@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -64,14 +65,9 @@ public class TypeScriptInputReaderTest {
 
             // act
             String inputModel = (String) new TypeScriptInputReader().read(filePath, Charset.defaultCharset());
-
-            assertThat(inputModel).contains("\"name\":\"aProperty\"");
-            assertThat(inputModel).contains("\"name\":\"aMethod\"");
-            assertThat(inputModel).contains("\"name\":\"b\"");
-            
-            LOG.debug("INPUT MODEL");
-            LOG.debug(inputModel);
-
+            assertThat(inputModel).contains("\"identifier\":\"aProperty\"");
+            assertThat(inputModel).contains("\"identifier\":\"aMethod\"");
+            assertThat(inputModel).contains("\"module\":\"b\"");
             return inputModel;
 
         } finally {
@@ -95,20 +91,41 @@ public class TypeScriptInputReaderTest {
             String inputModel = readingInput(baseFile.getAbsoluteFile().toPath());
             
             Map<String, Object> mapModel = new TypeScriptInputReader().createModel(inputModel);
-            
-            LOG.debug("MAP MODEL");
-            LOG.debug(mapModel.toString());
-            
-            ArrayList<Object> declarations = (ArrayList<Object>) mapModel.get("declarations");
-
             assertThat(mapModel).isNotNull();
             
-            LOG.debug("DECLARATIONS");
-            LOG.debug(declarations.toString());
-            for (Object declaration : declarations) {
-                //assertThat(declaration).isEqualTo("a");
+            // Checking imports
+            ArrayList<Object> importDeclarations = (ArrayList<Object>) mapModel.get("importDeclarations");
+            assertEquals(importDeclarations.size(), 2);
+            
+            String[] modules = {"b","d"};
+            String[] importedEntities = {"a","c"};
+            
+            for (int i=0; i<modules.length; i++)
+            {
+                LinkedHashMap<String,Object> currentImport = (LinkedHashMap<String, Object>) importDeclarations.get(i);
+                assertEquals(currentImport.get("module"), modules[i]);
+                ArrayList<String> currentEntities = (ArrayList<String>) currentImport.get("named");
+                assertEquals(currentEntities.get(0), importedEntities[i]);
             }
-
+            
+            // Checking exports
+            ArrayList<Object> exportDeclarations = (ArrayList<Object>) mapModel.get("exportDeclarations");
+            assertEquals(exportDeclarations.size(), 1);     
+            
+            LinkedHashMap<String,Object> currentExport = (LinkedHashMap<String, Object>) exportDeclarations.get(0);
+            assertEquals(currentExport.get("module"), "f");
+            ArrayList<String> currentEntities = (ArrayList<String>) currentExport.get("named");
+            assertEquals(currentEntities.get(0), "e");
+            
+            
+            // Checking classes
+            ArrayList<Object> classes = (ArrayList<Object>) mapModel.get("classes");
+            assertEquals(classes.size(), 1);     
+            
+            // Checking interfaces
+            ArrayList<Object> interfaces = (ArrayList<Object>) mapModel.get("interfaces");
+            assertEquals(interfaces.size(), 1);     
+            
         } finally {
 
             request.terminateProcessConnection();
