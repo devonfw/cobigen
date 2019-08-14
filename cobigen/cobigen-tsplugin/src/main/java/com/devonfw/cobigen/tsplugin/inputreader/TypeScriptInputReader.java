@@ -8,7 +8,9 @@ import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -168,24 +170,59 @@ public class TypeScriptInputReader implements InputReader {
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
         return getInputObjects(input, inputCharset, true);
     }
+    
+    private ArrayList<Object> castToList(Map<String, Object> mapModel,String key) {
+        return (ArrayList<Object>) mapModel.get(key);
+    }
 
     /**
-     * Returns all input objects for the given container input.
+     * Returns the first class or interface object.
      * @param input
      *            container input
      * @param inputCharset
      *            {@link Charset} to be used to read the children
      * @param recursively
      *            states, whether the children should be retrieved recursively
-     * @return the list of children.
+     * @return a list containing the first class or interface.
      */
     public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursively) {
+        
         LOG.debug("Retrieve input object for input {} {}", input, recursively ? "recursively" : "");
-        List<Object> tsClasses = new LinkedList<>();
+        List<Object> tsInputObjects = new LinkedList<>();
 
         LOG.debug("DEBUG getInputObjects: " + input.toString());
+        
+        try {
+            if (isValidInput(input))
+            {
+                String inputModel = (String) read(new File(input.toString()).toPath(), inputCharset);           
+                Map<String, Object> mapModel = createModel(inputModel);
+                
+                if (mapModel.containsKey("classes"))
+                {
+                    List<Object> classes = castToList(mapModel, "classes");
+                    tsInputObjects.add(castToHashMap(classes.get(0)));
+                    return tsInputObjects;
+                }
+                
+                if (mapModel.containsKey("interfaces"))
+                {
+                    List<Object> interfaces = castToList(mapModel, "interfaces");
+                    tsInputObjects.add(castToHashMap(interfaces.get(0)));
+                    return tsInputObjects;
+                }
+            }
 
-        return tsClasses;
+        } finally {
+            request.terminateProcessConnection();
+        }
+        
+        LOG.error("The given input does neither contain classes nor interfaces");
+        return tsInputObjects;
+    }
+
+    private LinkedHashMap<String, Object> castToHashMap(Object o) {
+        return (LinkedHashMap<String, Object>) o;
     }
 
     @Override
