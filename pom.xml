@@ -15,6 +15,13 @@
     <slf4j.version>1.7.21</slf4j.version>
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
+    <icsd.server.url>de-mucevolve02.corp.capgemini.com</icsd.server.url>
+    <icsd.webserver.url>http://${icsd.server.url}</icsd.webserver.url>
+    <p2.upload.url>ftp://${icsd.server.url}</p2.upload.url>
+    <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
+    <p2.repository.upload.dir>${project.build.directory}${file.separator}repository-upload</p2.repository.upload.dir>
+    <updatesite.path>files/cobigen/updatesite</updatesite.path>
+    <attach.source.javadoc.build>true</attach.source.javadoc.build>
   </properties>
 
   <modules>
@@ -39,7 +46,10 @@
   <developers>
     <developer>
       <name>Malte Brunnlieb</name>
-      <email>malte.brunnlieb@capgemini.com</email>
+      <organization>Capgemini</organization>
+    </developer>
+    <developer>
+      <name>Jaime Diaz Gonzalez</name>
       <organization>Capgemini</organization>
     </developer>
   </developers>
@@ -47,47 +57,57 @@
   <contributors>
     <contributor>
       <name>Jörg Hohwille</name>
-      <email>joerg.hohwille@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Fabian Kreis</name>
-      <email>fabian.kreis@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Steffen B. Holzer</name>
-      <email>steffen.holzer@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Jhonatan Ariel Core</name>
-      <email>jhonatan-ariel.core@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Ruben Diaz Martinez</name>
-      <email>ruben.diaz-martinez@capgemini.com</email>
       <organization>Capgemini</organization>
     </contributor>
     <contributor>
       <name>Simon Röger</name>
-      <email>simon.roeger@capgemini.com</email>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Krati Shah</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Christian Richter</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Erik Grüner</name>
+      <organization>Capgemini</organization>
+    </contributor>
+    <contributor>
+      <name>Mike Schumacher</name>
       <organization>Capgemini</organization>
     </contributor>
   </contributors>
 
   <organization>
-    <name>Capgemini</name>
-    <url>http://www.de.capgemini.com/</url>
+    <name>DevonFw</name>
+    <url>http://devonfw.com/</url>
   </organization>
 
   <licenses>
     <license>
-      <name>Capgemini CobiGen License Agreement</name>
-      <url>https://github.com/${github.project}/blob/master/LICENSE.CobiGen</url>
-      <distribution>manual</distribution>
-      <comments>Proprietary license. The complete Capgemini CobiGen License Agreement can be requested from the developers.</comments>
+      <name>Apache Software License</name>
+      <url>http://oasp.github.io/terms-of-use.html</url>
+      <distribution>repo</distribution>
+      <comments/>
     </license>
   </licenses>
 
@@ -146,14 +166,14 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <configuration>
           <flattenMode>${oasp.flatten.mode}</flattenMode>
         </configuration>
         <executions>
           <execution>
             <id>flatten</id>
-            <phase>process-test-resources</phase>
+            <phase>prepare-package</phase>
             <goals>
               <goal>flatten</goal>
             </goals>
@@ -167,6 +187,27 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.12</version>
+        <executions>
+          <execution>
+            <id>fileToUrl</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>regex-property</goal>
+            </goals>
+            <configuration>
+              <value>${p2.repository.build.dir}</value>
+              <regex>\\</regex>
+              <replacement>/</replacement>
+              <name>p2.repository.build.dir.url</name>
+              <failIfNoMatch>false</failIfNoMatch>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -174,7 +215,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.9</version>
+          <version>2.10</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -248,6 +289,19 @@
                     <ignore></ignore>
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <versionRange>[1.12,)</versionRange>
+                    <goals>
+                      <goal>regex-property</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
@@ -258,13 +312,115 @@
 
   <profiles>
     <profile>
-      <id>p2-upload-experimental</id>
+      <id>oss</id>
       <build>
         <plugins>
+          <!-- also generate javadoc JARs -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <additionalDependencies>
+                <additionalDependency>
+                  <groupId>javax.interceptor</groupId>
+                  <artifactId>javax.interceptor-api</artifactId>
+                  <version>1.2</version>
+                </additionalDependency>
+              </additionalDependencies>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Sign artifacts with PGP -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <configuration>
+              <keyname>${gpg.keyname}</keyname>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>p2-upload-experimental</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>experimental</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>file:///${p2.repository.build.dir.url}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir}</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>${icsd.webserver.url}/${updatesite.path}/experimental/cobigen-${project.artifactId}</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${p2.repository.upload.dir}</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -272,10 +428,10 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/experimental/cobigen-${project.artifactId}</toDir>
+                  <url>${p2.upload.url}/</url>
+                  <toDir>${updatesite.path}/experimental/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -286,12 +442,58 @@
     </profile>
     <profile>
       <id>p2-upload-ci</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>ci</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>file:///${p2.repository.build.dir.url}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir}</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>${icsd.webserver.url}/${updatesite.path}/ci/cobigen-${project.artifactId}</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${p2.repository.upload.dir}</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -299,10 +501,10 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/ci/cobigen-${project.artifactId}</toDir>
+                  <url>${p2.upload.url}/</url>
+                  <toDir>${updatesite.path}/ci/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
               </execution>
@@ -313,12 +515,58 @@
     </profile>
     <profile>
       <id>p2-upload-stable</id>
+      <activation>
+        <property>
+          <name>p2.upload</name>
+          <value>stable</value>
+        </property>
+        <file>
+          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
+          <exists>target/repository/artifacts.jar</exists>
+        </file>
+      </activation>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>1.1.0</version>
+            <executions>
+              <execution>
+                <id>mirror-files</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    <repository>
+                      <url>file:///${p2.repository.build.dir.url}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir}</destination>
+                  <xzCompress>false</xzCompress>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>wagon-maven-plugin</artifactId>
             <executions>
+              <execution>
+                <id>download-temporary-files</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>download</goal>
+                </goals>
+                <configuration>
+                  <url>${icsd.webserver.url}/${updatesite.path}/stable/cobigen-${project.artifactId}</url>
+                  <includes>artifacts.jar,content.jar</includes>
+                  <toDir>${p2.repository.upload.dir}</toDir>
+                </configuration>
+              </execution>
               <execution>
                 <id>upload-snapshot</id>
                 <phase>deploy</phase>
@@ -326,12 +574,48 @@
                   <goal>upload</goal>
                 </goals>
                 <configuration>
-                  <fromDir>${project.build.directory}/repository</fromDir>
+                  <fromDir>${p2.repository.upload.dir}</fromDir>
                   <includes>**</includes>
-                  <url>ftp://de-mucevolve02.corp.capgemini.com/</url>
-                  <toDir>files/cobigen/updatesite/stable/cobigen-${project.artifactId}</toDir>
+                  <url>${p2.upload.url}/</url>
+                  <toDir>${updatesite.path}/stable/cobigen-${project.artifactId}</toDir>
                   <serverId>iCSDFileServer</serverId>
                 </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <activation>
+        <property>
+          <name>attach.source.javadoc.build</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
               </execution>
             </executions>
           </plugin>

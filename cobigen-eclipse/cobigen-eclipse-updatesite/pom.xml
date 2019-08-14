@@ -2,14 +2,14 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cobigen-eclipse</artifactId>
+  <artifactId>eclipse</artifactId>
   <name>CobiGen - Eclipse Plug-In UpdateSite</name>
   <packaging>eclipse-repository</packaging>
-  <version>3.0.1</version>
+  <version>4.4.1</version>
 
   <parent>
-    <groupId>com.capgemini</groupId>
-    <artifactId>cobigen-eclipse-parent</artifactId>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>eclipse-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
 
