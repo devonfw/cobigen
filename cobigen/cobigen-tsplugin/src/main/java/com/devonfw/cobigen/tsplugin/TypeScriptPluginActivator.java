@@ -12,6 +12,11 @@ import com.google.common.collect.Lists;
  * TypeScript Plug-in Activator to be registered in the PluginRegistry of CobiGen.
  */
 public class TypeScriptPluginActivator implements GeneratorPluginActivator {
+    
+    /**
+     * Defines the trigger type
+     */
+    private static final String TRIGGER_TYPE = "typescript";
 
     @Override
     public List<Merger> bindMerger() {
@@ -23,7 +28,7 @@ public class TypeScriptPluginActivator implements GeneratorPluginActivator {
 
     @Override
     public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return null;
+        return Lists.<TriggerInterpreter> newArrayList(new TypeScriptTriggerInterpreter(TRIGGER_TYPE));
     }
 
 }
