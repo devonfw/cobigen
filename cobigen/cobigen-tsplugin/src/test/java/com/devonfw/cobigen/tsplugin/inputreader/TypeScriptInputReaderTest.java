@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,7 +33,7 @@ public class TypeScriptInputReaderTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/files/";
-    
+
     /** Output path **/
     private static String testFileOutputPath = "/Users/mghanmi/Desktop/test/generated_files/";
 
@@ -89,55 +87,53 @@ public class TypeScriptInputReaderTest {
             // arrange
             File baseFile = new File(testFileRootPath + "baseFile.ts");
 
-            String inputModel = (String) new TypeScriptInputReader().read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
-            
+            String inputModel = (String) new TypeScriptInputReader().read(baseFile.getAbsoluteFile().toPath(),
+                Charset.defaultCharset());
+
             Map<String, Object> mapModel = new TypeScriptInputReader().createModel(inputModel);
             assertThat(mapModel).isNotNull();
-            
+
             // Checking imports
             ArrayList<Object> importDeclarations = castToList(mapModel, "importDeclarations");
             assertEquals(importDeclarations.size(), 2);
-            
-            String[] modules = {"b","d"};
-            String[] importedEntities = {"a","c"};
-            
-            for (int i=0; i<modules.length; i++)
-            {
-                LinkedHashMap<String,Object> currentImport = (LinkedHashMap<String, Object>) importDeclarations.get(i);
+
+            String[] modules = { "b", "d" };
+            String[] importedEntities = { "a", "c" };
+
+            for (int i = 0; i < modules.length; i++) {
+                LinkedHashMap<String, Object> currentImport = (LinkedHashMap<String, Object>) importDeclarations.get(i);
                 assertEquals(currentImport.get("module"), modules[i]);
                 ArrayList<String> currentEntities = (ArrayList<String>) currentImport.get("named");
                 assertEquals(currentEntities.get(0), importedEntities[i]);
             }
-            
+
             // Checking exports
             ArrayList<Object> exportDeclarations = castToList(mapModel, "exportDeclarations");
-            assertEquals(exportDeclarations.size(), 1);     
-            
-            LinkedHashMap<String,Object> currentExport = (LinkedHashMap<String, Object>) exportDeclarations.get(0);
+            assertEquals(exportDeclarations.size(), 1);
+
+            LinkedHashMap<String, Object> currentExport = (LinkedHashMap<String, Object>) exportDeclarations.get(0);
             assertEquals(currentExport.get("module"), "f");
             ArrayList<String> currentEntities = (ArrayList<String>) currentExport.get("named");
             assertEquals(currentEntities.get(0), "e");
-            
-            
+
             // Checking classes
             ArrayList<Object> classes = castToList(mapModel, "classes");
-            assertEquals(classes.size(), 1);     
-            
+            assertEquals(classes.size(), 1);
+
             // Checking interfaces
             ArrayList<Object> interfaces = castToList(mapModel, "interfaces");
-            assertEquals(interfaces.size(), 1);     
-            
+            assertEquals(interfaces.size(), 1);
+
         } finally {
 
             request.terminateProcessConnection();
         }
     }
 
-    private ArrayList<Object> castToList(Map<String, Object> mapModel,String key) {
+    private ArrayList<Object> castToList(Map<String, Object> mapModel, String key) {
         return (ArrayList<Object>) mapModel.get(key);
     }
 
-    
     /**
      * Sends the path of a file to be parsed by the external process. Should return a valid JSON model.
      *
@@ -150,33 +146,33 @@ public class TypeScriptInputReaderTest {
 
             // arrange
             File baseFile = new File(testFileRootPath + "typeOrmFile.ts");
-            
-            String inputModel = (String) new TypeScriptInputReader().read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
-            
+
+            String inputModel = (String) new TypeScriptInputReader().read(baseFile.getAbsoluteFile().toPath(),
+                Charset.defaultCharset());
+
             LOG.debug("TypeOrm file");
             LOG.debug(inputModel);
-            
+
             JSONObject formatted = new JSONObject(inputModel); // Convert text to object
-            //Write JSON file
-            try (FileWriter file = new FileWriter(testFileOutputPath+"parsed_with_external_library.json" )) {
-     
-                file.write(formatted.toString(4));
-                file.flush();
-     
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            // Write JSON file
+            /*
+             * try (FileWriter file = new FileWriter(testFileOutputPath+"parsed_with_external_library.json" ))
+             * {
+             * 
+             * file.write(formatted.toString(4)); file.flush();
+             * 
+             * } catch (IOException e) { e.printStackTrace(); }
+             */
 
         } finally {
 
             request.terminateProcessConnection();
         }
     }
-    
-    
+
     /**
-     * Sends the path of a file to be parsed by the external process.
-     * Server determines whether the file is valid.
+     * Sends the path of a file to be parsed by the external process. Server determines whether the file is
+     * valid.
      *
      * @test fails
      */
@@ -186,15 +182,15 @@ public class TypeScriptInputReaderTest {
         try {
             File baseFile = new File(testFileRootPath + "baseFile.ts");
             boolean isValidInput = new TypeScriptInputReader().isValidInput(baseFile);
-            
-            LOG.debug("Valid input ? "+ isValidInput);
+
+            LOG.debug("Valid input ? " + isValidInput);
             assertTrue(isValidInput);
 
         } finally {
             request.terminateProcessConnection();
         }
     }
-    
+
     /**
      * Testing the extraction of the first class or interface
      * @test fails
@@ -204,13 +200,14 @@ public class TypeScriptInputReaderTest {
 
         try {
             File baseFile = new File(testFileRootPath + "baseFile.ts");
-            List<Object> tsInputObjects = new TypeScriptInputReader().getInputObjects(baseFile, Charset.defaultCharset());
+            List<Object> tsInputObjects =
+                new TypeScriptInputReader().getInputObjects(baseFile, Charset.defaultCharset());
             LinkedHashMap<String, Object> inputObject = castToHashMap(tsInputObjects.get(0));
-            
+
             assertNotNull(inputObject);
             assertEquals(inputObject.get("identifier"), "a");
             assertNotNull(inputObject.get("methods"));
-            
+
             LOG.debug(inputObject.toString());
 
         } finally {
