@@ -1,4 +1,4 @@
-package matcher;
+package com.devonfw.cobigen.tsplugin.matcher;
 
 import java.io.File;
 import java.nio.file.Path;
