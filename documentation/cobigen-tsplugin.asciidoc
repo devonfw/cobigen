@@ -45,6 +45,155 @@ import { a, c } from 'b';
 * *FunctionDeclaration*
 ** Merged in the same way as Method is.
 
+== Input reader
+The TypeScript input reader is based on the one that the link:https://github.com/devonfw/ts-merger[TypeScript merger] uses. The current extensions are additional module fields giving from which library any entity originates. 
+`module: null` specifies a standard entity or type as `string` or `number`.
 
+=== Object model
+To get a first impression of the created object after parsing, let us start with analyzing a small example, namely the parsing of a simple link:https://typeorm.io/#/[type-orm] model written in TypeScript. 
+
+```Typescript
+import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+
+@Entity()
+export class User {
+
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    firstName: string;
+
+    @Column()
+    lastName: string;
+
+    @Column()
+    age: number;
+
+}
+```
+The returned object has the following structure
+
+```JSON
+{
+  "importDeclarations": [
+    {
+      "module": "typeorm",
+      "named": [
+        "Entity",
+        "PrimaryGeneratedColumn",
+        "Column"
+      ],
+      "spaceBinding": true
+    }
+  ],
+  "classes": [
+    {
+      "identifier": "User",
+      "modifiers": [
+        "export"
+      ],
+      "decorators": [
+        {
+          "identifier": {
+            "name": "Entity",
+            "module": "typeorm"
+          },
+          "isCallExpression": true
+        }
+      ],
+      "properties": [
+        {
+          "identifier": "id",
+          "type": {
+            "name": "number",
+            "module": null
+          },
+          "decorators": [
+            {
+              "identifier": {
+                "name": "PrimaryGeneratedColumn",
+                "module": "typeorm"
+              },
+              "isCallExpression": true
+            }
+          ]
+        },
+        {
+          "identifier": "firstName",
+          "type": {
+            "name": "string",
+            "module": null
+          },
+          "decorators": [
+            {
+              "identifier": {
+                "name": "Column",
+                "module": "typeorm"
+              },
+              "isCallExpression": true
+            }
+          ]
+        },
+        {
+          "identifier": "lastName",
+          "type": {
+            "name": "string",
+            "module": null
+          },
+          "decorators": [
+            {
+              "identifier": {
+                "name": "Column",
+                "module": "typeorm"
+              },
+              "isCallExpression": true
+            }
+          ]
+        },
+        {
+          "identifier": "age",
+          "type": {
+            "name": "number",
+            "module": null
+          },
+          "decorators": [
+            {
+              "identifier": {
+                "name": "Column",
+                "module": "typeorm"
+              },
+              "isCallExpression": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+If we only consider the first level of the JSON response, we spot two lists of `imports` and `classes`, providing information about the only import statement and the only *User* class, respectively. Moving one level deeper we observe that:
+
+* Every import statement is translated to an import declaration entry in the declarations list, containing the module name, as well as a list of entities imported from the given module.
+* Every class entry provides besides the class identifier, its decoration(s), modifier(s), as well as a list of properties that the original class contains. 
+
+Note that, for each given type, the module from which it is imported is also given as in 
+
+```JSON
+  "identifier": {
+    "name": "Column",
+    "module": "typeorm"
+  }
+```
+
+Returning to the general case, independently from the given TypeScript file, an object having the following Structure will be created. 
+
+* *importDeclarations*: A list of import statement as described above
+* *exportDeclarations*: A list of export declarations
+* *classes*: A list of classes extracted from the given file, where each entry is full of class specific fields, describing its properties and decorator for example. 
+* *interfaces*: A list of interfaces.
+* *variables*: A list of variables. 
+* *functions*: A list of functions. 
+* *enums*: A list of enumerations.
 
 
