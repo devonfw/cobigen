@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -82,15 +84,30 @@ public class TypeScriptInputReader implements InputReader {
     public boolean isValidInput(Object input) {
         String fileContents = null;
         String inputCharset = "UTF-8";
-        File file = new File(input.toString());
-        Path path = file.toPath();
+
+        Path path;
+
+        if (input instanceof Path) {
+            path = (Path) input;
+        } else if (input instanceof File) {
+            path = ((File) input).toPath();
+        }
+
+        else {
+            // Input corresponds to the parsed file
+            Map<String, Object> mapModel = createModel(input);
+            path = Paths.get((URI) mapModel.get("path"));
+            return isValidInput(path);
+        }
+
         if (request.isNotConnected()) {
             startServerConnection();
         }
 
         // File content is not needed, as only the file extension is checked
         fileContents = new String("");
-        String fileName = path.getFileName().toString();
+        // String fileName = path.getFileName().toString();
+        String fileName = path.toString();
         InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset);
 
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "isValidInput");
@@ -234,7 +251,8 @@ public class TypeScriptInputReader implements InputReader {
         }
 
         String fileContents;
-        String fileName = path.getFileName().toString();
+        // String fileName = path.getFileName().toString();
+        String fileName = path.toString();
         try {
 
             fileContents = String.join("", Files.readAllLines(path, inputCharset));
