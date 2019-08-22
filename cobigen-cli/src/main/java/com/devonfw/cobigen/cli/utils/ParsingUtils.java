@@ -13,11 +13,20 @@ import net.sf.mmm.code.api.CodeName;
 import net.sf.mmm.code.base.BaseFile;
 import net.sf.mmm.code.base.BasePackage;
 import net.sf.mmm.code.base.source.BaseSource;
+import net.sf.mmm.code.base.type.BaseType;
 import net.sf.mmm.code.impl.java.JavaContext;
+import net.sf.mmm.code.impl.java.JavaFactory;
 import net.sf.mmm.code.impl.java.parser.JavaSourceCodeParserImpl;
+import net.sf.mmm.code.impl.java.parser.JavaSourceCodeReaderHighlevel;
+import net.sf.mmm.code.impl.java.parser.JavaSourceCodeReaderLowlevel;
 import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
+import net.sf.mmm.code.java.parser.base.JavaSourceCodeLexer;
+import net.sf.mmm.code.java.parser.base.JavaSourceCodeParser;
+import net.sf.mmm.code.java.parser.base.JavaSourceCodeParserBaseListener;
+import net.sf.mmm.code.java.parser.base.JavaSourceCodeParserListenerImpl;
 import net.sf.mmm.util.io.api.IoMode;
 import net.sf.mmm.util.io.api.RuntimeIoException;
+import net.sf.mmm.util.xml.api.ParserState;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,10 +124,14 @@ public class ParsingUtils {
 
         String className = inputFile.getName().replace(".java", "");
         BaseFile file = createFile(className, context);
-        JavaSourceCodeParserImpl parser = new JavaSourceCodeParserImpl();
-
-        try (Reader reader = new FileReader(inputFile.getAbsolutePath())) {
-            return parser.parseQualifiedName(reader, file);
+        JavaSourceCodeParserImpl parser = new JavaSourceCodeParserImpl();  
+        JavaSourceCodeReaderHighlevel jsp = new JavaSourceCodeReaderHighlevel();
+       
+        try (Reader reader = new FileReader(inputFile.getAbsolutePath())) {        	
+            BaseType parseType = parser.parseType(reader, file);
+			return parseType.getQualifiedName();
+            
+        	
         } catch (IOException e) {
             throw new RuntimeIoException(e, IoMode.READ);
         }
