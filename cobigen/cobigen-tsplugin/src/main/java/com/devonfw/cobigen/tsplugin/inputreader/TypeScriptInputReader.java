@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -96,7 +95,7 @@ public class TypeScriptInputReader implements InputReader {
         else {
             // Input corresponds to the parsed file
             Map<String, Object> mapModel = createModel(input);
-            path = Paths.get((URI) mapModel.get("path"));
+            path = Paths.get(mapModel.get("path").toString());
             return isValidInput(path);
         }
 
