@@ -83,33 +83,31 @@ public class TypeScriptInputReader implements InputReader {
         String fileContents = null;
         String inputCharset = "UTF-8";
         File file = new File(input.toString());
-        Path path =  file.toPath();
+        Path path = file.toPath();
         if (request.isNotConnected()) {
             startServerConnection();
         }
-     
 
         // File content is not needed, as only the file extension is checked
         fileContents = new String("");
         String fileName = path.getFileName().toString();
-        InputFileTo inputFile = new InputFileTo(fileName,fileContents, inputCharset);
-        
+        InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset);
+
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "isValidInput");
 
         if (request.sendRequest(inputFile, conn, "UTF-8")) {
-            
+
             StringBuffer response = new StringBuffer();
             try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
                 BufferedReader br = new BufferedReader(isr);) {
-                
+
                 LOG.info("Receiving response from Server....");
                 Stream<String> s = br.lines();
                 s.parallel().forEachOrdered((String line) -> {
                     response.append(line);
                 });
                 return Boolean.parseBoolean(response.toString());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
 
                 connectionExc.handle(e);
             }
@@ -170,8 +168,8 @@ public class TypeScriptInputReader implements InputReader {
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
         return getInputObjects(input, inputCharset, true);
     }
-    
-    private ArrayList<Object> castToList(Map<String, Object> mapModel,String key) {
+
+    private ArrayList<Object> castToList(Map<String, Object> mapModel, String key) {
         return (ArrayList<Object>) mapModel.get(key);
     }
 
@@ -186,27 +184,24 @@ public class TypeScriptInputReader implements InputReader {
      * @return a list containing the first class or interface.
      */
     public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursively) {
-        
+
         LOG.debug("Retrieve input object for input {} {}", input, recursively ? "recursively" : "");
         List<Object> tsInputObjects = new LinkedList<>();
 
         LOG.debug("DEBUG getInputObjects: " + input.toString());
-        
+
         try {
-            if (isValidInput(input))
-            {
-                String inputModel = (String) read(new File(input.toString()).toPath(), inputCharset);           
+            if (isValidInput(input)) {
+                String inputModel = (String) read(new File(input.toString()).toPath(), inputCharset);
                 Map<String, Object> mapModel = createModel(inputModel);
-                
-                if (mapModel.containsKey("classes"))
-                {
+
+                if (mapModel.containsKey("classes")) {
                     List<Object> classes = castToList(mapModel, "classes");
                     tsInputObjects.add(castToHashMap(classes.get(0)));
                     return tsInputObjects;
                 }
-                
-                if (mapModel.containsKey("interfaces"))
-                {
+
+                if (mapModel.containsKey("interfaces")) {
                     List<Object> interfaces = castToList(mapModel, "interfaces");
                     tsInputObjects.add(castToHashMap(interfaces.get(0)));
                     return tsInputObjects;
@@ -216,7 +211,7 @@ public class TypeScriptInputReader implements InputReader {
         } finally {
             request.terminateProcessConnection();
         }
-        
+
         LOG.error("The given input does neither contain classes nor interfaces");
         return tsInputObjects;
     }
@@ -237,19 +232,19 @@ public class TypeScriptInputReader implements InputReader {
         if (request.isNotConnected()) {
             startServerConnection();
         }
-        
+
         String fileContents;
         String fileName = path.getFileName().toString();
         try {
-            
+
             fileContents = String.join("", Files.readAllLines(path, inputCharset));
             // System.out.println("DEBUG -- File content");
             // System.out.println(fileContents);
         } catch (IOException e) {
             throw new InputReaderException("Could not read input file!" + fileName, e);
         }
-        
-        InputFileTo inputFile = new InputFileTo(fileName,fileContents, inputCharset.name());
+
+        InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset.name());
 
         HttpURLConnection conn =
             request.getConnection("POST", "Content-Type", "application/json", "tsplugin/getInputModel");
@@ -275,6 +270,11 @@ public class TypeScriptInputReader implements InputReader {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isMostLikelyReadable(Path path) {
+        return isValidInput(path);
     }
 
 }
