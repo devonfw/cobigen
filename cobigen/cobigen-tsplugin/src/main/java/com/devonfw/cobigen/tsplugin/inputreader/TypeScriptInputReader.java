@@ -93,10 +93,15 @@ public class TypeScriptInputReader implements InputReader {
         }
 
         else {
-            // Input corresponds to the parsed file
-            Map<String, Object> mapModel = createModel(input);
-            path = Paths.get(mapModel.get("path").toString());
-            return isValidInput(path);
+            try {
+                // Input corresponds to the parsed file
+                Map<String, Object> mapModel = createModel(input);
+                path = Paths.get(mapModel.get("path").toString());
+                return isValidInput(path);
+            } catch (Exception e) {
+                return false;
+            }
+
         }
 
         if (request.isNotConnected()) {
@@ -123,9 +128,12 @@ public class TypeScriptInputReader implements InputReader {
                     response.append(line);
                 });
                 return Boolean.parseBoolean(response.toString());
-            } catch (Exception e) {
+            } catch (NullPointerException e) {
+                return false;
 
+            } catch (IOException e) {
                 connectionExc.handle(e);
+                e.printStackTrace();
             }
         }
         return false;
