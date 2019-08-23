@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.tsplugin.matcher;
 
-import java.io.File;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.VariableAssignmentTo;
+import com.devonfw.cobigen.tsplugin.inputreader.TypeScriptInputReader;
 import com.google.common.collect.Maps;
 
 public class TypeScriptMatcher implements MatcherInterpreter {
@@ -26,7 +26,7 @@ public class TypeScriptMatcher implements MatcherInterpreter {
         /** Full Qualified Name Matching */
         FQN
     }
-    
+
     /** Available variable types for the matcher */
     private enum VariableType {
         /** Constant variable assignment */
@@ -34,25 +34,34 @@ public class TypeScriptMatcher implements MatcherInterpreter {
         /** Regular expression group assignment */
         REGEX
     }
-    
+
     @Override
     public boolean matches(MatcherTo matcher) {
 
-        try {
-            MatcherType matcherType = Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase());
-            switch (matcherType) {
-            case FQN:
-                String fqn = getFqn(matcher);
-                LOG.debug("Matching input FQN {} against regex '{}'", fqn, matcher.getValue());
-                return fqn != null && fqn.matches(matcher.getValue());
-                
-            }
-        } catch (IllegalArgumentException e) {
-            LOG.info("Matcher type '{}' not registered --> no match!", matcher.getType());
+        /*
+         *
+         * try { LOG.debug("Matcher type matches FQN? {}",
+         * matcher.getType().toUpperCase().equals(MatcherType.FQN.toString()));
+         *
+         * LOG.debug("Matcher types  {}", MatcherType.values()); MatcherType matcherType =
+         * Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase()); switch (matcherType) { case FQN:
+         * String fqn = getFqn(matcher); LOG.debug("Matching input FQN {} against regex '{}'", fqn,
+         * matcher.getValue()); return fqn != null && fqn.matches(matcher.getValue());
+         *
+         * } } catch (IllegalArgumentException e) { LOG.info("Matcher type '{}' not registered --> no match!",
+         * matcher.getType()); }
+         */
+        LOG.debug("Type {} matches FQN ? ", matcher.getType());
+        boolean matchesFqn = matcher.getType().toUpperCase().equals(MatcherType.FQN.toString());
+        if (matchesFqn) {
+            String fqn = getFqn(matcher);
+            LOG.debug("Matching input FQN {} against regex '{}'", fqn, matcher.getValue());
+            return fqn != null && fqn.matches(matcher.getValue());
         }
-        return false;
+        return matchesFqn;
+        // return false;
     }
-    
+
     /**
      * Returns the full qualified name of the matchers input
      *
@@ -64,15 +73,18 @@ public class TypeScriptMatcher implements MatcherInterpreter {
 
         Object target = matcher.getTarget();
         String fqn = null;
-        
-        if (target instanceof Path) {
-            fqn = ((Path) target).toString();
-        } else if (target instanceof String) {
-            fqn =  new File((String) target).toPath().toString();
+
+        try {
+            // Input corresponds to the parsed file
+            Map<String, Object> mapModel = new TypeScriptInputReader().createModel(target);
+            mapModel = (Map<String, Object>) mapModel.get("model");
+            fqn = Paths.get(mapModel.get("path").toString()).getFileName().toString();
+
+        } catch (NullPointerException e) {
+            return null;
         }
         return fqn;
     }
-    
 
     @Override
     public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
@@ -92,7 +104,7 @@ public class TypeScriptMatcher implements MatcherInterpreter {
         }
         return Maps.newHashMap();
     }
-    
+
     /**
      * Resolves all variables for this trigger
      *
@@ -127,7 +139,7 @@ public class TypeScriptMatcher implements MatcherInterpreter {
         }
         return resolvedVariables;
     }
-    
+
     /**
      * Resolves the variable assignments of type {@link VariableType#REGEX}
      *
