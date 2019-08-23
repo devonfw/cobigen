@@ -34,9 +34,6 @@ public class TypeScriptInputReaderTest {
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/files/";
 
-    /** Output path **/
-    private static String testFileOutputPath = "/Users/mghanmi/Desktop/test/generated_files/";
-
     /** Initializing connection with server */
     private static ExternalProcessHandler request = ExternalProcessHandler
         .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
@@ -93,6 +90,8 @@ public class TypeScriptInputReaderTest {
             Map<String, Object> mapModel = new TypeScriptInputReader().createModel(inputModel);
             assertThat(mapModel).isNotNull();
 
+            LOG.debug(mapModel.toString());
+            mapModel = (Map<String, Object>) mapModel.get("model");
             // Checking imports
             ArrayList<Object> importDeclarations = castToList(mapModel, "importDeclarations");
             assertEquals(importDeclarations.size(), 2);
@@ -158,9 +157,9 @@ public class TypeScriptInputReaderTest {
             /*
              * try (FileWriter file = new FileWriter(testFileOutputPath+"parsed_with_external_library.json" ))
              * {
-             * 
+             *
              * file.write(formatted.toString(4)); file.flush();
-             * 
+             *
              * } catch (IOException e) { e.printStackTrace(); }
              */
 
@@ -185,6 +184,50 @@ public class TypeScriptInputReaderTest {
 
             LOG.debug("Valid input ? " + isValidInput);
             assertTrue(isValidInput);
+
+        } finally {
+            request.terminateProcessConnection();
+        }
+    }
+
+    /**
+     * Sends the path of a file to be parsed by the external process. Server determines whether the file is
+     * valid.
+     *
+     * @test fails
+     */
+    @Test
+    public void testIsMostProbablyReadable() {
+
+        try {
+            File baseFile = new File(testFileRootPath + "baseFile.ts");
+            boolean isReadable = new TypeScriptInputReader().isValidInput(baseFile.toPath());
+
+            LOG.debug("is most probably readable ? " + isReadable);
+            assertTrue(isReadable);
+
+        } finally {
+            request.terminateProcessConnection();
+        }
+    }
+
+    /**
+     * Parses the input file and then check whether it is valid.
+     *
+     * @test fails
+     */
+    @Test
+    public void testIsValidInputAfterReading() {
+
+        try {
+            File baseFile = new File(testFileRootPath + "baseFile.ts");
+            // parsing
+            Object input = new TypeScriptInputReader().read(baseFile.toPath(), Charset.defaultCharset());
+            // Now checking whether the input is valid
+            boolean isValid = new TypeScriptInputReader().isValidInput(baseFile.toPath());
+
+            LOG.debug("is valid ? " + isValid);
+            assertTrue(isValid);
 
         } finally {
             request.terminateProcessConnection();
@@ -218,4 +261,4 @@ public class TypeScriptInputReaderTest {
     private LinkedHashMap<String, Object> castToHashMap(Object o) {
         return (LinkedHashMap<String, Object>) o;
     }
-}
+};
