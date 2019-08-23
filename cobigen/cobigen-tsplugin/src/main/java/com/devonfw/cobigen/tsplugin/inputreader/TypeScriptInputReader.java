@@ -96,6 +96,7 @@ public class TypeScriptInputReader implements InputReader {
             try {
                 // Input corresponds to the parsed file
                 Map<String, Object> mapModel = createModel(input);
+                mapModel = (Map<String, Object>) mapModel.get("model");
                 path = Paths.get(mapModel.get("path").toString());
                 return isValidInput(path);
             } catch (Exception e) {
@@ -216,7 +217,7 @@ public class TypeScriptInputReader implements InputReader {
         try {
             if (isValidInput(input)) {
                 String inputModel = (String) read(new File(input.toString()).toPath(), inputCharset);
-                Map<String, Object> mapModel = createModel(inputModel);
+                Map<String, Object> mapModel = (Map<String, Object>) createModel(inputModel).get("model");
 
                 if (mapModel.containsKey("classes")) {
                     List<Object> classes = castToList(mapModel, "classes");
