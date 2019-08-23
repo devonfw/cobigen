@@ -141,19 +141,18 @@ public class TypeScriptInputReader implements InputReader {
 
     @Override
     public Map<String, Object> createModel(Object input) {
+        Map<String, Object> pojoModel = new HashMap<>();
 
         try {
 
             ObjectMapper mapper = new ObjectMapper();
             String json = input.toString();
 
-            Map<String, Object> map = new HashMap<String, Object>();
-
             // convert JSON string to Map
-            map = mapper.readValue(json, new TypeReference<Map<String, Object>>() {
-            });
+            pojoModel.put("model", mapper.readValue(json, new TypeReference<Map<String, Object>>() {
+            }));
 
-            return map;
+            return pojoModel;
 
         } catch (JsonGenerationException e) {
             e.printStackTrace();
