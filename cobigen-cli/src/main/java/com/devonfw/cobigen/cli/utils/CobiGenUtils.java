@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
@@ -364,25 +365,25 @@ public class CobiGenUtils {
      * specified collection (optional operation). In other words, the resultant list removes from this list
      * all of its elements that are not contained in the specified collection.
      *
-     * @param currentList
+     * @param list
      *            list containing elements to be retained in this list
-     * @param listToIntersect
+     * @param list2
      *            second list to be used for the intersection
      * @return <tt>resultant list</tt> containing increments that are in both lists
      */
-    public static List<IncrementTo> retainAllIncrements(List<IncrementTo> currentList,
-        List<IncrementTo> listToIntersect) {
+    public static List<IncrementTo> retainAllIncrements(List<IncrementTo> list,
+        List<IncrementTo> list2) {
 
         List<IncrementTo> resultantList = new ArrayList<>();
 
-        for (IncrementTo currentIncrement : currentList) {
-            String currentIncrementDesc = currentIncrement.getDescription().trim().toLowerCase();
-            for (IncrementTo intersectIncrement : listToIntersect) {
+        for (GenerableArtifact currentIncrement : list) {
+            String currentIncrementDesc = ((IncrementTo) currentIncrement).getDescription().trim().toLowerCase();
+            for (GenerableArtifact intersectIncrement : list2) {
 
-                String intersectIncrementDesc = intersectIncrement.getDescription().trim().toLowerCase();
+                String intersectIncrementDesc = ((IncrementTo) intersectIncrement).getDescription().trim().toLowerCase();
 
                 if (currentIncrementDesc.equals(intersectIncrementDesc)) {
-                    resultantList.add(currentIncrement);
+                    resultantList.add((IncrementTo) currentIncrement);
                     break;
                 }
             }
