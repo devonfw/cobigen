@@ -2,6 +2,8 @@
 
 = CobiGen (Code-based incremental Generator)
 
+wiki clone job: image:https://api.travis-ci.com/devonfw/tools-cobigen.svg?branch=master[link="https://travis-ci.com/devonfw/tools-cobigen"] 
+
 image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield"]
 
 |===

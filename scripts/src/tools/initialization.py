@@ -112,8 +112,6 @@ def init_git_dependent_config(config: Config, github: GitHub, git_repo: GitRepo)
     else:
         log_info("Branch to be released: {}".format(config.branch_to_be_released))
 
-    config.wiki_submodule_name = __get_wiki_name_specific_branch(config, config.branch_to_be_released)
-    config.wiki_submodule_path = os.path.abspath(config.root_path)
     version_pattern = re.compile(r'[0-9]\.[0-9]\.[0-9]')
     if not hasattr(config,"release_version"):
         config.release_version = ""
