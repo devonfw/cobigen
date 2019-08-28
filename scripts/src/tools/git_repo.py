@@ -51,10 +51,8 @@ class GitRepo:
             self.update_and_clean()
 
     def update_and_clean(self):
-        log_info("Executing update and cleanup (git pull origin && git submodule update && git clean -fd)")
+        log_info("Executing update and cleanup (git pull origin && git clean -fd)")
         self.pull()
-        self.__repo.git.submodule("init")
-        self.__repo.git.submodule("update")
         self.__repo.git.clean("-fd")
         if not self.is_working_copy_clean():
             log_error("Reset and cleanup did not work out. Other branches have local commits not yet pushed:")
@@ -112,11 +110,6 @@ class GitRepo:
 
         self.__repo.index.add([i for i in files_to_add if self.__is_tracked_and_dirty(i)])
 
-    def add_submodule(self, module: str) -> None:
-        submodule = self.__repo.submodule(module)
-        submodule.binsha = submodule.module().head.commit.binsha
-        self.__repo.index.add([submodule])
-
     def merge(self, source: str, target: str) -> None:
         if self.__config.dry_run:
             log_info_dry("Would merge from " + source + " to " + target)
@@ -144,24 +137,21 @@ class GitRepo:
                 self.reset()
                 sys.exit()
 
-    def update_submodule(self, submodule_path: str) -> None:
-        sm_repo = GitRepo(self.__config, submodule_path)
-        sm_repo.checkout('master')
-        sm_repo.pull()
+    def update_documentation(self) -> None:
+        self.checkout('master')
+        self.pull()
 
         log_info("Changing the " + self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl + " v" + self.__config.release_version
-        modified_file = os.path.join(self.__config.wiki_submodule_path,"documentation", self.__config.wiki_version_overview_page)
+        modified_file = os.path.join(self.__config.root_path,"documentation", self.__config.wiki_version_overview_page)
         with FileInput(modified_file,
                        inplace=True) as file:
             for line in file:
                 line = re.sub(r'' + version_decl + r'\s+v[0-9]\.[0-9]\.[0-9]', new_version_decl, line)
                 sys.stdout.write(line)
 
-        sm_repo.add([modified_file], False)
-        sm_repo.commit("update wiki docs")
-        sm_repo.push()
+        self.add([modified_file], False)
 
     def exists_tag(self, tag_name) -> bool:
         return tag_name in self.__repo.tags
