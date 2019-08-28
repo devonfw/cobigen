@@ -57,18 +57,48 @@ public class ParsingUtils {
      */
     public static JavaContext getJavaContext(File inputFile, File inputProject) {
 
-        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject);
-
+        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject,true);
+        String fqn = ParsingUtils.getFQN(inputFile);
         String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
 
         try {
-            context.getClassLoader().loadClass(qualifiedName);
+           // context.getClassLoader().loadClass(qualifiedName);
+        	 context.getClassLoader().loadClass(fqn);
         } catch (NoClassDefFoundError | ClassNotFoundException e) {
             logger.error("Compiled class " + e.getMessage()
                 + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
             System.exit(1);
         }
         return context;
+    }
+    /**
+     * @param inputFile
+     * @return
+     */
+    private static String getFQN(File inputFile) {
+        String simpleName = inputFile.getName().replaceAll("\\.(?i)java", "");
+        String packageName = getPackageName(inputFile.getParentFile(), "");
+
+         return packageName + "." + simpleName;
+    }
+
+     private static String getPackageName(File folder, String packageName) {
+
+         if (folder == null) {
+            return null;
+        }
+
+         if (folder.getName().toLowerCase().equals("java")) {
+            String[] pkgs = packageName.split("\\.");
+
+             packageName = pkgs[pkgs.length - 1];
+            // Reverse order as we have traversed folders from child to parent
+            for (int i = pkgs.length - 2; i > 0; i--) {
+                packageName = packageName + "." + pkgs[i];
+            }
+            return packageName;
+        }
+        return getPackageName(folder.getParentFile(), packageName + "." + folder.getName());
     }
 
     /**

@@ -326,13 +326,12 @@ public class GenerateCommand implements Callable<Integer> {
      * @param inputProject
      *            project where the code will be generated to
      */
-    private void setOutputRootPath(File inputProject) {
-        logger.info("As you did not specify where the code will be generated, we will use the project of your current"
-            + " input file.");
-        logger.debug("Generating to: " + inputProject.getAbsolutePath());
+	private void setOutputRootPath(File inputProject) {
 
-        outputRootPath = inputProject;
-    }
+		// logger.debug("Generating to: " + inputProject.getAbsolutePath());
+
+		outputRootPath = inputProject;
+	}
 
     /**
      * Method that handles the increments selection and prints some messages to the console
@@ -345,16 +344,16 @@ public class GenerateCommand implements Callable<Integer> {
      *            class type, specifies whether Templates or Increments should be preprocessed
      * @return The final increments that will be used for generation
      */
-    private List<? extends GenerableArtifact> generableArtifactSelection(ArrayList<String> userInput,
+    @SuppressWarnings("unchecked")
+	private List<? extends GenerableArtifact> generableArtifactSelection(ArrayList<String> userInput,
         List<? extends GenerableArtifact> matching, Class<?> c) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         List<GenerableArtifact> userSelection = new ArrayList<>();
-        String artifactType = isIncrements ? "increment" : "template";
-
+        String artifactType = isIncrements ? "increment" : "template";       
         if (userInput == null || userInput.size() < 1) {
             // Print all matching generable artifacts
-            printAllMatchingIncrements(matching, isIncrements, artifactType);
+        	printFoundArtifacts((ArrayList<GenerableArtifact>) matching, isIncrements, artifactType);
 
             userInput = new ArrayList<>();
             for (String userArtifact : getUserInput().split(",")) {
@@ -385,7 +384,7 @@ public class GenerateCommand implements Callable<Integer> {
                         : ((TemplateTo) matching.get(index)).getId();
                     logger.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("The " + artifactType + " number you have specified is out of bounds!");
+                    logger.error("The " + artifactType + " number you have specified is out of bounds ,So please provide the number(s) of increments that you want to generate separated by comma.!");
                     System.exit(1);
                 } catch (NumberFormatException e) {
                     logger.error("Error parsing your input. You need to specify " + artifactType
@@ -421,40 +420,20 @@ public class GenerateCommand implements Callable<Integer> {
                     logger.info("Exact match found: " + artifactDescription + ".");
                     userSelection.add(possibleArtifacts.get(0));
                     return userSelection;
+                }else if(possibleArtifacts.size()<1) {
+                	logger. info("No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
+                       
+                        System.exit(1);
                 }
-
-                logger.info("Please enter the number(s) of " + artifactType
-                    + "(s) that you want to generate separated by comma.");
+                
+                /*logger.info("Please enter the number(s) of " + artifactType
+                    + "(s) that you want to generate separated by comma.");*/
 
                 userSelection = artifactStringSelection(userSelection, possibleArtifacts, artifactType);
             }
         }
         return userSelection;
 
-    }
-
-    /**
-     * Prints the complete list of generable artifacts (increments or templates) that one input file can use
-     * @param matching
-     *            all the increments that match the current input file
-     * @param isIncrements
-     *            true if we want to generate increments
-     * @param artifactType
-     *            type of artifact (increment or template)
-     */
-    private void printAllMatchingIncrements(List<? extends GenerableArtifact> matching, Boolean isIncrements,
-        String artifactType) {
-
-        int index = 0;
-        logger.info("(0) All");
-        for (GenerableArtifact artifact : matching) {
-            String artifactDescription =
-                isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
-            logger.info("(" + ++index + ") " + artifactDescription);
-        }
-        logger
-            .info("Here are the options you have for your choice. Which " + artifactType + "s do you want to generate?"
-                + " Please list the " + artifactType + "s number you want separated by comma:");
     }
 
     /**
