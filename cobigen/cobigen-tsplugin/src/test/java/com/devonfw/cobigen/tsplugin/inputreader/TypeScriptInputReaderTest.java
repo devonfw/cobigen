@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,9 +34,14 @@ public class TypeScriptInputReaderTest {
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/files/";
 
+    /** Generated resources root path */
+    private static String generatedFileRootPath = "src/test/resources/testdata/unittest/generated/";
+
     /** Initializing connection with server */
     private static ExternalProcessHandler request = ExternalProcessHandler
         .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+
+    private FileWriter generatedFile;
 
     /**
      * Starts the server and initializes the connection to it
@@ -72,7 +77,8 @@ public class TypeScriptInputReaderTest {
     }
 
     /**
-     * Sends the path of a file to be parsed by the external process. Should return a valid JSON model.
+     * Sends the path of a file to be parsed by the external process. Should return a valid JSON model. The
+     * validity of the generated model is then checked.
      *
      * @test fails
      */
@@ -134,44 +140,8 @@ public class TypeScriptInputReaderTest {
     }
 
     /**
-     * Sends the path of a file to be parsed by the external process. Should return a valid JSON model.
-     *
-     * @test fails
-     */
-    @Test
-    public void testTypeOrm() {
-
-        try {
-
-            // arrange
-            File baseFile = new File(testFileRootPath + "typeOrmFile.ts");
-
-            String inputModel = (String) new TypeScriptInputReader().read(baseFile.getAbsoluteFile().toPath(),
-                Charset.defaultCharset());
-
-            LOG.debug("TypeOrm file");
-            LOG.debug(inputModel);
-
-            JSONObject formatted = new JSONObject(inputModel); // Convert text to object
-            // Write JSON file
-            /*
-             * try (FileWriter file = new FileWriter(testFileOutputPath+"parsed_with_external_library.json" ))
-             * {
-             *
-             * file.write(formatted.toString(4)); file.flush();
-             *
-             * } catch (IOException e) { e.printStackTrace(); }
-             */
-
-        } finally {
-
-            request.terminateProcessConnection();
-        }
-    }
-
-    /**
-     * Sends the path of a file to be parsed by the external process. Server determines whether the file is
-     * valid.
+     * Sends a fileEto containing only the path of the file that needs to be parsed. Checks whether it is a
+     * valid input.
      *
      * @test fails
      */
@@ -191,8 +161,8 @@ public class TypeScriptInputReaderTest {
     }
 
     /**
-     * Sends the path of a file to be parsed by the external process. Server determines whether the file is
-     * valid.
+     * Sends a fileEto containing only the path of the file that needs to be parsed. Checks whether the file
+     * is most likely readable.
      *
      * @test fails
      */
@@ -201,7 +171,7 @@ public class TypeScriptInputReaderTest {
 
         try {
             File baseFile = new File(testFileRootPath + "baseFile.ts");
-            boolean isReadable = new TypeScriptInputReader().isValidInput(baseFile.toPath());
+            boolean isReadable = new TypeScriptInputReader().isMostLikelyReadable(baseFile.toPath());
 
             LOG.debug("is most probably readable ? " + isReadable);
             assertTrue(isReadable);
@@ -212,7 +182,7 @@ public class TypeScriptInputReaderTest {
     }
 
     /**
-     * Parses the input file and then check whether it is valid.
+     * Testing whether a file is valid, after it has been read.
      *
      * @test fails
      */
@@ -235,7 +205,7 @@ public class TypeScriptInputReaderTest {
     }
 
     /**
-     * Testing the extraction of the first class or interface
+     * Testing the extraction of the first class or interface.
      * @test fails
      */
     @Test
@@ -261,4 +231,5 @@ public class TypeScriptInputReaderTest {
     private LinkedHashMap<String, Object> castToHashMap(Object o) {
         return (LinkedHashMap<String, Object>) o;
     }
+
 };
