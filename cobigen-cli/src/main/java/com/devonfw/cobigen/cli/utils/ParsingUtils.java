@@ -59,12 +59,9 @@ public class ParsingUtils {
 
         JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject,true);
         String fqn = ParsingUtils.getFQN(inputFile);
-        String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
-
-        try {
-           // context.getClassLoader().loadClass(qualifiedName);
-        	 context.getClassLoader().loadClass(fqn);
-        } catch (NoClassDefFoundError | ClassNotFoundException e) {
+		try {
+			context.getClassLoader().loadClass(fqn);
+		} catch (NoClassDefFoundError | ClassNotFoundException e) {
             logger.error("Compiled class " + e.getMessage()
                 + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
             System.exit(1);
@@ -72,8 +69,9 @@ public class ParsingUtils {
         return context;
     }
     /**
+     * This method is traversing parent folders until it reaches java folder in order to get the FQN
      * @param inputFile
-     * @return
+     * @return qualified name with full package
      */
     private static String getFQN(File inputFile) {
         String simpleName = inputFile.getName().replaceAll("\\.(?i)java", "");
@@ -81,8 +79,14 @@ public class ParsingUtils {
 
          return packageName + "." + simpleName;
     }
-
-     private static String getPackageName(File folder, String packageName) {
+/**
+ *  This method traverse the folder in reverse order from child to parent
+ *  @param folder parent input file
+ *  @param package name 
+ *  @return package name
+ * */
+     @SuppressWarnings("javadoc")
+	private static String getPackageName(File folder, String packageName) {
 
          if (folder == null) {
             return null;
@@ -154,8 +158,7 @@ public class ParsingUtils {
 
         String className = inputFile.getName().replace(".java", "");
         BaseFile file = createFile(className, context);
-        JavaSourceCodeParserImpl parser = new JavaSourceCodeParserImpl();  
-        JavaSourceCodeReaderHighlevel jsp = new JavaSourceCodeReaderHighlevel();
+        JavaSourceCodeParserImpl parser = new JavaSourceCodeParserImpl(); 
        
         try (Reader reader = new FileReader(inputFile.getAbsolutePath())) {        	
             BaseType parseType = parser.parseType(reader, file);

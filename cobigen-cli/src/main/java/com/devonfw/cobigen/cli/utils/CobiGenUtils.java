@@ -185,7 +185,7 @@ public class CobiGenUtils {
         CobiGen cg = null;
         if (templatesJar != null) {
             try {
-                registerPlugins();
+            	registerPlugins();  
                 cg = CobiGenFactory.create(templatesJar.toURI());
 
                 return cg;
@@ -222,6 +222,7 @@ public class CobiGenUtils {
     /**
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
      * location and then adding the needed URLs to the class loader.
+     * @return 
      */
     public void registerPlugins() {
 
@@ -250,7 +251,7 @@ public class CobiGenUtils {
             logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
         }
 
-    }
+    };
 
     /**
      * Executes a Maven class path build command which will download all the transitive dependencies needed
@@ -371,14 +372,14 @@ public class CobiGenUtils {
      *            second list to be used for the intersection
      * @return <tt>resultant list</tt> containing increments that are in both lists
      */
-    public static List<IncrementTo> retainAllIncrements(List<IncrementTo> list,
-        List<IncrementTo> list2) {
+    public static List<IncrementTo> retainAllIncrements(List<IncrementTo> currentList,
+        List<IncrementTo> listToIntersect) {
 
         List<IncrementTo> resultantList = new ArrayList<>();
 
-        for (GenerableArtifact currentIncrement : list) {
+        for (GenerableArtifact currentIncrement : currentList) {
             String currentIncrementDesc = ((IncrementTo) currentIncrement).getDescription().trim().toLowerCase();
-            for (GenerableArtifact intersectIncrement : list2) {
+            for (GenerableArtifact intersectIncrement : listToIntersect) {
 
                 String intersectIncrementDesc = ((IncrementTo) intersectIncrement).getDescription().trim().toLowerCase();
 
