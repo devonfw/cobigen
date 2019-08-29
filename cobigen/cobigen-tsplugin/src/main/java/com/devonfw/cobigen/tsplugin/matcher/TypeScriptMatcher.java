@@ -38,19 +38,6 @@ public class TypeScriptMatcher implements MatcherInterpreter {
     @Override
     public boolean matches(MatcherTo matcher) {
 
-        /*
-         *
-         * try { LOG.debug("Matcher type matches FQN? {}",
-         * matcher.getType().toUpperCase().equals(MatcherType.FQN.toString()));
-         *
-         * LOG.debug("Matcher types  {}", MatcherType.values()); MatcherType matcherType =
-         * Enum.valueOf(MatcherType.class, matcher.getType().toUpperCase()); switch (matcherType) { case FQN:
-         * String fqn = getFqn(matcher); LOG.debug("Matching input FQN {} against regex '{}'", fqn,
-         * matcher.getValue()); return fqn != null && fqn.matches(matcher.getValue());
-         *
-         * } } catch (IllegalArgumentException e) { LOG.info("Matcher type '{}' not registered --> no match!",
-         * matcher.getType()); }
-         */
         LOG.debug("Type {} matches FQN ? ", matcher.getType());
         boolean matchesFqn = matcher.getType().toUpperCase().equals(MatcherType.FQN.toString());
         if (matchesFqn) {
@@ -59,7 +46,6 @@ public class TypeScriptMatcher implements MatcherInterpreter {
             return fqn != null && fqn.matches(matcher.getValue());
         }
         return matchesFqn;
-        // return false;
     }
 
     /**
