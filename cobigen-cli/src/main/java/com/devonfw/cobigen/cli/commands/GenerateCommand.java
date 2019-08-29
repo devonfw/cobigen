@@ -327,8 +327,10 @@ public class GenerateCommand implements Callable<Integer> {
      *            project where the code will be generated to
      */
 	private void setOutputRootPath(File inputProject) {
+		logger.info("As you did not specify where the code will be generated, we will use the project of your current"
+	          + " Input file.");
 
-		// logger.debug("Generating to: " + inputProject.getAbsolutePath());
+		 logger.debug("Generating to: " + inputProject.getAbsolutePath());
 
 		outputRootPath = inputProject;
 	}
@@ -384,7 +386,7 @@ public class GenerateCommand implements Callable<Integer> {
                         : ((TemplateTo) matching.get(index)).getId();
                     logger.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("The " + artifactType + " number you have specified is out of bounds ,So please provide the number(s) of increments that you want to generate separated by comma.!");
+                    logger.error("The " + artifactType + " number you have specified is out of bound !");
                     System.exit(1);
                 } catch (NumberFormatException e) {
                     logger.error("Error parsing your input. You need to specify " + artifactType
