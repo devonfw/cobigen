@@ -99,7 +99,7 @@ public class TypeScriptInputReader implements InputReader {
                 mapModel = (Map<String, Object>) mapModel.get("model");
                 path = Paths.get(mapModel.get("path").toString());
                 return isValidInput(path);
-            } catch (Exception e) {
+            } catch (NullPointerException e) {
                 return false;
             }
 
@@ -162,22 +162,6 @@ public class TypeScriptInputReader implements InputReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        /*
-         * HashMap<String, String> map = new HashMap<String, String>(); JSONObject jObject = new
-         * JSONObject(input.toString()); Iterator<?> keys = jObject.keys();
-         *
-         * while (keys.hasNext()) { String key = (String) keys.next();
-         *
-         * Object currentValue = jObject.get(key); if (currentValue instanceof String) { String value =
-         * jObject.getString(key); map.put(key, value); } else { JSONArray array = jObject.getJSONArray(key);
-         * for (Object obj : array) { map.put(key, obj.toString()); } }
-         *
-         * }
-         *
-         * System.out.println("json : " + jObject); System.out.println("map : " + map);
-         *
-         */
 
         return null;
 
