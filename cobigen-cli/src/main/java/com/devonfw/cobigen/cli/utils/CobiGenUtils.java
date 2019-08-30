@@ -179,29 +179,29 @@ public class CobiGenUtils {
      * Registers CobiGen plug-ins and instantiates CobiGen
      * @return object of CobiGen
      */
-	public CobiGen initializeCobiGen() {
-		getTemplates();
+    public CobiGen initializeCobiGen() {
+        getTemplates();
 
-		CobiGen cg = null;
-		if (templatesJar != null) {
-			try {
-				registerPlugins();
-				cg = CobiGenFactory.create(templatesJar.toURI());
+        CobiGen cg = null;
+        if (templatesJar != null) {
+            try {
+                registerPlugins();
+                cg = CobiGenFactory.create(templatesJar.toURI());
 
-				return cg;
+                return cg;
 
-			} catch (InvalidConfigurationException e) {
-				// if the context configuration is not valid
-				logger.error("Invalid configuration of context ");
-			} catch (IOException e) {
-				// If I/O operation failed then it will throw exception
-				logger.error("I/O operation is failed ");
-			}
+            } catch (InvalidConfigurationException e) {
+                // if the context configuration is not valid
+                logger.error("Invalid configuration of context ");
+            } catch (IOException e) {
+                // If I/O operation failed then it will throw exception
+                logger.error("I/O operation is failed ");
+            }
 
-		}
-		return cg;
+        }
+        return cg;
 
-	}
+    }
 
     /**
      * @return list of all classes, which have been defined in the template configuration folder from a jar
@@ -222,7 +222,6 @@ public class CobiGenUtils {
     /**
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
      * location and then adding the needed URLs to the class loader.
-     * @return 
      */
     public void registerPlugins() {
 
@@ -251,7 +250,7 @@ public class CobiGenUtils {
             logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
         }
 
-    };
+    }
 
     /**
      * Executes a Maven class path build command which will download all the transitive dependencies needed
@@ -366,9 +365,9 @@ public class CobiGenUtils {
      * specified collection (optional operation). In other words, the resultant list removes from this list
      * all of its elements that are not contained in the specified collection.
      *
-     * @param list
+     * @param currentList
      *            list containing elements to be retained in this list
-     * @param list2
+     * @param listToIntersect
      *            second list to be used for the intersection
      * @return <tt>resultant list</tt> containing increments that are in both lists
      */
@@ -377,20 +376,21 @@ public class CobiGenUtils {
 
         List<IncrementTo> resultantList = new ArrayList<>();
 
-        for (GenerableArtifact currentIncrement : currentList) {
-            String currentIncrementDesc = ((IncrementTo) currentIncrement).getDescription().trim().toLowerCase();
-            for (GenerableArtifact intersectIncrement : listToIntersect) {
+		for (GenerableArtifact currentIncrement : currentList) {
+			String currentIncrementDesc = ((IncrementTo) currentIncrement).getDescription().trim().toLowerCase();
+			for (GenerableArtifact intersectIncrement : listToIntersect) {
 
-                String intersectIncrementDesc = ((IncrementTo) intersectIncrement).getDescription().trim().toLowerCase();
+				String intersectIncrementDesc = ((IncrementTo) intersectIncrement).getDescription().trim()
+						.toLowerCase();
 
-                if (currentIncrementDesc.equals(intersectIncrementDesc)) {
-                    resultantList.add((IncrementTo) currentIncrement);
-                    break;
-                }
-            }
-        }
-        return resultantList;
-    }
+				if (currentIncrementDesc.equals(intersectIncrementDesc)) {
+					resultantList.add((IncrementTo) currentIncrement);
+					break;
+				}
+			}
+		}
+		return resultantList;
+	}
 
     /**
      * For Templates Returns a list that retains only the elements in this list that are contained in the
