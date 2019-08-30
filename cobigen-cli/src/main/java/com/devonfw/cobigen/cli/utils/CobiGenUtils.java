@@ -179,29 +179,29 @@ public class CobiGenUtils {
      * Registers CobiGen plug-ins and instantiates CobiGen
      * @return object of CobiGen
      */
-    public CobiGen initializeCobiGen() {
-        getTemplates();
+	public CobiGen initializeCobiGen() {
+		getTemplates();
 
-        CobiGen cg = null;
-        if (templatesJar != null) {
-            try {
-            	registerPlugins();  
-                cg = CobiGenFactory.create(templatesJar.toURI());
+		CobiGen cg = null;
+		if (templatesJar != null) {
+			try {
+				registerPlugins();
+				cg = CobiGenFactory.create(templatesJar.toURI());
 
-                return cg;
+				return cg;
 
-            } catch (InvalidConfigurationException e) {
-                // if the context configuration is not valid
-                logger.error("Invalid configuration of context ");
-            } catch (IOException e) {
-                // If I/O operation failed then it will throw exception
-                logger.error("I/O operation is failed ");
-            }
+			} catch (InvalidConfigurationException e) {
+				// if the context configuration is not valid
+				logger.error("Invalid configuration of context ");
+			} catch (IOException e) {
+				// If I/O operation failed then it will throw exception
+				logger.error("I/O operation is failed ");
+			}
 
-        }
-        return cg;
+		}
+		return cg;
 
-    }
+	}
 
     /**
      * @return list of all classes, which have been defined in the template configuration folder from a jar

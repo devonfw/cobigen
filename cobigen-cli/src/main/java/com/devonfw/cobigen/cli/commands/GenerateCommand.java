@@ -386,7 +386,7 @@ public class GenerateCommand implements Callable<Integer> {
                         : ((TemplateTo) matching.get(index)).getId();
                     logger.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("The " + artifactType + " number you have specified is out of bound !");
+                    logger.error("The " + artifactType + " number you have specified is out of bounds !");
                     System.exit(1);
                 } catch (NumberFormatException e) {
                     logger.error("Error parsing your input. You need to specify " + artifactType
@@ -428,8 +428,8 @@ public class GenerateCommand implements Callable<Integer> {
                         System.exit(1);
                 }
                 
-                /*logger.info("Please enter the number(s) of " + artifactType
-                    + "(s) that you want to generate separated by comma.");*/
+                logger.info("Please enter the number(s) of " + artifactType
+                    + "(s) that you want to generate separated by comma.");
 
                 userSelection = artifactStringSelection(userSelection, possibleArtifacts, artifactType);
             }
