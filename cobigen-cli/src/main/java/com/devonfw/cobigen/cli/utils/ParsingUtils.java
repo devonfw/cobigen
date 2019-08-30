@@ -82,10 +82,10 @@ public class ParsingUtils {
 /**
  *  This method traverse the folder in reverse order from child to parent
  *  @param folder parent input file
- *  @param package name 
+ *  @param packageName 
  *  @return package name
  * */
-     @SuppressWarnings("javadoc")
+     
 	private static String getPackageName(File folder, String packageName) {
 
          if (folder == null) {
