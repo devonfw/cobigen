@@ -114,7 +114,7 @@
                 <Embed-Transitive>true</Embed-Transitive>
                 <Bundle-Name>${project.name}</Bundle-Name>
                 <Include-Resource>
-                  {maven-resources}, {maven-dependencies}
+                  {maven-resources}, {maven-dependencies}, {META-INF/LICENSE.txt=src/main/resources/META-INF/LICENSEP2BUNDLE.txt}
                 </Include-Resource>
                 <niceManifest>true</niceManifest>
                 <Import-Package></Import-Package>
