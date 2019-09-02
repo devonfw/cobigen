@@ -8,7 +8,10 @@ import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.extension.InputReader;
-import com.devonfw.cobigen.api.to.FileTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
 import com.devonfw.cobigen.tsplugin.inputreader.to.InputFileTo;
@@ -79,53 +81,79 @@ public class TypeScriptInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
+        String fileContents = null;
+        String inputCharset = "UTF-8";
 
-        String basecontents = null;
-        File file = new File(input.toString());
+        Path path;
+
+        if (input instanceof Path) {
+            path = (Path) input;
+        } else if (input instanceof File) {
+            path = ((File) input).toPath();
+        }
+
+        else {
+            try {
+                // Input corresponds to the parsed file
+                Map<String, Object> mapModel = createModel(input);
+                mapModel = (Map<String, Object>) mapModel.get("model");
+                path = Paths.get(mapModel.get("path").toString());
+                return isValidInput(path);
+            } catch (NullPointerException e) {
+                return false;
+            }
+
+        }
 
         if (request.isNotConnected()) {
             startServerConnection();
         }
-        try {
-            basecontents = new String(Files.readAllBytes(file.toPath()));
-        } catch (IOException e) {
 
-        }
+        // File content is not needed, as only the file extension is checked
+        fileContents = new String("");
+        // String fileName = path.getFileName().toString();
+        String fileName = path.toString();
+        InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset);
 
-        FileTo fileTo = new FileTo(basecontents);
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "isValidInput");
 
-        if (request.sendRequest(fileTo, conn, "UTF-8")) {
+        if (request.sendRequest(inputFile, conn, "UTF-8")) {
 
+            StringBuffer response = new StringBuffer();
             try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
                 BufferedReader br = new BufferedReader(isr);) {
 
-            }
+                LOG.info("Receiving response from Server....");
+                Stream<String> s = br.lines();
+                s.parallel().forEachOrdered((String line) -> {
+                    response.append(line);
+                });
+                return Boolean.parseBoolean(response.toString());
+            } catch (NullPointerException e) {
+                return false;
 
-            catch (Exception e) {
-
+            } catch (IOException e) {
                 connectionExc.handle(e);
+                e.printStackTrace();
             }
         }
         return false;
-
     }
 
     @Override
     public Map<String, Object> createModel(Object input) {
+        Map<String, Object> pojoModel = new HashMap<>();
 
         try {
 
             ObjectMapper mapper = new ObjectMapper();
             String json = input.toString();
 
-            Map<String, Object> map = new HashMap<String, Object>();
-
             // convert JSON string to Map
-            map = mapper.readValue(json, new TypeReference<Map<String, Object>>() {
-            });
+            pojoModel.put("model", mapper.readValue(json, new TypeReference<Map<String, Object>>() {
+            }));
 
-            return map;
+            return pojoModel;
 
         } catch (JsonGenerationException e) {
             e.printStackTrace();
@@ -134,22 +162,6 @@ public class TypeScriptInputReader implements InputReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        /*
-         * HashMap<String, String> map = new HashMap<String, String>(); JSONObject jObject = new
-         * JSONObject(input.toString()); Iterator<?> keys = jObject.keys();
-         *
-         * while (keys.hasNext()) { String key = (String) keys.next();
-         *
-         * Object currentValue = jObject.get(key); if (currentValue instanceof String) { String value =
-         * jObject.getString(key); map.put(key, value); } else { JSONArray array = jObject.getJSONArray(key);
-         * for (Object obj : array) { map.put(key, obj.toString()); } }
-         *
-         * }
-         *
-         * System.out.println("json : " + jObject); System.out.println("map : " + map);
-         *
-         */
 
         return null;
 
@@ -165,23 +177,55 @@ public class TypeScriptInputReader implements InputReader {
         return getInputObjects(input, inputCharset, true);
     }
 
+    private ArrayList<Object> castToList(Map<String, Object> mapModel, String key) {
+        return (ArrayList<Object>) mapModel.get(key);
+    }
+
     /**
-     * Returns all input objects for the given container input.
+     * Returns the first class or interface object.
      * @param input
      *            container input
      * @param inputCharset
      *            {@link Charset} to be used to read the children
      * @param recursively
      *            states, whether the children should be retrieved recursively
-     * @return the list of children.
+     * @return a list containing the first class or interface.
      */
     public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursively) {
+
         LOG.debug("Retrieve input object for input {} {}", input, recursively ? "recursively" : "");
-        List<Object> tsClasses = new LinkedList<>();
+        List<Object> tsInputObjects = new LinkedList<>();
 
         LOG.debug("DEBUG getInputObjects: " + input.toString());
 
-        return tsClasses;
+        try {
+            if (isValidInput(input)) {
+                String inputModel = (String) read(new File(input.toString()).toPath(), inputCharset);
+                Map<String, Object> mapModel = (Map<String, Object>) createModel(inputModel).get("model");
+
+                if (mapModel.containsKey("classes")) {
+                    List<Object> classes = castToList(mapModel, "classes");
+                    tsInputObjects.add(castToHashMap(classes.get(0)));
+                    return tsInputObjects;
+                }
+
+                if (mapModel.containsKey("interfaces")) {
+                    List<Object> interfaces = castToList(mapModel, "interfaces");
+                    tsInputObjects.add(castToHashMap(interfaces.get(0)));
+                    return tsInputObjects;
+                }
+            }
+
+        } finally {
+            request.terminateProcessConnection();
+        }
+
+        LOG.error("The given input does neither contain classes nor interfaces");
+        return tsInputObjects;
+    }
+
+    private LinkedHashMap<String, Object> castToHashMap(Object o) {
+        return (LinkedHashMap<String, Object>) o;
     }
 
     @Override
@@ -197,7 +241,19 @@ public class TypeScriptInputReader implements InputReader {
             startServerConnection();
         }
 
-        InputFileTo inputFile = new InputFileTo(path.toString(), inputCharset.name());
+        String fileContents;
+        // String fileName = path.getFileName().toString();
+        String fileName = path.toString();
+        try {
+
+            fileContents = String.join("", Files.readAllLines(path, inputCharset));
+            // System.out.println("DEBUG -- File content");
+            // System.out.println(fileContents);
+        } catch (IOException e) {
+            throw new InputReaderException("Could not read input file!" + fileName, e);
+        }
+
+        InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset.name());
 
         HttpURLConnection conn =
             request.getConnection("POST", "Content-Type", "application/json", "tsplugin/getInputModel");
@@ -223,6 +279,11 @@ public class TypeScriptInputReader implements InputReader {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isMostLikelyReadable(Path path) {
+        return isValidInput(path);
     }
 
 }
