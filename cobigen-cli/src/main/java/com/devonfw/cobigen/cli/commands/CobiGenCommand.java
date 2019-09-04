@@ -45,10 +45,13 @@ public class CobiGenCommand implements Runnable {
 		// Nothing to do here, this is the master command
 	}
 
+	/**
+	 * This class implement getVersion() and this method return the version of plug-in
+	 */
 	static class PropertiesVersionProvider implements IVersionProvider {
 		@Override
 		public String[] getVersion() throws Exception {
-
+			String versionProvider[] = new String[50];
 			MavenXpp3Reader reader = new MavenXpp3Reader();
 			Model model;
 			if ((new File("pom.xml")).exists())
@@ -56,17 +59,15 @@ public class CobiGenCommand implements Runnable {
 			else
 				model = reader.read(
 						new InputStreamReader(CobiGenCommand.class.getResourceAsStream("/src/main/resources/pom.xml")));
-			List<Model> versionname = new ArrayList<Model>();
-			versionname.add(model);
-			for (int i = 0; i < versionname.size(); i++)
-				for (int j = 0; j < versionname.get(i).getDependencies().size(); j++) {
-					System.out.println("name:= "+versionname.get(i).getName()+"  version"+versionname.get(i).getVersion());
-					System.out.println("name:= " + versionname.get(i).getDependencies().get(j).getArtifactId()
-							+ "  version= " + versionname.get(i).getDependencies().get(j).getVersion());
-				}
-			String s[] = new String[10];
+			List<Model> versionList = new ArrayList<Model>();
+			versionList.add(model);
 
-			return s;
+			for (int j = 0; j < versionList.get(0).getDependencies().size(); j++) {
+				versionProvider[j] = " name:= " + model.getDependencies().get(j).getArtifactId() + " version=  "
+						+ model.getDependencies().get(j).getVersion();
+			}
+
+			return versionProvider;
 		}
 
 	}
