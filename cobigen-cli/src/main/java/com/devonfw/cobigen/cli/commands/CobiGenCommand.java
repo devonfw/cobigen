@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,12 +17,15 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.utils.xml.pull.XmlPullParserException;
 
+import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
+import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 
 import net.sf.mmm.util.io.api.IoMode;
 import net.sf.mmm.util.io.api.RuntimeIoException;
@@ -46,30 +50,58 @@ public class CobiGenCommand implements Runnable {
 	}
 
 	/**
-	 * This class implement getVersion() and this method return the version of plug-in
+	 * This class implement getVersion() and this method return the version of
+	 * plug-in
 	 */
 	static class PropertiesVersionProvider implements IVersionProvider {
 		@Override
 		public String[] getVersion() throws Exception {
-			String versionProvider[] = new String[50];
+			List<String> versionProvider = new ArrayList<String>();
 			MavenXpp3Reader reader = new MavenXpp3Reader();
-			Model model;
-			if ((new File("pom.xml")).exists())
-				model = reader.read(new FileReader("pom.xml"));
-			else
-				model = reader.read(
-						new InputStreamReader(CobiGenCommand.class.getResourceAsStream("/src/main/resources/pom.xml")));
+			Model model = null;
+			File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			Path rootCLIPath = locationCLI.getParentFile().toPath();
+
+			File pomFile = extractArtificialPom(rootCLIPath);
+
+			if (pomFile.exists()) {
+				model = reader.read(new FileReader(pomFile));
+			}
+
 			List<Model> versionList = new ArrayList<Model>();
 			versionList.add(model);
 
-			for (int j = 0; j < versionList.get(0).getDependencies().size(); j++) {
-				versionProvider[j] = " name:= " + model.getDependencies().get(j).getArtifactId() + " version=  "
-						+ model.getDependencies().get(j).getVersion();
-			}
+			List<Dependency> modelDependencies = model.getDependencies();
 
-			return versionProvider;
+			for (int i = 0; i < modelDependencies.size(); i++) {
+
+				versionProvider.add(" name:= " + modelDependencies.get(i).getArtifactId() + " version=  "
+						+ modelDependencies.get(i).getVersion());
+
+			}
+			return versionProvider.toArray(new String[versionProvider.size()]);
 		}
 
+	}
+
+	/**
+	 * Extracts an artificial POM which defines all the CobiGen plug-ins that are
+	 * needed
+	 * 
+	 * @param rootCLIPath path where the artificial POM will be extracted to
+	 * @return the extracted POM file
+	 */
+	private static File extractArtificialPom(Path rootCLIPath) {
+		File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
+		if (!pomFile.exists()) {
+			try (InputStream resourcesIS = (CobiGenCommand.class.getResourceAsStream("/" + MavenConstants.POM));) {
+				Files.copy(resourcesIS, pomFile.getAbsoluteFile().toPath());
+			} catch (IOException e1) {
+				System.out.println(
+						"Failed to extract CobiGen plugins pom into your computer. Maybe you need to use admin permissions.");
+			}
+		}
+		return pomFile;
 	}
 
 }
