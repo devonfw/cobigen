@@ -386,7 +386,7 @@ public class GenerateCommand implements Callable<Integer> {
                         : ((TemplateTo) matching.get(index)).getId();
                     logger.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("The " + artifactType + " number you have specified is out of bounds !");
+                    logger.error("The " + artifactType + " number you have specified is out of bounds!");
                     System.exit(1);
                 } catch (NumberFormatException e) {
                     logger.error("Error parsing your input. You need to specify " + artifactType
