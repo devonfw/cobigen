@@ -423,7 +423,7 @@ public class GenerateCommand implements Callable<Integer> {
                     userSelection.add(possibleArtifacts.get(0));
                     return userSelection;
                 }else if(possibleArtifacts.size()<1) {
-                	logger. info("No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
+                	logger.info("No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
                        
                         System.exit(1);
                 }
