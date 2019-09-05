@@ -236,7 +236,7 @@ public class CobiGenUtils {
             if (!cpFile.exists()) {
                 buildCobiGenDependencies(pomFile);
             }
-            
+
             // Read classPath.txt file and add to the class path all dependencies
             try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
                 String allJars = br.readLine();
