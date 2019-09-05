@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
@@ -261,6 +262,7 @@ public class CobiGenUtils {
         logger.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
+        	
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(pomFile);
             request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
@@ -287,7 +289,7 @@ public class CobiGenUtils {
      *            path where the artificial POM will be extracted to
      * @return the extracted POM file
      */
-    private File extractArtificialPom(Path rootCLIPath) {
+    public File extractArtificialPom(Path rootCLIPath) {
         File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
         if (!pomFile.exists()) {
             try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {
