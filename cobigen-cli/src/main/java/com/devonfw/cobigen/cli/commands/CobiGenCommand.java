@@ -59,10 +59,11 @@ public class CobiGenCommand implements Runnable {
 			List<String> versionProvider = new ArrayList<String>();
 			MavenXpp3Reader reader = new MavenXpp3Reader();
 			Model model = null;
-			File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			File locationCLI = new File(
+					GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 			Path rootCLIPath = locationCLI.getParentFile().toPath();
 
-			File pomFile = extractArtificialPom(rootCLIPath);
+			File pomFile = new CobiGenUtils().extractArtificialPom(rootCLIPath);
 
 			if (pomFile.exists()) {
 				model = reader.read(new FileReader(pomFile));
@@ -82,26 +83,6 @@ public class CobiGenCommand implements Runnable {
 			return versionProvider.toArray(new String[versionProvider.size()]);
 		}
 
-	}
-
-	/**
-	 * Extracts an artificial POM which defines all the CobiGen plug-ins that are
-	 * needed
-	 * 
-	 * @param rootCLIPath path where the artificial POM will be extracted to
-	 * @return the extracted POM file
-	 */
-	private static File extractArtificialPom(Path rootCLIPath) {
-		File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
-		if (!pomFile.exists()) {
-			try (InputStream resourcesIS = (CobiGenCommand.class.getResourceAsStream("/" + MavenConstants.POM));) {
-				Files.copy(resourcesIS, pomFile.getAbsoluteFile().toPath());
-			} catch (IOException e1) {
-				System.out.println(
-						"Failed to extract CobiGen plugins pom into your computer. Maybe you need to use admin permissions.");
-			}
-		}
-		return pomFile;
 	}
 
 }

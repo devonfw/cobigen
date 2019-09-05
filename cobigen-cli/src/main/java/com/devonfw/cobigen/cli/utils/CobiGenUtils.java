@@ -288,7 +288,7 @@ public class CobiGenUtils {
      *            path where the artificial POM will be extracted to
      * @return the extracted POM file
      */
-    private File extractArtificialPom(Path rootCLIPath) {
+    public File extractArtificialPom(Path rootCLIPath) {
         File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
         if (!pomFile.exists()) {
             try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {
