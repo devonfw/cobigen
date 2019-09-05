@@ -13,11 +13,20 @@ import net.sf.mmm.code.api.CodeName;
 import net.sf.mmm.code.base.BaseFile;
 import net.sf.mmm.code.base.BasePackage;
 import net.sf.mmm.code.base.source.BaseSource;
+import net.sf.mmm.code.base.type.BaseType;
 import net.sf.mmm.code.impl.java.JavaContext;
+import net.sf.mmm.code.impl.java.JavaFactory;
 import net.sf.mmm.code.impl.java.parser.JavaSourceCodeParserImpl;
+import net.sf.mmm.code.impl.java.parser.JavaSourceCodeReaderHighlevel;
+import net.sf.mmm.code.impl.java.parser.JavaSourceCodeReaderLowlevel;
 import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
+import net.sf.mmm.code.java.parser.base.JavaSourceCodeLexer;
+import net.sf.mmm.code.java.parser.base.JavaSourceCodeParser;
+import net.sf.mmm.code.java.parser.base.JavaSourceCodeParserBaseListener;
+import net.sf.mmm.code.java.parser.base.JavaSourceCodeParserListenerImpl;
 import net.sf.mmm.util.io.api.IoMode;
 import net.sf.mmm.util.io.api.RuntimeIoException;
+import net.sf.mmm.util.xml.api.ParserState;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,29 +57,66 @@ public class ParsingUtils {
      */
     public static JavaContext getJavaContext(File inputFile, File inputProject) {
 
-        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject);
+		JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject, true);
+		String fqn = ParsingUtils.getFQN(inputFile);
+		try {
+			context.getClassLoader().loadClass(fqn);
+		} catch (NoClassDefFoundError | ClassNotFoundException e) {
+			logger.error("Compiled class " + e.getMessage()
+					+ " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
+			System.exit(1);
+		}
+		return context;
+	}
 
-        String qualifiedName = ParsingUtils.getQualifiedName(inputFile, context);
+	/**
+	 * This method is traversing parent folders until it reaches java folder in
+	 * order to get the FQN
+	 * 
+	 * @param inputFile
+	 * @return qualified name with full package
+	 */
+	private static String getFQN(File inputFile) {
+		String simpleName = inputFile.getName().replaceAll("\\.(?i)java", "");
+		String packageName = getPackageName(inputFile.getParentFile(), "");
 
-        try {
-            context.getClassLoader().loadClass(qualifiedName);
-        } catch (NoClassDefFoundError | ClassNotFoundException e) {
-            logger.error("Compiled class " + e.getMessage()
-                + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
-            System.exit(1);
-        }
-        return context;
-    }
+		return packageName + "." + simpleName;
+	}
 
-    /**
-     * Creates a new {@link BasePackage}
-     * @param source
-     *            of the current context {@link BaseSource}
-     * @param qName
-     *            the qualified name of the parent {@link CodeName}
-     * @return A new {@link BasePackage}
-     */
-    private static BasePackage createPackage(BaseSource source, CodeName qName) {
+	/**
+	 * This method traverse the folder in reverse order from child to parent
+	 * 
+	 * @param folder      parent input file
+	 * @param packageName
+	 * @return package name
+	 */
+	private static String getPackageName(File folder, String packageName) {
+
+		if (folder == null) {
+			return null;
+		}
+
+		if (folder.getName().toLowerCase().equals("java")) {
+			String[] pkgs = packageName.split("\\.");
+
+			packageName = pkgs[pkgs.length - 1];
+			// Reverse order as we have traversed folders from child to parent
+			for (int i = pkgs.length - 2; i > 0; i--) {
+				packageName = packageName + "." + pkgs[i];
+			}
+			return packageName;
+		}
+		return getPackageName(folder.getParentFile(), packageName + "." + folder.getName());
+	}
+
+	/**
+	 * Creates a new {@link BasePackage}
+	 * 
+	 * @param source of the current context {@link BaseSource}
+	 * @param qName  the qualified name of the parent {@link CodeName}
+	 * @return A new {@link BasePackage}
+	 */
+	private static BasePackage createPackage(BaseSource source, CodeName qName) {
 
         BasePackage parentPkg = source.getRootPackage();
         if (qName == null) {
@@ -117,12 +163,14 @@ public class ParsingUtils {
         BaseFile file = createFile(className, context);
         JavaSourceCodeParserImpl parser = new JavaSourceCodeParserImpl();
 
-        try (Reader reader = new FileReader(inputFile.getAbsolutePath())) {
-            return parser.parseQualifiedName(reader, file);
-        } catch (IOException e) {
-            throw new RuntimeIoException(e, IoMode.READ);
-        }
-    }
+		try (Reader reader = new FileReader(inputFile.getAbsolutePath())) {
+			BaseType parseType = parser.parseType(reader, file);
+			return parseType.getQualifiedName();
+
+		} catch (IOException e) {
+			throw new RuntimeIoException(e, IoMode.READ);
+		}
+	}
 
     /**
      * Tries to parse a relative path with the current working directory
