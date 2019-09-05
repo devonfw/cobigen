@@ -236,7 +236,7 @@ public class CobiGenUtils {
             if (!cpFile.exists()) {
                 buildCobiGenDependencies(pomFile);
             }
-
+            
             // Read classPath.txt file and add to the class path all dependencies
             try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
                 String allJars = br.readLine();
@@ -262,6 +262,7 @@ public class CobiGenUtils {
         logger.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
+        	
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(pomFile);
             request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
@@ -376,21 +377,20 @@ public class CobiGenUtils {
 
         List<IncrementTo> resultantList = new ArrayList<>();
 
-		for (GenerableArtifact currentIncrement : currentList) {
-			String currentIncrementDesc = ((IncrementTo) currentIncrement).getDescription().trim().toLowerCase();
-			for (GenerableArtifact intersectIncrement : listToIntersect) {
+        for (IncrementTo currentIncrement : currentList) {
+            String currentIncrementDesc = currentIncrement.getDescription().trim().toLowerCase();
+            for (IncrementTo intersectIncrement : listToIntersect) {
 
-				String intersectIncrementDesc = ((IncrementTo) intersectIncrement).getDescription().trim()
-						.toLowerCase();
+                String intersectIncrementDesc = intersectIncrement.getDescription().trim().toLowerCase();
 
-				if (currentIncrementDesc.equals(intersectIncrementDesc)) {
-					resultantList.add((IncrementTo) currentIncrement);
-					break;
-				}
-			}
-		}
-		return resultantList;
-	}
+                if (currentIncrementDesc.equals(intersectIncrementDesc)) {
+                    resultantList.add(currentIncrement);
+                    break;
+                }
+            }
+        }
+        return resultantList;
+    }
 
     /**
      * For Templates Returns a list that retains only the elements in this list that are contained in the
