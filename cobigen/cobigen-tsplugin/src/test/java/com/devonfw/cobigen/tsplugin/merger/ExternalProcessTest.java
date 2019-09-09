@@ -2,9 +2,6 @@ package com.devonfw.cobigen.tsplugin.merger;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,24 +29,7 @@ public class ExternalProcessTest {
             ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 80);
 
         try {
-
             request.executingExe(Constants.EXE_NAME, this.getClass());
-
-            String s;
-            Process p;
-            try {
-                p = Runtime.getRuntime().exec("ps -aux | less");
-                BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                while ((s = br.readLine()) != null) {
-                    LOG.info("line: " + s);
-                }
-                p.waitFor();
-                LOG.info(("exit: " + p.exitValue()));
-
-                p.destroy();
-            } catch (Exception e) {
-            }
-
             assertEquals(true, request.initializeConnection());
         } finally {
             request.terminateProcessConnection();
