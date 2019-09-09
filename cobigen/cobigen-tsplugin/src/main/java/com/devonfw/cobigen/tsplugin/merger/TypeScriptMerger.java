@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
-import com.devonfw.cobigen.api.to.FileTo;
+import com.devonfw.cobigen.api.to.InputFileTo;
 import com.devonfw.cobigen.api.to.MergeTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
@@ -51,6 +51,9 @@ public class TypeScriptMerger implements Merger {
 
     /** The conflict resolving mode */
     private boolean patchOverrides;
+
+    /** Charset that will be used when sending strings to the server */
+    private String charset = "UTF-8";
 
     /**
      * Creates a new {@link TypeScriptMerger}
@@ -101,7 +104,7 @@ public class TypeScriptMerger implements Merger {
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
 
-        if (request.sendRequest(mergeTo, conn, "UTF-8")) {
+        if (request.sendRequest(mergeTo, conn, charset)) {
 
             try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
                 BufferedReader br = new BufferedReader(isr);) {
@@ -146,12 +149,12 @@ public class TypeScriptMerger implements Merger {
      */
     private String runBeautifierExcludingImports(String importsAndExports, String body) {
 
-        FileTo fileTo = new FileTo(body);
+        InputFileTo fileTo = new InputFileTo("", body, charset);
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/beautify");
 
         StringBuffer bodyBuffer = new StringBuffer();
 
-        request.sendRequest(fileTo, conn, "UTF-8");
+        request.sendRequest(fileTo, conn, charset);
 
         try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
             BufferedReader br = new BufferedReader(isr);) {

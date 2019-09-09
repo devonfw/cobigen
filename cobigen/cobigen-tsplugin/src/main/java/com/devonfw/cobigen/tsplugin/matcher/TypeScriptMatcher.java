@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,8 @@ public class TypeScriptMatcher implements MatcherInterpreter {
             Map<String, Object> mapModel = new TypeScriptInputReader().createModel(target);
             mapModel = (Map<String, Object>) mapModel.get("model");
             fqn = Paths.get(mapModel.get("path").toString()).getFileName().toString();
-
+            // We remove the file extension
+            fqn = FilenameUtils.removeExtension(fqn);
         } catch (NullPointerException e) {
             return null;
         }

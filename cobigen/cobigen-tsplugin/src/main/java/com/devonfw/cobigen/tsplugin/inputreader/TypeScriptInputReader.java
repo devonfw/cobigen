@@ -27,13 +27,13 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.extension.InputReader;
+import com.devonfw.cobigen.api.to.InputFileTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.inputreader.to.InputFileTo;
 import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
- *
+ * TypeScript input reader that uses a server to read TypeScript code
  */
 public class TypeScriptInputReader implements InputReader {
 
@@ -111,7 +111,7 @@ public class TypeScriptInputReader implements InputReader {
 
         // File content is not needed, as only the file extension is checked
         fileContents = new String("");
-        // String fileName = path.getFileName().toString();
+
         String fileName = path.toString();
         InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset);
 
@@ -119,22 +119,19 @@ public class TypeScriptInputReader implements InputReader {
 
         if (request.sendRequest(inputFile, conn, "UTF-8")) {
 
-            StringBuffer response = new StringBuffer();
+            String response = new String();
             try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
                 BufferedReader br = new BufferedReader(isr);) {
 
                 LOG.info("Receiving response from Server....");
-                Stream<String> s = br.lines();
-                s.parallel().forEachOrdered((String line) -> {
-                    response.append(line);
-                });
-                return Boolean.parseBoolean(response.toString());
+                response = br.readLine();
+
+                return Boolean.parseBoolean(response);
             } catch (NullPointerException e) {
                 return false;
 
             } catch (IOException e) {
                 connectionExc.handle(e);
-                e.printStackTrace();
             }
         }
         return false;
@@ -156,11 +153,13 @@ public class TypeScriptInputReader implements InputReader {
             return pojoModel;
 
         } catch (JsonGenerationException e) {
-            e.printStackTrace();
+            LOG.error("Exception during JSON writing. This is most probably a bug", e);
         } catch (JsonMappingException e) {
-            e.printStackTrace();
+            LOG.error(
+                "Exception during JSON mapping. This error occured while converting the templates model from JSON string to map",
+                e);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("IO exception while converting the templates model from JSON string to map", e);
         }
 
         return null;
@@ -175,10 +174,6 @@ public class TypeScriptInputReader implements InputReader {
     @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
         return getInputObjects(input, inputCharset, true);
-    }
-
-    private ArrayList<Object> castToList(Map<String, Object> mapModel, String key) {
-        return (ArrayList<Object>) mapModel.get(key);
     }
 
     /**
@@ -205,15 +200,18 @@ public class TypeScriptInputReader implements InputReader {
 
                 if (mapModel.containsKey("classes")) {
                     List<Object> classes = castToList(mapModel, "classes");
-                    tsInputObjects.add(castToHashMap(classes.get(0)));
-                    return tsInputObjects;
+                    for (Object classModel : classes) {
+                        tsInputObjects.add(castToHashMap(classModel));
+                    }
                 }
 
                 if (mapModel.containsKey("interfaces")) {
                     List<Object> interfaces = castToList(mapModel, "interfaces");
-                    tsInputObjects.add(castToHashMap(interfaces.get(0)));
-                    return tsInputObjects;
+                    for (Object interfaceModel : interfaces) {
+                        tsInputObjects.add(castToHashMap(interfaceModel));
+                    }
                 }
+                return tsInputObjects;
             }
 
         } finally {
@@ -222,10 +220,6 @@ public class TypeScriptInputReader implements InputReader {
 
         LOG.error("The given input does neither contain classes nor interfaces");
         return tsInputObjects;
-    }
-
-    private LinkedHashMap<String, Object> castToHashMap(Object o) {
-        return (LinkedHashMap<String, Object>) o;
     }
 
     @Override
@@ -242,13 +236,10 @@ public class TypeScriptInputReader implements InputReader {
         }
 
         String fileContents;
-        // String fileName = path.getFileName().toString();
         String fileName = path.toString();
         try {
 
             fileContents = String.join("", Files.readAllLines(path, inputCharset));
-            // System.out.println("DEBUG -- File content");
-            // System.out.println(fileContents);
         } catch (IOException e) {
             throw new InputReaderException("Could not read input file!" + fileName, e);
         }
@@ -284,6 +275,28 @@ public class TypeScriptInputReader implements InputReader {
     @Override
     public boolean isMostLikelyReadable(Path path) {
         return isValidInput(path);
+    }
+
+    /**
+     * Cast to list an object
+     * @param mapModel
+     *            map where our object to cast is stored
+     * @param key
+     *            cast object with this key
+     * @return our object casted to an array list
+     */
+    private ArrayList<Object> castToList(Map<String, Object> mapModel, String key) {
+        return (ArrayList<Object>) mapModel.get(key);
+    }
+
+    /**
+     * Cast to linked hash map an object
+     * @param o
+     *            object to cast to linked hash map
+     * @return linked hash map
+     */
+    private LinkedHashMap<String, Object> castToHashMap(Object o) {
+        return (LinkedHashMap<String, Object>) o;
     }
 
 }
