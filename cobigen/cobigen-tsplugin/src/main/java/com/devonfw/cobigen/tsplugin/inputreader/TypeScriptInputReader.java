@@ -52,6 +52,9 @@ public class TypeScriptInputReader implements InputReader {
      */
     private ConnectionExceptionHandler connectionExc = new ConnectionExceptionHandler();
 
+    /** Charset that will be used when sending strings to the server */
+    private String charset = "UTF-8";
+
     /**
      * Creates a new {@link TypeScriptInputReader}
      */
@@ -82,7 +85,6 @@ public class TypeScriptInputReader implements InputReader {
     @Override
     public boolean isValidInput(Object input) {
         String fileContents = null;
-        String inputCharset = "UTF-8";
 
         Path path;
 
@@ -113,11 +115,11 @@ public class TypeScriptInputReader implements InputReader {
         fileContents = new String("");
 
         String fileName = path.toString();
-        InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset);
+        InputFileTo inputFile = new InputFileTo(fileName, fileContents, charset);
 
         HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "isValidInput");
 
-        if (request.sendRequest(inputFile, conn, "UTF-8")) {
+        if (request.sendRequest(inputFile, conn, charset)) {
 
             String response = new String();
             try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
@@ -249,7 +251,7 @@ public class TypeScriptInputReader implements InputReader {
         HttpURLConnection conn =
             request.getConnection("POST", "Content-Type", "application/json", "tsplugin/getInputModel");
 
-        if (request.sendRequest(inputFile, conn, "UTF-8")) {
+        if (request.sendRequest(inputFile, conn, charset)) {
 
             StringBuffer inputModel = new StringBuffer();
 

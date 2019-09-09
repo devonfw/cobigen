@@ -104,7 +104,7 @@ public class TypeScriptMerger implements Merger {
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
 
-        if (request.sendRequest(mergeTo, conn, charset)) {
+        if (request.sendRequest(mergeTo, conn, targetCharset)) {
 
             try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
                 BufferedReader br = new BufferedReader(isr);) {
