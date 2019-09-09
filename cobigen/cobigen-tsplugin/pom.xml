@@ -14,7 +14,7 @@
 
   <properties>
     <skip.deployment>false</skip.deployment>
-    <server.version>1.0.7</server.version>
+    <server.version>1.0.8</server.version>
     <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
     <server.url.linux>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</server.url.linux>
     <server.url.macos>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-macos/-/cobigen-nestserver-macos-${server.version}.tgz</server.url.macos>
@@ -32,7 +32,7 @@
       <artifactId>core</artifactId>
       <version>5.3.1</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -46,18 +46,6 @@
         <version>20180813</version>
     </dependency>
         
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
-      <version>2.2.1.GA</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jackson-provider</artifactId>
-      <version>2.2.1.GA</version>
-    </dependency>
 
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
