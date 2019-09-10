@@ -1,9 +1,6 @@
-package com.devonfw.cobigen.tsplugin;
+package com.devonfw.cobigen.tsplugin.merger;
 
 import static org.junit.Assert.assertEquals;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,23 +41,12 @@ public class PortBlockedTest {
     @Test
     public void checkPortIsBlocked() {
 
+        // Port 80 is always blocked, so let's try to check what happens.
+        ExternalProcessHandler request =
+            ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 80);
+
         try {
-
-            String s;
-            Process p;
-            try {
-                p = Runtime.getRuntime().exec("ps -aux | less");
-                BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                while ((s = br.readLine()) != null) {
-                    LOG.info("line: " + s);
-                }
-                p.waitFor();
-                LOG.info(("exit: " + p.exitValue()));
-
-                p.destroy();
-            } catch (Exception e) {
-            }
-
+            request.executingExe(Constants.EXE_NAME, this.getClass());
             assertEquals(true, request.initializeConnection());
         } finally {
             request.terminateProcessConnection();
