@@ -243,7 +243,7 @@ public class CobiGenUtils implements Runnable{
 					e.printStackTrace();
 				}
             }
-            
+
             // Read classPath.txt file and add to the class path all dependencies
             try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
                 String allJars = br.readLine();

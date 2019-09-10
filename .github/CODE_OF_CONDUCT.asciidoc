@@ -6,6 +6,8 @@ toc::[]
 :source-highlighter: rouge
 :listing-caption: Listing
 
+IMPORTANT: This document is the *Official Covenant Code of Conduct* that must be present in every OASP or Devonfw project at the root folder as `CODE_OF_CONDUCT.asciidoc` or `CODE_OF_CONDUCT.md`. Please, include this contents in your repository and  the *Product Owner email address* in the right place below. 
+
 == Contributor Covenant Code of Conduct
 
 === Our Pledge
