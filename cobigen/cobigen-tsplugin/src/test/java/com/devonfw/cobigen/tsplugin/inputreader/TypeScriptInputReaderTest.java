@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,14 +33,9 @@ public class TypeScriptInputReaderTest {
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/files/";
 
-    /** Generated resources root path */
-    private static String generatedFileRootPath = "src/test/resources/testdata/unittest/generated/";
-
     /** Initializing connection with server */
     private static ExternalProcessHandler request = ExternalProcessHandler
         .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
-
-    private FileWriter generatedFile;
 
     /**
      * Starts the server and initializes the connection to it
