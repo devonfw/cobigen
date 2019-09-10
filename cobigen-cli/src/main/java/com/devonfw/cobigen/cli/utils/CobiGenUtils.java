@@ -22,10 +22,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
@@ -56,7 +58,7 @@ import net.sf.mmm.code.impl.java.JavaContext;
  * Utilities class for CobiGen related operations. For instance, creates a new CobiGen instance and registers
  * all the plug-ins
  */
-public class CobiGenUtils {
+public class CobiGenUtils implements Runnable{
 
     /**
      * Logger instance for the CLI
@@ -234,7 +236,12 @@ public class CobiGenUtils {
 
             File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
             if (!cpFile.exists()) {
-                buildCobiGenDependencies(pomFile);
+                try {
+					buildCobiGenDependencies(pomFile);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
             
             // Read classPath.txt file and add to the class path all dependencies
@@ -257,31 +264,62 @@ public class CobiGenUtils {
      * for the CLI
      * @param pomFile
      *            POM file that defines the needed CobiGen dependencies to build
+     * @throws IOException 
      */
-    private void buildCobiGenDependencies(File pomFile) {
-        logger.info(
-            "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
-        try {
-        	
-            InvocationRequest request = new DefaultInvocationRequest();
-            request.setPomFile(pomFile);
-            request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
-                "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q"));
+	private void buildCobiGenDependencies(File pomFile) throws IOException {
+		logger.info(
+				"As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
+		try {
 
-            Invoker invoker = new DefaultInvoker();
-            InvocationResult result;
+			InvocationRequest request = new DefaultInvocationRequest();
+			request.setPomFile(pomFile);
+			request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
+					"-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q"));
 
-            result = invoker.execute(request);
+			Invoker invoker = new DefaultInvoker();
+			InvocationResult result = null;
+			long total = 100;
+			long startTime = System.currentTimeMillis();
+			Thread t1 = new Thread();
+			t1.start();
 
-            if (result.getExitCode() != 0) {
-                logger.error(
-                    "Error while getting all the needed transitive dependencies. Please check your internet connection.");
-            }
-        } catch (MavenInvocationException e) {
+			Thread t2 = new Thread();
+			for (int i = 1; i <= total; i = i + 3) {
+				try {
+					printProgress(startTime, total, i, t1);
+					t1.join();
+					t2.setPriority(5);
 
-            logger.error("The maven command for getting needed dependencies was malformed. This is a bug.");
-        }
-    }
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			result = invoker.execute(request);
+			t2.start();
+			t2.run();
+			if (t1 != null) {
+
+				try {
+					t1.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			logger.debug('\n' + "Download the needed dependencies successfully.");
+
+			if (result.getExitCode() != 0) {
+				logger.error(
+						"Error while getting all the needed transitive dependencies. Please check your internet connection.");
+			}
+
+		} catch (MavenInvocationException e) {
+
+			logger.error("The maven command for getting needed dependencies was malformed. This is a bug.");
+		}
+	}
 
     /**
      * Extracts an artificial POM which defines all the CobiGen plug-ins that are needed
@@ -448,5 +486,21 @@ public class CobiGenUtils {
         }
         return input;
     }
+
+	private static void printProgress(long startTime, long total, long current, Thread t1) {
+		StringBuilder string = new StringBuilder(140);
+		int percent = (int) (current * 100 / total);
+		string.append(String.format(" %d%%", percent)).append(String.join("", Collections.nCopies(percent, "=")))
+				.append('>');
+
+		System.out.print(string);
+
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
