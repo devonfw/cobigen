@@ -58,7 +58,7 @@ import net.sf.mmm.code.impl.java.JavaContext;
  * Utilities class for CobiGen related operations. For instance, creates a new CobiGen instance and registers
  * all the plug-ins
  */
-public class CobiGenUtils implements Runnable{
+public class CobiGenUtils {
 
     /**
      * Logger instance for the CLI
@@ -278,38 +278,13 @@ public class CobiGenUtils implements Runnable{
 
 			Invoker invoker = new DefaultInvoker();
 			InvocationResult result = null;
-			long total = 100;
-			long startTime = System.currentTimeMillis();
-			Thread t1 = new Thread();
+			Thread t1 = new Thread(new ProgressBar());
 			t1.start();
-
-			Thread t2 = new Thread();
-			for (int i = 1; i <= total; i = i + 3) {
-				try {
-					printProgress(startTime, total, i, t1);
-					t1.join();
-					t2.setPriority(5);
-
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
 			result = invoker.execute(request);
-			t2.start();
-			t2.run();
 			if (t1 != null) {
-
-				try {
-					t1.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				t1.interrupt();
 			}
-
 			logger.debug('\n' + "Download the needed dependencies successfully.");
-
 			if (result.getExitCode() != 0) {
 				logger.error(
 						"Error while getting all the needed transitive dependencies. Please check your internet connection.");
@@ -487,20 +462,8 @@ public class CobiGenUtils implements Runnable{
         return input;
     }
 
-	private static void printProgress(long startTime, long total, long current, Thread t1) {
-		StringBuilder string = new StringBuilder(140);
-		int percent = (int) (current * 100 / total);
-		string.append(String.format(" %d%%", percent)).append(String.join("", Collections.nCopies(percent, "=")))
-				.append('>');
 
-		System.out.print(string);
 
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 }
