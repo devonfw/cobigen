@@ -117,7 +117,7 @@ public class GenerateCommandTest {
     }
     /**
      * This method is check whether generated file is exist or not  
-     * @param generateFiles list of generated fgiles
+     * @param generateFiles list of generated files
      */
 	private static void deleteGeneratedFiles(ArrayList<File> generateFiles) {
 
