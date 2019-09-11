@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.tsplugin;
+package com.devonfw.cobigen.tsplugin.merger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -17,16 +17,15 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.merger.TypeScriptMerger;
 import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * Test methods for different TS mergers of the plugin
  */
-public class ExternalTsMergerTest {
+public class TypeScriptMergerTest {
 
     /** Test resources root path */
-    private static String testFileRootPath = "src/test/resources/testdata/unittest/merger/";
+    private static String testFileRootPath = "src/test/resources/testdata/unittest/files/";
 
     /** Initializing connection with server */
     private static ExternalProcessHandler request = ExternalProcessHandler
@@ -37,12 +36,12 @@ public class ExternalTsMergerTest {
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_NAME, ExternalTsMergerTest.class));
+        assertEquals(true, request.executingExe(Constants.EXE_NAME, TypeScriptMergerTest.class));
         assertEquals(true, request.initializeConnection());
     }
 
     /**
-     * Checks if the ts-merger can be launched and if the output is correct with patchOverrides = false
+     * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = false
      *
      * @test fails
      */
@@ -54,7 +53,7 @@ public class ExternalTsMergerTest {
             // arrange
             File baseFile = new File(testFileRootPath + "baseFile.ts");
 
-            // Next version should merge comments
+            // Should merge comments
             String regex = " * Should format correctly this line";
 
             // act
@@ -86,7 +85,7 @@ public class ExternalTsMergerTest {
             assertThat(mergedContents).contains("export { e, g } from 'f';");
             assertThat(mergedContents).contains("export interface a {");
             assertThat(mergedContents).contains("private b: number;");
-            // assertThat(mergedContents).containsPattern(regex);
+            assertThat(mergedContents).containsPattern(regex);
         } finally {
 
             request.terminateProcessConnection();
@@ -120,6 +119,7 @@ public class ExternalTsMergerTest {
             assertThat(mergedContents).contains("export { e, g } from 'f';");
             assertThat(mergedContents).contains("interface a {");
             assertThat(mergedContents).contains("private b: string;");
+            // Should merge comments
             assertThat(mergedContents).contains("// Should contain this comment");
 
             mergedContents =
@@ -135,6 +135,7 @@ public class ExternalTsMergerTest {
             assertThat(mergedContents).contains("export { e, g } from 'f';");
             assertThat(mergedContents).contains("interface a {");
             assertThat(mergedContents).contains("private b: string;");
+            // Should merge comments
             assertThat(mergedContents).contains("// Should contain this comment");
         } finally {
             request.terminateProcessConnection();
