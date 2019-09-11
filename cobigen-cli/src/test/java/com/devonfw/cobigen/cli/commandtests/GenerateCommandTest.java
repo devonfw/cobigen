@@ -98,22 +98,20 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "1,15,22";
 
-        // Act
         CobiGenCLI.main(args);
-
-     // Assert
-     		Path rootPath = outputRootFile.toPath();
-     		File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
-     		geneatedList.add(generatedFiles);
-     		generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/shopmanagement").toFile();
-     		geneatedList.add(generatedFiles);
-     		generatedFiles = new File(testFileRootPath + "/devon4ng-ionic-application-template");
-     		geneatedList.add(generatedFiles);
-     		geneatedList.add(rootPath.resolve("src").toFile());
-     		geneatedList.add(rootPath.resolve("docs").toFile());
-     		geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
-     		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
-     		geneatedList.clear();
+        
+ 		Path rootPath = outputRootFile.toPath();
+ 		File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
+ 		geneatedList.add(generatedFiles);
+ 		generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/shopmanagement").toFile();
+ 		geneatedList.add(generatedFiles);
+ 		generatedFiles = new File(testFileRootPath + "/devon4ng-ionic-application-template");
+ 		geneatedList.add(generatedFiles);
+ 		geneatedList.add(rootPath.resolve("src").toFile());
+ 		geneatedList.add(rootPath.resolve("docs").toFile());
+ 		geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
+ 		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
+ 		geneatedList.clear();
     }
     /**
      * This method is check whether generated file is exist or not  
@@ -175,9 +173,9 @@ public class GenerateCommandTest {
 		args[4] = "--increments";
 		args[5] = "1";
 
-		// Act
+
 		CobiGenCLI.main(args);
-		// Assert
+
 		Path rootPath = outputRootFile.toPath();
 		File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
 		geneatedList.add(generatedFiles);
@@ -194,7 +192,7 @@ public class GenerateCommandTest {
 	}
     
     /**
-     *  This method test the unit test of multiple input file (Entity and Open API)
+     *  This method test the generation from typescript files.
      */
     @Test
     public void generateFromTsFileTest() {
@@ -209,11 +207,9 @@ public class GenerateCommandTest {
         args[3] = outputRootFile.getAbsolutePath();
         args[4] = "--increments";
         args[5] = "1,2,3,4,5,6";
-
-        // Act
+        
         CobiGenCLI.main(args);
         
-        // Assert
         Path rootPath = new File(testFileRootPath ).toPath();
         File generatedFiles = rootPath.resolve("devon4ng-application-template/src/app").toFile();
         geneatedList.add(generatedFiles);
