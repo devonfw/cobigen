@@ -129,6 +129,6 @@
   </stream>
   <logicalProjectContainer
       xsi:type="setup:Project"
-      href="http://devonfw.github.io/devon-ide/oomph/projects/catalog_devonfw.setup#//@projects[name='tools.cobigen']"/>
+      href="http://devonfw.github.io/ide/oomph/projects/catalog_devonfw.setup#//@projects[name='tools.cobigen']"/>
   <description>CobiGen Oomph Setup scripts to be best imported to Oomph-IDE.</description>
 </setup:Project>
