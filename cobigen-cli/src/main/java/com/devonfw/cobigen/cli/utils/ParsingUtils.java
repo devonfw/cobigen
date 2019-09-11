@@ -9,29 +9,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.cli.CobiGenCLI;
+
 import net.sf.mmm.code.api.CodeName;
 import net.sf.mmm.code.base.BaseFile;
 import net.sf.mmm.code.base.BasePackage;
 import net.sf.mmm.code.base.source.BaseSource;
 import net.sf.mmm.code.base.type.BaseType;
 import net.sf.mmm.code.impl.java.JavaContext;
-import net.sf.mmm.code.impl.java.JavaFactory;
 import net.sf.mmm.code.impl.java.parser.JavaSourceCodeParserImpl;
-import net.sf.mmm.code.impl.java.parser.JavaSourceCodeReaderHighlevel;
-import net.sf.mmm.code.impl.java.parser.JavaSourceCodeReaderLowlevel;
 import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
-import net.sf.mmm.code.java.parser.base.JavaSourceCodeLexer;
-import net.sf.mmm.code.java.parser.base.JavaSourceCodeParser;
-import net.sf.mmm.code.java.parser.base.JavaSourceCodeParserBaseListener;
-import net.sf.mmm.code.java.parser.base.JavaSourceCodeParserListenerImpl;
 import net.sf.mmm.util.io.api.IoMode;
 import net.sf.mmm.util.io.api.RuntimeIoException;
-import net.sf.mmm.util.xml.api.ParserState;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.devonfw.cobigen.cli.CobiGenCLI;
 
 /**
  * This class contains utilities for parsing user input. It also contains mmm logic to parse user's input file
