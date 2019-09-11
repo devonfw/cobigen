@@ -89,7 +89,7 @@ public class GenerateCommandTest {
         // Prepare
         File outputRootFile = new File(testFileRootPath + "generatedcode/root");
         File openApiFile = new File(testFileRootPath + "openAPI.yml");
-
+        
         String args[] = new String[6];
         args[0] = "generate";
         args[1] = openApiFile.getAbsolutePath();
@@ -97,21 +97,21 @@ public class GenerateCommandTest {
         args[3] = outputRootFile.getAbsolutePath();
         args[4] = "--increments";
         args[5] = "1,15,22";
-
+        
         CobiGenCLI.main(args);
         
- 		Path rootPath = outputRootFile.toPath();
- 		File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
- 		geneatedList.add(generatedFiles);
- 		generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/shopmanagement").toFile();
- 		geneatedList.add(generatedFiles);
- 		generatedFiles = new File(testFileRootPath + "/devon4ng-ionic-application-template");
- 		geneatedList.add(generatedFiles);
- 		geneatedList.add(rootPath.resolve("src").toFile());
- 		geneatedList.add(rootPath.resolve("docs").toFile());
- 		geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
- 		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
- 		geneatedList.clear();
+        Path rootPath = outputRootFile.toPath();
+        File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
+        geneatedList.add(generatedFiles);
+        generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/shopmanagement").toFile();
+        geneatedList.add(generatedFiles);
+        generatedFiles = new File(testFileRootPath + "/devon4ng-ionic-application-template");
+        geneatedList.add(generatedFiles);
+        geneatedList.add(rootPath.resolve("src").toFile());
+        geneatedList.add(rootPath.resolve("docs").toFile());
+        geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
+        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
+        geneatedList.clear();
     }
     /**
      * This method is check whether generated file is exist or not  
