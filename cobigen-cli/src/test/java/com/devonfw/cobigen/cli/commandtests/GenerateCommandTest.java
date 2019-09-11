@@ -200,5 +200,40 @@ public class GenerateCommandTest {
 		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
 		geneatedList.clear();
 	}
+    
+    /**
+     *  This method test the unit test of multiple input file (Entity and Open API)
+     * @throws IOException 
+     */
+    @Test
+    public void generateFromTsFileTest() throws IOException {
+        
+        
+        File outputRootFile = new File(testFileRootPath + "generatedcode/root");
+        File tsFile = new File(testFileRootPath + "some.entity.ts");      
+        String args[] = new String[6];
+        args[0] = "generate";
+        args[1] = tsFile.getAbsolutePath();
+        args[2] = "--out";
+        args[3] = outputRootFile.getAbsolutePath();
+        args[4] = "--increments";
+        args[5] = "1,2,3,4,5,6";
+
+        // Act
+        CobiGenCLI.main(args);
+        
+        // Assert
+        Path rootPath = new File(testFileRootPath ).toPath();
+        File generatedFiles = rootPath.resolve("devon4ng-application-template/src/app").toFile();
+        geneatedList.add(generatedFiles);
+        generatedFiles = rootPath.resolve("devon4ng-application-template/src/assets").toFile();
+        geneatedList.add(generatedFiles);
+        generatedFiles = rootPath.resolve("devon4ng-application-template/src/environments").toFile();
+        geneatedList.add(generatedFiles);      
+        generatedFiles = new File(testFileRootPath + "/devon4ng-application-template");
+        geneatedList.add(generatedFiles);
+        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
+        geneatedList.clear();
+    }
 
 }
