@@ -355,7 +355,7 @@ public class GenerateCommand implements Callable<Integer> {
         String artifactType = isIncrements ? "increment" : "template";       
         if (userInput == null || userInput.size() < 1) {
             // Print all matching generable artifacts
-        	printFoundArtifacts((ArrayList<GenerableArtifact>) matching, isIncrements, artifactType);
+        	printFoundArtifacts(new ArrayList<GenerableArtifact>(matching), isIncrements, artifactType);
 
             userInput = new ArrayList<>();
             for (String userArtifact : getUserInput().split(",")) {
