@@ -20,7 +20,7 @@ public class GenerateCommandTest {
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";
     /** Declare ArrayList variable for adding generate increment*/
-    ArrayList<File> geneatedList = new ArrayList<File>();
+    ArrayList<File> geneatedList = new ArrayList<>();
 
     /**
      * Input Java entity used in the tests
@@ -31,11 +31,9 @@ public class GenerateCommandTest {
     /**
      * Integration test of the generation of templates from a Java Entity. It does not specify the project to
      * generate the folders to.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateFromEntityTest() throws IOException {
+    public void generateFromEntityTest() {
         File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
 
         String args[] = new String[4];
@@ -56,11 +54,9 @@ public class GenerateCommandTest {
     /**
      * Integration test of the generation of templates from a Java Entity. It will generate all the templates
      * in the output root path passed.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateFromEntityWithOutputRootPathTest() throws IOException {
+    public void generateFromEntityWithOutputRootPathTest() {
         File outputRootPath = new File(testFileRootPath + "generatedcode/root");
 
         String args[] = new String[6];
@@ -87,11 +83,9 @@ public class GenerateCommandTest {
     /**
      * Integration test of the generation of templates from an OpenAPI file. It will generate all the
      * templates in the output root path passed.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateFromOpenApiTest() throws IOException {
+    public void generateFromOpenApiTest() {
         // Prepare
         File outputRootFile = new File(testFileRootPath + "generatedcode/root");
         File openApiFile = new File(testFileRootPath + "openAPI.yml");
@@ -123,6 +117,7 @@ public class GenerateCommandTest {
     }
     /**
      * This method is check whether generated file is exist or not  
+     * @param generateFiles list of generated fgiles
      */
 	private static void deleteGeneratedFiles(ArrayList<File> generateFiles) {
 
@@ -139,11 +134,9 @@ public class GenerateCommandTest {
 
     /**
      * Integration test of the generation of templates from a Java Entity with number selection.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateTemplatesFromEntityTest() throws IOException {
+    public void generateTemplatesFromEntityTest() {
         File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
 
         String args[] = new String[4];
@@ -168,10 +161,9 @@ public class GenerateCommandTest {
     
     /**
      *  This method test the unit test of multiple input file (Entity and Open API)
-     * @throws IOException 
      */
     @Test
-	public void generateFromMultipleTypeInputTest() throws IOException {
+	public void generateFromMultipleTypeInputTest() {
 		File outputRootFile = new File(testFileRootPath + "generatedcode/root");
 		File openApiFile = new File(testFileRootPath + "openAPI.yml");		
 		String args[] = new String[6];
@@ -203,10 +195,9 @@ public class GenerateCommandTest {
     
     /**
      *  This method test the unit test of multiple input file (Entity and Open API)
-     * @throws IOException 
      */
     @Test
-    public void generateFromTsFileTest() throws IOException {
+    public void generateFromTsFileTest() {
         
         
         File outputRootFile = new File(testFileRootPath + "generatedcode/root");
@@ -230,7 +221,7 @@ public class GenerateCommandTest {
         geneatedList.add(generatedFiles);
         generatedFiles = rootPath.resolve("devon4ng-application-template/src/environments").toFile();
         geneatedList.add(generatedFiles);      
-        generatedFiles = new File(testFileRootPath + "/devon4ng-application-template");
+        generatedFiles = new File(testFileRootPath + "/devon4ng-application-template"); //$NON-NLS-1$
         geneatedList.add(generatedFiles);
         GenerateCommandTest.deleteGeneratedFiles(geneatedList);
         geneatedList.clear();
