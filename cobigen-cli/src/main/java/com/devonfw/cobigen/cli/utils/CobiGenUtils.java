@@ -261,6 +261,7 @@ public class CobiGenUtils {
         logger.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
+        	
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(pomFile);
             request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
@@ -287,7 +288,7 @@ public class CobiGenUtils {
      *            path where the artificial POM will be extracted to
      * @return the extracted POM file
      */
-    private File extractArtificialPom(Path rootCLIPath) {
+    public File extractArtificialPom(Path rootCLIPath) {
         File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
         if (!pomFile.exists()) {
             try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {

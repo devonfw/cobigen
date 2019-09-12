@@ -2,7 +2,7 @@
 <feature
       id="com.devonfw.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
-      version="4.4.1"
+      version="4.4.2"
       provider-name="DevonFw Team">
 
    <description>
@@ -13,20 +13,12 @@
       Copyright © 2013-2017 Capgemini SE. All rights reserved.
    </copyright>
 
-   <license url="https://www.apache.org/licenses/LICENSE-2.0">
-Copyright © 2013-2017 Capgemini SE
+   <license url="https://devonfw.github.io/TermsOfUse">
+      We provide the computer program of devonfw, (hereinafter &quot;Software&quot;) free of charge to download. Regarding this software the license terms of the Apache License 2.0 apply. The user shall be responsible to provide the required system environment for using the software. In accordance with the license terms of the Apache License 2.0, the user is entitled to use the Software in own / other projects (also commercial projects), provided that the copyright notice will be taken.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+The software also requires open-source components of third-parties (providers), for which the respective open source license terms apply. The open-source components of third parties are not from us and must be licensed directly from the respective third party. The rights to use will be granted directly by the respective right owner to the extent of each relevant open source license terms. The user himself can download the desired third party component from the servers of the respective provider and install them in his own environment.
 
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+For a full list of the open-source components of third-parties  and applicable license terms, see https://devonfw.github.io/TermsOfUse
    </license>
 
    <url>
