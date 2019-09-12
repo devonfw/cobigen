@@ -23,7 +23,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +62,8 @@ import com.devonfw.cobigen.maven.validation.InputPreProcessor;
  * all the plug-ins
  */
 public class CobiGenUtils {
+
+    final String TEMPLATE_ARTIFACT_ID = "templates-devon4j";
 
     /**
      * Logger instance for the CLI
@@ -104,6 +105,10 @@ public class CobiGenUtils {
      *             {@link IOException} occurred
      */
     List<Class<?>> resolveTemplateUtilClassesFromJar(File templatesJar) throws IOException {
+        System.out.println("DEBUG jar path");
+        System.out.println(jarsDirectory.toString());
+        System.out.println("DEBUG loaded jar");
+        System.out.println(templatesJar.toString());
         final List<Class<?>> result = new LinkedList<>();
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
@@ -186,9 +191,8 @@ public class CobiGenUtils {
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
-        System.out.println("DEBUG Templates jar directory");
-        System.out.println(jarsDirectory.toPath());
-        setJarsDirectory();
+
+        
         getTemplates();
 
         CobiGen cg = null;
@@ -216,6 +220,7 @@ public class CobiGenUtils {
      * @return list of all classes, which have been defined in the template configuration folder from a jar
      */
     public List<Class<?>> getTemplates() {
+        deleteShaFiles();
         templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
 
         try {
@@ -226,6 +231,20 @@ public class CobiGenUtils {
 
         }
         return utilClasses;
+    }
+    
+    
+    private void deleteShaFiles()
+    {
+        for (File file:jarsDirectory.listFiles())
+        {
+            if (file.getName().endsWith("sha1"))
+            {
+                file.delete();
+            }
+        }
+        
+
     }
 
     /**
@@ -271,7 +290,7 @@ public class CobiGenUtils {
         logger.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
-        	
+
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(pomFile);
             request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
@@ -350,15 +369,29 @@ public class CobiGenUtils {
      * @return the jar file of the templates
      */
     public File getTemplatesJar(boolean isSource) {
+        setJarsDirectory();
         File jarFileDir = jarsDirectory.getAbsoluteFile();
-        System.out.println("DEBUG jar path");
-        System.out.println(jarFileDir.getAbsolutePath());
-        System.out.println("DEBUG END jar path");
-        
+
         // We first check if we already have the CobiGen_Templates jar downloaded
+
+        if (!jarFileDir.exists() | !jarFileDir.isDirectory()) {
+            try {
+                Files.createDirectories(jarFileDir.toPath());
+
+            } catch (IOException e) {
+                logger.error("Cannot create directories - " + jarFileDir.toString() + e);
+            }
+        }
         if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
             try {
-                TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
+                if (!templateDependencyIsGiven()) {
+                    TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
+                } else {
+                    Dependency templatesDep = getTemplateDependency();
+                    TemplatesJarUtil.downloadJar(templatesDep.getGroupId(), templatesDep.getArtifactId(),
+                        templatesDep.getVersion(), isSource, jarFileDir);
+                }
+
             } catch (MalformedURLException e) {
                 // if a path of one of the class path entries is not a valid URL
                 logger.error("Problem while downloading the templates, URL not valid. This is a bug", e);
@@ -460,20 +493,38 @@ public class CobiGenUtils {
         }
         return input;
     }
-    
-    
+
     /**
-     * TODO
+     * Sets the jars directory to the templates folder in the local maven repository
+     * @return whether the jarsDirectory has been modified to point to the templates folder in the maven
+     *         repository
      */
-    public void setJarsDirectory() {
-        
+    private void setJarsDirectory() {
 
+        if (!templateDependencyIsGiven()) {
+            return;
+        }
 
+        Dependency templatesDep = getTemplateDependency();
+        // maven repository
+        String m2Repo = System.getProperty("localRepository");
+
+        String jarsDir = m2Repo + File.separator + templatesDep.getGroupId().replace('.', File.separatorChar)
+            + File.separator + templatesDep.getArtifactId() + File.separator + templatesDep.getVersion();
+
+        jarsDirectory = new File(jarsDir);
+    }
+
+    /*
+     * 
+     */
+    private Model readPom() {
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = null;
         try {
-            MavenXpp3Reader reader = new MavenXpp3Reader();
-            Model model = null;
-            File locationCLI = new File(
-                    GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+
+            File locationCLI =
+                new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             Path rootCLIPath = locationCLI.getParentFile().toPath();
 
             File pomFile = new CobiGenUtils().extractArtificialPom(rootCLIPath);
@@ -481,35 +532,33 @@ public class CobiGenUtils {
             if (pomFile.exists()) {
                 model = reader.read(new FileReader(pomFile));
             }
-            
-            
-            Dependency templates_dep = model.getDependencies().stream().filter(dependency -> "templates-devon4j".equals(dependency.getArtifactId())).findFirst().orElse(null);
-            String tmpPath = System.getProperty("localRepository");
-            tmpPath = tmpPath + File.separator + templates_dep.getGroupId().replace('.', File.separatorChar) + File.separator + templates_dep.getArtifactId() + File.separator + templates_dep.getVersion();
-            
-            System.out.println("DEBUG jarDir");
-            System.out.println(tmpPath);
-      
-
-
         } catch (URISyntaxException e) {
             logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("External pom file has not been found", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("An exception occured while reading the external pom file", e);
         } catch (XmlPullParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("An exception occured while reading the external pom file", e);
         }
 
+        return model;
     }
-    
-    
-    public static Dependency findByArtifactId(Collection<Dependency> dependencies, String artifactId) {
-        return dependencies.stream().filter(dependency -> artifactId.equals(dependency.getArtifactId())).findFirst().orElse(null);
+
+    private Dependency getTemplateDependency() {
+        Model model = readPom();
+        if (model == null) {
+            return null;
+        }
+        // extracting templates dependency
+        Dependency templatesDep = model.getDependencies().stream()
+            .filter(dependency -> TEMPLATE_ARTIFACT_ID.equals(dependency.getArtifactId())).findFirst().orElse(null);
+        return templatesDep;
+    }
+
+    private boolean templateDependencyIsGiven() {
+        Dependency templatesDep = getTemplateDependency();
+        return templatesDep != null;
     }
 
 }
