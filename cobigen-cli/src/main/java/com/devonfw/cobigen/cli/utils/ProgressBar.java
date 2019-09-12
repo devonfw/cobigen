@@ -7,30 +7,21 @@ package com.devonfw.cobigen.cli.utils;
 
 public class ProgressBar implements Runnable {
 
-	private static void printProgress(long startTime, long total) {
-		StringBuilder string = new StringBuilder(140);
-		string.append("...");
+	private static void printProgress() {
 		System.out.print(".");
-
 	}
 
 	@Override
 	public void run() {
-		long total = 100;
-		long startTime = System.currentTimeMillis();
 		System.out.println("");
 		while (!Thread.interrupted()) {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-
 				System.out.println("");
 				return;
 			}
-			printProgress(startTime, total);
-
+			printProgress();
 		}
-
 	}
-
 }

@@ -225,39 +225,38 @@ public class CobiGenUtils {
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
      * location and then adding the needed URLs to the class loader.
      */
-    public void registerPlugins() {
+	public void registerPlugins() {
 
-        try {
-            // Get location of the current CLI jar
-            File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            Path rootCLIPath = locationCLI.getParentFile().toPath();
+		try {
+			// Get location of the current CLI jar
+			File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			Path rootCLIPath = locationCLI.getParentFile().toPath();
 
-            File pomFile = extractArtificialPom(rootCLIPath);
+			File pomFile = extractArtificialPom(rootCLIPath);
 
-            File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
-            if (!cpFile.exists()) {
-                try {
+			File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
+			if (!cpFile.exists()) {
+				try {
 					buildCobiGenDependencies(pomFile);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Not properly executes a Maven class path build command which will download all the transitive dependencies" , e);
 				}
-            }
+			}
 
-            // Read classPath.txt file and add to the class path all dependencies
-            try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
-                String allJars = br.readLine();
+			// Read classPath.txt file and add to the class path all dependencies
+			try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
+				String allJars = br.readLine();
 
-                addJarsToClassLoader(allJars);
-            } catch (IOException e) {
-                logger.error("Unable to read classPath.txt file.", e);
-            }
+				addJarsToClassLoader(allJars);
+			} catch (IOException e) {
+				logger.error("Unable to read classPath.txt file.", e);
+			}
 
-        } catch (URISyntaxException e) {
-            logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
-        }
+		} catch (URISyntaxException e) {
+			logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
+		}
 
-    }
+	}
 
     /**
      * Executes a Maven class path build command which will download all the transitive dependencies needed
@@ -461,9 +460,5 @@ public class CobiGenUtils {
         }
         return input;
     }
-
-
-
-	
 
 }
