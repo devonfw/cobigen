@@ -17,7 +17,6 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * Test methods for different TS mergers of the plugin
@@ -32,11 +31,11 @@ public class TypeScriptMergerTest {
         .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
-     * Starts the server and initializes the connection to it
+     * Starts the server and initializes the connection to it.
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_NAME, TypeScriptMergerTest.class));
+        assertEquals(true, request.startServer(TypeScriptMergerTest.class));
         assertEquals(true, request.initializeConnection());
     }
 
@@ -181,7 +180,7 @@ public class TypeScriptMergerTest {
 
         try {
 
-            assertEquals(request.executingExe(Constants.EXE_NAME, this.getClass()), true);
+            assertEquals(true, request.startServer(this.getClass()));
             assertEquals(true, request.initializeConnection());
 
             String mergedContents =

@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * Tests general functionalities of the server
@@ -31,7 +30,7 @@ public class PortBlockedTest {
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_NAME, PortBlockedTest.class));
+        assertEquals(true, request.startServer(PortBlockedTest.class));
         assertEquals(true, request.initializeConnection());
     }
 
@@ -46,7 +45,7 @@ public class PortBlockedTest {
             ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 80);
 
         try {
-            request.executingExe(Constants.EXE_NAME, this.getClass());
+            request.startServer(this.getClass());
             assertEquals(true, request.initializeConnection());
         } finally {
             request.terminateProcessConnection();
