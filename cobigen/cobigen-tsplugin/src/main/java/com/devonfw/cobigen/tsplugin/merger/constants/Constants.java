@@ -12,11 +12,6 @@ public class Constants {
     /** Export statement regex */
     public static final String EXPORT_REGEX = "export\\s+([^\\s]+)";
 
-    /**
-     * Path of the executable file where the server of the external process is stored
-     */
-    public static final String EXE_NAME = "nestserver";
-
     /** We want to check whether it is a real export statement, not like the type "export class a" */
     public static final Map<String, Boolean> NOT_EXPORT_TYPES;
 

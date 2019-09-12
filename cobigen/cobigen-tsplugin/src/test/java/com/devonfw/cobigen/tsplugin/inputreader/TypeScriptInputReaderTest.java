@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  *
@@ -42,7 +41,7 @@ public class TypeScriptInputReaderTest {
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_NAME, TypeScriptInputReaderTest.class));
+        assertEquals(true, request.startServer(TypeScriptInputReaderTest.class));
         assertEquals(true, request.initializeConnection());
     }
 
