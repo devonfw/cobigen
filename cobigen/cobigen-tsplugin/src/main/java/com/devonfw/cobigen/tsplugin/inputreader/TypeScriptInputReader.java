@@ -30,7 +30,6 @@ import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.to.InputFileTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * TypeScript input reader that uses a server to read TypeScript code
@@ -78,7 +77,7 @@ public class TypeScriptInputReader implements InputReader {
      * Deploys the server and tries to initialize a new connection between CobiGen and the server
      */
     private void startServerConnection() {
-        request.executingExe(Constants.EXE_NAME, this.getClass());
+        request.startServer(this.getClass());
         request.initializeConnection();
     }
 
@@ -248,8 +247,7 @@ public class TypeScriptInputReader implements InputReader {
 
         InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset.name());
 
-        HttpURLConnection conn =
-            request.getConnection("POST", "Content-Type", "application/json", "tsplugin/getInputModel");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "getInputModel");
 
         if (request.sendRequest(inputFile, conn, charset)) {
 
