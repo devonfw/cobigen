@@ -22,12 +22,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
+import net.sf.mmm.code.impl.java.JavaContext;
 
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
@@ -51,8 +50,6 @@ import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
-
-import net.sf.mmm.code.impl.java.JavaContext;
 
 /**
  * Utilities class for CobiGen related operations. For instance, creates a new CobiGen instance and registers
@@ -225,75 +222,77 @@ public class CobiGenUtils {
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
      * location and then adding the needed URLs to the class loader.
      */
-	public void registerPlugins() {
+    public void registerPlugins() {
 
-		try {
-			// Get location of the current CLI jar
-			File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-			Path rootCLIPath = locationCLI.getParentFile().toPath();
+        try {
+            // Get location of the current CLI jar
+            File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            Path rootCLIPath = locationCLI.getParentFile().toPath();
 
-			File pomFile = extractArtificialPom(rootCLIPath);
+            File pomFile = extractArtificialPom(rootCLIPath);
 
-			File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
-			if (!cpFile.exists()) {
-				try {
-					buildCobiGenDependencies(pomFile);
-				} catch (IOException e) {
-					logger.error("Not properly executes a Maven class path build command which will download all the transitive dependencies" , e);
-				}
-			}
+            File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
+            if (!cpFile.exists()) {
+                try {
+                    buildCobiGenDependencies(pomFile);
+                } catch (IOException e) {
+                    logger.error(
+                        "Not properly executes a Maven class path build command which will download all the transitive dependencies",
+                        e);
+                }
+            }
 
-			// Read classPath.txt file and add to the class path all dependencies
-			try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
-				String allJars = br.readLine();
+            // Read classPath.txt file and add to the class path all dependencies
+            try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
+                String allJars = br.readLine();
 
-				addJarsToClassLoader(allJars);
-			} catch (IOException e) {
-				logger.error("Unable to read classPath.txt file.", e);
-			}
+                addJarsToClassLoader(allJars);
+            } catch (IOException e) {
+                logger.error("Unable to read classPath.txt file.", e);
+            }
 
-		} catch (URISyntaxException e) {
-			logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
-		}
+        } catch (URISyntaxException e) {
+            logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
+        }
 
-	}
+    }
 
     /**
      * Executes a Maven class path build command which will download all the transitive dependencies needed
      * for the CLI
      * @param pomFile
      *            POM file that defines the needed CobiGen dependencies to build
-     * @throws IOException 
+     * @throws IOException
      */
-	private void buildCobiGenDependencies(File pomFile) throws IOException {
-		logger.info(
-				"As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
-		try {
+    private void buildCobiGenDependencies(File pomFile) throws IOException {
+        logger.info(
+            "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
+        try {
 
-			InvocationRequest request = new DefaultInvocationRequest();
-			request.setPomFile(pomFile);
-			request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
-					"-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q"));
+            InvocationRequest request = new DefaultInvocationRequest();
+            request.setPomFile(pomFile);
+            request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
+                "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q"));
 
-			Invoker invoker = new DefaultInvoker();
-			InvocationResult result = null;
-			Thread t1 = new Thread(new ProgressBar());
-			t1.start();
-			result = invoker.execute(request);
-			if (t1 != null) {
-				t1.interrupt();
-			}
-			logger.debug('\n' + "Download the needed dependencies successfully.");
-			if (result.getExitCode() != 0) {
-				logger.error(
-						"Error while getting all the needed transitive dependencies. Please check your internet connection.");
-			}
+            Invoker invoker = new DefaultInvoker();
+            InvocationResult result = null;
+            Thread t1 = new Thread(new ProgressBar());
+            t1.start();
+            result = invoker.execute(request);
+            if (t1 != null) {
+                t1.interrupt();
+            }
+            logger.debug('\n' + "Download the needed dependencies successfully.");
+            if (result.getExitCode() != 0) {
+                logger.error(
+                    "Error while getting all the needed transitive dependencies. Please check your internet connection.");
+            }
 
-		} catch (MavenInvocationException e) {
+        } catch (MavenInvocationException e) {
 
-			logger.error("The maven command for getting needed dependencies was malformed. This is a bug.");
-		}
-	}
+            logger.error("The maven command for getting needed dependencies was malformed. This is a bug.");
+        }
+    }
 
     /**
      * Extracts an artificial POM which defines all the CobiGen plug-ins that are needed
