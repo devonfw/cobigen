@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
@@ -62,8 +63,6 @@ import com.devonfw.cobigen.maven.validation.InputPreProcessor;
  * all the plug-ins
  */
 public class CobiGenUtils {
-
-    final String TEMPLATE_ARTIFACT_ID = "templates-devon4j";
 
     /**
      * Logger instance for the CLI
@@ -105,10 +104,6 @@ public class CobiGenUtils {
      *             {@link IOException} occurred
      */
     List<Class<?>> resolveTemplateUtilClassesFromJar(File templatesJar) throws IOException {
-        System.out.println("DEBUG jar path");
-        System.out.println(jarsDirectory.toString());
-        System.out.println("DEBUG loaded jar");
-        System.out.println(templatesJar.toString());
         final List<Class<?>> result = new LinkedList<>();
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
@@ -220,7 +215,6 @@ public class CobiGenUtils {
      * @return list of all classes, which have been defined in the template configuration folder from a jar
      */
     public List<Class<?>> getTemplates() {
-        deleteShaFiles();
         templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
 
         try {
@@ -233,19 +227,6 @@ public class CobiGenUtils {
         return utilClasses;
     }
     
-    
-    private void deleteShaFiles()
-    {
-        for (File file:jarsDirectory.listFiles())
-        {
-            if (file.getName().endsWith("sha1"))
-            {
-                file.delete();
-            }
-        }
-        
-
-    }
 
     /**
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
@@ -552,7 +533,7 @@ public class CobiGenUtils {
         }
         // extracting templates dependency
         Dependency templatesDep = model.getDependencies().stream()
-            .filter(dependency -> TEMPLATE_ARTIFACT_ID.equals(dependency.getArtifactId())).findFirst().orElse(null);
+            .filter(dependency -> TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID.equals(dependency.getArtifactId())).findFirst().orElse(null);
         return templatesDep;
     }
 
