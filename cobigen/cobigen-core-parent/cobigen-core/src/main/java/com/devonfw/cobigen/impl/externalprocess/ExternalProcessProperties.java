@@ -20,6 +20,11 @@ public class ExternalProcessProperties {
     private static final Logger LOG = LoggerFactory.getLogger(ExternalProcessProperties.class);
 
     /**
+     * Name of the plugin that executes this server
+     */
+    private String pluginName;
+
+    /**
      * Path to the external process
      */
     private String filePath;
@@ -52,6 +57,7 @@ public class ExternalProcessProperties {
      *
      */
     public ExternalProcessProperties(Properties propertiesFile) {
+        pluginName = "";
         filePath = "";
         fileName = "";
         serverVersion = "";
@@ -69,6 +75,7 @@ public class ExternalProcessProperties {
      *
      */
     public ExternalProcessProperties(String name) {
+        pluginName = "";
         filePath = "";
         fileName = name;
         serverVersion = "";
@@ -85,8 +92,9 @@ public class ExternalProcessProperties {
      *
      */
     private void settingProperties(Properties propertiesFile) {
-        serverVersion = propertiesFile.getProperty("server.version");
+        pluginName = propertiesFile.getProperty("plugin.name");
         fileName = propertiesFile.getProperty("server.name");
+        serverVersion = propertiesFile.getProperty("server.version");
 
         if (osName.indexOf("win") >= 0) {
             downloadURL = propertiesFile.getProperty("server.url");
@@ -130,6 +138,23 @@ public class ExternalProcessProperties {
             }
         }
 
+    }
+
+    /**
+     * Get the name of the plugin that wants to execute the external process
+     * @return String of the plugin name
+     */
+    public String getPluginName() {
+        return pluginName;
+    }
+
+    /**
+     * Set the name of the plugin that wants to execute the external process
+     * @param pluginName
+     *            name of the plugin
+     */
+    public void setPluginName(String pluginName) {
+        this.pluginName = pluginName;
     }
 
     /**
