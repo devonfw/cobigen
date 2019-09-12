@@ -243,7 +243,13 @@ public class CobiGenUtils {
 
             File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
             if (!cpFile.exists()) {
-                buildCobiGenDependencies(pomFile);
+                try {
+                    buildCobiGenDependencies(pomFile);
+                } catch (IOException e) {
+                    logger.error(
+                        "Not properly executes a Maven class path build command which will download all the transitive dependencies",
+                        e);
+                }
             }
 
             // Read classPath.txt file and add to the class path all dependencies
@@ -266,8 +272,9 @@ public class CobiGenUtils {
      * for the CLI
      * @param pomFile
      *            POM file that defines the needed CobiGen dependencies to build
+     * @throws IOException
      */
-    private void buildCobiGenDependencies(File pomFile) {
+    private void buildCobiGenDependencies(File pomFile) throws IOException {
         logger.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
@@ -278,14 +285,19 @@ public class CobiGenUtils {
                 "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q"));
 
             Invoker invoker = new DefaultInvoker();
-            InvocationResult result;
-
+            InvocationResult result = null;
+            Thread t1 = new Thread(new ProgressBar());
+            t1.start();
             result = invoker.execute(request);
-
+            if (t1 != null) {
+                t1.interrupt();
+            }
+            logger.debug('\n' + "Download the needed dependencies successfully.");
             if (result.getExitCode() != 0) {
                 logger.error(
                     "Error while getting all the needed transitive dependencies. Please check your internet connection.");
             }
+
         } catch (MavenInvocationException e) {
 
             logger.error("The maven command for getting needed dependencies was malformed. This is a bug.");

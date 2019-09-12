@@ -176,6 +176,8 @@ __log_step("Upgrade dependencies of SNAPSHOT versions and committing it...")
 (core_version_in_eclipse_pom, changed_files) = maven.upgrade_snapshot_dependencies()
 git_repo.add(changed_files)
 git_repo.commit("upgrade SNAPSHOT dependencies")
+log_info("Pushing Upgrade SNAPSHOT dependencies.")
+git_repo.push()
 
 #############################
 __log_step("Run integration tests...")
@@ -193,7 +195,6 @@ if config.test_run:
     continue_run = prompt_yesno_question("[TEST] Would now update documentation. Continue (yes) or skip (no)?")    
 
 if continue_run:
-    log_info("TODO: if this step fails, it means that when checking out to master, some files were not removed. Please do git status on master to check that.")    
     git_repo.update_documentation()
     git_repo.commit("update wiki docs")
     git_repo.push()
