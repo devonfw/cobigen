@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -132,24 +133,39 @@ public class ExternalProcessHandler {
     }
 
     /**
-     * Tries to execute, as a new process, the executable file specified on the parameter. Also initializes
+     * Tries to execute, as a new process, the executable file specified on the arguments. Also initializes
      * the error handler.
      *
      * @param name
      *            of the executable file to execute
-     * @param activatorClass
-     *            class that activated the execution of the server. We need it to find the jar of the
-     *            activator class, which should contain the executable server inside its jar
      * @return true if it was able to execute the exe successfully
      */
-    public boolean executingExe(String name, Class<?> activatorClass) {
+    public boolean startServer(String name) {
 
-        exeName = name;
-
-        boolean execution = false;
         try {
-            LOG.info("Loading server: " + exeName);
+            LOG.info("Loading server: " + name);
+            exeName = name;
+            if (processProperties == null) {
+                processProperties = new ExternalProcessProperties(exeName);
+            }
+            return executeExe();
+        } catch (IOException e) {
+            throw new CobiGenRuntimeException("Error starting the external process.");
+        }
+    }
 
+    /**
+     * Tries to execute, as a new process, the executable file defined inside the plugin calling this method.
+     * Also initializes the error handler.
+     *
+     * @param activatorClass
+     *            plug-in class that activated the execution of the server. We need it to find the jar of the
+     *            activator class, which should define the executable server in a properties file
+     * @return true if it was able to execute the exe successfully
+     */
+    public boolean startServer(Class<?> activatorClass) {
+
+        try {
             if (processProperties == null) {
                 // We load the properties file from the input stream
                 if (activatorClass.getResourceAsStream("/META-INF/externalservers/server.properties") != null) {
@@ -159,50 +175,62 @@ public class ExternalProcessHandler {
                         .load(activatorClass.getResourceAsStream("/META-INF/externalservers/server.properties"));
 
                     processProperties = new ExternalProcessProperties(serverProperties);
+                    exeName = processProperties.getFileName();
 
                 } else {
-                    processProperties = new ExternalProcessProperties(exeName);
+                    return false;
                 }
             }
 
-            String filePath = processProperties.getFilePath();
-            if (!new File(filePath).isFile()) {
-                filePath = downloadExe(processProperties.getDownloadURL(), filePath, processProperties.getFileName());
-            }
-
-            setPermissions(filePath);
-
-            process = new ProcessBuilder(filePath, String.valueOf(port)).start();
-
-            // We try to get the error output
-            errorHandler = new ProcessOutputUtil(process.getErrorStream(), "UTF-8");
-
-            int retry = 0;
-            while (!process.isAlive() && retry <= 10) {
-                if (processHasErrors()) {
-                    terminateProcessConnection();
-                    // If the process outputs errors, it means that we were able to start it successfully,
-                    // that's why we return true
-                    return true;
-                }
-                retry++;
-                // This means the executable has already finished
-                if (process.exitValue() == 0) {
-                    return true;
-                }
-                LOG.info("Waiting process to be alive");
-            }
-            if (retry > 10) {
-                // We were not able to start the process
-                return false;
-            }
-            execution = true;
+            return executeExe();
         } catch (IOException e) {
-            execution = false;
             throw new CobiGenRuntimeException("Error starting the external process.");
         }
-        return execution;
+    }
 
+    /**
+     * Executes the exe file
+     * @return true only if the exe has been correctly executed
+     * @throws IOException
+     *             thrown if we were not able to start the exe
+     * @throws UnsupportedEncodingException
+     *             thrown when the error stream was not able to use an encoding
+     */
+    private boolean executeExe() throws IOException, UnsupportedEncodingException {
+
+        String filePath = processProperties.getFilePath();
+        if (!new File(filePath).isFile()) {
+            filePath = downloadExe(processProperties.getDownloadURL(), filePath, processProperties.getFileName());
+        }
+
+        setPermissions(filePath);
+
+        process = new ProcessBuilder(filePath, String.valueOf(port)).start();
+
+        // We try to get the error output
+        errorHandler = new ProcessOutputUtil(process.getErrorStream(), "UTF-8");
+
+        int retry = 0;
+        while (!process.isAlive() && retry <= 10) {
+            if (processHasErrors()) {
+                terminateProcessConnection();
+                // If the process outputs errors, it means that we were able to start it successfully,
+                // that's why we return true
+                return true;
+            }
+            retry++;
+            // This means the executable has already finished
+            if (process.exitValue() == 0) {
+                return true;
+            }
+            LOG.info("Waiting process to be alive");
+        }
+        if (retry > 10) {
+            // We were not able to start the process
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -353,7 +381,7 @@ public class ExternalProcessHandler {
 
     /**
      * Tries several times to start a new connection to the server. If the port is already in use, tries to
-     * connect again with another port
+     * connect again to another port
      *
      * @return true if the ExternalProcess was able to connect to the server
      */
@@ -397,7 +425,8 @@ public class ExternalProcessHandler {
      */
     public void startConnection() throws IOException {
 
-        url = new URL("http://" + hostName + ":" + port + "/processmanagement/");
+        url = new URL(
+            "http://" + hostName + ":" + port + "/processmanagement/" + processProperties.getPluginName() + "/");
         conn = (HttpURLConnection) url.openConnection();
         conn.connect();
     }
@@ -410,8 +439,7 @@ public class ExternalProcessHandler {
      */
     private boolean acquirePort() {
 
-        // If there is any error, probably it is because the port is blocked
-        if (isNotConnected() && processHasErrors()) {
+        if (isNotConnected()) {
             restartServer();
         } else {
             return true;
@@ -444,10 +472,8 @@ public class ExternalProcessHandler {
     public boolean isNotConnected() {
 
         try {
-            getConnection("HEAD", "Content-Type", "text/plain", "");
-            int responseCode;
-            responseCode = conn.getResponseCode();
-            if (responseCode < 500) {
+            getConnection("GET", "Content-Type", "text/plain", ExternalProcessConstants.IS_CONNECTION_READY);
+            if (conn.getResponseCode() < 300) {
                 return false;
             }
         } catch (IOException e) {
@@ -576,7 +602,7 @@ public class ExternalProcessHandler {
     public void restartServer() {
         terminateProcessConnection();
         port++;
-        executingExe(exeName, this.getClass());
+        startServer(exeName);
     }
 
     /**
