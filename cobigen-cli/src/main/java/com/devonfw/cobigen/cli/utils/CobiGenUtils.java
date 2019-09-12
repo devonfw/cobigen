@@ -2,6 +2,7 @@ package com.devonfw.cobigen.cli.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,11 +23,17 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.mmm.code.impl.java.JavaContext;
+
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
@@ -34,6 +41,7 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +52,11 @@ import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
+import com.devonfw.cobigen.cli.commands.GenerateCommand;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
-
-import net.sf.mmm.code.impl.java.JavaContext;
 
 /**
  * Utilities class for CobiGen related operations. For instance, creates a new CobiGen instance and registers
@@ -179,6 +186,9 @@ public class CobiGenUtils {
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
+        System.out.println("DEBUG Templates jar directory");
+        System.out.println(jarsDirectory.toPath());
+        setJarsDirectory();
         getTemplates();
 
         CobiGen cg = null;
@@ -341,7 +351,10 @@ public class CobiGenUtils {
      */
     public File getTemplatesJar(boolean isSource) {
         File jarFileDir = jarsDirectory.getAbsoluteFile();
-
+        System.out.println("DEBUG jar path");
+        System.out.println(jarFileDir.getAbsolutePath());
+        System.out.println("DEBUG END jar path");
+        
         // We first check if we already have the CobiGen_Templates jar downloaded
         if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
             try {
@@ -446,6 +459,57 @@ public class CobiGenUtils {
             input = InputPreProcessor.process(cg, inputFile, null);
         }
         return input;
+    }
+    
+    
+    /**
+     * TODO
+     */
+    public void setJarsDirectory() {
+        
+
+
+        try {
+            MavenXpp3Reader reader = new MavenXpp3Reader();
+            Model model = null;
+            File locationCLI = new File(
+                    GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            Path rootCLIPath = locationCLI.getParentFile().toPath();
+
+            File pomFile = new CobiGenUtils().extractArtificialPom(rootCLIPath);
+
+            if (pomFile.exists()) {
+                model = reader.read(new FileReader(pomFile));
+            }
+            
+            
+            Dependency templates_dep = model.getDependencies().stream().filter(dependency -> "templates-devon4j".equals(dependency.getArtifactId())).findFirst().orElse(null);
+            String tmpPath = System.getProperty("localRepository");
+            tmpPath = tmpPath + File.separator + templates_dep.getGroupId().replace('.', File.separatorChar) + File.separator + templates_dep.getArtifactId() + File.separator + templates_dep.getVersion();
+            
+            System.out.println("DEBUG jarDir");
+            System.out.println(tmpPath);
+      
+
+
+        } catch (URISyntaxException e) {
+            logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    
+    public static Dependency findByArtifactId(Collection<Dependency> dependencies, String artifactId) {
+        return dependencies.stream().filter(dependency -> artifactId.equals(dependency.getArtifactId())).findFirst().orElse(null);
     }
 
 }
