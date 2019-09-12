@@ -20,7 +20,7 @@ public class GenerateCommandTest {
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";
     /** Declare ArrayList variable for adding generate increment*/
-    ArrayList<File> geneatedList = new ArrayList<File>();
+    ArrayList<File> geneatedList = new ArrayList<>();
 
     /**
      * Input Java entity used in the tests
@@ -31,11 +31,9 @@ public class GenerateCommandTest {
     /**
      * Integration test of the generation of templates from a Java Entity. It does not specify the project to
      * generate the folders to.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateFromEntityTest() throws IOException {
+    public void generateFromEntityTest() {
         File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
 
         String args[] = new String[4];
@@ -56,11 +54,9 @@ public class GenerateCommandTest {
     /**
      * Integration test of the generation of templates from a Java Entity. It will generate all the templates
      * in the output root path passed.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateFromEntityWithOutputRootPathTest() throws IOException {
+    public void generateFromEntityWithOutputRootPathTest() {
         File outputRootPath = new File(testFileRootPath + "generatedcode/root");
 
         String args[] = new String[6];
@@ -87,15 +83,13 @@ public class GenerateCommandTest {
     /**
      * Integration test of the generation of templates from an OpenAPI file. It will generate all the
      * templates in the output root path passed.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateFromOpenApiTest() throws IOException {
+    public void generateFromOpenApiTest() {
         // Prepare
         File outputRootFile = new File(testFileRootPath + "generatedcode/root");
         File openApiFile = new File(testFileRootPath + "openAPI.yml");
-
+        
         String args[] = new String[6];
         args[0] = "generate";
         args[1] = openApiFile.getAbsolutePath();
@@ -103,26 +97,25 @@ public class GenerateCommandTest {
         args[3] = outputRootFile.getAbsolutePath();
         args[4] = "--increments";
         args[5] = "1,15,22";
-
-        // Act
+        
         CobiGenCLI.main(args);
-
-     // Assert
-     		Path rootPath = outputRootFile.toPath();
-     		File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
-     		geneatedList.add(generatedFiles);
-     		generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/shopmanagement").toFile();
-     		geneatedList.add(generatedFiles);
-     		generatedFiles = new File(testFileRootPath + "/devon4ng-ionic-application-template");
-     		geneatedList.add(generatedFiles);
-     		geneatedList.add(rootPath.resolve("src").toFile());
-     		geneatedList.add(rootPath.resolve("docs").toFile());
-     		geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
-     		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
-     		geneatedList.clear();
+        
+        Path rootPath = outputRootFile.toPath();
+        File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
+        geneatedList.add(generatedFiles);
+        generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/shopmanagement").toFile();
+        geneatedList.add(generatedFiles);
+        generatedFiles = new File(testFileRootPath + "/devon4ng-ionic-application-template");
+        geneatedList.add(generatedFiles);
+        geneatedList.add(rootPath.resolve("src").toFile());
+        geneatedList.add(rootPath.resolve("docs").toFile());
+        geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
+        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
+        geneatedList.clear();
     }
     /**
      * This method is check whether generated file is exist or not  
+     * @param generateFiles list of generated files
      */
 	private static void deleteGeneratedFiles(ArrayList<File> generateFiles) {
 
@@ -139,11 +132,9 @@ public class GenerateCommandTest {
 
     /**
      * Integration test of the generation of templates from a Java Entity with number selection.
-     * @throws IOException
-     *             when the test was not able to remove the just generated templates
      */
     @Test
-    public void generateTemplatesFromEntityTest() throws IOException {
+    public void generateTemplatesFromEntityTest() {
         File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
 
         String args[] = new String[4];
@@ -168,10 +159,9 @@ public class GenerateCommandTest {
     
     /**
      *  This method test the unit test of multiple input file (Entity and Open API)
-     * @throws IOException 
      */
     @Test
-	public void generateFromMultipleTypeInputTest() throws IOException {
+	public void generateFromMultipleTypeInputTest() {
 		File outputRootFile = new File(testFileRootPath + "generatedcode/root");
 		File openApiFile = new File(testFileRootPath + "openAPI.yml");		
 		String args[] = new String[6];
@@ -183,9 +173,9 @@ public class GenerateCommandTest {
 		args[4] = "--increments";
 		args[5] = "1";
 
-		// Act
+
 		CobiGenCLI.main(args);
-		// Assert
+
 		Path rootPath = outputRootFile.toPath();
 		File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
 		geneatedList.add(generatedFiles);
@@ -200,5 +190,37 @@ public class GenerateCommandTest {
 		GenerateCommandTest.deleteGeneratedFiles(geneatedList);
 		geneatedList.clear();
 	}
+    
+    /**
+     *  This method test the generation from typescript files.
+     */
+    @Test
+    public void generateFromTsFileTest() {
+        
+        
+        File outputRootFile = new File(testFileRootPath + "generatedcode/root");
+        File tsFile = new File(testFileRootPath + "some.entity.ts");      
+        String args[] = new String[6];
+        args[0] = "generate";
+        args[1] = tsFile.getAbsolutePath();
+        args[2] = "--out";
+        args[3] = outputRootFile.getAbsolutePath();
+        args[4] = "--increments";
+        args[5] = "1,2,3,4,5,6";
+        
+        CobiGenCLI.main(args);
+        
+        Path rootPath = new File(testFileRootPath ).toPath();
+        File generatedFiles = rootPath.resolve("devon4ng-application-template/src/app").toFile();
+        geneatedList.add(generatedFiles);
+        generatedFiles = rootPath.resolve("devon4ng-application-template/src/assets").toFile();
+        geneatedList.add(generatedFiles);
+        generatedFiles = rootPath.resolve("devon4ng-application-template/src/environments").toFile();
+        geneatedList.add(generatedFiles);      
+        generatedFiles = new File(testFileRootPath + "/devon4ng-application-template"); //$NON-NLS-1$
+        geneatedList.add(generatedFiles);
+        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
+        geneatedList.clear();
+    }
 
 }
