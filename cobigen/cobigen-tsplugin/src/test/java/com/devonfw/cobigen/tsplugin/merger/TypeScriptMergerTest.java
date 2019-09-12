@@ -31,7 +31,7 @@ public class TypeScriptMergerTest {
         .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
-     * Starts the server and initializes the connection to it
+     * Starts the server and initializes the connection to it.
      */
     @BeforeClass
     public static void initializeServer() {
