@@ -43,8 +43,8 @@ public class TypeScriptInputReader implements InputReader {
      * Instance that handles all the operations performed to the external server, like initializing the
      * connection and sending new requests
      */
-    private ExternalProcessHandler request = ExternalProcessHandler
-        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+    private ExternalProcessHandler request = ExternalProcessHandler.getExternalProcessHandler(this.getClass(),
+        ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
      * Exception handler related to connectivity to the server
@@ -77,7 +77,7 @@ public class TypeScriptInputReader implements InputReader {
      * Deploys the server and tries to initialize a new connection between CobiGen and the server
      */
     private void startServerConnection() {
-        request.startServer(this.getClass());
+        request.startServer();
         request.initializeConnection();
     }
 
