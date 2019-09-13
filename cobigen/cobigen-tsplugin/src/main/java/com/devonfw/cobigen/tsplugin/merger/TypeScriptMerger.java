@@ -139,13 +139,6 @@ public class TypeScriptMerger implements Merger {
      */
     private void startServerConnection() {
         request.startServer();
-        try {
-            LOG.info("Testing sleeping 60 seconds");
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         request.initializeConnection();
     }
 
