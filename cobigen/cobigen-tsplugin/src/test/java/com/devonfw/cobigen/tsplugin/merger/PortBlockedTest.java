@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * Tests general functionalities of the server
@@ -24,14 +23,14 @@ public class PortBlockedTest {
      * happens.
      */
     private static ExternalProcessHandler request =
-        ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 80);
+        ExternalProcessHandler.getExternalProcessHandler(PortBlockedTest.class, ExternalProcessConstants.HOST_NAME, 80);
 
     /**
      * Starts the server and initializes the connection to it
      */
     @BeforeClass
     public static void initializeServer() {
-        assertEquals(true, request.executingExe(Constants.EXE_NAME, PortBlockedTest.class));
+        assertEquals(true, request.startServer());
         assertEquals(true, request.initializeConnection());
     }
 
@@ -42,11 +41,9 @@ public class PortBlockedTest {
     public void checkPortIsBlocked() {
 
         // Port 80 is always blocked, so let's try to check what happens.
-        ExternalProcessHandler request =
-            ExternalProcessHandler.getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, 80);
 
         try {
-            request.executingExe(Constants.EXE_NAME, this.getClass());
+            request.startServer();
             assertEquals(true, request.initializeConnection());
         } finally {
             request.terminateProcessConnection();
