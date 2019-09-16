@@ -35,8 +35,8 @@ public class TypeScriptMerger implements Merger {
      * Instance that handles all the operations performed to the external server, like initializing the
      * connection and sending new requests
      */
-    private ExternalProcessHandler request = ExternalProcessHandler
-        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+    private ExternalProcessHandler request = ExternalProcessHandler.getExternalProcessHandler(this.getClass(),
+        ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
      * Exception handler related to connectivity to the server
@@ -99,7 +99,7 @@ public class TypeScriptMerger implements Merger {
 
         MergeTo mergeTo = new MergeTo(baseFileContents, patch, patchOverrides);
 
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/merge");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "merge");
 
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
@@ -138,7 +138,7 @@ public class TypeScriptMerger implements Merger {
      * Deploys the server and tries to initialize a new connection between CobiGen and the server
      */
     private void startServerConnection() {
-        request.executingExe(Constants.EXE_NAME, this.getClass());
+        request.startServer();
         request.initializeConnection();
     }
 
@@ -155,7 +155,7 @@ public class TypeScriptMerger implements Merger {
     private String runBeautifierExcludingImports(String importsAndExports, String body, String targetCharset) {
 
         InputFileTo fileTo = new InputFileTo("", body, charset);
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/beautify");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "beautify");
 
         StringBuffer bodyBuffer = new StringBuffer();
 
