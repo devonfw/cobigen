@@ -14,7 +14,7 @@ This document contains the documentation of the CobiGen core module as well as a
 * CobiGen v5.3.4
 * CobiGen - Java Plug-in v2.1.0
 * CobiGen - XML Plug-in v4.1.0
-* CobiGen - TypeScript Plug-in v2.3.1
+* CobiGen - TypeScript Plug-in v2.3.2
 * CobiGen - Property Plug-in v2.0.0
 * CobiGen - Text Merger v2.0.0
 * CobiGen - JSON Plug-in v2.0.0
