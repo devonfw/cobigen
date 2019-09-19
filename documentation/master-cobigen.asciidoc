@@ -39,11 +39,11 @@ This document contains the documentation of the CobiGen core module as well as a
 * Marco Rose
 * Mohamed Ghanmi
 
-include::Guide-to-the-Reader[leveloffset=1]
+include::Guide-to-the-Reader[leveloffset=2]
 
-include::Home[leveloffset=1]
+include::Home[leveloffset=2]
 
-include::cobigen-usecases[leveloffset=1]
+include::cobigen-usecases[leveloffset=2]
 
 == CobiGen
 

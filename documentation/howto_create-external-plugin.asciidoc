@@ -13,7 +13,7 @@ Creating a new plug-in means:
 * Create a human readable model that can be used to generate templates (by retrieving properties from the model).
 * Enable merging files, so that user's code does not get removed.
 
-For the Java plug-in it was relatively easy. As you are inside the Java world, you can use multiple utilities libraries in order to get link:https://en.wikipedia.org/wiki/Abstract_syntax_tree[AST] or to merge Java code. With this new feature, we wanted that behaviour to be possible for any programming language.
+For the Java plug-in it was relatively easy. As you are inside the Java world, you can use multiple utilities libraries in order to get the link:https://en.wikipedia.org/wiki/Abstract_syntax_tree[AST] or to merge Java code. With this new feature, we wanted that behaviour to be possible for any programming language.
 
 == How does it work
 
@@ -25,9 +25,9 @@ Basically, when a new input file was sent to CobiGen, it called the input reader
 
 Afterwards, the template engine generated a new file which had to be merged with the original one. All this code was implemented in Java.
 
-On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.Net, Node.js, Python...) it just needs to implement an API contract defined here link:https://github.com/jdiazgon/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
+On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.Net, Node.js, Python...) it just needs to implement a REST API defined here link:https://github.com/jdiazgon/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
 
-image::images/howtos/todo-plugin/newCobiGen.png[Old CobiGen,width="450"link="images/howtos/todo-plugin/newCobiGen.png"]
+image::images/howtos/todo-plugin/newCobiGen.png[New CobiGen,width="450"link="images/howtos/todo-plugin/newCobiGen.png"]
 
 CobiGen acts as a client that sends requests to the server in order to read the input file and create a model. The model is returned to the template engine so that it generates a new file. Finally, it is sent back to get merged with the original file.
 
@@ -35,9 +35,47 @@ CobiGen acts as a client that sends requests to the server in order to read the 
 
 The creation of a new plug-in consists mainly in two steps:
 
-* Creation of the server: The server can be programmed in any language that is able to implement REST services endpoints. The API that it will have to implement is defined with link:https://github.com/jdiazgon/cobigen-template-plugin/blob/master/APIContract.yml[this contract].
+=== Server (external process)
+
+The server can be programmed in any language that is able to implement REST services endpoints. The API that it needs to implement is defined with link:https://github.com/jdiazgon/cobigen-template-plugin/blob/master/APIContract.yml[this contract]. You can paste the content to https://editor.swagger.io/ for a better look. 
+
+We have already created a NestJS server that implements the API defined above. You can find the code link:https://github.com/jdiazgon/CobiGen-NestServer/blob/master/src/processmanagement/processmanagement.controller.ts[here] which you can use as an example.
+
+As you can see, the endpoints have the following naming convention: `processmanagement/todoplugin/nameOfService` where you will have to change `todo` to your plug-in name (e.g. rustplugin, pyplugin, goplugin...)
+
+In order to test the server, you will have to deploy it on your local machine (localhost) and port 5000. If that port is already on use, you can deploy it on higher port values (5001, 5002...). Nevertheless, we will explain better the testing process as you need to complete the next step before.
+
+=== CobiGen plug-in
+
+You will have to create a new CobiGen plug-in that connects to the server. But *do not worry*, you will not have to implement anything new. We have a CobiGen plug-in template available, the only changes needed are renaming files and setting some properties on the pom.xml. Please follow these steps:
+
+* Get the CobiGen plug-in template from link:https://github.com/jdiazgon/cobigen-template-plugin[here]. It is a template repository (new GitHub feature), so you can click on "Use this template" as shown below:
+
+image::images/howtos/todo-plugin/usePluginTemplate.png[Plugin CobiGen template,width="550"link="images/howtos/todo-plugin/usePluginTemplate.png"]
+
+* Name your repo as `cobigen-name-plugin` where `name` can be python, rust, go... In our case we will create a `nest` plug-in. It will create a repo with only one commit which contains all the needed files.
+
+* Clone your just created repo and import folder `cobigen-todoplugin` as a Maven project on any Java IDE, though we recommend you devonfw ;)
+
+image::images/howtos/todo-plugin/importPluginEclipse.png[Import plugin,width="450"link="images/howtos/todo-plugin/importPluginEclipse.png"]
+
+* Rename all the `todoplugin` folders, file and class names to `nameplugin`. In our case `nestplugin`. In Eclipse you can easily rename by right clicking and then refactor -> rename:
+
+image::images/howtos/todo-plugin/renamePlugin.png[Rename plugin,width="450"link="images/howtos/todo-plugin/renamePlugin.png"]
+
+NOTE: We recommend you to select all the checkboxes
+
+image::images/howtos/todo-plugin/renameCheckbox.png[Rename checkbox,width="450"link="images/howtos/todo-plugin/renameCheckbox.png"]
 
 The generation can create a full Angular 6 client using the devon4ng-application-template package located at workspaces/examples folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
+
+* Remember to change all the package, files and class names to use your plug-in name, in `src/main/java` and `src/main/test` The final result would be:
+
+image::images/howtos/todo-plugin/packageStructure.png[Package structure,width="300"link="images/howtos/todo-plugin/packageStructure.png"]
+
+* Now we just need to change some properties. In class `TodoPluginActivator` (in our case `NestPluginActivator`), change all the `todo` to your plug-in name. See below the 3 strings that need to be changed:
+
+image::images/howtos/todo-plugin/pluginActivator.png[Plugin activator,width="450"link="images/howtos/todo-plugin/pluginActivator.png"]
 
 Take into account that the TypeScript merging for CobiGen needs Node 6 or higher to be installed at your machine.
 
