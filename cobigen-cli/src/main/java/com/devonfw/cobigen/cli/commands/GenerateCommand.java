@@ -115,7 +115,6 @@ public class GenerateCommand implements Callable<Integer> {
 
         if (areArgumentsValid()) {
             logger.debug("Input files and output root path confirmed to be valid.");
-            cobigenUtils.getTemplatesJar(false);
             CobiGen cg = cobigenUtils.initializeCobiGen();
 
             if (increments == null && templates != null) {
