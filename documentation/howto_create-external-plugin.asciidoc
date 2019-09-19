@@ -1,0 +1,223 @@
+:toc: macro
+toc::[]
+
+MODEL NEEDS TO HAVE path:pathOrFileName
+
+= Introduction to CobiGen external plug-ins
+
+Since October of 2019, a major change on CobiGen has taken place. CobiGen is written in Java code and previously, it was very hard for developers to create new plug-ins in other languages.
+
+Creating a new plug-in means: 
+
+* Being able to parse a file in that language.
+* Create a human readable model that can be used to generate templates (by retrieving properties from the model).
+* Enable merging files, so that user's code does not get removed.
+
+For the Java plug-in it was relatively easy. As you are inside the Java world, you can use multiple utilities libraries in order to get link:https://en.wikipedia.org/wiki/Abstract_syntax_tree[AST] or to merge Java code. With this new feature, we wanted that behaviour to be possible for any programming language.
+
+== How does it work
+
+Below you will find a very high level description of how CobiGen worked in previous versions:
+
+image::images/howtos/todo-plugin/oldCobiGen.png[Old CobiGen,width="450"link="images/howtos/todo-plugin/oldCobiGen.png"]
+
+Basically, when a new input file was sent to CobiGen, it called the input reader to create a model of it (see link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-tsplugin#object-model[here] an example of a model). That model was sent to the template engine. 
+
+Afterwards, the template engine generated a new file which had to be merged with the original one. All this code was implemented in Java.
+
+On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.Net, Node.js, Python...) it just needs to implement an API contract defined here link:https://github.com/jdiazgon/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
+
+image::images/howtos/todo-plugin/newCobiGen.png[Old CobiGen,width="450"link="images/howtos/todo-plugin/newCobiGen.png"]
+
+CobiGen acts as a client that sends requests to the server in order to read the input file and create a model. The model is returned to the template engine so that it generates a new file. Finally, it is sent back to get merged with the original file.
+
+== How to create new external plug-in
+
+The creation of a new plug-in consists mainly in two steps:
+
+* Creation of the server: The server can be programmed in any language that is able to implement REST services endpoints. The API that it will have to implement is defined with link:https://github.com/jdiazgon/cobigen-template-plugin/blob/master/APIContract.yml[this contract].
+
+The generation can create a full Angular 6 client using the devon4ng-application-template package located at workspaces/examples folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
+
+Take into account that the TypeScript merging for CobiGen needs Node 6 or higher to be installed at your machine.
+
+NOTE: This is a short introduction to the Angular generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-Devonfw-3.0.0-CobiGen-PoC-E2E_v3.11.pdf[this document].
+
+== Requisites
+
+Install yarn globally:
+
+[source, cmd]
+npm install -g yarn
+
+== Angular 6 workspace
+
+The output location of the generation can be defined editing the *__cobigen.properties__* file located at *__crud_angular_client_app/templates__* folder of the *__CobiGen_Templates__* project.
+
+image::images/howtos/angular4-gen/ng4gen_7.png[cobigen.properties file,width="450"link="images/howtos/angular4-gen/ng4gen_7.png"]
+
+By default, the output path would be into the __devon4ng-application-template__ folder at the root of the devon4j project parent folder: 
+
+----
+root/
+ |- devon4ng-application-template/
+ |- devon4j-project-parent/
+   |- core/
+   |- server/
+----
+
+However, this path can be changed, for example to __src/main/client__ folder of the devon4j project:
+
+[source, txt]
+relocate: ./src/main/client/${cwd}
+
+----
+root/
+ |- devon4j-project-parent/
+   |- core/
+      |- src
+        |- main
+          |- client
+   |- server/
+----
+
+Once the output path is chosen, copy the files of link:https://github.com/devonfw/devon4ng-application-template[DEVON4NG-APPLICATION-TEMPLATE] repository into this output path. 
+
+== Install Node dependencies
+
+Open a terminal into devon4ng-application-template copied and just run the command:
+
+[source, bash]
+yarn
+
+This will start the installation of all node packages needed by the project into the node_modules folder.
+
+== Generating
+
+From an Eto object, right click, CobiGen -> Generate will show the CobiGen wizard relative to client generation:
+
+image::images/howtos/angular4-gen/ng4gen_1.png[CobiGen Client Generation Wizard,width="450"link="images/howtos/angular4-gen/ng4gen_1.png"]
+
+Check all the increments realtive to Angular:
+
+[NOTE]
+=======
+The Angular devon4j URL increment is only needed for the first generations however, checking it again on next generation will not cause any problem.
+=======
+
+As we done on other generations, we click Next to choose which fields to include at the generation or simply clicking Finish will start the generation.
+
+image::images/howtos/angular4-gen/ng4gen_3.png[CobiGen Client Generation Wizard 3,width="450"link="images/howtos/angular4-gen/ng4gen_3.png"]
+
+== Routing
+
+Due to the nature of the TypeScript merger, currently is not possible to merge properly the array of paths objects of the routings at app.routing.ts file so, this modification should be done by hand on this file. However, the import related to the new component generated is added.
+
+This would be the generated `app-routing.module` file:
+[source, ts]
+import { Routes, RouterModule } from '@angular/router';
+import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './shared/security/auth-guard.service';
+import { InitialPageComponent } from './initial-page/initial-page.component';
+import { HomeComponent } from './home/home.component';
+import { SampleDataGridComponent } from './sampledata/sampledata-grid/sampledata-grid.component';
+//Routing array
+const appRoutes: Routes = [{
+    path: 'login',
+    component: LoginComponent
+}, {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AuthGuard],
+    children: [{
+        path: '',
+        redirectTo: '/home/initialPage',
+        pathMatch: 'full',
+        canActivate: [AuthGuard]
+    }, {
+        path: 'initialPage',
+        component: InitialPageComponent,
+        canActivate: [AuthGuard]
+    }]
+}, {
+    path: '**',
+    redirectTo: '/login',
+    pathMatch: 'full'
+}];
+export const routing = RouterModule.forRoot(appRoutes);
+
+Adding the following into the children object of `home`, will add into the side menu the entry for the component generated:
+
+[source, ts]
+{
+    path: 'sampleData',
+    component: SampleDataGridComponent,
+    canActivate: [AuthGuard],
+} 
+
+[source, ts]
+import { Routes, RouterModule } from '@angular/router';
+import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './shared/security/auth-guard.service';
+import { InitialPageComponent } from './initial-page/initial-page.component';
+import { HomeComponent } from './home/home.component';
+import { SampleDataGridComponent } from './sampledata/sampledata-grid/sampledata-grid.component';
+//Routing array
+const appRoutes: Routes = [{
+    path: 'login',
+    component: LoginComponent
+}, {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AuthGuard],
+    children: [{
+        path: '',
+        redirectTo: '/home/initialPage',
+        pathMatch: 'full',
+        canActivate: [AuthGuard]
+    }, {
+        path: 'initialPage',
+        component: InitialPageComponent,
+        canActivate: [AuthGuard]
+    }, {
+        path: 'sampleData',
+        component: SampleDataGridComponent,
+        canActivate: [AuthGuard],
+    }]
+}, {
+    path: '**',
+    redirectTo: '/login',
+    pathMatch: 'full'
+}];
+export const routing = RouterModule.forRoot(appRoutes);
+
+image::images/howtos/angular4-gen/ng4gen_6.png[APP SideMenu,width="450"link="images/howtos/angular4-gen/ng4gen_6.png"]
+
+== JWT Authentication
+
+If you are using a back end server with JWT Authentication (there is a sample in workspaces/folder called *sampleJwt*) you have to specify the Angular application to use this kind of authentication.
+
+By default the variable is set to ‘csrf’ but you can change it to JWT by going to the link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts#L10[Enviroment.ts] and setting `security: 'jwt'`.
+
+== Running
+
+First of all, run your devon4j java server by right clicking over SpringBootApp.java Run As -> Java Application. This will start to run the SpringBoot server. Once you see the Started SpringBoot in XX seconds, the backend is running.
+
+image::images/howtos/angular4-gen/ng4gen_4.png[Starting SpringBoot,width="450"link="images/howtos/angular4-gen/ng4gen_4.png"]
+
+Once the the server is running, open a Devon console at the output directory defined previously and run:
+
+[source, cmd]
+ng serve --open
+
+This will run the Angular 6 application at:
+
+[source, URL]
+http://localhost:4200
+
+image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 6 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
+
+Once finished, the browser will open automatically at the previous localhost URL showing the Angular 6 application, using the credentials set at the devon4j java server you will be able to access.
+
+
+
