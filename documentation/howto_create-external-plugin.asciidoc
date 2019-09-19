@@ -5,7 +5,7 @@ MODEL NEEDS TO HAVE path:pathOrFileName
 
 = Introduction to CobiGen external plug-ins
 
-Since October of 2019, a major change on CobiGen has taken place. CobiGen is written in Java code and previously, it was very hard for developers to create new plug-ins in other languages.
+Since September of 2019, a major change on CobiGen has taken place. CobiGen is written in Java code and previously, it was very hard for developers to create new plug-ins in other languages.
 
 Creating a new plug-in means: 
 
@@ -33,11 +33,13 @@ CobiGen acts as a client that sends requests to the server in order to read the 
 
 == How to create new external plug-in
 
-The creation of a new plug-in consists mainly in two steps:
+The creation of a new plug-in consists mainly in three steps:
 
 * Creation of the server (external process).
 
 * Creation of a CobiGen plug-in.
+
+* Define templates.
 
 === Server (external process)
 
@@ -47,7 +49,46 @@ We have already created a NestJS server that implements the API defined above. Y
 
 As you can see, the endpoints have the following naming convention: `processmanagement/todoplugin/nameOfService` where you will have to change `todo` to your plug-in name (e.g. rustplugin, pyplugin, goplugin...)
 
-In order to test the server, you will have to deploy it on your local machine (localhost) and port 5000. If that port is already in use, you can deploy it on higher port values (5001, 5002...). Nevertheless, we explain HERE the testing process as you need to complete the next step before.
+When implementing service `getInputModel` which returns a model from the input file there are only two restrictions:
+
+* A `path` key must be added. Its value can be the full path of the input file or just the file name. It is needed because in CobiGen there is a link:https://github.com/devonfw/tools-cobigen/wiki/eclipse-plugin_development#batch-mode[batch mode], in which you can have multiple input objects inside the same input file. You do not need to worry about batch mode for now.
+
+* On the root of your model, for each found key that is an object (defined with brackets `[{}]`), CobiGen will try to use it as an input object. For example, this could be a valid model:
+
+```JSON
+{
+  "path": example/path/employee.entity.ts
+  "classes": [
+    {
+      "identifier": "Employee",
+      "modifiers": [
+        "export"
+      ],
+      "decorators": [
+        {
+          "identifier": {
+            "name": "Entity",
+            "module": "typeorm"
+          },
+          "isCallExpression": true
+        }
+      ],
+      "properties": [
+        {
+          "identifier": "id",
+    ...
+    ...
+    ...
+    }]
+    "interfaces": [{
+        ...
+    }]
+}
+```
+
+For this model, CobiGen would use as input objects all the `classes` and `interfaces` defined. On the templates we would be able to do `model.classes[0].identifier` to get the class name. This depends on the language, therefore you can use any key.
+
+In order to test the server, you will have to deploy it on your local machine (localhost) and port 5000. If that port is already in use, you can deploy it on higher port values (5001, 5002...). Nevertheless, we explain <<testing_phase, later>> the testing process as you need to complete the next step before.
 
 IMPORTANT: Your server must accept one argument when running it. The argument will be the port number (as an integer). This will be used for CobiGen in order to handle blocked ports when deploying your server. Check this link:https://github.com/jdiazgon/cobigen-nest-server/blob/master/src/main.ts#L47[code] to see how we implemented that argument on our NestJS server.
 
@@ -65,7 +106,7 @@ image::images/howtos/todo-plugin/usePluginTemplate.png[Plugin CobiGen template,w
 
 image::images/howtos/todo-plugin/importPluginEclipse.png[Import plugin,width="450"link="images/howtos/todo-plugin/importPluginEclipse.png"]
 
-* Rename all the `todoplugin` folders, file and class names to `nameplugin`. In our case `nestplugin`. In Eclipse you can easily rename by right clicking and then refactor -> rename:
+* Rename all the `todoplugin` folders, files and class names to `nameplugin`. In our case `nestplugin`. In Eclipse you can easily rename by right clicking and then refactor -> rename:
 
 image::images/howtos/todo-plugin/renamePlugin.png[Rename plugin,width="450"link="images/howtos/todo-plugin/renamePlugin.png"]
 
@@ -73,9 +114,7 @@ NOTE: We recommend you to select all the checkboxes
 
 image::images/howtos/todo-plugin/renameCheckbox.png[Rename checkbox,width="450"link="images/howtos/todo-plugin/renameCheckbox.png"]
 
-The generation can create a full Angular 6 client using the devon4ng-application-template package located at workspaces/examples folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
-
-* Remember to change all the package, files and class names to use your plug-in name, in `src/main/java` and `src/main/test` The final result would be:
+* Remember to change all the package, files and class names to use your plug-in name, in `src/main/java` and `src/test/java` The final result would be:
 
 image::images/howtos/todo-plugin/packageStructure.png[Package structure,width="300"link="images/howtos/todo-plugin/packageStructure.png"]
 
@@ -100,15 +139,31 @@ image::images/howtos/todo-plugin/setPomProperties.png[Pom properties,width="550"
 
 ... server.version: You will specify here the server version that needs to be used. The _.exe_ file will be named as `{server.name}-{server.version}.exe`.
 
-... server.url: This will define from where to download the server. We *really* recommend you using NPM which is a package manager we know it works fine. We explain <<release_server, here>> how to release the server on NPM. This will download the _.exe_ file for Windows.
+... server.url: This will define from where to download the server. We *really* recommend you using NPM which is a package manager we know it works well. We explain <<release_server, here>> how to release the server on NPM. This will download the _.exe_ file for Windows.
 
-... server.url.linux: Same as before, but this should download the _.exe_ file for Linux systems. If you do not want to implement a Linux version of the plug-in, just use the same URL from MacOS or Windows.
+... server.url.linux: Same as before, but this should download the _.exe_ file for Linux systems. If you do not want to implement a Linux version of the plug-in, just use the same URL from Windows or MacOS.
 
 ... server.url.macos: Same as before, but this should download the _.exe_ file for MacOS systems. If you do not want to implement a MacOS version of the plug-in, just use the same URL from Linux or Windows.
 
+[[testing_phase]]
 == Testing phase
 
 Now that you have finished with the implementation of the server and the creation of a new CobiGen plug-in, we are going to explain how you can test that everything works fine:
+
+. Deploy the server on port 5000.
+. Run `mvn clean test` on the CobiGen-plugin or run the JUnit tests directly on Eclipse. 
+.. If the server and the plug-in are working properly, some tests will pass and other will fail (we need to tweak them).
+.. If every test fails, something is wrong in your code.
+
+. In order to fix the failing tests, go to `src/test/java`. The failing tests make use of sample input files that we added in sake of example:
+
+image::images/howtos/todo-plugin/failingTest.png[Pom properties,width="550"link="images/howtos/todo-plugin/failingTest.png"]
+
+Replace those files (on `src/test/resources/testadata/unittest/files/...`) with the correct input files for your server.
+
+== Releasing
+
+Now that you have already tested that everything works fine, we are going to explain how to release the server and the plug-in.
 
 [[release_server]]
 === Release the server
@@ -150,186 +205,42 @@ cobigen-template-server/
 * Finally, we have to publish to NPM. If you have never done it, you can follow this link:https://www.freecodecamp.org/news/how-to-make-a-beautiful-tiny-npm-package-and-publish-it-2881d4307f78/[tutorial]. Basically you need to login into NPM and run:
 
 [source, cmd]
+cd cobigen-todo-server/
 npm publish --access=public
+
+NOTE: To release Linux and MacOS versions of your plug-in, just add the suffix into the package name (e.g. `@devonfw/cobigen-todo-server-linux`)
 
 That's it! You have published the first version of your server. Now you just need to modify the properties defined on the pom of your CobiGen plug-in. Please see next section for more information.
 
-=== Finishing CobiGen plug-in
+=== Releasing CobiGen plug-in
 
-== Requisites
+* Change the pom.xml to define all the properties. You can see below a final example for `nest`:
 
-Install yarn globally:
+```XML
+...
+   <groupId>com.devonfw.cobigen</groupId>
+   <artifactId>nestplugin</artifactId>
+   <name>CobiGen - Nest Plug-in</name>
+   <version>1.0.0</version>
+   <packaging>jar</packaging>
+   <description>CobiGen - nest Plug-in</description>
+   
+   <properties>
+      <!-- External server properties -->
+      <plugin.name>${project.artifactId}</plugin.name>
+      <server.name>nestserver</server.name>
+      <server.version>1.0.0</server.version>
+      <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nest-server/-/cobigen-nest-server-${server.version}.tgz</server.url>
+      <server.url.linux>https\://registry.npmjs.org/@devonfw/cobigen-nest-server-linux/-/cobigen-nest-server-linux-${server.version}.tgz</server.url.linux>
+      <server.url.macos>https\://registry.npmjs.org/@devonfw/cobigen-nest-server-macos/-/cobigen-nest-server-macos-${server.version}.tgz</server.url.macos>
+...
+```
 
+* Deploy to Maven Central.
 
+== Define templates
 
-== Angular 6 workspace
+After following above steps, we now have a CobiGen plug-in that connects to a server (external process) which reads your input files, returns a model and is able to merge files.
 
-The output location of the generation can be defined editing the *__cobigen.properties__* file located at *__crud_angular_client_app/templates__* folder of the *__CobiGen_Templates__* project.
-
-image::images/howtos/angular4-gen/ng4gen_7.png[cobigen.properties file,width="450"link="images/howtos/angular4-gen/ng4gen_7.png"]
-
-By default, the output path would be into the __devon4ng-application-template__ folder at the root of the devon4j project parent folder: 
-
-----
-root/
- |- devon4ng-application-template/
- |- devon4j-project-parent/
-   |- core/
-   |- server/
-----
-
-However, this path can be changed, for example to __src/main/client__ folder of the devon4j project:
-
-[source, txt]
-relocate: ./src/main/client/${cwd}
-
-----
-root/
- |- devon4j-project-parent/
-   |- core/
-      |- src
-        |- main
-          |- client
-   |- server/
-----
-
-Once the output path is chosen, copy the files of link:https://github.com/devonfw/devon4ng-application-template[DEVON4NG-APPLICATION-TEMPLATE] repository into this output path. 
-
-== Install Node dependencies
-
-Open a terminal into devon4ng-application-template copied and just run the command:
-
-[source, bash]
-yarn
-
-This will start the installation of all node packages needed by the project into the node_modules folder.
-
-== Generating
-
-From an Eto object, right click, CobiGen -> Generate will show the CobiGen wizard relative to client generation:
-
-image::images/howtos/angular4-gen/ng4gen_1.png[CobiGen Client Generation Wizard,width="450"link="images/howtos/angular4-gen/ng4gen_1.png"]
-
-Check all the increments realtive to Angular:
-
-[NOTE]
-=======
-The Angular devon4j URL increment is only needed for the first generations however, checking it again on next generation will not cause any problem.
-=======
-
-As we done on other generations, we click Next to choose which fields to include at the generation or simply clicking Finish will start the generation.
-
-image::images/howtos/angular4-gen/ng4gen_3.png[CobiGen Client Generation Wizard 3,width="450"link="images/howtos/angular4-gen/ng4gen_3.png"]
-
-== Routing
-
-Due to the nature of the TypeScript merger, currently is not possible to merge properly the array of paths objects of the routings at app.routing.ts file so, this modification should be done by hand on this file. However, the import related to the new component generated is added.
-
-This would be the generated `app-routing.module` file:
-[source, ts]
-import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { AuthGuard } from './shared/security/auth-guard.service';
-import { InitialPageComponent } from './initial-page/initial-page.component';
-import { HomeComponent } from './home/home.component';
-import { SampleDataGridComponent } from './sampledata/sampledata-grid/sampledata-grid.component';
-//Routing array
-const appRoutes: Routes = [{
-    path: 'login',
-    component: LoginComponent
-}, {
-    path: 'home',
-    component: HomeComponent,
-    canActivate: [AuthGuard],
-    children: [{
-        path: '',
-        redirectTo: '/home/initialPage',
-        pathMatch: 'full',
-        canActivate: [AuthGuard]
-    }, {
-        path: 'initialPage',
-        component: InitialPageComponent,
-        canActivate: [AuthGuard]
-    }]
-}, {
-    path: '**',
-    redirectTo: '/login',
-    pathMatch: 'full'
-}];
-export const routing = RouterModule.forRoot(appRoutes);
-
-Adding the following into the children object of `home`, will add into the side menu the entry for the component generated:
-
-[source, ts]
-{
-    path: 'sampleData',
-    component: SampleDataGridComponent,
-    canActivate: [AuthGuard],
-} 
-
-[source, ts]
-import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { AuthGuard } from './shared/security/auth-guard.service';
-import { InitialPageComponent } from './initial-page/initial-page.component';
-import { HomeComponent } from './home/home.component';
-import { SampleDataGridComponent } from './sampledata/sampledata-grid/sampledata-grid.component';
-//Routing array
-const appRoutes: Routes = [{
-    path: 'login',
-    component: LoginComponent
-}, {
-    path: 'home',
-    component: HomeComponent,
-    canActivate: [AuthGuard],
-    children: [{
-        path: '',
-        redirectTo: '/home/initialPage',
-        pathMatch: 'full',
-        canActivate: [AuthGuard]
-    }, {
-        path: 'initialPage',
-        component: InitialPageComponent,
-        canActivate: [AuthGuard]
-    }, {
-        path: 'sampleData',
-        component: SampleDataGridComponent,
-        canActivate: [AuthGuard],
-    }]
-}, {
-    path: '**',
-    redirectTo: '/login',
-    pathMatch: 'full'
-}];
-export const routing = RouterModule.forRoot(appRoutes);
-
-image::images/howtos/angular4-gen/ng4gen_6.png[APP SideMenu,width="450"link="images/howtos/angular4-gen/ng4gen_6.png"]
-
-== JWT Authentication
-
-If you are using a back end server with JWT Authentication (there is a sample in workspaces/folder called *sampleJwt*) you have to specify the Angular application to use this kind of authentication.
-
-By default the variable is set to ‘csrf’ but you can change it to JWT by going to the link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts#L10[Enviroment.ts] and setting `security: 'jwt'`.
-
-== Running
-
-First of all, run your devon4j java server by right clicking over SpringBootApp.java Run As -> Java Application. This will start to run the SpringBoot server. Once you see the Started SpringBoot in XX seconds, the backend is running.
-
-image::images/howtos/angular4-gen/ng4gen_4.png[Starting SpringBoot,width="450"link="images/howtos/angular4-gen/ng4gen_4.png"]
-
-Once the the server is running, open a Devon console at the output directory defined previously and run:
-
-[source, cmd]
-ng serve --open
-
-This will run the Angular 6 application at:
-
-[source, URL]
-http://localhost:4200
-
-image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 6 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
-
-Once finished, the browser will open automatically at the previous localhost URL showing the Angular 6 application, using the credentials set at the devon4j java server you will be able to access.
-
-
+However, we need a key component for our plug-in to be useful. We need to define templates.
 
