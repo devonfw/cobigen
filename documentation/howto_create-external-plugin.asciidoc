@@ -11,7 +11,7 @@ Creating a new plug-in means:
 * Create a human readable model that can be used to generate templates (by retrieving properties from the model).
 * Enable merging files, so that user's code does not get removed.
 
-For the Java plug-in it was relatively easy. As you are inside the Java world, you can use multiple utilities libraries in order to get the link:https://en.wikipedia.org/wiki/Abstract_syntax_tree[AST] or to merge Java code. With this new feature, we wanted that behaviour to be possible for any programming language.
+For the Java plug-in it was relatively easy. As you are inside the Java world, you can use multiple utilities or libraries in order to get the link:https://en.wikipedia.org/wiki/Abstract_syntax_tree[AST] or to merge Java code. With this new feature, we wanted that behaviour to be possible for any programming language.
 
 == General intuition
 
@@ -37,7 +37,7 @@ The creation of a new plug-in consists mainly in three steps:
 
 * Creation of a CobiGen plug-in.
 
-* Definition of templates.
+* Creation of templates.
 
 === Server (external process)
 
@@ -236,7 +236,7 @@ That's it! You have published the first version of your server. Now you just nee
 
 * Deploy to Maven Central.
 
-== Define templates
+== Templates creation
 
 After following above steps, we now have a CobiGen plug-in that connects to a server (external process) which reads your input files, returns a model and is able to merge files.
 
@@ -308,5 +308,5 @@ image::images/howtos/todo-plugin/runAsArgs.png[Run version,width="450"link="imag
 ```
 c. If that worked, now you can send any arguments to the CLI in order to generate with your templates. Please follow link:https://github.com/devonfw/tools-cobigen/wiki/howto_Cobigen-CLI-generation[this guide] that explains all the CLI commands.
 
-2. Modify the already present JUnit tests: They test the generation of templates from multiple plug-ins, you can add your own files.
+2. Modify the already present JUnit tests: They test the generation of templates from multiple plug-ins, you can add your own tests and input files.
 
