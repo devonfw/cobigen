@@ -55,7 +55,7 @@ When implementing service `getInputModel` which returns a model from the input f
 +
 ```JSON
 {
-  "path": example/path/employee.entity.ts
+  "path": "example/path/employee.entity.ts"
   "classes": [
     {
       "identifier": "Employee",
