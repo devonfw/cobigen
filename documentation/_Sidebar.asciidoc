@@ -13,6 +13,7 @@
 * link:howto_update_CobiGen[Update CobiGen]
 * link:howto_devon4net[.Net generation]
 * link:howto_Release-creation[Release creation]
+* link:howto_create-external-plugin.asciidoc[External plugin creation]
 
 === Configuration
 * link:cobigen-core_configuration[CobiGen Configuration]
