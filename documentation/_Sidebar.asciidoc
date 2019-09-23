@@ -8,7 +8,7 @@
 ==== HowTo's
 * link:howto_angular-client-generation[Angular Client Generation]
 * link:howto_ionic-client-generation[Ionic Client Generation]
-* link:-client-generatiohowto_EAn[Enterprise Architect UML diagram Generation]
+* link:howto_EA-client-generation[Enterprise Architect UML diagram Generation]
 * link:howto_Cobigen-CLI-generation[Cobigen CLI Manual]
 * link:howto_update_CobiGen[Update CobiGen]
 * link:howto_devon4net[.Net generation]
