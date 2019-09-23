@@ -23,7 +23,7 @@ Basically, when a new input file was sent to CobiGen, it called the input reader
 
 Afterwards, the template engine generated a new file which had to be merged with the original one. All this code was implemented in Java.
 
-On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.Net, Node.js, Python...) it just needs to implement a REST API defined here link:https://github.com/jdiazgon/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
+On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.Net, Node.js, Python...) it just needs to implement a REST API defined here link:https://github.com/devonfw/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
 
 image::images/howtos/todo-plugin/newCobiGen.png[New CobiGen,width="450"link="images/howtos/todo-plugin/newCobiGen.png"]
 
@@ -41,9 +41,9 @@ The creation of a new plug-in consists mainly in three steps:
 
 === Server (external process)
 
-The server can be programmed in any language that is able to implement REST services endpoints. The API that needs to implement is defined with link:https://github.com/jdiazgon/cobigen-template-plugin/blob/master/APIContract.yml[this contract]. You can paste the content to https://editor.swagger.io/ for a better look. 
+The server can be programmed in any language that is able to implement REST services endpoints. The API that needs to implement is defined with link:https://github.com/devonfw/cobigen-template-plugin/blob/master/APIContract.yml[this contract]. You can paste the content to https://editor.swagger.io/ for a better look. 
 
-We have already created a NestJS server that implements the API defined above. You can find the code link:https://github.com/jdiazgon/cobigen-nest-server/blob/master/src/processmanagement/processmanagement.controller.ts[here] which you can use as an example.
+We have already created a NestJS server that implements the API defined above. You can find the code link:https://github.com/devonfw/cobigen-devon4node-server/blob/master/cobigen-nest-server/src/processmanagement/processmanagement.controller.ts[here] which you can use as an example.
 
 As you can see, the endpoints have the following naming convention: `processmanagement/todoplugin/nameOfService` where you will have to change `todo` to your plug-in name (e.g. rustplugin, pyplugin, goplugin...)
 
@@ -84,17 +84,17 @@ When implementing service `getInputModel` which returns a model from the input f
 }
 ```
 
-For this model, CobiGen would use as input objects all the `classes` and `interfaces` defined. On the templates we would be able to do `model.classes[0].identifier` to get the class name. This depends on the language, therefore you can use any key.
+For this model, CobiGen would use as input objects all the `classes` and `interfaces` defined. On the templates we would be able to do `model.classes[0].identifier` to get the class name. These input objects depend on the language, therefore you can use any key.
 
 In order to test the server, you will have to deploy it on your local machine (localhost), default port is 5000. If that port is already in use, you can deploy it on higher port values (5001, 5002...). Nevertheless, we explain <<testing_phase, later>> the testing process as you need to complete the next step before.
 
-IMPORTANT: Your server must accept one argument when running it. The argument will be the port number (as an integer). This will be used for CobiGen in order to handle blocked ports when deploying your server. Check this link:https://github.com/jdiazgon/cobigen-nest-server/blob/master/src/main.ts#L47[code] to see how we implemented that argument on our NestJS server.
+IMPORTANT: Your server must accept one argument when running it. The argument will be the port number (as an integer). This will be used for CobiGen in order to handle blocked ports when deploying your server. Check this link:https://github.com/devonfw/cobigen-devon4node-server/blob/master/cobigen-nest-server/src/main.ts#L47[code] to see how we implemented that argument on our NestJS server.
 
 === CobiGen plug-in
 
 You will have to create a new CobiGen plug-in that connects to the server. But *do not worry*, you will not have to implement anything new. We have a CobiGen plug-in template available, the only changes needed are renaming files and setting some properties on the pom.xml. Please follow these steps:
 
-* Get the CobiGen plug-in template from link:https://github.com/jdiazgon/cobigen-template-plugin[here]. It is a template repository (new GitHub feature), so you can click on "Use this template" as shown below:
+* Get the CobiGen plug-in template from link:https://github.com/devonfw/cobigen-template-plugin[here]. It is a template repository (new GitHub feature), so you can click on "Use this template" as shown below:
 +
 image::images/howtos/todo-plugin/usePluginTemplate.png[Plugin CobiGen template,width="550"link="images/howtos/todo-plugin/usePluginTemplate.png"]
 
@@ -112,7 +112,7 @@ NOTE: We recommend you to select all the checkboxes
 
 image::images/howtos/todo-plugin/renameCheckbox.png[Rename checkbox,width="450"link="images/howtos/todo-plugin/renameCheckbox.png"]
 
-* Remember to change all the package, files and class names to use your plug-in name, in `src/main/java` and `src/test/java` The final result would be:
+* Remember to change in `src/main/java` and `src/test/java` all the package, files and class names to use your plug-in name. The final result would be:
 +
 image::images/howtos/todo-plugin/packageStructure.png[Package structure,width="300"link="images/howtos/todo-plugin/packageStructure.png"]
 
@@ -168,7 +168,7 @@ Now that you have already tested that everything works fine, we are going to exp
 
 We are going to use link:https://www.npmjs.com/[NPM] to store the executable of our server. Even though NPM is a package manager for JavaScript, it can be used for our purpose.
 
-* Get the CobiGen server template from link:https://github.com/jdiazgon/cobigen-template-server[here]. It is a template repository (new GitHub feature), so you can click on "Use this template" as shown below:
+* Get the CobiGen server template from link:https://github.com/devonfw/cobigen-template-server[here]. It is a template repository (new GitHub feature), so you can click on "Use this template" as shown below:
 +
 image::images/howtos/todo-plugin/useServerTemplate.png[Server CobiGen template,width="550"link="images/howtos/todo-plugin/useServerTemplate.png"]
 
@@ -197,7 +197,7 @@ cobigen-template-server/
  |- cobigen-todo-server/
    |- ExternalProcessContract.yml
    |- package.json
-   |- todoserver-1.0.1.exe
+   |- todoserver-1.0.0.exe
 ----
 
 * Finally, we have to publish to NPM. If you have never done it, you can follow this link:https://www.freecodecamp.org/news/how-to-make-a-beautiful-tiny-npm-package-and-publish-it-2881d4307f78/[tutorial]. Basically you need to login into NPM and run:
@@ -267,7 +267,7 @@ image::images/howtos/todo-plugin/templatesInside.png[Templates project,width="45
   </trigger>
 ```
 
-* Change `templateFolder` to your templates folder name. `id` you can use any, but it is recommendable to use the same as the template folder name. `type` is the `TRIGGER_TYPE` we defined above on the `NestPluginActivator` class. On `matcher` just change the `value`. `([^\.]+).entity.ts` means that we will only accept inpu files that contain "anyString.entity.ts". This improves usability, so that users only generate using the correct input files. You will find more info about `variableAssignment` link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration#variableassignment-node[here].
+* Change `templateFolder` to your templates folder name. `id` you can use any, but it is recommendable to use the same as the template folder name. `type` is the `TRIGGER_TYPE` we defined above on the `NestPluginActivator` class. On `matcher` just change the `value`: `([^\.]+).entity.ts` means that we will only accept input files that contain "anyString.entity.ts". This improves usability, so that users only generate using the correct input files. You will find more info about `variableAssignment` link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration#variableassignment-node[here].
 
 * Finally, is time to configure `templates.xml`. It is needed for organizing templates into increments, please take a look into this link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration#templates-configuration[documentation].
 
@@ -289,7 +289,7 @@ image::images/howtos/todo-plugin/cliPom.png[CLI pom,width="450"link="images/howt
 
 1. Using Eclipse run as:
 +
-a. Inside Eclipse, you can run the CobiGen-cli as a Java application. Right click class `CobiGenCLI.java` -> run as -> run configurations... and create a new Java application as shown below:
+a. Inside Eclipse, you can run the CobiGen-CLI as a Java application. Right click class `CobiGenCLI.java` -> run as -> run configurations... and create a new Java application as shown below:
 +
 
 image::images/howtos/todo-plugin/runConfigurations.png[Create configuration,width="450"link="images/howtos/todo-plugin/runConfigurations.png"]
