@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
@@ -84,6 +85,11 @@ public class CobiGenUtils {
     public List<Class<?>> getUtilClasses() {
         return utilClasses;
     }
+    
+    /**
+     * Whether the template dependency is given. 
+     */
+    private boolean templateDependencyIsGiven = false;
 
     /**
      * Resolves all utilities classes, which have been defined in the templates jar.
@@ -179,25 +185,23 @@ public class CobiGenUtils {
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
-        getTemplates();
-
         CobiGen cg = null;
-        if (templatesJar != null) {
-            try {
-                registerPlugins();
-                cg = CobiGenFactory.create(templatesJar.toURI());
+        try {
+            registerPlugins();
+            getTemplatesJar(false);
+            getTemplates();
+            cg = CobiGenFactory.create(templatesJar.toURI());
+            return cg;
 
-                return cg;
-
-            } catch (InvalidConfigurationException e) {
-                // if the context configuration is not valid
-                logger.error("Invalid configuration of context ");
-            } catch (IOException e) {
-                // If I/O operation failed then it will throw exception
-                logger.error("I/O operation is failed ");
-            }
-
+        } catch (InvalidConfigurationException e) {
+            // if the context configuration is not valid
+            logger.error("Invalid configuration of context ");
+        } catch (IOException e) {
+            // If I/O operation failed then it will throw exception
+            logger.error("I/O operation is failed ");
         }
+
+        
         return cg;
 
     }
@@ -217,6 +221,7 @@ public class CobiGenUtils {
         }
         return utilClasses;
     }
+    
 
     /**
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
@@ -333,6 +338,13 @@ public class CobiGenUtils {
                 // Run projected addURL method to add JAR to class path
                 method.setAccessible(true);
                 method.invoke(cl, new Object[] { jar.toURI().toURL() });
+                
+                // Setting the template jar path
+                if (checkTemplateDepencency(jarToAdd))
+                {
+                    jarsDirectory = new File(jarToAdd).getParentFile();
+                    templateDependencyIsGiven = true;
+                }
             }
         } catch (MalformedURLException e) {
             logger.error("Not able to form URL of jar file.", e);
@@ -353,11 +365,12 @@ public class CobiGenUtils {
      */
     public File getTemplatesJar(boolean isSource) {
         File jarFileDir = jarsDirectory.getAbsoluteFile();
-
-        // We first check if we already have the CobiGen_Templates jar downloaded
         if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
             try {
-                TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
+                if (!templateDependencyIsGiven) {
+                    TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
+                } 
+
             } catch (MalformedURLException e) {
                 // if a path of one of the class path entries is not a valid URL
                 logger.error("Problem while downloading the templates, URL not valid. This is a bug", e);
@@ -458,6 +471,11 @@ public class CobiGenUtils {
             input = InputPreProcessor.process(cg, inputFile, null);
         }
         return input;
+    }
+
+    private boolean checkTemplateDepencency(String jarToAdd)
+    {
+        return jarToAdd.contains(TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID);
     }
 
 }
