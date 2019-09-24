@@ -241,6 +241,7 @@ def givePermissionsToExternalProcesses() {
 	for (int i = 0; i < foundFiles.size(); i++) {
 		sh "chmod 777 /home/pl/.cobigen/externalservers/${foundFiles[i]}"
 	}
+	sh "rm -rf /home/pl/.cobigen/externalservers/"
 
 }
 
