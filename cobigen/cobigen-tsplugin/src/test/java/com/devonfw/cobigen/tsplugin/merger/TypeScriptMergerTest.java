@@ -154,8 +154,7 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents.contains("Ñ")).isTrue();
 
         baseFile = new File(testFileRootPath + "baseFile_encoding_ISO-8859-1.ts");
-        mergedContents = "";
-        assertThat(mergedContents.contains("Ñ"));
+        assertThat(mergedContents.contains("Ñ")).isTrue();
 
     }
 
