@@ -29,7 +29,7 @@
       <version>5.3.4</version>
     </dependency>
     <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
+      <groupId>com.devonfw.cobigen</groupId> 
       <artifactId>core</artifactId>
       <version>5.4.0-SNAPSHOT</version>
     </dependency>
