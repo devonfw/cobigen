@@ -85,9 +85,9 @@ public class CobiGenUtils {
     public List<Class<?>> getUtilClasses() {
         return utilClasses;
     }
-    
+
     /**
-     * Whether the template dependency is given. 
+     * Whether the template dependency is given.
      */
     private boolean templateDependencyIsGiven = false;
 
@@ -201,7 +201,6 @@ public class CobiGenUtils {
             logger.error("I/O operation is failed ");
         }
 
-        
         return cg;
 
     }
@@ -221,7 +220,6 @@ public class CobiGenUtils {
         }
         return utilClasses;
     }
-    
 
     /**
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
@@ -338,10 +336,9 @@ public class CobiGenUtils {
                 // Run projected addURL method to add JAR to class path
                 method.setAccessible(true);
                 method.invoke(cl, new Object[] { jar.toURI().toURL() });
-                
+
                 // Setting the template jar path
-                if (checkTemplateDepencency(jarToAdd))
-                {
+                if (checkTemplateDepencency(jarToAdd)) {
                     jarsDirectory = new File(jarToAdd).getParentFile();
                     templateDependencyIsGiven = true;
                 }
@@ -369,7 +366,7 @@ public class CobiGenUtils {
             try {
                 if (!templateDependencyIsGiven) {
                     TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
-                } 
+                }
 
             } catch (MalformedURLException e) {
                 // if a path of one of the class path entries is not a valid URL
@@ -473,8 +470,7 @@ public class CobiGenUtils {
         return input;
     }
 
-    private boolean checkTemplateDepencency(String jarToAdd)
-    {
+    private boolean checkTemplateDepencency(String jarToAdd) {
         return jarToAdd.contains(TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID);
     }
 
