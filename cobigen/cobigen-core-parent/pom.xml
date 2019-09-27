@@ -12,7 +12,7 @@
   </parent>
 
   <properties>
-    <cobigencore.version>5.3.5-SNAPSHOT</cobigencore.version>
+    <cobigencore.version>5.3.5</cobigencore.version>
   </properties>
 
   <modules>
