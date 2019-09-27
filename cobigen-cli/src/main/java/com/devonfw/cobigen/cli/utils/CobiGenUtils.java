@@ -236,13 +236,7 @@ public class CobiGenUtils {
 
             File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
             if (!cpFile.exists()) {
-                try {
-                    buildCobiGenDependencies(pomFile);
-                } catch (IOException e) {
-                    logger.error(
-                        "Not properly executes a Maven class path build command which will download all the transitive dependencies",
-                        e);
-                }
+                buildCobiGenDependencies(pomFile);
             }
 
             // Read classPath.txt file and add to the class path all dependencies
@@ -265,9 +259,8 @@ public class CobiGenUtils {
      * for the CLI
      * @param pomFile
      *            POM file that defines the needed CobiGen dependencies to build
-     * @throws IOException
      */
-    private void buildCobiGenDependencies(File pomFile) throws IOException {
+    private void buildCobiGenDependencies(File pomFile) {
         logger.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
@@ -470,6 +463,12 @@ public class CobiGenUtils {
         return input;
     }
 
+    /**
+     * Checks whether the current jar is CobiGen templates
+     * @param jarToAdd
+     *            jar that we check
+     * @return true if jar is CobiGen templates
+     */
     private boolean checkTemplateDepencency(String jarToAdd) {
         return jarToAdd.contains(TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID);
     }
