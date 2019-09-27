@@ -53,8 +53,8 @@ import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 
 /**
- * Utilities class for CobiGen related operations. For instance, creates a new CobiGen instance and registers
- * all the plug-ins
+ * Utilities class for CobiGen related operations. For instance, it creates a new CobiGen instance and
+ * registers all the plug-ins
  */
 public class CobiGenUtils {
 
