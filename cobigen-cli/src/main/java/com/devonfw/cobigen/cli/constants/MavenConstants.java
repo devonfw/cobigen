@@ -20,4 +20,9 @@ public class MavenConstants {
      */
     public static String POM = "pom.xml";
 
+    /**
+     * GroupId of CobiGen on Maven Central
+     */
+    public static final String COBIGEN_GROUPID = "com.devonfw.cobigen";
+
 }
