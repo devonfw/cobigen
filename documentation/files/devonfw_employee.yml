@@ -1,0 +1,94 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/server/services/rest'
+    description: Just some data
+info:
+  title: devonfw Example
+  description: Example of a API definition
+  version: 1.0.0
+  x-rootpackage: com.devonfw.poc.jwtsample
+paths:
+  /employeemanagement/v1/employee/{employeeId}:
+    get:
+      operationId: findEmployee
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 50
+      responses:
+        '200':
+          description: Any
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Not found
+  /employeemanagement/v1/employee/{example}:
+    get:
+      operationId: findEmployee
+      parameters:
+        - name: example
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 10
+            maximum: 200
+      responses:
+        '200':
+          description: Any
+  /employeemanagement/v1/employee/:
+    post:
+      responses:
+        '200':
+          description: Any
+      requestBody:
+        $ref: '#/components/requestBodies/EmployeeData'
+      tags:
+       - searchCriteria
+components:
+    schemas:
+        Employee:
+          x-component: employeemanagement
+          description: Entity definiton of Employee
+          type: object
+          properties:
+            employeeId:
+              type: integer
+              format: int64
+              uniqueItems: true            
+            name:
+              type: string
+              maxLength: 30
+              minLength: 3
+              uniqueItems: true
+            surname :
+              type: string
+              maxLength: 100
+              minLength: 3
+              uniqueItems: true
+            email:
+              type: string
+              maxLength: 100
+              minLength: 3
+              uniqueItems: true              
+          required:
+            - employeeId
+    requestBodies:
+        EmployeeData:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          required: true
+ 
