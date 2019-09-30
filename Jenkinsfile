@@ -45,7 +45,7 @@ node {
 				if(justOneFolderChanged("cobigen-templates/")) {
 					echo "Just Templates changed!"
 					root = "cobigen-templates"
-				} else if(justOneFolderChanged("cobigen-cli/")) {
+				} else if(true) {
 					root = "cobigen-cli"
 				} else {
 					root = ""
@@ -84,7 +84,7 @@ node {
 									// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
 									wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
 										sh 'export SWT_GTK3=0' // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
-										sh "mvn -s ${MAVEN_SETTINGS} clean install -U -Pp2-build-mars,p2-build-stable"
+										sh "mvn -s ${MAVEN_SETTINGS} clean install -U -Pp2-build-mars,p2-build-stable -Dmaven.surefire.debug='-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE'"
 									}
 								} else if (origin_branch == 'dev_eclipseplugin') {
 										sh "mvn -s ${MAVEN_SETTINGS} clean package -U -Pp2-build-mars,p2-build-ci"
