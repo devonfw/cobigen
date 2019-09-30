@@ -29,7 +29,6 @@ import java.util.Map;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
@@ -40,8 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
@@ -50,7 +51,7 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
-import com.devonfw.cobigen.maven.validation.InputPreProcessor;
+import com.google.common.base.Charsets;
 
 /**
  * Utilities class for CobiGen related operations. For instance, it creates a new CobiGen instance and
@@ -446,21 +447,50 @@ public class CobiGenUtils {
      * @param isJavaInput
      *            true if input is Java code
      * @return valid cobiGen input
-     * @throws MojoFailureException
-     *             throws {@link MojoFailureException} when the input file could not be converted to a valid
+     * @throws InputReaderException
+     *             throws {@link InputReaderException} when the input file could not be converted to a valid
      *             CobiGen input
      */
     public static Object getValidCobiGenInput(CobiGen cg, File inputFile, Boolean isJavaInput)
-        throws MojoFailureException {
+        throws InputReaderException {
         Object input;
         // If it is a Java file, we need the class loader
         if (isJavaInput) {
             JavaContext context = ParsingUtils.getJavaContext(inputFile, ParsingUtils.getProjectRoot(inputFile));
-            input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
+            input = process(cg, inputFile, context.getClassLoader());
         } else {
-            input = InputPreProcessor.process(cg, inputFile, null);
+            input = process(cg, inputFile, null);
         }
         return input;
+    }
+
+    /**
+     * Processes the given file to be converted into any CobiGen valid input format
+     * @param file
+     *            {@link File} converted into any CobiGen valid input format
+     * @param cl
+     *            {@link ClassLoader} to be used, when considering Java-related inputs
+     * @param inputInterpreter
+     *            parse cobiGen compliant input from the file
+     * @throws InputReaderException
+     *             if the input retrieval did not result in a valid CobiGen input
+     * @return a CobiGen valid input
+     */
+    public static Object process(InputInterpreter inputInterpreter, File file, ClassLoader cl)
+        throws InputReaderException {
+        if (!file.exists() || !file.canRead()) {
+            throw new InputReaderException("Could not read input file " + file.getAbsolutePath());
+        }
+        Object input = null;
+        try {
+            input = inputInterpreter.read(Paths.get(file.toURI()), Charsets.UTF_8, cl);
+        } catch (InputReaderException e) {
+            // nothing
+        }
+        if (input != null) {
+            return input;
+        }
+        throw new InputReaderException("The file " + file.getAbsolutePath() + " is not a valid input for CobiGen.");
     }
 
     /**
