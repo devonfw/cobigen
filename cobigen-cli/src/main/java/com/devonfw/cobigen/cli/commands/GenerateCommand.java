@@ -14,11 +14,11 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.text.similarity.JaccardDistance;
-import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
@@ -186,7 +186,7 @@ public class GenerateCommand implements Callable<Integer> {
                         : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
                 }
 
-            } catch (MojoFailureException e) {
+            } catch (InputReaderException e) {
                 logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
 
             }
@@ -314,7 +314,7 @@ public class GenerateCommand implements Callable<Integer> {
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             }
             ValidationUtils.checkGenerationReport(report);
-        } catch (MojoFailureException e) {
+        } catch (InputReaderException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
 
         }
@@ -325,14 +325,14 @@ public class GenerateCommand implements Callable<Integer> {
      * @param inputProject
      *            project where the code will be generated to
      */
-	private void setOutputRootPath(File inputProject) {
-		logger.info("As you did not specify where the code will be generated, we will use the project of your current"
-	          + " Input file.");
+    private void setOutputRootPath(File inputProject) {
+        logger.info("As you did not specify where the code will be generated, we will use the project of your current"
+            + " Input file.");
 
-		 logger.debug("Generating to: " + inputProject.getAbsolutePath());
+        logger.debug("Generating to: " + inputProject.getAbsolutePath());
 
-		outputRootPath = inputProject;
-	}
+        outputRootPath = inputProject;
+    }
 
     /**
      * Method that handles the increments selection and prints some messages to the console
@@ -346,15 +346,15 @@ public class GenerateCommand implements Callable<Integer> {
      * @return The final increments that will be used for generation
      */
     @SuppressWarnings("unchecked")
-	private List<? extends GenerableArtifact> generableArtifactSelection(ArrayList<String> userInput,
+    private List<? extends GenerableArtifact> generableArtifactSelection(ArrayList<String> userInput,
         List<? extends GenerableArtifact> matching, Class<?> c) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         List<GenerableArtifact> userSelection = new ArrayList<>();
-        String artifactType = isIncrements ? "increment" : "template";       
+        String artifactType = isIncrements ? "increment" : "template";
         if (userInput == null || userInput.size() < 1) {
             // Print all matching generable artifacts
-        	printFoundArtifacts(new ArrayList<GenerableArtifact>(matching), isIncrements, artifactType);
+            printFoundArtifacts(new ArrayList<GenerableArtifact>(matching), isIncrements, artifactType);
 
             userInput = new ArrayList<>();
             for (String userArtifact : getUserInput().split(",")) {
@@ -421,12 +421,13 @@ public class GenerateCommand implements Callable<Integer> {
                     logger.info("Exact match found: " + artifactDescription + ".");
                     userSelection.add(possibleArtifacts.get(0));
                     return userSelection;
-                }else if(possibleArtifacts.size()<1) {
-                	logger.info("No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
-                       
-                        System.exit(1);
+                } else if (possibleArtifacts.size() < 1) {
+                    logger.info(
+                        "No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
+
+                    System.exit(1);
                 }
-                
+
                 logger.info("Please enter the number(s) of " + artifactType
                     + "(s) that you want to generate separated by comma.");
 
