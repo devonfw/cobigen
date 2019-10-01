@@ -60,7 +60,6 @@ public class GenerateCommand implements Callable<Integer> {
     File outputRootPath = null;
 
     /**
-     * If this options is enabled, we will print also debug messages
      */
     @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
     boolean verbose;
@@ -452,13 +451,13 @@ public class GenerateCommand implements Callable<Integer> {
      *            true if we want to generate increments
      * @param artifactType
      *            type of artifact (increment or template)
-     * @param userInput
-     *            provide of userincrementInput
+     * @param userInputIncrements
+     *            user selected increments
      *
      */
     private void printFoundArtifacts(ArrayList<GenerableArtifact> possibleArtifacts, Boolean isIncrements,
-        String artifactType, ArrayList<String> userInput) {
-        if (userInput != null) {
+        String artifactType, ArrayList<String> userInputIncrements) {
+        if (userInputIncrements != null) {
             logger.info("Here are the " + artifactType + "s that may match your search.");
         }
         logger.info("(0) " + "All");
