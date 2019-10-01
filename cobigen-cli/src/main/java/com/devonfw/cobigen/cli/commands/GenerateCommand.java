@@ -148,6 +148,7 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * For each input file it is going to get its matching templates or increments and then performs an
      * intersection between all of them, so that the user gets only the templates or increments that will work
+     *
      * @param cg
      *            CobiGen initialized instance
      * @param c
@@ -198,6 +199,7 @@ public class GenerateCommand implements Callable<Integer> {
 
     /**
      * Casting class, from List<subclasses of GenerableArtifact> to List<IncrementTo>
+     *
      * @param matching
      *            List containing instances of subclasses of GenerableArtifact
      * @return casted list containing instances of subclasses of IncrementTo
@@ -209,6 +211,7 @@ public class GenerateCommand implements Callable<Integer> {
 
     /**
      * Casting class, from List<subclasses of GenerableArtifact> to List<TemplateTo>
+     *
      * @param matching
      *            List containing instances of subclasses of GenerableArtifact
      * @return casted list containing instances of subclasses of TemplateTo
@@ -288,7 +291,8 @@ public class GenerateCommand implements Callable<Integer> {
             }
 
             if (outputRootPath == null) {
-                // If user did not specify the output path of the generated files, we can use the current
+                // If user did not specify the output path of the generated files, we can use
+                // the current
                 // project folder
                 setOutputRootPath(inputProject);
             }
@@ -322,22 +326,23 @@ public class GenerateCommand implements Callable<Integer> {
 
     /**
      * Sets the directory where the code will be generated to
+     *
      * @param inputProject
      *            project where the code will be generated to
      */
-	private void setOutputRootPath(File inputProject) {
-		logger.info("As you did not specify where the code will be generated, we will use the project of your current"
-	          + " Input file.");
+    private void setOutputRootPath(File inputProject) {
+        logger.info("As you did not specify where the code will be generated, we will use the project of your current"
+            + " Input file.");
 
-		 logger.debug("Generating to: " + inputProject.getAbsolutePath());
+        logger.debug("Generating to: " + inputProject.getAbsolutePath());
 
-		outputRootPath = inputProject;
-	}
+        outputRootPath = inputProject;
+    }
 
     /**
      * Method that handles the increments selection and prints some messages to the console
      *
-     * @param userInput
+     * @param userInputIncrements
      *            user selected increments
      * @param matching
      *            all the increments that match the current input file
@@ -346,25 +351,26 @@ public class GenerateCommand implements Callable<Integer> {
      * @return The final increments that will be used for generation
      */
     @SuppressWarnings("unchecked")
-	private List<? extends GenerableArtifact> generableArtifactSelection(ArrayList<String> userInput,
+    private List<? extends GenerableArtifact> generableArtifactSelection(ArrayList<String> userInputIncrements,
         List<? extends GenerableArtifact> matching, Class<?> c) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         List<GenerableArtifact> userSelection = new ArrayList<>();
-        String artifactType = isIncrements ? "increment" : "template";       
-        if (userInput == null || userInput.size() < 1) {
-            // Print all matching generable artifacts
-        	printFoundArtifacts(new ArrayList<GenerableArtifact>(matching), isIncrements, artifactType);
+        String artifactType = isIncrements ? "increment" : "template";
+        if (userInputIncrements == null || userInputIncrements.size() < 1) {
+            // Print all matching generable artifacts add new arg userInputIncrements
+            printFoundArtifacts(new ArrayList<GenerableArtifact>(matching), isIncrements, artifactType,
+                userInputIncrements);
 
-            userInput = new ArrayList<>();
+            userInputIncrements = new ArrayList<>();
             for (String userArtifact : getUserInput().split(",")) {
-                userInput.add(userArtifact);
+                userInputIncrements.add(userArtifact);
             }
         }
 
         // Print user selected increments
-        for (int j = 0; j < userInput.size(); j++) {
-            String currentSelectedArtifact = userInput.get(j);
+        for (int j = 0; j < userInputIncrements.size(); j++) {
+            String currentSelectedArtifact = userInputIncrements.get(j);
 
             String digitMatch = "\\d+";
             // If given generable artifact is Integer
@@ -413,7 +419,7 @@ public class GenerateCommand implements Callable<Integer> {
                 }
 
                 if (possibleArtifacts.size() > 1) {
-                    printFoundArtifacts(possibleArtifacts, isIncrements, artifactType);
+                    printFoundArtifacts(possibleArtifacts, isIncrements, artifactType, userInputIncrements);
                 } else if (possibleArtifacts.size() == 1) {
                     String artifactDescription =
                         isIncrements ? ((IncrementTo) possibleArtifacts.get(0)).getDescription()
@@ -421,18 +427,18 @@ public class GenerateCommand implements Callable<Integer> {
                     logger.info("Exact match found: " + artifactDescription + ".");
                     userSelection.add(possibleArtifacts.get(0));
                     return userSelection;
-                }else if(possibleArtifacts.size()<1) {
-                	logger.info("No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
-                       
-                        System.exit(1);
+                } else if (possibleArtifacts.size() < 1) {
+                    logger.info(
+                        "No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
+
+                    System.exit(1);
                 }
-                
-                logger.info("Please enter the number(s) of " + artifactType
-                    + "(s) that you want to generate separated by comma.");
 
                 userSelection = artifactStringSelection(userSelection, possibleArtifacts, artifactType);
             }
+
         }
+
         return userSelection;
 
     }
@@ -446,21 +452,28 @@ public class GenerateCommand implements Callable<Integer> {
      *            true if we want to generate increments
      * @param artifactType
      *            type of artifact (increment or template)
+     * @param userInputIncrements
+     *            user selected increments
      *
      */
     private void printFoundArtifacts(ArrayList<GenerableArtifact> possibleArtifacts, Boolean isIncrements,
-        String artifactType) {
-        logger.info("Here are the " + artifactType + "s that may match your search.");
+        String artifactType, ArrayList<String> userInputIncrements) {
+        if (userInputIncrements != null) {
+            logger.info("Here are the " + artifactType + "s that may match your search.");
+        }
         logger.info("(0) " + "All");
         for (GenerableArtifact artifact : possibleArtifacts) {
             String artifactDescription =
                 isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
             logger.info("(" + (possibleArtifacts.indexOf(artifact) + 1) + ") " + artifactDescription);
         }
+        logger.info(
+            "Please enter the number(s) of " + artifactType + "(s) that you want to generate separated by comma.");
     }
 
     /**
      * Handles the selection of generable artifacts (increments or templates) by String.
+     *
      * @param userSelection
      *            previous selected artifacts that user wants to generate
      * @param possibleArtifacts
@@ -497,6 +510,7 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * Search for generable artifacts (increments or templates) matching the user input. Generable artifacts
      * similar to the given search string or containing it are returned.
+     *
      * @param userInput
      *            the user's wished increment or template
      * @param matching
