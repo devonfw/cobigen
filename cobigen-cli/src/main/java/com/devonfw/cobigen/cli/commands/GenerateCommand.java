@@ -60,6 +60,7 @@ public class GenerateCommand implements Callable<Integer> {
     File outputRootPath = null;
 
     /**
+     * If this options is enabled, we will print also debug messages
      */
     @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
     boolean verbose;
