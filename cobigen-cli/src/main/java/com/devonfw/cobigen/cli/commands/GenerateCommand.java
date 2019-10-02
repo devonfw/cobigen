@@ -14,11 +14,11 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.text.similarity.JaccardDistance;
-import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
@@ -187,7 +187,7 @@ public class GenerateCommand implements Callable<Integer> {
                         : CobiGenUtils.retainAllTemplates(toTemplateTo(finalTos), toTemplateTo(matching));
                 }
 
-            } catch (MojoFailureException e) {
+            } catch (InputReaderException e) {
                 logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
 
             }
@@ -318,7 +318,7 @@ public class GenerateCommand implements Callable<Integer> {
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             }
             ValidationUtils.checkGenerationReport(report);
-        } catch (MojoFailureException e) {
+        } catch (InputReaderException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
 
         }

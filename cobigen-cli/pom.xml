@@ -4,8 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>cli</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>cobigen-cli</name>
+  
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>master-parent</artifactId>
+    <version>dev-SNAPSHOT</version>
+  </parent>
 
   <properties>
     <junit.version>4.11</junit.version>
@@ -37,17 +43,10 @@
         <version>3.0.1</version>
     </dependency>
     <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>maven-plugin</artifactId>
-      <version>4.1.0</version>
-      <type>maven-plugin</type>
-    </dependency>
-    <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-java-impl</artifactId>
       <version>1.0.0-beta2</version>
     </dependency>
-   
     <!-- SLF4J - API -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -67,7 +66,6 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
     <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
@@ -75,48 +73,84 @@
     </dependency>
   </dependencies>
 
-  <build> 
-    <plugins>
+  <build>
+   <!-- Add correct version to artificial pom -->
+   <resources>
+      <resource>
+         <filtering>true</filtering>
+         <directory>src/main/resources</directory>
+         <includes>
+            <include>pom.xml</include>
+         </includes>
+      </resource>
+   </resources>
+   <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <executions>
-          <execution>
-            <id>Install test project</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>mvn</executable>
-          <workingDirectory>${maven.test.path}</workingDirectory>
-          <arguments>
-            <argument>install</argument>
-          </arguments>
-        </configuration>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>exec-maven-plugin</artifactId>
+         <version>1.6.0</version>
+         <executions>
+            <execution>
+               <id>Install test project</id>
+               <phase>test-compile</phase>
+               <goals>
+                  <goal>exec</goal>
+               </goals>
+            </execution>
+         </executions>
+         <configuration>
+            <executable>mvn</executable>
+            <workingDirectory>${maven.test.path}</workingDirectory>
+            <arguments>
+               <argument>install</argument>
+            </arguments>
+         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
+         <artifactId>maven-compiler-plugin</artifactId>
+         <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>com.devonfw.cobigen.cli.CobiGenCLI</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-jar-plugin</artifactId>
+         <version>3.1.0</version>
+         <executions>
+            <execution>
+               <id>default-jar</id>
+               <phase>none</phase>
+            </execution>
+         </executions>
       </plugin>
-    </plugins>    
-  </build>
+      <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-assembly-plugin</artifactId>
+         <version>3.1.1</version>
+         <configuration>
+            <finalName>cobigen</finalName>
+            <appendAssemblyId>false</appendAssemblyId>
+            <descriptorRefs>
+               <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+            <archive>
+               <manifest>
+                  <addClasspath>true</addClasspath>
+                  <mainClass>com.devonfw.cobigen.cli.CobiGenCLI</mainClass>
+               </manifest>
+            </archive>
+         </configuration>
+         <executions>
+            <execution>
+               <id>assemble-all</id>
+               <phase>package</phase>
+               <goals>
+                  <goal>single</goal>
+               </goals>
+            </execution>
+         </executions>
+      </plugin>
+   </plugins>
+</build>
 </project>
