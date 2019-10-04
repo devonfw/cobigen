@@ -32,14 +32,14 @@ public class TypeScriptMergerTest {
     public void testMergingNoOverrides() {
 
         // arrange
+        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", false);
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         // Should merge comments
         String regex = " * Should format correctly this line";
 
         // act
-        String mergedContents =
-            new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
+        String mergedContents = tsMerger.merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
 
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 2");
@@ -53,8 +53,7 @@ public class TypeScriptMergerTest {
         assertThat(mergedContents).contains("private b: number;");
         assertThat(mergedContents).containsPattern(regex);
 
-        mergedContents =
-            new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
+        mergedContents = tsMerger.merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
 
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 2");
@@ -79,11 +78,11 @@ public class TypeScriptMergerTest {
     public void testMergingOverrides() {
 
         // arrange
+        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", true);
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         // act
-        String mergedContents =
-            new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
+        String mergedContents = tsMerger.merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
 
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 3");
@@ -98,8 +97,7 @@ public class TypeScriptMergerTest {
         // Should merge comments
         assertThat(mergedContents).contains("// Should contain this comment");
 
-        mergedContents =
-            new TypeScriptMerger("tsmerge", true).merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
+        mergedContents = tsMerger.merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
 
         assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 3");
@@ -125,11 +123,11 @@ public class TypeScriptMergerTest {
     public void testMergingMassiveFile() {
 
         // arrange
+        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", false);
         File baseFile = new File(testFileRootPath + "massiveFile.ts");
 
         // act
-        String mergedContents =
-            new TypeScriptMerger("tsmerge", false).merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
+        String mergedContents = tsMerger.merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
 
         assertEquals(false, mergedContents.contains("Not able to merge") || mergedContents.isEmpty());
 
@@ -145,11 +143,12 @@ public class TypeScriptMergerTest {
     @Test
     public void testReadingEncoding() throws IOException {
 
+        // Arrange
+        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", false);
         File baseFile = new File(testFileRootPath + "baseFile_encoding_UTF-8.ts");
         File patchFile = new File(testFileRootPath + "patchFile.ts");
 
-        String mergedContents =
-            new TypeScriptMerger("tsmerge", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
+        String mergedContents = tsMerger.merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
 
         assertThat(mergedContents.contains("Ñ")).isTrue();
 
