@@ -255,7 +255,7 @@ public class ExternalProcessHandler {
     }
 
     /**
-     * Returns true if the current exe server is not valid and we need to force a download. If it is not valid
+     * Returns true if the current exe server is not valid and we need to force a download.
      * @param filePath
      *            path to the exe of the server
      * @return true if the exe file needs to be downloaded again
@@ -393,8 +393,8 @@ public class ExternalProcessHandler {
     }
 
     /**
-     * Returns the last part of a path. So if we have "src/test/java" it will return "java". Attention, it is
-     * not OS independent on purpose
+     * Returns the last part of a tar path (path inside a tar file). So if we have "src/test/java" it will
+     * return "java"
      * @param path
      *            to perform the operation
      * @return string with the result
