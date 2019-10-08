@@ -83,6 +83,7 @@
          </includes>
       </resource>
    </resources>
+   
    <plugins>
       <!-- Add CobiGen bat files for executing the CLI on a console -->
       <plugin>
@@ -106,14 +107,14 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Add Class loader agent jar for correct class loading -->
+      <!-- Add Class loader agent jar for correct class loading. In test-compile phase for running tests -->
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <executions>
               <execution>
                   <id>copy-dependencies</id>
-                  <phase>prepare-package</phase>
+                  <phase>test-compile</phase>
                   <goals>
                       <goal>copy-dependencies</goal>
                   </goals>
@@ -157,11 +158,25 @@
             <target>1.8</target>
          </configuration>
       </plugin>
+      <!-- Run tests using the java-agent -->
+      <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-surefire-plugin</artifactId>
+         <version>2.22.2</version>
+         <configuration>
+             <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
+         </configuration>
+      </plugin>
       <!-- Don't create the default jar -->
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-jar-plugin</artifactId>
          <version>3.1.0</version>
+         <configuration>
+           <archive>
+             <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+           </archive>
+         </configuration>         
          <executions>
             <execution>
                <id>default-jar</id>
@@ -169,6 +184,7 @@
             </execution>
          </executions>
       </plugin>
+      
       <!-- Create a fat jar with all the dependencies -->
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
