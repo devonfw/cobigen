@@ -6,12 +6,6 @@
   <artifactId>cli</artifactId>
   <version>1.0.0</version>
   <name>cobigen-cli</name>
-  
-  <parent>
-    <groupId>com.devonfw.cobigen</groupId>
-    <artifactId>master-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
-  </parent>
 
   <properties>
     <junit.version>4.11</junit.version>
@@ -25,12 +19,12 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.3.5</version>
+      <version>5.4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.3.5</version>
+      <version>5.4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>
@@ -67,10 +61,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-text</artifactId>
-        <version>1.6</version>
+       <groupId>org.apache.commons</groupId>
+       <artifactId>commons-text</artifactId>
+       <version>1.6</version>
     </dependency>
+    <dependency>
+       <groupId>com.devonfw.cobigen</groupId>
+       <artifactId>class-loader-agent</artifactId>
+       <version>0.0.1-SNAPSHOT</version> 
+    </dependency>    
   </dependencies>
 
   <build>
@@ -107,6 +106,29 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Add Class loader agent jar for correct class loading -->
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <executions>
+              <execution>
+                  <id>copy-dependencies</id>
+                  <phase>prepare-package</phase>
+                  <goals>
+                      <goal>copy-dependencies</goal>
+                  </goals>
+                  <configuration>
+                      <includeArtifactIds>class-loader-agent</includeArtifactIds>              
+                      <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                      <stripVersion>true</stripVersion>
+                      <overWriteReleases>false</overWriteReleases>
+                      <overWriteSnapshots>false</overWriteSnapshots>
+                      <overWriteIfNewer>true</overWriteIfNewer>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>      
+      <!-- Building a Maven project that is used on the tests -->
       <plugin>
          <groupId>org.codehaus.mojo</groupId>
          <artifactId>exec-maven-plugin</artifactId>
@@ -135,6 +157,7 @@
             <target>1.8</target>
          </configuration>
       </plugin>
+      <!-- Don't create the default jar -->
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-jar-plugin</artifactId>
@@ -146,6 +169,7 @@
             </execution>
          </executions>
       </plugin>
+      <!-- Create a fat jar with all the dependencies -->
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-assembly-plugin</artifactId>
