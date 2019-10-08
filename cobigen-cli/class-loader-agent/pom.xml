@@ -4,6 +4,13 @@
   <artifactId>class-loader-agent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>cli-parent</artifactId>
+    <version>dev-SNAPSHOT</version>
+  </parent>
+  
+  
   <build>
     <plugins>
       <plugin>

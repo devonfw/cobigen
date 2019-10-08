@@ -6,6 +6,12 @@
   <artifactId>cli</artifactId>
   <version>1.0.0</version>
   <name>cobigen-cli</name>
+  
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>cli-parent</artifactId>
+    <version>dev-SNAPSHOT</version>
+  </parent>
 
   <properties>
     <junit.version>4.11</junit.version>
