@@ -77,23 +77,19 @@
           name="Eclipse"
           activeRepositoryList="${active.repo.list}">
         <requirement
-            name="org.eclipse.equinox.sdk.feature.group"
-            versionRange="[3.11.2,3.11.3)"/>
+            name="org.eclipse.equinox.sdk.feature.group"/>
         <requirement
             name="org.eclipse.sdk.ide"
             versionRange="[4.6.2,4.6.3)"/>
         <requirement
-            name="org.eclipse.jdt.feature.group"
-            versionRange="[3.11.2,3.11.3)"/>
+            name="org.eclipse.jdt.feature.group"/>
         <requirement
             name="org.eclipse.m2e.feature.feature.group"
             versionRange="1.6.2.20150902-0002"/>
         <requirement
-            name="org.apache.commons.io"
-            versionRange="[2.2.0,2.2.1)"/>
+            name="org.apache.commons.io"/>
         <requirement
-            name="ch.qos.logback.classic"
-            versionRange="[1.0.7,1.0.8)"/>
+            name="ch.qos.logback.classic"/>
         <requirement
             name="org.eclipse.swtbot.eclipse.feature.group"
             versionRange="2.6.0"/>
