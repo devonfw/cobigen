@@ -64,7 +64,7 @@
     <setupTask
         xsi:type="setup:VariableTask"
         name="active.repo.list"
-        defaultValue="Mars"
+        defaultValue="Neon"
         storageURI="scope://Workspace"
         label="Target Eclipse">
       <choice
@@ -81,7 +81,7 @@
             versionRange="[3.11.2,3.11.3)"/>
         <requirement
             name="org.eclipse.sdk.ide"
-            versionRange="[4.5.2,4.5.3)"/>
+            versionRange="[4.6.2,4.6.3)"/>
         <requirement
             name="org.eclipse.jdt.feature.group"
             versionRange="[3.11.2,3.11.3)"/>
@@ -129,11 +129,11 @@
         <sourceLocator
             rootFolder="${targlet.source.location}"/>
         <repositoryList
-            name="Mars">
+            name="Neon">
           <repository
-              url="http://download.eclipse.org/eclipse/updates/4.5/"/>
+              url="http://download.eclipse.org/eclipse/updates/4.6/"/>
           <repository
-              url="http://download.eclipse.org/releases/mars"/>
+              url="http://download.eclipse.org/releases/neon"/>
           <repository
               url="http://download.eclipse.org/technology/m2e/releases/1.6"/>
           <repository
