@@ -77,12 +77,14 @@
           name="Eclipse"
           activeRepositoryList="${active.repo.list}">
         <requirement
-            name="org.eclipse.equinox.sdk.feature.group"/>
+            name="org.eclipse.equinox.sdk.feature.group"
+            versionRange="[3.12.0,3.13.0)"/>
         <requirement
             name="org.eclipse.sdk.ide"
             versionRange="[4.6.2,4.6.3)"/>
         <requirement
-            name="org.eclipse.jdt.feature.group"/>
+            name="org.eclipse.jdt.feature.group"
+            versionRange="[3.12.0,3.13.0)"/>
         <requirement
             name="org.eclipse.m2e.feature.feature.group"
             versionRange="1.6.2.20150902-0002"/>
