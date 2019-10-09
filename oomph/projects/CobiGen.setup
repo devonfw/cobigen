@@ -81,7 +81,7 @@
             versionRange="[3.11.2,3.11.3)"/>
         <requirement
             name="org.eclipse.sdk.ide"
-            versionRange="[4.5.2,4.5.3)"/>
+            versionRange="[4.6.2,4.6.3)"/>
         <requirement
             name="org.eclipse.jdt.feature.group"
             versionRange="[3.11.2,3.11.3)"/>
