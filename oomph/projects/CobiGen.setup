@@ -64,25 +64,22 @@
     <setupTask
         xsi:type="setup:VariableTask"
         name="active.repo.list"
-        defaultValue="Neon"
+        defaultValue="Oxygen"
         storageURI="scope://Workspace"
         label="Target Eclipse">
       <choice
-          value="Neon"
-          label="Neon"/>
+          value="Oxygen"
+          label="Oxygen"/>
     </setupTask>
     <setupTask
         xsi:type="setup.targlets:TargletTask"
-        targetName="Neon">
+        targetName="Oxygen">
       <targlet
           name="Eclipse"
           activeRepositoryList="${active.repo.list}">
         <requirement
             name="org.eclipse.equinox.sdk.feature.group"
-            versionRange="[3.12.0,3.13.0)"/>
-        <requirement
-            name="org.eclipse.sdk.ide"
-            versionRange="[4.6.2,4.6.3)"/>
+            versionRange="[3.13.0,4.0.0)"/>
         <requirement
             name="org.eclipse.jdt.feature.group"
             versionRange="[3.12.0,3.13.0)"/>
@@ -125,14 +122,17 @@
             name="com.devonfw.cobigen.openapiplugin"/>
         <requirement
             name="com.devonfw.cobigen.jsonplugin"/>
+        <requirement
+            name="org.eclipse.sdk.ide"
+            versionRange="[4.7.0,5.0.0)"/>
         <sourceLocator
             rootFolder="${targlet.source.location}"/>
         <repositoryList
-            name="Neon">
+            name="Oxygen">
           <repository
-              url="http://download.eclipse.org/eclipse/updates/4.6/"/>
+              url="http://download.eclipse.org/eclipse/updates/4.7/"/>
           <repository
-              url="http://download.eclipse.org/releases/neon"/>
+              url="http://download.eclipse.org/releases/oxygen"/>
           <repository
               url="http://download.eclipse.org/technology/m2e/releases/1.6"/>
           <repository
@@ -1026,6 +1026,6 @@
   </stream>
   <logicalProjectContainer
       xsi:type="setup:Project"
-      href="http://devonfw.github.io/ide/oomph/projects/catalog_devonfw.setup#//@projects[name='tools.cobigen']"/>
+      href="index:/org.eclipse.setup#//@projectCatalogs[name='devonfw']/@projects[name='tools.cobigen']"/>
   <description>CobiGen is the Code-based incremental Generator used in multiple projects at Capgemini.</description>
 </setup:Project>
