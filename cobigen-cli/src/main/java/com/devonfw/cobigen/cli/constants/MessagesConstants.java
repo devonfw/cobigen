@@ -58,4 +58,10 @@ public class MessagesConstants {
     public static final String TEMPLATES_OPTION_DESCRIPTION =
         "List of templates that will be generated. They need to be specified with numbers separated by comma.";
 
+    /**
+     * Message constant: description of the plug-in update
+     */
+    public static final String UPDATE_OPTION_DESCRIPTION =
+        "Using update command compare maven central plugin and update.";
+
 }
