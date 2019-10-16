@@ -62,6 +62,6 @@ public class MessagesConstants {
      * Message constant: description of the plug-in update
      */
     public static final String UPDATE_OPTION_DESCRIPTION =
-        "Using update command compare maven central plugin and update.";
+        "Using update command compare artificial pom plugin  and maven central plugin if it is outdated then artificial pom version will be update .";
 
 }
