@@ -38,8 +38,11 @@ public class TypeScriptInputReaderTest {
      */
     public String readingInput(Path filePath) {
 
+        // arrange
+        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+
         // act
-        String inputModel = (String) new TypeScriptInputReader().read(filePath, Charset.defaultCharset());
+        String inputModel = (String) tsInputReader.read(filePath, Charset.defaultCharset());
         assertThat(inputModel).contains("\"identifier\":\"aProperty\"");
         assertThat(inputModel).contains("\"identifier\":\"aMethod\"");
         assertThat(inputModel).contains("\"module\":\"b\"");
@@ -56,12 +59,12 @@ public class TypeScriptInputReaderTest {
     public void testCreatingModel() {
 
         // arrange
+        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
-        String inputModel =
-            (String) new TypeScriptInputReader().read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
+        String inputModel = (String) tsInputReader.read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
 
-        Map<String, Object> mapModel = new TypeScriptInputReader().createModel(inputModel);
+        Map<String, Object> mapModel = tsInputReader.createModel(inputModel);
         assertThat(mapModel).isNotNull();
 
         LOG.debug(mapModel.toString());
@@ -99,10 +102,6 @@ public class TypeScriptInputReaderTest {
 
     }
 
-    private ArrayList<Object> castToList(Map<String, Object> mapModel, String key) {
-        return (ArrayList<Object>) mapModel.get(key);
-    }
-
     /**
      * Sends a fileEto containing only the path of the file that needs to be parsed. Checks whether it is a
      * valid input.
@@ -112,8 +111,11 @@ public class TypeScriptInputReaderTest {
     @Test
     public void testValidInput() {
 
+        // arrange
+        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
-        boolean isValidInput = new TypeScriptInputReader().isValidInput(baseFile);
+
+        boolean isValidInput = tsInputReader.isValidInput(baseFile);
 
         LOG.debug("Valid input ? " + isValidInput);
         assertTrue(isValidInput);
@@ -129,8 +131,11 @@ public class TypeScriptInputReaderTest {
     @Test
     public void testIsMostProbablyReadable() {
 
+        // arrange
+        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
-        boolean isReadable = new TypeScriptInputReader().isMostLikelyReadable(baseFile.toPath());
+
+        boolean isReadable = tsInputReader.isMostLikelyReadable(baseFile.toPath());
 
         LOG.debug("is most probably readable ? " + isReadable);
         assertTrue(isReadable);
@@ -145,11 +150,13 @@ public class TypeScriptInputReaderTest {
     @Test
     public void testIsValidInputAfterReading() {
 
+        // arrange
+        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
         // parsing
-        Object input = new TypeScriptInputReader().read(baseFile.toPath(), Charset.defaultCharset());
+        tsInputReader.read(baseFile.toPath(), Charset.defaultCharset());
         // Now checking whether the input is valid
-        boolean isValid = new TypeScriptInputReader().isValidInput(baseFile.toPath());
+        boolean isValid = tsInputReader.isValidInput(baseFile.toPath());
 
         LOG.debug("is valid ? " + isValid);
         assertTrue(isValid);
@@ -163,8 +170,11 @@ public class TypeScriptInputReaderTest {
     @Test
     public void testGetInputObjects() {
 
+        // arrange
+        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
-        List<Object> tsInputObjects = new TypeScriptInputReader().getInputObjects(baseFile, Charset.defaultCharset());
+
+        List<Object> tsInputObjects = tsInputReader.getInputObjects(baseFile, Charset.defaultCharset());
         LinkedHashMap<String, Object> inputObject = castToHashMap(tsInputObjects.get(0));
 
         assertNotNull(inputObject);
@@ -175,8 +185,26 @@ public class TypeScriptInputReaderTest {
 
     }
 
+    /**
+     * Casts an object to a LinkedHashMap
+     * @param o
+     *            object to cast
+     * @return object casted to a LinkedHashMap
+     */
     private LinkedHashMap<String, Object> castToHashMap(Object o) {
         return (LinkedHashMap<String, Object>) o;
+    }
+
+    /**
+     * Cast an object on the map to a list
+     * @param mapModel
+     *            current map where our object is located
+     * @param key
+     *            key to find the object
+     * @return object casted to list
+     */
+    private ArrayList<Object> castToList(Map<String, Object> mapModel, String key) {
+        return (ArrayList<Object>) mapModel.get(key);
     }
 
 };
