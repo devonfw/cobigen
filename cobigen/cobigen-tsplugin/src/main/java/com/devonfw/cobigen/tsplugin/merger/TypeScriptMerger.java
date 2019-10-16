@@ -55,6 +55,9 @@ public class TypeScriptMerger implements Merger {
     /** Charset that will be used when sending strings to the server */
     private String charset = "UTF-8";
 
+    /** Used for not checking multiple times whether the server is deployed or not */
+    private Boolean serverIsNotDeployed = true;
+
     /**
      * Creates a new {@link TypeScriptMerger}
      *
@@ -71,12 +74,33 @@ public class TypeScriptMerger implements Merger {
             // We first check if the server is already running
             request.startConnection();
             if (request.isNotConnected()) {
-                startServerConnection();
+                if (startServerConnection()) {
+                    // Server is deployed
+                    serverIsNotDeployed = false;
+                }
+            } else {
+                // Server is deployed
+                serverIsNotDeployed = false;
             }
         } catch (IOException e) {
             // If it is not currently running, we need to execute it
             LOG.info("Server is not currently running. Let's initialize it");
-            startServerConnection();
+            if (startServerConnection()) {
+                // Server is deployed
+                serverIsNotDeployed = false;
+            }
+        }
+    }
+
+    /**
+     * Deploys the server and tries to initialize a new connection between CobiGen and the server
+     * @return true only if the server was executed and deployed successfully
+     */
+    private Boolean startServerConnection() {
+        if (request.startServer()) {
+            return request.initializeConnection();
+        } else {
+            return false;
         }
     }
 
@@ -88,8 +112,11 @@ public class TypeScriptMerger implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String baseFileContents;
-        if (request.isNotConnected()) {
-            startServerConnection();
+        if (serverIsNotDeployed) {
+            LOG.error("We have not been able to send requests to the external server. "
+                + "Most probably there is an error on the executable file. "
+                + "Try to manually remove folder .cobigen/externalservers found at your user root folder");
+            return null;
         }
         try {
             baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
@@ -132,14 +159,6 @@ public class TypeScriptMerger implements Merger {
         }
         // Merge was not successful
         return baseFileContents;
-    }
-
-    /**
-     * Deploys the server and tries to initialize a new connection between CobiGen and the server
-     */
-    private void startServerConnection() {
-        request.startServer();
-        request.initializeConnection();
     }
 
     /**
