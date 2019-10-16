@@ -82,7 +82,7 @@ public class TemplatesJarUtil {
 
         String mavenUrl = "https://repository.sonatype.org/service/local/artifact/maven/"
             + "redirect?r=central-proxy&g=" + groupId + "&a=" + artifactId + "&v=" + version;
-        ;
+
         if (isDownloadSource) {
             mavenUrl = mavenUrl + "&c=sources";
         }
