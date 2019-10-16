@@ -1026,6 +1026,6 @@
   </stream>
   <logicalProjectContainer
       xsi:type="setup:Project"
-      href="index:/org.eclipse.setup#//@projectCatalogs[name='devonfw']/@projects[name='tools.cobigen']"/>
+      href="http://devonfw.github.io/ide/oomph/projects/catalog_devonfw.setup#//@projects[name='tools.cobigen']"/>
   <description>CobiGen is the Code-based incremental Generator used in multiple projects at Capgemini.</description>
 </setup:Project>
