@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.cli.commands;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,12 +11,14 @@ import java.util.concurrent.Callable;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.cli.CobiGenCLI;
+import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.PluginUpdateUtil;
@@ -72,6 +75,7 @@ public class UpdateCommand implements Callable<Integer> {
         List<String> needversionupdate = new ArrayList<>();
         List<GenerableArtifact> userSelection = new ArrayList<>();
         MavenXpp3Reader reader = new MavenXpp3Reader();
+        MavenXpp3Writer writer = new MavenXpp3Writer();
         File locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         Path rootCLIPath = locationCLI.getParentFile().toPath();
         File pomFile = new CobiGenUtils().extractArtificialPom(rootCLIPath);
@@ -81,7 +85,7 @@ public class UpdateCommand implements Callable<Integer> {
             int count = 0;
             logger.info("(0) " + "All");
             for (Dependency lclDependency : localPomDepedency) {
-
+                String[] localVersion = lclDependency.getVersion().split("\\.");
                 if (!lclDependency.getArtifactId().equals("freemarker")
                     && !lclDependency.getArtifactId().equals("mmm-code-java-parser")
                     && !lclDependency.getArtifactId().equals("mmm-code-base")
@@ -89,7 +93,6 @@ public class UpdateCommand implements Callable<Integer> {
                     && !lclDependency.getArtifactId().equals("mmm-util-core")) {
                     String centralMavenversion =
                         PluginUpdateUtil.checkLatestMavenVersion(lclDependency.getArtifactId());
-                    String[] localVersion = lclDependency.getVersion().split("\\.");
 
                     String[] centralversionValue = centralMavenversion.split("\\.");
                     for (int ver = 0; ver < localVersion.length; ver++) {
@@ -98,35 +101,63 @@ public class UpdateCommand implements Callable<Integer> {
                             count++;
                             String requireupdate = lclDependency.getArtifactId();
                             logger.info("(" + (count) + ")" + requireupdate + " , " + lclDependency.getVersion());
+
                         }
                     }
 
                 }
 
             }
+            logger.info(
+                "Here are the components that can be updated, which ones do you want to  update? Please list the");
+            ArrayList<String> userInputPluginForUpdate = new ArrayList<>();
+            for (String userArtifact : GenerateCommand.getUserInput().split(",")) {
+                userInputPluginForUpdate.add(userArtifact);
+            }
+            for (int j = 0; j < userInputPluginForUpdate.size(); j++) {
+                String currentSelectedArtifact = userInputPluginForUpdate.get(j);
 
-        }
+                String digitMatch = "\\d+";
+                // If given generable artifact is Integer
+                if (currentSelectedArtifact.matches(digitMatch)) {
+                    int selectedArtifactNumber = Integer.parseInt(currentSelectedArtifact);
+                    int index = selectedArtifactNumber - 1;
+                    // We need to generate all
+                    if (selectedArtifactNumber == 0) {
+                        logger.info("(0) All");
+                    }
+                    logger.info("Updating the following components:");
 
-        logger.info("Here are the components that can be updated, which ones do you want to  update? Please list the");
-        ArrayList<String> userInputPluginForUpdate = new ArrayList<>();
-        for (String userArtifact : GenerateCommand.getUserInput().split(",")) {
-            userInputPluginForUpdate.add(userArtifact);
-        }
-        for (int j = 0; j < userInputPluginForUpdate.size(); j++) {
-            String currentSelectedArtifact = userInputPluginForUpdate.get(j);
+                    File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
+                    cpFile.deleteOnExit();
+                    if (pomFile.exists()) {
+                        model = reader.read(new FileReader(pomFile));
+                    }
+                    // updating artificial pom
+                    for (Dependency lclDependency : localPomDepedency) {
+                        String[] localVersion = lclDependency.getVersion().split("\\.");
+                        if (!lclDependency.getArtifactId().equals("freemarker")
+                            && !lclDependency.getArtifactId().equals("mmm-code-java-parser")
+                            && !lclDependency.getArtifactId().equals("mmm-code-base")
+                            && !lclDependency.getArtifactId().equals("mmm-code-java-maven")
+                            && !lclDependency.getArtifactId().equals("mmm-util-core")) {
+                            String centralMavenversion =
+                                PluginUpdateUtil.checkLatestMavenVersion(lclDependency.getArtifactId());
 
-            String digitMatch = "\\d+";
-            // If given generable artifact is Integer
-            if (currentSelectedArtifact.matches(digitMatch)) {
-                int selectedArtifactNumber = Integer.parseInt(currentSelectedArtifact);
-                int index = selectedArtifactNumber - 1;
-                // We need to generate all
-                if (selectedArtifactNumber == 0) {
-                    logger.info("(0) All");
+                            String[] centralversionValue = centralMavenversion.split("\\.");
+                            for (int ver = 0; ver < localVersion.length; ver++) {
+
+                                if (Integer.parseInt(localVersion[ver]) < Integer.parseInt(centralversionValue[ver])) {
+                                    writer.write(new FileOutputStream(new File(rootCLIPath.toString(), "/pom.xml")),
+                                        model);
+                                }
+                            }
+                        }
+                    }
+
                 }
                 logger.info("updated succesfully");
             }
-
         }
 
         return 1;
