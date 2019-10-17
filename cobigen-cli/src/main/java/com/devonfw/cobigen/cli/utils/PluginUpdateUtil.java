@@ -26,7 +26,7 @@ public class PluginUpdateUtil {
      * @throws IOException
      * @throws ParserConfigurationException
      */
-    public static String checkLatestMavenVersion(String artificialDependency)
+    public static String latestPluginVersion(String artificialDependency)
         throws MalformedURLException, IOException, ParserConfigurationException {
         String mavenUrl =
             "https://repo.maven.apache.org/maven2/com/devonfw/cobigen/" + artificialDependency + "/maven-metadata.xml";
