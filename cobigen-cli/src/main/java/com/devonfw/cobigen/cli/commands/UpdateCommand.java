@@ -100,11 +100,15 @@ public class UpdateCommand implements Callable<Integer> {
                     for (Dependency lclDependency : localPomDepedency) {
                         if ((plugin).equals(lclDependency.getArtifactId())) {
                             lclDependency.setVersion(centralMavenversionList.get(j));
-                            model.addDependency(lclDependency);
-                            writer.write(new FileWriter(pomFile), model);
+                            Dependency pluginDependency;
+                            pluginDependency = localPomDepedency.get(j);
+                            pluginDependency = lclDependency;
+
                         }
 
                     }
+                    model.setDependencies(localPomDepedency);
+                    writer.write(new FileWriter(pomFile), model);
 
                 }
 
