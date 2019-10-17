@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.maven.model.Dependency;
@@ -39,6 +40,11 @@ public class UpdateCommand implements Callable<Integer> {
         File locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         Path rootCLIPath = locationCLI.getParentFile().toPath();
         File pomFile = new CobiGenUtils().extractArtificialPom(rootCLIPath);
+        HashMap<String, String> updatepluginVersion = new HashMap<String, String>();
+        HashMap<Integer, String> listOfArtifact = new HashMap<Integer, String>();
+        List<String> centralMavenversionList = new ArrayList<String>();
+        String centralMavenversion = "";
+        String requireupdate = "";
         if (pomFile.exists()) {
             model = reader.read(new FileReader(pomFile));
             List<Dependency> localPomDepedency = model.getDependencies();
@@ -46,24 +52,19 @@ public class UpdateCommand implements Callable<Integer> {
             logger.info("(0) " + "All");
             for (Dependency lclDependency : localPomDepedency) {
                 String[] localVersion = lclDependency.getVersion().split("\\.");
-                if (!lclDependency.getArtifactId().equals("freemarker")
-                    && !lclDependency.getArtifactId().equals("mmm-code-java-parser")
-                    && !lclDependency.getArtifactId().equals("mmm-code-base")
-                    && !lclDependency.getArtifactId().equals("mmm-code-java-maven")
-                    && !lclDependency.getArtifactId().equals("mmm-util-core")) {
+                if (dependencyShouldBeUpdated(lclDependency.getGroupId())) {
                     // Read pom to check which dependencies can be updated.
-                    String centralMavenversion =
-                        PluginUpdateUtil.checkLatestMavenVersion(lclDependency.getArtifactId());
-
+                    centralMavenversion = PluginUpdateUtil.latestPluginVersion(lclDependency.getArtifactId());
                     String[] centralversionValue = centralMavenversion.split("\\.");
                     for (int ver = 0; ver < localVersion.length; ver++) {
-
                         if (Integer.parseInt(localVersion[ver]) < Integer.parseInt(centralversionValue[ver])) {
                             count++;
+                            centralMavenversionList.add(centralMavenversion);
+                            requireupdate = lclDependency.getArtifactId();
+                            updatepluginVersion.put(lclDependency.getArtifactId(), centralversionValue[ver]);
+                            listOfArtifact.put(count, requireupdate);
                             // Print the dependecy need to update
-                            String requireupdate = lclDependency.getArtifactId();
                             logger.info("(" + (count) + ")" + requireupdate + " , " + lclDependency.getVersion());
-
                         }
                     }
 
@@ -77,53 +78,57 @@ public class UpdateCommand implements Callable<Integer> {
             for (String userArtifact : GenerateCommand.getUserInput().split(",")) {
                 userInputPluginForUpdate.add(userArtifact);
             }
+            logger.info("Updating the following components:");
             for (int j = 0; j < userInputPluginForUpdate.size(); j++) {
                 String currentSelectedArtifact = userInputPluginForUpdate.get(j);
-
                 String digitMatch = "\\d+";
                 // If given updatable artifact is Integer
                 if (currentSelectedArtifact.matches(digitMatch)) {
                     int selectedArtifactNumber = Integer.parseInt(currentSelectedArtifact);
+                    int index = selectedArtifactNumber - 1;
                     // We need to update all
                     if (selectedArtifactNumber == 0) {
                         logger.info("(0) All");
                     }
-                    logger.info("Updating the following components:");
-
+                    String plugin = listOfArtifact.get(selectedArtifactNumber);
+                    logger.info("(" + selectedArtifactNumber + ")" + plugin);
                     File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
                     cpFile.deleteOnExit();
                     if (pomFile.exists()) {
                         model = reader.read(new FileReader(pomFile));
                     }
-                    // updating artificial pom
                     for (Dependency lclDependency : localPomDepedency) {
-                        String[] localVersion = lclDependency.getVersion().split("\\.");
-                        if (!lclDependency.getArtifactId().equals("freemarker")
-                            && !lclDependency.getArtifactId().equals("mmm-code-java-parser")
-                            && !lclDependency.getArtifactId().equals("mmm-code-base")
-                            && !lclDependency.getArtifactId().equals("mmm-code-java-maven")
-                            && !lclDependency.getArtifactId().equals("mmm-util-core")) {
-                            String centralMavenversion =
-                                PluginUpdateUtil.checkLatestMavenVersion(lclDependency.getArtifactId());
-
-                            String[] centralversionValue = centralMavenversion.split("\\.");
-                            for (int ver = 0; ver < localVersion.length; ver++) {
-                                model.setModelVersion(centralMavenversion);
-                                if (Integer.parseInt(localVersion[ver]) < Integer.parseInt(centralversionValue[ver])) {
-                                    try (FileWriter w = new FileWriter(pomFile)) {
-                                        writer.write(w, model);
-                                    }
-                                }
-                            }
+                        if ((plugin).equals(lclDependency.getArtifactId())) {
+                            lclDependency.setVersion(centralMavenversionList.get(j));
+                            model.addDependency(lclDependency);
+                            writer.write(new FileWriter(pomFile), model);
                         }
+
                     }
 
                 }
-                logger.info("Updated successfully");
+
             }
+            logger.info("Updated successfully");
         }
 
         return 1;
+    }
+
+    /**
+     * This method checks which artifacts are related to CobiGen. If so, returns true. This is useful for just
+     * Updating CobiGen related plug-ins to user
+     * @param groupId
+     *            group id to check whether it is CobiGen related
+     * @return true if group id is related to CobiGen
+     *
+     */
+    private Boolean dependencyShouldBeUpdated(String groupId) {
+
+        if (MavenConstants.COBIGEN_GROUPID.equals(groupId)) {
+            return true;
+        }
+        return false;
     }
 
 }
