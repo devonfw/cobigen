@@ -35,8 +35,8 @@ public class TypeScriptMerger implements Merger {
      * Instance that handles all the operations performed to the external server, like initializing the
      * connection and sending new requests
      */
-    private ExternalProcessHandler request = ExternalProcessHandler
-        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+    private ExternalProcessHandler request = ExternalProcessHandler.getExternalProcessHandler(this.getClass(),
+        ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
      * Exception handler related to connectivity to the server
@@ -55,6 +55,9 @@ public class TypeScriptMerger implements Merger {
     /** Charset that will be used when sending strings to the server */
     private String charset = "UTF-8";
 
+    /** Used for not checking multiple times whether the server is deployed or not */
+    private Boolean serverIsNotDeployed = true;
+
     /**
      * Creates a new {@link TypeScriptMerger}
      *
@@ -71,12 +74,33 @@ public class TypeScriptMerger implements Merger {
             // We first check if the server is already running
             request.startConnection();
             if (request.isNotConnected()) {
-                startServerConnection();
+                if (startServerConnection()) {
+                    // Server is deployed
+                    serverIsNotDeployed = false;
+                }
+            } else {
+                // Server is deployed
+                serverIsNotDeployed = false;
             }
         } catch (IOException e) {
             // If it is not currently running, we need to execute it
             LOG.info("Server is not currently running. Let's initialize it");
-            startServerConnection();
+            if (startServerConnection()) {
+                // Server is deployed
+                serverIsNotDeployed = false;
+            }
+        }
+    }
+
+    /**
+     * Deploys the server and tries to initialize a new connection between CobiGen and the server
+     * @return true only if the server was executed and deployed successfully
+     */
+    private Boolean startServerConnection() {
+        if (request.startServer()) {
+            return request.initializeConnection();
+        } else {
+            return false;
         }
     }
 
@@ -88,8 +112,11 @@ public class TypeScriptMerger implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String baseFileContents;
-        if (request.isNotConnected()) {
-            startServerConnection();
+        if (serverIsNotDeployed) {
+            LOG.error("We have not been able to send requests to the external server. "
+                + "Most probably there is an error on the executable file. "
+                + "Try to manually remove folder .cobigen/externalservers found at your user root folder");
+            return null;
         }
         try {
             baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
@@ -99,7 +126,7 @@ public class TypeScriptMerger implements Merger {
 
         MergeTo mergeTo = new MergeTo(baseFileContents, patch, patchOverrides);
 
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/merge");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "merge");
 
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
@@ -135,14 +162,6 @@ public class TypeScriptMerger implements Merger {
     }
 
     /**
-     * Deploys the server and tries to initialize a new connection between CobiGen and the server
-     */
-    private void startServerConnection() {
-        request.executingExe(Constants.EXE_NAME, this.getClass());
-        request.initializeConnection();
-    }
-
-    /**
      * Reads the output.ts temporary file to get the merged contents
      * @param importsAndExports
      *            The part of the code where imports and exports are declared
@@ -155,7 +174,7 @@ public class TypeScriptMerger implements Merger {
     private String runBeautifierExcludingImports(String importsAndExports, String body, String targetCharset) {
 
         InputFileTo fileTo = new InputFileTo("", body, charset);
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/beautify");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "beautify");
 
         StringBuffer bodyBuffer = new StringBuffer();
 
