@@ -92,7 +92,7 @@ Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as ch
 
 * The attribute `type` declares the type of _variable assignment_ to be processed by the _trigger interpreter_ providing plug-in. This attribute enables _variable assignments_ with different dynamic value resolutions.
 * The attribute `key` declares the namespace under which the resolved value will be accessible later on.
-* The attribute `value` might declare a constant value to be assigned or any hint for value resolution done by the _trigger interpreter_ providing plug-in.
+* The attribute `value` might declare a constant value to be assigned or any hint for value resolution done by the _trigger interpreter_ providing plug-in. For instance, if `type` is `regex`, then on `value` you will assign the matched group number by the regex (1, 2, 3...)
 
 === ContainerMatcher Node
 The `<containerMatcher>` node is an additional matcher for matching containers of multiple input objects.
@@ -217,6 +217,7 @@ A `templateScan` will result in the following **default configuration of templat
 * `targetCharset`:  _(optional)_ defaults to UTF-8
 
 _(Since version 4.1.0)_ It is possible to reference external `templateScan` (templateScans defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
+
 
 === TemplateExtension Node
 _(since cobigen-core-v1.2.0)_

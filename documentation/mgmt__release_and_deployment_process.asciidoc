@@ -3,6 +3,8 @@ toc::[]
 
 = Release and Deployment Process
 
+*Updated:* This explains the manual process of releasing. We now have an automatic script that enables a fast and easy release. Please check it link:https://github.com/devonfw/tools-cobigen/wiki/howto_Release-creation[here]
+
 Create a new issue with the following markdown contents for each release of any plugin/module containing the following tasks to be performed on release:
 
 .*Template for release tasks (markdown)*
