@@ -3,7 +3,7 @@
   <artifactId>com.devonfw.cobigen.eclipse</artifactId>
   <name>CobiGen - Eclipse Plug-In</name>
   <packaging>eclipse-plugin</packaging>
-  <version>4.4.4-SNAPSHOT</version>
+  <version>4.4.4</version>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
