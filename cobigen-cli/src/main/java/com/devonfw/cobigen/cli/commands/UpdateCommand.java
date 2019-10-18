@@ -72,7 +72,7 @@ public class UpdateCommand implements Callable<Integer> {
 
             }
             logger.info(
-                "Here are the components that can be updated, which ones do you want to  update? Please list the");
+                "Here are the components that can be updated, which ones do you want to  update? Please list the number of artifact(s) to update separated by comma:");
             ArrayList<String> userInputPluginForUpdate = new ArrayList<>();
             // User selects which dependencies to update
             for (String userArtifact : GenerateCommand.getUserInput().split(",")) {
