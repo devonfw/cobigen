@@ -17,10 +17,10 @@ public class ExternalProcessTest {
      */
     @Test
     public void startExternalProcess() {
-        ExternalProcessHandler request = ExternalProcessHandler
-            .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+        ExternalProcessHandler request = ExternalProcessHandler.getExternalProcessHandler("/DummyExe",
+            ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
-        assertEquals(true, request.executingExe("/DummyExe", this.getClass()));
+        assertEquals(true, request.startServer());
         assertEquals(true, request.terminateProcessConnection());
     }
 }

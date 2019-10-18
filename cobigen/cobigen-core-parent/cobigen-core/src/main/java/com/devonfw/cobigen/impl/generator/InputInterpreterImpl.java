@@ -61,6 +61,19 @@ public class InputInterpreterImpl implements InputInterpreter {
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
         Set<String> keySet = PluginRegistry.getTriggerInterpreterKeySet();
+        // We first try to find an input reader that is most likely readable
+        for (String s : keySet) {
+            try {
+                if (isMostLikelyReadable(s, path)) {
+                    return getInputReader(s).read(path, inputCharset, additionalArguments);
+                }
+            } catch (InputReaderException e) {
+                // nothing to do.
+            }
+        }
+
+        // No input reader is most likely readable, then we try with every of them until we find the correct
+        // one
         for (String s : keySet) {
             try {
                 return getInputReader(s).read(path, inputCharset, additionalArguments);

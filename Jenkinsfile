@@ -42,9 +42,11 @@ node {
 			def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin","dev_oomph_setup"]
 			def root = ""
 			if (origin_branch == "master") {
-				if(justTemplatesChanged()) {
+				if(justOneFolderChanged("cobigen-templates/")) {
 					echo "Just Templates changed!"
 					root = "cobigen-templates"
+				} else if(justOneFolderChanged("cobigen-cli/")) {
+					root = "cobigen-cli"
 				} else {
 					root = ""
 				}
@@ -231,12 +233,12 @@ def isPRBuild() {
     return (env.BRANCH_NAME ==~ /^PR-\d+$/)
 }
 
-def justTemplatesChanged() {
+def justOneFolderChanged(String folderName) {
 	// split will return a list with one element (the empty string) if called on an empty string
 	diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim().split("\\s+")
 	for(int i=0; i < diff_files.size(); i++) {
-		if(!diff_files[i].startsWith("cobigen-templates/")) {
-			echo "'${diff_files[i]}' does not start with cobigen-templates/"
+		if(!diff_files[i].startsWith(folderName)) {
+			echo "'${diff_files[i]}' does not start with /" + folderName
 			return false
 		}
 	}

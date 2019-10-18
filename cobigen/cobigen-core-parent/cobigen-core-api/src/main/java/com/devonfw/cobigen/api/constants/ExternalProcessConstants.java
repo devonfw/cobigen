@@ -41,4 +41,9 @@ public final class ExternalProcessConstants {
      * Folder name where the different external processes are stored
      */
     public static final Path EXTERNAL_PROCESS_FOLDER = CobiGenPathUtil.getExternalProcessesPath("externalservers");
+
+    /**
+     * Name of the service the external process should implement for testing that the connection is ready
+     */
+    public static final String IS_CONNECTION_READY = "isConnectionReady";
 }

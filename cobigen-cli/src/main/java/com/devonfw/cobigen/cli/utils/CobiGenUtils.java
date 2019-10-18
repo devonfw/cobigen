@@ -27,7 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.plugin.MojoFailureException;
+import net.sf.mmm.code.impl.java.JavaContext;
+
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
@@ -38,7 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.InputInterpreter;
+import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
@@ -47,13 +51,11 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
-import com.devonfw.cobigen.maven.validation.InputPreProcessor;
-
-import net.sf.mmm.code.impl.java.JavaContext;
+import com.google.common.base.Charsets;
 
 /**
- * Utilities class for CobiGen related operations. For instance, creates a new CobiGen instance and registers
- * all the plug-ins
+ * Utilities class for CobiGen related operations. For instance, it creates a new CobiGen instance and
+ * registers all the plug-ins
  */
 public class CobiGenUtils {
 
@@ -84,6 +86,11 @@ public class CobiGenUtils {
     public List<Class<?>> getUtilClasses() {
         return utilClasses;
     }
+
+    /**
+     * Whether the template dependency is given.
+     */
+    private boolean templateDependencyIsGiven = false;
 
     /**
      * Resolves all utilities classes, which have been defined in the templates jar.
@@ -179,25 +186,22 @@ public class CobiGenUtils {
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
-        getTemplates();
-
         CobiGen cg = null;
-        if (templatesJar != null) {
-            try {
-                registerPlugins();
-                cg = CobiGenFactory.create(templatesJar.toURI());
+        try {
+            registerPlugins();
+            getTemplatesJar(false);
+            getTemplates();
+            cg = CobiGenFactory.create(templatesJar.toURI());
+            return cg;
 
-                return cg;
-
-            } catch (InvalidConfigurationException e) {
-                // if the context configuration is not valid
-                logger.error("Invalid configuration of context ");
-            } catch (IOException e) {
-                // If I/O operation failed then it will throw exception
-                logger.error("I/O operation is failed ");
-            }
-
+        } catch (InvalidConfigurationException e) {
+            // if the context configuration is not valid
+            logger.error("Invalid configuration of context ");
+        } catch (IOException e) {
+            // If I/O operation failed then it will throw exception
+            logger.error("I/O operation is failed ");
         }
+
         return cg;
 
     }
@@ -261,21 +265,26 @@ public class CobiGenUtils {
         logger.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
-        	
+
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(pomFile);
             request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
                 "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q"));
 
             Invoker invoker = new DefaultInvoker();
-            InvocationResult result;
-
+            InvocationResult result = null;
+            Thread t1 = new Thread(new ProgressBar());
+            t1.start();
             result = invoker.execute(request);
-
+            if (t1 != null) {
+                t1.interrupt();
+            }
+            logger.debug('\n' + "Download the needed dependencies successfully.");
             if (result.getExitCode() != 0) {
                 logger.error(
                     "Error while getting all the needed transitive dependencies. Please check your internet connection.");
             }
+
         } catch (MavenInvocationException e) {
 
             logger.error("The maven command for getting needed dependencies was malformed. This is a bug.");
@@ -321,6 +330,12 @@ public class CobiGenUtils {
                 // Run projected addURL method to add JAR to class path
                 method.setAccessible(true);
                 method.invoke(cl, new Object[] { jar.toURI().toURL() });
+
+                // Setting the template jar path
+                if (checkTemplateDepencency(jarToAdd)) {
+                    jarsDirectory = new File(jarToAdd).getParentFile();
+                    templateDependencyIsGiven = true;
+                }
             }
         } catch (MalformedURLException e) {
             logger.error("Not able to form URL of jar file.", e);
@@ -341,11 +356,12 @@ public class CobiGenUtils {
      */
     public File getTemplatesJar(boolean isSource) {
         File jarFileDir = jarsDirectory.getAbsoluteFile();
-
-        // We first check if we already have the CobiGen_Templates jar downloaded
         if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
             try {
-                TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
+                if (!templateDependencyIsGiven) {
+                    TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
+                }
+
             } catch (MalformedURLException e) {
                 // if a path of one of the class path entries is not a valid URL
                 logger.error("Problem while downloading the templates, URL not valid. This is a bug", e);
@@ -431,21 +447,60 @@ public class CobiGenUtils {
      * @param isJavaInput
      *            true if input is Java code
      * @return valid cobiGen input
-     * @throws MojoFailureException
-     *             throws {@link MojoFailureException} when the input file could not be converted to a valid
+     * @throws InputReaderException
+     *             throws {@link InputReaderException} when the input file could not be converted to a valid
      *             CobiGen input
      */
     public static Object getValidCobiGenInput(CobiGen cg, File inputFile, Boolean isJavaInput)
-        throws MojoFailureException {
+        throws InputReaderException {
         Object input;
         // If it is a Java file, we need the class loader
         if (isJavaInput) {
             JavaContext context = ParsingUtils.getJavaContext(inputFile, ParsingUtils.getProjectRoot(inputFile));
-            input = InputPreProcessor.process(cg, inputFile, context.getClassLoader());
+            input = process(cg, inputFile, context.getClassLoader());
         } else {
-            input = InputPreProcessor.process(cg, inputFile, null);
+            input = process(cg, inputFile, null);
         }
         return input;
+    }
+
+    /**
+     * Processes the given file to be converted into any CobiGen valid input format
+     * @param file
+     *            {@link File} converted into any CobiGen valid input format
+     * @param cl
+     *            {@link ClassLoader} to be used, when considering Java-related inputs
+     * @param inputInterpreter
+     *            parse cobiGen compliant input from the file
+     * @throws InputReaderException
+     *             if the input retrieval did not result in a valid CobiGen input
+     * @return a CobiGen valid input
+     */
+    public static Object process(InputInterpreter inputInterpreter, File file, ClassLoader cl)
+        throws InputReaderException {
+        if (!file.exists() || !file.canRead()) {
+            throw new InputReaderException("Could not read input file " + file.getAbsolutePath());
+        }
+        Object input = null;
+        try {
+            input = inputInterpreter.read(Paths.get(file.toURI()), Charsets.UTF_8, cl);
+        } catch (InputReaderException e) {
+            // nothing
+        }
+        if (input != null) {
+            return input;
+        }
+        throw new InputReaderException("The file " + file.getAbsolutePath() + " is not a valid input for CobiGen.");
+    }
+
+    /**
+     * Checks whether the current jar is CobiGen templates
+     * @param jarToAdd
+     *            jar that we check
+     * @return true if jar is CobiGen templates
+     */
+    private boolean checkTemplateDepencency(String jarToAdd) {
+        return jarToAdd.contains(TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID);
     }
 
 }
