@@ -30,7 +30,6 @@ import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.to.InputFileTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
-import com.devonfw.cobigen.tsplugin.merger.constants.Constants;
 
 /**
  * TypeScript input reader that uses a server to read TypeScript code
@@ -44,8 +43,8 @@ public class TypeScriptInputReader implements InputReader {
      * Instance that handles all the operations performed to the external server, like initializing the
      * connection and sending new requests
      */
-    private ExternalProcessHandler request = ExternalProcessHandler
-        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+    private ExternalProcessHandler request = ExternalProcessHandler.getExternalProcessHandler(this.getClass(),
+        ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
      * Exception handler related to connectivity to the server
@@ -54,6 +53,9 @@ public class TypeScriptInputReader implements InputReader {
 
     /** Charset that will be used when sending strings to the server */
     private String charset = "UTF-8";
+
+    /** Used for not checking multiple times whether the server is deployed or not */
+    private Boolean serverIsNotDeployed = true;
 
     /**
      * Creates a new {@link TypeScriptInputReader}
@@ -64,22 +66,35 @@ public class TypeScriptInputReader implements InputReader {
             // We first check if the server is already running
             request.startConnection();
             if (request.isNotConnected()) {
-                startServerConnection();
+                if (startServerConnection()) {
+                    // Server is deployed
+                    serverIsNotDeployed = false;
+                }
+            } else {
+                // Server is deployed
+                serverIsNotDeployed = false;
             }
         } catch (IOException e) {
             // If it is not currently running, we need to execute it
             LOG.info("Server is not currently running. Let's initialize it");
-            startServerConnection();
+            if (startServerConnection()) {
+                // Server is deployed
+                serverIsNotDeployed = false;
+            }
         }
 
     }
 
     /**
      * Deploys the server and tries to initialize a new connection between CobiGen and the server
+     * @return true only if the server was executed and deployed successfully
      */
-    private void startServerConnection() {
-        request.executingExe(Constants.EXE_NAME, this.getClass());
-        request.initializeConnection();
+    private Boolean startServerConnection() {
+        if (request.startServer()) {
+            return request.initializeConnection();
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -107,8 +122,11 @@ public class TypeScriptInputReader implements InputReader {
 
         }
 
-        if (request.isNotConnected()) {
-            startServerConnection();
+        if (serverIsNotDeployed) {
+            LOG.error("We have not been able to send requests to the external server. "
+                + "Most probably there is an error on the executable file. "
+                + "Try to manually remove folder .cobigen/externalservers found at your user root folder");
+            return false;
         }
 
         // File content is not needed, as only the file extension is checked
@@ -233,8 +251,11 @@ public class TypeScriptInputReader implements InputReader {
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
 
-        if (request.isNotConnected()) {
-            startServerConnection();
+        if (serverIsNotDeployed) {
+            LOG.error("We have not been able to send requests to the external server. "
+                + "Most probably there is an error on the executable file. "
+                + "Try to manually remove folder .cobigen/externalservers found at your user root folder");
+            return null;
         }
 
         String fileContents;
@@ -248,8 +269,7 @@ public class TypeScriptInputReader implements InputReader {
 
         InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset.name());
 
-        HttpURLConnection conn =
-            request.getConnection("POST", "Content-Type", "application/json", "tsplugin/getInputModel");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "getInputModel");
 
         if (request.sendRequest(inputFile, conn, charset)) {
 

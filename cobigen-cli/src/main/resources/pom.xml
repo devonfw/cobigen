@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>cli</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>${project.version}</version>
   <name>cobigen-cli</name>
 
   <properties>
@@ -20,7 +20,7 @@
       <dependency>
         <groupId>com.devonfw.cobigen</groupId>
         <artifactId>tsplugin</artifactId>
-        <version>2.3.0</version>
+        <version>2.3.2</version>
       </dependency>
       <dependency>
         <groupId>com.devonfw.cobigen</groupId>
