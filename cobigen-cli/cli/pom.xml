@@ -24,12 +24,12 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.4.0-SNAPSHOT</version>
+      <version>5.4.0</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.4.0-SNAPSHOT</version>
+      <version>5.4.0</version>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>
@@ -74,7 +74,14 @@
        <groupId>com.devonfw.cobigen</groupId>
        <artifactId>class-loader-agent</artifactId>
        <version>1.0.0-SNAPSHOT</version> 
-    </dependency>    
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.ea.agentloader/ea-agent-loader -->
+    <dependency>
+        <groupId>com.ea.agentloader</groupId>
+        <artifactId>ea-agent-loader</artifactId>
+        <version>1.0.3</version>
+    </dependency>
+        
   </dependencies>
 
   <build>
