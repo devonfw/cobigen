@@ -40,31 +40,32 @@ public class UpdateCommand implements Callable<Integer> {
         File locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         Path rootCLIPath = locationCLI.getParentFile().toPath();
         File pomFile = new CobiGenUtils().extractArtificialPom(rootCLIPath);
-        HashMap<String, String> updatepluginVersion = new HashMap<String, String>();
-        HashMap<Integer, String> listOfArtifact = new HashMap<Integer, String>();
-        List<String> centralMavenversionList = new ArrayList<String>();
-        String centralMavenversion = "";
-        String requireupdate = "";
+        HashMap<String, String> updatePluginVersions = new HashMap<String, String>();
+        HashMap<Integer, String> listOfArtifacts = new HashMap<Integer, String>();
+        List<String> centralMavenVersionList = new ArrayList<String>();
+        String centralMavenVersion = "";
+        String requiresUpdate = "";
         if (pomFile.exists()) {
             model = reader.read(new FileReader(pomFile));
-            List<Dependency> localPomDepedency = model.getDependencies();
+            List<Dependency> localPomDependencies = model.getDependencies();
             int count = 0;
             logger.info("(0) " + "All");
-            for (Dependency lclDependency : localPomDepedency) {
-                String[] localVersion = lclDependency.getVersion().split("\\.");
-                if (dependencyShouldBeUpdated(lclDependency.getGroupId())) {
+            for (Dependency lclDependencies : localPomDependencies) {
+                String[] localVersion = lclDependencies.getVersion().split("\\.");
+                if (dependencyShouldBeUpdated(lclDependencies.getGroupId())) {
                     // Read pom to check which dependencies can be updated.
-                    centralMavenversion = PluginUpdateUtil.latestPluginVersion(lclDependency.getArtifactId());
-                    String[] centralversionValue = centralMavenversion.split("\\.");
+                    centralMavenVersion = PluginUpdateUtil.latestPluginVersion(lclDependencies.getArtifactId());
+                    String[] centralVersionValues = centralMavenVersion.split("\\.");
                     for (int ver = 0; ver < localVersion.length; ver++) {
-                        if (Integer.parseInt(localVersion[ver]) < Integer.parseInt(centralversionValue[ver])) {
+                        if (Integer.parseInt(localVersion[ver]) < Integer.parseInt(centralVersionValues[ver])) {
                             count++;
-                            centralMavenversionList.add(centralMavenversion);
-                            requireupdate = lclDependency.getArtifactId();
-                            updatepluginVersion.put(lclDependency.getArtifactId(), centralversionValue[ver]);
-                            listOfArtifact.put(count, requireupdate);
+                            centralMavenVersionList.add(centralMavenVersion);
+                            requiresUpdate = lclDependencies.getArtifactId();
+                            updatePluginVersions.put(lclDependencies.getArtifactId(), centralVersionValues[ver]);
+                            listOfArtifacts.put(count, requiresUpdate);
                             // Print the dependecy need to update
-                            logger.info("(" + (count) + ")" + requireupdate + " , " + lclDependency.getVersion());
+                            logger.info("(" + (count) + ")" + requiresUpdate + " , " + lclDependencies.getVersion());
+                            break;
                         }
                     }
 
@@ -79,6 +80,8 @@ public class UpdateCommand implements Callable<Integer> {
                 userInputPluginForUpdate.add(userArtifact);
             }
             logger.info("Updating the following components:");
+            File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
+            cpFile.deleteOnExit();
             for (int j = 0; j < userInputPluginForUpdate.size(); j++) {
                 String currentSelectedArtifact = userInputPluginForUpdate.get(j);
                 String digitMatch = "\\d+";
@@ -87,27 +90,43 @@ public class UpdateCommand implements Callable<Integer> {
                     int selectedArtifactNumber = Integer.parseInt(currentSelectedArtifact);
                     int index = selectedArtifactNumber - 1;
                     // We need to update all
-                    if (selectedArtifactNumber == 0) {
-                        logger.info("(0) All");
-                    }
-                    String plugin = listOfArtifact.get(selectedArtifactNumber);
-                    logger.info("(" + selectedArtifactNumber + ")" + plugin);
-                    File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
-                    cpFile.deleteOnExit();
                     if (pomFile.exists()) {
                         model = reader.read(new FileReader(pomFile));
                     }
-                    for (Dependency lclDependency : localPomDepedency) {
-                        if ((plugin).equals(lclDependency.getArtifactId())) {
-                            lclDependency.setVersion(centralMavenversionList.get(j));
-                            Dependency pluginDependency;
-                            pluginDependency = localPomDepedency.get(j);
-                            pluginDependency = lclDependency;
+                    int all = 0;
+                    if (selectedArtifactNumber == 0) {
+                        // Updating all plugin
+                        for (Dependency lclDependencies : localPomDependencies) {
+                            if ((listOfArtifacts).containsValue(lclDependencies.getArtifactId())) {
+                                logger.info(lclDependencies.getArtifactId());
+                                lclDependencies.setVersion(centralMavenVersionList.get(all));
+                                Dependency pluginDependencies;
+                                pluginDependencies = localPomDependencies.get(all);
+                                pluginDependencies = lclDependencies;
+                                all++;
+                            }
 
                         }
+                        model.setDependencies(localPomDependencies);
 
+                    } else {
+                        // Updating selected plugin
+                        String plugin = listOfArtifacts.get(selectedArtifactNumber);
+                        logger.info("(" + selectedArtifactNumber + ")" + plugin);
+
+                        for (Dependency selectedDependencies : localPomDependencies) {
+                            if ((plugin).equals(selectedDependencies.getArtifactId())) {
+                                selectedDependencies.setVersion(centralMavenVersionList.get(index));
+                                Dependency pluginDependencies;
+                                pluginDependencies = localPomDependencies.get(j);
+                                pluginDependencies = selectedDependencies;
+
+                            }
+
+                        }
+                        model.setDependencies(localPomDependencies);
                     }
-                    model.setDependencies(localPomDepedency);
+
                     writer.write(new FileWriter(pomFile), model);
 
                 }
