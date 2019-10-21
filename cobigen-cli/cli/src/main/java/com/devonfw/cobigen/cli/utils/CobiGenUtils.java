@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarFile;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 
@@ -52,6 +52,8 @@ import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.google.common.base.Charsets;
+
+import classloader.Agent;
 
 /**
  * Utilities class for CobiGen related operations. For instance, it creates a new CobiGen instance and
@@ -316,20 +318,11 @@ public class CobiGenUtils {
      *            file to load
      */
     public void addJarsToClassLoader(String allJars) {
+        String[] jarsToAdd = allJars.split(File.pathSeparator);
         try {
-            // Get the ClassLoader class
-            ClassLoader cl = ClassLoader.getSystemClassLoader();
-            Class<?> clazz = cl.getClass();
-
-            // Get the protected addURL method from the parent URLClassLoader class
-            Method method = clazz.getSuperclass().getDeclaredMethod("addURL", new Class[] { URL.class });
-
-            for (String jarToAdd : allJars.split(File.pathSeparator)) {
-                File jar = new File(jarToAdd);
-
-                // Run projected addURL method to add JAR to class path
-                method.setAccessible(true);
-                method.invoke(cl, new Object[] { jar.toURI().toURL() });
+            for (String jarToAdd : jarsToAdd) {
+                JarFile jar = new JarFile(jarToAdd);
+                Agent.appendJarFile(jar);
 
                 // Setting the template jar path
                 if (checkTemplateDepencency(jarToAdd)) {
@@ -342,10 +335,11 @@ public class CobiGenUtils {
         } catch (SecurityException e) {
             logger.error(
                 "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.");
-        } catch (ReflectiveOperationException e) {
-            logger.error(
-                "Failed to execute reflective method to add a new URL to the current class loader. This is a bug");
+        } catch (IOException e) {
+            logger.error("CobiGen plug-in jar file that was being loaded was not found. "
+                + "Please try again or file an issue in tools-cobigen GitHub repo.");
         }
+
     }
 
     /**
