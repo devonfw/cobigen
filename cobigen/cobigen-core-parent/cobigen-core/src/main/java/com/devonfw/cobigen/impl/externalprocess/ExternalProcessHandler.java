@@ -217,7 +217,7 @@ public class ExternalProcessHandler {
 
         try {
             String filePath = processProperties.getFilePath();
-            if (!new File(filePath).isFile()) {
+            if (exeIsNotValid(filePath)) {
                 filePath = downloadExe(processProperties.getDownloadURL(), filePath, processProperties.getFileName());
             }
 
@@ -252,6 +252,32 @@ public class ExternalProcessHandler {
         }
 
         return true;
+    }
+
+    /**
+     * Returns true if the current exe server is not valid and we need to force a download.
+     * @param filePath
+     *            path to the exe of the server
+     * @return true if the exe file needs to be downloaded again
+     */
+    private boolean exeIsNotValid(String filePath) {
+        File exeFile = new File(filePath);
+        if (!exeFile.isFile()) {
+            return true;
+        }
+
+        try {
+            if (removeOldVersions(exeName, exeFile.getName())) {
+                LOG.info(
+                    "Cleaning up the external servers folder because something strange was found. Server: " + exeName);
+                Files.deleteIfExists(Paths.get(filePath));
+                return true;
+            }
+        } catch (IOException e) {
+            LOG.error(
+                "Not able to clean externalservers folder, but we will keep the execution as this is not a blocker", e);
+        }
+        return false;
     }
 
     /**
@@ -335,7 +361,7 @@ public class ExternalProcessHandler {
                     if (entry.getName().contains(fileName)) {
                         // We don't want the directories (src/main/server.exe), we just want to create the
                         // file (server.exe)
-                        currentFileName = getLastPartOfPath(entry.getName());
+                        currentFileName = getLastPartOfTarPath(entry.getName());
                         File curfile = new File(parentDirectory, currentFileName);
 
                         try (FileOutputStream fos = new FileOutputStream(curfile)) {
@@ -367,12 +393,13 @@ public class ExternalProcessHandler {
     }
 
     /**
-     * Returns the last part of a path. So if we have "src/test/java" it will return "java"
+     * Returns the last part of a tar path (path inside a tar file). So if we have "src/test/java" it will
+     * return "java"
      * @param path
      *            to perform the operation
      * @return string with the result
      */
-    private String getLastPartOfPath(String path) {
+    private String getLastPartOfTarPath(String path) {
         return path.substring(path.lastIndexOf("/") + 1);
     }
 
@@ -384,20 +411,23 @@ public class ExternalProcessHandler {
      * @param currentFileName
      *            name of the current external server including the version number and its extension (e.g.
      *            "nestserver-1.0.7.exe")
+     * @return true if any file was removed
      * @throws IOException
      *             {@link IOException} occurred while removing the file
      */
-    private void removeOldVersions(String fileName, String currentFileName) throws IOException {
+    private Boolean removeOldVersions(String fileName, String currentFileName) throws IOException {
         File folder = new File(ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString());
         File[] listOfFiles = folder.listFiles();
+        Boolean somethingWasRemoved = false;
 
         for (File currFile : listOfFiles) {
-            if (getLastPartOfPath(currFile.getName()).contains(fileName)
-                && !getLastPartOfPath(currFile.getName()).equals(currentFileName)) {
+            if (currFile.getName().contains(fileName) && !currFile.getName().equals(currentFileName)) {
                 // Remove old version of file
                 Files.deleteIfExists(currFile.toPath());
+                somethingWasRemoved = true;
             }
         }
+        return somethingWasRemoved;
     }
 
     /**
@@ -408,7 +438,7 @@ public class ExternalProcessHandler {
      */
     public boolean initializeConnection() {
 
-        for (int retry = 0; retry < 20; retry++) {
+        for (int retry = 0; retry < 10; retry++) {
             try {
                 startConnection();
 
