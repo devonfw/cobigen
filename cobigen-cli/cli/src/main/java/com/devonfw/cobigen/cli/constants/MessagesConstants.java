@@ -58,4 +58,10 @@ public class MessagesConstants {
     public static final String TEMPLATES_OPTION_DESCRIPTION =
         "List of templates that will be generated. They need to be specified with numbers separated by comma.";
 
+    /**
+     * Message constant: description of the plug-in update
+     */
+    public static final String UPDATE_OPTION_DESCRIPTION =
+        "Use update command to find out which plug-ins are outdated and choose which ones do you want to update .";
+
 }
