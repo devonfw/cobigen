@@ -16,7 +16,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * This class facilitates to check plugin is outdated or not as per central plugin and uprovide latest plugin
+ * This class facilitates to check plugin is outdated or not as per central plugin and provide latest plugin
  * version .
  */
 public class PluginUpdateUtil {
@@ -27,7 +27,7 @@ public class PluginUpdateUtil {
      * @throws IOException
      * @throws ParserConfigurationException
      * @param artificialDependency
-     *            artificialDependency defines to plugin whichone compare with maven central plugin
+     *            artificialDependency defines which plugin to compare with maven central
      * @return this method return the latest plugin version
      */
     public static String latestPluginVersion(String artificialDependency)
