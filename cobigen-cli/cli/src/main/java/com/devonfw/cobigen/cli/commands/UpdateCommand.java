@@ -3,15 +3,11 @@ package com.devonfw.cobigen.cli.commands;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -73,7 +69,7 @@ public class UpdateCommand implements Callable<Integer> {
             writer.write(new FileWriter(pomFile), model);
             File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
             cpFile.deleteOnExit();
-            logger.info("Updated successfully");
+            logger.info("Updated successfully. Next time you generate, the plug-ins will be downloaded.");
         }
 
         return 1;
@@ -100,12 +96,9 @@ public class UpdateCommand implements Callable<Integer> {
      *            This parameter contain the key ,value pair of version
      * @param listOfArtifacts
      *            this hold list of artifact id which is need to update
-     * @throws IOException
      */
-    @SuppressWarnings("javadoc")
     public void printOutdatedPlugin(List<Dependency> localPomDependencies, List<String> centralMavenVersionList,
-        HashMap<String, String> updatePluginVersions, HashMap<Integer, String> listOfArtifacts)
-        throws MalformedURLException, IOException, ParserConfigurationException {
+        HashMap<String, String> updatePluginVersions, HashMap<Integer, String> listOfArtifacts) {
         int count = 0;
         String centralMavenVersion = "";
         String requiresUpdate = "";
