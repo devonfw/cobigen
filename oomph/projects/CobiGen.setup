@@ -68,8 +68,8 @@
         storageURI="scope://Workspace"
         label="Target Eclipse">
       <choice
-          value="Neon"
-          label="Neon"/>
+          value="Photon"
+          label="Photon"/>
     </setupTask>
     <setupTask
         xsi:type="setup.targlets:TargletTask"
@@ -78,17 +78,13 @@
           name="Eclipse"
           activeRepositoryList="${active.repo.list}">
         <requirement
-            name="org.eclipse.equinox.sdk.feature.group"
-            versionRange="[3.12.0,3.13.0)"/>
+            name="org.eclipse.equinox.sdk.feature.group"/>
         <requirement
-            name="org.eclipse.sdk.ide"
-            versionRange="[4.6.2,4.6.3)"/>
+            name="org.eclipse.sdk.ide"/>
         <requirement
-            name="org.eclipse.jdt.feature.group"
-            versionRange="[3.12.0,3.13.0)"/>
+            name="org.eclipse.jdt.feature.group"/>
         <requirement
-            name="org.eclipse.m2e.feature.feature.group"
-            versionRange="1.6.2.20150902-0002"/>
+            name="org.eclipse.m2e.feature.feature.group"/>
         <requirement
             name="org.apache.commons.io"/>
         <requirement
@@ -128,13 +124,13 @@
         <sourceLocator
             rootFolder="${targlet.source.location}"/>
         <repositoryList
-            name="Neon">
+            name="Photon">
           <repository
-              url="http://download.eclipse.org/eclipse/updates/4.6/"/>
+              url="http://download.eclipse.org/eclipse/updates/4.8/"/>
           <repository
-              url="http://download.eclipse.org/releases/neon"/>
+              url="http://download.eclipse.org/releases/photon"/>
           <repository
-              url="http://download.eclipse.org/technology/m2e/releases/1.6"/>
+              url="https://download.eclipse.org/technology/m2e/releases/"/>
           <repository
               url="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
           <repository
@@ -1026,6 +1022,6 @@
   </stream>
   <logicalProjectContainer
       xsi:type="setup:Project"
-      href="http://devonfw.github.io/ide/oomph/projects/catalog_devonfw.setup#//@projects[name='tools.cobigen']"/>
+      href="index:/org.eclipse.setup#//@projectCatalogs[name='devonfw']/@projects[name='tools.cobigen']"/>
   <description>CobiGen is the Code-based incremental Generator used in multiple projects at Capgemini.</description>
 </setup:Project>
