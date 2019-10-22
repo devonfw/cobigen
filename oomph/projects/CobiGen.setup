@@ -62,21 +62,11 @@
       xsi:type="setup:CompoundTask"
       name="Targlet">
     <setupTask
-        xsi:type="setup:VariableTask"
-        name="active.repo.list"
-        defaultValue="Photon"
-        storageURI="scope://Workspace"
-        label="Target Eclipse">
-      <choice
-          value="Photon"
-          label="Photon"/>
-    </setupTask>
-    <setupTask
         xsi:type="setup.targlets:TargletTask"
-        targetName="Photon">
+        targetName="Eclipse">
       <targlet
-          name="Eclipse"
-          activeRepositoryList="${active.repo.list}">
+          name="Photon"
+          activeRepositoryList="Photon">
         <requirement
             name="org.eclipse.equinox.sdk.feature.group"/>
         <requirement
