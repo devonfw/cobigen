@@ -64,7 +64,7 @@
     <setupTask
         xsi:type="setup:VariableTask"
         name="active.repo.list"
-        defaultValue="Neon"
+        defaultValue="Photon"
         storageURI="scope://Workspace"
         label="Target Eclipse">
       <choice
@@ -73,7 +73,7 @@
     </setupTask>
     <setupTask
         xsi:type="setup.targlets:TargletTask"
-        targetName="Neon">
+        targetName="Photon">
       <targlet
           name="Eclipse"
           activeRepositoryList="${active.repo.list}">
