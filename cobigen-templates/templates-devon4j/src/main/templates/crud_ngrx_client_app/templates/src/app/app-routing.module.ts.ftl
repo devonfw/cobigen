@@ -1,8 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
+import { RouterModule, Routes } from '@angular/router';
+import { routerReducer, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
-import { BrowserModule } from '@angular/platform-browser';
+import { AuthGuard } from './core/security/auth-guard.service';
+import { NavBarComponent } from './layout/nav-bar/nav-bar.component';
 const routes: Routes = [
   {
     path: '',
@@ -11,11 +13,36 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => {
-      return import('./${variables.etoName?lower_case}/${variables.etoName?lower_case}.module').then((m: any) => {
-        return m.${variables.etoName?cap_first}Module;
-      });
-	},
+    loadChildren: () =>
+      import('./auth/auth.module').then(m => m.AuthDataModule),
+  },
+  {
+    path: 'home',
+    canActivate: [AuthGuard],
+    component: NavBarComponent,
+    children: [
+      {
+        path: '${variables.etoName?uncap_first}',
+        canActivate: [AuthGuard],
+        loadChildren: () =>
+          import('./home/${variables.etoName?lower_case}/${variables.etoName?lower_case}.module').then(
+            m => m.${variables.etoName?cap_first}Module,
+          ),
+      },
+      {
+        path: 'initial',
+        canActivate: [AuthGuard],
+        loadChildren: () =>
+          import('./home/initial-page/initial-page.module').then(
+            m => m.InitialPageModule,
+          ),
+      },
+
+    ],
+  },
+  {
+    path: '**',
+    redirectTo: '/login',
   },
 ];
 
@@ -25,7 +52,7 @@ const routes: Routes = [
 @NgModule({
   exports: [RouterModule],
   imports: [
-    BrowserModule,
+    CommonModule,
     StoreModule.forRoot(
       {
         router: routerReducer,
