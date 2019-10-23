@@ -24,6 +24,7 @@ Using the following command and option you will be able to customize your genera
 
 • `< --help, -h >` : Prints man page.
 
+• `< update, u>` : This command compare the artificial pom plug-ins version with central latest version available and user can update any  outdated plug-ins version .
 
 == CLI Execution steps:
 CobiGen CLI is installed inside your devonfw distribution. In order to execute it follow the next steps:
@@ -48,6 +49,15 @@ A selection of commands that you can use with the CLI:
 image::images/selectedIncr.PNG[Generation path, link="images/selectedIncr.PNG"]
 
 * `cg g foo\bar\webServices.yml -i 1,4,6`: Directly generates increments with IDs `1`, `4` and `6`. CobiGen will not request you any other input.
+
+== CLI update command
+Example of Update Command :
+
+image::images/updateCommand.PNG[Generation path, link="images/updateCommand.PNG"]
+
+Select the plug-ins which you want to update like below :
+
+image::images/updatePlugin.PNG[Generation path, link="images/updatePlugin.PNG"]
 
 == Troubleshooting
 
