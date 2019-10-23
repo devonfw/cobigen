@@ -29,7 +29,6 @@ import com.thoughtworks.qdox.model.impl.AbstractInheritableJavaEntity;
 import com.thoughtworks.qdox.model.impl.DefaultBeanProperty;
 import com.thoughtworks.qdox.model.impl.DefaultJavaClass;
 import com.thoughtworks.qdox.model.impl.DefaultJavaTypeVariable;
-import com.thoughtworks.qdox.model.impl.JavaClassParent;
 import com.thoughtworks.qdox.model.impl.JavaMethodDelegate;
 
 /**
@@ -158,10 +157,10 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         return new LinkedList<JavaType>(implementz);
     }
 
-    @Override
-    public List<JavaClass> getImplementedInterfaces() {
-        return new LinkedList<>(implementz);
-    }
+    // @Override
+    // public List<JavaClass> getImplementedInterfaces() {
+    // return new LinkedList<>(implementz);
+    // }
 
     @Override
     public List<JavaClass> getInterfaces() {
@@ -229,25 +228,25 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     }
 
     @Override
-    public JavaSource getParentSource() {
-        return (getParentClass() != null ? getParentClass().getParentSource() : super.getSource());
+    public JavaSource getSuperSource() {
+        return (getSuperClass() != null ? getSuperClass().getSuperSource() : super.getSource());
     }
 
     @Override
     public JavaSource getSource() {
-        return getParentSource();
+        return getSuperSource();
     }
 
     @Override
     public JavaPackage getPackage() {
-        return getParentSource() != null ? getParentSource().getPackage() : javaPackage;
+        return getSuperSource() != null ? getSuperSource().getPackage() : javaPackage;
     }
 
     @Override
-    public JavaClassParent getParent() {
-        JavaClassParent result = getParentClass();
+    public JavaClassSuper getSuper() {
+        JavaClassSuper result = getSuperClass();
         if (result == null) {
-            result = getParentSource();
+            result = getSuperSource();
         }
         return result;
     }
@@ -260,7 +259,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     public String getFullyQualifiedName() {
-        return (getParentClass() != null ? (getParentClass().getClassNamePrefix())
+        return (getSuperClass() != null ? (getSuperClass().getClassNamePrefix())
             : getPackage() != null ? (getPackage().getName() + ".") : "") + getName();
     }
 
@@ -291,7 +290,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     public boolean isInner() {
-        return getParentClass() != null;
+        return getSuperClass() != null;
     }
 
     @Override
@@ -301,7 +300,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         String result;
         /*
          * JavaClass resolvedClass = getNestedClassByName(typeName); if (resolvedClass != null) { result =
-         * resolvedClass.getFullyQualifiedName(); } else { result = getParent().resolveType(typeName); }
+         * resolvedClass.getFullyQualifiedName(); } else { result = getSuper().resolveType(typeName); }
          */
         result = resolveFullyQualifiedName(typeName);
         return result;
@@ -315,7 +314,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
                 return innerClass.getName();
             }
         }
-        return getParent().resolveCanonicalName(name);
+        return getSuper().resolveCanonicalName(name);
     }
 
     @Override
@@ -326,9 +325,9 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
                 return innerClass.getFullyQualifiedName();
             }
         }
-        String result = // getParent().resolveFullyQualifiedName(name); //replaced since getParent() is
+        String result = // getSuper().resolveFullyQualifiedName(name); //replaced since getSuper() is
                         // deprecated
-            getParentSource().resolveFullyQualifiedName(name);
+            getSuperSource().resolveFullyQualifiedName(name);
         if (result != null) { // by sholzer 18-06-15 to fix issue #108
             result = result.replace('$', '.');
         }
@@ -413,7 +412,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
         }
 
-        for (JavaClass clazz : callingClazz.getImplementedInterfaces()) {
+        for (JavaClass clazz : callingClazz.getInterfaces()) {
             Map<String, JavaMethod> interfaceMethods = getMethodsFromSuperclassAndInterfaces(callingClazz, clazz);
             for (Map.Entry<String, JavaMethod> methodEntry : interfaceMethods.entrySet()) {
                 if (!result.containsKey(methodEntry.getKey())) {
@@ -488,7 +487,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
                 }
             }
 
-            for (JavaClass clazz : getImplementedInterfaces()) {
+            for (JavaClass clazz : getInterfaces()) {
                 JavaMethod method = clazz.getMethodBySignature(name, parameterTypes, true, varArg);
                 if (method != null) {
                     result.add(new JavaMethodDelegate(this, method));
@@ -552,29 +551,29 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         classes.add(cls);
     }
 
-    /**
-     * @deprecated Use {@link #getNestedClasses()} instead.
-     */
-    @Override
-    @Deprecated
-    public List<JavaClass> getClasses() {
-        return getNestedClasses();
-    }
+    // /**
+    // * @deprecated Use {@link #getNestedClasses()} instead.
+    // */
+    // @Override
+    // @Deprecated
+    // public List<JavaClass> getClasses() {
+    // return getNestedClasses();
+    // }
 
     @Override
     public List<JavaClass> getNestedClasses() {
         return classes;
     }
 
-    @Override
-    public JavaClass getInnerClassByName(String name) {
-        return getNestedClassByName(name);
-    }
-
-    @Override
-    public List<JavaClass> getInnerClasses() {
-        return getNestedClasses();
-    }
+    // @Override
+    // public JavaClass getInnerClassByName(String name) {
+    // return getNestedClassByName(name);
+    // }
+    //
+    // @Override
+    // public List<JavaClass> getInnerClasses() {
+    // return getNestedClasses();
+    // }
 
     @Override
     public JavaClass getNestedClassByName(String name) {
@@ -600,7 +599,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         if (fullClassName.equals(getFullyQualifiedName())) {
             return true;
         }
-        for (JavaClass implementz : getImplementedInterfaces()) {
+        for (JavaClass implementz : getInterfaces()) {
             if (implementz.isA(fullClassName)) {
                 return true;
             }
@@ -620,7 +619,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
             return true;
         } else if (javaClass != null) {
             // ask our interfaces
-            for (JavaClass intrfc : getImplementedInterfaces()) {
+            for (JavaClass intrfc : getInterfaces()) {
                 if (intrfc.isA(javaClass)) {
                     return true;
                 }
@@ -705,7 +704,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     public JavaClass getDeclaringClass() {
-        return getParentClass();
+        return getSuperJavaClass();
     }
 
     @Override
@@ -723,7 +722,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
                 result.addAll(getTagsRecursive(superclass, name, superclasses));
             }
 
-            for (JavaClass intrfc : javaClass.getImplementedInterfaces()) {
+            for (JavaClass intrfc : javaClass.getInterfaces()) {
                 if (intrfc != null) {
                     result.addAll(getTagsRecursive(intrfc, name, superclasses));
                 }
@@ -838,6 +837,24 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
             initializers.set(i, patchInitializerBlock);
         }
 
+    }
+
+    @Override
+    public String getBinaryName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public JavaSource getParentSource() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getSimpleName() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

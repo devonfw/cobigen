@@ -25,6 +25,12 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaGenericDeclaration;
 import com.thoughtworks.qdox.model.JavaInitializer;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaExports;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaOpens;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaProvides;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaRequires;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaUses;
 import com.thoughtworks.qdox.model.JavaPackage;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
@@ -478,6 +484,42 @@ public class CustomModelWriter implements ModelWriter {
     @Override
     public String toString() {
         return buffer.toString();
+    }
+
+    @Override
+    public ModelWriter writeModuleDescriptor(JavaModuleDescriptor descriptor) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ModelWriter writeModuleExports(JavaExports exports) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ModelWriter writeModuleOpens(JavaOpens opens) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ModelWriter writeModuleProvides(JavaProvides provides) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ModelWriter writeModuleRequires(JavaRequires requires) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ModelWriter writeModuleUses(JavaUses uses) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
