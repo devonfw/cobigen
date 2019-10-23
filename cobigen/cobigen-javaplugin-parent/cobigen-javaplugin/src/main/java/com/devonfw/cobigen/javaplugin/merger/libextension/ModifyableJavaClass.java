@@ -227,29 +227,29 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         this.javaPackage = javaPackage;
     }
 
-    @Override
-    public JavaSource getSuperSource() {
-        return (getSuperClass() != null ? getSuperClass().getSuperSource() : super.getSource());
-    }
+    // @Override
+    // public JavaSource getSuperSource() {
+    // return (getSuperClass() != null ? getSuperClass().getSuperSource() : super.getSource());
+    // }
 
-    @Override
-    public JavaSource getSource() {
-        return getSuperSource();
-    }
+    // @Override
+    // public JavaSource getSource() {
+    // return getSuperSource();
+    // }
 
     @Override
     public JavaPackage getPackage() {
-        return getSuperSource() != null ? getSuperSource().getPackage() : javaPackage;
+        return getSuper() != null ? getSuper().getPackage() : javaPackage;
     }
 
-    @Override
-    public JavaClassSuper getSuper() {
-        JavaClassSuper result = getSuperClass();
-        if (result == null) {
-            result = getSuperSource();
-        }
-        return result;
-    }
+    // @Override
+    // public JavaClassSuper getSuper() {
+    // JavaClassSuper result = getSuperClass();
+    // if (result == null) {
+    // result = getSuper();
+    // }
+    // return result;
+    // }
 
     @Override
     public String getPackageName() {
@@ -293,56 +293,56 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         return getSuperClass() != null;
     }
 
-    @Override
-    public String resolveType(String typeName) {
-        // since this method is deprecated but still called from other structures it's simply a wrap around
-        // for the proposed method
-        String result;
-        /*
-         * JavaClass resolvedClass = getNestedClassByName(typeName); if (resolvedClass != null) { result =
-         * resolvedClass.getFullyQualifiedName(); } else { result = getSuper().resolveType(typeName); }
-         */
-        result = resolveFullyQualifiedName(typeName);
-        return result;
-    }
+    // @Override
+    // public String resolveType(String typeName) {
+    // // since this method is deprecated but still called from other structures it's simply a wrap around
+    // // for the proposed method
+    // String result;
+    // /*
+    // * JavaClass resolvedClass = getNestedClassByName(typeName); if (resolvedClass != null) { result =
+    // * resolvedClass.getFullyQualifiedName(); } else { result = getSuper().resolveType(typeName); }
+    // */
+    // result = resolveFullyQualifiedName(typeName);
+    // return result;
+    // }
 
-    @Override
-    public String resolveCanonicalName(String name) {
-        // Maybe it's an inner class?
-        for (JavaClass innerClass : getNestedClasses()) {
-            if (innerClass.getName().equals(name)) {
-                return innerClass.getName();
-            }
-        }
-        return getSuper().resolveCanonicalName(name);
-    }
+    // @Override
+    // public String resolveCanonicalName(String name) {
+    // // Maybe it's an inner class?
+    // for (JavaClass innerClass : getNestedClasses()) {
+    // if (innerClass.getName().equals(name)) {
+    // return innerClass.getName();
+    // }
+    // }
+    // return getSuper().resolveCanonicalName(name);
+    // }
 
-    @Override
-    public String resolveFullyQualifiedName(String name) {
-        // Maybe it's an inner class?
-        for (JavaClass innerClass : getNestedClasses()) {
-            if (innerClass.getName().equals(name)) {
-                return innerClass.getFullyQualifiedName();
-            }
-        }
-        String result = // getSuper().resolveFullyQualifiedName(name); //replaced since getSuper() is
-                        // deprecated
-            getSuperSource().resolveFullyQualifiedName(name);
-        if (result != null) { // by sholzer 18-06-15 to fix issue #108
-            result = result.replace('$', '.');
-        }
-        return result;
-    }
-
-    @Override
-    public String getClassNamePrefix() {
-        return getFullyQualifiedName() + "$";
-    }
-
-    @Override
-    public JavaType asType() {
-        return this;
-    }
+    // @Override
+    // public String resolveFullyQualifiedName(String name) {
+    // // Maybe it's an inner class?
+    // for (JavaClass innerClass : getNestedClasses()) {
+    // if (innerClass.getName().equals(name)) {
+    // return innerClass.getFullyQualifiedName();
+    // }
+    // }
+    // String result = // getSuper().resolveFullyQualifiedName(name); //replaced since getSuper() is
+    // // deprecated
+    // getSuperSource().resolveFullyQualifiedName(name);
+    // if (result != null) { // by sholzer 18-06-15 to fix issue #108
+    // result = result.replace('$', '.');
+    // }
+    // return result;
+    // }
+    //
+    // @Override
+    // public String getClassNamePrefix() {
+    // return getFullyQualifiedName() + "$";
+    // }
+    //
+    // // @Override
+    // // public JavaType asType() {
+    // // return this;
+    // // }
 
     @Override
     public List<JavaInitializer> getInitializers() {
