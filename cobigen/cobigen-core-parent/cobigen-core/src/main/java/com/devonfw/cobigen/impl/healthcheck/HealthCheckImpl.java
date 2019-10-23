@@ -1,8 +1,6 @@
 package com.devonfw.cobigen.impl.healthcheck;
 
 import java.io.File;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -56,28 +54,31 @@ public class HealthCheckImpl implements HealthCheck {
 
         TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
         try {
-            try {
-                templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
-                    backupPolicy);
-                LOG.info("Upgrade finished successfully.");
-            } catch (BackupFailedException e) {
-                healthCheckReport.addError(e);
-                if (healthCheckReport.getErrors().contains(BackupFailedException.class)) {
-                    templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
-                        BackupPolicy.NO_BACKUP);
-                    LOG.info("Upgrade finished successfully but without backup.");
-                } else {
-                    healthCheckReport.addError(new CobiGenRuntimeException("Upgrade aborted"));
-                    LOG.info("Upgrade aborted.");
-                }
-            }
-        } catch (RuntimeException e) {
+            templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
+                backupPolicy);
+            LOG.info("Upgrade finished successfully.");
+        } catch (BackupFailedException e) {
             healthCheckReport.addError(e);
-            healthCheckReport
-                .addErrorMessages("An unexpected error occurred while upgrading the templates configuration");
-            LOG.error("An unexpected error occurred while upgrading the templates configuration.", e);
+            if (containsAnyExceptionOfClass(BackupFailedException.class)) {
+                templateConfigurationUpgrader.upgradeConfigurationToLatestVersion(templatesConfigurationFolder,
+                    BackupPolicy.NO_BACKUP);
+                LOG.info("Upgrade finished successfully but without backup.");
+            } else {
+                healthCheckReport.addError(new CobiGenRuntimeException("Upgrade aborted"));
+                LOG.info("Upgrade aborted.");
+            }
         }
         return healthCheckReport;
+    }
+
+    /**
+     * @param typeToBeFound
+     *            the type to find
+     * @return true if any exception in the list of errors of the health check is equal to or subtype of the
+     *         parameter
+     */
+    private boolean containsAnyExceptionOfClass(Class<? extends RuntimeException> typeToBeFound) {
+        return healthCheckReport.getErrors().stream().anyMatch(e -> typeToBeFound.isAssignableFrom(e.getClass()));
     }
 
     @Override
@@ -116,82 +117,75 @@ public class HealthCheckImpl implements HealthCheck {
     }
 
     @Override
-	public HealthCheckReport perform(Path configurationPath) {
-		try {
-			// 1. Get configuration resources
-			// determine expected template configurations to be defined
-			ContextConfiguration contextConfiguration = new ContextConfiguration(configurationPath);
-			List<String> expectedTemplatesConfigurations = Lists.newArrayList();
-			Set<String> hasConfiguration = Sets.newHashSet();
-			Set<String> isAccessible = Sets.newHashSet();
-			Map<String, Path> upgradeableConfigurations = Maps.newHashMap();
-			Set<String> upToDateConfigurations = Sets.newHashSet();
-			Path pathForCobigenTemplates = null;
-			for (Trigger t : contextConfiguration.getTriggers()) {
-				expectedTemplatesConfigurations.add(t.getTemplateFolder());
-			}
-			// 2. Determine current state
-			TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
-			pathForCobigenTemplates = Paths.get(configurationPath + File.separator + "src" + File.separator + "main"
-					+ File.separator + "templates");
+    public HealthCheckReport perform(Path configurationPath) {
+        // 1. Get configuration resources
+        // determine expected template configurations to be defined
+        ContextConfiguration contextConfiguration = new ContextConfiguration(configurationPath);
+        List<String> expectedTemplatesConfigurations = Lists.newArrayList();
+        Set<String> hasConfiguration = Sets.newHashSet();
+        Set<String> isAccessible = Sets.newHashSet();
+        Map<String, Path> upgradeableConfigurations = Maps.newHashMap();
+        Set<String> upToDateConfigurations = Sets.newHashSet();
+        Path pathForCobigenTemplates = null;
+        for (Trigger t : contextConfiguration.getTriggers()) {
+            expectedTemplatesConfigurations.add(t.getTemplateFolder());
+        }
+        // 2. Determine current state
+        TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
+        pathForCobigenTemplates = Paths
+            .get(configurationPath + File.separator + "src" + File.separator + "main" + File.separator + "templates");
 
-			for (String expectedTemplateFolder : expectedTemplatesConfigurations) {
-				if (pathForCobigenTemplates.toFile().exists()) {
-					String configPath = (configurationPath + File.separator + "src" + File.separator + "main"
-							+ File.separator + "templates").toString();
-					hasConfiguration.add(configPath);
-					isAccessible.add(configPath);
-					Path expectedTemplateFolderForResolvedVer = (Paths.get(pathForCobigenTemplates + File.separator
-							+ expectedTemplateFolder.replace("/", File.separator)));
-					TemplatesConfigurationVersion resolvedVersion = templateConfigurationUpgrader
-							.resolveLatestCompatibleSchemaVersion(expectedTemplateFolderForResolvedVer);
-					if (resolvedVersion != null) {
-						if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
-							upgradeableConfigurations.put(expectedTemplateFolder, pathForCobigenTemplates);
-						} else {
-							upToDateConfigurations.add(expectedTemplateFolder);
-						}
-					}
+        for (String expectedTemplateFolder : expectedTemplatesConfigurations) {
+            if (pathForCobigenTemplates.toFile().exists()) {
+                String configPath = (configurationPath + File.separator + "src" + File.separator + "main"
+                    + File.separator + "templates").toString();
+                hasConfiguration.add(configPath);
+                isAccessible.add(configPath);
+                Path expectedTemplateFolderForResolvedVer = (Paths.get(
+                    pathForCobigenTemplates + File.separator + expectedTemplateFolder.replace("/", File.separator)));
+                TemplatesConfigurationVersion resolvedVersion = templateConfigurationUpgrader
+                    .resolveLatestCompatibleSchemaVersion(expectedTemplateFolderForResolvedVer);
+                if (resolvedVersion != null) {
+                    if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
+                        upgradeableConfigurations.put(expectedTemplateFolder, pathForCobigenTemplates);
+                    } else {
+                        upToDateConfigurations.add(expectedTemplateFolder);
+                    }
+                }
 
-				} else {
+            } else {
 
-					Path templateFolder = configurationPath.resolve(expectedTemplateFolder);
-					Path templatesConfigurationPath = templateFolder
-							.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
-					File templatesConfigurationFile = templatesConfigurationPath.toFile();
-					if (templatesConfigurationFile.exists()) {
-						hasConfiguration.add(expectedTemplateFolder);
-						if (templatesConfigurationFile.canWrite()) {
-							isAccessible.add(expectedTemplateFolder);
+                Path templateFolder = configurationPath.resolve(expectedTemplateFolder);
+                Path templatesConfigurationPath =
+                    templateFolder.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+                File templatesConfigurationFile = templatesConfigurationPath.toFile();
+                if (templatesConfigurationFile.exists()) {
+                    hasConfiguration.add(expectedTemplateFolder);
+                    if (templatesConfigurationFile.canWrite()) {
+                        isAccessible.add(expectedTemplateFolder);
 
-							TemplatesConfigurationVersion resolvedVersion = templateConfigurationUpgrader
-									.resolveLatestCompatibleSchemaVersion(templateFolder);
-							if (resolvedVersion != null) {
-								if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
-									upgradeableConfigurations.put(expectedTemplateFolder, templateFolder);
-								} else {
-									upToDateConfigurations.add(expectedTemplateFolder);
-								}
-							}
-						}
-					}
+                        TemplatesConfigurationVersion resolvedVersion =
+                            templateConfigurationUpgrader.resolveLatestCompatibleSchemaVersion(templateFolder);
+                        if (resolvedVersion != null) {
+                            if (resolvedVersion != TemplatesConfigurationVersion.getLatest()) {
+                                upgradeableConfigurations.put(expectedTemplateFolder, templateFolder);
+                            } else {
+                                upToDateConfigurations.add(expectedTemplateFolder);
+                            }
+                        }
+                    }
+                }
 
-				}
-			}
+            }
+        }
 
-			healthCheckReport.setExpectedTemplatesConfigurations(expectedTemplatesConfigurations);
-			healthCheckReport.setHasConfiguration(hasConfiguration);
-			healthCheckReport.setIsAccessible(isAccessible);
-			healthCheckReport.setUpgradeableConfigurations(upgradeableConfigurations);
-			healthCheckReport.setUpToDateConfigurations(upToDateConfigurations);
+        healthCheckReport.setExpectedTemplatesConfigurations(expectedTemplatesConfigurations);
+        healthCheckReport.setHasConfiguration(hasConfiguration);
+        healthCheckReport.setIsAccessible(isAccessible);
+        healthCheckReport.setUpgradeableConfigurations(upgradeableConfigurations);
+        healthCheckReport.setUpToDateConfigurations(upToDateConfigurations);
 
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			healthCheckReport.addError(e);
-			healthCheckReport.addErrorMessages("An unexpected exception occurred.");
-			LOG.error("An unexpected exception occurred.", e);
-		}
-		return healthCheckReport;
-	}
+        return healthCheckReport;
+    }
 
 }
