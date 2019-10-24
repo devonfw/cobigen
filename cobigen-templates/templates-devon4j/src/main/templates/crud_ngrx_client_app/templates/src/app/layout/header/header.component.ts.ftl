@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { logOutAction } from '../../auth/store/actions';
 import { AuthService } from '../../core/security/auth.service';
-import { AppState } from '../../home/sampledata/store/reducers/index';
+import { AppState } from '../../home/${variables.etoName?lower_case}/store/reducers/index';
 
 /* @export
  * @class HeaderComponent
