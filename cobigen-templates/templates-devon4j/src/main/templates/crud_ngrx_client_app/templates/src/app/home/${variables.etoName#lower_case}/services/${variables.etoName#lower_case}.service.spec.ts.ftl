@@ -1,7 +1,7 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { ${variables.etoName?cap_first}Service } from './${variables.etoName?lower_case}.service';
 
-import { CoreModule } from '../../core/core.module';
+import { CoreModule } from '../../../core/core.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
