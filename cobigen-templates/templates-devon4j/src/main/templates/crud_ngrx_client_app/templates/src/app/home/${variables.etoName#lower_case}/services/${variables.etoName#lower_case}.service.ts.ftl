@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
-import { SearchCriteria } from '../../core/interfaces/search-criteria';
-import { Sort } from '../../core/interfaces/sort';
+import { SearchCriteria } from '../../../shared/models/search-criteria';
+import { Sort } from '../../../shared/models/sort';
 import { ${variables.etoName?cap_first}Model } from '../models/${variables.etoName?lower_case}.model';
 
 
@@ -43,7 +43,7 @@ export class ${variables.etoName?cap_first}Service {
     };
     return this.http.post(this.urlService, obj);
   }
-  
+
   edit${variables.etoName?cap_first}(data: any): Observable<Object> {
     const obj: any = {
       id: data.id,

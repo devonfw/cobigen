@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CoreModule } from '../core/core.module';
+import { CoreModule } from '../../core/core.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { StoreModule } from '@ngrx/store';
 import { reducers } from './store/reducers/index';
@@ -9,7 +9,6 @@ import { ${variables.etoName?cap_first}DialogComponent } from '../${variables.et
 import { ${variables.etoName?cap_first}RoutingModule } from './${variables.etoName?lower_case}-routing.module';
 import { ${variables.etoName?cap_first}AlertComponent } from './components/${variables.etoName?lower_case}-alert/${variables.etoName?lower_case}-alert.component';
 import { ${variables.etoName?cap_first}GridComponent } from './components/${variables.etoName?lower_case}-grid/${variables.etoName?lower_case}-grid.component';
-import { HomeModule } from '../home/home.module';
 import { effects } from './store/effects';
 
 @NgModule({
@@ -18,8 +17,7 @@ import { effects } from './store/effects';
     CoreModule,
     TranslateModule,
     ${variables.etoName?cap_first}RoutingModule,
-    HomeModule,
-    StoreModule.forFeature('${variables.etoName?lower_case}reducer',reducers),
+    StoreModule.forFeature('${variables.etoName?lower_case}reducer', reducers),
     EffectsModule.forFeature(effects),
   ],
   declarations: [

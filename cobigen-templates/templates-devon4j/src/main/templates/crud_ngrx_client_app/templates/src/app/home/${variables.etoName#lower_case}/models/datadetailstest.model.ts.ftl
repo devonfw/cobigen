@@ -6,7 +6,7 @@ export class TestDataDetails {
   ${field.name?uncap_first}?: ${JavaUtil.getAngularType(field.type)};
   </#list>
   id?: number;
-  pageSize?: number = 8;
+  pageSize = 8;
   pageSizes?: number[] = [8, 16, 24];
   selectedRow?: any;
   size?: number;

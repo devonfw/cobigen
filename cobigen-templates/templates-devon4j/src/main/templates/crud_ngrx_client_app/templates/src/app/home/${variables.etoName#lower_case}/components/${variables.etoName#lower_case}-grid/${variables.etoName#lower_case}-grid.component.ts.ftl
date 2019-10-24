@@ -5,23 +5,20 @@ import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ${variables.etoName?cap_first}Service } from '../../services/${variables.etoName?lower_case}.service';
-import { AuthService } from '../../../core/security/auth.service';
+import { AuthService } from '../../../../core/security/auth.service';
 
 import { ${variables.etoName?cap_first}DialogComponent } from '../../components/${variables.etoName?lower_case}-dialog/${variables.etoName?lower_case}-dialog.component';
-import { Pageable } from '../../../core/interfaces/pageable';
+import { Pageable } from '../../../../shared/models/pageable';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import * as fromStore from '../../store';
-import {
-  CreateData,
-  UpdateData,
-  DeleteData,
-  LoadData,
-} from '../../store/actions/${variables.etoName?lower_case}.actions';
 import { ${variables.etoName?cap_first}Model } from '../../models/${variables.etoName?lower_case}.model';
+import * as ${variables.etoName?uncap_first}Actions from '../../store/actions/${variables.etoName?lower_case}.actions';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ${variables.etoName?cap_first}AlertComponent } from '../${variables.etoName?lower_case}-alert/${variables.etoName?lower_case}-alert.component';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { SearchCriteriaDataModel } from '../../models/searchcriteriadata.model';
+
 @Component({
   selector: 'public-${variables.etoName?lower_case}-grid',
   templateUrl: './${variables.etoName?lower_case}-grid.component.html',
@@ -61,7 +58,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
     ];
 
   totalItems: number;
-  pageSize: number = 8;
+  pageSize = 8;
   pageSizes: string[] = ['8', '16', '24'];
   selectedRow: any;
   dialogRef: MatDialogRef<${variables.etoName?cap_first}DialogComponent>;
@@ -95,11 +92,18 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
       fromStore.get${variables.etoName?cap_first}Total,
     );
 
-    this.store.dispatch(new LoadData(this.getSearchCriteria()));
+    this.store.dispatch(
+      ${variables.etoName?uncap_first}Actions.loadData({
+        ${variables.etoName?uncap_first}Model: this.getSearchCriteria(),
+      }),
+    );
     this.get${variables.etoName?cap_first}();
   }
 
-  ngOnDestroy(): void {}
+  // tslint:disable-next-line: use-life-cycle-interface
+  ngOnDestroy(): void {
+  	/* Method necessary to manage unsubcriptions,  it must not be deleted*/
+  }
 
   get${variables.etoName?cap_first}(): void {
     this.${variables.etoName?lower_case}Total$.pipe(untilDestroyed(this)).subscribe(
@@ -129,7 +133,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
       .subscribe((res: string) => {
         value = res;
       });
-	  
+
 	this.translate.onLangChange.pipe(untilDestroyed(this)).subscribe(() => {
       this.columns.forEach((column: any) => {
         if (text.endsWith(column.name)) {
@@ -142,10 +146,10 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
         }
       });
     });
-	  
+
     return value;
   }
-  
+
   getSearchCriteria(): {} {
     return {
       size: this.pageable.pageSize,
@@ -161,7 +165,11 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
         pageNumber: pagingEvent.pageIndex,
         sort: this.pageable.sort,
     };
-    this.store.dispatch(new LoadData(this.getSearchCriteria()));
+    this.store.dispatch(
+      ${variables.etoName?uncap_first}Actions.loadData({
+        ${variables.etoName?uncap_first}Model: this.getSearchCriteria(),
+      }),
+    );
   }
 
   sort(sortEvent: Sort): void {
@@ -172,7 +180,11 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
        direction: '' + sortEvent.direction,
       });
 	}
-    this.store.dispatch(new LoadData(this.getSearchCriteria()));
+    this.store.dispatch(
+      ${variables.etoName?uncap_first}Actions.loadData({
+        ${variables.etoName?uncap_first}Model: this.getSearchCriteria(),
+      }),
+    );
   }
 
   checkboxLabel(row?: any): string {
@@ -187,11 +199,12 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((result: any) => {
         if (result) {
+          const searchCriteriaDataModel: SearchCriteriaDataModel = {
+            criteria: this.getSearchCriteria(),
+            data: result,
+          };
           this.store.dispatch(
-            new CreateData({
-              criteria: this.getSearchCriteria(),
-              data: result,
-            }),
+            ${variables.etoName?uncap_first}Actions.createData({ searchCriteriaDataModel }),
           );
         }
       });
@@ -212,11 +225,12 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
         if (result) {
           {
             this.selectedRow = undefined;
+            const searchCriteriaDataModel: SearchCriteriaDataModel = {
+              criteria: this.getSearchCriteria(),
+              data: result,
+            };
             this.store.dispatch(
-              new UpdateData({
-                criteria: this.getSearchCriteria(),
-                data: result,
-              }),
+              ${variables.etoName?uncap_first}Actions.updateData({ searchCriteriaDataModel }),
             );
           }
         }
@@ -249,24 +263,33 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((accept: boolean) => {
         if (accept) {
+          const searchCriteriaDataModel: SearchCriteriaDataModel = {
+            criteria: this.getSearchCriteria(),
+            data: payload,
+          };
           this.store.dispatch(
-            new DeleteData({
-              criteria: this.getSearchCriteria(),
-              data: payload,
-            }),
+            ${variables.etoName?uncap_first}Actions.deleteData({ searchCriteriaDataModel }),
           );
           this.selectedRow = undefined;
         }
       });
   }
-  
+
   filter(): void {
-    this.store.dispatch(new LoadData(this.getSearchCriteria()));
+    this.store.dispatch(
+      ${variables.etoName?uncap_first}Actions.loadData({
+        ${variables.etoName?uncap_first}Model: this.getSearchCriteria(),
+      }),
+    );
     this.pagingBar.firstPage();
   }
 
   searchReset(form: any): void {
     form.reset();
-    this.store.dispatch(new LoadData(this.getSearchCriteria()));
+    this.store.dispatch(
+      ${variables.etoName?uncap_first}Actions.loadData({
+        ${variables.etoName?uncap_first}Model: this.getSearchCriteria(),
+      }),
+    );
   }
 }
