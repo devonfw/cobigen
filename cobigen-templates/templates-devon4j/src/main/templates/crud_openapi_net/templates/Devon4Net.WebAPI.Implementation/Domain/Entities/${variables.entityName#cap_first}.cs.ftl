@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Devon4Net.Domain.Entities.Models;
+using Devon4Net.WebAPI.Implementation.Domain.Entities;
 
-namespace Devon4Net.Domain.Entities.Models
+namespace Devon4Net.WebAPI.Implementation.Domain.Entities
 {
     public class ${variables.entityName}
     {
