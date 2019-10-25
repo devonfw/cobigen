@@ -22,8 +22,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.commands.GenerateCommand;
@@ -36,10 +34,6 @@ import classloader.Agent;
  */
 public class UpdateCommandTest {
 
-    /**
-     * Logger to output useful information to the user
-     */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";
@@ -70,7 +64,7 @@ public class UpdateCommandTest {
      * @throws URISyntaxException
      */
     @Before
-    public static void setCliPath() throws URISyntaxException {
+    public void setCliPath() throws URISyntaxException {
         if (rootCLIPath == null) {
             File locationCLI;
             locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -87,7 +81,6 @@ public class UpdateCommandTest {
     public void replacePom() throws IOException {
 
         File originalPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
-        logger.info("Pom file path" + rootCLIPath.toString());
         File tmpPom = new File(Paths.get(testFileRootPath, tmpPomFileName).toString());
 
         // Storing original pom
@@ -171,12 +164,12 @@ public class UpdateCommandTest {
         File originalPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
 
         String oldVersion = getArtifactVersion(originalPom, pluginId);
-        logger.info("tsplugin version before update: " + oldVersion);
 
         assertNotNull(oldVersion);
 
-        String args[] = new String[1];
+        String args[] = new String[2];
         args[0] = "update";
+        args[1] = "--all";
         CobiGenCLI.main(args);
 
         File updatedPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
@@ -184,9 +177,5 @@ public class UpdateCommandTest {
 
         assertNotNull(newVersion);
         assertNotEquals(oldVersion, newVersion);
-
-        logger.info("tsplugin version after update: " + newVersion);
-
     }
-
 }
