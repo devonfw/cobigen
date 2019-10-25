@@ -24,6 +24,7 @@ import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.PluginUpdateUtil;
 
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * This class handle update command
@@ -35,6 +36,12 @@ public class UpdateCommand implements Callable<Integer> {
      * Logger to output useful information to the user
      */
     private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+    
+    /**
+     * If this options is enabled, all plugins get updated.
+     */
+    @Option(names = { "--all" }, negatable = true, description = MessagesConstants.UPDATE_ALL_DESCRIPTION)
+    boolean updateAll;
 
     @Override
     public Integer call() throws Exception {
@@ -52,15 +59,22 @@ public class UpdateCommand implements Callable<Integer> {
             Model model = reader.read(new FileReader(pomFile));
             List<Dependency> localPomDependencies = model.getDependencies();
             printOutdatedPlugin(localPomDependencies, centralMavenVersionList, updatePluginVersions, listOfArtifacts);
-            // User selects which dependencies to update
-            userInputPluginSelection(userInputPluginForUpdate);
-            if (userInputPluginForUpdate.size() == 1 ) {
-                if (!StringUtils.isNumeric(userInputPluginForUpdate.get(0)))
-                {
-                    logger.info("Nothing selected to update...");
-                    System.exit(0);
+            
+            if (updateAll)
+            {
+                userInputPluginForUpdate.add("0"); 
+                logger.info("(0) ALL is selected!"); 
+            }
+            else {
+                // User selects which dependencies to update
+                userInputPluginSelection(userInputPluginForUpdate);
+                if (userInputPluginForUpdate.size() == 1 ) {
+                    if (!StringUtils.isNumeric(userInputPluginForUpdate.get(0)))
+                    {
+                        logger.info("Nothing selected to update...");
+                        System.exit(0);
+                    }
                 }
-                
             }
             logger.info("Updating the following components:");
 
