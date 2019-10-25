@@ -279,7 +279,7 @@ def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
     run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U "+activation_str, execpath=execpath)
 
 
-def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
+def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs, p2_upload: list=p2_upload):
     for site in p2_upload:
         run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars -Dp2.upload={}".format(site), execpath=execpath)
 
