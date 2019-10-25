@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -54,9 +55,14 @@ public class UpdateCommand implements Callable<Integer> {
             model = reader.read(new FileReader(pomFile));
             // User selects which dependencies to update
             userInputPluginSelection(userInputPluginForUpdate);
-            if (userInputPluginForUpdate.size() == 1) {
-                logger.info("Nothing selected to update...");
-                System.exit(0);
+            logger.info("User input: "+ userInputPluginForUpdate);
+            if (userInputPluginForUpdate.size() == 1 ) {
+                if (!StringUtils.isNumeric(userInputPluginForUpdate.get(0)))
+                {
+                    logger.info("Nothing selected to update...");
+                    System.exit(0);
+                }
+                
             }
             logger.info("Updating the following components:");
 
@@ -175,6 +181,7 @@ public class UpdateCommand implements Callable<Integer> {
                     String plugin = listOfArtifacts.get(selectedArtifactNumber);
                     logger.info("(" + selectedArtifactNumber + ") " + plugin);
                     for (Dependency selectedDependencies : localPomDependencies) {
+                        
                         if ((plugin).equals(selectedDependencies.getArtifactId())) {
                             selectedDependencies.setVersion(centralMavenVersionList.get(index));
 
