@@ -253,21 +253,23 @@ __log_step("Deploy artifacts to nexus and update sites...")
 #############################
 
 p2_profiles = {
-    "mucevolve":"stable",
-    "bintray":"bintray"
+    "mucevolve":["stable"],
+    "bintray":["bintray"],
+    "both":["stable","bintray"]
 }
 p2_upload = None
 while p2_upload not in p2_profiles:
-    p2_upload = prompt_enter_value("To which update site do you want to deploy (bintray/mucevolve)?")
+    p2_upload = prompt_enter_value("To which update site(s) do you want to deploy (bintray/mucevolve... or both)?")
 p2_upload = p2_profiles[p2_upload]
 
-def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs, p2_upload: str=p2_upload ):
+def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs, p2_upload: list=p2_upload ):
     activation_str = ""
     if oss:
         activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable        
     run_maven_process_and_handle_error("mvn clean package -U bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn install -U bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
-    run_maven_process_and_handle_error("mvn deploy -U "+activation_str+" -Dmaven.test.skip=true -Dp2.upload={}".format(p2_upload), execpath=execpath)
+    for site in p2_upload:
+        run_maven_process_and_handle_error("mvn deploy -U "+activation_str+" -Dmaven.test.skip=true -Dp2.upload={}".format(site), execpath=execpath)
 
 
 def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
@@ -278,7 +280,8 @@ def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
 
 
 def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
-    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars -Dp2.upload={}".format(p2_upload), execpath=execpath)
+    for site in p2_upload:
+        run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars -Dp2.upload={}".format(site), execpath=execpath)
 
 
 if config.dry_run or config.test_run:
