@@ -53,6 +53,9 @@ public class UpdateCommandTest {
     /** outdated pom file */
     private static String outdatedPomFileName = "outdatedPom.xml";
     
+    /** root CLI path */
+    private static Path rootCLIPath = null;
+    
     /**
      * We need to dynamically load the Java agent before the tests.
      * Note that Java 9 requires -Djdk.attach.allowAttachSelf=true to be present among JVM startup arguments.
@@ -62,16 +65,28 @@ public class UpdateCommandTest {
         AgentLoader.loadAgentClass(Agent.class.getName(), "");
     }
     
+    /** TODO: rootCLI path setting 
+     * 
+     * @throws URISyntaxException
+     */
+    @Before
+    public void setCliPath() throws URISyntaxException {
+        if (rootCLIPath == null)
+        {
+            File locationCLI;
+            locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            rootCLIPath = locationCLI.getParentFile().toPath();
+        }
+    }
+    
     /**
      * TODO: Repalce original pom.
      * @throws URISyntaxException 
      * @throws IOException 
      */
     @Before
-    public void replacePom() throws URISyntaxException, IOException {
-        File locationCLI;
-        locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        Path rootCLIPath = locationCLI.getParentFile().toPath();
+    public void replacePom() throws IOException  {
+
         File originalPom = new File(Paths.get(rootCLIPath.toString(),pomFileName).toString());
         logger.info("Pom file path" + rootCLIPath.toString());        
         File tmpPom = new File(Paths.get(testFileRootPath,tmpPomFileName).toString());
@@ -92,10 +107,7 @@ public class UpdateCommandTest {
      */
     
     @After
-    public void restorePom() throws URISyntaxException, IOException {
-        File locationCLI;
-        locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        Path rootCLIPath = locationCLI.getParentFile().toPath();
+    public void restorePom() throws IOException {
         File originalPom = new File(Paths.get(rootCLIPath.toString(),pomFileName).toString());
         File tmpPom = new File(Paths.get(testFileRootPath,tmpPomFileName).toString());
         
@@ -152,12 +164,8 @@ public class UpdateCommandTest {
      * @throws XmlPullParserException 
      */
     @Test
-    public void pluginUpdateTest() throws URISyntaxException, IOException, XmlPullParserException {
-        
+    public void pluginUpdateTest() throws IOException, XmlPullParserException {
         String pluginId = "tsplugin";
-        File locationCLI;
-        locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        Path rootCLIPath = locationCLI.getParentFile().toPath();
         File originalPom = new File(Paths.get(rootCLIPath.toString(),pomFileName).toString());
        
         String oldVersion = getArtifactVersion(originalPom, pluginId);
