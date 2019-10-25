@@ -63,5 +63,12 @@ public class MessagesConstants {
      */
     public static final String UPDATE_OPTION_DESCRIPTION =
         "Use update command to find out which plug-ins are outdated and choose which ones do you want to update .";
+    
+    /**
+     * Message constant: description of update all option
+     */
+    public static final String UPDATE_ALL_DESCRIPTION =
+        "If this option is enabled, all plugins will get updated.";
+    
 
 }
