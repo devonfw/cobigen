@@ -51,9 +51,7 @@ public class UpdateCommand implements Callable<Integer> {
             Model model = reader.read(new FileReader(pomFile));
             List<Dependency> localPomDependencies = model.getDependencies();
             printOutdatedPlugin(localPomDependencies, centralMavenVersionList, updatePluginVersions, listOfArtifacts);
-            if (pomFile.exists()) {
-                model = reader.read(new FileReader(pomFile));
-            }
+            model = reader.read(new FileReader(pomFile));
             // User selects which dependencies to update
             userInputPluginSelection(userInputPluginForUpdate);
             if (userInputPluginForUpdate.size() == 1) {
