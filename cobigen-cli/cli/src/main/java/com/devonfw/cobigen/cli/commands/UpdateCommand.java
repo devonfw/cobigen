@@ -52,10 +52,8 @@ public class UpdateCommand implements Callable<Integer> {
             Model model = reader.read(new FileReader(pomFile));
             List<Dependency> localPomDependencies = model.getDependencies();
             printOutdatedPlugin(localPomDependencies, centralMavenVersionList, updatePluginVersions, listOfArtifacts);
-            model = reader.read(new FileReader(pomFile));
             // User selects which dependencies to update
             userInputPluginSelection(userInputPluginForUpdate);
-            logger.info("User input: "+ userInputPluginForUpdate);
             if (userInputPluginForUpdate.size() == 1 ) {
                 if (!StringUtils.isNumeric(userInputPluginForUpdate.get(0)))
                 {
@@ -181,7 +179,6 @@ public class UpdateCommand implements Callable<Integer> {
                     String plugin = listOfArtifacts.get(selectedArtifactNumber);
                     logger.info("(" + selectedArtifactNumber + ") " + plugin);
                     for (Dependency selectedDependencies : localPomDependencies) {
-                        
                         if ((plugin).equals(selectedDependencies.getArtifactId())) {
                             selectedDependencies.setVersion(centralMavenVersionList.get(index));
 
