@@ -196,17 +196,27 @@ public class ModifyableModelBuilder implements Builder {
     }
 
     protected ModifyableJavaClass bindClass(ModifyableJavaClass newClass) {
-
         if (currentField != null) {
             classStack.getFirst().addClass(newClass);
             currentField.setEnumConstantClass(newClass);
         } else if (!classStack.isEmpty()) {
             classStack.getFirst().addClass(newClass);
-            newClass.setSuperClass(classStack.getFirst());// .setParentClass(classStack.getFirst());
+            newClass.setDeclaringClass(classStack.getFirst());
         } else {
             source.addClass(newClass);
         }
         return newClass;
+        // if (currentField != null) {
+        // classStack.getFirst().addClass(newClass);
+        // currentField.setEnumConstantClass(newClass);
+        // } else if (!classStack.isEmpty()) {
+        // classStack.getFirst().addClass(newClass);
+        // // newClass.setSuperClass(classStack.getFirst());
+        // newClass.setParentClass(classStack.getFirst());
+        // } else {
+        // source.addClass(newClass);
+        // }
+        // return newClass;
     }
 
     @Override
@@ -449,18 +459,36 @@ public class ModifyableModelBuilder implements Builder {
     }
 
     private void setAnnotations(final AbstractBaseJavaEntity entity) {
-
         if (!currentAnnoDefs.isEmpty()) {
-            DefaultJavaAnnotationAssembler assembler = new DefaultJavaAnnotationAssembler((JavaClass) entity,
-                classLibrary, TypeResolver.byPackageName(source.getPackageName(), classLibrary, null));
+            TypeResolver typeResolver;
+            if (classStack.isEmpty()) {
+                typeResolver = TypeResolver.byPackageName(source.getPackageName(), classLibrary, source.getImports());
+            } else {
+                typeResolver =
+                    TypeResolver.byClassName(classStack.getFirst().getBinaryName(), classLibrary, source.getImports());
+            }
 
-            List<JavaAnnotation> annotations = new LinkedList<>();
+            DefaultJavaAnnotationAssembler assembler =
+                new DefaultJavaAnnotationAssembler(entity.getDeclaringClass(), classLibrary, typeResolver);
+
+            List<JavaAnnotation> annotations = new LinkedList<JavaAnnotation>();
             for (AnnoDef annoDef : currentAnnoDefs) {
                 annotations.add(assembler.assemble(annoDef));
             }
             entity.setAnnotations(annotations);
             currentAnnoDefs.clear();
         }
+        // if (!currentAnnoDefs.isEmpty()) {
+        // DefaultJavaAnnotationAssembler assembler = new DefaultJavaAnnotationAssembler((JavaClass) entity,
+        // classLibrary, TypeResolver.byPackageName(source.getPackageName(), classLibrary, null));
+        //
+        // List<JavaAnnotation> annotations = new LinkedList<>();
+        // for (AnnoDef annoDef : currentAnnoDefs) {
+        // annotations.add(assembler.assemble(annoDef));
+        // }
+        // entity.setAnnotations(annotations);
+        // currentAnnoDefs.clear();
+        // }
     }
 
     // Don't resolve until we need it... class hasn't been defined yet.

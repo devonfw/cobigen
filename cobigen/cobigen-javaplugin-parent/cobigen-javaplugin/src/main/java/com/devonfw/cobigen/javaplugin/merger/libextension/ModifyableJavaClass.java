@@ -232,14 +232,14 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     // return (getSuperClass() != null ? getSuperClass().getSuperSource() : super.getSource());
     // }
 
-    // @Override
-    // public JavaSource getSource() {
-    // return getSuperSource();
-    // }
+    @Override
+    public JavaSource getSource() {
+        return getParentSource();
+    }
 
     @Override
     public JavaPackage getPackage() {
-        return getSuperJavaClass() != null ? getSuperJavaClass().getPackage() : javaPackage;
+        return getParentSource() != null ? getParentSource().getPackage() : javaPackage;
     }
 
     // @Override
@@ -259,8 +259,15 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     public String getFullyQualifiedName() {
-        return (getSuperJavaClass() != null ? (getSuperJavaClass().getPackageName())
-            : getPackage() != null ? (getPackage().getName() + ".") : "") + getName();
+        // return (getParentClass() != null ? (getParentClass().getClassNamePrefix())
+        // : getPackage() != null ? (getPackage().getName() + ".") : "") + getName();
+        if (isPrimitive()) {
+            return getName();
+        } else if (getDeclaringClass() == null) {
+            return (getPackage() == null ? "" : getPackage().getName() + '.') + getSimpleName();
+        } else {
+            return getDeclaringClass().getFullyQualifiedName() + "." + getSimpleName();
+        }
     }
 
     @Override
@@ -702,10 +709,10 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         return result;
     }
 
-    @Override
-    public JavaClass getDeclaringClass() {
-        return getSuperJavaClass();
-    }
+    // @Override
+    // public JavaClass getDeclaringClass() {
+    // return getParentClass();// getSuperJavaClass();
+    // }
 
     @Override
     public List<DocletTag> getTagsByName(String name, boolean superclasses) {
@@ -841,20 +848,18 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     public String getBinaryName() {
-        // TODO Auto-generated method stub
-        return null;
+        return (getDeclaringClass() == null ? getCanonicalName()
+            : getDeclaringClass().getBinaryName() + '$' + getSimpleName());
     }
 
     @Override
     public JavaSource getParentSource() {
-        // TODO Auto-generated method stub
-        return null;
+        return (getDeclaringClass() != null ? getDeclaringClass().getParentSource() : super.getSource());
     }
 
     @Override
     public String getSimpleName() {
-        // TODO Auto-generated method stub
-        return null;
+        return getName();
     }
 
 }
