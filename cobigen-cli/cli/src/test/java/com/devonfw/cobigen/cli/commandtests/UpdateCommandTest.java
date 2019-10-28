@@ -30,7 +30,7 @@ import com.ea.agentloader.AgentLoader;
 import classloader.Agent;
 
 /**
- * 
+ * Tests the usage of the update command
  */
 public class UpdateCommandTest {
 
@@ -96,7 +96,6 @@ public class UpdateCommandTest {
      * @throws URISyntaxException
      * @throws IOException
      */
-
     @After
     public void restorePom() throws IOException {
         File originalPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
