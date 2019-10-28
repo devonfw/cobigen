@@ -2,12 +2,6 @@
 <templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
   version="2.1">
   
-  <templates>
-    <templateExtension ref="${variables.entityName#replace('Dto', '')#cap_first}Dto.cs"/>
-    <templateExtension ref="${variables.component#cap_first}Controller.cs"/>
-    <templateExtension ref="I${variables.component#cap_first}Service.cs"/>
-  </templates>
-  
   <templateScans>
     <templateScan templatePath="templates" destinationPath=""/>
   </templateScans>
@@ -17,10 +11,18 @@
       <incrementRef ref="controllers"/>
       <incrementRef ref="dtos"/>
       <incrementRef ref="services"/>
-      <incrementRef ref="entities"/>
+      <incrementRef ref="domain"/>
+      <incrementRef ref="application"/>
     </increment>
-    <increment name="entities" description="Entities">
+    <increment name="application" description="Application">
+        <templateRef ref="Startup.cs"/>
+        <templateRef ref="DevonConfiguration.cs"/>
+    </increment>
+    <increment name="domain" description="Domain">
+        <templateRef ref="CobigenContext.cs"/>
         <templateRef ref="${variables.entityName#cap_first}.cs"/>
+        <templateRef ref="I${variables.entityName#cap_first}Repository.cs"/>
+        <templateRef ref="${variables.entityName#cap_first}Repository.cs"/>
     </increment>
     <increment name="dtos" description="DTO's">
         <templateRef ref="${variables.entityName#replace('Dto', '')#cap_first}Dto.cs"/>
