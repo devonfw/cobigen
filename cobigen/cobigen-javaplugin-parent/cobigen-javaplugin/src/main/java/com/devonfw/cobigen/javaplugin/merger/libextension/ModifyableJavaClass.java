@@ -239,7 +239,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     public JavaPackage getPackage() {
-        return getSuper() != null ? getSuper().getPackage() : javaPackage;
+        return getSuperJavaClass() != null ? getSuperJavaClass().getPackage() : javaPackage;
     }
 
     // @Override
@@ -259,7 +259,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     public String getFullyQualifiedName() {
-        return (getSuperClass() != null ? (getSuperClass().getClassNamePrefix())
+        return (getSuperJavaClass() != null ? (getSuperJavaClass().getPackageName())
             : getPackage() != null ? (getPackage().getName() + ".") : "") + getName();
     }
 
