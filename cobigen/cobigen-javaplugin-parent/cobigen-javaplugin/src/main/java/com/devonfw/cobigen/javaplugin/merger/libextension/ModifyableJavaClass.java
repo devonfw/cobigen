@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.thoughtworks.qdox.library.ClassLibrary;
 import com.thoughtworks.qdox.model.BeanProperty;
 import com.thoughtworks.qdox.model.DocletTag;
@@ -36,6 +39,9 @@ import com.thoughtworks.qdox.model.impl.JavaMethodDelegate;
  */
 @SuppressWarnings({ "javadoc", "deprecation" })
 public class ModifyableJavaClass extends AbstractInheritableJavaEntity implements JavaClass {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyableJavaClass.class);
 
     /**
      * Serial version UID
