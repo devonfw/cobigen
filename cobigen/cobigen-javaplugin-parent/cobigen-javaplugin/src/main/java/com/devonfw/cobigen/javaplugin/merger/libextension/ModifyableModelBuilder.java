@@ -25,6 +25,7 @@ import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaGenericDeclaration;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaModule;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
 import com.thoughtworks.qdox.model.JavaType;
@@ -46,10 +47,17 @@ import com.thoughtworks.qdox.parser.structs.ClassDef;
 import com.thoughtworks.qdox.parser.structs.FieldDef;
 import com.thoughtworks.qdox.parser.structs.InitDef;
 import com.thoughtworks.qdox.parser.structs.MethodDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.ExportsDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.OpensDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.ProvidesDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.RequiresDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.UsesDef;
 import com.thoughtworks.qdox.parser.structs.PackageDef;
 import com.thoughtworks.qdox.parser.structs.TagDef;
 import com.thoughtworks.qdox.parser.structs.TypeDef;
 import com.thoughtworks.qdox.parser.structs.TypeVariableDef;
+import com.thoughtworks.qdox.type.TypeResolver;
 import com.thoughtworks.qdox.writer.ModelWriterFactory;
 
 /**
@@ -83,9 +91,12 @@ public class ModifyableModelBuilder implements Builder {
 
     private ModelWriterFactory modelWriterFactory;
 
+    private ClassLibrary classLibrary;
+
     public ModifyableModelBuilder(ClassLibrary classLibrary, DocletTagFactory docletTagFactory) {
 
         this.docletTagFactory = docletTagFactory;
+        this.classLibrary = classLibrary;
         source = new DefaultJavaSource(classLibrary);
         currentAnnoDefs = new LinkedList<>();
         currentArguments = new LinkedList<>();
@@ -191,7 +202,7 @@ public class ModifyableModelBuilder implements Builder {
             currentField.setEnumConstantClass(newClass);
         } else if (!classStack.isEmpty()) {
             classStack.getFirst().addClass(newClass);
-            newClass.setParentClass(classStack.getFirst());
+            newClass.setSuperClass(classStack.getFirst());// .setParentClass(classStack.getFirst());
         } else {
             source.addClass(newClass);
         }
@@ -218,7 +229,8 @@ public class ModifyableModelBuilder implements Builder {
             return null;
         }
         return TypeAssembler.createUnresolved(typeDef, dimensions,
-            classStack.isEmpty() ? source : classStack.getFirst());
+            TypeResolver.byClassName(typeDef.getName(), classLibrary, null));
+        // classStack.isEmpty() ? source : classStack.getFirst());
     }
 
     private void addJavaDoc(AbstractBaseJavaEntity entity) {
@@ -253,7 +265,7 @@ public class ModifyableModelBuilder implements Builder {
 
         currentConstructor = new DefaultJavaConstructor();
 
-        currentConstructor.setParentClass(classStack.getFirst());
+        currentConstructor.setDeclaringClass(classStack.getFirst());// .setParentClass(classStack.getFirst());
 
         currentConstructor.setModelWriterFactory(modelWriterFactory);
 
@@ -303,7 +315,7 @@ public class ModifyableModelBuilder implements Builder {
 
         currentMethod = new DefaultJavaMethod();
         if (currentField == null) {
-            currentMethod.setParentClass(classStack.getFirst());
+            currentMethod.setDeclaringClass(classStack.getFirst());// .setParentClass(classStack.getFirst());
             classStack.getFirst().addMethod(currentMethod);
         }
         currentMethod.setModelWriterFactory(modelWriterFactory);
@@ -354,8 +366,8 @@ public class ModifyableModelBuilder implements Builder {
         if (typeVariableDef == null) {
             return null;
         }
-        DefaultJavaTypeVariable<G> result =
-            new DefaultJavaTypeVariable<>(typeVariableDef.getName(), genericDeclaration);
+        DefaultJavaTypeVariable<G> result = new DefaultJavaTypeVariable(typeVariableDef.getName(),
+            TypeResolver.byPackageName(source.getPackageName(), classLibrary, null));
 
         if (typeVariableDef.getBounds() != null && !typeVariableDef.getBounds().isEmpty()) {
             List<JavaType> bounds = new LinkedList<>();
@@ -370,12 +382,12 @@ public class ModifyableModelBuilder implements Builder {
     @Override
     public void beginField(FieldDef def) {
 
-        currentField = new DefaultJavaField();
-        currentField.setParentClass(classStack.getFirst());
+        currentField = new DefaultJavaField(def.getName());
+        currentField.setDeclaringClass(classStack.getFirst());// .setParentClass(classStack.getFirst());
         currentField.setLineNumber(def.getLineNumber());
         currentField.setModelWriterFactory(modelWriterFactory);
 
-        currentField.setName(def.getName());
+        // currentField.setName(def.getName());
         currentField.setType(createType(def.getType(), def.getDimensions()));
 
         currentField.setEnumConstant(def.isEnumConstant());
@@ -400,7 +412,9 @@ public class ModifyableModelBuilder implements Builder {
 
         if (currentArguments != null && !currentArguments.isEmpty()) {
             // DefaultExpressionTransformer??
-            DefaultJavaAnnotationAssembler assembler = new DefaultJavaAnnotationAssembler(currentField);
+            DefaultJavaAnnotationAssembler assembler =
+                new DefaultJavaAnnotationAssembler(currentField.getDeclaringClass(), classLibrary,
+                    TypeResolver.byPackageName(source.getPackageName(), classLibrary, null));
 
             List<Expression> arguments = new LinkedList<>();
             for (ExpressionDef annoDef : currentArguments) {
@@ -422,9 +436,11 @@ public class ModifyableModelBuilder implements Builder {
             new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()), fieldDef.getName(),
                 fieldDef.getModifiers(), fieldDef.isVarArgs());
         if (currentMethod != null) {
-            jParam.setDeclarator(currentMethod);
+            jParam.setExecutable(currentMethod);
+            // .setDeclarator(currentMethod);
         } else {
-            jParam.setDeclarator(currentConstructor);
+            jParam.setExecutable(currentMethod);
+            // .setDeclarator(currentConstructor);
         }
         jParam.setModelWriterFactory(modelWriterFactory);
         addJavaDoc(jParam);
@@ -435,8 +451,8 @@ public class ModifyableModelBuilder implements Builder {
     private void setAnnotations(final AbstractBaseJavaEntity entity) {
 
         if (!currentAnnoDefs.isEmpty()) {
-            DefaultJavaAnnotationAssembler assembler =
-                new DefaultJavaAnnotationAssembler((JavaAnnotatedElement) entity);
+            DefaultJavaAnnotationAssembler assembler = new DefaultJavaAnnotationAssembler((JavaClass) entity,
+                classLibrary, TypeResolver.byPackageName(source.getPackageName(), classLibrary, null));
 
             List<JavaAnnotation> annotations = new LinkedList<>();
             for (AnnoDef annoDef : currentAnnoDefs) {
@@ -470,5 +486,47 @@ public class ModifyableModelBuilder implements Builder {
     public void setUrl(URL url) {
 
         source.setURL(url);
+    }
+
+    @Override
+    public void setModule(ModuleDef moduleDef) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void addExports(ExportsDef exports) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void addRequires(RequiresDef requires) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void addOpens(OpensDef opens) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void addProvides(ProvidesDef provides) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void addUses(UsesDef uses) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public JavaModule getModuleInfo() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
