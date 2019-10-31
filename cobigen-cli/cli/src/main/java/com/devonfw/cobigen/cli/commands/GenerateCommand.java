@@ -222,6 +222,25 @@ public class GenerateCommand implements Callable<Integer> {
     }
 
     /**
+     * Processes the input file's path. Strips the quotes from the file path if they are given.
+     * @param inputFile the input file
+     * @return input file with processed path
+     */
+    private File preprocessInputFile (File inputFile)
+    {
+        String path = inputFile.getPath();
+        String pattern = "[\\\"|\\']([^\\\"]+)[\\\"|\\']";
+        boolean matches = path.matches(pattern);
+        if (matches)
+        {
+            path = path.replace("\"", "");
+            path = path.replace("\'", "");
+            return new File(path);
+        }
+        
+        return inputFile;
+    }
+    /**
      * Validates the user arguments in the context of the generate command. Tries to check whether all the
      * input files and the output root path are valid.
      *
@@ -231,6 +250,7 @@ public class GenerateCommand implements Callable<Integer> {
 
         int index = 0;
         for (File inputFile : inputFiles) {
+            inputFile = preprocessInputFile(inputFile);
             // Input file can be: C:\folder\input.java
             if (inputFile.exists() == false) {
                 logger.debug("We could not find input file: " + inputFile.getAbsolutePath()
@@ -248,6 +268,11 @@ public class GenerateCommand implements Callable<Integer> {
                 return false;
             }
         }
+        
+        if (outputRootPath != null)
+        {
+            outputRootPath = preprocessInputFile(outputRootPath);
+        }     
         return ValidationUtils.isOutputRootPathValid(outputRootPath);
 
     }
@@ -274,7 +299,7 @@ public class GenerateCommand implements Callable<Integer> {
         List<Class<?>> utilClasses, Class<?> c) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
-
+        inputFile = preprocessInputFile(inputFile);
         try {
             Object input;
             String extension = inputFile.getName().toLowerCase();
