@@ -229,7 +229,7 @@ public class GenerateCommand implements Callable<Integer> {
     private File preprocessInputFile (File inputFile)
     {
         String path = inputFile.getPath();
-        String pattern = "[\\\"|\\']([^\\\"]+)[\\\"|\\']";
+        String pattern = "[\\\"|\\'](.+)[\\\"|\\']";
         boolean matches = path.matches(pattern);
         if (matches)
         {
