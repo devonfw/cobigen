@@ -240,13 +240,18 @@ public class GenerateCommandTest {
     
     /**
      * Integration test of the generation of templates from an input file whose path contains spaces and quotes. 
+     * @throws IOException 
      */
     @Test
-    public void generateFromArgsWithQuote() {
-
+    public void generateFromArgsWithQuote() throws IOException {
+        
         // Prepare
         File outputRootFile = new File(testFileRootPath + "generatedcode/root");
+        File openApiOriginalFile = new File(testFileRootPath + "openAPI.yml");
         File openApiFile = new File(testFileRootPath + "openAPI file.yml");
+        // duplicate openapi file while changing the name
+        FileUtils.copyFile(openApiOriginalFile, openApiFile);
+        
 
         String args[] = new String[6];
         args[0] = "generate";
@@ -262,6 +267,7 @@ public class GenerateCommandTest {
         Path rootPath = outputRootFile.toPath();
         geneatedList.add(rootPath.resolve("docs").toFile());
         GenerateCommandTest.deleteGeneratedFiles(geneatedList);
+        openApiFile.delete();
         geneatedList.clear();
     }
 }
