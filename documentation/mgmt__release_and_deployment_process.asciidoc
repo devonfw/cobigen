@@ -85,7 +85,7 @@ Starting from a clean devonfw 3.0.0 distribution, follow the next steps to test 
 
 * Open devonfw distribution, right click on a Java entity. Click on `CobiGen -> Healtcheck`. It should:
 
-.. Throw message stating that there are no templates. It asks you to download them. If you cancel it, nothing happens, if you accept, it should say "Templates downloaded succesfully".
+.. Throw message stating that there are no templates. It asks you to download them. If you cancel it, nothing happens. If you accept, it should say "Templates downloaded successfully".
 
 .. After downloading the templates, you should see two `OK` values on _CobiGen_Templates_ and on _context.xml_.
 
@@ -106,7 +106,7 @@ Starting from a clean devonfw 3.0.0 distribution, follow the next steps to test 
 * [ ] A message is thrown informing that there are no templates.
 * [ ] It asks you to download templates.
 * [ ] If you cancel it, nothing happens.
-* [ ] If you accept it, a new window is shown with: Templates downloaded succesfully.
+* [ ] If you accept it, a new window is shown with: Templates downloaded successfully.
 * [ ] You should see two OK values.
 * [ ] If you press on Advanced Health check, everything should be green.
 * [ ] If you try to generate, it directly reads the templates.
@@ -186,7 +186,7 @@ public class EmployeeEntity {
 } 
 ```
 
-* Using the EmployeeEntity, generate increments `CRUD DAO'S, CRUD REST services, CRUD SOAP services, CRUD logic (all in one), Entity infrastructture and TO's`. After generating, follow first the following tutorial related to link:howto_ionic-client-generation#generation[Ionic Client Generation] and afterwards the link:howto_angular-client-generation#generating[Angular tutorial].
+* Using the EmployeeEntity, generate increments `CRUD DAO'S, CRUD REST services, CRUD SOAP services, CRUD logic (all in one), Entity infrastructure and TO's`. After generating, follow first the following tutorial related to link:howto_ionic-client-generation#generation[Ionic Client Generation] and afterwards the link:howto_angular-client-generation#generating[Angular tutorial].
 
 * The final step before releasing should be creating an issue with the following Markdown template. If every test scenario is completed, then testing phase is over and you can release.
 
