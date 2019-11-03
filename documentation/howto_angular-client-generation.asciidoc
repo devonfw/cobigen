@@ -64,7 +64,7 @@ From an Eto object, right click, CobiGen -> Generate will show the CobiGen wizar
 
 image::images/howtos/angular4-gen/ng4gen_1.png[CobiGen Client Generation Wizard,width="450"link="images/howtos/angular4-gen/ng4gen_1.png"]
 
-Check all the increments realtive to Angular:
+Check all the increments relative to Angular:
 
 [NOTE]
 =======
