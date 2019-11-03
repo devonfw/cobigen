@@ -3,7 +3,7 @@
 = Troubleshooting for Developers
 
 == cobigen-eclipse or cobigen-eclipse-test has build errors after git clone or pull
-This might be caused as of the fact, that the `cobigen-eclipse*/lib` folder is not available after initial cloning or the contents of the lib folder are not synchonous with the dependencies specified in the pom.xml respectively with the classpath inclusions in the `plugin.xml` (tab runtime).
+This might be caused as of the fact, that the `cobigen-eclipse*/lib` folder is not available after initial cloning or the contents of the lib folder are not in sync with the dependencies specified in the pom.xml respectively with the classpath inclusions in the `plugin.xml` (tab runtime).
 
 ==== Solution
 
@@ -80,7 +80,7 @@ Error message will be like:
 ```
 1) Caused by: java.lang.ClassNotFoundException: An error occurred while automatically activating bundle com.devonfw.cobigen.eclipse
 2) org.osgi.framework.BundleException: Error starting module.
-3) org.eclipse.core.runtime.CoreException: Plug-in com.devonfw.cobigen.eclipse was unable to load class com.devonfw.cobigen.eclipse.workbenchcontrol.handler.XXXXHanlder.
+3) org.eclipse.core.runtime.CoreException: Plug-in com.devonfw.cobigen.eclipse was unable to load class com.devonfw.cobigen.eclipse.workbenchcontrol.handler.XXXXHandler.
 ```
 
 ==== Solution
