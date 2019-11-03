@@ -45,7 +45,7 @@ A ContainerMatcher check if the input is a valid container.
 </trigger>
 +
 
-Before applying any Matcher, this containerMatcher checks if the XML file contais a node "uml:Model" with a childnode "packagedElement" which contains an attribute "xmi:type" with the value "uml:Class".
+Before applying any Matcher, this containerMatcher checks if the XML file contains a node "uml:Model" with a childnode "packagedElement" which contains an attribute "xmi:type" with the value "uml:Class".
 
 === Matcher types
 With the trigger you might define matchers, which restrict the input upon specific aspects:
@@ -92,7 +92,7 @@ This variable assignment assigns the `value` to the `key` as a constant.
 The Cobigen XML Plug-in implements an input reader for parsed xml documents. So API user can pass `org.w3c.dom.Document` objects for generation. For getting the right parsed xml inputs you can easily use the `xmlplugin.util.XmlUtil`, which provides static functionality to parse xml files or input streams and get the appropriate `Document` object.
 
 ==== Template object
-Due to the heterogeneous structure an xml document can have, the xml input reader does not always create exactly the same model structure (in contrast to the java input reader). For example the model's depth differs strongly, according to it's input document. To allow navigational access to the nodes, the model also depends on the document's element's node names. All child elements with unique names, are directly accessable via their names. In addition it is possible to iterate over all child elements with held of the child list `Children`. So it is also possible to access child elements with non unique names.
+Due to the heterogeneous structure an xml document can have, the xml input reader does not always create exactly the same model structure (in contrast to the java input reader). For example the model's depth differs strongly, according to it's input document. To allow navigational access to the nodes, the model also depends on the document's element's node names. All child elements with unique names, are directly accessible via their names. In addition it is possible to iterate over all child elements with held of the child list `Children`. So it is also possible to access child elements with non unique names.
 
 
 The XML input reader will create the following object model for template creation (`~EXAMPLEROOT~, ~EXAMPLENODE1~, ~EXAMPLENODE2~, ~EXAMPLEATTR1~,...` are just used here as examples. Of course they will be replaced later by the actual node or attribute names):
@@ -115,7 +115,7 @@ The XML input reader will create the following object model for template creatio
 *** ...common element structure...
 ** *\~EXAMPLENODE2~* ('Map<String, Object>' :: One of the root's child nodes)
 *** ...common element sub structure...
-*** *\~EXAMPLENODE21~* ('Map<String, Object>' :: One of the nodes's child nodes)
+*** *\~EXAMPLENODE21~* ('Map<String, Object>' :: One of the nodes' child nodes)
 **** ...common element structure...
 *** *\~EXAMPLENODE...~*
 ** *\~EXAMPLENODE...~*
@@ -124,7 +124,7 @@ In contrast to the java input reader, this xml input reader does currently not p
 
 == Merger extensions
 
-The XML plugin uses the link:https://github.com/maybeec/lexeme[LeXeMe] merger library to produce semantically correct merge prodcuts. The following four merge strategies are implemented and can be configured in the `templates.xml`:
+The XML plugin uses the link:https://github.com/maybeec/lexeme[LeXeMe] merger library to produce semantically correct merge products. The following four merge strategies are implemented and can be configured in the `templates.xml`:
 
 * `xmlmerge`: In case of a conflict the base value is preferred
 * `xmlmerge_override`: In case of a conflict the patch value is preferred
