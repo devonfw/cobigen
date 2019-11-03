@@ -9,4 +9,4 @@ toc::[]
  * All GitHub Wiki pages should be edited in AsciiDoc mode to ensure the PDF documentation generation possibility 
 
 == Hints
-* http://powerman.name/doc/asciidoc-compact[AsciiDoc SheatSheet]
+* http://powerman.name/doc/asciidoc-compact[AsciiDoc cheatsheet]
