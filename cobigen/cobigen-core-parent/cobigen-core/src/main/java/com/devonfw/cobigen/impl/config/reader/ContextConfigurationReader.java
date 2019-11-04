@@ -59,9 +59,12 @@ public class ContextConfigurationReader {
      *             if the configuration is not valid against its xsd specification
      */
     public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
-		if (configRoot != null) {
-			contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-		}
+        if (configRoot != null) {
+            contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        } else {
+            throw new IllegalArgumentException("Configuration path cannot be null.");
+        }
+
         if (!Files.exists(contextFile)) {
             configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
             contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
@@ -72,13 +75,17 @@ public class ContextConfigurationReader {
         contextRoot = configRoot;
 
         readConfiguration();
-
     }
 
     /**
      * Reads the context configuration.
      */
     private void readConfiguration() {
+        // workaround to make JAXB work in OSGi context by
+        // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
+        final ClassLoader orig = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+
         try {
             Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
@@ -135,6 +142,8 @@ public class ContextConfigurationReader {
                 "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
         } catch (IOException e) {
             throw new InvalidConfigurationException(contextFile, "Could not read context configuration file.", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(orig);
         }
     }
 
