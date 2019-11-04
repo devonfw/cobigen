@@ -82,7 +82,7 @@
               <requirement>
                 <type>p2-installable-unit</type>
                 <id>org.eclipse.m2e.feature.feature.group</id>
-                <versionRange>[1.6.0,1.7.0)</versionRange>
+                <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
@@ -171,30 +171,20 @@
       <layout>p2</layout>
     </repository>
     <repository>
-      <id>neon</id>
+      <id>photon</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/neon</url>
+      <url>http://download.eclipse.org/releases/photon</url>
     </repository>
   </repositories>
 
   <profiles>
     <!-- see http://download.eclipse.org/tools/orbit/downloads/ for upgrades -->
     <profile>
-      <id>p2-build-mars</id>
+      <id>p2-build-photon</id>
       <repositories>
         <repository>
-          <id>eclipse-mars-sr2-test</id>
-          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-    <profile>
-      <id>p2-build-neon</id>
-      <repositories>
-        <repository>
-          <id>eclipse-neon-sr2-test</id>
-          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/</url>
+          <id>eclipse-photon-sr2-test</id>
+          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository/</url>
           <layout>p2</layout>
         </repository>
       </repositories>

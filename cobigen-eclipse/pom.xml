@@ -129,21 +129,11 @@
 
   <profiles>
     <profile>
-      <id>p2-build-mars</id>
+      <id>p2-build-photon</id>
       <repositories>
         <repository>
-          <id>eclipse-mars</id>
-          <url>http://download.eclipse.org/releases/mars</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-    <profile>
-      <id>p2-build-neon</id>
-      <repositories>
-        <repository>
-          <id>eclipse-neon</id>
-          <url>http://download.eclipse.org/releases/neon</url>
+          <id>eclipse-photon</id>
+          <url>http://download.eclipse.org/releases/photon</url>
           <layout>p2</layout>
         </repository>
       </repositories>
