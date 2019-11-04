@@ -34,9 +34,9 @@ import { a, c } from 'b';
 * *PropertyDeclaration*
 ** Adds non existent decorators.
 ** Merge existent decorators.
-** With override startegy, the value of the property will be replaced by the patch value.
+** With override strategy, the value of the property will be replaced by the patch value.
 * *MethodDeclaration*
-** With override startegy, the body will be replaced.
+** With override strategy, the body will be replaced.
 ** The parameters will be merged.
 * *ParameterDeclaration*
 ** Replace type and modifiers with override merge strategy, adding non existent from patch into base.

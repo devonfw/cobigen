@@ -12,14 +12,14 @@ Selecting the menu entry _Generate..._ the generation wizard will be opened:
 image:images/generate_wizard_page1.png[]
 
 The left side of the wizard shows all available increments, which can be selected to be generated. Increments are a container like concept encompassing multiple files to be generated, which should result in a semantically closed generation output.
-On the right side of the wizard all files, which might be effected by the generation. Dependent on the increment selection on the left side, potenially effected files will be shown on the right side. The type of modification of each file will be encoded into following color scheme if the files are selected for generation:
+On the right side of the wizard all files are shown, which might be effected by the generation - dependent on the increment selection of files on the left side. The type of modification of each file will be encoded into following color scheme if the files are selected for generation:
 
 * *green:* files, which are currently non-existent in the file system. These files will be created during generation
 * *yellow:* files, which are currently existent in the file system and which are configured to be merged with generated contents.
 * *red:* files, which are currently existent in the file system. These files will be overwritten if manually selected.
 * *no color:* files, which are currently existent in the file system. Additionally files, which were unselected and thus will be ignored during generation.
 
-Selecting an increment on the left side will initialize the selection of all shown files to be generated on the right side, whereas green and yellow categorized files will be selected intially. A manual modification of the pre-selection can be performed by switching to the customization tree using the _Customize_ button on the right lower corner.
+Selecting an increment on the left side will initialize the selection of all shown files to be generated on the right side, whereas green and yellow categorized files will be selected initially. A manual modification of the pre-selection can be performed by switching to the customization tree using the _Customize_ button on the right lower corner.
 
 ____
 *Optional:* If you want to customize the generation object model of a Java input class, you might continue with the _Next >_ button instead of finishing the generation wizard. The next generation wizard page is currently available for Java file inputs and lists all non-static fields of the input. Unselecting entries will lead to an adapted object model for generation, such that unselected fields will be removed in the object model for generation. By default all fields will be included in the object model.
@@ -30,7 +30,7 @@ Using the _Finish_ button, the generation will be performed. Finally, CobiGen ru
 
 == Batch mode
 
-Are there multiple input elements selected, e.g., Java files, CobiGen will be started in batch mode. For the generation wizard dialog this means, that the generation preview will be contrained to the first selected input element. It does _not_ preview the generation for each element of the selection or of a complex input. The selection of the files to be generated will be generated for each input element analogously afterwards.
+If there are multiple input elements selected, e.g., Java files, CobiGen will be started in batch mode. For the generation wizard dialog this means, that the generation preview will be constrained to the first selected input element. It does _not_ preview the generation for each element of the selection or of a complex input. The selection of the files to be generated will be generated for each input element analogously afterwards.
 
 image:images/generate_wizard_page1_batch.png[]
 

@@ -7,7 +7,7 @@ New plug-ins can implement an input reader, a merger, a matcher, a trigger inter
 
 [NOTE]
 ====
-It is discouraged to have `cobigen-core` dependencies ar runtime, except for `cobigen-core-api` which definitly must be present 
+It is discouraged to have `cobigen-core` dependencies at runtime, except for `cobigen-core-api` which definitely must be present.
 ====
 
 == Plugin Activator
@@ -126,7 +126,7 @@ Since version 3.x the Eclipse and Maven plugins of CobiGen utilize the Java `Ser
 
 .Example: Java Plugin
 ****
-The java plugin provides both a `Merger` and a `TriggerInterpreter`. It contains therefore a `com.capgemini.cobigen.api.extension.GeneratorPluginActivator` file with the followong content:
+The java plugin provides both a `Merger` and a `TriggerInterpreter`. It contains therefore a `com.capgemini.cobigen.api.extension.GeneratorPluginActivator` file with the following content:
 ```
 com.capgemini.cobigen.javaplugin.JavaPluginActivator
 ```
@@ -185,7 +185,7 @@ E.g. you want an experimental release you need to follow these steps:
 mvn clean package bundle:bundle -Pp2-bundle
 # Uses the created bundle and builds a p2 update site for it. Do NOT use clean
 mvn install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-experimental p2:site
-# Uploades the p2 update site to the experimental repository. Do NOT use clean
+# Uploads the p2 update site to the experimental repository. Do NOT use clean
 mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
 ```
-You need write access to the link:http://de-mucevolve02[iCSD Fileserver] configured (e.g in the CobiGen IDE via the `variables-customized` script).
+You need write access to the link:http://de-mucevolve02[iCSD file server] configured (e.g in the CobiGen IDE via the `variables-customized` script).
