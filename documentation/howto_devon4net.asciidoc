@@ -77,42 +77,7 @@ After generating the files, locate the services created in *Devon4Net.Business.C
 [[img-cobigen]]
 image::images/howtos/devon4net/Services.png["cobigen", width="300", link="images/howtos/devon4net/Services.png]
 
-Once you have find these you have to import them and add them into the _AddBusinessCommonDependencyInjectionService_ method found in *Bussiness/Devon4Net.Business.Common/Configuration/BusinessCommonConfiguration.cs*
+Once you have find these you have to import them and add them into the _AddBusinessCommonDependencyInjectionService_ method found in *Business/Devon4Net.Business.Common/Configuration/BusinessCommonConfiguration.cs*
 
 [[img-cobigen]]
 image::images/howtos/devon4net/BussinessCommonConfiguration.png["cobigen", width="800", link="images/howtos/devon4net/BussinessCommonConfiguration.png]
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
