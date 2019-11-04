@@ -81,13 +81,13 @@
             name="ch.qos.logback.classic"/>
         <requirement
             name="org.eclipse.swtbot.eclipse.feature.group"
-            versionRange="2.6.0"/>
+            versionRange="2.8.0"/>
         <requirement
             name="org.eclipse.swtbot.eclipse.test.junit.feature.group"
-            versionRange="2.6.0"/>
+            versionRange="2.8.0"/>
         <requirement
             name="org.eclipse.swtbot.feature.group"
-            versionRange="2.6.0"/>
+            versionRange="2.8.0"/>
         <requirement
             name="com.devonfw.cobigen.tempeng-freemarker"/>
         <requirement
@@ -126,7 +126,7 @@
           <repository
               url="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/"/>
           <repository
-              url="http://download.eclipse.org/technology/swtbot/snapshots"/>
+              url="https://download.eclipse.org/technology/swtbot/releases/latest"/>
           <repository
               url="http://de-mucevolve02/files/cobigen/updatesite/experimental/"/>
           <repository
