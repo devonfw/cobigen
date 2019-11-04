@@ -27,8 +27,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Sets;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +37,8 @@ import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler.Connection
 import com.devonfw.cobigen.impl.exceptions.HttpConnectionException;
 import com.devonfw.cobigen.impl.util.ExceptionUtil;
 import com.devonfw.cobigen.impl.util.ProcessOutputUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 /**
  * Class for handling the external process creation and the communication with it.

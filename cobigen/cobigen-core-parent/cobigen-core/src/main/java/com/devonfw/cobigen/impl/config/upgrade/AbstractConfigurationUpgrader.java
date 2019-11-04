@@ -338,15 +338,25 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
      */
     private Object unmarshallConfiguration(Path configurationFile, VERSIONS_TYPE lv, Class<?> jaxbConfigurationClass)
         throws JAXBException, SAXException, IOException {
-        Unmarshaller unmarschaller = JAXBContext.newInstance(jaxbConfigurationClass).createUnmarshaller();
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(new StreamSource(
-            getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + configurationXsdFilename)));
-        unmarschaller.setSchema(schema);
-        Object rootNode;
-        try (InputStream in = Files.newInputStream(configurationFile)) {
-            rootNode = unmarschaller.unmarshal(in);
+
+        // workaround to make JAXB work in OSGi context by
+        // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
+        final ClassLoader orig = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+
+        try {
+            Unmarshaller unmarschaller = JAXBContext.newInstance(jaxbConfigurationClass).createUnmarshaller();
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = schemaFactory.newSchema(new StreamSource(
+                getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + configurationXsdFilename)));
+            unmarschaller.setSchema(schema);
+            Object rootNode;
+            try (InputStream in = Files.newInputStream(configurationFile)) {
+                rootNode = unmarschaller.unmarshal(in);
+            }
+            return rootNode;
+        } finally {
+            Thread.currentThread().setContextClassLoader(orig);
         }
-        return rootNode;
     }
 }
