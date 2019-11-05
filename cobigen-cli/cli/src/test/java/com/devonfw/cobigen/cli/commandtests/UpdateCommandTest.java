@@ -30,10 +30,10 @@ import com.ea.agentloader.AgentLoader;
 import classloader.Agent;
 
 /**
- * Tests the usage of the update command
+ * Tests the usage of the update command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
+ * present among JVM startup arguments.
  */
 public class UpdateCommandTest {
-
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";
