@@ -7,7 +7,7 @@ This might be caused as of the fact, that the `cobigen-eclipse*/lib` folder is n
 
 ==== Solution
 
-In any of these cases you can fix the issue by running a `mvn clean package -Pp2-build-mars`.
+In any of these cases you can fix the issue by running a `mvn clean package -Pp2-build-photon`.
 
 == Getting Not authorized , ReasonPhrase: Unauthorized
 You are facing an error like
@@ -56,7 +56,7 @@ To test changes implemented on the `cobigen-core` you have to follow the next pr
 1. Open a console and step into `cobigen/cobigen-core-parent`. Run `mvn clean install` and remember the jar version you have just installed.
 2. On Eclipse, go to `cobigen/cobigen-eclipse` pom.xml and change the `<version>` of your cobigen-core.
 3. Also check on the `cobigen/cobigen-core-parent` pom-xml that it is using the just installed version.
-4. Open a console and step into `cobigen/cobigen-eclipse`. Run `mvn clean package -Pp2-build-mars,p2-build-stable,p2-build-experimental`.
+4. Open a console and step into `cobigen/cobigen-eclipse`. Run `mvn clean package -Pp2-build-photon,p2-build-stable,p2-build-experimental`.
 5. On Eclipse, go to `cobigen/cobigen-eclipse` and double-click 'plugins.xml'. On the bottom, click on 'runtime' tab. On 'classpath', add a new library and choose the jars you have just installed.
 6. Refresh on Eclipse, press F5 on the `cobigen-eclipse` inside Eclipse.
 5. If you still see compilation errors: On Eclipse, right-click `cobigen/cobigen-eclipse` -> Maven -> Update projects. 
