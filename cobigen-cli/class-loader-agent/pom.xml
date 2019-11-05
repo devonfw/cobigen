@@ -8,16 +8,14 @@
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>cli-parent</artifactId>
     <version>dev-SNAPSHOT</version>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
   </parent>
-  
   
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.2</version>
         <configuration>
           <archive>
           <manifestEntries>

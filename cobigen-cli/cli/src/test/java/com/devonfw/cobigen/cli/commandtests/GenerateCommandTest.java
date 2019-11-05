@@ -159,14 +159,11 @@ public class GenerateCommandTest {
         args[0] = "generate";
         args[1] = entityInputFile.getAbsolutePath();
         args[2] = "-t";
-        args[3] = "1,5,7";
+        args[3] = "1";
 
         CobiGenCLI.main(args);
 
         File generatedFiles = baseProject.toPath().resolve("src/main/java/com/maven/project/general/").toFile();
-        geneatedList.add(generatedFiles);
-        generatedFiles = baseProject.getParentFile().toPath()
-            .resolve("api/src/main/java/com/maven/project/sampledatamanagement/logic").toFile();
         geneatedList.add(generatedFiles);
         GenerateCommandTest.deleteGeneratedFiles(geneatedList);
         geneatedList.clear();
