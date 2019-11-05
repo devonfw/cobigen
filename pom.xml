@@ -15,6 +15,7 @@
     <slf4j.version>1.7.21</slf4j.version>
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
+    <tycho.version>1.5.1</tycho.version>
     <icsd.server.url>de-mucevolve02.corp.capgemini.com</icsd.server.url>
     <icsd.webserver.url>http://${icsd.server.url}</icsd.webserver.url>
     <p2.upload.url>ftp://${icsd.server.url}</p2.upload.url>
@@ -280,7 +281,7 @@
           <plugin>
             <groupId>org.eclipse.tycho.extras</groupId>
             <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>1.1.0</version>
+            <version>${tycho.version}</version>
             <executions>
               <execution>
                 <id>mirror-files</id>
@@ -353,7 +354,7 @@
           <plugin>
             <groupId>org.eclipse.tycho.extras</groupId>
             <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>1.1.0</version>
+            <version>${tycho.version}</version>
             <executions>
               <execution>
                 <id>mirror-files</id>
@@ -426,7 +427,7 @@
           <plugin>
             <groupId>org.eclipse.tycho.extras</groupId>
             <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>1.1.0</version>
+            <version>${tycho.version}</version>
             <executions>
               <execution>
                 <id>mirror-files</id>
