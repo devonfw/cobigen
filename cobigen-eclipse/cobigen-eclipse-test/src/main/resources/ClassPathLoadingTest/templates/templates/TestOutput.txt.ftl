@@ -1,1 +1,1 @@
-${TestUtil.getAnnotation(classObject, "javax.ws.rs.Path")} ${TestUtil.getAnnotation2(classObject, "javax.ws.rs.Path")}
+${TestUtil.getAnnotation2(classObject, "javax.ws.rs.Path")}
