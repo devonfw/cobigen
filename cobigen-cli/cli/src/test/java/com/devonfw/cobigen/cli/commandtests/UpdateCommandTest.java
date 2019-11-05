@@ -104,6 +104,7 @@ public class UpdateCommandTest {
         // Restoring original pom
         FileUtils.copyFile(tmpPom, originalPom);
 
+        FileUtils.deleteQuietly(tmpPom);
     }
 
     /**
