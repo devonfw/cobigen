@@ -163,13 +163,7 @@
             </arguments>
          </configuration>
       </plugin>
-      <plugin>
-         <artifactId>maven-compiler-plugin</artifactId>
-         <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-         </configuration>
-      </plugin>
+
       <!-- Run tests using the java-agent -->
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
@@ -177,6 +171,8 @@
          <version>2.22.2</version>
          <configuration>
              <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
+             <!-- Needed for JDK 9+ -->
+             <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
          </configuration>
       </plugin>
       <!-- Don't create the default jar -->
