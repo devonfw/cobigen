@@ -12,9 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.thoughtworks.qdox.builder.Builder;
 import com.thoughtworks.qdox.builder.TypeAssembler;
 import com.thoughtworks.qdox.builder.impl.DefaultJavaAnnotationAssembler;
@@ -197,12 +194,6 @@ public class ModifyableModelBuilder implements Builder {
         // javadoc
         addJavaDoc(newClass);
 
-        // // ignore annotation types (for now)
-        // if (ClassDef.ANNOTATION_TYPE.equals(def.type)) {
-        // System.out.println( currentClass.getFullyQualifiedName() );
-        // return;
-        // }
-
         // annotations
         setAnnotations(newClass);
 
@@ -220,17 +211,6 @@ public class ModifyableModelBuilder implements Builder {
             source.addClass(newClass);
         }
         return newClass;
-        // if (currentField != null) {
-        // classStack.getFirst().addClass(newClass);
-        // currentField.setEnumConstantClass(newClass);
-        // } else if (!classStack.isEmpty()) {
-        // classStack.getFirst().addClass(newClass);
-        // // newClass.setSuperClass(classStack.getFirst());
-        // newClass.setParentClass(classStack.getFirst());
-        // } else {
-        // source.addClass(newClass);
-        // }
-        // return newClass;
     }
 
     @Override
@@ -295,7 +275,7 @@ public class ModifyableModelBuilder implements Builder {
 
         currentConstructor = new DefaultJavaConstructor();
 
-        currentConstructor.setDeclaringClass(classStack.getFirst());// .setParentClass(classStack.getFirst());
+        currentConstructor.setDeclaringClass(classStack.getFirst());
 
         currentConstructor.setModelWriterFactory(modelWriterFactory);
 
@@ -345,7 +325,7 @@ public class ModifyableModelBuilder implements Builder {
 
         currentMethod = new DefaultJavaMethod();
         if (currentField == null) {
-            currentMethod.setDeclaringClass(classStack.getFirst());// .setParentClass(classStack.getFirst());
+            currentMethod.setDeclaringClass(classStack.getFirst());
             classStack.getFirst().addMethod(currentMethod);
         }
         currentMethod.setModelWriterFactory(modelWriterFactory);
@@ -389,9 +369,6 @@ public class ModifyableModelBuilder implements Builder {
 
         currentMethod.setSourceCode(def.getBody());
     }
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyableModelBuilder.class);
 
     private <G extends JavaGenericDeclaration> ModifyableJavaTypeVariable<G> createTypeVariable(
         TypeVariableDef typeVariableDef, G genericDeclaration) {
@@ -437,11 +414,10 @@ public class ModifyableModelBuilder implements Builder {
     public void beginField(FieldDef def) {
 
         currentField = new DefaultJavaField(def.getName());
-        currentField.setDeclaringClass(classStack.getFirst());// .setParentClass(classStack.getFirst());
+        currentField.setDeclaringClass(classStack.getFirst());
         currentField.setLineNumber(def.getLineNumber());
         currentField.setModelWriterFactory(modelWriterFactory);
 
-        // currentField.setName(def.getName());
         currentField.setType(createType(def.getType(), def.getDimensions()));
 
         currentField.setEnumConstant(def.isEnumConstant());
@@ -497,10 +473,8 @@ public class ModifyableModelBuilder implements Builder {
                 fieldDef.getModifiers(), fieldDef.isVarArgs());
         if (currentMethod != null) {
             jParam.setExecutable(currentMethod);
-            // .setDeclarator(currentMethod);
         } else {
             jParam.setExecutable(currentMethod);
-            // .setDeclarator(currentConstructor);
         }
         jParam.setModelWriterFactory(modelWriterFactory);
         addJavaDoc(jParam);

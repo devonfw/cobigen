@@ -13,8 +13,6 @@ import java.util.LinkedList;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.javaplugin.merger.JavaMerger;
@@ -319,9 +317,6 @@ public class JavaMergerTest {
         boolean eol3 = mergedContents.contains("\r");
         assertThat(eol1 ^ eol2 ^ eol3).isTrue();
     }
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(JavaMergerTest.class);
 
     /**
      * Tests whether all generics of the original file will be existent after merging
