@@ -12,8 +12,6 @@ import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
-import com.thoughtworks.qdox.model.JavaAnnotatedElement;
-import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
@@ -118,36 +116,11 @@ public class JavaMerger implements Merger {
     private ModifyableJavaClass merge(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
         mergeImports(baseClass, patchClass);
-        mergeAnnotations(baseClass, patchClass);
         mergeFields(baseClass, patchClass);
         mergeInnerClasses(baseClass, patchClass);
         mergeMethods(baseClass, patchClass);
         mergeSupertypes(baseClass, patchClass);
         return baseClass;
-    }
-
-    /**
-     * Merges all annotations of the given {@link JavaAnnotatedElement}s
-     *
-     * @param baseAnnotatedElement
-     *            {@link JavaAnnotatedElement}
-     * @param patchAnnotatedElement
-     *            {@link JavaAnnotatedElement}
-     */
-    private void mergeAnnotations(JavaAnnotatedElement baseAnnotatedElement,
-        JavaAnnotatedElement patchAnnotatedElement) {
-
-        for (JavaAnnotation patchAnnotation : patchAnnotatedElement.getAnnotations()) {
-            JavaAnnotation baseAnnotation = getCorrespondingAnnotation(baseAnnotatedElement, patchAnnotation);
-            if (baseAnnotation == null) {
-                baseAnnotatedElement.getAnnotations().add(patchAnnotation);
-            } else {
-                if (patchOverrides) {
-                    baseAnnotatedElement.getAnnotations().remove(baseAnnotation);
-                    baseAnnotatedElement.getAnnotations().add(patchAnnotation);
-                }
-            }
-        }
     }
 
     /**
@@ -269,7 +242,6 @@ public class JavaMerger implements Merger {
             if (baseField == null) {
                 baseClass.addField(patchField);
             } else {
-                mergeAnnotations(baseField, patchField);
                 if (patchOverrides) {
                     baseClass.replace(baseField, patchField);
                 } // else do not override
@@ -297,7 +269,6 @@ public class JavaMerger implements Merger {
             if (baseConstructor == null) {
                 baseClass.addConstructor(patchConstructor);
             } else {
-                mergeAnnotations(baseConstructor, patchConstructor);
                 if (patchOverrides) {
                     baseClass.replace(baseConstructor, patchConstructor);
                 } // else do not override
@@ -330,7 +301,6 @@ public class JavaMerger implements Merger {
             if (baseMethod == null) {
                 baseClass.addMethod(patchMethod);
             } else {
-                mergeAnnotations(baseMethod, patchMethod);
                 if (patchOverrides) {
                     baseClass.replace(baseMethod, patchMethod);
                 } // else do not override
@@ -346,27 +316,6 @@ public class JavaMerger implements Merger {
     private String getBlock(JavaInitializer initializer) {
         return initializer.getBlockContent().replaceAll("\\s", "");
 
-    }
-
-    /**
-     * Searches the given {@link JavaAnnotatedElement} for the given {@link JavaAnnotation}'s type
-     *
-     * @param baseAnnotatedElement
-     *            {@link JavaAnnotatedElement}
-     * @param patchAnnotation
-     *            {@link JavaAnnotation}
-     * @return The annotation of the same type as the given {@link JavaAnnotation} in the
-     *         {@link JavaAnnotatedElement}. Null if there is no such {@link JavaAnnotation}
-     */
-    private JavaAnnotation getCorrespondingAnnotation(JavaAnnotatedElement baseAnnotatedElement,
-        JavaAnnotation patchAnnotation) {
-
-        for (JavaAnnotation baseAnnotation : baseAnnotatedElement.getAnnotations()) {
-            if (baseAnnotation.getType().equals(patchAnnotation.getType())) {
-                return baseAnnotation;
-            }
-        }
-        return null;
     }
 
 }
