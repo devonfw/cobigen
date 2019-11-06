@@ -31,7 +31,6 @@ import com.thoughtworks.qdox.model.JavaType;
 import com.thoughtworks.qdox.model.impl.AbstractInheritableJavaEntity;
 import com.thoughtworks.qdox.model.impl.DefaultBeanProperty;
 import com.thoughtworks.qdox.model.impl.DefaultJavaClass;
-import com.thoughtworks.qdox.model.impl.DefaultJavaTypeVariable;
 import com.thoughtworks.qdox.model.impl.JavaMethodDelegate;
 
 /**
@@ -68,7 +67,7 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     private List<JavaInitializer> initializers = new LinkedList<>();
 
-    private List<DefaultJavaTypeVariable<JavaClass>> typeParameters = new LinkedList<>();
+    private List<ModifyableJavaTypeVariable<JavaClass>> typeParameters = new LinkedList<>();
 
     // sourceless class can use this property
     private JavaPackage javaPackage;
@@ -211,11 +210,11 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<DefaultJavaTypeVariable<JavaClass>> getTypeParameters() {
+    public List<ModifyableJavaTypeVariable<JavaClass>> getTypeParameters() {
         return typeParameters;
     }
 
-    public void setTypeParameters(List<DefaultJavaTypeVariable<JavaClass>> typeParameters) {
+    public void setTypeParameters(List<ModifyableJavaTypeVariable<JavaClass>> typeParameters) {
         this.typeParameters = typeParameters;
     }
 

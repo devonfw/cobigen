@@ -12,6 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.thoughtworks.qdox.builder.Builder;
 import com.thoughtworks.qdox.builder.TypeAssembler;
 import com.thoughtworks.qdox.builder.impl.DefaultJavaAnnotationAssembler;
@@ -48,7 +51,6 @@ import com.thoughtworks.qdox.model.impl.DefaultJavaPackage;
 import com.thoughtworks.qdox.model.impl.DefaultJavaParameter;
 import com.thoughtworks.qdox.model.impl.DefaultJavaSource;
 import com.thoughtworks.qdox.model.impl.DefaultJavaType;
-import com.thoughtworks.qdox.model.impl.DefaultJavaTypeVariable;
 import com.thoughtworks.qdox.parser.expression.ExpressionDef;
 import com.thoughtworks.qdox.parser.structs.AnnoDef;
 import com.thoughtworks.qdox.parser.structs.ClassDef;
@@ -185,7 +187,7 @@ public class ModifyableModelBuilder implements Builder {
 
         // typeParameters
         if (def.getTypeParameters() != null) {
-            List<DefaultJavaTypeVariable<JavaClass>> typeParams = new LinkedList<>();
+            List<ModifyableJavaTypeVariable<JavaClass>> typeParams = new LinkedList<>();
             for (TypeVariableDef typeVariableDef : def.getTypeParameters()) {
                 typeParams.add(createTypeVariable(typeVariableDef, (JavaClass) newClass));
             }
@@ -388,15 +390,17 @@ public class ModifyableModelBuilder implements Builder {
         currentMethod.setSourceCode(def.getBody());
     }
 
-    private <G extends JavaGenericDeclaration> DefaultJavaTypeVariable<G> createTypeVariable(
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyableModelBuilder.class);
+
+    private <G extends JavaGenericDeclaration> ModifyableJavaTypeVariable<G> createTypeVariable(
         TypeVariableDef typeVariableDef, G genericDeclaration) {
         if (typeVariableDef == null) {
             return null;
         }
 
         JavaClass declaringClass = getContext(genericDeclaration);
-        // can't select a declaring class based on the genericDeclaration
-        // likely method specifies its own genericDecleration
+
         if (declaringClass == null) {
             return null;
         }
@@ -404,7 +408,8 @@ public class ModifyableModelBuilder implements Builder {
         TypeResolver typeResolver =
             TypeResolver.byClassName(declaringClass.getBinaryName(), classLibrary, source.getImports());
 
-        DefaultJavaTypeVariable<G> result = new DefaultJavaTypeVariable<G>(typeVariableDef.getName(), typeResolver);
+        ModifyableJavaTypeVariable<G> result =
+            new ModifyableJavaTypeVariable<G>(typeVariableDef.getName(), typeResolver);
 
         if (typeVariableDef.getBounds() != null && !typeVariableDef.getBounds().isEmpty()) {
             List<JavaType> bounds = new LinkedList<JavaType>();
