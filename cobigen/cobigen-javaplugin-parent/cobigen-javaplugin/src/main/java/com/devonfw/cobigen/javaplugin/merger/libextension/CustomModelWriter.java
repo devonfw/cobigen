@@ -15,8 +15,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaAnnotatedElement;
@@ -335,9 +333,6 @@ public class CustomModelWriter implements ModelWriter {
         }
         return this;
     }
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(CustomModelWriter.class);
 
     private boolean writeTypeParameters(JavaGenericDeclaration decl) {
         List<JavaTypeVariable<JavaGenericDeclaration>> typeParameters = decl.getTypeParameters();

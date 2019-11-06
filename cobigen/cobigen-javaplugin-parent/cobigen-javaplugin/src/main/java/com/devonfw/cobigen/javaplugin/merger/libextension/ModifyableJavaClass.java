@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.thoughtworks.qdox.library.ClassLibrary;
 import com.thoughtworks.qdox.model.BeanProperty;
 import com.thoughtworks.qdox.model.DocletTag;
@@ -38,9 +35,6 @@ import com.thoughtworks.qdox.model.impl.JavaMethodDelegate;
  */
 @SuppressWarnings({ "javadoc", "deprecation" })
 public class ModifyableJavaClass extends AbstractInheritableJavaEntity implements JavaClass {
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyableJavaClass.class);
 
     /**
      * Serial version UID
@@ -162,11 +156,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         return new LinkedList<JavaType>(implementz);
     }
 
-    // @Override
-    // public List<JavaClass> getImplementedInterfaces() {
-    // return new LinkedList<>(implementz);
-    // }
-
     @Override
     public List<JavaClass> getInterfaces() {
         return new LinkedList<>(implementz);
@@ -232,11 +221,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         this.javaPackage = javaPackage;
     }
 
-    // @Override
-    // public JavaSource getSuperSource() {
-    // return (getSuperClass() != null ? getSuperClass().getSuperSource() : super.getSource());
-    // }
-
     @Override
     public JavaSource getSource() {
         return getParentSource();
@@ -247,15 +231,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         return getParentSource() != null ? getParentSource().getPackage() : javaPackage;
     }
 
-    // @Override
-    // public JavaClassSuper getSuper() {
-    // JavaClassSuper result = getSuperClass();
-    // if (result == null) {
-    // result = getSuper();
-    // }
-    // return result;
-    // }
-
     @Override
     public String getPackageName() {
         JavaPackage pckg = getPackage();
@@ -264,8 +239,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     @Override
     public String getFullyQualifiedName() {
-        // return (getParentClass() != null ? (getParentClass().getClassNamePrefix())
-        // : getPackage() != null ? (getPackage().getName() + ".") : "") + getName();
         if (isPrimitive()) {
             return getName();
         } else if (getDeclaringClass() == null) {
@@ -304,57 +277,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
     public boolean isInner() {
         return getSuperClass() != null;
     }
-
-    // @Override
-    // public String resolveType(String typeName) {
-    // // since this method is deprecated but still called from other structures it's simply a wrap around
-    // // for the proposed method
-    // String result;
-    // /*
-    // * JavaClass resolvedClass = getNestedClassByName(typeName); if (resolvedClass != null) { result =
-    // * resolvedClass.getFullyQualifiedName(); } else { result = getSuper().resolveType(typeName); }
-    // */
-    // result = resolveFullyQualifiedName(typeName);
-    // return result;
-    // }
-
-    // @Override
-    // public String resolveCanonicalName(String name) {
-    // // Maybe it's an inner class?
-    // for (JavaClass innerClass : getNestedClasses()) {
-    // if (innerClass.getName().equals(name)) {
-    // return innerClass.getName();
-    // }
-    // }
-    // return getSuper().resolveCanonicalName(name);
-    // }
-
-    // @Override
-    // public String resolveFullyQualifiedName(String name) {
-    // // Maybe it's an inner class?
-    // for (JavaClass innerClass : getNestedClasses()) {
-    // if (innerClass.getName().equals(name)) {
-    // return innerClass.getFullyQualifiedName();
-    // }
-    // }
-    // String result = // getSuper().resolveFullyQualifiedName(name); //replaced since getSuper() is
-    // // deprecated
-    // getSuperSource().resolveFullyQualifiedName(name);
-    // if (result != null) { // by sholzer 18-06-15 to fix issue #108
-    // result = result.replace('$', '.');
-    // }
-    // return result;
-    // }
-    //
-    // @Override
-    // public String getClassNamePrefix() {
-    // return getFullyQualifiedName() + "$";
-    // }
-    //
-    // // @Override
-    // // public JavaType asType() {
-    // // return this;
-    // // }
 
     @Override
     public List<JavaInitializer> getInitializers() {
@@ -563,29 +485,10 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         classes.add(cls);
     }
 
-    // /**
-    // * @deprecated Use {@link #getNestedClasses()} instead.
-    // */
-    // @Override
-    // @Deprecated
-    // public List<JavaClass> getClasses() {
-    // return getNestedClasses();
-    // }
-
     @Override
     public List<JavaClass> getNestedClasses() {
         return classes;
     }
-
-    // @Override
-    // public JavaClass getInnerClassByName(String name) {
-    // return getNestedClassByName(name);
-    // }
-    //
-    // @Override
-    // public List<JavaClass> getInnerClasses() {
-    // return getNestedClasses();
-    // }
 
     @Override
     public JavaClass getNestedClassByName(String name) {
@@ -713,11 +616,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         }
         return result;
     }
-
-    // @Override
-    // public JavaClass getDeclaringClass() {
-    // return getParentClass();// getSuperJavaClass();
-    // }
 
     @Override
     public List<DocletTag> getTagsByName(String name, boolean superclasses) {
