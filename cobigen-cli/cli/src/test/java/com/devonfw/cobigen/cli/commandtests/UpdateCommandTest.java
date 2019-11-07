@@ -66,9 +66,7 @@ public class UpdateCommandTest {
     @Before
     public void setCliPath() throws URISyntaxException {
         if (rootCLIPath == null) {
-            File locationCLI;
-            locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            rootCLIPath = locationCLI.getParentFile().toPath();
+            rootCLIPath = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toPath();
         }
     }
 
