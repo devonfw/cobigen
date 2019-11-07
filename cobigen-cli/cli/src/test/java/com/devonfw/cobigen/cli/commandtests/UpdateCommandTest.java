@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.commands.GenerateCommand;
+import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.ea.agentloader.AgentLoader;
 
 import classloader.Agent;
@@ -51,6 +52,11 @@ public class UpdateCommandTest {
     private static Path rootCLIPath = null;
 
     /**
+     * Original CobiGen CLI pom file
+     */
+    private File originalPom = null;
+
+    /**
      * We need to dynamically load the Java agent before the tests. Note that Java 9 requires
      * -Djdk.attach.allowAttachSelf=true to be present among JVM startup arguments.
      */
@@ -66,19 +72,19 @@ public class UpdateCommandTest {
     @Before
     public void setCliPath() throws URISyntaxException {
         if (rootCLIPath == null) {
-            rootCLIPath = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toPath();
+            rootCLIPath = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                .getParentFile().toPath();
         }
+        originalPom = new CobiGenUtils().extractArtificialPom(rootCLIPath);
     }
 
     /**
      * Replaces the original pom with and outdated one.
-     * @throws URISyntaxException
      * @throws IOException
      */
     @Before
     public void replacePom() throws IOException {
 
-        File originalPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
         File tmpPom = new File(Paths.get(testFileRootPath, tmpPomFileName).toString());
 
         // Storing original pom
@@ -91,17 +97,14 @@ public class UpdateCommandTest {
 
     /**
      * Restores the original pom.
-     * @throws URISyntaxException
      * @throws IOException
      */
     @After
     public void restorePom() throws IOException {
-        File originalPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
         File tmpPom = new File(Paths.get(testFileRootPath, tmpPomFileName).toString());
 
         // Restoring original pom
         FileUtils.copyFile(tmpPom, originalPom);
-
         FileUtils.deleteQuietly(tmpPom);
     }
 
@@ -159,7 +162,6 @@ public class UpdateCommandTest {
     @Test
     public void pluginUpdateTest() throws IOException, XmlPullParserException {
         String pluginId = "tsplugin";
-        File originalPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
 
         String oldVersion = getArtifactVersion(originalPom, pluginId);
 
