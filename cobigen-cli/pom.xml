@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>cli</artifactId>
@@ -32,9 +31,9 @@
       <version>4.0.0-beta-1b</version>
     </dependency>
     <dependency>
-        <groupId>org.apache.maven.shared</groupId>
-        <artifactId>maven-invoker</artifactId>
-        <version>3.0.1</version>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-invoker</artifactId>
+      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
@@ -47,7 +46,7 @@
       <artifactId>mmm-code-java-impl</artifactId>
       <version>1.0.0-beta2</version>
     </dependency>
-   
+
     <!-- SLF4J - API -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -69,33 +68,28 @@
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
     <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-text</artifactId>
-        <version>1.6</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.6</version>
     </dependency>
     <dependency>
-  <groupId>com.google.googlejavaformat</groupId>
-  <artifactId>google-java-format</artifactId>
-  <version>1.7</version>
-</dependency>
-<dependency>
-  <groupId>com.google.googlejavaformat</groupId>
-  <artifactId>google-java-format</artifactId>
-  <version>1.7</version>
-</dependency>
-<dependency>
-    <groupId>com.google.guava</groupId>
-    <artifactId>guava</artifactId>
-    <version>23.6-jre</version>
-</dependency> 
-<dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpcore</artifactId>
-    <version>4.4.8</version>
-</dependency>
+      <groupId>com.google.googlejavaformat</groupId>
+      <artifactId>google-java-format</artifactId>
+      <version>1.7</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>23.6-jre</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>4.4.8</version>
+    </dependency>
   </dependencies>
 
-  <build> 
+  <build>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -137,6 +131,6 @@
           </archive>
         </configuration>
       </plugin>
-    </plugins>    
+    </plugins>
   </build>
 </project>

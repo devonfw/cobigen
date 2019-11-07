@@ -3,22 +3,15 @@ package com.devonfw.cobigen.cli.commands;
 import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.similarity.JaccardDistance;
 import org.apache.maven.plugin.MojoFailureException;
 import org.slf4j.Logger;
@@ -35,8 +28,8 @@ import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
-import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
+
 import ch.qos.logback.classic.Level;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -324,37 +317,16 @@ public class GenerateCommand implements Callable<Integer> {
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             }
             if (isJavaInput && ValidationUtils.checkGenerationReport(report)) {
-                Set<Path> format = report.getGeneratedFiles();
-                Iterator<Path> itr = format.iterator();
-                if (itr.hasNext()) {
-                    try {
-
-                        try {
-                            InputStream inputStream = Files.newInputStream(itr.next());
-                            String unformatterContent = IOUtils.toString(inputStream);
-                            new Formatter().formatSource(unformatterContent);
-                        } catch (IOException e) {
-                            logger.error("Unable to read input file");
-                        }
-                    } catch (FormatterException e) {
-                        logger.error("No elements found");
-                    }
+                try {
+                    ParsingUtils.formatJavaSources(report.getGeneratedFiles());
+                } catch (FormatterException e) {
+                    logger.info("Format exception occured when trying to format generated code");
                 }
-
             }
         } catch (MojoFailureException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
 
         }
-    }
-
-    /**
-     * @param file
-     * @return
-     */
-    private InputStream newInputStream(File file) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     /**
