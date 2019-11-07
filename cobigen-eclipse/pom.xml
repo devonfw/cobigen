@@ -13,7 +13,7 @@
   </parent>
 
   <properties>
-    <tycho.version>1.1.0</tycho.version>
+    <tycho.version>1.5.1</tycho.version>
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
   </properties>
 
@@ -129,21 +129,11 @@
 
   <profiles>
     <profile>
-      <id>p2-build-mars</id>
+      <id>p2-build-photon</id>
       <repositories>
         <repository>
-          <id>eclipse-mars</id>
-          <url>http://download.eclipse.org/releases/mars</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-    <profile>
-      <id>p2-build-neon</id>
-      <repositories>
-        <repository>
-          <id>eclipse-neon</id>
-          <url>http://download.eclipse.org/releases/neon</url>
+          <id>eclipse-photon</id>
+          <url>http://download.eclipse.org/releases/photon</url>
           <layout>p2</layout>
         </repository>
       </repositories>
