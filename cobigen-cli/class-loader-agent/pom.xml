@@ -10,7 +10,6 @@
     <version>dev-SNAPSHOT</version>
   </parent>
   
-  
   <build>
     <plugins>
       <plugin>

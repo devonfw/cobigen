@@ -30,10 +30,10 @@ import com.ea.agentloader.AgentLoader;
 import classloader.Agent;
 
 /**
- * Tests the usage of the update command
+ * Tests the usage of the update command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
+ * present among JVM startup arguments.
  */
 public class UpdateCommandTest {
-
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";
@@ -66,9 +66,7 @@ public class UpdateCommandTest {
     @Before
     public void setCliPath() throws URISyntaxException {
         if (rootCLIPath == null) {
-            File locationCLI;
-            locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            rootCLIPath = locationCLI.getParentFile().toPath();
+            rootCLIPath = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toPath();
         }
     }
 
@@ -104,6 +102,7 @@ public class UpdateCommandTest {
         // Restoring original pom
         FileUtils.copyFile(tmpPom, originalPom);
 
+        FileUtils.deleteQuietly(tmpPom);
     }
 
     /**
