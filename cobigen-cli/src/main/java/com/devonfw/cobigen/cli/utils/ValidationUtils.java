@@ -148,9 +148,10 @@ public final class ValidationUtils {
      * @param report
      *            the generation report returned by the CobiGen.generate method
      */
-    public static void checkGenerationReport(GenerationReportTo report) {
+    public static boolean checkGenerationReport(GenerationReportTo report) {
         if (report.getErrors() == null || report.getErrors().isEmpty()) {
             logger.info("Successful generation.\n");
+            return true;
         } else {
             logger.error("Generation failed due to the following problems:");
             for (Throwable throwable : report.getErrors()) {
@@ -161,6 +162,7 @@ public final class ValidationUtils {
         for (String warning : report.getWarnings()) {
             logger.debug("Warning: " + warning);
         }
+        return false;
     }
 
     /**
