@@ -17,7 +17,8 @@ import com.ea.agentloader.AgentLoader;
 import classloader.Agent;
 
 /**
- * Tests the usage of the generate command
+ * Tests the usage of the generate command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
+ * present among JVM startup arguments.
  */
 public class GenerateCommandTest {
 
@@ -34,8 +35,8 @@ public class GenerateCommandTest {
         + "localmavenproject/maven.project/core/src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/SampleDataEntity.java");
 
     /**
-     * We need to dynamically load the Java agent before the tests.
-     * Note that Java 9 requires -Djdk.attach.allowAttachSelf=true to be present among JVM startup arguments.
+     * We need to dynamically load the Java agent before the tests. Note that Java 9 requires
+     * -Djdk.attach.allowAttachSelf=true to be present among JVM startup arguments.
      */
     @Before
     public void loadJavaAgent() {
@@ -158,17 +159,11 @@ public class GenerateCommandTest {
         args[0] = "generate";
         args[1] = entityInputFile.getAbsolutePath();
         args[2] = "-t";
-        args[3] = "1,5,7";
+        args[3] = "1";
 
         CobiGenCLI.main(args);
 
-        File generatedFiles =
-            baseProject.toPath().resolve("src/main/java/com/maven/project/general/logic/base").toFile();
-        geneatedList.add(generatedFiles);
-        generatedFiles = baseProject.toPath().resolve("src/main/java/com/maven/project/general/common").toFile();
-        geneatedList.add(generatedFiles);
-        generatedFiles = baseProject.getParentFile().toPath()
-            .resolve("api/src/main/java/com/maven/project/sampledatamanagement/logic").toFile();
+        File generatedFiles = baseProject.toPath().resolve("src/main/java/com/maven/project/general/").toFile();
         geneatedList.add(generatedFiles);
         GenerateCommandTest.deleteGeneratedFiles(geneatedList);
         geneatedList.clear();
@@ -237,21 +232,21 @@ public class GenerateCommandTest {
         GenerateCommandTest.deleteGeneratedFiles(geneatedList);
         geneatedList.clear();
     }
-    
+
     /**
-     * Integration test of the generation of templates from an input file whose path contains spaces and quotes. 
-     * @throws IOException 
+     * Integration test of the generation of templates from an input file whose path contains spaces and
+     * quotes.
+     * @throws IOException
      */
     @Test
     public void generateFromArgsWithQuote() throws IOException {
-        
+
         // Prepare
         File outputRootFile = new File(testFileRootPath + "generatedcode/root");
         File openApiOriginalFile = new File(testFileRootPath + "openAPI.yml");
         File openApiFile = new File(testFileRootPath + "openAPI file.yml");
         // duplicate openapi file while changing the name
         FileUtils.copyFile(openApiOriginalFile, openApiFile);
-        
 
         String args[] = new String[6];
         args[0] = "generate";
@@ -261,9 +256,9 @@ public class GenerateCommandTest {
         args[3] = outputRootFile.getAbsolutePath();
         args[4] = "--increments";
         args[5] = "15";
-        
+
         CobiGenCLI.main(args);
-        
+
         Path rootPath = outputRootFile.toPath();
         geneatedList.add(rootPath.resolve("docs").toFile());
         GenerateCommandTest.deleteGeneratedFiles(geneatedList);
