@@ -275,8 +275,18 @@ public class CobiGenUtils {
 
             Invoker invoker = new DefaultInvoker();
             InvocationResult result = null;
+
+            // Progress bar starts
             Thread t1 = new Thread(new ProgressBar());
             t1.start();
+
+            try {
+                invoker.setMavenHome(new File(System.getenv("MAVEN_HOME")));
+            } catch (NullPointerException e) {
+                logger.error(
+                    "MAVEN_HOME environment variable has not been set on your machine. CobiGen CLI needs Maven correctly configured.",
+                    e);
+            }
             result = invoker.execute(request);
             if (t1 != null) {
                 t1.interrupt();
