@@ -275,8 +275,12 @@ public class CobiGenUtils {
 
             Invoker invoker = new DefaultInvoker();
             InvocationResult result = null;
+
+            // Progress bar starts
             Thread t1 = new Thread(new ProgressBar());
             t1.start();
+
+            invoker.setMavenHome(new File(System.getenv("MAVEN_HOME")));
             result = invoker.execute(request);
             if (t1 != null) {
                 t1.interrupt();
