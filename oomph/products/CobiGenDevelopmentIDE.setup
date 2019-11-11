@@ -35,11 +35,9 @@
       label="CobiGen IDE"
       licenseConfirmationDisabled="true">
     <requirement
-        name="org.eclipse.m2e.feature.feature.group"
-        versionRange="[1.8.0,1.9.0)"/>
+        name="org.eclipse.m2e.feature.feature.group"/>
     <requirement
-        name="org.eclipse.m2e.logback.feature.feature.group"
-        versionRange="[1.8.0,1.9.0)"/>
+        name="org.eclipse.m2e.logback.feature.feature.group"/>
     <requirement
         name="org.eclipse.egit.feature.group"/>
     <requirement
@@ -71,8 +69,7 @@
     <requirement
         name="org.python.pydev.feature.source.feature.group"/>
     <requirement
-        name="org.jboss.ide.eclipse.freemarker.feature.feature.group"
-        versionRange="[1.5.0,1.6.0)"/>
+        name="org.jboss.ide.eclipse.freemarker.feature.feature.group"/>
     <repository
         url="http://fabioz.github.io/startexplorer/update/"/>
     <repository
@@ -84,13 +81,13 @@
     <repository
         url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
-        url="http://download.eclipse.org/technology/swtbot/snapshots"/>
+        url="http://download.eclipse.org/technology/swtbot/releases/latest/"/>
     <repository
         url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.9.0/N/0.9.0.201609252021/"/>
     <repository
         url="http://www.pydev.org/updates"/>
     <repository
-        url="http://download.jboss.org/jbosstools/neon/stable/updates/"/>
+        url="https://download.jboss.org/jbosstools/photon/stable/updates/"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
@@ -508,22 +505,16 @@
           xsi:type="setup:ResourceCopyTask"
           excludedTriggers="STARTUP MANUAL"
           successor="unzip.jdk"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.181_x64.zip"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-11.0.5.10_x64.zip"
           targetURL="${tmp.download.location/java.zip|uri}">
         <description></description>
       </setupTask>
-    </setupTask>
-    <setupTask
-        xsi:type="setup:CompoundTask"
-        successor="unzip.jdk"
-        filter="(osgi.arch=x86)"
-        name="x86">
       <setupTask
           xsi:type="setup:ResourceCopyTask"
           excludedTriggers="STARTUP MANUAL"
-          successor="unzip.jdk"
-          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.181.zip"
-          targetURL="${tmp.download.location/java.zip|uri}">
+          successor="unzip.jdk8"
+          sourceURL="http://de-mucevolve02/files/oomph/resources/java/jdk-1.8.0.181_x64.zip"
+          targetURL="${tmp.download.location/java8.zip|uri}">
         <description></description>
       </setupTask>
     </setupTask>
@@ -531,9 +522,17 @@
         xsi:type="com.github.maybeec.oomph.task:unzipTask"
         id="unzip.jdk"
         excludedTriggers="STARTUP MANUAL"
-        predecessor="jdk.win.64 //@setupTasks.11/@setupTasks.1"
+        predecessor="jdk.win.64"
         zipFile="${tmp.download.location/java.zip}"
         destinationDir="${software.location/java/}"
+        priority="100"/>
+    <setupTask
+        xsi:type="com.github.maybeec.oomph.task:unzipTask"
+        id="unzip.jdk8"
+        excludedTriggers="STARTUP MANUAL"
+        predecessor="jdk.win.64"
+        zipFile="${tmp.download.location/java8.zip}"
+        destinationDir="${software.location/java/additionalJdk/1.8.0.181/}"
         priority="100"/>
   </setupTask>
   <setupTask
