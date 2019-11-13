@@ -11,6 +11,14 @@
             id="com.devonfw.cobigen.eclipseplugin.healthy_check"
             name="Healthy Check">
       </command>
+      <command
+            id="com.devonfw.cobigen.eclipseplugin.update_template"
+            name="Update Template">
+      </command>
+      <command
+            id="com.devonfw.cobigen.eclipseplugin.adapt_template"
+            name="Adapt Template">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -21,6 +29,14 @@
       <handler
             class="com.devonfw.cobigen.eclipse.workbenchcontrol.handler.HealthCheckHandler"
             commandId="com.devonfw.cobigen.eclipseplugin.health_check">
+      </handler>
+       <handler
+            class="com.devonfw.cobigen.eclipse.workbenchcontrol.handler.UpdateTemplatesHandler"
+            commandId="com.devonfw.cobigen.eclipseplugin.update_template">
+      </handler>
+      <handler
+            class="com.devonfw.cobigen.eclipse.workbenchcontrol.handler.AdaptTemplatesHandler"
+            commandId="com.devonfw.cobigen.eclipseplugin.adapt_template">
       </handler>
    </extension>
    <extension
@@ -42,6 +58,16 @@
              <command
                    commandId="com.devonfw.cobigen.eclipseplugin.health_check"
                    label="Health Check..."
+                   style="push">
+             </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.update_template"
+                   label="Update Templates..."
+                   style="push">
+             </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.adapt_template"
+                   label="Adapt Templates..."
                    style="push">
              </command>
           </menu>
@@ -69,6 +95,16 @@
                    label="Health Check..."
                    style="push">
              </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.update_template"
+                   label="Update Templates..."
+                   style="push">
+             </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.adapt_template"
+                   label="Adapt Templates..."
+                   style="push">
+             </command>
           </menu>
           <separator
                 name="com.devonfw.cobigen.eclipseplugin.separator4"
@@ -92,6 +128,16 @@
              <command
                    commandId="com.devonfw.cobigen.eclipseplugin.health_check"
                    label="Health Check..."
+                   style="push">
+             </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.update_template"
+                   label="Update Templates..."
+                   style="push">
+             </command>
+             <command
+                   commandId="com.devonfw.cobigen.eclipseplugin.adapt_template"
+                   label="Adapt Templates..."
                    style="push">
              </command>
              <visibleWhen

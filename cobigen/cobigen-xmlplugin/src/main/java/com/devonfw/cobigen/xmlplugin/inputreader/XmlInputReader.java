@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -249,5 +251,12 @@ public class XmlInputReader implements InputReader {
             }
         }
         throw new IllegalArgumentException("Currently folders are not supported as Input by XmlInputReader#read");
+    }
+
+    @Override
+    public boolean isMostLikelyReadable(Path path) {
+        List<String> validExtensions = Arrays.asList("xml", "xmi");
+        String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
+        return validExtensions.contains(fileExtension);
     }
 }

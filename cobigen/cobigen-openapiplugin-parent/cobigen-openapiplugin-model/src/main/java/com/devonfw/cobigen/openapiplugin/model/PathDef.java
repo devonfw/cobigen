@@ -9,6 +9,8 @@ import java.util.List;
 @SuppressWarnings("javadoc")
 public class PathDef {
 
+    private String rootComponent;
+
     private String pathURI;
 
     private String version;
@@ -21,8 +23,21 @@ public class PathDef {
         operations = new LinkedList<>();
     }
 
+    public PathDef(String rootComponent, String pathURI, String version) {
+        this(pathURI, version);
+        this.rootComponent = rootComponent;
+    }
+
     public PathDef() {
         version = "v1";
+    }
+
+    public String getRootComponent() {
+        return rootComponent;
+    }
+
+    public void setRootComponent(String rootComponent) {
+        this.rootComponent = rootComponent;
     }
 
     public String getPathURI() {

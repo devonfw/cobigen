@@ -45,7 +45,7 @@ public class ConfigurationHolder {
         if (!templatesConfigurations.containsKey(templateFolder)) {
             templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
 
-            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger);
+            TemplatesConfiguration config = new TemplatesConfiguration(configurationPath, trigger, this);
             templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
         }
 
