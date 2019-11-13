@@ -83,6 +83,7 @@ public class ClassLoaderUtil {
                 break;
             }
         }
+
         return urlList;
     }
 
@@ -98,6 +99,6 @@ public class ClassLoaderUtil {
      */
     public static URLClassLoader getProjectClassLoader(IJavaProject project)
         throws CoreException, MalformedURLException {
-        return getProjectClassLoader(project, null);
+        return getProjectClassLoader(project, ClassLoaderUtil.class.getClassLoader());
     }
 }
