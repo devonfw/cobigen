@@ -2,10 +2,14 @@
 <templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
     <templates>
         <template name="t1" destinationPath="${variables.rootPackage}/${variables.entityName}.java" templateFile="TestClassT1.java.ftl"/>
+        <template name="t2" destinationPath="${variables.rootPackage}/${variables.entityName}2.java" templateFile="TestClassT2.java.ftl"/>
     </templates>
     <increments>
-        <increment name="i1" description="the only increment">
+        <increment name="i1" description="the class increment">
             <templateRef ref="t1"/>
+        </increment>
+        <increment name="i2" description="the enum increment">
+            <templateRef ref="t2"/>
         </increment>
     </increments>
 </templatesConfiguration>
