@@ -183,9 +183,9 @@ git_repo.push()
 __log_step("Run integration tests...")
 #############################
 if not prompt_yesno_question("Do you want to run the tests? WARNING: Your tests must pass succesfully, only answer NO when you already have passed the tests in a previous execution."):
-    run_maven_process_and_handle_error("mvn clean install -U -Dmaven.test.skip=true -Pp2-build-mars,p2-build-stable")
+    run_maven_process_and_handle_error("mvn clean install -U -Dmaven.test.skip=true -Pp2-build-photon,p2-build-stable")
 else:
-    run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-mars,p2-build-stable")
+    run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-photon,p2-build-stable")
 
 #############################
 __log_step("Update documentation...")
@@ -281,7 +281,7 @@ def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
 
 def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs, p2_upload: list=p2_upload):
     for site in p2_upload:
-        run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars -Dp2.upload={}".format(site), execpath=execpath)
+        run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-photon -Dp2.upload={}".format(site), execpath=execpath)
 
 
 if config.dry_run or config.test_run:
