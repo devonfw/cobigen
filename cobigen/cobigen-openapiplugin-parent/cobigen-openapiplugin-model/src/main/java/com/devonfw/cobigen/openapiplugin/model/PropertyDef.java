@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.openapiplugin.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,12 +28,22 @@ public class PropertyDef {
 
     private Map<String, Object> constraints;
 
+    private List<String> enumElements;
+
     public PropertyDef() {
         constraints = new HashMap<>();
         setIsCollection(false);
         setIsEntity(false);
         constraints = new HashMap<>();
         setSameComponent(false);
+    }
+
+    public void setEnumElements(List<String> enumElements) {
+        this.enumElements = enumElements;
+    }
+
+    public List<String> getEnumElements() {
+        return enumElements;
     }
 
     public String getName() {

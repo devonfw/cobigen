@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -468,6 +469,13 @@ public class JavaInputReader implements InputReader {
                 throw new InputReaderException("Failed to parse java sources in " + path.toString() + ".", e);
             }
         }
+    }
+
+    @Override
+    public boolean isMostLikelyReadable(Path path) {
+        String validExtension = "java";
+        String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
+        return validExtension.equals(fileExtension) || Files.isDirectory(path);
     }
 
     /**

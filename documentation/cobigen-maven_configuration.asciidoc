@@ -1,0 +1,209 @@
+:toc:
+toc::[]
+
+= Maven Build Integration
+
+For maven integration of CobiGen you can include the following build plugin into your build:
+
+.Build integration of CobiGen
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>maven-plugin</artifactId>
+      <version>VERSION-YOU-LIKE</version>
+      <executions>
+        <execution>
+          <id>cobigen-generate</id>
+          <phase>site</phase>
+          <goals>
+            <goal>generate</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
+</build>
+```
+
+**Available goals**
+
+* `generate`: Generates contents configured by the standard non-compiled configuration folder. Thus generation can be controlled/configured due to an location URI of the configuration and template or increment ids to be generated for a set of inputs.
+
+**Available phases** are all phases, which already provide compiled sources such that CobiGen can perform reflection on it. Thus possible phases are for example package, site.
+
+== Provide Template Set
+
+For generation using the CobiGen maven plug-in, the CobiGen configuration can be provided in two different styles:
+
+. By a `configurationFolder`, which should be available on the file system whenever you are running the generation. The value of `configurationFolder` should correspond to the maven file path syntax.
++
+.Provide CobiGen configuration by configuration folder (file)
+```xml
+<build>
+  <plugins>
+    <plugin>
+      ...
+      <configuration>
+        <configurationFolder>cobigen-templates</configurationFolder>
+      </configuration>
+       ...
+     </plugin>
+  </plugins>
+</build>
+```
+. By maven dependency, whereas the maven dependency should stick on the same conventions as the configuration folder. This explicitly means that it should contain non-compiled resources as well as the `context.xml` on top-level.
++
+
+.Provide CobiGen configuration by maven dependency (jar)
+```xml
+<build>
+  <plugins>
+    <plugin>
+      ...
+      <dependencies>
+        <dependency>
+          <groupId>com.devonfw.cobigen</groupId>
+          <artifactId>templates-XYZ</artifactId>
+          <version>VERSION-YOU-LIKE</version>
+        </dependency>
+      </dependencies>
+      ...
+    </plugin>
+  </plugins>
+</build>
+```
++
+We currently provide a generic deployed version of the templates on the devonfw-nexus for Register Factory (`<artifactId>cobigen-templates-rf</artifactId>`) and for the devonfw itself (`<artifactId>cobigen-templates-devonfw</artifactId>`).
+
+== Build Configuration
+
+Using the following configuration you will be able to customize your generation as follows:
+
+* `<destinationRoot>` specifies the root directory the relative `destinationPath` of link:cobigen-core_configuration#Templates-configuration[CobiGen templates configuration] should depend on. _Default ${basedir}_
+* `<inputPackage>` declares a package name to be used as input for batch generation. This refers directly to the CobiGen Java Plug-in link:cobigen-javaplugin#ContainerMatcher-types[container matchers of type package] configuration.
+* `<inputFile>` declares a file to be used as input. The CobiGen maven plug-in will try to parse this file to get an appropriate input to be interpreted by any CobiGen plug-in.
+* `<increment>` specifies an link:cobigen-core_configuration#increment-node[increment] ID to be generated. You can specify one single increment with content `ALL` to generate all increments matching the input(s).
+* `<template>` specifies a link:cobigen-core_configuration#increment-node[template] ID to be generated. You can specify one single template with content `ALL` to generate all templates matching the input(s).
+* `<forceOverride>` specifies an overriding behavior, which enables non-mergeable resources to be completely rewritten by generated contents. For mergeable resources this flag indicates, that conflicting fragments during merge will be replaced by generated content. _Default: false_ 
+* `<failOnNothingGenerated>` specifies whether the build should fail if the execution does not generate anything.
+
+.Example for a simple build configuration
+```xml
+<build>
+  <plugins>
+    <plugin>
+       ...
+      <configuration>
+        <destinationRoot>${basedir}</destinationRoot>
+        <inputPackages>
+          <inputPackage>package.to.be.used.as.input</inputPackage>
+        </inputPackages>
+        <inputFiles>
+          <inputFile>path/to/file/to/be/used/as/input</inputFile>
+        </inputFiles>
+        <increments>
+          <increment>IncrementID</increment>
+        </increments>
+        <templates>
+          <template>TemplateID</template>
+        </templates>
+        <forceOverride>false</forceOverride>
+      </configuration>
+        ...
+    </plugin>
+  </plugins>
+</build>
+```
+
+== Plugin Injection Since v3
+
+Since version 3.0.0, the link:cobigen-core_configuration#plugin-mechanism[plug-in mechanism] has changed to support modular releases of the CobiGen plug-ins. Therefore, you need to add all plug-ins to be used for generation. Take the following example to get the idea:
+
+.Example of a full configuration including plugins
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>maven-plugin</artifactId>
+      <version>VERSION-YOU-LIKE</version>
+      <executions>
+        ...
+      </executions>
+      <configuration>
+        ...
+      </configuration>
+      <dependencies>
+        <dependency>
+          <groupId>com.devonfw.cobigen<groupId>
+          <artifactId>templates-devon4j</artifactId>
+          <version>2.0.0</version>
+        </dependency>
+        <dependency>
+          <groupId>com.devonfw.cobigen</groupId>
+          <artifactId>tempeng-freemarker</artifactId>
+          <version>1.0.0</version>
+        </dependency>
+        <dependency>
+          <groupId>com.devonfw.cobigen</groupId>
+          <artifactId>javaplugin</artifactId>
+          <version>1.6.0</version>
+        </dependency>
+      </dependencies>
+    </plugin>
+  </plugins>
+</build>
+```
+
+== A full example
+
+. A complete maven configuration example
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>maven-plugin</artifactId>
+      <version>3.0.0</version>
+      <executions>
+        <execution>
+          <id>generate</id>
+          <phase>package</phase>
+          <goals>
+            <goal>generate</goal>
+          </goals>
+        </execution>
+      </executions>
+      <configuration>
+        <inputFiles>
+          <inputFile>src/main/java/io/github/devonfw/cobigen/generator/dataaccess/api/InputEntity.java</inputFile>
+        </inputFiles>
+        <increments>
+          <increment>dataaccess_infrastructure</increment>
+          <increment>daos</increment>
+        </increments>
+        <failOnNothingGenerated>false</failOnNothingGenerated>
+      </configuration>
+      <dependencies>
+        <dependency>
+          <groupId>com.devonfw.cobigen</groupId>
+          <artifactId>templates-devon4j</artifactId>
+          <version>2.0.0</version>
+        </dependency>
+        <dependency>
+          <groupId>com.devonfw.cobigen</groupId>
+          <artifactId>tempeng-freemarker</artifactId>
+          <version>1.0.0</version>
+        </dependency>
+        <dependency>
+          <groupId>com.devonfw.cobigen</groupId>
+          <artifactId>javaplugin</artifactId>
+          <version>1.6.0</version>
+        </dependency>
+      </dependencies>
+    </plugin>
+  </plugins>
+</build>
+```
