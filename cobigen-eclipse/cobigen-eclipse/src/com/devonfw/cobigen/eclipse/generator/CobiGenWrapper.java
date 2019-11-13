@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -34,6 +35,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -41,6 +43,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.bindings.Trigger;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
@@ -48,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.CobiGenCancellationException;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
@@ -63,7 +67,6 @@ import com.devonfw.cobigen.eclipse.common.tools.MapUtils;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.eclipse.generator.entity.ComparableIncrement;
-import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -186,14 +189,22 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         final IProject proj = getGenerationTargetProject();
         if (proj != null) {
             LOG.debug("Generating files...");
-            monitor.beginTask("Generating files...", templates.size());
+
+            SubMonitor subMonitor = SubMonitor.convert(monitor, 105);
             List<Class<?>> utilClasses = resolveTemplateUtilClasses();
 
+            monitor.setTaskName("load Classes...");
+            SubMonitor loadClasses = subMonitor.split(2);
             if (utilClasses == null) {
                 // Call method to get utils from jar
                 utilClasses = resolveTemplateUtilClassesFromJar();
             }
 
+            if (monitor.isCanceled()) {
+                throw new CancellationException("generation got Cancelled by the User");
+            }
+            monitor.setTaskName("load Templates...");
+            SubMonitor loadTemplates = subMonitor.split(2);
             // set override flags individually for every template
             for (TemplateTo template : templates) {
                 // if template is resolved to be generated (it has been selected manually in the generate
@@ -202,14 +213,25 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                     template.setForceOverride(true);
                 }
             }
+            loadTemplates.done();
 
+            if (monitor.isCanceled()) {
+                throw new CancellationException("generation got Cancelled by the User");
+            }
+
+            monitor.setTaskName("generate Destination Pathes...");
+            SubMonitor generateTargetUri = subMonitor.split(1);
             URI generationTargetUri = getGenerationTargetProject().getLocationURI();
             if (generationTargetUri == null) {
                 throw new CobiGenRuntimeException("The location URI of the generation target project "
                     + getGenerationTargetProject().getName() + " could not be resolved. This might be "
                     + "a temporary issue. If this problem persists, please state a bug report.");
             }
+            generateTargetUri.done();
 
+            monitor.setTaskName("generate Files...");
+            SubMonitor p = subMonitor.split(100);
+            p.setWorkRemaining(1000);
             GenerationReportTo report;
             if (singleNonContainerInput) {
                 // if we only consider one input, we want to allow some customizations of the generation
@@ -217,7 +239,15 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
                 report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
-                    model);
+                    model, (String taskName, Integer progress) -> {
+                        p.split(progress);
+                        monitor.setTaskName(taskName);
+
+                        if (monitor.isCanceled()) { // Thread.currentThread().stop(CancellationException);
+                            throw new CobiGenCancellationException();
+                        }
+
+                    });
             } else {
                 report = new GenerationReportTo();
                 for (Object input : inputs) {
@@ -225,6 +255,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                         cobiGen.generate(input, templates, Paths.get(generationTargetUri), false, utilClasses));
                 }
             }
+            p.done();
+            monitor.setTaskName("refresh Workspace...");
 
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
             monitor.done();
