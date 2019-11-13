@@ -42,8 +42,9 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
 
-        assertThat(inputObjects).hasSize(2);
-        assertThat(inputObjects).extracting("name").containsExactly("Table", "Sale");
+        assertThat(inputObjects).hasSize(4);
+        assertThat(inputObjects).extracting("name").containsExactly("Table", "Sale", "tablemanagement",
+            "salemanagement");
     }
 
     /**
@@ -57,11 +58,11 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("paths-resolution.yaml");
 
         assertThat(inputObjects).isNotNull();
-        List<EntityDef> collect = inputObjects.stream().map(e -> (EntityDef) e).filter(e -> e.getName().equals("Table"))
-            .collect(Collectors.toList());
-        assertThat(collect).hasSize(1);
-        assertThat(collect.get(0).getComponent().getPaths()).hasSize(2).flatExtracting(e -> e.getOperations())
-            .extracting(e -> e.getOperationId()).containsExactlyInAnyOrder("findTable", null);
+        List<EntityDef> collectEntities = inputObjects.stream().filter(e -> isEntityDef(e)).map(e -> (EntityDef) e)
+            .filter(e -> e.getName().equals("Table")).collect(Collectors.toList());
+        assertThat(collectEntities).hasSize(1);
+        assertThat(collectEntities.get(0).getComponent().getPaths()).hasSize(3).flatExtracting(e -> e.getOperations())
+            .extracting(e -> e.getOperationId()).containsExactlyInAnyOrder("findTable", null, null);
     }
 
     @Test
@@ -69,26 +70,37 @@ public class OpenAPIInputReaderTest {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
 
-        assertThat(inputObjects).hasSize(2);
-        assertThat(inputObjects).extracting("componentName").containsExactly("tablemanagement", "salemanagement");
+        assertThat(inputObjects).hasSize(4);
+
+        List<EntityDef> collectEntities =
+            inputObjects.stream().filter(e -> isEntityDef(e)).map(e -> (EntityDef) e).collect(Collectors.toList());
+
+        assertThat(collectEntities).extracting("componentName").containsExactly("tablemanagement", "salemanagement");
+
+        List<ComponentDef> collectComponents = inputObjects.stream().filter(e -> isComponentDef(e))
+            .map(e -> (ComponentDef) e).collect(Collectors.toList());
+
+        assertThat(collectComponents).extracting("name").containsExactly("tablemanagement", "salemanagement");
     }
 
     @Test
     public void testRetrieveHeaderInfo() throws Exception {
         List<Object> inputObjects = getInputs("two-components.yaml");
         for (Object o : inputObjects) {
-            EntityDef entityDef = (EntityDef) o;
-            HeaderDef header = entityDef.getHeader();
+            if (isEntityDef(o)) {
+                EntityDef entityDef = (EntityDef) o;
+                HeaderDef header = entityDef.getHeader();
 
-            InfoDef info = header.getInfo();
-            assertThat(info.getDescription()).isEqualTo("Example of a API definition");
-            assertThat(info.getTitle()).isEqualTo("Devon Example");
+                InfoDef info = header.getInfo();
+                assertThat(info.getDescription()).isEqualTo("Example of a API definition");
+                assertThat(info.getTitle()).isEqualTo("Devon Example");
 
-            List<ServerDef> servers = header.getServers();
-            assertThat(servers).hasSize(1);
-            ServerDef server = servers.get(0);
-            assertThat(server.getDescription()).isEqualTo("Just some data");
-            assertThat(server.getURI()).isEqualTo("https://localhost:8081/server/services/rest");
+                List<ServerDef> servers = header.getServers();
+                assertThat(servers).hasSize(1);
+                ServerDef server = servers.get(0);
+                assertThat(server.getDescription()).isEqualTo("Just some data");
+                assertThat(server.getURI()).isEqualTo("https://localhost:8081/server/services/rest");
+            }
         }
     }
 
@@ -98,7 +110,9 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
         for (Object o : inputObjects) {
-            properties.addAll(((EntityDef) o).getProperties());
+            if (isEntityDef(o)) {
+                properties.addAll(((EntityDef) o).getProperties());
+            }
         }
         assertThat(properties).hasSize(2);
         assertThat(properties).extracting("name").containsExactly("tableExample", "saleExample");
@@ -110,7 +124,9 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
         for (Object o : inputObjects) {
-            properties.addAll(((EntityDef) o).getProperties());
+            if (isEntityDef(o)) {
+                properties.addAll(((EntityDef) o).getProperties());
+            }
         }
         List<String> types = new LinkedList<>();
         List<String> formats = new LinkedList<>();
@@ -130,7 +146,9 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<PropertyDef> properties = new LinkedList<>();
         for (Object o : inputObjects) {
-            properties.addAll(((EntityDef) o).getProperties());
+            if (isEntityDef(o)) {
+                properties.addAll(((EntityDef) o).getProperties());
+            }
         }
         List<Map<String, Object>> constraints = new LinkedList<>();
         for (PropertyDef property : properties) {
@@ -150,26 +168,36 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("two-components.yaml");
         List<ComponentDef> cmps = new LinkedList<>();
         for (Object o : inputObjects) {
-            cmps.add(((EntityDef) o).getComponent());
+            if (isComponentDef(o)) {
+                cmps.add(((ComponentDef) o));
+            } else {
+                cmps.add(((EntityDef) o).getComponent());
+            }
         }
-        assertThat(cmps).extracting("paths").hasSize(2);
+        assertThat(cmps).extracting("paths").hasSize(4);
         List<String> pathURIs = new LinkedList<>();
         for (ComponentDef cmp : cmps) {
             for (PathDef path : cmp.getPaths()) {
                 pathURIs.add(path.getPathURI());
             }
         }
-        assertThat(pathURIs).hasSize(4);
-        assertThat(pathURIs).containsExactly("/table/{id}/", "/table/new/", "/sale/{id}/", "/sale/");
+        assertThat(pathURIs).hasSize(10);
+        assertThat(pathURIs).containsExactly("/table/{id}/", "/table/new/", "/sale/{id}/", "/sale/{bla}/", "/sale/",
+            "/table/{id}/", "/table/new/", "/sale/{id}/", "/sale/{bla}/", "/sale/");
     }
 
     @Test
     public void testRetrieveOperationsOfPath() throws Exception {
 
         List<Object> inputObjects = getInputs("two-components.yaml");
+
         List<ComponentDef> cmps = new LinkedList<>();
         for (Object o : inputObjects) {
-            cmps.add(((EntityDef) o).getComponent());
+            if (isComponentDef(o)) {
+                cmps.add((ComponentDef) o);
+            } else {
+                cmps.add(((EntityDef) o).getComponent());
+            }
         }
 
         List<OperationDef> operations = new LinkedList<>();
@@ -180,16 +208,18 @@ public class OpenAPIInputReaderTest {
                 }
             }
         }
-        assertThat(operations).extracting("type").hasSize(4);
-        assertThat(operations).extracting("type").containsExactly("get", "post", "get", "post");
+        assertThat(operations).extracting("type").hasSize(10);
+        assertThat(operations).extracting("type").containsExactly("get", "post", "get", "get", "post", "get", "post",
+            "get", "get", "post");
     }
 
     @Test
     public void testRetrieveParametersOfOperation() throws Exception {
 
         List<ParameterDef> parameters = getParametersOfOperations("two-components.yaml");
-        assertThat(parameters).extracting("name").hasSize(4);
-        assertThat(parameters).extracting("name").containsExactly("id", "table", "amount", "criteria");
+        assertThat(parameters).extracting("name").hasSize(10);
+        assertThat(parameters).extracting("name").containsExactly("id", "table", "amount", "bla", "criteria", "id",
+            "table", "amount", "bla", "criteria");
 
     }
 
@@ -201,12 +231,13 @@ public class OpenAPIInputReaderTest {
         for (ParameterDef param : parameters) {
             constraints.add(param.getConstraints());
         }
-        assertThat(constraints).extracting("minimum").hasSize(4);
-        assertThat(constraints).extracting("maximum").hasSize(4);
-        assertThat(constraints).extracting("notNull").hasSize(4);
+        assertThat(constraints).extracting("minimum").hasSize(10);
+        assertThat(constraints).extracting("maximum").hasSize(10);
+        assertThat(constraints).extracting("notNull").hasSize(10);
         assertThat(constraints).extracting("minimum").contains(0, 10);
         assertThat(constraints).extracting("maximum").contains(50, 200);
-        assertThat(constraints).extracting("notNull").containsExactly(true, true, false, true);
+        assertThat(constraints).extracting("notNull").containsExactly(true, true, false, false, true, true, true, false,
+            false, true);
     }
 
     @Test
@@ -214,23 +245,25 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("two-components.yaml");
         boolean found = false;
         for (Object o : inputObjects) {
-            EntityDef eDef = (EntityDef) o;
-            if (eDef.getName().equals("Table")) {
-                assertThat(eDef.getComponent().getPaths()).hasSize(2);
-                for (PathDef pathDef : eDef.getComponent().getPaths()) {
-                    for (OperationDef opDef : pathDef.getOperations()) {
-                        if (opDef.getOperationId() != null && opDef.getOperationId().equals("findTable")) {
-                            found = true;
-                            assertThat(opDef.getResponses()).hasSize(2);
-                            for (ResponseDef respDef : opDef.getResponses()) {
-                                if (respDef.getCode().equals("200")) {
-                                    assertThat(respDef.getMediaTypes()).hasSize(2);
-                                    assertThat(respDef.getMediaTypes()).containsExactly("application/json",
-                                        "text/plain");
-                                } else if (respDef.getCode().equals("404")) {
-                                    assertThat(respDef.getDescription()).isEqualTo("Not found");
-                                } else {
-                                    found = false;
+            if (isEntityDef(o)) {
+                EntityDef eDef = (EntityDef) o;
+                if (eDef.getName().equals("Table")) {
+                    assertThat(eDef.getComponent().getPaths()).hasSize(2);
+                    for (PathDef pathDef : eDef.getComponent().getPaths()) {
+                        for (OperationDef opDef : pathDef.getOperations()) {
+                            if (opDef.getOperationId() != null && opDef.getOperationId().equals("findTable")) {
+                                found = true;
+                                assertThat(opDef.getResponses()).hasSize(2);
+                                for (ResponseDef respDef : opDef.getResponses()) {
+                                    if (respDef.getCode().equals("200")) {
+                                        assertThat(respDef.getMediaTypes()).hasSize(2);
+                                        assertThat(respDef.getMediaTypes()).containsExactly("application/json",
+                                            "text/plain");
+                                    } else if (respDef.getCode().equals("404")) {
+                                        assertThat(respDef.getDescription()).isEqualTo("Not found");
+                                    } else {
+                                        found = false;
+                                    }
                                 }
                             }
                         }
@@ -256,17 +289,20 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("property-ref-one-to-one.yaml");
         boolean found = false;
         for (Object o : inputObjects) {
-            EntityDef entityDef = (EntityDef) o;
-            if (entityDef.getName().equals("SampleData")) {
-                assertThat(entityDef.getProperties()).hasSize(1);
-                PropertyDef prop = entityDef.getProperties().get(0);
-                assertThat(prop.getType()).isEqualTo("MoreData");
-                assertThat(prop.getName()).isEqualTo("mainData");
-                assertThat(prop.getSameComponent()).isTrue();
-                // The description of the property will be ignored in compliance with the JSON specification:
-                // https://github.com/RepreZen/KaiZen-OpenApi-Parser/issues/148
-                assertThat(prop.getDescription()).isEqualTo("MoreData Desc");
-                found = true;
+            if (isEntityDef(o)) {
+                EntityDef entityDef = (EntityDef) o;
+                if (entityDef.getName().equals("SampleData")) {
+                    assertThat(entityDef.getProperties()).hasSize(1);
+                    PropertyDef prop = entityDef.getProperties().get(0);
+                    assertThat(prop.getType()).isEqualTo("MoreData");
+                    assertThat(prop.getName()).isEqualTo("mainData");
+                    assertThat(prop.getSameComponent()).isTrue();
+                    // The description of the property will be ignored in compliance with the JSON
+                    // specification:
+                    // https://github.com/RepreZen/KaiZen-OpenApi-Parser/issues/148
+                    assertThat(prop.getDescription()).isEqualTo("MoreData Desc");
+                    found = true;
+                }
             }
         }
         assertThat(found).as("SampleData component schema not found!").isTrue();
@@ -277,15 +313,17 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("property-ref-many-to-one.yaml");
         boolean found = false;
         for (Object o : inputObjects) {
-            EntityDef entityDef = (EntityDef) o;
-            if (entityDef.getName().equals("SampleData")) {
-                assertThat(entityDef.getProperties()).hasSize(1);
-                PropertyDef prop = entityDef.getProperties().get(0);
-                assertThat(prop.getType()).isEqualTo("MoreData");
-                assertThat(prop.getName()).isEqualTo("mainData");
-                assertThat(prop.getSameComponent()).isTrue();
-                assertThat(prop.getDescription()).isEqualTo("a single ref to MoreData (many-to-one)");
-                found = true;
+            if (isEntityDef(o)) {
+                EntityDef entityDef = (EntityDef) o;
+                if (entityDef.getName().equals("SampleData")) {
+                    assertThat(entityDef.getProperties()).hasSize(1);
+                    PropertyDef prop = entityDef.getProperties().get(0);
+                    assertThat(prop.getType()).isEqualTo("MoreData");
+                    assertThat(prop.getName()).isEqualTo("mainData");
+                    assertThat(prop.getSameComponent()).isTrue();
+                    assertThat(prop.getDescription()).isEqualTo("a single ref to MoreData (many-to-one)");
+                    found = true;
+                }
             }
         }
         assertThat(found).as("SampleData component schema not found!").isTrue();
@@ -296,14 +334,16 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("componentResponseType.yaml");
         boolean found = false;
         for (Object o : inputObjects) {
-            EntityDef e = (EntityDef) o;
-            ComponentDef c = e.getComponent();
-            for (PathDef p : c.getPaths()) {
-                if (p.getPathURI().equals("/sampledata/customSearch/")) {
-                    for (OperationDef op : p.getOperations()) {
-                        for (ResponseDef r : op.getResponses()) {
-                            assertThat(r.getType()).isEqualTo("SampleData");
-                            found = true;
+            if (isEntityDef(o)) {
+                EntityDef e = (EntityDef) o;
+                ComponentDef c = e.getComponent();
+                for (PathDef p : c.getPaths()) {
+                    if (p.getPathURI().equals("/sampledata/customSearch/")) {
+                        for (OperationDef op : p.getOperations()) {
+                            for (ResponseDef r : op.getResponses()) {
+                                assertThat(r.getType()).isEqualTo("SampleData");
+                                found = true;
+                            }
                         }
                     }
                 }
@@ -333,7 +373,11 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs(testInputFilename);
         List<ComponentDef> cmps = new LinkedList<>();
         for (Object o : inputObjects) {
-            cmps.add(((EntityDef) o).getComponent());
+            if (isComponentDef(o)) {
+                cmps.add(((ComponentDef) o));
+            } else {
+                cmps.add(((EntityDef) o).getComponent());
+            }
         }
 
         List<ParameterDef> parameters = new LinkedList<>();
@@ -348,6 +392,26 @@ public class OpenAPIInputReaderTest {
             }
         }
         return parameters;
+    }
+
+    /**
+     * Checks whether the object is an {@link EntityDef}
+     * @param o
+     *            object to check whether it is an EntityDef
+     * @return true if it is an EntityDef
+     */
+    private boolean isEntityDef(Object o) {
+        return o.getClass() == EntityDef.class;
+    }
+
+    /**
+     * Checks whether the object is an {@link ComponentDef}
+     * @param o
+     *            object to check whether it is an ComponentDef
+     * @return true if it is an ComponentDef
+     */
+    private boolean isComponentDef(Object o) {
+        return o.getClass() == ComponentDef.class;
     }
 
 }
