@@ -156,6 +156,12 @@ public class TemplatesConfigurationReader {
      * Reads the templates configuration.
      */
     private void readConfiguration() {
+
+        // workaround to make JAXB work in OSGi context by
+        // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
+        final ClassLoader orig = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+
         try {
             Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
 
@@ -214,6 +220,8 @@ public class TemplatesConfigurationReader {
         } catch (IOException e) {
             throw new InvalidConfigurationException(configFilePath.toUri().toString(),
                 "Could not read templates configuration file.", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(orig);
         }
     }
 
