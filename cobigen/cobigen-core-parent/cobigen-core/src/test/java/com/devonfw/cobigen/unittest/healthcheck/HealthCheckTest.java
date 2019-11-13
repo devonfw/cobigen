@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.unittest.healthcheck;
 
 import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -160,11 +159,11 @@ public class HealthCheckTest {
     }
 
     /**
-     * Testing Error Message for an Invalid Templates Configuration.
+     * Testing an Invalid Templates Configuration.
      * @throws IOException
      *             not thrown
      */
-    @Test
+    @Test(expected = InvalidConfigurationException.class)
     public void testFailingTemplatesConfigUpgrade() throws IOException {
 
         HealthCheckImpl healthcheck = new HealthCheckImpl();
@@ -173,10 +172,7 @@ public class HealthCheckTest {
         Path executionFolder = tempFolder.getRoot().toPath().resolve("testFailingUpgradeTemplatesConfig");
         FileUtils.copyDirectory(configurationFolder.toFile(), executionFolder.toFile());
         // act
-        HealthCheckReport report = healthcheck.upgradeTemplatesConfiguration(executionFolder, backuppolicy);
-        System.out.print(report.getErrors());
-        assertThat(report.getErrors().toString())
-            .contains("Templates Configuration does not match any current or legacy schema definitions.");
+        healthcheck.upgradeTemplatesConfiguration(executionFolder, backuppolicy);
     }
 
     /**

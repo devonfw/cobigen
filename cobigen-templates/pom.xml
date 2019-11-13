@@ -13,8 +13,8 @@
   </parent>
 
   <modules>
-    <module>templates-oasp4j</module>
-    <module>templates-oasp4js</module>
+    <module>templates-devon4j</module>
+    <module>templates-devon4ng</module>
     <module>templates-rf</module>
   </modules>
 
@@ -22,7 +22,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>maven-test</artifactId>
-      <version>4.0.0</version>
+      <version>4.1.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -30,15 +30,8 @@
   <build>
     <resources>
       <resource>
-        <directory>${basedir}</directory>
-        <excludes>
-          <exclude>/target/**/*</exclude>
-          <exclude>*.classpath</exclude>
-          <exclude>*.project</exclude>
-          <exclude>/bin/**/*</exclude>
-          <exclude>/src/test/**/*</exclude>
-          <exclude>**/MavenMetadata.java</exclude>
-        </excludes>
+        <directory>src/main/templates</directory>
+        <targetPath>src/main/templates</targetPath>
       </resource>
     </resources>
     <plugins>
@@ -84,6 +77,30 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
       </plugin>
     </plugins>
   </build>
