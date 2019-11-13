@@ -71,7 +71,9 @@ public class CobiGenImpl implements CobiGen {
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
         Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
-        return generate(input, generableArtifacts, targetRootPath, forceOverride, logicClasses, null, null);
+        return generate(input, generableArtifacts, targetRootPath, forceOverride, logicClasses, null,
+            (String taskName, Integer progress) -> {
+            });
     }
 
     @Override
@@ -116,7 +118,8 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(targetRootPath, "targetRootPath");
         return new GenerationProcessorImpl(configurationHolder, inputResolver).generate(input,
             Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel,
-            (BiConsumer<String, Integer>) null);
+            (String taskName, Integer progress) -> {
+            });
     }
 
     @Override
