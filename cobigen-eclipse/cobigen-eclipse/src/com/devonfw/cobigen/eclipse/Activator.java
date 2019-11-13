@@ -49,7 +49,7 @@ public class Activator extends AbstractUIPlugin {
     public Activator() {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         configurationProjectListener = new ConfigurationProjectListener();
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
 
     @Override

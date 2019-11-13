@@ -81,4 +81,19 @@ public interface InputReader {
      */
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException;
 
+    /**
+     * Try to determine, whether the input file is readable by the plug-ins parser. If false is returned by
+     * the method, it is not assured, that the read method is not called at all. In case of the situation,
+     * that no plug-in is most likely to read the input, CobiGen will try every input reader to read the
+     * input. Please be aware, that this method should be kept highly performant. It does not have to be an
+     * exact result.
+     * @param path
+     *            the file {@link Path}.
+     * @return true, if it is most likely, that the file can be read by this input reader's read method<br>
+     *         false, if the reader is most likely not able to read the file.
+     */
+    @SuppressWarnings("unused")
+    default public boolean isMostLikelyReadable(Path path) {
+        return false;
+    }
 }

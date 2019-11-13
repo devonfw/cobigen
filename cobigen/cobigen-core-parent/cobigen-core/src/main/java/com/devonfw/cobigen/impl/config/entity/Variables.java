@@ -323,7 +323,7 @@ public class Variables {
                     CaseSyntax syntax = CaseSyntax.ofExample(variableKey, true);
                     variableValue = syntax.convert(variableValue);
                     if (containsDot) {
-                        variableValue.replace(DUMMY_LETTER_FOR_DOT, replacementForDot);
+                        variableValue = variableValue.replace(DUMMY_LETTER_FOR_DOT, replacementForDot);
                     }
                 } else {
                     variableValue = resolveFunction(variableValue, m.group(2));

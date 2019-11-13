@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import yaml
 
 from pprint import pprint
 from github.Milestone import Milestone
@@ -9,7 +10,7 @@ from tools.config import Config
 from tools.github import GitHub
 from tools.git_repo import GitRepo
 from tools.validation import exit_if_not_executed_in_ide_environment, exit_if_origin_is_not_correct, check_running_in_bash
-from tools.user_interface import prompt_yesno_question
+from tools.user_interface import prompt_enter_value, prompt_yesno_question
 from tools.maven import Maven
 from tools.initialization import init_git_dependent_config, init_non_git_config
 from tools.logger import log_step, log_debug, log_error, log_info, log_info_dry
@@ -33,6 +34,67 @@ def __log_step(message: str):
             sys.exit()
 #####################################################################
 
+#####################################################################
+def __load_config_file(config : Config):
+    def load_file(path):
+        with open(path, 'r') as file:
+            try:
+                return yaml.safe_load(file)
+            except yaml.YAMLError as exc:
+                log_error(exc)
+
+    config_dir = "config"
+    non_git_config_path = os.path.join(config_dir,"non_git_config.yml")
+    git_config_path = os.path.join(config_dir, "git_config.yml")
+    if os.path.isfile(git_config_path) and os.path.isfile(git_config_path):
+        msg = "[INFO ] We have found a configuration file from your previous execution," \
+              " would you like to load it?"
+        load_file_flag = prompt_yesno_question(msg)
+        if load_file_flag:
+            data = {**load_file(non_git_config_path), **load_file(git_config_path)}
+            for attr in data:
+                setattr(config,attr,data[attr])
+            return True
+    return False
+#####################################################################
+
+#####################################################################
+def __store_config(config: Config):
+    def config2dic(config, attrs):
+        data = dict()
+        for attr in attrs:
+            if hasattr(config, attr):
+                data[attr] = getattr(config, attr)
+        return data
+
+    def store_as_yaml(data,path,prefix=""):
+        with open(path, 'w') as outfile:
+            yaml.dump(data, outfile, default_flow_style=False)
+        log_info("{}Git configuration has been stored in {}!".format(prefix,path))
+
+    config_dir = "config"
+    if not os.path.isdir(config_dir):
+        os.makedirs(config_dir)
+        log_info("Folder config has been created!")
+
+    attrs = ["oss",
+             "gpg_loaded",
+             "gpg_keyname"]
+    non_git_config_dic = config2dic(config, attrs)
+    non_git_config_path = os.path.join(config_dir,"non_git_config.yml")
+    store_as_yaml(non_git_config_dic, non_git_config_path, prefix="Non ")
+
+    attrs = ["git_username",
+             "two_factor_authentication",
+             "branch_to_be_released",
+             "release_version",
+             "next_version",
+             "github_issue_no"]
+    git_config_dic = config2dic(config, attrs)
+    git_config_path = os.path.join(config_dir, "git_config.yml")
+    store_as_yaml(git_config_dic, git_config_path)
+
+#####################################################################
 
 #############################
 log_step("Initialization...")
@@ -42,14 +104,16 @@ check_running_in_bash()
 exit_if_not_executed_in_ide_environment()
 
 config = Config()
+loaded_config_flag = __load_config_file(config)
 init_non_git_config(config)
+__store_config(config)
 
 git_repo = GitRepo(config)
 git_repo.assure_clean_working_copy()
 
 github = GitHub(config)
 init_git_dependent_config(config, github, git_repo)
-
+__store_config(config)
 exit_if_origin_is_not_correct(config)
 
 if(config.debug):
@@ -69,6 +133,7 @@ report_messages = []
 
 
 def run_maven_process_and_handle_error(command: str, execpath: str=config.build_folder_abs):
+    log_info("Execute command '" + command + "'")
     returncode = maven.run_maven_process(execpath, command)
 
     if returncode == 1:
@@ -111,22 +176,26 @@ __log_step("Upgrade dependencies of SNAPSHOT versions and committing it...")
 (core_version_in_eclipse_pom, changed_files) = maven.upgrade_snapshot_dependencies()
 git_repo.add(changed_files)
 git_repo.commit("upgrade SNAPSHOT dependencies")
+log_info("Pushing Upgrade SNAPSHOT dependencies.")
+git_repo.push()
 
 #############################
 __log_step("Run integration tests...")
 #############################
-run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-mars,p2-build-stable")
+if not prompt_yesno_question("Do you want to run the tests? WARNING: Your tests must pass succesfully, only answer NO when you already have passed the tests in a previous execution."):
+    run_maven_process_and_handle_error("mvn clean install -U -Dmaven.test.skip=true -Pp2-build-photon,p2-build-stable")
+else:
+    run_maven_process_and_handle_error("mvn clean install -U -Pp2-build-photon,p2-build-stable")
 
 #############################
-__log_step("Update wiki submodule...")
+__log_step("Update documentation...")
 #############################
 continue_run = True
 if config.test_run:
-    continue_run = prompt_yesno_question("[TEST] Would now update wiki submodule. Continue (yes) or skip (no)?")
+    continue_run = prompt_yesno_question("[TEST] Would now update documentation. Continue (yes) or skip (no)?")    
 
 if continue_run:
-    git_repo.update_submodule(config.wiki_submodule_path)
-    git_repo.add_submodule(config.wiki_submodule_name)
+    git_repo.update_documentation()
     git_repo.commit("update wiki docs")
     git_repo.push()
 
@@ -143,6 +212,9 @@ else:
 #############################
 __log_step("Merging " + config.branch_to_be_released + " to master...")
 #############################
+log_info("TODO: if this step fails, it means you need to check that your " + config.branch_to_be_released + " or master needs to commit the latest changes")
+# TODO: Sometimes the error happens when doing a checkout to master. With the checkout you are moving some files from the branch to release,
+#  to master, and the script is not able to remove them.
 os.chdir(config.root_path)
 git_repo.merge(config.branch_to_be_released, "master")
 
@@ -153,7 +225,7 @@ list_of_changed_files = git_repo.get_changed_files_of_last_commit()
 is_pom_changed = False
 for file_name in list_of_changed_files:
     file_name = file_name.replace('/', os.sep)
-    if not file_name.startswith(config.build_folder) and not file_name == config.wiki_submodule_name.replace('/', os.sep):
+    if not file_name.startswith(config.build_folder):
         if not prompt_yesno_question("Changed file " + file_name + " is outside the component folder path "+config.build_folder+".\nThis should not be the normal case! Please check these changes are necessary. Continue?"):
             git_repo.reset()
             sys.exit()
@@ -180,27 +252,36 @@ git_repo.commit("Set release version")
 __log_step("Deploy artifacts to nexus and update sites...")
 #############################
 
+p2_profiles = {
+    "mucevolve":["stable"],
+    "bintray":["bintray"],
+    "both":["stable","bintray"]
+}
+p2_upload = None
+while p2_upload not in p2_profiles:
+    p2_upload = prompt_enter_value("To which update site(s) do you want to deploy (bintray/mucevolve... or both)?")
+p2_upload = p2_profiles[p2_upload]
 
-def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
+def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs, p2_upload: list=p2_upload ):
     activation_str = ""
     if oss:
-        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname+" "
+        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable        
     run_maven_process_and_handle_error("mvn clean package -U bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn install -U bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
-    run_maven_process_and_handle_error("mvn deploy -U "+activation_str+"-Dmaven.test.skip=true -Dp2.upload=stable", execpath=execpath)
+    for site in p2_upload:
+        run_maven_process_and_handle_error("mvn deploy -U "+activation_str+" -Dmaven.test.skip=true -Dp2.upload={}".format(site), execpath=execpath)
 
 
 def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
-    # no oss activation as this will cause the build to fail
-    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U", execpath=execpath)
-
-
-def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
-        activation_str = ",oss -Dgpg.keyname="+config.gpg_keyname
-    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-mars" +
-                                       activation_str+" -Dp2.upload=stable", execpath=execpath)
+        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable    
+    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U "+activation_str, execpath=execpath)
+
+
+def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs, p2_upload: list=p2_upload):
+    for site in p2_upload:
+        run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-photon -Dp2.upload={}".format(site), execpath=execpath)
 
 
 if config.dry_run or config.test_run:
@@ -243,7 +324,11 @@ else:
     if (milestone.state == "closed"):
         log_info("Milestone '"+milestone.title + "' is already closed, please check.")
     else:
-        milestone.edit(milestone.title, "closed", milestone.description)
+        if milestone.description is None:
+            #TODO: milestone.description is sometimes None
+            milestone.edit(milestone.title, "closed", "Void description error")
+        else:
+            milestone.edit(milestone.title, "closed", milestone.description)
         log_info("New status of Milestone '" + milestone.title + "' is: " + milestone.state)
 
 #############################
@@ -258,9 +343,10 @@ if config.dry_run:
     log_info_dry("Would create a new milestone")
 else:
     if not github.create_next_release_milestone():
-        log_info("Aborting...")
-        git_repo.reset()
-        sys.exit()
+        log_info("Failed to create the next release milestone (is it already created?), please create it manually...")
+        if not prompt_yesno_question("Do you still want to continue the execution?"):
+            git_repo.reset()
+            sys.exit()
 
 #############################
 __log_step("Merge master branch to "+config.branch_to_be_released+"...")

@@ -1,13 +1,18 @@
 package ${variables.rootPackage}.${variables.component}.logic.impl.usecase;
 
+import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.base.usecase.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Named;
@@ -38,7 +43,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
         <#if property.type?ends_with("Entity")>
       cto.set${property.name?cap_first}(getBeanMapper().map(entity.get${property.name?cap_first}(), ${property.type?replace("Entity", "Eto")}.class));
         <#elseif property.type?contains("Entity") && JavaUtil.isCollection(classObject, property.name)>
-      cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${OaspUtil.getListArgumentType(property, classObject)}Eto.class));
+      cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${DevonUtil.getListArgumentType(property, classObject)}Eto.class));
         </#if>
       </#list>
    
@@ -57,7 +62,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
           <#if property.type?ends_with("Entity")>
         cto.set${property.name?cap_first}(getBeanMapper().map(entity.get${property.name?cap_first}(), ${property.type?replace("Entity", "Eto")}.class));
           <#elseif property.type?contains("Entity") && JavaUtil.isCollection(classObject, property.name)>
-        cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${OaspUtil.getListArgumentType(property, classObject)}Eto.class));
+        cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${DevonUtil.getListArgumentType(property, classObject)}Eto.class));
           </#if>
         </#list>
         ctos.add(cto);

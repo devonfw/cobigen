@@ -27,8 +27,8 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
 
   /**
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo} with the criteria to search.
-   * @param pageRequest {@link Pageable} implementation used to set page properties like page size
    * @return the {@link Page} of the {@link ${variables.entityName}Entity} objects that matched the search.
+   * If no pageable is set, it will return a unique page with all the objects that matched the search.
    */
   default Page<${variables.entityName}Entity> findByCriteria(${variables.entityName}SearchCriteriaTo criteria) {
 
@@ -46,28 +46,32 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
         <#if !JavaUtil.isCollection(classObject, field.name)>
           <#compress>
           <#if field.type?ends_with("Entity") && newFieldType=='Long'>
-              ${newFieldType} ${field.name} = criteria.${OaspUtil.resolveIdGetter(field,false,"")};
+              ${newFieldType} ${field.name} = criteria.${DevonUtil.resolveIdGetter(field,false,"")};
               if(${field.name} != null) {
                   query.where($(alias.get${fieldCapName}().getId()).eq(${field.name}));
               }
               
           <#elseif field.type="String">
-              String ${field.name} = criteria.${OaspUtil.resolveIdGetter(field,false,"")};
+              String ${field.name} = criteria.${DevonUtil.resolveIdGetter(field,false,"")};
               if (${field.name} != null && !${field.name}.isEmpty()) {
                 QueryUtil.get().whereString(query, $(alias.get${field.name?cap_first}()), ${field.name}, criteria.get${field.name?cap_first}Option());
               }
               
           <#else>
-              ${newFieldType} ${field.name} = criteria.${OaspUtil.resolveIdGetter(field,false,"")};
+              ${newFieldType} ${field.name} = criteria.${DevonUtil.resolveIdGetter(field,false,"")};
               if (${field.name} != null) {
-                query.where($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>${OaspUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
+                query.where($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>${DevonUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
               }
               
           </#if> 
       </#compress>
     </#if>
     </#list>
-    addOrderBy(query, alias, criteria.getPageable().getSort());
+    if (criteria.getPageable() == null) {
+      criteria.setPageable(PageRequest.of(0, Integer.MAX_VALUE));
+    } else {
+      addOrderBy(query, alias, criteria.getPageable().getSort());
+    }
     
     return QueryUtil.get().findPaginated(criteria.getPageable(), query, true);
   }

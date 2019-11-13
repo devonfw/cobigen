@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tsplugin</artifactId>
   <name>CobiGen - TypeScript Plug-in</name>
-  <version>2.0.0</version>
+  <version>2.3.3</version>
   <packaging>jar</packaging>
   <description>CobiGen - TypeScript Plug-in</description>
 
@@ -13,6 +13,12 @@
   </parent>
 
   <properties>
+    <plugin.name>${project.artifactId}</plugin.name>
+    <server.name>nestserver</server.name>
+    <server.version>1.1.1</server.version>
+    <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
+    <server.url.linux>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</server.url.linux>
+    <server.url.macos>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-macos/-/cobigen-nestserver-macos-${server.version}.tgz</server.url.macos>
     <skip.deployment>false</skip.deployment>
   </properties>
 
@@ -20,15 +26,28 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.0.0</version>
+      <version>5.4.0</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core</artifactId>
+      <version>5.4.0</version>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
     </dependency>
-
+    
+    <!-- Used for converting JSON to Hashmaps -->
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20180813</version>
+    </dependency>
+        
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
@@ -38,101 +57,23 @@
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>com.googlecode.maven-download-plugin</groupId>
-        <artifactId>download-maven-plugin</artifactId>
-        <version>1.3.0</version>
-        <executions>
-          <execution>
-            <id>download-ts-merger</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://registry.npmjs.org/@oasp/ts-merger/-/ts-merger-2.0.0.tgz</url>
-              <outputFileName>ts-merger.tgz</outputFileName>
-              <skipCache>true</skipCache>
-              <outputDirectory>${project.build.directory}/download</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>download-beautify-js</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>https://registry.npmjs.org/js-beautify/-/js-beautify-1.6.14.tgz</url>
-              <outputFileName>js-beautify.tgz</outputFileName>
-              <skipCache>true</skipCache>
-              <outputDirectory>${project.build.directory}/download</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
-        <executions>
-          <execution>
-            <id>process-tsmerger-package</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <echo message="unpack ts-merger.tgz"/>
-                <mkdir dir="${project.build.directory}/download/ts-merger/"/>
-                <untar src="${project.build.directory}/download/ts-merger.tgz" compression="gzip" dest="${project.build.directory}/download/ts-merger/"/>
-                <echo message="copy ts-merger.umd.js"/>
-                <copy file="${project.build.directory}/download/ts-merger/package/dist/ts-merger.umd.js" tofile="${project.build.directory}/generated-sources/js/ts-merger.js"/>
-              </tasks>
-            </configuration>
-          </execution>
-          <execution>
-            <id>process-jsbeautify-package</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <echo message="unpack js-beautify.tgz"/>
-                <mkdir dir="${project.build.directory}/download/js-beautify/"/>
-                <untar src="${project.build.directory}/download/js-beautify.tgz" compression="gzip" dest="${project.build.directory}/download/js-beautify/"/>
-                <echo message="copy js-beautify.js"/>
-                <copy file="${project.build.directory}/download/js-beautify/package/js/lib/beautify.js" tofile="${project.build.directory}/generated-sources/js/beautify.js"/>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.0.0</version>
-        <executions>
-          <execution>
-            <id>add-js-resources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>add-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/generated-sources/js</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+    <resources>
+    <!-- Needed for specifying the external server properties to a file -->
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>true</filtering>
+      <includes>
+        <include>**/META-INF/externalservers/server.properties</include>
+      </includes>
+    </resource>
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>false</filtering>
+      <excludes>
+        <exclude>**/META-INF/externalservers/server.properties</exclude>
+      </excludes>
+    </resource>
+  </resources>
     <pluginManagement>
       <plugins>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build

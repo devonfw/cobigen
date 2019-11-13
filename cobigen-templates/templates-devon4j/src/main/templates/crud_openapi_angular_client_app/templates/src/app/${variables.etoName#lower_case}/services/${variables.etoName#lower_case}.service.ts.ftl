@@ -4,8 +4,6 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { SearchCriteria } from '../../core/interfaces/search-criteria';
 import { Sort } from '../../core/interfaces/sort';
-import { Pageable } from '../../core/interfaces/pageable';
-
 
 @Injectable()
 export class ${variables.etoName?cap_first}Service {
