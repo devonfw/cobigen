@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 import javax.inject.Inject;
 
@@ -70,6 +71,13 @@ public class CobiGenImpl implements CobiGen {
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
         Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+        return generate(input, generableArtifacts, targetRootPath, forceOverride, logicClasses, null, null);
+    }
+
+    @Override
+    public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel,
+        BiConsumer<String, Integer> progressCallback) {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         if (generableArtifacts.contains(null)) {
@@ -80,7 +88,7 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
         return new GenerationProcessorImpl(configurationHolder, inputResolver).generate(input, generableArtifacts,
-            targetRootPath, forceOverride, logicClasses, rawModel);
+            targetRootPath, forceOverride, logicClasses, rawModel, progressCallback);
     }
 
     @Override
@@ -107,7 +115,8 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(generableArtifact, "Artifact to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
         return new GenerationProcessorImpl(configurationHolder, inputResolver).generate(input,
-            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel);
+            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel,
+            (BiConsumer<String, Integer>) null);
     }
 
     @Override
