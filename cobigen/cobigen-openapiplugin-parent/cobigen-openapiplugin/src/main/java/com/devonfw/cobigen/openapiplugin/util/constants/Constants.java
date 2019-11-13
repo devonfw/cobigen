@@ -16,4 +16,6 @@ public class Constants {
 
     public static final String COMPONENT_EXT = "x-component";
 
+    public static final String SCHEMA = "schema";
+
 }

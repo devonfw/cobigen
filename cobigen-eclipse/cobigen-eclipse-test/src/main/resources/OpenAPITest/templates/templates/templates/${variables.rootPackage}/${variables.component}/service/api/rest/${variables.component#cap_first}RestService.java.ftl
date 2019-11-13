@@ -1,5 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.service.api.rest;
 
+import java.awt.PageAttributes.MediaType;
+
 public interface ${variables.component?cap_first}RestService {
   
 <#list model.component.paths as path>

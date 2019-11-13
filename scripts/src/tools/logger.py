@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 
 step_counter: int = 0
 
