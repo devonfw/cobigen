@@ -13,11 +13,16 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Util functionality for {@link ClassLoader} issues
  */
 public class ClassLoaderUtil {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ClassLoaderUtil.class);
 
     /**
      * Returns the java {@link ClassLoader} of the {@link IJavaProject} passed
@@ -34,7 +39,7 @@ public class ClassLoaderUtil {
     public static URLClassLoader getProjectClassLoader(IJavaProject project, ClassLoader parentClassLoader)
         throws CoreException, MalformedURLException {
         LinkedHashSet<URL> urlList = getProjectClasspathURLs(project);
-
+        LOG.debug("Project class loader URLs used for generation: " + urlList);
         URL[] urls = urlList.toArray(new URL[urlList.size()]);
         return new URLClassLoader(urls, parentClassLoader);
     }
@@ -78,6 +83,7 @@ public class ClassLoaderUtil {
                 break;
             }
         }
+
         return urlList;
     }
 
@@ -93,6 +99,6 @@ public class ClassLoaderUtil {
      */
     public static URLClassLoader getProjectClassLoader(IJavaProject project)
         throws CoreException, MalformedURLException {
-        return getProjectClassLoader(project, null);
+        return getProjectClassLoader(project, ClassLoaderUtil.class.getClassLoader());
     }
 }

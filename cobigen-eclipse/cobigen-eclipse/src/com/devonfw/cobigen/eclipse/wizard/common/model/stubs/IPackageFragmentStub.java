@@ -5,6 +5,8 @@ import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IModularClassFile;
+import org.eclipse.jdt.core.IOrdinaryClassFile;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.WorkingCopyOwner;
@@ -155,5 +157,25 @@ public class IPackageFragmentStub extends IJavaElementStub implements IPackageFr
             return ((IPackageFragment) obj).getPath().equals(getPath());
         }
         return false;
+    }
+
+    @Override
+    public IOrdinaryClassFile getOrdinaryClassFile(String name) {
+        return null;
+    }
+
+    @Override
+    public IModularClassFile getModularClassFile() {
+        return null;
+    }
+
+    @Override
+    public IClassFile[] getAllClassFiles() throws JavaModelException {
+        return null;
+    }
+
+    @Override
+    public IOrdinaryClassFile[] getOrdinaryClassFiles() throws JavaModelException {
+        return null;
     }
 }

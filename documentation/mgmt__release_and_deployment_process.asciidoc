@@ -1,0 +1,217 @@
+:toc:
+toc::[]
+
+= Release and Deployment Process
+
+*Updated:* This explains the manual process of releasing. We now have an automatic script that enables a fast and easy release. Please check it link:https://github.com/devonfw/tools-cobigen/wiki/howto_Release-creation[here]
+
+Create a new issue with the following markdown contents for each release of any plugin/module containing the following tasks to be performed on release:
+
+.*Template for release tasks (markdown)*
+```markdown
+
+ **Release tasks:**
+***1. Preparation***
+* [ ] Check running maven build on the development branch `mvn clean install`
+  * especially for eclipse plugin release run `mvn clean install -Pp2-build-mars,p2-build-stable` in cobigen-eclipse folder to run SWTBot UI tests locally. **Be patient, do not touch mouse and keyboard.**
+* [ ] Check if all tests are green and if there are no ignored ones left. As there are ignored ones, please check them if they can be removed or they only should be temporarily ignored. Potentially fix them.
+* [ ] Check/Update documentation according to changelog to be released
+  * [ ] especially update version number of module to be released [here](https://github.com/devonfw/tools-cobigen/wiki/CobiGen)
+  * [ ] Update the wiki submodule and commit the latest version to target the updated release version of the wiki 
+    \```
+    cd cobigen-documentation/tools-cobigen.wiki
+    git pull origin master
+    cd ..
+    git add tools-cobigen.wiki
+    git commit -m"#<releaseIssueNo> update docs"
+    git push
+    \```
+  * [ ] Check branch build to not fail in production line https://devon.s2-eu.capgemini.com/
+
+***2. Merging / Review***
+* [ ] **Locally** merge development branch to master branch
+  * [ ] Check for changed maven dependencies and document them. _As dependencies have been changed:_
+    * [ ] check new dependencies with legal (in case of not yet used licenses).
+    * **If there are any issues with the dependencies. Abort, get in contact.**
+    * [ ] document the changes in the [ChangeLog of the dependency tracking](https://github.com/devonfw/tools-cobigen/wiki/mgmt_dependency-and-license-tracking).
+    * [ ] create a new licensing document for the new version (just once for each eclipse/maven release). Find the latest document in [TeamForge](https://coconet.capgemini.com/sf/go/projects.apps2_devon/docman.root.devonfw.licenses.de) and upload a new version next to it. Chapter one is the only to be updated according to changed dependencies and included components.
+  * [ ] Perform final review of merged contents
+    * [ ] Are there any changes in a different module not corresponding to the current development branch? Try to find the cause and potentially discuss with the guy failing.
+    * [ ] Any major issues, which would prevent from merging? Missing files, changes?
+    * if ok - commit (if not yet done) **but do not push** to master branch 
+    * if not - abort merge, cleanup working copy, and fix on dev branch
+
+***3. Testing / Consolidation***
+* [ ] Higher component version number to release version
+* [ ] Fix snapshot versions of dependencies of all components to be released to its release versions
+* [ ] Install components locally and/or deploy to experimental update site
+* [ ] Perform a final manual test of all issues resolved in the milestone to be released.
+* [ ] Perform integration tests
+  * especially for cobigen-eclipse if cobigen internal dependencies have been changed
+
+***4. Deployment***
+* [ ] Close eclipse IDE
+* [ ] In case of non-eclipse component (for cobigen-core, just execute first line): 
+  \```
+  mvn clean package bundle:bundle -Pp2-bundle -Dmaven.test.skip=true
+  mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true
+  mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable
+  \```
+* [ ] In case of eclipse plug-in release: 
+  \```
+  cd cobigen-eclipse
+  mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable
+  \```
+* [ ] Check the update site `http://de-mucevolve02/files/cobigen/updatesite/stable/` by installing/updating it once to an eclipse distribution.
+* [ ] Assure, that everything is committed and the working copy is clean
+* [ ] Create a tag according to the naming conventions
+* [ ] Push
+* [ ] Close milestone and create new release with binaries on GitHub
+
+***5. Follow-up***
+* [ ] Merge master branch back to corresponding dev_ branch
+* [ ] Create new Milestone (minor version update)
+* [ ] increase version on dev branch to next minor version + SNAPSHOT
+* [ ] Push
+```
+
+== Testing process
+
+In this section, the testing process of certain CobiGen features will be described. This should be used as a quality assurance document to follow up before releasing these features:
+
+=== Update templates feature
+
+Starting from a clean devonfw 3.0.0 distribution, follow the next steps to test the link:https://github.com/devonfw/tools-cobigen/projects/9[new feature for updating templates]:
+
+* Open devonfw distribution, right click on a Java entity. Click on `CobiGen -> Healtcheck`. It should:
+
+.. Throw message stating that there are no templates. It asks you to download them. If you cancel it, nothing happens. If you accept, it should say "Templates downloaded successfully".
+
+.. After downloading the templates, you should see two `OK` values on _CobiGen_Templates_ and on _context.xml_.
+
+... If you click on `Advanced Health Check` everything should be green.
+
+.. Now, right click again on `CobiGen -> Generate`. As you have already downloaded the templates, it should directly start loading them, without asking to download them again. 
+
+.. Try to generate something. The generated files should be visible after generating.
+
+```markdown
+
+**Quality assurance plan Update Templates feature:**
+
+***1. Preparation***
+* [ ] Follow [this tutorial](https://github.com/devonfw/tools-cobigen/wiki/mgmt__release_and_deployment_process#update-templates-feature) to start the testing phase
+
+***2. Testing scenarios***
+* [ ] A message is thrown informing that there are no templates.
+* [ ] It asks you to download templates.
+* [ ] If you cancel it, nothing happens.
+* [ ] If you accept it, a new window is shown with: Templates downloaded successfully.
+* [ ] You should see two OK values.
+* [ ] If you press on Advanced Health check, everything should be green.
+* [ ] If you try to generate, it directly reads the templates.
+* [ ] You are able to generate and you see the generated files.
+
+
+***3. Deployment***
+
+If every of these test scenarios are checked out, then release process can continue.
+```
+
+=== Ionic and Angular
+
+To properly test the Ionic and Angular templates we need to follow the next steps:
+
+* Copy the _jwtsample_ project from the worskpaces/examples folder and paste it to the workspaces/main folder, then import it into your workspace.
+* Add to the database of the project the following SQL script, so that we can test the retrieval of data.
+
+```SQL
+CREATE TABLE EMPLOYEE (
+
+  id BIGINT auto_increment ,
+
+  modificationCounter INTEGER NOT NULL,
+
+  employeeid BIGINT auto_increment,
+
+  name VARCHAR(255),
+
+  surname VARCHAR(255),
+
+  email VARCHAR(255),
+
+  PRIMARY KEY (employeeid)
+
+); 
+
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Mister','Boss','mister.boss@capgemini.com');
+
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Intern','Student', 'intern.student@capgemini.com'); 
+```
+
+* Create a Hibernate entity to map the data of the previous SQL script.
+
+
+```java
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+
+
+@Entity
+
+@javax.persistence.Table(name = "EMPLOYEE")
+
+public class EmployeeEntity {
+
+  @Column(name = "EMPLOYEEID")
+
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+  private Long employeeId;
+
+  @Column(name = "NAME")
+
+  private String name;
+
+  @Column(name = "SURNAME")
+
+  private String surname;
+
+  @Column(name = "EMAIL")
+
+  private String email;
+
+} 
+```
+
+* Using the EmployeeEntity, generate increments `CRUD DAO'S, CRUD REST services, CRUD SOAP services, CRUD logic (all in one), Entity infrastructure and TO's`. After generating, follow first the following tutorial related to link:howto_ionic-client-generation#generation[Ionic Client Generation] and afterwards the link:howto_angular-client-generation#generating[Angular tutorial].
+
+* The final step before releasing should be creating an issue with the following Markdown template. If every test scenario is completed, then testing phase is over and you can release.
+
+```markdown
+
+**Quality assurance plan Ionic and Angular:**
+
+***1. Preparation***
+* [ ] Follow [this tutorial](https://github.com/devonfw/tools-cobigen/wiki/mgmt__release_and_deployment_process#ionic-and-angular) to start the testing phase
+
+***2. Testing scenarios***
+* [ ] You are able to log-in into both Ionic and Angular apps using JWT authentication.
+* [ ] You are able to log-in into Angular using csrf authentication.
+* [ ] You are able to retrieve all the employees in both Ionic and Angular.
+* [ ] You are able to create an employee in both Ionic and Angular.
+* [ ] You are able to find an employee by any of its fields in both Ionic and Angular.
+* [ ] You are able to update an employee by any of its fields in both Ionic and Angular.
+* [ ] You are able to use [swipe functionality](https://ionicframework.com/docs/api/components/item/ItemSliding/) to update or delete an employee in Ionic.
+* [ ] You are able to use the [Ionic refresher](https://ionicframework.com/docs/api/components/refresher/Refresher/).
+
+
+***3. Deployment***
+
+If every of these test scenarios are checked out, then release process can continue.
+```
+
+
+
