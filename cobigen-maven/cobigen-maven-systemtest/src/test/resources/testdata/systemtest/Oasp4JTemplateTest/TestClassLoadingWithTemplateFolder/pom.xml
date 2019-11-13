@@ -9,7 +9,7 @@
     <plugins>
       <plugin>
         <groupId>com.devonfw.cobigen</groupId>
-        <artifactId>maven-plugin</artifactId>
+        <artifactId>cobigen-maven-plugin</artifactId>
         <version>${pluginVersion}</version>
         <executions>
           <execution>
