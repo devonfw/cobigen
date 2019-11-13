@@ -126,12 +126,13 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                         }
                     });
                 } else {
+                    String reportMessage = generationReport.isCancelled() ? "generation got Cancelled"
+                        : "Contents from " + templatesToBeGenerated.size() + " templates have been generated.";
                     PlatformUIUtil.getWorkbench().getDisplay().syncExec(new Runnable() {
                         @Override
                         public void run() {
                             MessageDialog.openInformation(PlatformUIUtil.getWorkbench().getDisplay().getActiveShell(),
-                                CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED,
-                                "Contents from " + templatesToBeGenerated.size() + " templates have been generated.");
+                                CobiGenDialogConstants.DIALOG_TITLE_GEN_SUCCEEDED, reportMessage);
                         }
                     });
                 }

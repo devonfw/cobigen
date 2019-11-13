@@ -35,6 +35,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -240,12 +241,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 adaptModel(model);
                 report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
                     model, (String taskName, Integer progress) -> {
-                        p.split(progress);
-                        monitor.setTaskName(taskName);
-
-                        if (monitor.isCanceled()) { // Thread.currentThread().stop(CancellationException);
+                        try {
+                            p.split(progress);
+                        } catch (OperationCanceledException e) {
                             throw new CobiGenCancellationException();
                         }
+                        monitor.setTaskName(taskName);
 
                     });
             } else {
@@ -260,7 +261,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
             monitor.done();
-            LOG.info("Generation finished successfully.");
+            if (report.isSuccessful()) {
+                LOG.info("Generation finished successfully.");
+            }
             return report;
         } else {
             throw new CobiGenRuntimeException("No generation target project configured! This is a Bug!");
