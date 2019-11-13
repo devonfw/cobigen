@@ -1,0 +1,29 @@
+:toc:
+toc::[]
+
+= JSON Plug-in
+At the moment the plug-in can be used for merge generic JSOn files depending on the merge strategy defined at the templates.
+
+== Merger extensions
+There are currently these merge strategies:
+
+*Generic JSON Merge*
+
+* merge strategy `jsonmerge`(add the new code respecting the existent is case of conflict)
+* merge strategy `jsonmerge_override` (add the new code overwriting the existent in case of conflict)
+
+. JsonArray's will be ignored / replaced in total
+. JsonObjects in conflict will be processed recursively ignoring adding non existent elements.
+
+== Merge Process
+
+=== Generic JSON Merging
+
+The merge process will be:
+
+. Add non existent JSON Objects from patch file to base file.
+. For existent object in both files, will add non existent keys from patch to base object. This process will be done recursively for all existent objects.
+. For Json Arrays existent in both files, the arrays will be just concatenated.
+
+
+

@@ -161,6 +161,12 @@ public class CustomModelWriter implements ModelWriter {
             writeConstructor(javaConstructor);
         }
 
+        // initializer
+        for (JavaInitializer innerInitializer : cls.getInitializers()) {
+            buffer.newline();
+            writeInitializer(innerInitializer);
+        }
+
         // methods
         for (JavaMethod javaMethod : cls.getMethods()) {
             buffer.newline();

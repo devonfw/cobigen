@@ -28,6 +28,12 @@ paths:
           description: Any
       requestBody:
         $ref: '#/components/requestBodies/TableData'
+  /tablemanagement:
+    x-component: tablemanagement
+    post:
+      responses:
+        "200":
+          description: Any
 components:
     schemas:
         Table:
