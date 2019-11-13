@@ -19,6 +19,7 @@ public class UnknownContextVariableException extends InvalidConfigurationExcepti
      */
     public UnknownContextVariableException(String variableName) {
 
-        super("Unknown context variable: " + variableName);
+        super("Either unknown context variable: " + variableName
+            + "or invalid external incrementRef in case of having one.");
     }
 }

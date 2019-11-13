@@ -85,6 +85,37 @@ public class ClassLoadingTest extends AbstractApiTest {
 
     }
 
+    @Test
+    public void testLoadEnumClass() throws Exception {
+
+        // Mocking
+        Object containerInput = createTestDataAndConfigureMock();
+
+        // Useful to see generates if necessary, comment the generationRootFolder above then
+        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
+
+        // pre-processing
+        File templatesFolder = new File(testFileRootPath + "templates");
+        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+        List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
+
+        // very manual way to load classes
+        List<Class<?>> logicClasses = new ArrayList<>();
+        logicClasses.add(getJarClass("JarredEnum"));
+        logicClasses.add(getJarClass("EnumTestJarredClass"));
+
+        // Execution
+        GenerationReportTo report = target.generate(containerInput, templates.get(1),
+            Paths.get(generationRootFolder.toURI()), false, logicClasses);
+
+        // Verification
+        File expectedResult = new File(testFileRootPath, "expected/Test2.java");
+        File generatedFile = new File(generationRootFolder, "com/devonfw/Test2.java");
+        assertThat(report).isSuccessful();
+        assertThat(generatedFile).exists();
+        assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
+    }
+
     /**
      * Creates simple to debug test data, which includes on container object and one child of the container
      * object. A {@link TriggerInterpreter TriggerInterpreter} will be mocked with all necessary supplier
