@@ -109,7 +109,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         logicClassesModel = Maps.newHashMap();
         for (Class<?> logicClass : logicClasses) {
             try {
-                logicClassesModel.put(logicClass.getSimpleName(), logicClass.newInstance());
+                if (logicClass.isEnum()) {
+                    logicClassesModel.put(logicClass.getSimpleName(), logicClass.getEnumConstants());
+                } else {
+                    logicClassesModel.put(logicClass.getSimpleName(), logicClass.newInstance());
+                }
             } catch (InstantiationException | IllegalAccessException e) {
                 LOG.warn(
                     "The Java class '{}' could not been instantiated for template processing and thus will be missing in the model.",
@@ -282,6 +286,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         TemplatesConfiguration tConfig = configurationHolder.readTemplatesConfiguration(trigger);
         String templateEngineName = tConfig.getTemplateEngine();
         TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
+
         templateEngine.setTemplateFolder(
             configurationHolder.readContextConfiguration().getConfigurationPath().resolve(trigger.getTemplateFolder()));
 
@@ -305,6 +310,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTargetPath());
             String resolvedTmpDestinationPath =
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTemplatePath());
+
             File originalFile = targetRootPath.resolve(resolvedTargetDestinationPath).toFile();
             File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
             // remember mapping to later on copy the generated resources to its target destinations

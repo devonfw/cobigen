@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.devonfw.cobigen.api.exception.MergeException;
@@ -14,6 +15,7 @@ import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
+import com.thoughtworks.qdox.model.JavaInitializer;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.parser.ParseException;
 
@@ -67,15 +69,15 @@ public class JavaMerger implements Merger {
         } catch (IOException e) {
             throw new MergeException(base, "Cannot read base file.", e);
         } catch (ParseException e) {
-            throw new MergeException(base, "Cannot parse base file. Error in line: " + e.getLine() + " / column: "
-                + e.getColumn() + ": " + e.getMessage(), e);
+            throw new MergeException(base, "The syntax of the base file is invalid. Error in line: " + e.getLine()
+                + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
         }
         ModifyableJavaClass patchClass;
         try {
             patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
         } catch (ParseException e) {
-            throw new MergeException(base, "Cannot parse generated patch. Error in line: " + e.getLine() + " / column: "
-                + e.getColumn() + ": " + e.getMessage(), e);
+            throw new MergeException(base, "The syntax of the generated patch is invalid. Error in line: " + e.getLine()
+                + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
         }
 
         if (baseClass == null) {
@@ -272,6 +274,27 @@ public class JavaMerger implements Merger {
                 } // else do not override
             }
         }
+
+        List<JavaInitializer> InitializersToAdd = new ArrayList<>();
+
+        for (JavaInitializer patchInitializerBlock : patchClass.getInitializers()) {
+
+            for (JavaInitializer baseInitializerBlock : baseClass.getInitializers()) {
+                if (getBlock(baseInitializerBlock).equals(getBlock(patchInitializerBlock))) {
+                    if (patchOverrides) {
+                        baseClass.replace(baseInitializerBlock, patchInitializerBlock);
+                    }
+
+                } else {
+                    InitializersToAdd.add(patchInitializerBlock);
+                }
+
+            }
+
+        }
+
+        baseClass.addAllInitializer(InitializersToAdd);
+
         for (JavaMethod patchMethod : patchClass.getMethods()) {
             JavaMethod baseMethod =
                 baseClass.getMethodBySignature(patchMethod.getName(), patchMethod.getParameterTypes(true));
@@ -283,6 +306,16 @@ public class JavaMerger implements Merger {
                 } // else do not override
             }
         }
+    }
+
+    /**
+     * @param initializer
+     *            JavaInitializer
+     * @return Contents of the Initializer block removing white space and new line
+     */
+    private String getBlock(JavaInitializer initializer) {
+        return initializer.getBlockContent().replaceAll("\\s", "");
+
     }
 
 }
