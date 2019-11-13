@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  version="2.1">
+
+  <increments>
+    <increment name="3" description="3">
+      <incrementRef ref="valid_increment_composition::0"/>     
+    </increment>
+    <increment name="4" description="4">      
+      <incrementRef ref="valid_increment_composition::1"/>
+    </increment>
+    <increment name="5" description="5">
+      <incrementRef ref="valid_increment_composition::2"/>     
+    </increment>
+  </increments>
+</templatesConfiguration>
