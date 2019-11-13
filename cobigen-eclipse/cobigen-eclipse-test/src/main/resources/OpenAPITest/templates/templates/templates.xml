@@ -5,7 +5,7 @@
     </templates>
     
     <templateScans>
-    	<templateScan templatePath="templates" destinationPath="src"/>
+    	<templateScan templatePath="templates" destinationPath="src/main/java"/>
   	</templateScans>
   	
     <increments>

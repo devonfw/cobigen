@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
@@ -64,18 +65,46 @@ public class HealthCheckDialog {
 
         try {
 
+            // refresh and check context configuration
+            ResourcesPluginUtil.refreshConfigurationProject();
+            String pathForCobigenTemplates = "";
+
             // check configuration project existence
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
-            // refresh and check context configuration
-            ResourcesPluginUtil.refreshConfigurationProject();
-            CobiGenFactory.create(generatorConfProj.getLocationURI());
+            IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+            pathForCobigenTemplates = ws.toPortableString();
+
+            if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
+                CobiGenFactory.create(generatorConfProj.getLocationURI());
+            } else {
+                String fileName = ResourcesPluginUtil.getJarPath(false);
+
+                File jarPath =
+                    new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
+                CobiGenFactory.create(jarPath.toURI());
+                boolean fileExists = jarPath.exists();
+                if (!fileExists) {
+                    MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                        "Not Downloaded the CobiGen Template Jar");
+                }
+
+                // We try to unzip the jar into our folder structure
+                ResourcesPluginUtil.processJar(jarPath.getName());
+
+            }
 
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep;
             boolean healthyCheckWarning = false;
-            if (new File(Paths.get(generatorConfProj.getLocationURI()).toString(),
-                ConfigurationConstants.CONTEXT_CONFIG_FILENAME).exists()) {
+            File tempFile = new File(
+                pathForCobigenTemplates + "/CobiGen_Templates/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            boolean contextFileExists = tempFile.exists();
+            File newtempFile = new File(
+                pathForCobigenTemplates + "/CobiGen_Templates/" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER + "/"
+                    + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            boolean newcontextFileExists = newtempFile.exists();
+            if (newcontextFileExists || contextFileExists) {
                 healthyCheckMessage += "OK.";
             } else {
                 healthyCheckMessage += "INVALID.";
@@ -92,7 +121,7 @@ public class HealthCheckDialog {
             // Won't be reached anymore
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep + "INVALID!";
-            if (generatorConfProj != null) {
+            if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
                 Path configurationProject = Paths.get(generatorConfProj.getLocationURI());
                 ContextConfigurationVersion currentVersion =
                     new ContextConfigurationUpgrader().resolveLatestCompatibleSchemaVersion(configurationProject);
@@ -124,8 +153,10 @@ public class HealthCheckDialog {
             PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
             LOG.warn(healthyCheckMessage, e);
         } catch (Throwable e) {
-            healthyCheckMessage = "An unexpected error occurred!";
-            healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
+            healthyCheckMessage = "An unexpected error occurred! Templates were not found.";
+            if (report != null && healthyCheckMessage != null) {
+                healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
+            }
             PlatformUIUtil.openErrorDialog(healthyCheckMessage, e);
             LOG.error(healthyCheckMessage, e);
         }
@@ -133,6 +164,7 @@ public class HealthCheckDialog {
 
     /**
      * Open up an error dialog, which encompasses the ability to upgrade the context configuration.
+     *
      * @param healthyCheckMessage
      *            message to be shown to the user
      * @param configurationFolder
@@ -148,7 +180,6 @@ public class HealthCheckDialog {
             new MessageDialog(Display.getDefault().getActiveShell(), HealthCheckDialogs.DIALOG_TITLE, null,
                 healthyCheckMessage, MessageDialog.ERROR, new String[] { "Upgrade Context Configuration", "Abort" }, 1);
         dialog.setBlockOnOpen(true);
-
         int result = dialog.open();
         if (result == 0) {
             HealthCheckReport report = healthCheck.upgradeContextConfiguration(configurationFolder, backupPolicy);
@@ -174,6 +205,7 @@ public class HealthCheckDialog {
     /**
      * Open up a success dialog with the given message, which provides the ability to perform an advanced
      * health check in addition.
+     *
      * @param healthyCheckMessage
      *            message to be shown to the user
      * @param warn
@@ -188,8 +220,12 @@ public class HealthCheckDialog {
         int result = dialog.open();
         if (result == 0) {
             try {
-                report = healthCheck
-                    .perform(ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation().toFile().toPath());
+                IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+                String healthProj = ws.toPortableString() + "/" + ResourceConstants.CONFIG_PROJECT_NAME;
+                File healthcheckFile = new File(healthProj);
+                if (ResourcesPluginUtil.getGeneratorConfigurationProject() != null) {
+                    report = healthCheck.perform(healthcheckFile.toPath());
+                }
                 AdvancedHealthCheckDialog advancedHealthCheckDialog =
                     new AdvancedHealthCheckDialog(report, healthCheck);
                 advancedHealthCheckDialog.setBlockOnOpen(false);

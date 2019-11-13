@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+	<templates>
+      <templateExtension ref="${variables.component#lower_case}RestController.service.ts" mergeStrategy="tsmerge"/>
+    </templates>
+    
+    <templateScans>
+    	<templateScan templatePath="templates" destinationPath="src/main/java"/>
+  	</templateScans>
+  	
+    <increments>
+      <increment name="app_angular_devon4j_component" description="View Component">
+        <templateRef ref="${variables.component#lower_case}RestController.service.ts"/>
+      </increment>
+    </increments>
+</templatesConfiguration>

@@ -21,6 +21,7 @@ import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaType;
 
 /** The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser */
@@ -58,7 +59,7 @@ public class ParsedJavaModelBuilder {
         }
         pojoModel.put(ModelConstant.CANONICAL_NAME, javaClass.getCanonicalName());
 
-        Map<String, String> javaDoc = extractJavaDoc(javaClass);
+        Map<String, Object> javaDoc = extractJavaDoc(javaClass);
         if (javaDoc != null) {
             pojoModel.put(ModelConstant.JAVADOC, javaDoc);
         }
@@ -122,7 +123,7 @@ public class ParsedJavaModelBuilder {
             Map<String, Object> methodAttributes = new HashMap<>();
             methodAttributes.put(ModelConstant.NAME, method.getName());
             if (method.getComment() != null) {
-                Map<String, String> javaDoc = extractJavaDoc(method);
+                Map<String, Object> javaDoc = extractJavaDoc(method);
                 if (javaDoc != null) {
                     methodAttributes.put(ModelConstant.JAVADOC, javaDoc);
                 }
@@ -174,7 +175,7 @@ public class ParsedJavaModelBuilder {
         fieldValues.put(ModelConstant.CANONICAL_TYPE, field.getGenericCanonicalName());
 
         if (annotatedElement != null) {
-            Map<String, String> javaDoc = extractJavaDoc(annotatedElement);
+            Map<String, Object> javaDoc = extractJavaDoc(annotatedElement);
             if (javaDoc != null) {
                 fieldValues.put(ModelConstant.JAVADOC, javaDoc);
             }
@@ -205,7 +206,7 @@ public class ParsedJavaModelBuilder {
                 superclassModel.put(ModelConstant.PACKAGE, "");
             }
 
-            Map<String, String> javaDoc = extractJavaDoc(superclass);
+            Map<String, Object> javaDoc = extractJavaDoc(superclass);
             if (javaDoc != null) {
                 superclassModel.put(ModelConstant.JAVADOC, javaDoc);
             }
@@ -236,7 +237,7 @@ public class ParsedJavaModelBuilder {
                 interfaceModel.put(ModelConstant.PACKAGE, "");
             }
 
-            Map<String, String> javaDoc = extractJavaDoc(c);
+            Map<String, Object> javaDoc = extractJavaDoc(c);
             if (javaDoc != null) {
                 interfaceModel.put(ModelConstant.JAVADOC, javaDoc);
             }
@@ -360,17 +361,41 @@ public class ParsedJavaModelBuilder {
      * @return the mapping of javaDoc elements to its values or <code>null</code> if the element does not
      *         declare javaDoc
      */
-    private Map<String, String> extractJavaDoc(JavaAnnotatedElement annotatedElement) {
+    private Map<String, Object> extractJavaDoc(JavaAnnotatedElement annotatedElement) {
         if (annotatedElement.getComment() == null) {
             return null;
         }
-        Map<String, String> javaDocModel = Maps.newHashMap();
+        Map<String, Object> javaDocModel = Maps.newHashMap();
         javaDocModel.put(ModelConstant.COMMENT, annotatedElement.getComment());
+        Map<String, String> params = Maps.newHashMap();
+        Map<String, String> thrown = Maps.newHashMap();
         for (DocletTag tag : annotatedElement.getTags()) {
-            // currently conflicting tag names like @param or @throws are simply not in scope.
-            // what we want to get is a simple way of addressing custom docletTags and its values
-            javaDocModel.put(tag.getName(), tag.getValue());
+            String tagValue = tag.getValue();
+            String tagName = tag.getName();
+            if (annotatedElement instanceof JavaMethod) {
+                String name = StringUtils.substringBefore(tagValue, " ").trim();
+                String value = StringUtils.substringAfter(tagValue, " ").trim();
+                if (tagName.equals("param")) {
+                    JavaMethod jm = (JavaMethod) annotatedElement;
+                    int i = 0;
+                    for (JavaParameter jp : jm.getParameters()) {
+                        if (name.equals(jp.getName())) {
+                            params.put(name, value);
+                            params.put("arg" + i, value);
+                        }
+                        i++;
+                    }
+                } else if (tagName.equals("throws")) {
+                    thrown.put(name, value);
+                } else {
+                    javaDocModel.put(tagName, tagValue);
+                }
+            } else {
+                javaDocModel.put(tagName, tagValue);
+            }
         }
+        javaDocModel.put("params", params);
+        javaDocModel.put("throws", thrown);
         return javaDocModel;
     }
 
