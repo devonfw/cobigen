@@ -536,6 +536,16 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
 
     public void addInitializer(JavaInitializer initializer) {
         initializers.add(initializer);
+
+    }
+
+    public void addAllInitializer(List<JavaInitializer> initializersList) {
+        initializers.addAll(initializersList);
+
+    }
+
+    public void removeInitializer(JavaInitializer initializer) {
+        initializers.remove(initializer);
     }
 
     public void addClass(JavaClass cls) {
@@ -815,6 +825,19 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
         if (i != -1) {
             constructors.set(i, patchConstructor);
         }
+    }
+
+    /**
+     * Replaces the given baseInitializer with the given patchInitializer.
+     * @param baseInitializerBlock
+     * @param patchInitializerBlock
+     */
+    public void replace(JavaInitializer baseInitializerBlock, JavaInitializer patchInitializerBlock) {
+        int i = initializers.indexOf(baseInitializerBlock);
+        if (i != -1) {
+            initializers.set(i, patchInitializerBlock);
+        }
+
     }
 
 }
