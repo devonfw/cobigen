@@ -46,18 +46,21 @@
       <id>nexus.central</id>
       <mirrorOf>central</mirrorOf>
       <name>central-mirror</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/central</url>
+      <url>https://devon.s2-eu.capgemini.com/nexus3/repository/central</url>
     </mirror>
   </mirrors>
 
   <profiles>
     <profile>
       <id>devon.nexus</id>
+      <properties>
+        <nexusurl>https://devon.s2-eu.capgemini.com/nexus3/repository</nexusurl>
+      </properties>
       <repositories>
         <repository>
           <id>public</id>
           <name>Public Repositories</name>
-          <url>https://devon.s2-eu.capgemini.com/nexus/content/groups/public/</url>
+          <url>${nexusurl}/public/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
@@ -70,7 +73,7 @@
         <repository>
           <id>3rd.party</id>
           <name>3rd party</name>
-          <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/thirdparty</url>
+          <url>${nexusurl}/thirdparty</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
@@ -83,7 +86,7 @@
         <repository>
           <id>oasp.releases</id>
           <name>OASP Releases</name>
-          <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/oasp.releases</url>
+          <url>${nexusurl}/oasp.releases</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
@@ -96,7 +99,7 @@
         <repository>
           <id>oasp.snapshots</id>
           <name>OASP Snapshots</name>
-          <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/oasp.snapshots</url>
+          <url>${nexusurl}/oasp.snapshots</url>
           <releases>
             <enabled>false</enabled>
             <updatePolicy>always</updatePolicy>
@@ -109,7 +112,7 @@
         <repository>
           <id>devon.releases</id>
           <name>Devon Releases</name>
-          <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/releases</url>
+          <url>${nexusurl}/releases</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>
@@ -122,7 +125,7 @@
         <repository>
           <id>devon.snapshots</id>
           <name>Devon Snapshots</name>
-          <url>https://devon.s2-eu.capgemini.com/nexus/content/repositories/snapshots</url>
+          <url>${nexusurl}/snapshots</url>
           <releases>
             <enabled>false</enabled>
             <updatePolicy>always</updatePolicy>
@@ -137,7 +140,7 @@
         <pluginRepository>
           <id>public</id>
           <name>Public Repositories</name>
-          <url>https://devon.s2-eu.capgemini.com/nexus/content/groups/public/</url>
+          <url>${nexusurl}/public/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>always</updatePolicy>

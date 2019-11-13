@@ -84,8 +84,11 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                     cobigenWrapper.getWorkspaceDependentTemplateDestinationPath(generationReport.getGeneratedFiles());
                 Set<IProject> projects = Sets.newHashSet();
                 for (String filePath : generatedFiles) {
+
                     IProject project =
                         ResourcesPlugin.getWorkspace().getRoot().getProject(PathUtil.getProject(filePath));
+                    project = PathUtil.getRelativeProjectIfNeeded(filePath, project);
+
                     if (project.exists()) {
                         projects.add(project);
                     }
@@ -153,15 +156,15 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                 }
             }
         } catch (CoreException e) {
+            LOG.error("Eclipse internal Exception", e);
             PlatformUIUtil.openErrorDialog("An eclipse internal exception occurred during processing:\n"
                 + e.getMessage() + "\n If this problem persists please report it to the CobiGen developers.", e);
-            LOG.error("Eclipse internal Exception", e);
         } catch (CobiGenRuntimeException e) {
-            PlatformUIUtil.openErrorDialog(e.getMessage(), e);
             LOG.error("CobiGen Exception:\n{}", e.getMessage(), e);
+            PlatformUIUtil.openErrorDialog(e.getMessage(), e);
         } catch (Throwable e) {
-            PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
             LOG.error("An unexpected exception occurred!", e);
+            PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
         } finally {
             LOG.info("Finished processing generation.");
             monitor.done();
@@ -192,6 +195,9 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
      *            {@link CompilationUnit}s to be organized
      */
     private void organizeImports(final ICompilationUnit[] cus) {
+        if (cus.length < 1) {
+            return;
+        }
 
         Display.getDefault().syncExec(new Runnable() {
             @Override
@@ -210,6 +216,9 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
      *            {@link CompilationUnit}s to be formatted
      */
     private void formatSourceCode(final ICompilationUnit[] cus) {
+        if (cus.length < 1) {
+            return;
+        }
 
         Display.getDefault().asyncExec(new Runnable() {
             @Override
@@ -237,7 +246,7 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                 IResource file = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
                 if (file != null && file instanceof IFile) {
                     IJavaElement elem = JavaCore.create(file);
-                    if (elem instanceof ICompilationUnit) {
+                    if (elem != null && elem instanceof ICompilationUnit) {
                         cus.add((ICompilationUnit) elem);
                     }
                 }
