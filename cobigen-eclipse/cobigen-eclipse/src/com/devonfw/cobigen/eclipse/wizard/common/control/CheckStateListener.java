@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.TreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -87,6 +88,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
 
         CheckboxTreeViewer resourcesTree = page.getResourcesTree();
         CheckboxTreeViewer incrementSelector = page.getPackageSelector();
+
         if (event.getSource().equals(resourcesTree)) {
             resourcesTree.setSubtreeChecked(event.getElement(), event.getChecked());
             ((SelectFileLabelProvider) resourcesTree.getLabelProvider())
@@ -245,32 +247,52 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      * @param packageSelector
      *            current {@link CheckboxTreeViewer} for the package selection
      */
-    private void performCheckLogic(CheckStateChangedEvent event, CheckboxTreeViewer packageSelector) {
+    public void performCheckLogic(CheckStateChangedEvent event, CheckboxTreeViewer packageSelector) {
 
-        SelectIncrementContentProvider cp = (SelectIncrementContentProvider) packageSelector.getContentProvider();
-        TreePath[] paths = cp.getAllPaths(event.getElement());
-        for (TreePath path : paths) {
-            packageSelector.setSubtreeChecked(path, event.getChecked());
-        }
+        if (event.getSource().equals(packageSelector)) {
+            SelectIncrementContentProvider cp = (SelectIncrementContentProvider) packageSelector.getContentProvider();
+            TreePath[] paths = cp.getAllPaths(event.getElement());
+            for (TreePath path : paths) {
+                packageSelector.setSubtreeChecked(path, event.getChecked());
+            }
 
-        TreePath[] parents = cp.getParents(event.getElement());
-        if (event.getChecked()) {
-            for (TreePath parent : parents) {
+            TreePath[] parents = cp.getParents(event.getElement());
+            if (event.getChecked()) {
+                for (TreePath parent : parents) {
+                    boolean allChecked = true;
+                    for (Object child : cp.getChildren(parent)) {
+                        if (!packageSelector.getChecked(parent.createChildPath(child))) {
+                            allChecked = false;
+                            break;
+                        }
+                    }
+                    if (allChecked) {
+                        packageSelector.setChecked(parent, true);
+                    }
+                }
+
+                if (event.getElement().toString().contains("All")) {
+                    packageSelector.setAllChecked(true);
+                }
+
+                // checks if all child increments are checked and checks All-Checkbox
                 boolean allChecked = true;
-                for (Object child : cp.getChildren(parent)) {
-                    if (!packageSelector.getChecked(parent.createChildPath(child))) {
+                for (TreeItem item : packageSelector.getTree().getItems()) {
+
+                    if (!item.getChecked() && !item.getText().contains("All")) {
                         allChecked = false;
                         break;
                     }
                 }
                 if (allChecked) {
-                    packageSelector.setChecked(parent, true);
+                    packageSelector.getTree().getItem(0).setChecked(true);
                 }
-            }
-        } else {
-            for (TreePath parent : parents) {
-                if (parent.getSegmentCount() > 0) {
-                    packageSelector.setChecked(parent, false);
+
+            } else {
+                for (TreePath parent : parents) {
+                    if (parent.getSegmentCount() > 0) {
+                        packageSelector.setChecked(parent, false);
+                    }
                 }
             }
         }
@@ -299,7 +321,7 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
      * @param selectedElements
      *            the {@link Set} of all elements checked by the user
      */
-    private void performCheckLogicForALLIncrement(CheckboxTreeViewer incrementSelector, Set<Object> selectedElements) {
+    public void performCheckLogicForALLIncrement(CheckboxTreeViewer incrementSelector, Set<Object> selectedElements) {
 
         Set<Object> addedDiff = new HashSet<>(selectedElements);
         Set<? extends IncrementTo> removedDiff = new HashSet<>(selectedIncrements);
