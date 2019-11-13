@@ -26,6 +26,16 @@ public class ResponseDef {
 
     private String description;
 
+    private EntityDef entityRef;
+
+    public EntityDef getEntityRef() {
+        return entityRef;
+    }
+
+    public void setEntityRef(EntityDef entityRef) {
+        this.entityRef = entityRef;
+    }
+
     public ResponseDef() {
         isArray = false;
         isPaginated = false;

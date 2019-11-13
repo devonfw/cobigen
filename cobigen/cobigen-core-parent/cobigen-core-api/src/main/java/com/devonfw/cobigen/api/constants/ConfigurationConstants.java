@@ -18,4 +18,16 @@ public class ConfigurationConstants {
 
     /** Filename of the {@link Properties} used to customize cobigen properties and template relocation. */
     public static final String COBIGEN_PROPERTIES = "cobigen.properties";
+
+    /** Name of the CobiGen home folder, placed on the users home directory */
+    public static final String COBIGEN_HOME_FOLDER = ".cobigen";
+
+    /** Name of the templates folder */
+    public static final String TEMPLATES_FOLDER = "templates";
+
+    /** Resource folder containing templates */
+    public static final String TEMPLATE_RESOURCE_FOLDER = "src/main/templates";
+
+    /** Delimiter splitting the template folder and value of references in templates.xml files */
+    public static final String REFERENCE_DELIMITER = "::";
 }

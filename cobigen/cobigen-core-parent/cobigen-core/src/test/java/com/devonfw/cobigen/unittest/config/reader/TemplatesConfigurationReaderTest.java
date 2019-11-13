@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -15,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.impl.config.ConfigurationHolder;
+import com.devonfw.cobigen.impl.config.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
@@ -22,6 +25,7 @@ import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateExtension;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScan;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -47,7 +51,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     public void testTemplatesOfAPackageRetrieval() throws Exception {
 
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid");
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -67,7 +71,31 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid");
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+
+        // then
+        assertThat(templates).isNotNull().hasSize(6);
+
+        String templateIdFooClass = "prefix_FooClass.java";
+        Template templateFooClass = templates.get(templateIdFooClass);
+        assertThat(templateFooClass).isNotNull();
+        assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
+        assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("foo/FooClass.java.ftl");
+        assertThat(templateFooClass.getUnresolvedTargetPath()).isEqualTo("src/main/java/foo/FooClass.java");
+        assertThat(templateFooClass.getMergeStrategy()).isNull();
+    }
+
+    @Test
+    public void testTemplatesSourceFolder() {
+        // given
+        TemplatesConfigurationReader target =
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid_source_folder");
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -97,7 +125,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     public void testTemplateScanDoesNotOverwriteExplicitTemplateDeclarations() throws Exception {
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid");
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -133,7 +161,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     public void testTemplateExtensionDeclarationOverridesTemplateScanDefaults() throws Exception {
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid");
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -177,7 +205,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     public void testEmptyTemplateExtensionDeclarationDoesNotOverrideAnyDefaults() throws Exception {
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid");
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -205,7 +233,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
-        new TemplatesConfigurationReader(new File(testFileRootPath + "faulty").toPath());
+        new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "faulty");
     }
 
     /**
@@ -217,8 +245,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnDuplicateTemplateExtensionDeclaration() throws InvalidConfigurationException {
 
-        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "faulty_duplicate_template_extension").toPath());
+        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "faulty_duplicate_template_extension");
         reader.loadTemplates(null);
     }
 
@@ -231,8 +259,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnUnhookedTemplateExtensionDeclaration() throws InvalidConfigurationException {
 
-        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "faulty_unhooked_template_extension").toPath());
+        TemplatesConfigurationReader reader =
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "faulty_unhooked_template_extension");
         reader.loadTemplates(null);
     }
 
@@ -246,7 +274,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     public void testErrorOnDuplicateScannedIds() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "faulty_duplicate_scanned_id").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "faulty_duplicate_scanned_id");
         reader.loadTemplates(null);
     }
 
@@ -260,7 +288,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         // given
         TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_template_scan_references").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid_template_scan_references");
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -285,8 +313,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     @Test(expected = InvalidConfigurationException.class)
     public void testErrorOnDuplicateTemplateScanNames() throws InvalidConfigurationException {
 
-        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(
-            new File(testFileRootPath + "faulty_duplicate_template_scan_name").toPath());
+        TemplatesConfigurationReader reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "faulty_duplicate_template_scan_name");
         reader.loadTemplates(null);
     }
 
@@ -299,7 +327,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     public void testErrorOnInvalidTemplateScanReference() throws InvalidConfigurationException {
 
         TemplatesConfigurationReader reader =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "faulty_invalid_template_scan_ref").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "faulty_invalid_template_scan_ref");
         reader.loadTemplates(null);
     }
 
@@ -311,7 +339,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         // given
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(testFileRootPath + "valid_increment_composition").toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid_increment_composition");
 
         Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
             new LinkedList<ContainerMatcher>());
@@ -332,6 +360,122 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         assertThat(increments.get("2").getTemplates()).extracting("name").containsOnly("templateDecl", "prefix_scanned",
             "scanned", "prefix_scanned2");
 
+    }
+
+    /**
+     * Tests the correct resolution of TemplateRef from outside the current templates file.
+     */
+    @Test
+    public void testTemplateRefOutsideCurrentFile() {
+        // given
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_templateref", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+        Map<String, Increment> increments = templatesConfiguration.getIncrements();
+
+        assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
+
+        // validation
+        Increment incrementThree = increments.get("3");
+        LinkedList<String> templateNamesThree = new LinkedList<>();
+        for (Template tmplate : incrementThree.getTemplates()) {
+            templateNamesThree.add(tmplate.getName());
+        }
+        assertThat(templateNamesThree).containsExactly("templateDecl");
+
+        Increment incrementFour = increments.get("4");
+        LinkedList<String> templateNamesFour = new LinkedList<>();
+        for (Template tmplate : incrementFour.getTemplates()) {
+            templateNamesFour.add(tmplate.getName());
+        }
+        assertThat(templateNamesFour).containsExactly("ExplicitlyDefined");
+    }
+
+    /**
+     * Tests the correct resolution of incrementsRef from outside the current templates file. (Issue #678)
+     */
+    @Test
+    public void testIncrementRefOutsideCurrentFile() {
+
+        // given
+        Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_incrementref", Charset.forName("UTF-8"),
+            new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+        Map<String, Increment> increments = templatesConfiguration.getIncrements();
+
+        // validation
+        assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
+        assertThat(increments).containsOnlyKeys("3", "4", "5");
+
+        Increment incrementThree = increments.get("3").getDependentIncrements().get(0);
+        assertThat(incrementThree.getName()).isEqualTo("0");
+        assertThat(incrementThree.getTemplates().size()).isEqualTo(1);
+
+        Increment incrementFour = increments.get("4").getDependentIncrements().get(0);
+        assertThat(incrementFour.getName()).isEqualTo("1");
+        assertThat(incrementFour.getTemplates().size()).isEqualTo(4);
+
+        Increment incrementFive = increments.get("5").getDependentIncrements().get(0);
+        assertThat(incrementFive.getName()).isEqualTo("2");
+        assertThat(incrementFive.getTemplates().size()).isEqualTo(4);
+    }
+
+    /**
+     * Tests the correct detection of invalid external increment reference.
+     * @throws InvalidConfigurationException
+     *             expected
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testInvalidIncrementRefOutsideCurrentFile() {
+
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+
+        // given
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "faulty_invalid_external_incrementref", configurationHolder);
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+        target.loadIncrements(templates, trigger);
+    }
+
+    /**
+     * Tests the correct detection of invalid external increment reference.
+     * @throws InvalidConfigurationException
+     *             expected
+     */
+    @Test(expected = InvalidConfigurationException.class)
+    public void testInvalidTemplateRefOutsideCurrentFile() {
+
+        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+
+        // given
+        ConfigurationHolder configurationHolder =
+            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "faulty_invalid_external_templateref", configurationHolder);
+
+        Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
+            new LinkedList<ContainerMatcher>());
+
+        // when
+        Map<String, Template> templates = target.loadTemplates(trigger);
+        target.loadIncrements(templates, trigger);
     }
 
     /**
@@ -361,8 +505,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         // given
         String templateScanDestinationPath = "src/main/java/";
         String templatesConfigurationRoot = testFileRootPath + "valid_relocate_templateExt_vs_scan/";
-        TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "valid_relocate_templateExt_vs_scan/");
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
@@ -400,7 +544,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         String templateScanDestinationPath = "src/main/java/";
         String templatesConfigurationRoot = testFileRootPath + "valid_relocate_template_vs_scan/";
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid_relocate_template_vs_scan/");
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
@@ -435,8 +579,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     public void testRelocate_propertiesResolution() {
         // arrange
         String templatesConfigurationRoot = testFileRootPath + "valid_relocate_propertiesresolution/";
-        TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "valid_relocate_propertiesresolution/");
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
@@ -466,8 +610,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
         // given
         String templatesConfigurationRoot = testFileRootPath + "valid_relocate_template_fileending/";
-        TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+        TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+            "valid_relocate_template_fileending/");
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
@@ -504,7 +648,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         String templateScanDestinationPath = "src/main/java/";
         String templatesConfigurationRoot = testFileRootPath + "valid_relocate/";
         TemplatesConfigurationReader target =
-            new TemplatesConfigurationReader(new File(templatesConfigurationRoot).toPath());
+            new TemplatesConfigurationReader(new File(testFileRootPath).toPath(), "valid_relocate/");
 
         Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
