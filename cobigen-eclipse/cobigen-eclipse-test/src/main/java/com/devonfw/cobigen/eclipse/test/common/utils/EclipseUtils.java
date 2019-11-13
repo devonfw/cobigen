@@ -1,9 +1,12 @@
 package com.devonfw.cobigen.eclipse.test.common.utils;
 
+import static org.eclipse.swtbot.eclipse.finder.matchers.WidgetMatcherFactory.withTitle;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -20,11 +23,14 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
+import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
@@ -33,6 +39,9 @@ import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
  * Eclipse specific operations to make test setup easier.
  */
 public class EclipseUtils {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(EclipseUtils.class);
 
     /**
      * Imports the an existing general (non-java/non-maven) project to the workspace.
@@ -108,7 +117,8 @@ public class EclipseUtils {
         configurationProject.contextMenu().menu("Maven", false, 0).menu("Update Project...", false, 0).click();
         bot.waitUntil(shellIsActive("Update Maven Project"));
         bot.button(IDialogConstants.OK_LABEL).click();
-        ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+        ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).build(IncrementalProjectBuilder.CLEAN_BUILD,
+            new NullProgressMonitor());
         bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
     }
 
@@ -174,5 +184,32 @@ public class EclipseUtils {
             }
         }
         ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    }
+
+    /**
+     * Defensively try to expand errors in problem view for screenshot analysis. Failing here, will not fail
+     * the test.
+     * @param bot
+     *            the current workbench bot
+     */
+    public static void openErrorsTreeInProblemsView(SWTWorkbenchBot bot) {
+        try {
+            SWTBotView viewByTitle = bot.view(withTitle(containsString("Problems")));
+            SWTBotTree tree = viewByTitle.bot().tree().select(0);
+            Arrays.asList(tree.getAllItems()).stream().forEach(e -> e.expand());
+
+            LOG.debug("Log Problems view entries:");
+            LOG.debug(">>>>>");
+            for (SWTBotTreeItem category : tree.getAllItems()) {
+                LOG.debug("> {}", category.getText());
+                for (SWTBotTreeItem issue : category.getItems()) {
+                    LOG.debug(">> {}", issue.getText());
+                }
+            }
+            LOG.debug("<<<<<");
+        } catch (WidgetNotFoundException e) {
+            LOG.warn("Could not find Widget during expansion of problem view. This does not harm the test... continue.",
+                e);
+        }
     }
 }

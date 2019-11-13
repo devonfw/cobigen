@@ -3,6 +3,7 @@ package com.devonfw.cobigen.openapiplugin.inputreader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,6 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
@@ -32,7 +37,8 @@ import com.jayway.jsonpath.Configuration;
 import com.reprezen.jsonoverlay.JsonOverlay;
 import com.reprezen.jsonoverlay.Overlay;
 import com.reprezen.jsonoverlay.Reference;
-import com.reprezen.kaizen.oasparser.OpenApi3Parser;
+import com.reprezen.kaizen.oasparser.OpenApiParser;
+import com.reprezen.kaizen.oasparser.OpenApiParser.SwaggerParserException;
 import com.reprezen.kaizen.oasparser.model3.Info;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
@@ -48,6 +54,12 @@ import com.reprezen.kaizen.oasparser.model3.Server;
  * files into FreeMarker models
  */
 public class OpenAPIInputReader implements InputReader {
+
+    /**
+     * Components retrieved from an EntityDef. Used for not executing multiple times the retrieval of
+     * components
+     */
+    private List<ComponentDef> components;
 
     @Override
     public boolean isValidInput(Object input) {
@@ -107,8 +119,18 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public List<Object> getInputObjects(Object input, Charset inputCharset) {
         List<Object> inputs = new LinkedList<>();
+        List<Path> paths = new LinkedList<>();
+
         if (input instanceof OpenAPIFile) {
-            inputs.addAll(extractComponents(((OpenAPIFile) input).getAST()));
+            OpenApi3 astOpenApi = ((OpenAPIFile) input).getAST();
+            inputs.addAll(extractComponents(astOpenApi));
+
+            for (String key : astOpenApi.getPaths().keySet()) {
+                Path path = astOpenApi.getPaths().get(key);
+                paths.add(path);
+            }
+
+            inputs.addAll(extractComponentsFromPaths(paths, astOpenApi));
         }
         return inputs;
     }
@@ -124,6 +146,68 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * Get a list of components defined at the paths part with the x-component tag. Returns a list of
+     * {@link ComponentDef}'s
+     * @param paths
+     *            the paths of the OpenApi3 file
+     * @param astOpenApi
+     *            OpenApi3 object which is the AST of the file
+     * @return a list of {@link ComponentDef}'s for each path that contains x-component tag
+     */
+    private List<ComponentDef> extractComponentsFromPaths(List<Path> paths, OpenApi3 astOpenApi) {
+        for (Path path : paths) {
+            if (path.getExtensions().get(Constants.COMPONENT_EXT) != null) {
+                String componentName = path.getExtensions().get(Constants.COMPONENT_EXT).toString();
+                if (componentName != null && !componentName.isEmpty()) {
+
+                    // items on a list are passed by reference, we can change it
+                    ComponentDef componentDef = getComponent(componentName);
+                    // If the component has no name, it means no component was found
+                    if (componentDef.getName() == null) {
+                        componentDef.setName(componentName);
+                        componentDef.setPaths(extractPaths(astOpenApi.getPaths(), componentName));
+                        setExtensionsToComponent(astOpenApi, componentDef);
+
+                        components.add(componentDef);
+                    } else {
+                        setExtensionsToComponent(astOpenApi, componentDef);
+                    }
+                }
+            }
+        }
+        return components;
+    }
+
+    /**
+     * Sets the extension properties (x-.... tags) to the component
+     * @param astOpenApi
+     *            OpenApi3 object which is the AST of the file
+     * @param componentDef
+     *            component to set the extension properties to
+     */
+    private void setExtensionsToComponent(OpenApi3 astOpenApi, ComponentDef componentDef) {
+        // Sets a Map containing all the extensions of the info part of the OpenAPI file
+        if (Overlay.isPresent((JsonOverlay<?>) astOpenApi.getInfo())) {
+            componentDef.setUserPropertiesMap(astOpenApi.getInfo().getExtensions());
+        }
+    }
+
+    /**
+     * Tries to get a component from the components list using as parameter the component name
+     * @param componentName
+     *            component name to search
+     * @return the component if it was found on the list or otherwise a new ComponentDef
+     */
+    private ComponentDef getComponent(String componentName) {
+        for (ComponentDef componentDef : components) {
+            if (componentDef.getName().equals(componentName)) {
+                return componentDef;
+            }
+        }
+        return new ComponentDef();
+    }
+
+    /**
      * Get a list of entities defined at an OpenaApi3 file returning a list of {@link EntityDef}'s
      *
      * @param openApi
@@ -136,6 +220,8 @@ public class OpenAPIInputReader implements InputReader {
         header.setServers(extractServers(openApi));
         header.setInfo(extractInfo(openApi));
         List<EntityDef> objects = new LinkedList<>();
+        components = new LinkedList<>();
+
         for (String key : openApi.getSchemas().keySet()) {
             EntityDef entityDef = new EntityDef();
             entityDef.setName(key);
@@ -152,7 +238,8 @@ public class OpenAPIInputReader implements InputReader {
                         + "to check how to correctly format it."
                         + " If it is still not working, check your file indentation!");
             }
-            entityDef.setComponentName(openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString());
+            String componentName = openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString();
+            entityDef.setComponentName(componentName);
 
             // If the path's tag was not found on the input file, throw invalid configuration
             if (openApi.getPaths().size() == 0) {
@@ -173,9 +260,11 @@ public class OpenAPIInputReader implements InputReader {
                 String keyMap = it.next();
                 entityDef.setUserProperty(keyMap, openApi.getSchema(key).getExtensions().get(keyMap).toString());
             }
-            componentDef.setPaths(extractPaths(openApi.getPaths(),
-                openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT).toString()));
+            componentDef.setPaths(extractPaths(openApi.getPaths(), componentName));
+            componentDef.setName(componentName);
+            components.add(componentDef);
             entityDef.setComponent(componentDef);
+
             entityDef.setHeader(header);
             objects.add(entityDef);
         }
@@ -273,6 +362,7 @@ public class OpenAPIInputReader implements InputReader {
             String propertyName = prop.getKey();
             Schema propertySchema = prop.getValue();
             PropertyDef propModel;
+
             if (propertySchema.getType().equals(Constants.ARRAY)) {
                 if (propertySchema.getItemsSchema().getType().equals(Constants.OBJECT)
                     && propertySchema.getItemsSchema() != null
@@ -303,6 +393,17 @@ public class OpenAPIInputReader implements InputReader {
                     propModel.setFormat(propertySchema.getFormat());
                 }
             }
+
+            if (propertySchema.hasEnums()) {
+                Collection<Object> enums = propertySchema.getEnums();
+
+                List<String> enumElements = new ArrayList<>();
+                for (Object element : enums) {
+                    enumElements.add(element.toString());
+                }
+                propModel.setEnumElements(enumElements);
+            }
+
             propModel.setName(propertyName);
             propModel.setDescription(propertySchema.getDescription());
 
@@ -329,34 +430,57 @@ public class OpenAPIInputReader implements InputReader {
      * @return list of {@link PathDef}'s
      */
     private List<PathDef> extractPaths(Map<String, ? extends Path> paths, String componentName) {
+        Matcher matcher;
+        Pattern pattern;
+        String match, rootComponent, version;
+        boolean matchFound = false;
+
         List<PathDef> pathDefs = new LinkedList<>();
+
         for (String pathKey : paths.keySet()) {
             if (pathKey.toLowerCase().contains(componentName.toLowerCase())) {
+                rootComponent = null;
+                version = null;
                 String[] mp = pathKey.split("/");
                 String pathUri = "/";
-                for (int i = 3; i < mp.length; i++) {
-                    pathUri = pathUri.concat(mp[i] + "/");
-                }
-                PathDef path = new PathDef(pathUri, mp[2]);
-                if (pathKey.toLowerCase().contains(mp[1].toLowerCase())) {
-                    for (String opKey : paths.get(pathKey).getOperations().keySet()) {
-                        OperationDef operation = new OperationDef(opKey);
-                        operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
-                        operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
-                        operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
-                        operation.setResponses(extractResponses(paths.get(pathKey).getOperation(opKey).getResponses(),
-                            paths.get(pathKey).getOperation(opKey).getTags()));
-                        operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
-                        if (path.getOperations() == null) {
-                            path.setOperations(new ArrayList<OperationDef>());
-                        }
-                        operation.getParameters()
-                            .addAll(extractParameters(paths.get(pathKey).getOperation(opKey).getParameters(),
-                                paths.get(pathKey).getOperation(opKey).getTags(),
-                                paths.get(pathKey).getOperation(opKey).getRequestBody()));
-                        path.getOperations().add(operation);
+
+                match = "^\\/[^\\/]+\\/+[^\\/]+\\/(.+)";
+                pattern = Pattern.compile(match);
+                matcher = pattern.matcher(pathKey);
+                matchFound = matcher.find();
+                if (matchFound) {
+                    pathUri += matcher.group(1);
+                    if (!pathUri.substring(pathUri.length() - 1).equals("/")) {
+                        pathUri += "/";
                     }
                 }
+                if (mp.length > 1) {
+                    rootComponent = mp[1];
+                    if (mp.length > 2) {
+                        version = mp[2];
+                    }
+                }
+
+                PathDef path = new PathDef(rootComponent, pathUri, version);
+
+                for (String opKey : paths.get(pathKey).getOperations().keySet()) {
+                    OperationDef operation = new OperationDef(opKey);
+                    operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
+                    operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
+                    operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
+                    operation.setResponses(extractResponses(paths.get(pathKey).getOperation(opKey).getResponses(),
+                        paths.get(pathKey).getOperation(opKey).getTags()));
+                    operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
+                    if (path.getOperations() == null) {
+                        path.setOperations(new ArrayList<OperationDef>());
+                    }
+                    operation.getParameters()
+                        .addAll(extractParameters(paths.get(pathKey).getOperation(opKey).getParameters(),
+                            paths.get(pathKey).getOperation(opKey).getTags(),
+                            paths.get(pathKey).getOperation(opKey).getRequestBody()));
+                    path.getOperations().add(operation);
+                }
+
                 pathDefs.add(path);
             }
         }
@@ -378,9 +502,10 @@ public class OpenAPIInputReader implements InputReader {
     private List<ParameterDef> extractParameters(Collection<? extends Parameter> parameters, Collection<String> tags,
         RequestBody requestBody) {
         List<ParameterDef> parametersList = new LinkedList<>();
-        ParameterDef parameter = new ParameterDef();
+        ParameterDef parameter;
         for (Parameter param : parameters) {
-
+            parameter = new ParameterDef();
+            parameter.setIsBody(false);
             switch (param.getIn()) {
             case "path":
                 parameter.setInPath(true);
@@ -392,6 +517,7 @@ public class OpenAPIInputReader implements InputReader {
                 parameter.setInHeader(true);
                 break;
             }
+
             parameter.setName(param.getName());
             Schema schema = param.getSchema();
             Map<String, Object> constraints = extractConstraints(schema);
@@ -409,15 +535,17 @@ public class OpenAPIInputReader implements InputReader {
                 }
             }
             try {
-                if (Overlay.isReference(param, "schema")) {
+                if (Overlay.isReference(param, Constants.SCHEMA)) {
                     parameter.setIsEntity(true);
+                    parameter.setType(schema.getName());
+                } else {
+                    parameter.setType(schema.getType());
+                    parameter.setFormat(schema.getFormat());
                 }
             } catch (NullPointerException e) {
                 throw new CobiGenRuntimeException("Error at parameter " + param.getName()
                     + ". Invalid OpenAPI file, path parameters need to have a schema defined.");
             }
-            parameter.setType(schema.getType());
-            parameter.setFormat(schema.getFormat());
             parametersList.add(parameter);
         }
 
@@ -425,6 +553,7 @@ public class OpenAPIInputReader implements InputReader {
             Schema mediaSchema;
             for (String media : requestBody.getContentMediaTypes().keySet()) {
                 parameter = new ParameterDef();
+                parameter.setIsBody(true);
                 parameter.setMediaType(media);
                 if (tags.contains(Constants.SEARCH_CRITERIA)
                     || tags.contains(Constants.SEARCH_CRITERIA.toLowerCase())) {
@@ -432,9 +561,10 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setName("criteria");
                 }
                 if (requestBody.getContentMediaTypes().get(media).getSchema() != null) {
+                    String requestBodyRefType = getRequestBodyRefType(requestBody, media);
                     mediaSchema = requestBody.getContentMediaTypes().get(media).getSchema();
                     parameter.setIsEntity(true);
-                    parameter.setType(mediaSchema.getName());
+                    parameter.setType(requestBodyRefType);
                     if (!parameter.getIsSearchCriteria()) {
                         char c[] = mediaSchema.getName().toCharArray();
                         c[0] = Character.toLowerCase(c[0]);
@@ -453,6 +583,22 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
+     * Tries to get from a request body its reference to a component
+     *
+     * @param requestBody
+     *            the defined request body on the OpenAPI file which contains the reference of the entity
+     * @param media
+     *            content media type of the request body
+     * @return the referenced component name
+     */
+    private String getRequestBodyRefType(RequestBody requestBody, String media) {
+        String ref =
+            Overlay.getReference(requestBody.getContentMediaTypes().get(media), Constants.SCHEMA).getRefString();
+        String[] splittedRef = ref.split("/");
+        return splittedRef[splittedRef.length - 1];
+    }
+
+    /**
      * Returns a {@link ResponseDef} from a operation '200' response definition depending on the tags
      *
      * @param responses
@@ -465,6 +611,7 @@ public class OpenAPIInputReader implements InputReader {
         ResponseDef response;
         List<String> mediaTypes = new LinkedList<>();
         List<ResponseDef> resps = new LinkedList<>();
+        String schemaType;
         for (String resp : responses.keySet()) {
             response = new ResponseDef();
             response.setCode(resp);
@@ -476,14 +623,27 @@ public class OpenAPIInputReader implements InputReader {
                 }
                 for (String media : contentMediaTypes.keySet()) {
                     mediaTypes.add(media);
-                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), "schema");
+                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), Constants.SCHEMA);
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
-                        // System.out.println(schema);
+                        schemaType = schema.getType();
                         if (schemaReference != null) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);
-                        } else if (schema.getType().equals(Constants.ARRAY)) {
+                            EntityDef eDef = new EntityDef();
+                            List<PropertyDef> propDefs = new LinkedList<>();
+                            for (Schema propertySchema : schema.getProperties().values()) {
+                                PropertyDef prop = new PropertyDef();
+                                prop.setDescription(propertySchema.getDescription());
+                                prop.setFormat(propertySchema.getFormat());
+                                prop.setName(propertySchema.getName());
+                                prop.setType(propertySchema.getType());
+                                propDefs.add(prop);
+                            }
+                            eDef.setName(schema.getName());
+                            eDef.setProperties(propDefs);
+                            response.setEntityRef(eDef);
+                        } else if (Constants.ARRAY.equals(schemaType)) {
                             if (schema.getItemsSchema() != null) {
                                 response.setType(schema.getItemsSchema().getName());
                                 response.setIsEntity(true);
@@ -496,12 +656,12 @@ public class OpenAPIInputReader implements InputReader {
                                 response.setIsArray(true);
                             }
 
-                        } else if (schema.getType() != null) {
-                            response.setType(schema.getType());
+                        } else if (schemaType != null) {
+                            response.setType(schemaType);
                         } else {
                             response.setIsVoid(true);
                         }
-                    } else {
+                    } else if (schemaReference != null) {
                         String refString = schemaReference.getRefString();
                         throw new InvalidConfigurationException(
                             "Referenced entity " + refString.substring(refString.lastIndexOf('/'))
@@ -524,11 +684,22 @@ public class OpenAPIInputReader implements InputReader {
         if (!Files.isRegularFile(path)) {
             throw new InputReaderException("Path " + path.toAbsolutePath().toUri().toString() + " is not a file!");
         }
-        OpenApi3 openApi = new OpenApi3Parser().parse(path.toUri());
-        if (openApi == null) {
-            throw new InputReaderException(path + " is not a valid OpenAPI file");
+        try {
+            OpenApi3 openApi = (OpenApi3) new OpenApiParser().parse(path.toUri());
+            if (openApi == null) {
+                throw new InputReaderException(path + " is not a valid OpenAPI file");
+            }
+            return new OpenAPIFile(path, openApi);
+        } catch (SwaggerParserException e) {
+            // SwaggerParserException indicates a wrong input file.
+            throw new InputReaderException("Reader does not support input type or input is faulty", e);
         }
-        return new OpenAPIFile(path, openApi);
     }
 
+    @Override
+    public boolean isMostLikelyReadable(java.nio.file.Path path) {
+        List<String> validExtensions = Arrays.asList("yaml", "yml");
+        String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
+        return validExtensions.contains(fileExtension);
+    }
 }

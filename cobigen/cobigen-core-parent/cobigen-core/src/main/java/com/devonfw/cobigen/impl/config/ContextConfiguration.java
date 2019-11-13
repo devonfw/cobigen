@@ -48,6 +48,7 @@ public class ContextConfiguration {
      */
     private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
         ContextConfigurationReader reader = new ContextConfigurationReader(configRoot);
+        configurationPath = reader.getContextRoot();
         triggers = reader.loadTriggers();
     }
 
