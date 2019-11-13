@@ -1,0 +1,41 @@
+:toc: macro
+toc::[]
+
+= How to update CobiGen
+
+In order to update CobiGen from our devonfw distribution, we have two options:
+
+* Open Eclipse, click on _Help_ -> _Check for updates_
+
+image::images/howtos/update_CobiGen/check_updates.png[Check updates,width="450"link="images/howtos/update_CobiGen/check_updates.png"]
+
+* Select all the CobiGen plugins listed and click on _Next_.
+
+image::images/howtos/update_CobiGen/all_updates.png[All the updates,width="450"link="images/howtos/update_CobiGen/all_updates.png"]
+
+If this option is not working properly, then you can try the second option:
+
+* Open Eclipse, click on _Help_ -> _About Eclipse IDE_:
+
+image::images/howtos/update_CobiGen/about_eclipse.png[About Eclipse,width="450"link="images/howtos/update_CobiGen/about_eclipse.png"]
+
+* Click on _Installation details_:
+
+image::images/howtos/update_CobiGen/installation_details.png[Installation details,width="350"link="images/howtos/update_CobiGen/installation_details.png"]
+
+* Select all the CobiGen plugins and click on _Update_:
+
+image::images/howtos/update_CobiGen/details_all_udpates.png[All updates details,width="450"link="images/howtos/update_CobiGen/details_all_udpates.png"]
+
+After the update process finishes, remember to restart Eclipse.
+
+== Updating templates:
+
+To update your CobiGen templates to the latest version, you just need to do one step:
+
+* Right click any file on your package explorer, click on _CobiGen_ -> _Update templates_, then click on _download_:
+
+
+image::images/howtos/update_CobiGen/update_templates.png[Update templates,width="450"link="images/howtos/update_CobiGen/update_templates.png"]
+
+Now you will have the latest templates ready!

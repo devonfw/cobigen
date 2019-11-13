@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+    <templates>
+        <template name="prefix_Foo2Class.java" destinationPath="src/main/java/foo/Foo2Class${variable}.java" templateFile="foo/Foo2Class.java.ftl" mergeStrategy="javamerge"/>
+        <templateExtension ref="prefix2_FooClass.java" destinationPath="adapted/path/FooClass.java" mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
+        <templateExtension ref="prefix2_Foo2Class.java"/>
+    </templates>
+    <templateScans>
+        <templateScan templateNamePrefix="prefix_" templatePath="foo" destinationPath="src/main/java/foo"/>
+        <templateScan templateNamePrefix="prefix2_" templatePath="bar" destinationPath="src/main/java/bar"/>
+    </templateScans>
+</templatesConfiguration>
