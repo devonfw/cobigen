@@ -17,8 +17,8 @@
     <plugins>
       <plugin>
         <groupId>com.devonfw.cobigen</groupId>
-        <artifactId>maven-plugin</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <artifactId>cobigen-maven-plugin</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
         <executions>
           <execution>
             <id>generate</id>
