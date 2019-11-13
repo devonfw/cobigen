@@ -6,7 +6,7 @@ import { ${variables.etoName?cap_first}Module } from '../${variables.etoName?low
 
 import { ${variables.etoName?cap_first}Service } from '../services/${variables.etoName?lower_case}.service';
 import { ${variables.etoName?cap_first}DialogComponent } from './${variables.etoName?lower_case}-dialog.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 
 describe('${variables.etoName?cap_first}DialogComponent', () => {

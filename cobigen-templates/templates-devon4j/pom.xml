@@ -3,10 +3,10 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>templates-devon4j</artifactId>
-  <version>2.4.4-SNAPSHOT</version>
+  <version>3.1.8-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>CobiGen OASP4J Templates</name>
-  <description>CobiGen OASP4J Templates</description>
+  <name>CobiGen devon4j Templates</name>
+  <description>CobiGen devon4j Templates</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
@@ -14,8 +14,10 @@
     <version>dev-SNAPSHOT</version>
   </parent>
 
-  <properties>
+   <properties>
     <skip.deployment>false</skip.deployment>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -37,7 +39,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.6.3</version>
+      <version>2.9.9.3</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -55,6 +57,42 @@
       <version>3.10.0</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <!-- Patching the flattened-pom file -->
+                <!-- Removing the last </project> line -->
+                <replace file=".flattened-pom.xml" value="" token="&lt;/project>"></replace>
+                <!-- Updating the patch file -->
+                <replace file="./pom_patch.xml" value="${maven.compiler.source}" token="{maven.compiler.source}"></replace>
+                <replace file="./pom_patch.xml" value="${maven.compiler.target}" token="{maven.compiler.target}"></replace>
+                <!-- Adding content -->
+                <concat destfile=".flattened-pom.xml" append="true">
+                  <filelist dir="." files="pom_patch.xml"/>
+                </concat>
+                <!-- Restoring the patch file -->
+                <replace file="./pom_patch.xml" value="{maven.compiler.source}" token="${maven.compiler.source}"></replace>
+                <replace file="./pom_patch.xml" value="{maven.compiler.target}" token="${maven.compiler.target}"></replace>
+                <!-- Restoring the last </project> line -->
+                <concat destfile=".flattened-pom.xml" append="true">&lt;/project></concat>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -1,22 +1,27 @@
-import { HttpinterceptorProvider } from '../providers/security/httpinterceptor';
-import { AuthServiceProvider } from '../providers/security/auth-service';
-import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  HttpClientModule,
+} from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
-import { MyApp } from './app.component';
-import { LoginPage } from '../pages/login/login';
-import { LoginProvider } from '../providers/login/loginProvider';
-import { TranslateModule,TranslateLoader } from '@ngx-translate/core';
+import { RouteReuseStrategy } from '@angular/router';
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import {
+  TranslateModule,
+  TranslateLoader,
+  TranslateService,
+} from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HeaderComponent } from '../components/header/header';
-import { HomePage } from '../pages/home/home';
-import { BusinessOperatorProvider } from '../providers/shared/business-operator';
-import { ${variables.etoName?cap_first}Detail } from '../pages/${variables.etoName?lower_case}-detail/${variables.etoName?lower_case}-detail';
-import { ${variables.etoName?cap_first}Rest } from '../providers/${variables.etoName?lower_case}-rest';
-import { ${variables.etoName?cap_first}List } from '../pages/${variables.etoName?lower_case}-list/${variables.etoName?lower_case}-list';
+import { FormsModule } from '@angular/forms';
+import { ComponentsModule } from './components/components.module';
+import { AuthGuardService } from './services/authorization/auth-guard.service';
+import { HttpinterceptorService } from './services/security/http-interceptor.service';
+import { ${variables.etoName?cap_first}Detail } from './pages/${variables.etoName?lower_case}-detail/${variables.etoName?lower_case}-detail.page';
+import { ${variables.etoName?cap_first}RestService } from './services/${variables.etoName?lower_case}-rest.service';
+import { ${variables.etoName?cap_first}List } from './pages/${variables.etoName?lower_case}-list/${variables.etoName?lower_case}-list.page';
 
 export function translateFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -24,50 +29,40 @@ export function translateFactory(http: HttpClient) {
 
 @NgModule({
   declarations: [
-    MyApp,
-    HomePage,
-    LoginPage,
-    HeaderComponent,
+    AppComponent,
     ${variables.etoName?cap_first}List,
     ${variables.etoName?cap_first}Detail,
   ],
+  entryComponents: [
+    ${variables.etoName?cap_first}Detail
+  ],
   imports: [
     BrowserModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
     HttpClientModule,
-    IonicModule.forRoot(MyApp),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: translateFactory,
-        deps: [HttpClient]
-      }
-    })
+        deps: [HttpClient],
+      },
+    }),
+    FormsModule,
+    ComponentsModule,
   ],
-  bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp,
-    HomePage,
-    LoginPage,
-    ${variables.etoName?cap_first}List,
-    ${variables.etoName?cap_first}Detail
-  ],
-  providers: [
 
-    TranslateModule,
-    StatusBar,
-    SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    BusinessOperatorProvider,
-    HttpClient,
-    LoginProvider,
-    AuthServiceProvider,
-    {provide: HTTP_INTERCEPTORS,
-      useClass: HttpinterceptorProvider,
-      multi: true},
-    ${variables.etoName?cap_first}Rest,
-    
-  ]
+  providers: [
+    AuthGuardService,
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpinterceptorService,
+      multi: true,
+    },
+    ${variables.etoName?cap_first}RestService,
+    TranslateService,
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
-
-

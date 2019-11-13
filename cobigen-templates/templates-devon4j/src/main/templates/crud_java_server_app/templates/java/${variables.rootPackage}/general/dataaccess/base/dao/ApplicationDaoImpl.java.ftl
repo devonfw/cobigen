@@ -3,7 +3,7 @@ package ${variables.rootPackage}.general.dataaccess.base.dao;
 import ${variables.rootPackage}.general.dataaccess.api.dao.ApplicationDao;
 import ${variables.rootPackage}.general.dataaccess.base.RestaurantPersistenceEntity;
 
-import io.oasp.module.jpa.dataaccess.base.AbstractDao;
+import com.devonfw.module.jpa.dataaccess.base.AbstractDao;
 
 import net.sf.mmm.util.entity.api.PersistenceEntity;
 

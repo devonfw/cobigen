@@ -19,7 +19,7 @@
                        destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/impl/rest/${variables.component#cap_first}RestServiceImpl.java"
                        mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.component#cap_first}RestServiceCtos.java" 
-                       destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/api/rest/${variables.component#cap_first}RestService.java"
+                       destinationPath="../api/src/main/java/${variables.rootPackage}/${variables.component}/service/api/rest/${variables.component#cap_first}RestService.java"
                        mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.component#cap_first}SoapService.java" mergeStrategy="javamerge"/>
@@ -43,10 +43,7 @@
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <increment name="ctos" description="CTO's">
-      <templateRef ref="AbstractSearchCriteriaTo.java"/>
       <templateRef ref="${variables.entityName}Cto.java"/>
-      <templateRef ref="${variables.entityName}Eto.java"/>
-      <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
     <!-- <increment name="logic_impl" description="CRUD logic (all in one)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>

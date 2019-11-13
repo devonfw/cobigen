@@ -42,9 +42,11 @@ node {
 			def non_deployable_branches = ["master","gh-pages","dev_eclipseplugin","dev_oomph_setup"]
 			def root = ""
 			if (origin_branch == "master") {
-				if(justTemplatesChanged()) {
+				if(justOneFolderChanged("cobigen-templates/")) {
 					echo "Just Templates changed!"
 					root = "cobigen-templates"
+				} else if(justOneFolderChanged("cobigen-cli/")) {
+					root = "cobigen-cli"
 				} else {
 					root = ""
 				}
@@ -64,8 +66,6 @@ node {
 				root = "cobigen/cobigen-javaplugin-parent"
 			} else if (origin_branch == "dev_openapiplugin") {
 				root = "cobigen/cobigen-openapiplugin-parent"
-			} else if (origin_branch == "dev_jssenchaplugin") {
-				root = "cobigen/cobigen-senchaplugin"
 			} else if (origin_branch == "gh-pages" || origin_branch == "dev_oomph_setup") {
 				currentBuild.result = 'SUCCESS'
 				setBuildStatus("Complete","SUCCESS")
@@ -84,10 +84,10 @@ node {
 									// https://github.com/jenkinsci/xvnc-plugin/blob/master/src/main/java/hudson/plugins/xvnc/Xvnc.java
 									wrap([$class:'Xvnc', useXauthority: true]) { // takeScreenshot: true, causes issues seemingly
 										sh 'export SWT_GTK3=0' // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
-										sh "mvn -s ${MAVEN_SETTINGS} clean install -U -Pp2-build-mars,p2-build-stable"
+									sh "mvn -s ${MAVEN_SETTINGS} clean install -U -Pp2-build-photon,p2-build-stable"
 									}
 								} else if (origin_branch == 'dev_eclipseplugin') {
-										sh "mvn -s ${MAVEN_SETTINGS} clean package -U -Pp2-build-mars,p2-build-ci"
+									sh "mvn -s ${MAVEN_SETTINGS} clean package -U -Pp2-build-photon,p2-build-ci"
 								} else {
 										sh "mvn -s ${MAVEN_SETTINGS} clean install -U"
 								}
@@ -136,9 +136,9 @@ node {
 								dir(deployRoot) {
 									// we currently need these three steps to assure the correct sequence of packaging,
 									// manifest extension, osgi bundling, and upload
-									sh "mvn -s ${MAVEN_SETTINGS} package -U bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci -Dmaven.test.skip=true"
-									sh "mvn -s ${MAVEN_SETTINGS} install -U bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-ci p2:site -Dmaven.test.skip=true"
-									sh "mvn -s ${MAVEN_SETTINGS} deploy -U -Pp2-build-mars,p2-build-ci -Dmaven.test.skip=true -Dp2.upload=ci"
+								sh "mvn -s ${MAVEN_SETTINGS} package -U bundle:bundle -Pp2-bundle,p2-build-photon,p2-build-ci -Dmaven.test.skip=true"
+								sh "mvn -s ${MAVEN_SETTINGS} install -U bundle:bundle -Pp2-bundle,p2-build-photon,p2-build-ci p2:site -Dmaven.test.skip=true"
+								sh "mvn -s ${MAVEN_SETTINGS} deploy -U -Pp2-build-photon,p2-build-ci -Dmaven.test.skip=true -Dp2.upload=ci"
 								}
 								if(origin_branch == "dev_javaplugin"){
 									dir("cobigen-javaplugin-model"){
@@ -153,7 +153,7 @@ node {
 							}
 						} else if(origin_branch == 'dev_eclipseplugin') {
 							withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'fileserver', usernameVariable: 'ICSD_FILESERVER_USER', passwordVariable: 'ICSD_FILESERVER_PASSWD']]) {
-								sh "mvn -s ${MAVEN_SETTINGS} deploy -U -Dmaven.test.skip=true -Pp2-build-mars,p2-build-ci -Dp2.upload=ci"
+								sh "mvn -s ${MAVEN_SETTINGS} deploy -U -Dmaven.test.skip=true -Pp2-build-photon,p2-build-ci -Dp2.upload=ci"
 							}
 						}
 					}
@@ -171,7 +171,7 @@ node {
 								configFileProvider([configFile(fileId: '9d437f6e-46e7-4a11-a8d1-2f0055f14033', variable: 'MAVEN_SETTINGS')]) {
 									try {
 										sh 'export SWT_GTK3=0' // disable GTK3 as of linux bug (see also https://bbs.archlinux.org/viewtopic.php?id=218587)
-										sh "mvn -s ${MAVEN_SETTINGS} integration-test -Pp2-build-mars,p2-build-ci"
+										sh "mvn -s ${MAVEN_SETTINGS} integration-test -Pp2-build-photon,p2-build-ci"
 									} catch(err) {
 										step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: false])
 										if (currentBuild.result != 'UNSTABLE') { // JUnitResultArchiver sets result to UNSTABLE. If so, indicate UNSTABLE, otherwise throw error.
@@ -194,6 +194,7 @@ node {
 			stage('process test results') {
 				// added 'allowEmptyResults:true' to prevent failure in case of no tests
 				step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true])
+				archiveArtifacts artifacts: '**/target/screenshots/*.jpeg', allowEmptyArchive: true 
 			}
 
 			// triggering of upcoming builds
@@ -211,22 +212,33 @@ node {
 				setBuildStatus("Incomplete","ERROR")
 			}
 			notifyFailed()
+			
+			stage('clean up') {
+				cleanWs()
+				deleteDir()
+			}
+			
 			throw e
 		}
 		setBuildStatus("Complete","SUCCESS")
 	//}
+	
+	stage('clean up') {
+		cleanWs()
+		deleteDir()
+	}
 }
 
 def isPRBuild() {
     return (env.BRANCH_NAME ==~ /^PR-\d+$/)
 }
 
-def justTemplatesChanged() {
+def justOneFolderChanged(String folderName) {
 	// split will return a list with one element (the empty string) if called on an empty string
 	diff_files= sh(script: "git diff --name-only origin/master | xargs", returnStdout: true).trim().split("\\s+")
 	for(int i=0; i < diff_files.size(); i++) {
-		if(!diff_files[i].startsWith("cobigen-templates/")) {
-			echo "'${diff_files[i]}' does not start with cobigen-templates/"
+		if(!diff_files[i].startsWith(folderName)) {
+			echo "'${diff_files[i]}' does not start with /" + folderName
 			return false
 		}
 	}
@@ -253,4 +265,6 @@ def setBuildStatus(String message, String state) {
 		echo "Could not set build status for ${params.TRIGGER}: ${message}, ${state}"
 		echo "Exception ${e.toString()}:${e.getMessage()}"
 	}
+	
+
 }

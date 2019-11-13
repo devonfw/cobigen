@@ -12,7 +12,7 @@ import ${variables.rootPackage}.general.common.api.to.PaginatedListToWrapper;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 
-import io.oasp.module.jpa.common.api.to.PaginatedListTo;
+import com.devonfw.module.jpa.common.api.to.PaginatedListTo;
 
 
 @WebService

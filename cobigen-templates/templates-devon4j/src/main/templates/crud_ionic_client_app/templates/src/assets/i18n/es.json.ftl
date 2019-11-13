@@ -63,5 +63,5 @@
     "errorMsg": "Usuario o contraseña erroneos"
   },
   "example": "ejemplo",
-  "Home": "Principal"
+  "Home": "Principal" 
 }

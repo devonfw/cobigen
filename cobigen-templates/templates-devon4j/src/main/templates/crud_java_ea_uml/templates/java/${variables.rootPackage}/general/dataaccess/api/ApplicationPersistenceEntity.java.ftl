@@ -5,7 +5,7 @@ import javax.dataaccess.MappedSuperclass;
 
 import ${variables.rootPackage}.general.common.api.ApplicationEntity;
 
-import io.oasp.module.jpa.dataaccess.api.AbstractPersistenceEntity;
+import com.devonfw.module.jpa.dataaccess.api.AbstractPersistenceEntity;
 
 /**
  * Abstract Entity for all Entities with an id and a version field.

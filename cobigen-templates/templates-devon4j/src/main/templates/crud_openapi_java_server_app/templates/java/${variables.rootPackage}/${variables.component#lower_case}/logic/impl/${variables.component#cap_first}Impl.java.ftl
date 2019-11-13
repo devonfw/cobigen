@@ -8,6 +8,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind$
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     
         <#list model.component.paths as path>
   	<#list path.operations as operation>
-  		<#if !OaspUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
+  		<#if !DevonUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
   	@Override
         <#assign responses=operation.responses>
         <#list responses as response>
