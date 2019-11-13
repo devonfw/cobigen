@@ -1,6 +1,7 @@
 /*.settings
 bin
 target
+eclipse-target
 .flattened-pom.xml
 /.project
 *.log
