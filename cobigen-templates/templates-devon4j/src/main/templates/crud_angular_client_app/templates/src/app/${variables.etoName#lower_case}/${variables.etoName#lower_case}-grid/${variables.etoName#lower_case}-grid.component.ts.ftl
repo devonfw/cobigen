@@ -43,7 +43,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
     </#list>
     ];
   pageSize: number = 8;
-  pageSizes: string[] = ['8', '16', '24'];
+  pageSizes: number[] = [8, 16, 24];
   selectedRow: any;
 
   dialogRef: MatDialogRef<${variables.etoName?cap_first}DialogComponent>;
