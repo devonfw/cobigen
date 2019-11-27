@@ -156,24 +156,30 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         try {
             for (TemplateTo template : templatesToBeGenerated) {
-                Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-                TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-                InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-                tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
-                progressCallback.accept("generates... ", Math.round(1 / (float) templatesToBeGenerated.size() * 800));
+                try {
+                    Trigger trigger =
+                        configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+                    TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+                    InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
+                    tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
+                    progressCallback.accept("generates... ",
+                        Math.round(1 / (float) templatesToBeGenerated.size() * 800));
+                } catch (CobiGenCancellationException e) {
+                    throw (e);
+                } catch (CobiGenRuntimeException e) {
+                    generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+                    generationReport.addError(e);
+                    LOG.error("An internal error occurred during generation.", e);
+                } catch (Throwable e) {
+                    generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+                    generationReport.addError(new CobiGenRuntimeException(
+                        "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
+                    LOG.error("An unknown exception occurred during generation.", e);
+                }
             }
         } catch (CobiGenCancellationException e) {
             LOG.error("the Generation has been Canceled.", e);
             generationReport.setCancelled(true);
-        } catch (CobiGenRuntimeException e) {
-            generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
-            generationReport.addError(e);
-            LOG.error("An internal error occurred during generation.", e);
-        } catch (Throwable e) {
-            generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
-            generationReport.addError(new CobiGenRuntimeException(
-                "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
-            LOG.error("An unknown exception occurred during generation.", e);
         }
         if (generationReport.isCancelled()) {
             generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
