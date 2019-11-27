@@ -3,7 +3,7 @@ package com.devonfw.cobigen.api.exception;
 import java.util.concurrent.CancellationException;
 
 /**
- *
+ * Exception is thrown if the generation Process is Cancelled
  */
 public class CobiGenCancellationException extends CancellationException {
 
