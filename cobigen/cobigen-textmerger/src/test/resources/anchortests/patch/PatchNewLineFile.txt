@@ -1,0 +1,16 @@
+// anchor:part1:newline_append:anchorend
+line1.5
+// anchor:part2:newline_appendafter:anchorend
+line2.5
+// anchor:part3:newline_appendbefore:anchorend
+line3.5
+// anchor:part4:append_newline:anchorend
+line4.5
+// anchor:part5:appendafter_newline:anchorend
+line5.5
+// anchor:part6:appendbefore_newline:anchorend
+line6.5
+// anchor:part7:newline:anchorend
+line7.5
+// anchor:part8:newline:anchorend
+line8.5

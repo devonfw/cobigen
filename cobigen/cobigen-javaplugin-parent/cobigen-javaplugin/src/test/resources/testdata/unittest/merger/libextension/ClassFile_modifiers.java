@@ -1,4 +1,4 @@
-package com.capgemini;
+package com.devonfw;
 
 public final class FooBar
 {
