@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CancellationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -157,8 +156,6 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                     LOG.error("An error occurred during generation:", e);
                 }
             }
-        } catch (CancellationException e) {
-            LOG.error("generation got cancelled", e);
         } catch (CoreException e) {
             LOG.error("Eclipse internal Exception", e);
             PlatformUIUtil.openErrorDialog("An eclipse internal exception occurred during processing:\n"
