@@ -16,6 +16,7 @@ stages:
 jobs:
   include:
     - stage: Documentation
+      if: (type = push) AND (branch = master)
       script:
         # Clone repositories
         - git clone -b master --single-branch https://${GH_REPO_SOURCE}
