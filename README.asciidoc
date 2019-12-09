@@ -2,6 +2,29 @@
 
 = CobiGen (Code-based incremental Generator)
 
+wiki clone job: image:https://api.travis-ci.com/devonfw/tools-cobigen.svg?branch=master[link="https://travis-ci.com/devonfw/tools-cobigen"] 
+
+image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield"]
+
+|===
+| Component | Release
+| maven-plugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin]
+| templates-oasp4j | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j]
+| templates-oasp4js | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js]
+| core | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core]
+| javaplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin]
+| xmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin]
+| openapiplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin]
+| tsplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tsplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tsplugin]
+| jsonplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/jsonplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/jsonplugin]
+| propertyplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/propertyplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/propertyplugin]
+| htmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/htmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/htmlplugin]
+| textmerger | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/textmerger/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/textmerger]
+| tempeng-velocity | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-velocity/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-velocity]
+| tempeng-freemarker | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-freemarker/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-freemarker]
+|===
+
+
 == Usage
 
 * https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
@@ -34,8 +57,6 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 
 | `cobigen-review` | Project to be used for https://github.com/AgileReview-Project/AgileReview-Legacy-Plugin[AgileReview] 
 
-| `cobigen-sample` | Sample code to be used for CobiGen demonstrations 
-
 | `cobigen-templates` | Contains template sets for different architectures 
 
 | `cobigen` | Containts the code implementation of CobiGen as well as all plug-in implementations besides the eclipse plug-in and maven plug-in 
@@ -47,7 +68,7 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 
 You can build CobiGen core as well as each plug-in besides the eclipse plug-in separately by stepping into the plug-in folder, e.g. for the Java plug-in you could step into `cobigen/cobigen-javaplugin` and run `mvn clean install` to build the plug-in and deploy it into your local repository.
 
-The CobiGen eclipse plug-in can build build by running `mvn clean package -Pp2-build-mars`. The profile `p2-build-mars` builds the eclipse plug-in by retrieving eclipse mars bundles as dependencies. Without specifying the profile, the build will fail. An exception to this is the cobigen-eclipse-test project, which has to be built using `mvn clean package -Pp2-build-mars,p2-build-stable,p2-build-experimental`.
+The CobiGen eclipse plug-in can build build by running `mvn clean package -Pp2-build-photon`. The profile `p2-build-photon` builds the eclipse plug-in by retrieving eclipse photon bundles as dependencies. Without specifying the profile, the build will fail. An exception to this is the cobigen-eclipse-test project, which has to be built using `mvn clean package -Pp2-build-photon,p2-build-stable,p2-build-experimental`.
 
 == Deploy
 
@@ -59,17 +80,33 @@ CobiGen deployment has to be distinguished threefold
 
 |  `cobigen/cobigen-core/`,`cobigen-maven/` | MAVEN | `mvn clean deploy`
 
-|  `cobigen/cobigen-*/` (except core) | ECLIPSE | ```# Builds the Manifest and bundles the dependencies
+|  `cobigen/cobigen-*/` (except core). In case of deploying dev_javaplugin or dev_openapiplugin, go to `cobigen/cobigen-*-parent/cobigen-*`| ECLIPSE | ```# Builds the Manifest and bundles the dependencies
 mvn clean package bundle:bundle -Pp2-bundle
 # Uses the created bundle and builds a p2 update site for it. Do NOT use clean
-mvn install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-experimental p2:site
+mvn install bundle:bundle -Pp2-bundle,p2-build-photon,p2-build-experimental p2:site
 # Uploades the p2 update site to the experimental repository. Do NOT use clean
-mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
+mvn deploy -Pp2-build-photon,p2-build-experimental -Dp2.upload=experimental
 ```
 
-| `cobigen-eclipse/` | ECLIPSE | `mvn clean deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental`
+| `cobigen-eclipse/` | ECLIPSE | `mvn clean deploy -Pp2-build-photon,p2-build-experimental -Dp2.upload=experimental`
 |===
+
+== Debugging with Maven
+
+To debug Maven builds on any plug-in:
+
+. Step into the plug-in and start a console there.
+. Run `mvnDebug clean install`, it will output the port the debugger is listening to.
+. On Eclipse, right click your project -> Debug as -> Debug Configurations...
+. Add a new Remote Java Application that connects on a socket on the port that was outputted by Maven.
+. Hit debug and have fun!
+
+To debug Maven tests follow https://doc.nuxeo.com/corg/how-to-debug-a-test-run-with-maven/[this link]
+
 
 == Contribute
 
 https://github.com/devonfw/tools-cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
+
+## License
+image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=large[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_large"]

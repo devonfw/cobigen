@@ -6,6 +6,7 @@
   <name>CobiGen Core</name>
   <version>${cobigencore.version}</version>
   <packaging>jar</packaging>
+  <description>Code-based incremental generator</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>

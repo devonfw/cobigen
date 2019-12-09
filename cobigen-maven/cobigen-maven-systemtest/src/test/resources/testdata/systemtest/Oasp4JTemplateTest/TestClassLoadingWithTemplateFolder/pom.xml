@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.capgemini</groupId>
+  <groupId>com.devonfw.cobigen</groupId>
   <artifactId>Oasp4JTemplateTest-TestClassLoadingWithTemplateFolder</artifactId>
   <version>dev-SNAPSHOT</version>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>com.capgemini</groupId>
-        <artifactId>cobigen-maven-plugin</artifactId>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>maven-plugin</artifactId>
         <version>${pluginVersion}</version>
         <executions>
           <execution>
@@ -31,14 +31,14 @@
         </configuration>
         <dependencies>
           <dependency>
-            <groupId>com.capgemini</groupId>
-            <artifactId>cobigen-tempeng-freemarker</artifactId>
-            <version>1.0.0</version>
+            <groupId>com.devonfw.cobigen</groupId>
+            <artifactId>tempeng-freemarker</artifactId>
+            <version>2.0.0</version>
           </dependency>
           <dependency>
-            <groupId>com.capgemini</groupId>
-            <artifactId>cobigen-javaplugin</artifactId>
-            <version>1.6.0</version>
+            <groupId>com.devonfw.cobigen</groupId>
+            <artifactId>javaplugin</artifactId>
+            <version>2.0.0</version>
           </dependency>
         </dependencies>
       </plugin>
