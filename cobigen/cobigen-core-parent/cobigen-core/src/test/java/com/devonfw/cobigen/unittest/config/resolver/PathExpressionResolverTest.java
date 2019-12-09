@@ -137,8 +137,8 @@ public class PathExpressionResolverTest {
   @Test
   public void testEvaluateExpressionCaseSyntax() {
 
-    assertThat(target.evaluateExpressions("foo-$_VariableName_$-bar-$_variableName_$-some"))
+    assertThat(target.evaluateExpressions("foo-X__VariableName__X-bar-x__variableName__x-some"))
         .isEqualTo("foo-PrefixValueSuffix-bar-prefixValueSuffix-some");
-    assertThat(target.evaluateExpressions("foo$_VariableName_$bar")).isEqualTo("fooPrefixValueSuffixbar");
+    assertThat(target.evaluateExpressions("fooX__VariableName__Xbar")).isEqualTo("fooPrefixValueSuffixbar");
   }
 }

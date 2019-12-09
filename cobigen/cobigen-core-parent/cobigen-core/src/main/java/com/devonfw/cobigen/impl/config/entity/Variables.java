@@ -39,8 +39,8 @@ public class Variables {
   private static final Pattern PATTERN_VARIABLE_DOLLAR_SYNTAX = Pattern
       .compile("\\$\\{([^?#}]+)(((\\?|#)[^}?#]+)*)\\}");
 
-  /** Regex {@link Pattern} for variable in underscore syntax (<code>__...__</code>). */
-  private static final Pattern PATTERN_VARIABLE_CASE_SYNTAX = Pattern.compile("\\$_(([^$]|\\$(?!_))+)_\\$");
+  /** Regex {@link Pattern} for variable in language-agnostic case-syntax (<code>x_..._x</code>). */
+  private static final Pattern PATTERN_VARIABLE_CASE_SYNTAX = Pattern.compile("[xX]__([a-zA-Z0-9_-]+?)__[xX]");
 
   /** The parent {@link Variables} to inherit or {@code null}. */
   private final Variables parent;
