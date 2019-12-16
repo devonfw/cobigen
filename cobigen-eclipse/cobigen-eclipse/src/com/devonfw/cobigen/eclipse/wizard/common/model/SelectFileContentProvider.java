@@ -470,7 +470,6 @@ public class SelectFileContentProvider implements ITreeContentProvider {
             }
         }
         return true;
-        // return path.lastSegment().contains(".");
     }
 
     /**
