@@ -279,7 +279,7 @@ image::images/howtos/todo-plugin/templatesSnapshot.png[Templates snapshot versio
 
 NOTE: We always recommend using the devonfw console, which already contains a working Maven version.
 
-* Now we have your last version of the templates ready to be used. We need to use that latest version in CobiGen. We will use the CobiGen CLI that you will find in your cloned repo, at `cobigen-cli/`. Import the project into your IDE.
+* Now we have your last version of the templates ready to be used. We need to use that latest version in CobiGen. We will use the CobiGen CLI that you will find in your cloned repo, at `cobigen-cli/cli`. Import the project into your IDE.
 
 * Inside the project, go to `src/main/resources/pom.xml`. This pom.xml is used on runtime in order to install all the CobiGen plug-ins and templates. Add there your latest templates version and the previously created plug-in:
 +
