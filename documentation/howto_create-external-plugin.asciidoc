@@ -285,7 +285,7 @@ NOTE: We always recommend using the devonfw console, which already contains a wo
 +
 image::images/howtos/todo-plugin/cliPom.png[CLI pom,width="450"link="images/howtos/todo-plugin/cliPom.png"]
 
-* Afterwards, run `mvn clean install -DskipTests` and CobiGen will get your plug-ins. Now you have two options to test templates:
+* Afterwards, run `mvn clean install -DskipTests` and CobiGen will get your plug-ins. Now you have three options to test templates:
 
 1. Using Eclipse run as:
 +
@@ -308,5 +308,15 @@ image::images/howtos/todo-plugin/runAsArgs.png[Run version,width="450"link="imag
 ```
 c. If that worked, now you can send any arguments to the CLI in order to generate with your templates. Please follow link:https://github.com/devonfw/tools-cobigen/wiki/howto_Cobigen-CLI-generation[this guide] that explains all the CLI commands.
 
-2. Modify the already present JUnit tests: They test the generation of templates from multiple plug-ins, you can add your own tests and input files.
+2. Modify the already present JUnit tests on the CLI project: They test the generation of templates from multiple plug-ins, you can add your own tests and input files.
 
+3. Use the CLI jar to execute commands:
+
++
+a. The `mvn clean install -DskipTests` command will have created a Cobigen.jar inside your target folder (_cobigen-cli/cli/target_). Open the jar with any unzipper and extract to the current location _class-loader-agent.jar_, _cobigen.bat_ and _cg.bat_:
++
+image::images/howtos/todo-plugin/extractFilesCLI.png[Extract files,width="450"link="images/howtos/todo-plugin/extractFilesCLI.png"]
++
+b. Now you can run any CobiGen CLI commands using a console. link:https://github.com/devonfw/tools-cobigen/wiki/howto_Cobigen-CLI-generation[This guide] explains all the CLI commands.
++
+image::images/howtos/todo-plugin/runningCLI.png[Run CLI,width="450"link="images/howtos/todo-plugin/runningCLI.png]
