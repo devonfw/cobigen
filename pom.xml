@@ -106,8 +106,8 @@
 
   <licenses>
     <license>
-      <name>Apache Software License</name>
-      <url>http://oasp.github.io/terms-of-use.html</url>
+      <name>Apache Software License 2.0</name>
+      <url>https://github.com/devonfw/.github/blob/master/LICENSE</url>
       <distribution>repo</distribution>
       <comments/>
     </license>
