@@ -196,7 +196,7 @@ public class TextAppender implements Merger {
                                             + " Invalid merge strategy, merge strategy does not exist.");
                                     default:
                                         throw new Exception("Implementation error, please create a new issue at "
-                                            + "https://github.com/devonfw/tools-cobigen/issues "
+                                            + "https://github.com/devonfw/cobigen/issues "
                                             + "and provide your document and the faulty anchor "
                                             + tmpAnchor.getAnchor());
                                     }
