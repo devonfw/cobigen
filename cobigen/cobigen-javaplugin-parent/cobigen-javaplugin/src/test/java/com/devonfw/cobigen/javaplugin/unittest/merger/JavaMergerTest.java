@@ -370,7 +370,7 @@ public class JavaMergerTest {
     }
 
     /**
-     * Tests issue <a href=https://github.com/oasp/tools-cobigen/issues/39>#39</a>: inheritance relation
+     * Tests issue <a href=https://github.com/oasp/cobigen/issues/39>#39</a>: inheritance relation
      * should be merged also if the base class (natively) extends java.lang.Object
      * @throws IOException
      *             test fails
@@ -400,7 +400,7 @@ public class JavaMergerTest {
 
     /**
      * Tests the behavior if one file imports a type while the other uses an explicit type. Corresponds to <a
-     * href=https://github.com/devonfw/tools-cobigen/issues/108>#108</a>
+     * href=https://github.com/devonfw/cobigen/issues/108>#108</a>
      * @throws IOException
      *             shouldn't happen
      * @throws MergeException
@@ -424,7 +424,7 @@ public class JavaMergerTest {
 
     /**
      * Tests whether static and object Initializers are getting merged
-     * https://github.com/devonfw/tools-cobigen/issues/791
+     * https://github.com/devonfw/cobigen/issues/791
      *
      * @throws IOException
      *             shouldn't happen

@@ -10,7 +10,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <github.project>devonfw/tools-cobigen</github.project>
+    <github.project>devonfw/cobigen</github.project>
     <oasp.flatten.mode>ossrh</oasp.flatten.mode>
     <slf4j.version>1.7.21</slf4j.version>
     <skip.deployment>true</skip.deployment>
