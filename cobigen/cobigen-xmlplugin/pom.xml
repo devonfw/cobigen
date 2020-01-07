@@ -58,7 +58,8 @@
     </dependency>
   </dependencies>
    <build>
-    <resource>
+    <resources>
+	    <resource>
       <directory>src/main/resources</directory>
       <filtering>false</filtering>
       <excludes>
