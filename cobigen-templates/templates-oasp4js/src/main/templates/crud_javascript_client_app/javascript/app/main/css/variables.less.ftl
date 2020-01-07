@@ -1,1 +1,0 @@
-@sampleVariable: 123;

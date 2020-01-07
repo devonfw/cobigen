@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaModel;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IModuleDescription;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -243,6 +244,11 @@ public class IPackageFragmentRootStub implements IPackageFragmentRoot {
     public void move(IPath destination, int updateResourceFlags, int updateModelFlags, IClasspathEntry sibling,
         IProgressMonitor monitor) throws JavaModelException {
 
+    }
+
+    @Override
+    public IModuleDescription getModuleDescription() {
+        return null;
     }
 
 }
