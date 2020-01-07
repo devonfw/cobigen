@@ -57,4 +57,15 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+   <build>
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>false</filtering>
+      <excludes>
+        <exclude>**/META-INF/externalservers/server.properties</exclude>
+        <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
+      </excludes>
+    </resource>
+  </resources>
+  </build>
 </project>
