@@ -10,7 +10,7 @@
     "--max-line-length=160"
   ],
   // Arguments passed in. Each argument is a separate item in the array.
-  "python.linting.pep8Args": [
+  "python.linting.pycodestyleArgs": [
     "--max-line-length=160"
   ],
   // Path to autopep8, you can use a custom version of autopep8 by modifying this setting to include the full path.

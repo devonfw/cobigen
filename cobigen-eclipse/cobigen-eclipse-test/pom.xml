@@ -5,7 +5,7 @@
   <artifactId>com.devonfw.cobigen.eclipse.test</artifactId>
   <name>CobiGen - Eclipse Plug-In Tests</name>
   <packaging>eclipse-test-plugin</packaging>
-  <version>4.0.0</version>
+  <version>5.0.0</version>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.0.0</version>
+      <version>5.3.1</version>
     </dependency>
   </dependencies>
 
@@ -82,7 +82,7 @@
               <requirement>
                 <type>p2-installable-unit</type>
                 <id>org.eclipse.m2e.feature.feature.group</id>
-                <versionRange>[1.6.0,1.7.0)</versionRange>
+                <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
@@ -170,31 +170,21 @@
       <url>http://download.eclipse.org/technology/swtbot/releases/latest/</url>
       <layout>p2</layout>
     </repository>
-	<repository>
-      <id>neon</id>
+    <repository>
+      <id>photon</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/neon</url>
+      <url>http://download.eclipse.org/releases/photon</url>
     </repository>
   </repositories>
 
   <profiles>
     <!-- see http://download.eclipse.org/tools/orbit/downloads/ for upgrades -->
     <profile>
-      <id>p2-build-mars</id>
+      <id>p2-build-photon</id>
       <repositories>
         <repository>
-          <id>eclipse-mars-sr2-test</id>
-          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-    <profile>
-      <id>p2-build-neon</id>
-      <repositories>
-        <repository>
-          <id>eclipse-neon-sr2-test</id>
-          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/</url>
+          <id>eclipse-photon-sr2-test</id>
+          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository/</url>
           <layout>p2</layout>
         </repository>
       </repositories>

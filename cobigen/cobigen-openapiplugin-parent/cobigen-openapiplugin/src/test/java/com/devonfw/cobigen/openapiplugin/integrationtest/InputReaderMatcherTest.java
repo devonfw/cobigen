@@ -119,6 +119,34 @@ public class InputReaderMatcherTest {
             .hasContent("testingRootName");
     }
 
+    /*
+     * Tests variable assignment resolution of ROOTPACKAGE type, thus that the user can define the root
+     * package in the "info" part of the OpenAPI file
+     *
+     * @throws Exception test fails
+     */
+    @Test
+    public void testVariableAssignment_rootComponent() throws Exception {
+        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+
+        Object openApiFile = cobigen.read("openapi", Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
+        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+
+        // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
+        // TestConstants.UTF_8);
+        List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
+
+        String templateName = "testModel_rootComponentProperty.txt";
+        TemplateTo template = findTemplate(cobigen, inputObjects.get(0), templateName);
+
+        File targetFolder = tmpFolder.newFolder();
+        GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
+        assertThat(report).isSuccessful();
+
+        assertThat(targetFolder.toPath().resolve(templateName).toFile()).exists().hasContent("tablemanagement");
+
+    }
+
     /**
      * Tests variable assignment resolution of ATTRIBUTE type, thus that the user can define any custom
      * variables inside the schema of OpenAPI files. <br>
