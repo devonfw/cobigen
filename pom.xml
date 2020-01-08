@@ -10,7 +10,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <github.project>devonfw/tools-cobigen</github.project>
+    <github.project>devonfw/cobigen</github.project>
     <oasp.flatten.mode>ossrh</oasp.flatten.mode>
     <slf4j.version>1.7.21</slf4j.version>
     <skip.deployment>true</skip.deployment>
@@ -100,14 +100,14 @@
   </contributors>
 
   <organization>
-    <name>DevonFw</name>
+    <name>devonfw</name>
     <url>http://devonfw.com/</url>
   </organization>
 
   <licenses>
     <license>
-      <name>Apache Software License</name>
-      <url>http://oasp.github.io/terms-of-use.html</url>
+      <name>Apache Software License 2.0</name>
+      <url>https://github.com/devonfw/.github/blob/master/LICENSE</url>
       <distribution>repo</distribution>
       <comments/>
     </license>

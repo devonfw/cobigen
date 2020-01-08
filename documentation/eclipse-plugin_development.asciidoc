@@ -11,7 +11,7 @@ The Eclipse plugin is where all the other plugins (JavaPlugin, XMLPlugin, Proper
 === Activator java
 
 Activator class is the start point of the plugin. Activator class is loaded initially and it extends the *AbstractUIPlugin*, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform UI.
-An ID for the plugin is defined for configuration at https://github.com/devonfw/tools-cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
+An ID for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
 
 [source,java]
 /**
@@ -25,7 +25,7 @@ PluginRegistry.loadPlugin(PluginActivator.class);
 
 [NOTE]
 ===============================
-How the `loadPlugin` works is explained deeply at https://github.com/devonfw/tools-cobigen/wiki/Core-Development#2-2-loadplugin[core development].
+How the `loadPlugin` works is explained deeply at https://github.com/devonfw/cobigen/wiki/Core-Development#2-2-loadplugin[core development].
 ===============================
 
 The activator has the listener *__ConfigurationProjectListener.java__* from the *workbenchcontrol* package that checks continuously changes on the templates project
@@ -194,7 +194,7 @@ Will call the *__AdvancedHealthCheckDialog.java__* showing a dialog with the cur
 === Starting the Wizard
 
 To open a wizard, use the *WizardDialog* class from the *org.eclipse.jface.wizard* package.
-The plugin does that at *__GenerateHandler.java__* as previously explained https://github.com/devonfw/tools-cobigen/wiki/Eclipse-Plugin-Development#3-1-generate-action-handler[here]:
+The plugin does that at *__GenerateHandler.java__* as previously explained https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#3-1-generate-action-handler[here]:
 
 [source,java]
 if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).size() == 1)

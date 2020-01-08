@@ -155,7 +155,7 @@ public class TypeScriptMerger implements Merger {
             }
         } else {
             throw new MergeException(base, "Execution of the TypeScript merger raised an internal error."
-                + " Check your file syntax and if error occurs again, please report it on tools-cobigen GitHub.");
+                + " Check your file syntax and if error occurs again, please report it on cobigen GitHub.");
         }
         // Merge was not successful
         return baseFileContents;

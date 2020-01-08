@@ -22,8 +22,8 @@ For a full list of the open-source components of third-parties  and applicable l
    </license>
 
    <url>
-      <update label="CobiGen Eclipse Plug-in" url="https://github.com/devonfw/tools-cobigen"/>
-      <discovery label="GitHub Repository" url="https://github.com/devonfw/tools-cobigen"/>
+      <update label="CobiGen Eclipse Plug-in" url="https://github.com/devonfw/cobigen"/>
+      <discovery label="GitHub Repository" url="https://github.com/devonfw/cobigen"/>
    </url>
 
    <plugin
