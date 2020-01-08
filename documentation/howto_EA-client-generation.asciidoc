@@ -43,7 +43,7 @@ Now we are going to start the generation, right-click your exported file and sel
 
 image::images/howtos/EA-gen/generating.png[Eclipse CobiGen generation,width="500"link="images/howtos/EA-gen/generating.png"]
 
-After following all these steps, your generated files should be inside `src\main\java` folder. If you want an XMI example, you will find it link:https://github.com/devonfw/tools-cobigen/blob/master/cobigen/cobigen-xmlplugin/src/test/resources/testdata/integrationtest/uml-classdiag/completeUmlXmi.xml[here].
+After following all these steps, your generated files should be inside `src\main\java` folder. If you want an XMI example, you will find it link:https://github.com/devonfw/cobigen/blob/master/cobigen/cobigen-xmlplugin/src/test/resources/testdata/integrationtest/uml-classdiag/completeUmlXmi.xml[here].
 
 
 
