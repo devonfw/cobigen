@@ -4,8 +4,6 @@
 
 wiki clone job: image:https://api.travis-ci.com/devonfw/cobigen.svg?branch=master[link="https://travis-ci.com/devonfw/cobigen"] 
 
-image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Fcobigen.svg?type=shield[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Fcobigen?ref=badge_shield"]
-
 |===
 | Component | Release
 | maven-plugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin]
