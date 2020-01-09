@@ -347,7 +347,7 @@ public class CobiGenUtils {
                 "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.");
         } catch (IOException e) {
             logger.error("CobiGen plug-in jar file that was being loaded was not found. "
-                + "Please try again or file an issue in tools-cobigen GitHub repo.");
+                + "Please try again or file an issue in cobigen GitHub repo.");
         }
 
     }

@@ -11,12 +11,12 @@ CobiGen uses Apache FreeMarker as engine for generation through FreeMarker templ
 ================
 * To know more about development using Apache FreeMarker, please refer to http://freemarker.org/docs/pgui.html[official documentation].
 * To know more about FreeMarker template development, please refer to the http://freemarker.org/docs/dgui.html[official template development documentation] and the guide of this wiki for each plugin:
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-javaplugin[Java Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-xmlplugin[Xml Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-propertyplugin[Property Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger[Text Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-jsonplugin[JSON Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-templates_helpful-links[Helpful Links]
+. https://github.com/devonfw/cobigen/wiki/cobigen-javaplugin[Java Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-xmlplugin[Xml Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-propertyplugin[Property Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-textmerger[Text Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-jsonplugin[JSON Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-templates_helpful-links[Helpful Links]
 ================
 
 The core implementation are divided in three projects:
@@ -46,11 +46,11 @@ The core must load all the sub plugins to get their Merger, Matcher, TriggerInte
 
 image:images/howtos/cobigen-core/core_01.png[Diagram 1,width="450",link="images/howtos/cobigen-core/core_01.png"]
 
-Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an InputReader (advanced information https://github.com/devonfw/tools-cobigen/wiki/new_plugin[here])
+Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an InputReader (advanced information https://github.com/devonfw/cobigen/wiki/new_plugin[here])
 
 === LoadPlugin
 
-The process of loading plugins to the core is done at the https://github.com/devonfw/tools-cobigen/wiki/eclipse-plugin_development#1-1-activator-java[eclipse-plugin initialization].
+The process of loading plugins to the core is done at the https://github.com/devonfw/cobigen/wiki/eclipse-plugin_development#1-1-activator-java[eclipse-plugin initialization].
 
 Each sub plugin has an activator class that extends the *__GeneratorPluginActivator__* interface from the *extension* package. That class implements the methods `bindMerger()` and `bindTriggerInterpreter()`.
 
@@ -64,7 +64,7 @@ The trigger interpreter has the correspondent input reader of the plugin.
 
 [NOTE]
 ======================
-https://github.com/devonfw/tools-cobigen/wiki/new_plugin#3-adding-inputreader[How to add a new input reader]
+https://github.com/devonfw/cobigen/wiki/new_plugin#3-adding-inputreader[How to add a new input reader]
 ======================
 
 == CobiGen Initialization
@@ -88,7 +88,7 @@ The *__ContextConfiguration__* creates a new ContextConfiguration from the *conf
 
 [NOTE]
 =========
-How the ContextConfiguration works explained deeply https://github.com/devonfw/tools-cobigen/wiki/Core-Development#4-1-contextconfiguration[here].
+How the ContextConfiguration works explained deeply https://github.com/devonfw/cobigen/wiki/Core-Development#4-1-contextconfiguration[here].
 =========
 
 The Configuration initialization requires the version of Freemarker to be used and at the ObjectWrapper initialization as well.
@@ -104,7 +104,7 @@ The context configuration reads the `context.xml` file from the template project
 
 [NOTE]
 ==========
-Please, check the https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration[CobiGen configuration] for extended information about the `context.xml` and `templates.xml` configuration.
+Please, check the https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration[CobiGen configuration] for extended information about the `context.xml` and `templates.xml` configuration.
 ==========
 
 That reader uses the JAXB, JAXB (Java Architecture for XML Binding) provides a fast and convenient way to bind XML schemas and Java representations, making it easy for Java developers to incorporate XML data and processing functions in Java applications. As part of this process, JAXB provides methods for unmarshalling (reading) XML instance documents into Java content trees.

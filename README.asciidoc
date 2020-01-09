@@ -2,9 +2,7 @@
 
 = CobiGen (Code-based incremental Generator)
 
-wiki clone job: image:https://api.travis-ci.com/devonfw/tools-cobigen.svg?branch=master[link="https://travis-ci.com/devonfw/tools-cobigen"] 
-
-image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield"]
+wiki clone job: image:https://api.travis-ci.com/devonfw/cobigen.svg?branch=master[link="https://travis-ci.com/devonfw/cobigen"] 
 
 |===
 | Component | Release
@@ -27,20 +25,20 @@ image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobi
 
 == Usage
 
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage[OpenAPI Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/howto_ionic-client-generation[Ionic/Cordova Client Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/howto_angular-client-generation[Angular Client Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-maven_configuration[Usage in Maven Builds]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration[Configuration of the Templates]
+* https://github.com/devonfw/cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
+* https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage[OpenAPI Generation]
+* https://github.com/devonfw/cobigen/wiki/howto_ionic-client-generation[Ionic/Cordova Client Generation]
+* https://github.com/devonfw/cobigen/wiki/howto_angular-client-generation[Angular Client Generation]
+* https://github.com/devonfw/cobigen/wiki/cobigen-maven_configuration[Usage in Maven Builds]
+* https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration[Configuration of the Templates]
 
 ==  Installation
 
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_installation[For eclipse users]
+* https://github.com/devonfw/cobigen/wiki/cobigen-eclipse_installation[For eclipse users]
 
 ==  Architecture
 
-https://github.com/devonfw/tools-cobigen/wiki#architecture[CobiGen is build as an extensible framework for incremental code generation...]
+https://github.com/devonfw/cobigen/wiki#architecture[CobiGen is build as an extensible framework for incremental code generation...]
 
 == Repository Organization
 
@@ -106,7 +104,7 @@ To debug Maven tests follow https://doc.nuxeo.com/corg/how-to-debug-a-test-run-w
 
 == Contribute
 
-https://github.com/devonfw/tools-cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
+https://github.com/devonfw/cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
 
 ## License
-image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=large[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_large"]
+image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Fcobigen.svg?type=large[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Fcobigen?ref=badge_large"]
