@@ -3,8 +3,8 @@ env:
   global:
     - ORG="devonfw"
     - EMAIL="icsddevonfwsupport.apps2@capgemini.com"
-    - REPO_SOURCE="tools-cobigen"
-    - REPO_DEST="tools-cobigen.wiki"
+    - REPO_SOURCE="cobigen"
+    - REPO_DEST="cobigen.wiki"
     - REPO_CONSOLIDATE="devonfw-guide"
     - GH_REPO_SOURCE="github.com/${ORG}/${REPO_SOURCE}.git"
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
@@ -16,6 +16,7 @@ stages:
 jobs:
   include:
     - stage: Documentation
+      if: (type = push) AND (branch = master)
       script:
         # Clone repositories
         - git clone -b master --single-branch https://${GH_REPO_SOURCE}

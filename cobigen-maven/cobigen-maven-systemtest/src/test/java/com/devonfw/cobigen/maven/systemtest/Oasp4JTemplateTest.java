@@ -137,7 +137,7 @@ public class Oasp4JTemplateTest extends AbstractMavenTest {
     }
 
     /**
-     * Tries to reproduce issue #715 https://github.com/devonfw/tools-cobigen/issues/715 where a Windows path
+     * Tries to reproduce issue #715 https://github.com/devonfw/cobigen/issues/715 where a Windows path
      * exception is thrown when trying to generate from an OpenApi file. For doing so, processes a generation
      * of oasp4j template increments daos, entity_infrastructure, TOs, Logic and Rest Service and just checks
      * whether the files have been generated. Takes a yaml file as input.
