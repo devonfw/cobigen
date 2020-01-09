@@ -18,7 +18,7 @@ This document contains the documentation of the CobiGen core module as well as a
 * CobiGen - Property Plug-in v2.1.0
 * CobiGen - Text Merger v2.1.0
 * CobiGen - JSON Plug-in v2.0.0
-* CobiGen - HTML Plug-in v2.0.1
+* CobiGen - HTML Plug-in v2.1.0
 * CobiGen - Open API Plug-in v2.3.0
 * CobiGen - FreeMaker Template Engine v2.0.0
 * CobiGen - Velocity Template Engine v2.0.0
