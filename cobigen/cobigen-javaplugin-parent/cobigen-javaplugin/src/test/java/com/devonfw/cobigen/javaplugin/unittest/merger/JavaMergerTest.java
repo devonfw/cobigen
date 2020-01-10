@@ -330,6 +330,7 @@ public class JavaMergerTest {
     public void testMergeWithGenerics() throws IOException, MergeException {
         File baseFile = new File(testFileRootPath + "BaseFile_generics.java");
         File patchFile = new File(testFileRootPath + "PatchFile_generics.java");
+
         String mergedContents =
             new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
 
