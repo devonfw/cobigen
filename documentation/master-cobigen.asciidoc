@@ -21,7 +21,7 @@ This document contains the documentation of the CobiGen core module as well as a
 * CobiGen - HTML Plug-in v2.1.0
 * CobiGen - Open API Plug-in v2.4.0
 * CobiGen - FreeMaker Template Engine v2.0.1
-* CobiGen - Velocity Template Engine v2.0.0
+* CobiGen - Velocity Template Engine v2.0.1
 
 **Authors:**
 
