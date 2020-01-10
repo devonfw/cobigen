@@ -234,7 +234,7 @@ public class OpenAPIInputReader implements InputReader {
                 throw new InvalidConfigurationException(
                     "Your Swagger file is not correctly formatted, it lacks of x-component tags.\n\n"
                         + "Go to the documentation "
-                        + "(https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#full-example) "
+                        + "(https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#full-example) "
                         + "to check how to correctly format it."
                         + " If it is still not working, check your file indentation!");
             }
@@ -245,7 +245,7 @@ public class OpenAPIInputReader implements InputReader {
             if (openApi.getPaths().size() == 0) {
                 throw new InvalidConfigurationException(
                     "Your Swagger file is not correctly formatted, it lacks of the correct path syntax.\n\n"
-                        + "Go to the documentation (https://github.com/devonfw/tools-cobigen"
+                        + "Go to the documentation (https://github.com/devonfw/cobigen"
                         + "/wiki/cobigen-openapiplugin#paths) to check how to correctly format it."
                         + " If it is still not working, check your file indentation!");
             }

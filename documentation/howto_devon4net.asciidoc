@@ -11,7 +11,7 @@ toc::[]
 
 In this guide we will explain how to generate a new WebApi project from an OpenAPI 3.0.0 specification. This  means that we are going to use a “contract first” strategy. This is going to be possible due to these type of files that contain all the information about entities, operations, etc…
 
-In order to make it work we are using https://github.com/devonfw/tools-cobigen[CobiGen], a powerful tool for generating source code. CobiGen allows users to generate all the structure and code of the components, helping to save a lot of time otherwise waisted on repetitive tasks.
+In order to make it work we are using https://github.com/devonfw/cobigen[CobiGen], a powerful tool for generating source code. CobiGen allows users to generate all the structure and code of the components, helping to save a lot of time otherwise waisted on repetitive tasks.
 
 == [navy]#Getting things ready#
 
@@ -36,7 +36,7 @@ In order to let CobiGen generate all the files, we first have to make some modif
 
 It is obligatory to put the _“x-rootpackage”_ tag to indicate where CobiGen will place the generated files as well as the _"x-component"_ tags for each component, keep in mind that due to CobiGen's limitations each component *_must_* have its own entity.
 
-You can read more information about how to configure your OpenAPI file and a working example https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#full-example[here].
+You can read more information about how to configure your OpenAPI file and a working example https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#full-example[here].
 
 == [navy]#Generating files#
 	

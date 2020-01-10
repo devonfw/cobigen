@@ -1,11 +1,15 @@
 # Handle line endings automatically for files detected as text
 # and leave all files detected as binary untouched.
-* text=auto
+* text eol=lf
+*.bat eol=crlf
 
 #
 # The above will handle all files NOT found below
 #
 # These files are text and should be normalized (Convert crlf => lf)
+*.asciidoc	text
+*.adoc		text
+*.md
 *.css           text
 *.df            text
 *.htm           text
@@ -39,3 +43,6 @@
 *.png           binary
 *.so            binary
 *.war           binary
+*.pdf		binary
+*.exe		binary
+*.zip		binary
