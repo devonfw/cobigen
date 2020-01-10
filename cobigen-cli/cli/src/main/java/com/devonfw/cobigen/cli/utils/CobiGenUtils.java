@@ -389,7 +389,7 @@ public class CobiGenUtils {
      *            list containing elements to be retained in this list
      * @param listToIntersect
      *            second list to be used for the intersection
-     * @return <tt>resultant list</tt> containing increments that are in both lists
+     * @return resultant list containing increments that are in both lists
      */
     public static List<IncrementTo> retainAllIncrements(List<IncrementTo> currentList,
         List<IncrementTo> listToIntersect) {
@@ -420,7 +420,7 @@ public class CobiGenUtils {
      *            list containing elements to be retained in this list
      * @param listToIntersect
      *            second list to be used for the intersection
-     * @return <tt>resultant list</tt> containing increments that are in both lists
+     * @return resultant list containing increments that are in both lists
      */
     public static List<TemplateTo> retainAllTemplates(List<TemplateTo> currentList, List<TemplateTo> listToIntersect) {
 
