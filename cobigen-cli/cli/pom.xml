@@ -123,6 +123,9 @@
                 <resource>
                   <directory>${project.basedir}/src/main/resources/batchFiles</directory>
                 </resource>
+                <resource>
+                  <directory>${project.basedir}/src/main/resources/META-INF</directory>
+                </resource>
               </resources>
             </configuration>
           </execution>
