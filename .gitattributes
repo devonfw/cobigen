@@ -9,7 +9,7 @@
 # These files are text and should be normalized (Convert crlf => lf)
 *.asciidoc	text
 *.adoc		text
-*.md
+*.md		text
 *.css           text
 *.df            text
 *.htm           text
