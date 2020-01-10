@@ -135,13 +135,13 @@ public class JavaMerger implements Merger {
     private void mergeSupertypes(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
         if (patchOverrides) {
-            baseClass.setImplementz(patchClass.getImplementedInterfaces());
+            baseClass.setImplementz(patchClass.getInterfaces());
             if (!patchClass.getSuperClass().getCanonicalName().equals("java.lang.Enum")) {
                 baseClass.setSuperClass(patchClass.getSuperClass());
             }
         } else {
-            List<JavaClass> baseClassInterfaces = baseClass.getImplementedInterfaces();
-            for (JavaClass pClass : patchClass.getImplementedInterfaces()) {
+            List<JavaClass> baseClassInterfaces = baseClass.getInterfaces();
+            for (JavaClass pClass : patchClass.getInterfaces()) {
                 // TODO funktioniert noch nicht, da super klassen nicht im QDox Modell sind
                 if (!baseClassInterfaces.contains(pClass) && !baseClass.isA(pClass)) {
                     baseClassInterfaces.add(pClass);
