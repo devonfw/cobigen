@@ -459,7 +459,9 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      *
      * @param path
      *            to target
-     * @return <code>true</code> if the last element of the path contains a dot<br>
+     * @param paths
+     *            paths to all files and containing folders which aren't generated
+     * @return <code>true</code> if the path isn't contained by another path<br>
      *         <code>false</code>, otherwise
      */
     private boolean targetIsFile(IPath path, List<String> paths) {
