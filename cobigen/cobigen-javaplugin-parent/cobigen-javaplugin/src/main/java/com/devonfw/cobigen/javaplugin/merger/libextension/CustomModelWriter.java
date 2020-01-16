@@ -404,6 +404,9 @@ public class CustomModelWriter implements ModelWriter {
                     buffer.write("{");
                     for (int i = 0; i < annotations.toArray().length; i++) {
                         if (a[i] instanceof JavaAnnotation) {
+                            if (i > 0) {
+                                buffer.write(", ");
+                            }
                             writeAnnotation((JavaAnnotation) a[i]);
                         } else {
                             if (i > 0) {
@@ -477,7 +480,9 @@ public class CustomModelWriter implements ModelWriter {
         }
         if (entity.getAnnotations() != null) {
             for (JavaAnnotation annotation : entity.getAnnotations()) {
-                writeAnnotation(annotation);
+                if (entity.getAnnotations().get(entity.getAnnotations().size() - 1) != null) {
+                    writeAnnotation(annotation);
+                }
             }
         }
     }
