@@ -97,9 +97,9 @@ public class HealthCheckDialog {
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep;
             boolean healthyCheckWarning = false;
-            File tempFile = new File(pathForCobigenTemplates + "\\" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            File tempFile = new File(pathForCobigenTemplates + "/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
             boolean contextFileExists = tempFile.exists();
-            File newtempFile = new File(pathForCobigenTemplates + "\\" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER
+            File newtempFile = new File(pathForCobigenTemplates + "/" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER
                 + "/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
             boolean newcontextFileExists = newtempFile.exists();
             if (newcontextFileExists || contextFileExists) {
