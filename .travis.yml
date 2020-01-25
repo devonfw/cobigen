@@ -19,7 +19,8 @@ jobs:
       if: (type = push) AND (branch = master)
       script:
         # Clone repositories
-        - git clone -b master --single-branch https://${GH_REPO_SOURCE}
+        # travis will automatically already clone REPO_SOURCE into devonfw/cobigen and navigate to this folder. So we go one up again.
+        - cd .. 
         - git clone https://${GH_REPO_DEST}
         - git clone https://${GH_REPO_CONSOLIDATE}
         # Update wiki repository with documentation folder contents
