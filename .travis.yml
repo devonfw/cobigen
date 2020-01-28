@@ -19,7 +19,7 @@ jobs:
       if: (type = push) AND (branch = master)
       script:
         # Activate error population
-        - set +e
+        - set -e
         # Clone repositories
         # travis will automatically already clone REPO_SOURCE into devonfw/cobigen and navigate to this folder. So we go one up again.
         - cd .. 
@@ -32,6 +32,7 @@ jobs:
         # Terminate Travis CI build when no changes detected
         - |
           if git diff-index --quiet HEAD && [ ! -n "$(git status -s)" ]; then 
+            set +e
             pkill -9 -P $$ &> /dev/null || true 
             exit 0
           else 
