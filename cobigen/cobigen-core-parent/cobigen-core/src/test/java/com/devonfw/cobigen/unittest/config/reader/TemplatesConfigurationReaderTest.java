@@ -479,7 +479,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     }
 
     /**
-     * Test for <a href="https://github.com/devonfw/tools-cobigen/issues/167">Issue 167</a>. Tests if the
+     * Test for <a href="https://github.com/devonfw/cobigen/issues/167">Issue 167</a>. Tests if the
      * exception message from {@link #testErrorOnDuplicateScannedIds()} contains the name of the file causing
      * the exception
      */
@@ -637,7 +637,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
     /**
      * Test the basic valid configuration of
-     * <a href="https://github.com/devonfw/tools-cobigen/issues/157">issue 157</a> for relocation of templates
+     * <a href="https://github.com/devonfw/cobigen/issues/157">issue 157</a> for relocation of templates
      * to support multi-module generation.
      */
     @Test

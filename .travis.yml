@@ -3,8 +3,8 @@ env:
   global:
     - ORG="devonfw"
     - EMAIL="icsddevonfwsupport.apps2@capgemini.com"
-    - REPO_SOURCE="tools-cobigen"
-    - REPO_DEST="tools-cobigen.wiki"
+    - REPO_SOURCE="cobigen"
+    - REPO_DEST="cobigen.wiki"
     - REPO_CONSOLIDATE="devonfw-guide"
     - GH_REPO_SOURCE="github.com/${ORG}/${REPO_SOURCE}.git"
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
@@ -18,8 +18,11 @@ jobs:
     - stage: Documentation
       if: (type = push) AND (branch = master)
       script:
+        # Activate error population
+        - set -e
         # Clone repositories
-        - git clone -b master --single-branch https://${GH_REPO_SOURCE}
+        # travis will automatically already clone REPO_SOURCE into devonfw/cobigen and navigate to this folder. So we go one up again.
+        - cd .. 
         - git clone https://${GH_REPO_DEST}
         - git clone https://${GH_REPO_CONSOLIDATE}
         # Update wiki repository with documentation folder contents
@@ -29,7 +32,7 @@ jobs:
         # Terminate Travis CI build when no changes detected
         - |
           if git diff-index --quiet HEAD && [ ! -n "$(git status -s)" ]; then 
-            set +e 
+            set +e
             pkill -9 -P $$ &> /dev/null || true 
             exit 0
           else 
