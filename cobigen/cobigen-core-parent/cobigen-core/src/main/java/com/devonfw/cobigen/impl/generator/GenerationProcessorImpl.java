@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.CobiGenCancellationException;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.MergeException;
@@ -105,10 +107,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
      * @param logicClasses
      *            logic classes to instantiate.
      */
-    private void loadLogicClasses(List<Class<?>> logicClasses) {
+    private void loadLogicClasses(BiConsumer<String, Integer> progressCallback, List<Class<?>> logicClasses) {
         logicClassesModel = Maps.newHashMap();
         for (Class<?> logicClass : logicClasses) {
             try {
+                progressCallback.accept(logicClass.getCanonicalName(), 100 / logicClasses.size());
                 if (logicClass.isEnum()) {
                     logicClassesModel.put(logicClass.getSimpleName(), logicClass.getEnumConstants());
                 } else {
@@ -124,15 +127,18 @@ public class GenerationProcessorImpl implements GenerationProcessor {
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel,
+        BiConsumer<String, Integer> progressCallback) {
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
         // initialize
         this.forceOverride = forceOverride;
         this.input = input;
         if (logicClasses != null) {
-            loadLogicClasses(logicClasses);
+            loadLogicClasses(progressCallback, logicClasses);
         }
+
+        progressCallback.accept("createTempDirectory", 50);
         this.rawModel = rawModel;
         try {
             tmpTargetRootPath = Files.createTempDirectory("cobigen-");
@@ -143,29 +149,42 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         this.targetRootPath = targetRootPath;
         generationReport = new GenerationReportTo();
 
+        progressCallback.accept("load Templates", 50);
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
         // generate
         Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
-        for (TemplateTo template : templatesToBeGenerated) {
-            try {
-                Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-                TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-                InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-                tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
-            } catch (CobiGenRuntimeException e) {
-                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
-                generationReport.addError(e);
-                LOG.error("An internal error occurred during generation.", e);
-            } catch (Throwable e) {
-                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
-                generationReport.addError(new CobiGenRuntimeException(
-                    "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
-                LOG.error("An unknown exception occurred during generation.", e);
+        try {
+            for (TemplateTo template : templatesToBeGenerated) {
+                try {
+                    Trigger trigger =
+                        configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+                    TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+                    InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
+                    tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
+                    progressCallback.accept("generates... ",
+                        Math.round(1 / (float) templatesToBeGenerated.size() * 800));
+                } catch (CobiGenCancellationException e) {
+                    throw (e);
+                } catch (CobiGenRuntimeException e) {
+                    generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+                    generationReport.addError(e);
+                    LOG.error("An internal error occurred during generation.", e);
+                } catch (Throwable e) {
+                    generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+                    generationReport.addError(new CobiGenRuntimeException(
+                        "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
+                    LOG.error("An unknown exception occurred during generation.", e);
+                }
             }
+        } catch (CobiGenCancellationException e) {
+            LOG.error("the Generation has been Canceled.", e);
+            generationReport.setCancelled(true);
         }
-
-        if (generationReport.isSuccessful()) {
+        if (generationReport.isCancelled()) {
+            generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+            // do nothing if cancelled
+        } else if (generationReport.isSuccessful()) {
             try {
                 for (Entry<File, File> tmpToOrigFile : tmpToOrigFileTrace.entrySet()) {
                     Files.createDirectories(tmpToOrigFile.getValue().toPath().getParent());
