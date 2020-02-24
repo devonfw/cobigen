@@ -5,7 +5,7 @@ env:
     - EMAIL="icsddevonfwsupport.apps2@capgemini.com"
     - REPO_SOURCE="cobigen"
     - REPO_DEST="cobigen.wiki"
-    - REPO_CONSOLIDATE="d evonfw-guide"
+    - REPO_CONSOLIDATE="devonfw-guide"
     - GH_REPO_SOURCE="github.com/${ORG}/${REPO_SOURCE}.git"
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
     - GH_REPO_CONSOLIDATE="github.com/${ORG}/${REPO_CONSOLIDATE}.git"
