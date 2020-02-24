@@ -15,6 +15,7 @@ grep -lr "link:[a-zA-Z0-9_.-]*.asciidoc.*" .| xargs -r sed -i "s/.asciidoc//g"
 # Terminate Travis CI build when no changes detected
 if [ ! -n "$(git status -s)" ]; then 
   set +e
+  echo "Nothing to synchronize. Closing..."
   pkill -9 -P $$ &> /dev/null || true 
   exit 0
 else 
