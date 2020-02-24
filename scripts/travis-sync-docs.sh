@@ -18,7 +18,6 @@ if git diff-index --quiet HEAD && [ ! -n "$(git status -s)" ]; then
   pkill -9 -P $$ &> /dev/null || true 
   exit 0
 else 
-  git diff-index --quiet HEAD
   git status -s
   git config user.email ${EMAIL}
   git config user.name ${USER}
