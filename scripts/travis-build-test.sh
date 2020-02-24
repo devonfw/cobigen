@@ -3,33 +3,33 @@ set -e
 
 source ./scripts/travis-functions.sh
 
-ROOT = ""
+ROOT=""
 
 if [ $TRAVIS_BRANCH == "master" ]; then 
-  if [ justOneFolderChanged "cobigen-templates/" ]; then
+  if justOneFolderChanged "cobigen-templates/"; then
     echo "Just Templates changed!"
-    ROOT = "cobigen-templates"
+    ROOT="cobigen-templates"
   else
-    ROOT = ""
+    ROOT=""
   fi
-} else if ($TRAVIS_BRANCH == "dev_eclipseplugin") {
-  ROOT = "cobigen-eclipse"
-} else if ($TRAVIS_BRANCH == "dev_htmlmerger") {
-  ROOT = "cobigen/cobigen-htmlplugin"
-} else if ($TRAVIS_BRANCH == "dev_mavenplugin") {
-  ROOT = "cobigen-maven"
-} else if ($TRAVIS_BRANCH == "dev_tempeng_freemarker") {
-  ROOT = "cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
-} else if ($TRAVIS_BRANCH == "dev_tempeng_velocity") {
-  ROOT = "cobigen/cobigen-templateengines/cobigen-tempeng-velocity"
-} else if ($TRAVIS_BRANCH == "dev_core") {
-  ROOT = "cobigen/cobigen-core-parent"
-} else if ($TRAVIS_BRANCH == "dev_javaplugin") {
-  ROOT = "cobigen/cobigen-javaplugin-parent"
-} else if ($TRAVIS_BRANCH == "dev_openapiplugin") {
-  ROOT = "cobigen/cobigen-openapiplugin-parent"
-} else {
-  ROOT = "cobigen/cobigen-" + ${TRAVIS_BRANCH/dev_/}
+elif [ $TRAVIS_BRANCH == "dev_eclipseplugin" ]; then
+  ROOT="cobigen-eclipse"
+elif [ $TRAVIS_BRANCH == "dev_htmlmerger" ]; then
+  ROOT="cobigen/cobigen-htmlplugin"
+elif [ $TRAVIS_BRANCH == "dev_mavenplugin" ]; then
+  ROOT="cobigen-maven"
+elif [ $TRAVIS_BRANCH == "dev_tempeng_freemarker" ]; then
+  ROOT="cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
+elif [ $TRAVIS_BRANCH == "dev_tempeng_velocity" ]; then
+  ROOT="cobigen/cobigen-templateengines/cobigen-tempeng-velocity"
+elif [ $TRAVIS_BRANCH == "dev_core" ]; then
+  ROOT="cobigen/cobigen-core-parent"
+elif [ $TRAVIS_BRANCH == "dev_javaplugin" ]; then
+  ROOT="cobigen/cobigen-javaplugin-parent"
+elif [ $TRAVIS_BRANCH == "dev_openapiplugin" ]; then
+  ROOT="cobigen/cobigen-openapiplugin-parent"
+else
+  ROOT="cobigen/cobigen-${TRAVIS_BRANCH/dev_/}"
 fi
 
 # -s ${MAVEN_SETTINGS} 
