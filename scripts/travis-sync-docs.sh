@@ -1,6 +1,12 @@
 # Activate error population
 set -e
 
+source ./scripts/travis-functions.sh
+
+if [ ! folderChanged "documentation/" ]; then
+  echo "Nothing to synchronize. Closing..."
+fi
+
 # Clone repositories
 # travis will automatically already clone REPO_SOURCE into devonfw/cobigen and navigate to this folder. So we go one up again.
 cd ..
