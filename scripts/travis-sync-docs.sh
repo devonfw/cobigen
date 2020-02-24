@@ -1,7 +1,7 @@
 # Activate error population
 set -e
-# Clone repositories
 
+# Clone repositories
 # travis will automatically already clone REPO_SOURCE into devonfw/cobigen and navigate to this folder. So we go one up again.
 cd ..
 git clone https://${GH_REPO_DEST}
@@ -18,6 +18,8 @@ if git diff-index --quiet HEAD && [ ! -n "$(git status -s)" ]; then
   pkill -9 -P $$ &> /dev/null || true 
   exit 0
 else 
+  git diff-index --quiet HEAD
+  git status -s
   git config user.email ${EMAIL}
   git config user.name ${USER}
   git status
