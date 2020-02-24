@@ -1,7 +1,7 @@
 # Activate error population
 set -e
 
-source ./travis-functions.sh
+source ./scripts/travis-functions.sh
 
 ROOT = ""
 
