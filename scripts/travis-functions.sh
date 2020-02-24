@@ -1,10 +1,10 @@
-function justOneFolderChanged { args : string folderName } {
+function justOneFolderChanged() {
 	# split will return a list with one element (the empty string) if called on an empty string
 	DIFF_FILES="$(git diff --name-only origin/master | xargs)"
 	while IFS=$' \t\n' read -ra DIFF_FILES; do
     for i in "${ADDR[@]}"; do
-      if [[ $i != $folderName* ]]; then
-        echo "'$i' does not start with /$folderName"
+      if [[ $i != $1* ]]; then
+        echo "'$i' does not start with /$1"
         return false
       fi
     done
@@ -12,13 +12,13 @@ function justOneFolderChanged { args : string folderName } {
 	return true
 }
 
-function folderChanged { args : string folderName } {
+function folderChanged() {
 	# split will return a list with one element (the empty string) if called on an empty string
 	DIFF_FILES="$(git diff --name-only origin/master | xargs)"
 	while IFS=$' \t\n' read -ra DIFF_FILES; do
     for i in "${ADDR[@]}"; do
-      if [[ $i == $folderName* ]]; then
-        echo "'$i' has been changed within /$folderName"
+      if [[ $i == $1* ]]; then
+        echo "'$i' has been changed within /$1"
         return true
       fi
     done
