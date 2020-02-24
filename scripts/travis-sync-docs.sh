@@ -3,7 +3,7 @@ set -e
 
 source ./scripts/travis-functions.sh
 
-if [ ! folderChanged "documentation/" ]; then
+if ! folderChanged "documentation/"; then
   echo "Nothing to synchronize. Closing..."
 fi
 
