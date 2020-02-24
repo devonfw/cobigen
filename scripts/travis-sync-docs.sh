@@ -13,12 +13,11 @@ cd ${REPO_DEST}
 grep -lr "link:[a-zA-Z0-9_.-]*.asciidoc.*" .| xargs -r sed -i "s/.asciidoc//g"
 
 # Terminate Travis CI build when no changes detected
-if git diff-index --quiet HEAD && [ ! -n "$(git status -s)" ]; then 
+if [ ! -n "$(git status -s)" ]; then 
   set +e
   pkill -9 -P $$ &> /dev/null || true 
   exit 0
 else 
-  git status -s
   git config user.email ${EMAIL}
   git config user.name ${USER}
   git status
