@@ -39,6 +39,12 @@
       <artifactId>core</artifactId>
       <version>6.0.0</version>
     </dependency>
+    
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core-api</artifactId>
+      <version>6.0.0</version>
+    </dependency>
 
     <!-- dependencies to annotations -->
     <dependency>
