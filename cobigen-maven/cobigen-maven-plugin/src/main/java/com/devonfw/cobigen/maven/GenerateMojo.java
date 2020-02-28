@@ -31,9 +31,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.Charsets;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -167,39 +165,63 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     /**
+     * Checks the ClassRealm for any context.xml provided either in configurationFolder or in templates-plugin
+     * and returns its URL
+     * @param classRealm
+     *            the ClassRealm to check
+     * @return URL of the context configuration file path
+     * @throws MojoExecutionException
+     *             if no configuration file was found
+     */
+    private URL getContextConfiguration(ClassRealm classRealm) throws MojoExecutionException {
+        URL contextConfigurationLocation = null;
+        String[] possibleLocations = new String[] { "context.xml", "src/main/templates/context.xml" };
+
+        for (String possibleLocation : possibleLocations) {
+            URL configLocation = classRealm.getResource(possibleLocation);
+            if (configLocation != null) {
+                contextConfigurationLocation = configLocation;
+                getLog().debug("Found context.xml URL in the classpath @: " + contextConfigurationLocation.toString());
+                break;
+            }
+        }
+
+        if (contextConfigurationLocation == null) {
+            throw new MojoExecutionException("No context.xml could be found in the classpath!");
+        }
+        return contextConfigurationLocation;
+    }
+
+    /**
      * Creates an instance of {@link CobiGen} based on a given configuration project or configuration jar.
      * @return the initialized {@link CobiGen} instance
      * @throws MojoExecutionException
      *             if the configuration could not be read
-     * @throws MojoFailureException
-     *             if no configuration is given
      */
-    private CobiGen createCobiGenInstance() throws MojoExecutionException, MojoFailureException {
+    private CobiGen createCobiGenInstance() throws MojoExecutionException {
         CobiGen cobiGen;
+
         if (configurationFolder != null) {
+
+            getLog().debug("configurationFolder found in:" + configurationFolder.toURI().toString());
             try {
                 cobiGen = CobiGenFactory.create(configurationFolder.toURI());
             } catch (IOException e) {
                 throw new MojoExecutionException("The configured configuration folder could not be read.", e);
             }
         } else {
-            List<Dependency> dependencies =
-                execution.getMojoDescriptor().getPluginDescriptor().getPlugin().getDependencies();
+            final ClassRealm classRealm = pluginDescriptor.getClassRealm();
+            URL contextConfigurationLocation = getContextConfiguration(classRealm);
 
-            if (dependencies != null && !dependencies.isEmpty()) {
-                Dependency dependency = dependencies.iterator().next();
-                Artifact templatesArtifact = execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
-                    .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
-                try {
-                    cobiGen = CobiGenFactory.create(templatesArtifact.getFile().toURI());
-                } catch (IOException e) {
-                    throw new MojoExecutionException("The templates artifact could not be read in location '"
-                        + templatesArtifact.getFile().toURI() + "'.", e);
-                }
-            } else {
-                throw new MojoFailureException(
-                    "No configuration injected. Please inject a 'configurationFolder' to a local folder"
-                        + " or inject an archive as plugin dependency.");
+            URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
+
+            getLog().debug("reading configuration from file:" + configFile.toString());
+
+            try {
+                cobiGen = CobiGenFactory.create(configFile);
+            } catch (IOException e) {
+                throw new MojoExecutionException("The templates artifact could not be read in location '"
+                    + contextConfigurationLocation.getFile() + "'.", e);
             }
         }
         return cobiGen;
@@ -225,20 +247,10 @@ public class GenerateMojo extends AbstractMojo {
             }
         }
 
-        Path templateRoot;
-        URL contextConfigurationLocation = classRealm.getResource("context.xml");
-        if (contextConfigurationLocation == null
-            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
-            contextConfigurationLocation = classRealm.getResource("src/main/templates/context.xml");
-            if (contextConfigurationLocation == null) {
-                throw new MojoExecutionException("No context.xml could be found in the classpath!");
-            } else {
-                templateRoot =
-                    Paths.get(URI.create(contextConfigurationLocation.toString())).getParent().getParent().getParent();
-            }
-        } else {
-            templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
-        }
+        URL contextConfigurationLocation = getContextConfiguration(classRealm);
+
+        Path templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
+
         getLog().debug("Found context.xml @ " + contextConfigurationLocation.toString());
         final List<String> foundClasses = new LinkedList<>();
         if (contextConfigurationLocation.toString().startsWith("jar")) {
@@ -572,13 +584,6 @@ public class GenerateMojo extends AbstractMojo {
                 for (URL url : loader.getURLs()) {
                     getLog().debug("    * " + url.toString());
                 }
-                URL contextURL = loader.getResource("context.xml");
-                if (contextURL != null) {
-                    getLog().debug("Found content.xml @ " + contextURL.toString());
-                } else {
-                    getLog().warn("No context.xml found in classpath");
-                }
-
             }
             return loader;
         } catch (DependencyResolutionRequiredException e) {
