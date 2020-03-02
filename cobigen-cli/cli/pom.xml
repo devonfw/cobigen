@@ -45,7 +45,7 @@
       <dependency>
          <groupId>net.sf.m-m-m</groupId>
          <artifactId>mmm-code-java-impl</artifactId>
-         <version>1.0.0-beta2</version>
+         <version>1.0.0-beta5</version>
       </dependency>
       <!-- SLF4J - API -->
       <dependency>
