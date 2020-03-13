@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
@@ -95,6 +94,46 @@ public class CobiGenUtils {
     private boolean templateDependencyIsGiven = false;
 
     /**
+     * Checks the ClassLoader for any context.xml and returns its URL
+     * @param classLoader
+     *            to load resource from
+     * @return URL
+     * @throws IOException
+     *             when no context.xml was found
+     */
+    private URL getContextConfiguration(ClassLoader classLoader) throws IOException {
+        URL contextConfigurationLocation = null;
+        String[] possibleLocations = new String[] { "context.xml", "src/main/templates/context.xml" };
+
+        for (String possibleLocation : possibleLocations) {
+            URL configLocation = classLoader.getResource(possibleLocation);
+            if (configLocation != null) {
+                contextConfigurationLocation = configLocation;
+                logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
+                break;
+            }
+        }
+
+        if (contextConfigurationLocation == null) {
+            throw new IOException("No context.xml could be found in the classloader!");
+        } else {
+            // Make sure to create file system
+            Map<String, String> env = new HashMap<>();
+            env.put("create", "true");
+
+            URI uri = URI.create(contextConfigurationLocation.toString());
+            FileSystem fs;
+            try {
+                fs = FileSystems.getFileSystem(uri);
+            } catch (FileSystemNotFoundException e) {
+                fs = FileSystems.newFileSystem(uri, env);
+            }
+            Paths.get(uri);
+        }
+        return contextConfigurationLocation;
+    }
+
+    /**
      * Resolves all utilities classes, which have been defined in the templates jar.
      * @param templatesJar
      *            templates jar where we will try to find the list of classes
@@ -109,42 +148,9 @@ public class CobiGenUtils {
         final List<Class<?>> result = new LinkedList<>();
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
-        URL contextConfigurationLocation = inputClassLoader.getResource("context.xml");
-        if (contextConfigurationLocation == null
-            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
-            contextConfigurationLocation = inputClassLoader.getResource("src/main/templates/context.xml");
-            if (contextConfigurationLocation == null) {
-                throw new CobiGenRuntimeException("No context.xml could be found in the classpath!");
-            } else {
 
-                final Map<String, String> env = new HashMap<>();
+        URL contextConfigurationLocation = getContextConfiguration(inputClassLoader);
 
-                String[] pathTemplate = contextConfigurationLocation.toString().split("!");
-                FileSystem fs;
-                try {
-                    fs = FileSystems.getFileSystem(URI.create(pathTemplate[0]));
-                } catch (FileSystemNotFoundException e) {
-                    fs = FileSystems.newFileSystem(URI.create(pathTemplate[0]), env);
-                }
-                final Path path = fs.getPath(pathTemplate[1]);
-
-                Paths.get(URI.create("file://" + path.toString())).getParent().getParent().getParent();
-
-            }
-        } else {
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-
-            URI uri = URI.create(contextConfigurationLocation.toString());
-            FileSystem fs;
-            try {
-                fs = FileSystems.getFileSystem(uri);
-            } catch (FileSystemNotFoundException e) {
-                fs = FileSystems.newFileSystem(uri, env);
-            }
-            Paths.get(uri);
-        }
-        logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
         final List<String> foundClasses = new LinkedList<>();
         if (contextConfigurationLocation.toString().startsWith("jar")) {
             logger.debug("Processing configuration archive " + contextConfigurationLocation.toString());
