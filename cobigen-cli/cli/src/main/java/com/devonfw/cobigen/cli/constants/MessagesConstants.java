@@ -63,12 +63,15 @@ public class MessagesConstants {
      */
     public static final String UPDATE_OPTION_DESCRIPTION =
         "Use update command to find out which plug-ins are outdated and choose which ones do you want to update .";
-    
+
     /**
      * Message constant: description of update all option
      */
-    public static final String UPDATE_ALL_DESCRIPTION =
-        "If this option is enabled, all plugins will get updated.";
-    
+    public static final String UPDATE_ALL_DESCRIPTION = "If this option is enabled, all plugins will get updated.";
+
+    /**
+     * Message constant: description of the adapt-templates command
+     */
+    public static final String ADAPT_TEMPLATES_DESCRIPTION = "Generates a new templates folder next to the cobigen cli";
 
 }
