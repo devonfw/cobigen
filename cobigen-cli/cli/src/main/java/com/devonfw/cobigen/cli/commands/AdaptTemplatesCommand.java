@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -68,91 +67,33 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
     /**
      * Process Jar method is responsible for unzip the source Jar and create new CobiGen_Templates folder
      * structure at /main/CobiGen_Templates location
-     * @param fileName
-     *            Name of source jar file downloaded
      * @throws IOException
-     *             {@link IOException} occurred
-     * @throws MalformedURLException
-     *             {@link MalformedURLException} occurred
      */
-    public static void processJar(String fileName) throws MalformedURLException, IOException {
+    public static void processJar() throws IOException {
         String pathForCobigenTemplates = "";
 
         try {
             File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             Path rootCLIPath = locationCLI.getParentFile().toPath();
             pathForCobigenTemplates = rootCLIPath.toString();
-            logger.info("rootCLIPath {}", rootCLIPath.toString());
-            logger.info("locationCLI {}", locationCLI.toString());
         } catch (URISyntaxException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
-        String templatesPath = cobigenUtils.getTemplatesJar(false).getPath();
-
-        logger.info("templatesPath {}", templatesPath.toString());
-
-        String jarPath = templatesPath.toString();
+        String jarPath = cobigenUtils.getTemplatesJar(false).getPath().toString();
         FileSystem fileSystem = FileSystems.getDefault();
         Path cobigenFolderPath = null;
         if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
             cobigenFolderPath = fileSystem.getPath(pathForCobigenTemplates);
-            logger.info("cobigenFolderPath {}", cobigenFolderPath.toString());
+        }
+
+        if (cobigenFolderPath == null) {
+            throw new IOException(
+                "An exception occurred while processing Jar files to create CobiGen_Templates folder");
         }
 
         logger.info("Processing jar file @ {}", jarPath);
-
-        try (ZipFile file = new ZipFile(jarPath)) {
-            logger.info("file {}", file.getName());
-        } catch (IOException e) {
-            logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
-        }
-
-        // If we are unzipping a sources jar, we need to get the pom.xml from the normal jar
-        if (fileName.contains("sources")) {
-
-            String classJarPath = templatesPath;
-
-            try (ZipFile file = new ZipFile(classJarPath)) {
-                Enumeration<? extends ZipEntry> entries = file.entries();
-                Path cobigenTemplatesFolderPath = null;
-                if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
-                    cobigenTemplatesFolderPath =
-                        fileSystem.getPath(pathForCobigenTemplates + File.separator + COBIGEN_TEMPLATES);
-                }
-
-                if (cobigenTemplatesFolderPath == null) {
-                    throw new IOException(
-                        "An exception occurred while processing Jar files to create CobiGen_Templates folder");
-                }
-
-                if (Files.notExists(cobigenTemplatesFolderPath)) {
-                    Files.createDirectory(cobigenTemplatesFolderPath);
-                }
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    if (entry.getName().equals("pom.xml")) {
-                        Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
-                            + COBIGEN_TEMPLATES + File.separator + File.separator + entry.getName());
-
-                        Files.deleteIfExists(saveForFileCreationPath);
-                        Files.createFile(saveForFileCreationPath);
-                        try (InputStream is = file.getInputStream(entry);
-                            BufferedInputStream bis = new BufferedInputStream(is);
-                            FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());) {
-
-                            while (bis.available() > 0) {
-                                fileOutput.write(bis.read());
-                            }
-
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                logger.debug("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
-            }
-        }
 
         List<String> templateNames = new ArrayList<>();
         try (ZipFile file = new ZipFile(jarPath)) {
@@ -199,8 +140,11 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
             CLILogger.setLevel(Level.DEBUG);
         }
 
-        logger.info("starting AdaptTemplatesCommand!");
-        processJar("test");
+        logger.info("Running AdaptTemplatesCommand!, please wait...");
+
+        processJar();
+
+        logger.info("Successfully created custom templates folder @ {}", cobigenUtils.getCobigenTemplatesFolderPath());
         return 1;
     }
 }
