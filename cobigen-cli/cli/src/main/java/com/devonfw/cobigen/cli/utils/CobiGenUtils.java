@@ -122,9 +122,8 @@ public class CobiGenUtils {
     }
 
     /**
-     * Resolves all utilities classes, which have been defined in the templates jar.
-     * @param templatesJar
-     *            templates jar where we will try to find the list of classes
+     * Resolves all utilities classes, which have been defined in the custom template folder or the templates
+     * jar.
      *
      * @return the list of classes
      *
@@ -132,7 +131,8 @@ public class CobiGenUtils {
      * @throws IOException
      *             {@link IOException} occurred
      */
-    List<Class<?>> resolveTemplateUtilClassesFromJar(File templatesJar) throws IOException {
+    List<Class<?>> resolveTemplateUtilClasses() throws IOException {
+        templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
         final List<Class<?>> result = new LinkedList<>();
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
@@ -338,17 +338,15 @@ public class CobiGenUtils {
     }
 
     /**
-     * @return list of all classes, which have been defined in the template configuration folder from a jar
+     * @return list of all classes, which have been defined in the custom template configuration folder or
+     *         from a jar
      */
     public List<Class<?>> getTemplates() {
-        templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-
         try {
-            utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
+            utilClasses = resolveTemplateUtilClasses();
         } catch (IOException e) {
             logger.error(
                 "IO exception due to unable to resolves all classes, which have been defined in the template configuration folder from a jar");
-
         }
         return utilClasses;
     }
