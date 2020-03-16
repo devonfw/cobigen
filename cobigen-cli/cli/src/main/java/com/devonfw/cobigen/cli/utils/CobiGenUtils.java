@@ -271,6 +271,25 @@ public class CobiGenUtils {
     }
 
     /**
+     * Processes the input file's path. Strips the quotes from the file path if they are given.
+     * @param inputFile
+     *            the input file
+     * @return input file with processed path
+     */
+    public File preprocessInputFile(File inputFile) {
+        String path = inputFile.getPath();
+        String pattern = "[\\\"|\\'](.+)[\\\"|\\']";
+        boolean matches = path.matches(pattern);
+        if (matches) {
+            path = path.replace("\"", "");
+            path = path.replace("\'", "");
+            return new File(path);
+        }
+
+        return inputFile;
+    }
+
+    /**
      * Tries to load a class over it's file path. If the path is /a/b/c/Some.class this method tries to load
      * the following classes in this order: <list>
      * <li>Some</li>
