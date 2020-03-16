@@ -144,7 +144,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
 
         processJar();
 
-        logger.info("Successfully created custom templates folder @ {}", cobigenUtils.getCobigenTemplatesFolderPath());
+        logger.info("Successfully created custom templates folder @ {}", cobigenUtils.getCobigenTemplatesFolderFile());
         return 1;
     }
 }

@@ -41,7 +41,7 @@ public class AdaptTemplatesCommandTest {
 
         CobiGenUtils utils = new CobiGenUtils();
 
-        Path cobigenTemplatesFolderPath = utils.getCobigenTemplatesFolderPath();
+        Path cobigenTemplatesFolderPath = utils.getCobigenTemplatesFolderFile().toPath();
 
         assertTrue(Files.exists(cobigenTemplatesFolderPath));
     }
