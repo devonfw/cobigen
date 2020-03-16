@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 import net.sf.mmm.code.api.CodeName;
 import net.sf.mmm.code.base.BaseFile;
@@ -24,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.cli.CobiGenCLI;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 
 /**
  * This class contains utilities for parsing user input. It also contains mmm logic to parse user's input file
@@ -49,22 +54,29 @@ public class ParsingUtils {
      */
     public static JavaContext getJavaContext(File inputFile, File inputProject) {
 
-        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject, true);
-        String fqn = ParsingUtils.getFQN(inputFile);
         try {
+            JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject, true);
+            String fqn = ParsingUtils.getFQN(inputFile);
             context.getClassLoader().loadClass(fqn);
+            return context;
         } catch (NoClassDefFoundError | ClassNotFoundException e) {
             logger.error("Compiled class " + e.getMessage()
                 + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
             System.exit(1);
+        } catch (Exception e) {
+            logger.error("Transitive dependencies have not been found on your m2 repository (Maven). "
+                + "Please run 'mvn package' in your input project in order to download all the needed dependencies.");
+            System.exit(1);
         }
-        return context;
+        // Will never happen as every exception is catch
+        return null;
     }
 
     /**
      * This method is traversing parent folders until it reaches java folder in order to get the FQN
-     * 
+     *
      * @param inputFile
+     *            Java input file to retrieve FQN (Full Qualified Name)
      * @return qualified name with full package
      */
     private static String getFQN(File inputFile) {
@@ -76,7 +88,7 @@ public class ParsingUtils {
 
     /**
      * This method traverse the folder in reverse order from child to parent
-     * 
+     *
      * @param folder
      *            parent input file
      * @param packageName
@@ -103,7 +115,7 @@ public class ParsingUtils {
 
     /**
      * Creates a new {@link BasePackage}
-     * 
+     *
      * @param source
      *            of the current context {@link BaseSource}
      * @param qName
@@ -211,6 +223,34 @@ public class ParsingUtils {
         logger.debug("Projec root could not be found, therefore we use your current input file location.");
         logger.debug("Using '" + inputFile.getParent() + "' as location where code will be generated");
         return inputFile.getAbsoluteFile().getParentFile();
+    }
+
+    /**
+     * This method format the runtime generated code with the help of google API
+     * @param generatedFiles
+     *            List of generation report files
+     * @throws FormatterException
+     *             if any error occurred while formatting the Java code
+     */
+    public static void formatJavaSources(Set<Path> generatedFiles) throws FormatterException {
+        Set<Path> filesToFormat = generatedFiles;
+        Formatter formatter = new Formatter();
+        Iterator<Path> itr = filesToFormat.iterator();
+        logger.info("Formatting code...");
+        while (itr.hasNext()) {
+            Path generatedFilePath = itr.next();
+            try {
+                String unformattedCode = new String(Files.readAllBytes(generatedFilePath));
+                String formattedCode = formatter.formatSource(unformattedCode);
+                Files.write(generatedFilePath, formattedCode.getBytes());
+            } catch (IOException e) {
+                logger.error("Unable to read or write the generated file " + generatedFilePath.toString()
+                    + " when trying to format it");
+                return;
+            }
+        }
+        logger.info("Finished successfully");
+
     }
 
 }
