@@ -6,7 +6,7 @@ This document contains the documentation of the CobiGen core module as well as a
 
 **Current versions:**
 
-* CobiGen - Eclipse Plug-in v5.0.0
+* CobiGen - Eclipse Plug-in v5.1.0
 * CobiGen - Maven Build Plug-in v4.1.0
 
 ---
@@ -14,14 +14,14 @@ This document contains the documentation of the CobiGen core module as well as a
 * CobiGen v6.0.0
 * CobiGen - Java Plug-in v2.2.0
 * CobiGen - XML Plug-in v4.2.0
-* CobiGen - TypeScript Plug-in v2.4.0
+* CobiGen - TypeScript Plug-in v2.4.1
 * CobiGen - Property Plug-in v2.1.0
 * CobiGen - Text Merger v2.1.0
 * CobiGen - JSON Plug-in v2.1.0
 * CobiGen - HTML Plug-in v2.1.0
-* CobiGen - Open API Plug-in v2.3.0
+* CobiGen - Open API Plug-in v2.4.0
 * CobiGen - FreeMaker Template Engine v2.0.1
-* CobiGen - Velocity Template Engine v2.0.0
+* CobiGen - Velocity Template Engine v2.0.1
 
 **Authors:**
 
@@ -65,6 +65,10 @@ include::cobigen-tsplugin[leveloffset=3]
 
 include::cobigen-htmlplugin[leveloffset=3]
 
+== CobiGen CLI
+
+include::howto_Cobigen-CLI-generation[leveloffset=2]
+
 == Maven Build Integration
 
 include::cobigen-maven_configuration[leveloffset=2]
@@ -76,6 +80,22 @@ include::cobigen-eclipse_installation[leveloffset=2]
 include::cobigen-eclipse_usage[leveloffset=2]
 
 include::cobigen-eclipse_logging[leveloffset=2]
+
+== How to
+
+include::howto_angular-client-generation[leveloffset=2]
+
+include::howto_ionic-client-generation[leveloffset=2]
+
+include::howto_create-a-new-plugin[leveloffset=2]
+
+include::howto_create-external-plugin[leveloffset=2]
+
+include::howto_devon4net[leveloffset=2]
+
+include::howto_update_CobiGen[leveloffset=2]
+
+include::howto_Release-creation[leveloffset=2]
 
 == Template Development
 
