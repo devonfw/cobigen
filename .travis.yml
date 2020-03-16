@@ -5,14 +5,14 @@ jdk:
 cache:
   directories:
     - "$HOME/.m2/repository"
-install: true
 addons:
   apt:
     packages:
       - metacity
+services:
+  - xvfb
 env:
   global:
-    - DISPLAY=:99.0
     - ORG="devonfw"
     - EMAIL="icsddevonfwsupport.apps2@capgemini.com"
     - REPO_SOURCE="cobigen"
@@ -32,12 +32,7 @@ stages:
 jobs:
   include:
     - stage: Build & Test
-      before_script:
-        - sh -e /etc/init.d/xvfb start
-        - metacity --sm-disable --replace 2> metacity.err &
-      script:
-        - export
-        - ./scripts/travis-build-test.sh
+      script: ./scripts/travis-build-test.sh
     - stage: Deploy
       script: ./scripts/travis-deploy.sh
     - stage: Documentation
