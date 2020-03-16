@@ -16,7 +16,7 @@ For maven integration of CobiGen you can include the following build plugin into
       <executions>
         <execution>
           <id>cobigen-generate</id>
-          <phase>site</phase>
+          <phase>generate-resources</phase>
           <goals>
             <goal>generate</goal>
           </goals>

@@ -2,14 +2,14 @@
 toc::[]
 
 = CobiGen Release creation
-In this guide we explain how to create CobiGen related releases, i.e. release of a new core version using our useful release automation https://github.com/devonfw/tools-cobigen/tree/master/scripts[script].
+In this guide we explain how to create CobiGen related releases, i.e. release of a new core version using our useful release automation https://github.com/devonfw/cobigen/tree/master/scripts[script].
 
 == Usage
 Fire up a command prompt from the CobiGen IDE environment (using `console.bat` for example). Then, you will need to execute the following command: 
 
 [source,bash]
 ----
-python "<path_to_release_script_parent_folder>/create_release.py" -d -g devonfw/tools-cobigen -r "<path_of_your_just_cloned_fork>" -k "yourcapgemini@mail.com" -c
+python "<path_to_release_script_parent_folder>/create_release.py" -d -g devonfw/cobigen -r "<path_of_your_just_cloned_fork>" -k "yourcapgemini@mail.com" -c
 ----
 
 NOTE: The CobiGen development environment comes with all required python packages needed for the release script. However, if you encounter errors like `no module named xyz found` you might want to consider running the following command:

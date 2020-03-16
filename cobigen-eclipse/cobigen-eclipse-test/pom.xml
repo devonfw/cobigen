@@ -5,7 +5,7 @@
   <artifactId>com.devonfw.cobigen.eclipse.test</artifactId>
   <name>CobiGen - Eclipse Plug-In Tests</name>
   <packaging>eclipse-test-plugin</packaging>
-  <version>5.0.0</version>
+  <version>5.1.0</version>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
@@ -194,7 +194,7 @@
       <repositories>
         <repository>
           <id>cobigen-plugins-ci</id>
-          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/ci/</url>
+          <url>https://dl.bintray.com/devonfw/cobigen.p2.ci/</url>
           <layout>p2</layout>
         </repository>
       </repositories>
@@ -203,8 +203,8 @@
       <id>p2-build-experimental</id>
       <repositories>
         <repository>
-          <id>cobigen-plugins-ci</id>
-          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/experimental/</url>
+          <id>cobigen-plugins-experimental</id>
+          <url>https://dl.bintray.com/devonfw/cobigen.p2.experimental/</url>
           <layout>p2</layout>
         </repository>
       </repositories>
@@ -214,7 +214,7 @@
       <repositories>
         <repository>
           <id>cobigen-plugins-stable</id>
-          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/stable/</url>
+          <url>https://dl.bintray.com/devonfw/cobigen.p2/</url>
           <layout>p2</layout>
         </repository>
       </repositories>

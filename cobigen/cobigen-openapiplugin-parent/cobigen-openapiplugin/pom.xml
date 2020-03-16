@@ -43,13 +43,13 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.3.0</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.3.0</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
