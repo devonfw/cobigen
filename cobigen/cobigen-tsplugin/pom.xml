@@ -31,10 +31,9 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.4.0</version>
+      <version>[5.4.0,)</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
