@@ -32,7 +32,12 @@ stages:
 jobs:
   include:
     - stage: Build & Test
-      script: ./scripts/travis-build-test.sh
+      before_script:
+        - sh -e /etc/init.d/xvfb start
+        - metacity --sm-disable --replace 2> metacity.err &
+      script:
+        - export
+        - ./scripts/travis-build-test.sh
     - stage: Deploy
       script: ./scripts/travis-deploy.sh
     - stage: Documentation

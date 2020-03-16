@@ -36,10 +36,6 @@ fi
 if [ $TRAVIS_BRANCH == 'master' ]; then
   mvn clean install -U -Pp2-build-photon,p2-build-stable
 elif [ $TRAVIS_BRANCH == 'dev_eclipseplugin' ]; then
-  # start xvfb for eclipse UI tests
-  sh -e /etc/init.d/xvfb start
-  metacity --sm-disable --replace 2> metacity.err &
-  # end
   mvn clean package -U -Pp2-build-photon,p2-build-ci
 else
   mvn clean install -U
