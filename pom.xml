@@ -16,13 +16,12 @@
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
     <tycho.version>1.5.1</tycho.version>
-    <icsd.server.url>de-mucevolve02.corp.capgemini.com</icsd.server.url>
-    <icsd.webserver.url>http://${icsd.server.url}</icsd.webserver.url>
-    <p2.upload.url>ftp://${icsd.server.url}</p2.upload.url>
+    <bintray.url>https://dl.bintray.com/devonfw</bintray.url>
+    <!-- bintray.repository needs to be set by cmd and needs to be one of https://bintray.com/devonfw repositories -->
+    <bintray.repository.url>${bintray.url}/${bintray.repository}</bintray.repository.url>
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
     <p2.repository.upload.dir>${project.build.directory}${file.separator}repository-upload</p2.repository.upload.dir>
     <p2.repository.upload.dir.plugin>${p2.repository.upload.dir}/cobigen-${project.artifactId}</p2.repository.upload.dir.plugin>
-    <updatesite.path>files/cobigen/updatesite</updatesite.path>
     <attach.source.javadoc.build>true</attach.source.javadoc.build>
   </properties>
 
@@ -229,7 +228,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.1.1</version>
           <configuration>
-          <!-- needed to fix javadoc on java 11+-->
+            <!-- needed to fix javadoc on java 11+ -->
             <source>8</source>
             <quiet>true</quiet>
           </configuration>
@@ -360,235 +359,6 @@
           </plugin>
         </plugins>
       </build>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-          <id>ossrh</id>
-          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-      </distributionManagement>
-    </profile>
-    <profile>
-      <id>p2-upload-experimental</id>
-      <activation>
-        <property>
-          <name>p2.upload</name>
-          <value>experimental</value>
-        </property>
-        <file>
-          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
-          <exists>target/repository/artifacts.jar</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>mirror-files</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>mirror</goal>
-                </goals>
-                <configuration>
-                  <source>
-                    <repository>
-                      <url>file:///${p2.repository.build.dir.url}</url>
-                      <layout>p2</layout>
-                    </repository>
-                  </source>
-                  <destination>${p2.repository.upload.dir}</destination>
-                  <xzCompress>false</xzCompress>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>download-temporary-files</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>download</goal>
-                </goals>
-                <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/experimental/cobigen-${project.artifactId}</url>
-                  <includes>artifacts.jar,content.jar</includes>
-                  <toDir>${p2.repository.upload.dir}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>upload-snapshot</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${p2.repository.upload.dir}</fromDir>
-                  <includes>**</includes>
-                  <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/experimental/cobigen-${project.artifactId}</toDir>
-                  <serverId>iCSDFileServer</serverId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>p2-upload-ci</id>
-      <activation>
-        <property>
-          <name>p2.upload</name>
-          <value>ci</value>
-        </property>
-        <file>
-          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
-          <exists>target/repository/artifacts.jar</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>mirror-files</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>mirror</goal>
-                </goals>
-                <configuration>
-                  <source>
-                    <repository>
-                      <url>file:///${p2.repository.build.dir.url}</url>
-                      <layout>p2</layout>
-                    </repository>
-                  </source>
-                  <destination>${p2.repository.upload.dir}</destination>
-                  <xzCompress>false</xzCompress>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>download-temporary-files</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>download</goal>
-                </goals>
-                <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/ci/cobigen-${project.artifactId}</url>
-                  <includes>artifacts.jar,content.jar</includes>
-                  <toDir>${p2.repository.upload.dir}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>upload-snapshot</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${p2.repository.upload.dir}</fromDir>
-                  <includes>**</includes>
-                  <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/ci/cobigen-${project.artifactId}</toDir>
-                  <serverId>iCSDFileServer</serverId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>p2-upload-stable</id>
-      <activation>
-        <property>
-          <name>p2.upload</name>
-          <value>stable</value>
-        </property>
-        <file>
-          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
-          <exists>target/repository/artifacts.jar</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>mirror-files</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>mirror</goal>
-                </goals>
-                <configuration>
-                  <source>
-                    <repository>
-                      <url>file:///${p2.repository.build.dir.url}</url>
-                      <layout>p2</layout>
-                    </repository>
-                  </source>
-                  <destination>${p2.repository.upload.dir}</destination>
-                  <xzCompress>false</xzCompress>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>download-temporary-files</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>download</goal>
-                </goals>
-                <configuration>
-                  <url>${icsd.webserver.url}/${updatesite.path}/stable/cobigen-${project.artifactId}</url>
-                  <includes>artifacts.jar,content.jar</includes>
-                  <toDir>${p2.repository.upload.dir}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>upload-snapshot</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${p2.repository.upload.dir}</fromDir>
-                  <includes>**</includes>
-                  <url>${p2.upload.url}/</url>
-                  <toDir>${updatesite.path}/stable/cobigen-${project.artifactId}</toDir>
-                  <serverId>iCSDFileServer</serverId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <activation>
@@ -631,8 +401,7 @@
       <id>p2-upload-bintray</id>
       <activation>
         <property>
-          <name>p2.upload</name>
-          <value>bintray</value>
+          <name>bintray.repository</name>
         </property>
         <file>
           <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
@@ -676,7 +445,7 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>https://dl.bintray.com/devonfw/cobigen.p2</url>
+                  <url>${bintray.repository.url}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir.plugin}</toDir>
                   <serverId>bintray-repo</serverId>
@@ -692,7 +461,7 @@
                 <configuration>
                   <fromDir>${p2.repository.upload.dir.plugin}</fromDir>
                   <includes>*.jar</includes>
-                  <url>https://api.bintray.com/content/devonfw/cobigen.p2/cobigen-${project.artifactId}</url>
+                  <url>${bintray.repository.url}/cobigen-${project.artifactId}</url>
                   <serverId>bintray-repo</serverId>
                 </configuration>
               </execution>
@@ -707,7 +476,7 @@
                   <fromDir>${p2.repository.upload.dir.plugin}</fromDir>
                   <excludes>*.jar</excludes>
                   <!-- We need to duplicate /cobigen-${project.artifactId} as a workaround for bintray -->
-                  <url>https://api.bintray.com/content/devonfw/cobigen.p2/updatesite/cobigen-${project.artifactId}/cobigen-${project.artifactId}</url>
+                  <url>${bintray.repository.url}/updatesite/cobigen-${project.artifactId}/cobigen-${project.artifactId}</url>
                   <serverId>bintray-repo</serverId>
                 </configuration>
               </execution>
@@ -732,14 +501,14 @@
 
   <distributionManagement>
     <repository>
-      <id>devon.releases</id>
-      <name>Devon Nexus Releases</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus3/repository/releases/</url>
+      <id>sonartype.releases</id>
+      <name>Sonartype Releases</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
-      <id>devon.snapshots</id>
-      <name>Devon Nexus Snapshots</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus3/repository/snapshots/</url>
+      <id>sonartype.snapshots</id>
+      <name>Sonartype Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
