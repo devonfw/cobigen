@@ -103,7 +103,7 @@ public class CustomModelWriterTest {
 
     /**
      * Tests whether 'value=' is not written for annotation parameters, whereas value is the only parameter.
-     * See https://github.com/devonfw/tools-cobigen/issues/143
+     * See https://github.com/devonfw/cobigen/issues/143
      * @throws Exception
      *             test fails
      */
@@ -138,7 +138,7 @@ public class CustomModelWriterTest {
      * Tests the output of the CustomModelWriter with respect to the syntax of the array notation for
      * annotation parameter values with Annotation[].
      *
-     * See https://github.com/devonfw/tools-cobigen/issues/290
+     * See https://github.com/devonfw/cobigen/issues/290
      * @throws Exception
      *             test fails
      */
@@ -158,7 +158,7 @@ public class CustomModelWriterTest {
      * Tests the output of the CustomModelWriter with respect to the syntax of the array notation for
      * annotation parameter values with only one Annotation.
      *
-     * See https://github.com/devonfw/tools-cobigen/issues/290
+     * See https://github.com/devonfw/cobigen/issues/290
      * @throws Exception
      *             test fails
      */
@@ -178,7 +178,7 @@ public class CustomModelWriterTest {
      * Tests the output of the CustomModelWriter regarding the full qualified names of the nested annotations
      * used in it.
      *
-     * See https://github.com/devonfw/tools-cobigen/issues/291
+     * See https://github.com/devonfw/cobigen/issues/291
      * @throws Exception
      *             test fails
      */
@@ -196,7 +196,7 @@ public class CustomModelWriterTest {
     /**
      * Tests the output of the CustomModelWriter regarding an own Annotation containing two Strings.
      *
-     * See https://github.com/devonfw/tools-cobigen/issues/290
+     * See https://github.com/devonfw/cobigen/issues/290
      * @throws Exception
      *             test fails
      */

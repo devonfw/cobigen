@@ -449,7 +449,7 @@ public class TemplatesConfigurationReader {
             if (scanSourcePath != null) {
                 // The relative template path has to be specifically parsed to string and back to a path so
                 // the templateFile and scanSourcePath are using the same file system. More info can be found
-                // at https://github.com/devonfw/tools-cobigen/issues/715
+                // at https://github.com/devonfw/cobigen/issues/715
                 String templateFilePath = templateFile.getRootRelativePath().toString();
                 Path destinationPath = Paths.get(scanSourcePath).relativize(Paths.get(templateFilePath));
                 unresolvedDestinationPath =

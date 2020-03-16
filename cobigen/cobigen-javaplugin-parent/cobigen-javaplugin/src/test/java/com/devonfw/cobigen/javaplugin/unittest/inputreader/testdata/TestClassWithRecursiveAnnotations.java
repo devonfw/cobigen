@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 @JsonSubTypes({ @JsonSubTypes.Type(value = TestInterface1.class, name = "dog"),
     @JsonSubTypes.Type(value = TestInterface1.class, name = "cat") })
