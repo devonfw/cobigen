@@ -5,8 +5,14 @@ jdk:
 cache:
   directories:
     - "$HOME/.m2/repository"
+install: true
+addons:
+  apt:
+    packages:
+      - metacity
 env:
   global:
+    - DISPLAY=:99.0
     - ORG="devonfw"
     - EMAIL="icsddevonfwsupport.apps2@capgemini.com"
     - REPO_SOURCE="cobigen"
