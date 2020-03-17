@@ -13,10 +13,10 @@ if [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_BRANCH" != "gh-pages" ] && [ "
   if [ "$TRAVIS_BRANCH" != "dev_core" ] && [ "$TRAVIS_BRANCH" != "dev_mavenplugin" ]; then
     CWD=$(pwd)
 
-    if [ "$TRAVIS_BRANCH" != "dev_javaplugin" ]; then
+    if [ "$TRAVIS_BRANCH" == "dev_javaplugin" ]; then
       cd cobigen-javaplugin
     fi
-    if [ "$TRAVIS_BRANCH" != "dev_openapiplugin" ]; then
+    if [ "$TRAVIS_BRANCH" == "dev_openapiplugin" ]; then
       cd cobigen-openapiplugin
     fi
     
