@@ -40,6 +40,15 @@ public class AbstractMavenTest {
     protected File mvnSettingsFile;
 
     /**
+     * Set maven.home system property to enable maven invoker execution
+     */
+    @Before
+    public void setMavenHome() {
+
+        System.setProperty("maven.home", System.getenv().get("MAVEN_HOME"));
+    }
+
+    /**
      * Copy settings file to get a file handle required by maven invoker API
      * @throws IOException
      *             if the file could not be read/written
