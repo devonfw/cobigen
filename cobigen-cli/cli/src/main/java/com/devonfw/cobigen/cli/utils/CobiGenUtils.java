@@ -94,21 +94,25 @@ public class CobiGenUtils {
      */
     private boolean templateDependencyIsGiven = false;
 
+    public Path getCobigenCliRootPath() {
+        Path rootCLIPath = null;
+        try {
+            File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            rootCLIPath = locationCLI.getParentFile().toPath();
+        } catch (URISyntaxException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        return rootCLIPath;
+    }
+
     /**
      * @return File of Cobigen templates folder
      */
     public File getCobigenTemplatesFolderFile() {
         String pathForCobigenTemplates = "";
 
-        // retrieves the root path of the cli
-        try {
-            File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            Path rootCLIPath = locationCLI.getParentFile().toPath();
-            pathForCobigenTemplates = rootCLIPath.toString();
-        } catch (URISyntaxException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+        pathForCobigenTemplates = getCobigenCliRootPath().toString();
 
         // initializes filesystem and sets cobigenTemplatesFolderPath
         FileSystem fileSystem = FileSystems.getDefault();

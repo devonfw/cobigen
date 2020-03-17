@@ -74,4 +74,9 @@ public class MessagesConstants {
      */
     public static final String ADAPT_TEMPLATES_DESCRIPTION = "Generates a new templates folder next to the cobigen cli";
 
+    /**
+     * Message constant: description of the custom-location option
+     */
+    public static final String CUSTOM_LOCATION_OPTION_DESCRIPTION =
+        "Custom location where the unpacked templates will be stored.";
 }
