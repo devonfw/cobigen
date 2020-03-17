@@ -5,6 +5,10 @@ toc::[]
 
 Our new command line interface (CLI) for CobiGen enables the generation of code using few commands. This feature allows us to decouple CobiGen from Eclipse.
 
+== Install CobiGen CLI
+
+In order to install the CobiGen CLI you will need to use the https://github.com/devonfw/ide[devonfw/ide]. In a console run `devon cobigen`.
+
 == Commands and options
 Using the following command and option you will be able to customize your generation as follows:
 
@@ -24,6 +28,7 @@ Using the following command and option you will be able to customize your genera
 
 • `< --help, -h >` : Prints man page.
 
+• `< update, u>` : This command compare the artificial pom plug-ins version with central latest version available and user can update any  outdated plug-ins version .
 
 == CLI Execution steps:
 CobiGen CLI is installed inside your devonfw distribution. In order to execute it follow the next steps:
@@ -49,9 +54,18 @@ image::images/selectedIncr.PNG[Generation path, link="images/selectedIncr.PNG"]
 
 * `cg g foo\bar\webServices.yml -i 1,4,6`: Directly generates increments with IDs `1`, `4` and `6`. CobiGen will not request you any other input.
 
+== CLI update command
+Example of Update Command :
+
+image::images/updateCommand.PNG[Generation path, link="images/updateCommand.PNG"]
+
+Select the plug-ins which you want to update like below :
+
+image::images/updatePlugin.PNG[Generation path, link="images/updatePlugin.PNG"]
+
 == Troubleshooting
 
 When generating code from a Java file, CobiGen makes use of Java reflection for generating templates. In order to do that, the CLI needs to find the compiled source code of your project.
 
-If you find an error like `Compiled class foo\bar\EmployeeEntity.java has not been found`, it means you need to run `mvn clean install` so that a new `target` folder gets created with the needed compiled sources.
+If you find an error like `Compiled class foo\bar\EmployeeEntity.java has not been found`, it means you need to run `mvn clean install` on the input project so that a new `target` folder gets created with the needed compiled sources.
 

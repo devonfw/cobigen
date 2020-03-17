@@ -16,7 +16,7 @@ For maven integration of CobiGen you can include the following build plugin into
       <executions>
         <execution>
           <id>cobigen-generate</id>
-          <phase>site</phase>
+          <phase>generate-resources</phase>
           <goals>
             <goal>generate</goal>
           </goals>
@@ -29,7 +29,7 @@ For maven integration of CobiGen you can include the following build plugin into
 
 **Available goals**
 
-* `generate`: Generates contents configured by the standard non-compiled configuration folder. Thus generation can be controlled/configured due to an location URI of the configuration and tempalte or increment ids to be generated for a set of inputs.
+* `generate`: Generates contents configured by the standard non-compiled configuration folder. Thus generation can be controlled/configured due to an location URI of the configuration and template or increment ids to be generated for a set of inputs.
 
 **Available phases** are all phases, which already provide compiled sources such that CobiGen can perform reflection on it. Thus possible phases are for example package, site.
 
@@ -86,7 +86,7 @@ Using the following configuration you will be able to customize your generation 
 * `<inputFile>` declares a file to be used as input. The CobiGen maven plug-in will try to parse this file to get an appropriate input to be interpreted by any CobiGen plug-in.
 * `<increment>` specifies an link:cobigen-core_configuration#increment-node[increment] ID to be generated. You can specify one single increment with content `ALL` to generate all increments matching the input(s).
 * `<template>` specifies a link:cobigen-core_configuration#increment-node[template] ID to be generated. You can specify one single template with content `ALL` to generate all templates matching the input(s).
-* `<forceOverride>` specifies an overriding behavior, which enables non-mergable resources to be completely rewritten by generated contents. For mergable resources this flag indicates, that conflicting fragments during merge will be replaced by generated content. _Default: false_ 
+* `<forceOverride>` specifies an overriding behavior, which enables non-mergeable resources to be completely rewritten by generated contents. For mergeable resources this flag indicates, that conflicting fragments during merge will be replaced by generated content. _Default: false_ 
 * `<failOnNothingGenerated>` specifies whether the build should fail if the execution does not generate anything.
 
 .Example for a simple build configuration

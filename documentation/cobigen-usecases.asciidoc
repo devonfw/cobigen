@@ -92,7 +92,7 @@ Finally, the builder API provides different methods to create new objects.
 
 ==== Custom Builder for Business Needs
 
-CobiGen just generates basic builder for any POJO. However, for project needs you probably would like to have even more complex builders, which enable the easy generation of more complex test data which are encoded in a large object hierarchy. Therefore, the generated builders can just be seen as a tool to achieve this. You can define your own business driven builders in the same way as the generated builders, but explicitely focusing on your business needs. Just take this example as a demonstration of that idea:
+CobiGen just generates basic builder for any POJO. However, for project needs you probably would like to have even more complex builders, which enable the easy generation of more complex test data which are encoded in a large object hierarchy. Therefore, the generated builders can just be seen as a tool to achieve this. You can define your own business driven builders in the same way as the generated builders, but explicitly focusing on your business needs. Just take this example as a demonstration of that idea:
 
 ```java
   University uni = new ComplexUniversityBuilder()
@@ -109,7 +109,7 @@ E.g. the method `withExternalStudent()` might create a person, which is a studen
 
 ===  CRUD server application
 
-Generates a CRUD application with persistence entites as inputs. This includes DAOs, TOs, use cases, as well as a CRUD JSF user interface if needed.
+Generates a CRUD application with persistence entities as inputs. This includes DAOs, TOs, use cases, as well as a CRUD JSF user interface if needed.
 
 ===  Testdata Builder
 

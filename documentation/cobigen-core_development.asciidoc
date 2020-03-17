@@ -11,12 +11,12 @@ CobiGen uses Apache FreeMarker as engine for generation through FreeMarker templ
 ================
 * To know more about development using Apache FreeMarker, please refer to http://freemarker.org/docs/pgui.html[official documentation].
 * To know more about FreeMarker template development, please refer to the http://freemarker.org/docs/dgui.html[official template development documentation] and the guide of this wiki for each plugin:
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-javaplugin[Java Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-xmlplugin[Xml Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-propertyplugin[Property Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger[Text Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-jsonplugin[JSON Plugin]
-. https://github.com/devonfw/tools-cobigen/wiki/cobigen-templates_helpful-links[Helpful Links]
+. https://github.com/devonfw/cobigen/wiki/cobigen-javaplugin[Java Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-xmlplugin[Xml Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-propertyplugin[Property Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-textmerger[Text Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-jsonplugin[JSON Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-templates_helpful-links[Helpful Links]
 ================
 
 The core implementation are divided in three projects:
@@ -46,11 +46,11 @@ The core must load all the sub plugins to get their Merger, Matcher, TriggerInte
 
 image:images/howtos/cobigen-core/core_01.png[Diagram 1,width="450",link="images/howtos/cobigen-core/core_01.png"]
 
-Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an InputReader (advanced information https://github.com/devonfw/tools-cobigen/wiki/new_plugin[here])
+Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an InputReader (advanced information https://github.com/devonfw/cobigen/wiki/new_plugin[here])
 
 === LoadPlugin
 
-The process of loading plugins to the core is done at the https://github.com/devonfw/tools-cobigen/wiki/eclipse-plugin_development#1-1-activator-java[eclipse-plugin initialization].
+The process of loading plugins to the core is done at the https://github.com/devonfw/cobigen/wiki/eclipse-plugin_development#1-1-activator-java[eclipse-plugin initialization].
 
 Each sub plugin has an activator class that extends the *__GeneratorPluginActivator__* interface from the *extension* package. That class implements the methods `bindMerger()` and `bindTriggerInterpreter()`.
 
@@ -64,7 +64,7 @@ The trigger interpreter has the correspondent input reader of the plugin.
 
 [NOTE]
 ======================
-https://github.com/devonfw/tools-cobigen/wiki/new_plugin#3-adding-inputreader[How to add a new input reader]
+https://github.com/devonfw/cobigen/wiki/new_plugin#3-adding-inputreader[How to add a new input reader]
 ======================
 
 == CobiGen Initialization
@@ -88,10 +88,10 @@ The *__ContextConfiguration__* creates a new ContextConfiguration from the *conf
 
 [NOTE]
 =========
-How the ContextConfiguration works explained deeply https://github.com/devonfw/tools-cobigen/wiki/Core-Development#4-1-contextconfiguration[here].
+How the ContextConfiguration works explained deeply https://github.com/devonfw/cobigen/wiki/Core-Development#4-1-contextconfiguration[here].
 =========
 
-The Configuration initialization requires the version of Freemarker to be used and at the ObjectWrapper initialization aswell.
+The Configuration initialization requires the version of Freemarker to be used and at the ObjectWrapper initialization as well.
 The *__DefaultObjectWrapperBuilder__* creates an *__DefaultObjectWrapper__* object that maps Java objects to the type-system of FreeMarker Template Language (FTL) with the given `incompatibleImprovements` specified by the version used as argument.
 
 The configuration of Freemarker requires to specify to a __TemplateLoader__. A __TemplateLoader__ is an interface provided by Freemarker library that the developer should implement to fit the needs. The __TemplateLoader__ implementation at CobiGen is the class *__NioFileSystemTemplateLoader.java__* from the *config.nio* package.
@@ -104,19 +104,19 @@ The context configuration reads the `context.xml` file from the template project
 
 [NOTE]
 ==========
-Please, check the https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration[CobiGen configuration] for extended information about the `context.xml` and `templates.xml` configuration.
+Please, check the https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration[CobiGen configuration] for extended information about the `context.xml` and `templates.xml` configuration.
 ==========
 
 That reader uses the JAXB, JAXB (Java Architecture for XML Binding) provides a fast and convenient way to bind XML schemas and Java representations, making it easy for Java developers to incorporate XML data and processing functions in Java applications. As part of this process, JAXB provides methods for unmarshalling (reading) XML instance documents into Java content trees.
 
 ==== JAXB
 
-JAXB auto generates the Java object within the JAXBContext especified at the `xmlns` attribute of the `contextConfiguration` field from the `context.xml` file
+JAXB auto generates the Java object within the JAXBContext specified at the `xmlns` attribute of the `contextConfiguration` field from the `context.xml` file
 
 [source,java]
-Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+Unmarshaller unmarshaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
-That autogeneration follows the `contextConfiguration.xsd` schema. Each Java object follows the template specified with the field `<xs:CompleType>` from the schema file.
+That auto-generation follows the `contextConfiguration.xsd` schema. Each Java object follows the template specified with the field `<xs:CompleType>` from the schema file.
 
 [source,xml]
 <xs:complexType name="trigger">
@@ -169,7 +169,7 @@ public class Trigger {
 
 This process it is done when calling the `unmarshal()` method.
 [source,java]
-Object rootNode = unmarschaller.unmarshal(Files.newInputStream(contextFile));
+Object rootNode = unmarshaller.unmarshal(Files.newInputStream(contextFile));
 
 [NOTE]
 ===========
@@ -240,8 +240,8 @@ try (
                                                               + "/contextConfiguration.xsd");
     InputStream configInputStream = Files.newInputStream(contextFile)) {
     Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
-    unmarschaller.setSchema(schema);
-    rootNode = unmarschaller.unmarshal(configInputStream);
+    unmarshaller.setSchema(schema);
+    rootNode = unmarshaller.unmarshal(configInputStream);
     contextNode = (ContextConfiguration) rootNode;
 }
 
@@ -287,7 +287,7 @@ As the model has been created at the *CobiGenWrapper*, there is no need to creat
 . Get the destination file.
 . Check if the destination file already exists +
 If it exists, but the forceOverride is set to `true` or the merge strategy of the template is null, the file will be overwritten, not merged. Otherwise, first generate output into a writter object, get the merger and merge the original file with the writter and write the file with the merge result.
-. If the file does not exists, simple write the file.
+. If the file does not exist, simple write the file.
 
 === Single Container Input or multiple files selection
 
