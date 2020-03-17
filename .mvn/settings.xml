@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings>
+  <servers>
+    <server>
+      <id>sonartype.releases</id>
+      <username>${env.SONATYPE_USERNAME}</username>
+      <password>${env.SONATYPE_PASSWORD}</password>
+    </server>
+    <server>
+      <id>sonartype.snapshots</id>
+      <username>${env.SONATYPE_USERNAME}</username>
+      <password>${env.SONATYPE_PASSWORD}</password>
+    </server>
+  </servers>
+</settings>

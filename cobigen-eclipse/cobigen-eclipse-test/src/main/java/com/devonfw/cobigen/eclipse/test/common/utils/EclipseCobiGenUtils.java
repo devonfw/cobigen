@@ -12,6 +12,7 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.eclipse.swtbot.swt.finder.widgets.TimeoutException;
 import org.slf4j.Logger;
@@ -82,12 +83,15 @@ public class EclipseCobiGenUtils {
         bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.HealthCheckDialogs.DIALOG_TITLE), DEFAULT_TIMEOUT);
 
         takeScreenshot(bot, "healthCheck");
-        bot.activeShell().bot().button(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE).click();
+        SWTBotShell healthCheckDialog = bot.shell(CobiGenDialogConstants.HealthCheckDialogs.DIALOG_TITLE);
+        healthCheckDialog.bot().button(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE).click();
         bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE),
             DEFAULT_TIMEOUT);
         takeScreenshot(bot, "advancedHealthCheck");
-        bot.activeShell().bot().button("OK");
-        bot.activeShell().bot().button("OK");
+        SWTBotShell advancedHealthCheckDialog =
+            bot.shell(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE);
+        advancedHealthCheckDialog.bot().button("OK");
+        advancedHealthCheckDialog.bot().button("OK");
     }
 
     /**

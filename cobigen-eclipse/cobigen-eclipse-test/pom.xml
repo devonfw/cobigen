@@ -5,7 +5,7 @@
   <artifactId>com.devonfw.cobigen.eclipse.test</artifactId>
   <name>CobiGen - Eclipse Plug-In Tests</name>
   <packaging>eclipse-test-plugin</packaging>
-  <version>4.4.1</version>
+  <version>5.1.0</version>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
@@ -82,7 +82,7 @@
               <requirement>
                 <type>p2-installable-unit</type>
                 <id>org.eclipse.m2e.feature.feature.group</id>
-                <versionRange>[1.6.0,1.7.0)</versionRange>
+                <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
@@ -171,30 +171,20 @@
       <layout>p2</layout>
     </repository>
     <repository>
-      <id>neon</id>
+      <id>photon</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/neon</url>
+      <url>http://download.eclipse.org/releases/photon</url>
     </repository>
   </repositories>
 
   <profiles>
     <!-- see http://download.eclipse.org/tools/orbit/downloads/ for upgrades -->
     <profile>
-      <id>p2-build-mars</id>
+      <id>p2-build-photon</id>
       <repositories>
         <repository>
-          <id>eclipse-mars-sr2-test</id>
-          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-    <profile>
-      <id>p2-build-neon</id>
-      <repositories>
-        <repository>
-          <id>eclipse-neon-sr2-test</id>
-          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/</url>
+          <id>eclipse-photon-sr2-test</id>
+          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository/</url>
           <layout>p2</layout>
         </repository>
       </repositories>
@@ -204,7 +194,7 @@
       <repositories>
         <repository>
           <id>cobigen-plugins-ci</id>
-          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/ci/</url>
+          <url>https://dl.bintray.com/devonfw/cobigen.p2.ci/</url>
           <layout>p2</layout>
         </repository>
       </repositories>
@@ -213,8 +203,8 @@
       <id>p2-build-experimental</id>
       <repositories>
         <repository>
-          <id>cobigen-plugins-ci</id>
-          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/experimental/</url>
+          <id>cobigen-plugins-experimental</id>
+          <url>https://dl.bintray.com/devonfw/cobigen.p2.experimental/</url>
           <layout>p2</layout>
         </repository>
       </repositories>
@@ -224,7 +214,7 @@
       <repositories>
         <repository>
           <id>cobigen-plugins-stable</id>
-          <url>http://de-mucevolve02.corp.capgemini.com/files/cobigen/updatesite/stable/</url>
+          <url>https://dl.bintray.com/devonfw/cobigen.p2/</url>
           <layout>p2</layout>
         </repository>
       </repositories>

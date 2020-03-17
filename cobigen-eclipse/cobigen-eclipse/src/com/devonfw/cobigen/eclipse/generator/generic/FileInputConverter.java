@@ -52,21 +52,63 @@ public class FileInputConverter {
                     charset = Charset.forName("UTF-8");
                 }
                 Path inputFilePath = Paths.get(inputFile.getLocationURI());
-                String readerType;
+                String readerType = "";
 
-                if (cobigen.isMostLikelyReadable("xml", inputFilePath)) {
-                    readerType = "xml";
-                    readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
-                    continue;
+                try {
+                    if (cobigen.isMostLikelyReadable("xml", inputFilePath)) {
+                        readerType = "xml";
+                        readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
+                        continue;
+                    }
+                } catch (InputReaderException e) {
+                    LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
+                        readerType, e);
+                    // try next
+                } catch (PluginNotAvailableException e) {
+                    LOG.trace(e.getMessage(), e);
                 }
 
-                else if (cobigen.isMostLikelyReadable("openapi", inputFilePath)) {
-                    readerType = "openapi";
-                    readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
-                    continue;
+                try {
+                    if (cobigen.isMostLikelyReadable("typescript", inputFilePath)) {
+                        readerType = "typescript";
+                        readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
+                        continue;
+                    }
+                } catch (InputReaderException e) {
+                    LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
+                        readerType, e);
+                    // try next
+                } catch (PluginNotAvailableException e) {
+                    LOG.trace(e.getMessage(), e);
+                }
+
+                try {
+                    if (cobigen.isMostLikelyReadable("openapi", inputFilePath)) {
+                        readerType = "openapi";
+                        readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
+                        continue;
+                    }
+                } catch (InputReaderException e) {
+                    LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
+                        readerType, e);
+                    // try next
+                } catch (PluginNotAvailableException e) {
+                    LOG.trace(e.getMessage(), e);
                 }
 
                 readerType = "xml";
+                try {
+                    readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
+                    continue;
+                } catch (InputReaderException e) {
+                    LOG.trace("Could not read file {} with input reader of type '{}'", inputFile.getLocationURI(),
+                        readerType, e);
+                    // try next
+                } catch (PluginNotAvailableException e) {
+                    LOG.trace(e.getMessage(), e);
+                }
+
+                readerType = "typescript";
                 try {
                     readAndAddInput(cobigen, convertedInputs, inputType, readerType, inputFilePath, charset);
                     continue;

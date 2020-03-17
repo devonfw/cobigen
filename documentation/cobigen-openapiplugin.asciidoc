@@ -164,8 +164,8 @@ The Cobigen OpenApi Plug-in implements an input reader for OpenApi 3.0 files. Th
 ** *type* ('String' :: type of the property)
 ** *format* ('String' :: format of the property (i.e. int64))
 ** *isCollection* ('boolean' :: *true* if the property is a collection, false by default)
-** *isEntity* ('boolean' :: *true* if the property referes to another entity, false by default)
-** *sameComponent* ('boolean' :: *true* if the entity that the property refers to belonmgs to the same component, false by default)
+** *isEntity* ('boolean' :: *true* if the property refers to another entity, false by default)
+** *sameComponent* ('boolean' :: *true* if the entity that the property refers to belongs to the same component, false by default)
 ** *description* ('String' :: Description of the property)
 ** *required* ('boolean' :: *true* if the property is set as required)
 ** *constraints* ('Map<String, Object>')
@@ -188,7 +188,7 @@ The Cobigen OpenApi Plug-in implements an input reader for OpenApi 3.0 files. Th
 ** *operationId* ('String' :: name of the operation prototype)
 ** *description* ('String' :: JavaDoc Description of the operation)
 ** *summary* ('List<PropertyDef>' :: JavaDoc operation Summary)
-** *tags* ('List<String>' :: List of diferent tags)
+** *tags* ('List<String>' :: List of different tags)
 ** *responses* ('List<ResponseDef>' :: Responses of the operation)
 
 * *ParameterDef* ('Map<String, Object>' :: common element structure)
@@ -215,7 +215,7 @@ The Cobigen OpenApi Plug-in implements an input reader for OpenApi 3.0 files. Th
 == Merger extensions
 
 This plugin only provides an input reader, there is no support for OpenApi merging. Nevertheless, the files generated from an OpenApi file will be Java, XML, JSON, TS, etc... so, 
-for each file to be generated defined at templates.xml, must set the mergeStartegy for the specific language (javamerge, javamerge_override, jsonmerge, etc...)
+for each file to be generated defined at templates.xml, must set the mergeStrategy for the specific language (javamerge, javamerge_override, jsonmerge, etc...)
 
 [source,xml]
 <templates>
@@ -238,7 +238,7 @@ The Swagger file must be at the core folder of your devon4j project, like shown 
 
 image:images/howtos/openapi-gen/openapi_howto1.png[Swagger at devon4j Project, width="450",link="images/howtos/openapi-gen/openapi_howto1.png"]
 
-To be compatible with CobiGen and devon4j, it must follow some specific configurations. This configurations allows us to avoid redundant definitions as SearchCriterias and PaginatedList objects are used at the services definitions.
+To be compatible with CobiGen and devon4j, it must follow some specific configurations. This configurations allows us to avoid redundant definitions as SearchCriteria and PaginatedList objects are used at the services definitions.
 
 [[paths]]
 === Paths
@@ -281,7 +281,7 @@ components:
     schemas:
         Shop:
           x-component: shopmanagement
-          description: Entity definiton of Shop
+          description: Entity definition of Shop
           type: object
           properties:
             shopExample:
@@ -293,7 +293,7 @@ components:
 
 We could not generate services without the definition of those components. 
 
-In our current version, we have overcomed it, so that now we are able to generate all the services independently. You just need to add an `x-component` tag with the name of the component that will make use of that service. See <<paths, here>>.
+In our current version, we have overcome it, so that now we are able to generate all the services independently. You just need to add an `x-component` tag with the name of the component that will make use of that service. See <<paths, here>>.
 
 An small OpenAPI example defining only services can be found below:
 
@@ -428,7 +428,7 @@ components:
     schemas:
         Shop:
           x-component: shopmanagement
-          description: Entity definiton of Shop
+          description: Entity definition of Shop
           type: object
           properties:
             shopExample:
@@ -442,7 +442,7 @@ components:
                 $ref: '#/components/schemas/Sale'
         Sale:
           x-component: salemanagement
-          description: Entity definiton of Shop
+          description: Entity definition of Shop
           type: object
           properties:
             saleExample:

@@ -2,7 +2,7 @@
 
 = CobiGen (Code-based incremental Generator)
 
-image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield"]
+wiki clone job: image:https://api.travis-ci.com/devonfw/cobigen.svg?branch=master[link="https://travis-ci.com/devonfw/cobigen"] 
 
 |===
 | Component | Release
@@ -25,20 +25,20 @@ image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobi
 
 == Usage
 
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage[OpenAPI Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/howto_ionic-client-generation[Ionic/Cordova Client Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/howto_angular-client-generation[Angular Client Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-maven_configuration[Usage in Maven Builds]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration[Configuration of the Templates]
+* https://github.com/devonfw/cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
+* https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage[OpenAPI Generation]
+* https://github.com/devonfw/cobigen/wiki/howto_ionic-client-generation[Ionic/Cordova Client Generation]
+* https://github.com/devonfw/cobigen/wiki/howto_angular-client-generation[Angular Client Generation]
+* https://github.com/devonfw/cobigen/wiki/cobigen-maven_configuration[Usage in Maven Builds]
+* https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration[Configuration of the Templates]
 
 ==  Installation
 
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_installation[For eclipse users]
+* https://github.com/devonfw/cobigen/wiki/cobigen-eclipse_installation[For eclipse users]
 
 ==  Architecture
 
-https://github.com/devonfw/tools-cobigen/wiki#architecture[CobiGen is build as an extensible framework for incremental code generation...]
+https://github.com/devonfw/cobigen/wiki#architecture[CobiGen is build as an extensible framework for incremental code generation...]
 
 == Repository Organization
 
@@ -66,7 +66,7 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 
 You can build CobiGen core as well as each plug-in besides the eclipse plug-in separately by stepping into the plug-in folder, e.g. for the Java plug-in you could step into `cobigen/cobigen-javaplugin` and run `mvn clean install` to build the plug-in and deploy it into your local repository.
 
-The CobiGen eclipse plug-in can build build by running `mvn clean package -Pp2-build-mars`. The profile `p2-build-mars` builds the eclipse plug-in by retrieving eclipse mars bundles as dependencies. Without specifying the profile, the build will fail. An exception to this is the cobigen-eclipse-test project, which has to be built using `mvn clean package -Pp2-build-mars,p2-build-stable,p2-build-experimental`.
+The CobiGen eclipse plug-in can build build by running `mvn clean package -Pp2-build-photon`. The profile `p2-build-photon` builds the eclipse plug-in by retrieving eclipse photon bundles as dependencies. Without specifying the profile, the build will fail. An exception to this is the cobigen-eclipse-test project, which has to be built using `mvn clean package -Pp2-build-photon,p2-build-stable,p2-build-experimental`.
 
 == Deploy
 
@@ -81,12 +81,12 @@ CobiGen deployment has to be distinguished threefold
 |  `cobigen/cobigen-*/` (except core). In case of deploying dev_javaplugin or dev_openapiplugin, go to `cobigen/cobigen-*-parent/cobigen-*`| ECLIPSE | ```# Builds the Manifest and bundles the dependencies
 mvn clean package bundle:bundle -Pp2-bundle
 # Uses the created bundle and builds a p2 update site for it. Do NOT use clean
-mvn install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-experimental p2:site
+mvn install bundle:bundle -Pp2-bundle,p2-build-photon,p2-build-experimental p2:site
 # Uploades the p2 update site to the experimental repository. Do NOT use clean
-mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
+mvn deploy -Pp2-build-photon,p2-build-experimental -Dp2.upload=experimental
 ```
 
-| `cobigen-eclipse/` | ECLIPSE | `mvn clean deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental`
+| `cobigen-eclipse/` | ECLIPSE | `mvn clean deploy -Pp2-build-photon,p2-build-experimental -Dp2.upload=experimental`
 |===
 
 == Debugging with Maven
@@ -104,7 +104,7 @@ To debug Maven tests follow https://doc.nuxeo.com/corg/how-to-debug-a-test-run-w
 
 == Contribute
 
-https://github.com/devonfw/tools-cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
+https://github.com/devonfw/cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
 
 ## License
-image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=large[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_large"]
+image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Fcobigen.svg?type=large[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Fcobigen?ref=badge_large"]

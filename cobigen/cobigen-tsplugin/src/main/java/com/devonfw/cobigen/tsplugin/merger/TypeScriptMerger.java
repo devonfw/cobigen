@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
-import com.devonfw.cobigen.api.to.FileTo;
+import com.devonfw.cobigen.api.to.InputFileTo;
 import com.devonfw.cobigen.api.to.MergeTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
@@ -35,8 +35,8 @@ public class TypeScriptMerger implements Merger {
      * Instance that handles all the operations performed to the external server, like initializing the
      * connection and sending new requests
      */
-    private ExternalProcessHandler request = ExternalProcessHandler
-        .getExternalProcessHandler(ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
+    private ExternalProcessHandler request = ExternalProcessHandler.getExternalProcessHandler(this.getClass(),
+        ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
 
     /**
      * Exception handler related to connectivity to the server
@@ -51,6 +51,12 @@ public class TypeScriptMerger implements Merger {
 
     /** The conflict resolving mode */
     private boolean patchOverrides;
+
+    /** Charset that will be used when sending strings to the server */
+    private String charset = "UTF-8";
+
+    /** Used for not checking multiple times whether the server is deployed or not */
+    private Boolean serverIsNotDeployed = true;
 
     /**
      * Creates a new {@link TypeScriptMerger}
@@ -68,12 +74,33 @@ public class TypeScriptMerger implements Merger {
             // We first check if the server is already running
             request.startConnection();
             if (request.isNotConnected()) {
-                startServerConnection();
+                if (startServerConnection()) {
+                    // Server is deployed
+                    serverIsNotDeployed = false;
+                }
+            } else {
+                // Server is deployed
+                serverIsNotDeployed = false;
             }
         } catch (IOException e) {
             // If it is not currently running, we need to execute it
             LOG.info("Server is not currently running. Let's initialize it");
-            startServerConnection();
+            if (startServerConnection()) {
+                // Server is deployed
+                serverIsNotDeployed = false;
+            }
+        }
+    }
+
+    /**
+     * Deploys the server and tries to initialize a new connection between CobiGen and the server
+     * @return true only if the server was executed and deployed successfully
+     */
+    private Boolean startServerConnection() {
+        if (request.startServer()) {
+            return request.initializeConnection();
+        } else {
+            return false;
         }
     }
 
@@ -85,8 +112,11 @@ public class TypeScriptMerger implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String baseFileContents;
-        if (request.isNotConnected()) {
-            startServerConnection();
+        if (serverIsNotDeployed) {
+            LOG.error("We have not been able to send requests to the external server. "
+                + "Most probably there is an error on the executable file. "
+                + "Try to manually remove folder .cobigen/externalservers found at your user root folder");
+            return null;
         }
         try {
             baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
@@ -96,7 +126,7 @@ public class TypeScriptMerger implements Merger {
 
         MergeTo mergeTo = new MergeTo(baseFileContents, patch, patchOverrides);
 
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/merge");
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "merge");
 
         StringBuffer importsAndExports = new StringBuffer();
         StringBuffer body = new StringBuffer();
@@ -125,18 +155,10 @@ public class TypeScriptMerger implements Merger {
             }
         } else {
             throw new MergeException(base, "Execution of the TypeScript merger raised an internal error."
-                + " Check your file syntax and if error occurs again, please report it on tools-cobigen GitHub.");
+                + " Check your file syntax and if error occurs again, please report it on cobigen GitHub.");
         }
         // Merge was not successful
         return baseFileContents;
-    }
-
-    /**
-     * Deploys the server and tries to initialize a new connection between CobiGen and the server
-     */
-    private void startServerConnection() {
-        request.executingExe(Constants.EXE_NAME, this.getClass());
-        request.initializeConnection();
     }
 
     /**
@@ -151,8 +173,8 @@ public class TypeScriptMerger implements Merger {
      */
     private String runBeautifierExcludingImports(String importsAndExports, String body, String targetCharset) {
 
-        FileTo fileTo = new FileTo(body);
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "tsplugin/beautify");
+        InputFileTo fileTo = new InputFileTo("", body, charset);
+        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "beautify");
 
         StringBuffer bodyBuffer = new StringBuffer();
 
