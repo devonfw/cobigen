@@ -53,8 +53,8 @@ public class AbstractMavenTest {
     }
 
     /**
-     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
-     * local repository of the executing maven process is used.
+     * Runs the maven invoker with goal package. Makes sure, that the local repository of the executing maven
+     * process is used.
      * @param testProject
      *            the test project to build
      * @param localRepoPath
@@ -81,6 +81,26 @@ public class AbstractMavenTest {
      *             if anything fails
      */
     protected File runMavenInvoker(File testProject, File templatesProject, String localRepoPath) throws Exception {
+        return runMavenInvoker(testProject, templatesProject, localRepoPath, false);
+    }
+
+    /**
+     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
+     * local repository of the executing maven process is used.
+     * @param testProject
+     *            the test project to build
+     * @param templatesProject
+     *            the templates project to be used for generation. May be {@code null}
+     * @param localRepoPath
+     *            local repository path of the current execution
+     * @param debug
+     *            enable debug logging
+     * @return the temporary copy of the test project, the build was executed in
+     * @throws Exception
+     *             if anything fails
+     */
+    protected File runMavenInvoker(File testProject, File templatesProject, String localRepoPath, boolean debug)
+        throws Exception {
         assertThat(testProject).exists();
 
         File testProjectRoot = tmpFolder.newFolder();
@@ -92,7 +112,7 @@ public class AbstractMavenTest {
         setTestProperties(request, templatesProject);
         request.getProperties().put("locRep", localRepoPath);
         request.setShowErrors(true);
-        request.setDebug(false);
+        request.setDebug(debug);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);
         request.setMavenOpts("-Xmx4096m");
