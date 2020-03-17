@@ -49,9 +49,11 @@ public class AbstractMavenTest {
         if (m2Home != null) {
             System.setProperty("maven.home", m2Home);
         } else {
-            m2Home = System.getenv().get("M2_HOME"); // travis
+            m2Home = System.getenv().get("M2_HOME");
             if (m2Home != null) {
                 System.setProperty("maven.home", m2Home);
+            } else if ("true".equals(System.getenv("TRAVIS"))) {
+                System.setProperty("maven.home", "/usr/local/maven"); // travis only
             } else {
                 LOG.warn("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME");
             }
