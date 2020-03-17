@@ -32,8 +32,12 @@ else
   ROOT="cobigen/cobigen-${TRAVIS_BRANCH/dev_/}"
 fi
 
-echo "Execute build in $ROOT"
-cd $ROOT
+if [ -z "$ROOT" ]; then
+  echo "Execute build in root directory"
+else
+  echo "Execute build in $ROOT"
+  cd $ROOT
+fi
 
 # -s ${MAVEN_SETTINGS} 
 if [[ $TRAVIS_BRANCH == 'master' ]]; then
