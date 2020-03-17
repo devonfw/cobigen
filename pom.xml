@@ -497,18 +497,6 @@
         <directory>eclipse-target</directory>
       </build>
     </profile>
-    <profile>
-      <!-- separate eclipse build from command-line... -->
-      <id>eclipse</id>
-      <activation>
-        <property>
-          <name>eclipse.application</name>
-        </property>
-      </activation>
-      <build>
-        <directory>eclipse-target</directory>
-      </build>
-    </profile>
   </profiles>
 
   <distributionManagement>
