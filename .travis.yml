@@ -5,10 +5,6 @@ jdk:
 cache:
   directories:
     - "$HOME/.m2/repository"
-addons:
-  apt:
-    packages:
-      - metacity
 services:
   - xvfb
 env:
@@ -22,6 +18,8 @@ env:
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
     - GH_REPO_CONSOLIDATE="github.com/${ORG}/${REPO_CONSOLIDATE}.git"
     - secure: LaDZLvPaW1O59PbNnkNo/e18/fsdPDmlS5dF2hfbljAgYfdCwyiJbCAoUMyM1NcAHQ/28zNWaVP8u5cADNbQGA3X4FYSfCRTaq5Ikm0AOObb/JQrhvMMkSfzhM1AU/oglUfYtwcBWdCEhUrsX97tZPoVCjlaqrjiBWYDyp70NAxrKpXnNEiy4GRPUHSy9WIgfYcG5Y2V1mZHWmkurhtUL6Xy2SL6Uq9/VazqlI6Yxry9AXpZHQynjQlmbMkGPC71AIcb8vfY47a/n7mwnztzfTuRUnIZKyetIiT0GHPErg0S2IBGk1LTxBd9mFk1lKCybbUv1G7ROxrYaw1yeRwcsb7tLRwX8QT9HfcDSIzKO7fr92HsGzSsPrjsCObGPxLPPUTqSC+DDIU1S2KChqjLXuq6AOdY0qWAuUOhtp+ksb1oqEQnWowKfJ17Z5ijuC7alPAdlHqlN9BY/AYkyUpr1azOJuBKwG1uMkhxTjLKnu8HHZ0onkcwkKwTjl+FEfaIWBqiIFl/2VPSZ+jLlcccgzW3emVI2EzZFDTX9wIzgE0BJx1ZV3aQQ74gbVNngDyl9BS2ncSIG2YCC6gJfSfYyGl00cctHdq9QtR61XJdklQmAw2vjdq4me3WT7lPx1BeAkxZL1l7xmUovt7kpdd9NDD26b8a8ITLqgQ377RZ3nI=
+    - secure: jjf+2LuRPALUCWMqAchoddsWZqJFOc4HpXxYi0IlOitAlS249bwqTCuesgDKLpecqKE9ttSlOFkFdY02VKl5dxQg6ndxghsqrwWhYwZ0oYyrLSJ+yaR4IYyyE8KNC+77eO5h9zh8Cya4d7XiNiPB6F18HezSmlLXQClDB5qgANwJYCFnyuD8EutkDQxLCajOHrj6OEDnXb0x4x144PA/CcAAaseghIRNdsWSQbx0Jh4+25vQln8gctbc3jsnd1M2v//xtmvGDUrAovL2p9fl5RL0BPTQnm0YtBMwAoGmVy5fBKRLR36HTL8Jff0qAO+RTcMDL/CN4BjbT/1Fk+b0MZjnm736eH4uA+9XwsnRSHw8/t1t7WwJp0/Iap8aqBEBQea8Ca+vQCPdsol14I9YbH4zBf8LEZ6CCb9LkFG90bk+V1UlDBqzuTSTIaWsASkH1ytfaqjLuSekLZ3Mfq/VJRfUfnnhLpQLbexLhCRlL+xqrlIp4zg0iT2nuPhgF31H0XL5sxtoWHPBdwP5QL2rGz8pphA3N03HSKUk4x69uX824+Hhe/+yDdNI8TsxSEd0gajPmoZz6PqQejHTDMd/HPLvGDIfqDEM5l7nndTz4crmBitIR1JrICvqKov/k8d0Ne4SAHsQjzg/EG4sYKF2Jua4meuy0R2AI6mXnP/kcIY=
+    - secure: ax002sOgbQova/2ofIFEDKbUssJiFDbyDLQzYbAHRLKB06KpKx4yCRk6OicTC7cD9iMe0Ftm82+ZrL9Pt1CMqvZX/CVo+qxVV6Pj6LPHZvSssyzp3HCHcaHo3Wss/+GlEwkR7xV5c2wKzVoRcOSmVwonBR7Xr+ivOC04kamDWnart+P1Iwr7CL9zQo8g7m9kq+hCjmdj000pd9DncgJoZN/CS58HOaRbHZdVD9CRgxVi6lYpldtpAQo2YQUARgc4R/+vTozvNSyLKxEEbylWMifn0cND/NjJd2pk7WGVUiqSPdGF6ByOCXYGa6eLjc9Zp2N9iCPdXszrw+MuC8g0fm9/wXueNO2Fa13oO3hWhi3uxDO9XZ6QRjW+6OyrqSb6Cm2F3T0In07GHNXcfr/PkzDGoXJGCymYn/NYJQhI+kNbaVq+Pz0xisOl79By1zcJuc16PQDoMFZN5vpcqW8O/IK9XhNxok8eW5bH+/r+cgRWM3ZUSxamMgH4SuWz7iotLtKlyHOHpMjTb0s/5nEY5OHbgTtaXvAmwX74LiL/FS49o7lbYfbtMsPySghIUrsaJ936gBCmhS1aWuF/K2ew9jkZT6m3eWZ7+H6/hT49C17jnmey89J7PGNwrkQJtNPAic/MxiyHTpzD1/fE9qw4+VBssvZPH+abokMxF8e1joI=
 stages:
   - name: Documentation
     if: (branch = master) AND (type = push)
