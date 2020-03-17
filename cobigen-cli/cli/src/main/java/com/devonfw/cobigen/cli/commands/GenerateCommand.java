@@ -27,6 +27,7 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
+import com.devonfw.cobigen.cli.utils.ConfigurationUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
 import com.google.googlejavaformat.java.FormatterException;
@@ -99,6 +100,11 @@ public class GenerateCommand implements Callable<Integer> {
      * Used for getting users input
      */
     private static final Scanner inputReader = new Scanner(System.in);
+
+    /**
+     * Utils class for configuration related operations
+     */
+    private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
 
     /**
      * Constructor needed for Picocli
@@ -232,7 +238,7 @@ public class GenerateCommand implements Callable<Integer> {
 
         int index = 0;
         for (File inputFile : inputFiles) {
-            inputFile = cobigenUtils.preprocessInputFile(inputFile);
+            inputFile = configurationUtils.preprocessInputFile(inputFile);
             // Input file can be: C:\folder\input.java
             if (inputFile.exists() == false) {
                 logger.debug("We could not find input file: " + inputFile.getAbsolutePath()
@@ -252,7 +258,7 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         if (outputRootPath != null) {
-            outputRootPath = cobigenUtils.preprocessInputFile(outputRootPath);
+            outputRootPath = configurationUtils.preprocessInputFile(outputRootPath);
         }
         return ValidationUtils.isOutputRootPathValid(outputRootPath);
 
@@ -280,7 +286,7 @@ public class GenerateCommand implements Callable<Integer> {
         List<Class<?>> utilClasses, Class<?> c) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
-        inputFile = cobigenUtils.preprocessInputFile(inputFile);
+        inputFile = configurationUtils.preprocessInputFile(inputFile);
         try {
             Object input;
             String extension = inputFile.getName().toLowerCase();

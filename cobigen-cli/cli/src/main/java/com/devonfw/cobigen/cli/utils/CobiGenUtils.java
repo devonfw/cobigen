@@ -11,7 +11,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -21,11 +20,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 import java.util.jar.JarFile;
 
 import net.sf.mmm.code.impl.java.JavaContext;
@@ -94,73 +90,10 @@ public class CobiGenUtils {
      */
     private boolean templateDependencyIsGiven = false;
 
-    public Path getCobigenCliRootPath() {
-        Path rootCLIPath = null;
-        try {
-            File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            rootCLIPath = locationCLI.getParentFile().toPath();
-        } catch (URISyntaxException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        return rootCLIPath;
-    }
-
     /**
-     * @return File of Cobigen templates folder
+     * Utils class for configuration related operations
      */
-    public File getCobigenTemplatesFolderFile() {
-        String pathForCobigenTemplates = "";
-
-        pathForCobigenTemplates = getCobigenCliRootPath().toString();
-
-        // initializes filesystem and sets cobigenTemplatesFolderPath
-        FileSystem fileSystem = FileSystems.getDefault();
-        Path cobigenTemplatesFolderPath = null;
-        if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
-            cobigenTemplatesFolderPath =
-                fileSystem.getPath(pathForCobigenTemplates + File.separator + "CobiGen_Templates");
-        }
-        return cobigenTemplatesFolderPath.toFile();
-    }
-
-    /**
-     *
-     * @param classLoader
-     * @return
-     * @throws IOException
-     */
-    private URL getContextConfiguration(ClassLoader classLoader) throws IOException {
-        URL contextConfigurationLocation = null;
-        String[] possibleLocations = new String[] { "context.xml", "src/main/templates/context.xml" };
-
-        for (String possibleLocation : possibleLocations) {
-            URL configLocation = classLoader.getResource(possibleLocation);
-            if (configLocation != null) {
-                contextConfigurationLocation = configLocation;
-                logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
-                break;
-            }
-        }
-
-        if (contextConfigurationLocation == null) {
-            throw new IOException("No context.xml could be found in the classloader!");
-        } else {
-            // Make sure to create file system
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-
-            URI uri = URI.create(contextConfigurationLocation.toString());
-            FileSystem fs;
-            try {
-                fs = FileSystems.getFileSystem(uri);
-            } catch (FileSystemNotFoundException e) {
-                fs = FileSystems.newFileSystem(uri, env);
-            }
-            Paths.get(uri);
-        }
-        return contextConfigurationLocation;
-    }
+    private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
 
     /**
      * Resolves all utilities classes, which have been defined in the custom template folder or the templates
@@ -175,13 +108,13 @@ public class CobiGenUtils {
     List<Class<?>> resolveUtilClasses() throws IOException {
         templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
 
-        File cobigenTemplatesFolderFile = getCobigenTemplatesFolderFile();
+        File cobigenTemplatesFolderFile = configurationUtils.getCobigenTemplatesFolderFile();
 
         final List<Class<?>> result = new LinkedList<>();
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
 
-        URL contextConfigurationLocation = getContextConfiguration(inputClassLoader);
+        URL contextConfigurationLocation = configurationUtils.getContextConfiguration(inputClassLoader);
 
         final List<String> foundClasses = new LinkedList<>();
 
@@ -262,7 +195,7 @@ public class CobiGenUtils {
             if (foundPaths.size() > 0) {
                 for (Path path : foundPaths) {
                     try {
-                        result.add(loadClassByPath(templateRoot.relativize(path), inputClassLoader));
+                        result.add(configurationUtils.loadClassByPath(templateRoot.relativize(path), inputClassLoader));
                     } catch (ClassNotFoundException e) {
                         logger.error("", e);
                     }
@@ -272,70 +205,6 @@ public class CobiGenUtils {
             }
         }
         return result;
-    }
-
-    /**
-     * Processes the input file's path. Strips the quotes from the file path if they are given.
-     * @param inputFile
-     *            the input file
-     * @return input file with processed path
-     */
-    public File preprocessInputFile(File inputFile) {
-        String path = inputFile.getPath();
-        String pattern = "[\\\"|\\'](.+)[\\\"|\\']";
-        boolean matches = path.matches(pattern);
-        if (matches) {
-            path = path.replace("\"", "");
-            path = path.replace("\'", "");
-            return new File(path);
-        }
-
-        return inputFile;
-    }
-
-    /**
-     * Tries to load a class over it's file path. If the path is /a/b/c/Some.class this method tries to load
-     * the following classes in this order: <list>
-     * <li>Some</li>
-     * <li>c.Some</li>
-     * <li>b.c.Some</li>
-     * <li>a.b.c.Some</> </list>
-     * @param classPath
-     *            the {@link Path} of the Class file
-     * @param cl
-     *            the used ClassLoader
-     * @return Class<?> of the class file
-     * @throws ClassNotFoundException
-     *             if no class could be found all the way up to the path root
-     */
-    private Class<?> loadClassByPath(Path classPath, ClassLoader cl) throws ClassNotFoundException {
-        // Get a list with all path segments, starting with the class name
-        Queue<String> pathSegments = new LinkedList<>();
-        // Split the path by the systems file separator and without the .class suffix
-        String[] pathSegmentsArray = classPath.toString().substring(0, classPath.toString().length() - 6)
-            .split("\\".equals(File.separator) ? "\\\\" : File.separator);
-        for (int i = pathSegmentsArray.length - 1; i > -1; i--) {
-            pathSegments.add(pathSegmentsArray[i]);
-        }
-
-        if (!pathSegments.isEmpty()) {
-            String className = "";
-            while (!pathSegments.isEmpty()) {
-                if (className == "") {
-                    className = pathSegments.poll();
-                } else {
-                    className = pathSegments.poll() + "." + className;
-                }
-                try {
-                    logger.debug("Try to load " + className);
-                    return cl.loadClass(className);
-                } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                    continue;
-                }
-            }
-        }
-        throw new ClassNotFoundException("Could not find class on path " + classPath.toString());
-
     }
 
     /**

@@ -1,12 +1,10 @@
 package com.devonfw.cobigen.cli.commands;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -27,6 +25,7 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
+import com.devonfw.cobigen.cli.utils.ConfigurationUtils;
 
 import ch.qos.logback.classic.Level;
 import picocli.CommandLine.Command;
@@ -40,24 +39,14 @@ import picocli.CommandLine.Option;
 public class AdaptTemplatesCommand implements Callable<Integer> {
 
     /**
-     * Name of templates folder
-     */
-    private static final String COBIGEN_TEMPLATES = "CobiGen_Templates";
-
-    /**
-     * Name of configuration file
-     */
-    private static final String COBIGEN_CONFIG = "config.txt";
-
-    /**
-     * Logger to output useful information to the user
-     */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
-
-    /**
      * Utils class for CobiGen related operations
      */
     private static CobiGenUtils cobigenUtils = new CobiGenUtils();
+
+    /**
+     * Utils class for configuration related operations
+     */
+    private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
 
     /**
      * If this options is enabled, we will print also debug messages
@@ -71,6 +60,11 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
     @Option(names = { "--custom-location", "-cl" }, arity = "0..1",
         description = MessagesConstants.CUSTOM_LOCATION_OPTION_DESCRIPTION)
     File customTemplatesLocation = null;
+
+    /**
+     * Logger to output useful information to the user
+     */
+    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Constructor needed for Picocli
@@ -94,7 +88,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
             pathForCobigenTemplates = customPath.toString();
             logger.info("Target directory for custom templates {}", pathForCobigenTemplates);
         } else {
-            pathForCobigenTemplates = cobigenUtils.getCobigenCliRootPath().toString();
+            pathForCobigenTemplates = configurationUtils.getCobigenCliRootPath().toString();
         }
 
         String jarPath = cobigenUtils.getTemplatesJar(false).getPath().toString();
@@ -119,16 +113,16 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
             }
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + COBIGEN_TEMPLATES
-                    + File.separator + File.separator + entry.getName());
+                Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
+                    + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + File.separator + entry.getName());
                 if (templateNames.parallelStream().anyMatch(entry.getName()::contains)
                     || entry.getName().contains("context.xml")) {
-                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator + COBIGEN_TEMPLATES
-                        + File.separator + File.separator + entry.getName());
+                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
+                        + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + File.separator + entry.getName());
                 } else if (entry.getName().contains("com/")) {
-                    saveForFileCreationPath = fileSystem
-                        .getPath(cobigenFolderPath + File.separator + COBIGEN_TEMPLATES + File.separator + "src"
-                            + File.separator + "main" + File.separator + "java" + File.separator + entry.getName());
+                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
+                        + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + "src" + File.separator + "main"
+                        + File.separator + "java" + File.separator + entry.getName());
                 }
                 if (entry.isDirectory()) {
                     Files.createDirectories(saveForFileCreationPath);
@@ -150,35 +144,6 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         }
     }
 
-    /**
-     * Creates a configuration file next to the CLI executable and stores the location of the custom templates
-     * folder in it
-     * @throws IOException
-     *             if the configuration file could not created
-     */
-    public void createConfigFile() throws IOException {
-        Path path = Paths.get(cobigenUtils.getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG);
-        Properties props = new Properties();
-        props.setProperty("cobigen.custom-templates-location", customTemplatesLocation.toString());
-        props.store(new FileOutputStream(path.toFile()), MessagesConstants.CUSTOM_LOCATION_OPTION_DESCRIPTION);
-    }
-
-    /**
-     * Reads the configuration file and returns all of its properties
-     * @return Properties
-     */
-    public Properties readConfigFileProperties() {
-        Properties props = new Properties();
-
-        Path path = Paths.get(cobigenUtils.getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG);
-        try (BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"))) {
-            props.load(reader);
-        } catch (IOException e) {
-            logger.error("An error occured while reading the config file", e);
-        }
-        return props;
-    }
-
     @Override
     public Integer call() throws Exception {
         if (verbose) {
@@ -189,10 +154,11 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
 
         if (customTemplatesLocation != null) {
             logger.info("Creating Templates folder at custom location {}", customTemplatesLocation);
-            customTemplatesLocation = cobigenUtils.preprocessInputFile(customTemplatesLocation);
-            createConfigFile();
+            customTemplatesLocation = configurationUtils.preprocessInputFile(customTemplatesLocation);
+            configurationUtils.setCustomTemplatesLocation(customTemplatesLocation);
+            configurationUtils.createConfigFile();
         }
-        Properties props = readConfigFileProperties();
+        Properties props = configurationUtils.readConfigFileProperties();
 
         Path cobigenTemplatesDirectory = null;
         if (props != null) {
@@ -200,7 +166,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
             cobigenTemplatesDirectory = Paths.get(props.getProperty("cobigen.custom-templates-location"));
         } else {
             // sets default templates directory path from CLI location
-            cobigenTemplatesDirectory = Paths.get(cobigenUtils.getCobigenTemplatesFolderFile().toURI());
+            cobigenTemplatesDirectory = Paths.get(configurationUtils.getCobigenTemplatesFolderFile().toURI());
         }
 
         if (Files.exists(cobigenTemplatesDirectory)) {
