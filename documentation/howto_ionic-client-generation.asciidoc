@@ -6,7 +6,7 @@ toc::[]
 We are going to show you **how to** generate a CRUD Ionic application from an **ETO**
 using CobiGen. 
 
-NOTE: This is a short introduction to the Ionic generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-Devonfw-3.0.0-CobiGen-PoC-E2E_v3.11.pdf[this document].
+NOTE: This is a short introduction to the Ionic generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-devonfw-ide-CobiGen-PoC-E2E_v3.2.pdf[this document].
 
 == Prerequisites
 
@@ -74,7 +74,7 @@ This happens because the merger of CobiGen prefers to duplicate rather than to d
 
 * Run ```ionic serve`` on your console.
 
-After following all these steps, your application should start. However, remember that you will need your **server** to be running for acessing to the list page.
+After following all these steps your application should start. However, remember that you will need your **server** to be running for access to the list page.
 
 == Running it on Android
 

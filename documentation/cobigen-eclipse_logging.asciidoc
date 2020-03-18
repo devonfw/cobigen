@@ -3,7 +3,7 @@ toc::[]
 
 = Logging
 
-If you have any problem with the CobiGen eclipse plug-in, you might want to enable logging to provide more information for further problem analysis. This can be done easily by adding the `logback.xml` to the root of the CobiGen_templates configuration folder. The file should contain at least the following contents, whereas you should specify an absolute path to the target log file (at the `TODO`). If you are using the (https://github.com/devonfw/tools-cobigen/tree/master/cobigen-templates)[cobigen-templates] project, you might have the contents already specified but partially commented.
+If you have any problem with the CobiGen eclipse plug-in, you might want to enable logging to provide more information for further problem analysis. This can be done easily by adding the `logback.xml` to the root of the CobiGen_templates configuration folder. The file should contain at least the following contents, whereas you should specify an absolute path to the target log file (at the `TODO`). If you are using the (https://github.com/devonfw/cobigen/tree/master/cobigen-templates)[cobigen-templates] project, you might have the contents already specified but partially commented.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

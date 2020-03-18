@@ -1,141 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.devonfw.cobigen</groupId>
-  <artifactId>cli</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>cobigen-cli</name>
+  <artifactId>cli-parent</artifactId>
+  <name>CobiGen - CLI - Parent</name>
+  <packaging>pom</packaging>
 
-  <properties>
-    <junit.version>4.11</junit.version>
-    <logback.version>1.1.2</logback.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <slf4j-api.version>1.7.7</slf4j-api.version>
-    <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
-  </properties>
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>master-parent</artifactId>
+    <version>dev-SNAPSHOT</version>
+  </parent>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core</artifactId>
-      <version>5.3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-api</artifactId>
-      <version>5.3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>info.picocli</groupId>
-      <artifactId>picocli</artifactId>
-      <version>4.0.0-beta-1b</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.maven.shared</groupId>
-        <artifactId>maven-invoker</artifactId>
-        <version>3.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>maven-plugin</artifactId>
-      <version>4.1.0</version>
-      <type>maven-plugin</type>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-java-parser</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-base</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-java-maven</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-java-impl</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-util-core</artifactId>
-      <version>7.5.1</version>
-    </dependency>
-    <!-- SLF4J - API -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.7</version>
-    </dependency>
-    <!-- logback -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-    <!-- JUnit -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
-    <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-text</artifactId>
-        <version>1.6</version>
-    </dependency>
-  </dependencies>
-
-  <build> 
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <executions>
-          <execution>
-            <id>Install test project</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>mvn</executable>
-          <workingDirectory>${maven.test.path}</workingDirectory>
-          <arguments>
-            <argument>install</argument>
-          </arguments>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>com.devonfw.cobigen.cli.CobiGenCLI</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>    
+  <modules>
+    <module>class-loader-agent</module>
+    <module>cli</module>
+  </modules>
+  
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.1.2</version>
+        </plugin>
+        <plugin>  
+          <artifactId>maven-compiler-plugin</artifactId> 
+          <configuration>  
+            <source>1.8</source>  
+            <target>1.8</target>  
+          </configuration> 
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
+
 </project>

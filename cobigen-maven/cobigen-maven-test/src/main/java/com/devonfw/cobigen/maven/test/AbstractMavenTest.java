@@ -40,6 +40,27 @@ public class AbstractMavenTest {
     protected File mvnSettingsFile;
 
     /**
+     * Set maven.home system property to enable maven invoker execution
+     */
+    @Before
+    public void setMavenHome() {
+
+        String m2Home = System.getenv().get("MAVEN_HOME");
+        if (m2Home != null) {
+            System.setProperty("maven.home", m2Home);
+        } else {
+            m2Home = System.getenv().get("M2_HOME");
+            if (m2Home != null) {
+                System.setProperty("maven.home", m2Home);
+            } else if ("true".equals(System.getenv("TRAVIS"))) {
+                System.setProperty("maven.home", "/usr/local/maven"); // travis only
+            } else {
+                LOG.warn("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME");
+            }
+        }
+    }
+
+    /**
      * Copy settings file to get a file handle required by maven invoker API
      * @throws IOException
      *             if the file could not be read/written
@@ -53,8 +74,8 @@ public class AbstractMavenTest {
     }
 
     /**
-     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
-     * local repository of the executing maven process is used.
+     * Runs the maven invoker with goal package. Makes sure, that the local repository of the executing maven
+     * process is used.
      * @param testProject
      *            the test project to build
      * @param localRepoPath
@@ -81,6 +102,26 @@ public class AbstractMavenTest {
      *             if anything fails
      */
     protected File runMavenInvoker(File testProject, File templatesProject, String localRepoPath) throws Exception {
+        return runMavenInvoker(testProject, templatesProject, localRepoPath, false);
+    }
+
+    /**
+     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
+     * local repository of the executing maven process is used.
+     * @param testProject
+     *            the test project to build
+     * @param templatesProject
+     *            the templates project to be used for generation. May be {@code null}
+     * @param localRepoPath
+     *            local repository path of the current execution
+     * @param debug
+     *            enable debug logging
+     * @return the temporary copy of the test project, the build was executed in
+     * @throws Exception
+     *             if anything fails
+     */
+    protected File runMavenInvoker(File testProject, File templatesProject, String localRepoPath, boolean debug)
+        throws Exception {
         assertThat(testProject).exists();
 
         File testProjectRoot = tmpFolder.newFolder();
@@ -92,7 +133,7 @@ public class AbstractMavenTest {
         setTestProperties(request, templatesProject);
         request.getProperties().put("locRep", localRepoPath);
         request.setShowErrors(true);
-        request.setDebug(false);
+        request.setDebug(debug);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);
         request.setMavenOpts("-Xmx4096m");

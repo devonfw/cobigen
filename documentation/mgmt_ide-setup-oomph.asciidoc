@@ -20,9 +20,9 @@ As an alternate and faster way to set up Eclipse for CobiGen development we also
 ===============================
 Before starting the installation make sure to
 
-. have `git` configured for your prefered github authentication method
+. have `git` configured for your preferred github authentication method
 . have `git` configured to handle long file names (e.g. by setting `git config --system core.longpaths true`)
-. have reading access to http://de-mucevolve02/ in the corp network
+. have read access to http://de-mucevolve02/ in the corp network
 ===============================
 
 == Quick start guide
@@ -38,11 +38,11 @@ Before starting the installation make sure to
 On the first installer page you need to choose what Eclipse bundle you want to use. The _Product page_ (picture below) displays the possible choices.
 image:images/howtos/ide-setup-oomph/01_installer.png[Product page of the installer]
 
-. the current Product Catalog. Each entry represents a pre-configured Eclipse bundle. In case of doubt choose _ConiGen IDE_
+. the current Product Catalog. Each entry represents a pre-configured Eclipse bundle. In case of doubt choose _CobiGen IDE_
 . the Eclipse version to be installed.
 . the bitness of the Eclipse version. Be sure to choose the bitness of your OS
 . the Java VM used _during_ installation.
-. the bundle pool. If activated Eclipse will create a p2 pool. This can be helpfull if you want to create multiple installations of eclipse. This option is hidden and deactivated by default. You can make it visible by removing the `-Doomph.p2.pool=@none` line in the installers `eclipse-inst.ini`
+. the bundle pool. If activated Eclipse will create a p2 pool. This can be helpful if you want to create multiple installations of eclipse. This option is hidden and deactivated by default. You can make it visible by removing the `-Doomph.p2.pool=@none` line in the installers `eclipse-inst.ini`
 . the update indicator. If those arrows spin you can update the installer or any of it's components by clicking on this button
 . Chooses the selected product and continues with the installation
 
@@ -65,15 +65,15 @@ By proceeding with the _Next_ button the installer opens the _Variables page_. O
 
 image:images/howtos/ide-setup-oomph/04_installer.png[Variable page of the installer]
 
-. the folder in that Eclipse will be installed into. It is recommended to use the _Browse..._ button to locate the folder. A direct input into the text field is possible but due to a randomly occuring bug in the installer the input is only partially parsed.
+. the folder into that Eclipse will be installed. It is recommended to use the _Browse..._ button to locate the folder. A direct input into the text field is possible but due to a randomly occurring bug in the installer the input is only partially parsed.
 . the User name to access the _Devon Maven Nexus_. Typically your corp user name. This value will be stored in `variables-customized(.bat)`
 . the password to access the _Devon Maven Nexus_. Typically your corp password. This value will be stored (*PLAIN!*) in `variables-customized(.bat)`
 . the User name to access the _iCSD Fileserver_. This value will be stored in `variables-customized(.bat)`. If no credentials were provided insert anything.
 . the password to access the _iCSD Fileserver_. This value will be stored (*PLAIN!*) in `variables-customized(.bat)`. If no credentials were provided insert anything.
 . the Github remote URI for cloning the devonfw repository of _CobiGen_. Target of this URI is `%installation location%/workspaces/cobigen-master` if the chosen stream is `development`.
-.. `SSH`: The remote URI to access the repository via ssh. Make sure to have your `git` configured to work with a ssh client and have this client running
-.. `HTTPS`: The remote URI to access the repository via https. Activiates the `Github user ID` and `Github user Password` variables. User id and password are stored in the cloning scripts in *plain* text.
-.. Two-Factor-Authentifications aren't supported and probably won't be in the future
+.. `SSH`: The remote URI to access the repository via ssh. Make sure to have your `git` configured to work with a ssh client and have this client running.
+.. `HTTPS`: The remote URI to access the repository via https. Activates the `Github user ID` and `Github user Password` variables. User id and password are stored in the cloning scripts in *plain* text.
+.. Two-Factor-Authentification isn't supported and probably won't be in the future.
 . the Github remote URI for cloning a CobiGen repository.
 .. `Existing own fork (SSH)`: Same as above. The `Github user ID` is used in the remote URI instead of `devonfw`. Activates and requires the `Github user ID` variable.
 .. `Existing own fork (HTTPS)`: Same as above. The `Github user ID` is used in the remote URI instead of `devonfw`.
@@ -81,7 +81,7 @@ image:images/howtos/ide-setup-oomph/04_installer.png[Variable page of the instal
 . The Eclipse version you want to develop cobigen for. This is *not* the Eclipse version to be installed. When running integration tests for the CobiGen Eclipse Plugin this Eclipse version is launched.
 . Your Github user id.
 . Your Github user password. Be aware that this is stored in plain text! Moreover, if you use special characters as for example ! or % in your password, you need to escape them in the batch file. See http://www.robvanderwoude.com/escapechars.php for further information.
-. Reveals all variables that can be setted. Activated by default. If not activated preset variables and variables with default values are hidden.
+. Reveals all variables that can be set. Activated by default. If not activated preset variables and variables with default values are hidden.
 
 The _Next_ button can only be used if *all* variables are set. Proceeding the installer opens the _Confirmation page_. All tasks needed for installation are shown here with all variables resolved. Only the tasks needed for the installation are activated. Tasks like _Project import_ are triggered at first startup of Eclipse.
 
@@ -91,9 +91,9 @@ The _Finish_ button triggers the installation process. Once started the installa
 
 image:images/howtos/ide-setup-oomph/06_installer.png[Progress page]
 
-. indiciates the task that is currently executed
+. indicates the task that is currently executed
 . the task output. Provides progress and debugging information
-. if activated the installer exits after successfull installation
+. if activated the installer exits after successful installation
 . stops the installation
 
 === Into an existing Eclipse installation

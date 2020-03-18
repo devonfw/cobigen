@@ -1,0 +1,1 @@
+<#assign properties = model.classes[0].properties>

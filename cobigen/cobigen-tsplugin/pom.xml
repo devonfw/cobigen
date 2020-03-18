@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tsplugin</artifactId>
   <name>CobiGen - TypeScript Plug-in</name>
-  <version>2.2.1</version>
+  <version>2.4.1</version>
   <packaging>jar</packaging>
   <description>CobiGen - TypeScript Plug-in</description>
 
@@ -13,24 +13,26 @@
   </parent>
 
   <properties>
-    <skip.deployment>false</skip.deployment>
-    <server.version>1.0.8</server.version>
+    <plugin.name>${project.artifactId}</plugin.name>
+    <server.name>nestserver</server.name>
+    <server.version>1.1.2</server.version>
     <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
     <server.url.linux>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</server.url.linux>
     <server.url.macos>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-macos/-/cobigen-nestserver-macos-${server.version}.tgz</server.url.macos>
-    <server.name>nestserver</server.name>
+    <skip.deployment>false</skip.deployment>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.3.0</version>
+      <version>5.4.0</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.3.0</version>
+      <version>5.4.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -38,14 +40,20 @@
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
     </dependency>
-
+    
+    <!-- Used for converting JSON to Hashmaps -->
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20180813</version>
+    </dependency>
+        
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
       <version>5.0.0</version>
       <scope>test</scope>
     </dependency>
-    
   </dependencies>
 
   <build>
@@ -63,6 +71,7 @@
       <filtering>false</filtering>
       <excludes>
         <exclude>**/META-INF/externalservers/server.properties</exclude>
+        <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
       </excludes>
     </resource>
   </resources>

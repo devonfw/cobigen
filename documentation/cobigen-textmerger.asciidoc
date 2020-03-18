@@ -37,9 +37,9 @@ In general, ${documentpart} is an id to mark a part of the document, that way th
 
 If the same documentpart is defined multiple times, it can lead to errors, so instead of defining `table` multiple times, use `table1`, `table2`, `table3` etc. 
 
-If a `${documentpart}` is defined in the document but not in the patch and they are in the same position, it is porcessed int the following way: If only the documentparts `header`, `test` and `footer` are defined in the document in that order, and the patch contains `header`, `order` and `footer`, the resulting order will be `header`, `test`, `order` then `footer`.
+If a `${documentpart}` is defined in the document but not in the patch and they are in the same position, it is processed in the following way: If only the documentparts `header`, `test` and `footer` are defined in the document in that order, and the patch contains `header`, `order` and `footer`, the resulting order will be `header`, `test`, `order` then `footer`.
 
-The following documentparts have default functionality
+The following documentparts have default functionality:
 
 . `anchor:header:${mergestrategy}:anchorend` marks the beginning of a header, that will be added once when the document is created, but not again.
 _Remark:_ This is only done once, if you have `header` in another anchor, it will be ignored
@@ -53,7 +53,7 @@ Mergestrategies are only relevant in the patch, as the merger is only interested
 . `anchor:${documentpart}::anchorend` will use the merge strategy from templates.xml, see <<extensions,Merger-Extensions>>.
 . `anchor:${}:${mergestrategy}\_newline:anchorend` or `anchor:${}:newline_${mergestrategy}:anchorend` states that a new line should be appended before or after this anchors text, depending on where the newline is (before or after the mergestrategy). `anchor:${documentpart}:newline:anchorend` puts a new line after the anchors text.
 _Remark:_ Only works with appending strategies, not merging/replacing ones. These strategies currently include: `appendbefore`, `append`/`appendafter`
-. `achor:${documentpart}:override:anchorend` means that the new text of this documentpart will replace the existing one completely
+. `anchor:${documentpart}:override:anchorend` means that the new text of this documentpart will replace the existing one completely
 . `anchor:${documentpart}:appendbefore:anchorend` or `anchor:${documentpart}:appendafter:anchorend`/`anchor:${documentpart}:append:anchorend` specifies whether the text of the patch should come before the existing text or after.
 
 == Usage Examples
@@ -89,7 +89,7 @@ Imprint
 
 === Merging
 
-In this section you will see a comparision on what files look like before and after merging
+In this section you will see a comparison on what files look like before and after merging
 
 ==== override
 .Before

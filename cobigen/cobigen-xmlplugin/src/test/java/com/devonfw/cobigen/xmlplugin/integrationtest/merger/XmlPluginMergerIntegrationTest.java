@@ -77,7 +77,7 @@ public class XmlPluginMergerIntegrationTest {
     }
 
     /**
-     * Tests Issue #18 - https://github.com/oasp/tools-cobigen/issues/18
+     * Tests Issue #18 - https://github.com/oasp/cobigen/issues/18
      *
      * @throws Exception
      *             test fails
@@ -220,7 +220,7 @@ public class XmlPluginMergerIntegrationTest {
     }
 
     /**
-     * Tests Issue https://github.com/devonfw/tools-cobigen/issues/119
+     * Tests Issue https://github.com/devonfw/cobigen/issues/119
      * @throws Exception
      *             when something goes wrong
      */
@@ -237,7 +237,7 @@ public class XmlPluginMergerIntegrationTest {
     }
 
     /**
-     * Tests Issue https://github.com/devonfw/tools-cobigen/issues/119
+     * Tests Issue https://github.com/devonfw/cobigen/issues/119
      * @throws Exception
      *             when something goes wrong
      */
