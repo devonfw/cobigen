@@ -167,13 +167,12 @@ public class GenerateMojo extends AbstractMojo {
     /**
      * Checks the ClassRealm for any context.xml provided either in configurationFolder or in templates-plugin
      * and returns its URL
-     * @param classRealm
-     *            the ClassRealm to check
      * @return URL of the context configuration file path
      * @throws MojoExecutionException
      *             if no configuration file was found
      */
-    private URL getContextConfiguration(ClassRealm classRealm) throws MojoExecutionException {
+    private URL getContextConfiguration() throws MojoExecutionException {
+        final ClassRealm classRealm = pluginDescriptor.getClassRealm();
         URL contextConfigurationLocation = null;
         String[] possibleLocations = new String[] { "context.xml", "src/main/templates/context.xml" };
 
@@ -181,7 +180,7 @@ public class GenerateMojo extends AbstractMojo {
             URL configLocation = classRealm.getResource(possibleLocation);
             if (configLocation != null) {
                 contextConfigurationLocation = configLocation;
-                getLog().debug("Found context.xml URL in the classpath @: " + contextConfigurationLocation.toString());
+                getLog().debug("Found context.xml URL in the classpath @ " + contextConfigurationLocation.toString());
                 break;
             }
         }
@@ -210,8 +209,8 @@ public class GenerateMojo extends AbstractMojo {
                 throw new MojoExecutionException("The configured configuration folder could not be read.", e);
             }
         } else {
-            final ClassRealm classRealm = pluginDescriptor.getClassRealm();
-            URL contextConfigurationLocation = getContextConfiguration(classRealm);
+
+            URL contextConfigurationLocation = getContextConfiguration();
 
             URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
 
@@ -247,7 +246,7 @@ public class GenerateMojo extends AbstractMojo {
             }
         }
 
-        URL contextConfigurationLocation = getContextConfiguration(classRealm);
+        URL contextConfigurationLocation = getContextConfiguration();
 
         Path templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
 
