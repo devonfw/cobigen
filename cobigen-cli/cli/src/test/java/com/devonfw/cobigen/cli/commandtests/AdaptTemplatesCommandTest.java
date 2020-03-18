@@ -4,6 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -54,7 +56,10 @@ public class AdaptTemplatesCommandTest {
 
         CobiGenCLI.main(args);
 
-        Path cobigenTemplatesFolderPath = configurationUtils.getCobigenCliRootPath();
+        FileSystem fileSystem = FileSystems.getDefault();
+
+        Path cobigenTemplatesFolderPath = fileSystem.getPath(
+            configurationUtils.getCobigenCliRootPath() + File.separator + ConfigurationUtils.COBIGEN_TEMPLATES);
 
         assertTrue(Files.exists(cobigenTemplatesFolderPath));
     }
