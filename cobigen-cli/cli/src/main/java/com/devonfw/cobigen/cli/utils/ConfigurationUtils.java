@@ -42,30 +42,26 @@ public class ConfigurationUtils {
     private static final String COBIGEN_CONFIG = "config.txt";
 
     /**
-     * Location of custom templates folder
+     * Name of configuration key for custom templates file path
      */
-    private File customTemplatesLocation = null;
-
-    /**
-     *
-     * @return
-     */
-    public File getCustomTemplatesLocation() {
-        return customTemplatesLocation;
-    }
-
-    /**
-     *
-     * @param customTemplatesLocation
-     */
-    public void setCustomTemplatesLocation(File customTemplatesLocation) {
-        this.customTemplatesLocation = customTemplatesLocation;
-    }
+    private static final String COBIGEN_CONFIG_LOCATION_KEY = "cobigen.custom-templates-location";
 
     /**
      * Logger to output useful information to the user
      */
     private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+
+    /**
+     * @return Path of custom templates location or null
+     */
+    public Path getCustomTemplatesLocation() {
+        if (Files.exists(Paths.get(getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG))) {
+            Properties props = readConfigFileProperties();
+            return Paths.get(props.getProperty(COBIGEN_CONFIG_LOCATION_KEY));
+        } else {
+            return null;
+        }
+    }
 
     /**
      * @return Path of Cobigen CLI root
@@ -75,9 +71,8 @@ public class ConfigurationUtils {
         try {
             File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             rootCLIPath = locationCLI.getParentFile().toPath();
-        } catch (URISyntaxException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (URISyntaxException e) {
+            logger.error("An error occured while building the URI of the CLI location {}", e);
         }
         return rootCLIPath;
     }
@@ -88,7 +83,12 @@ public class ConfigurationUtils {
     public File getCobigenTemplatesFolderFile() {
         String pathForCobigenTemplates = "";
 
-        pathForCobigenTemplates = getCobigenCliRootPath().toString();
+        Path customTemplatesLocation = getCustomTemplatesLocation();
+        if (customTemplatesLocation != null) {
+            pathForCobigenTemplates = getCustomTemplatesLocation().toString();
+        } else {
+            pathForCobigenTemplates = getCobigenCliRootPath().toString();
+        }
 
         // initializes filesystem and sets cobigenTemplatesFolderPath
         FileSystem fileSystem = FileSystems.getDefault();
@@ -143,13 +143,14 @@ public class ConfigurationUtils {
     /**
      * Creates a configuration file next to the CLI executable and stores the location of the custom templates
      * folder in it
+     * @param customTemplatesLocation
      * @throws IOException
      *             if the configuration file could not created
      */
-    public void createConfigFile() throws IOException {
+    public void createConfigFile(File customTemplatesLocation) throws IOException {
         Path path = Paths.get(getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG);
         Properties props = new Properties();
-        props.setProperty("cobigen.custom-templates-location", customTemplatesLocation.toString());
+        props.setProperty(COBIGEN_CONFIG_LOCATION_KEY, customTemplatesLocation.toString());
         props.store(new FileOutputStream(path.toFile()), MessagesConstants.CUSTOM_LOCATION_OPTION_DESCRIPTION);
     }
 

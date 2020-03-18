@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -152,18 +151,14 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
 
         logger.info("Running AdaptTemplatesCommand!, please wait...");
 
+        Path cobigenTemplatesDirectory = null;
         if (customTemplatesLocation != null) {
             logger.info("Creating Templates folder at custom location {}", customTemplatesLocation);
             customTemplatesLocation = configurationUtils.preprocessInputFile(customTemplatesLocation);
-            configurationUtils.setCustomTemplatesLocation(customTemplatesLocation);
-            configurationUtils.createConfigFile();
-        }
-        Properties props = configurationUtils.readConfigFileProperties();
-
-        Path cobigenTemplatesDirectory = null;
-        if (props != null) {
+            configurationUtils.createConfigFile(customTemplatesLocation);
             // sets custom templates directory path from configuration file property
-            cobigenTemplatesDirectory = Paths.get(props.getProperty("cobigen.custom-templates-location"));
+            cobigenTemplatesDirectory = configurationUtils.getCustomTemplatesLocation();
+            processJar(cobigenTemplatesDirectory);
         } else {
             // sets default templates directory path from CLI location
             cobigenTemplatesDirectory = Paths.get(configurationUtils.getCobigenTemplatesFolderFile().toURI());
