@@ -54,7 +54,7 @@ public class AdaptTemplatesCommandTest {
 
         CobiGenCLI.main(args);
 
-        Path cobigenTemplatesFolderPath = configurationUtils.getCobigenTemplatesFolderFile().toPath();
+        Path cobigenTemplatesFolderPath = configurationUtils.getCobigenCliRootPath();
 
         assertTrue(Files.exists(cobigenTemplatesFolderPath));
     }

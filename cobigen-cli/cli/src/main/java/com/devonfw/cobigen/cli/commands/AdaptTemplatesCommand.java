@@ -158,16 +158,15 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
             configurationUtils.createConfigFile(customTemplatesLocation);
             // sets custom templates directory path from configuration file property
             cobigenTemplatesDirectory = configurationUtils.getCustomTemplatesLocation();
-            processJar(cobigenTemplatesDirectory);
         } else {
             // sets default templates directory path from CLI location
-            cobigenTemplatesDirectory = Paths.get(configurationUtils.getCobigenTemplatesFolderFile().toURI());
+            cobigenTemplatesDirectory = Paths.get(configurationUtils.getCobigenCliRootPath().toUri());
         }
 
         if (Files.exists(cobigenTemplatesDirectory)) {
             processJar(cobigenTemplatesDirectory);
         } else {
-            logger.error("{} does not exist!", cobigenTemplatesDirectory);
+            logger.error("Could not find target directory to extract templates @", cobigenTemplatesDirectory);
             return 0;
         }
 
