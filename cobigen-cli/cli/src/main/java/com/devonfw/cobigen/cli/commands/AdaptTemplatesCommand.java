@@ -9,7 +9,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -75,31 +74,19 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
     /**
      * Process Jar method is responsible for unzip the source Jar and create new CobiGen_Templates folder
      * structure at /main/CobiGen_Templates location
-     * @param customPath
-     *            Custom path to be used as target directory
+     * @param destinationPath
+     *            path to be used as target directory
      * @throws IOException
      *             if no destination path could be set
      */
-    public static void processJar(Path customPath) throws IOException {
-        String pathForCobigenTemplates = "";
-
-        if (customPath != null) {
-            pathForCobigenTemplates = customPath.toString();
-            logger.info("Target directory for custom templates {}", pathForCobigenTemplates);
-        } else {
-            pathForCobigenTemplates = configurationUtils.getCobigenCliRootPath().toString();
-        }
+    public static void processJar(Path destinationPath) throws IOException {
 
         String jarPath = cobigenUtils.getTemplatesJar(false).getPath().toString();
         FileSystem fileSystem = FileSystems.getDefault();
-        Path cobigenFolderPath = null;
-        if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
-            cobigenFolderPath = fileSystem.getPath(pathForCobigenTemplates);
-        }
+        Path cobigenFolderPath = destinationPath;
 
         if (cobigenFolderPath == null) {
-            throw new IOException(
-                "An exception occurred while processing Jar files to create CobiGen_Templates folder");
+            throw new IOException("Cobigen folder path not found!");
         }
 
         logger.info("Processing jar file @ {}", jarPath);
@@ -139,7 +126,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
                 }
             }
         } catch (IOException e) {
-            logger.debug("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
+            logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
         }
     }
 
@@ -153,14 +140,15 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
 
         Path cobigenTemplatesDirectory = null;
         if (customTemplatesLocation != null) {
-            logger.info("Creating Templates folder at custom location {}", customTemplatesLocation);
             customTemplatesLocation = configurationUtils.preprocessInputFile(customTemplatesLocation);
             configurationUtils.createConfigFile(customTemplatesLocation);
             // sets custom templates directory path from configuration file property
             cobigenTemplatesDirectory = configurationUtils.getCustomTemplatesLocation();
+            logger.info("Creating custom templates folder at custom location @ {}", cobigenTemplatesDirectory);
         } else {
             // sets default templates directory path from CLI location
-            cobigenTemplatesDirectory = Paths.get(configurationUtils.getCobigenCliRootPath().toUri());
+            cobigenTemplatesDirectory = configurationUtils.getCobigenCliRootPath();
+            logger.info("Creating custom templates folder next to the CLI @ {}", cobigenTemplatesDirectory);
         }
 
         if (Files.exists(cobigenTemplatesDirectory)) {
