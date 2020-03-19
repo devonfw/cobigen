@@ -4,19 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
 
@@ -52,6 +46,7 @@ public class ConfigurationUtils {
     private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
+     * Checks if the configuration file exists and returns the path of the custom templates location key
      * @return Path of custom templates location or null
      */
     public Path getCustomTemplatesLocation() {
@@ -78,25 +73,27 @@ public class ConfigurationUtils {
     }
 
     /**
+     * Checks if custom templates location path exists and either returns the path of the default location
+     * next to the CLI or the custom templates location defined in the configuration
      * @return File of Cobigen templates folder
      */
     public File getCobigenTemplatesFolderFile() {
-        String pathForCobigenTemplates = "";
+        Path pathForCobigenTemplates;
 
         Path customTemplatesLocation = getCustomTemplatesLocation();
         if (customTemplatesLocation != null) {
-            pathForCobigenTemplates = getCustomTemplatesLocation().toString();
+            pathForCobigenTemplates = getCustomTemplatesLocation();
         } else {
-            pathForCobigenTemplates = getCobigenCliRootPath().toString();
+            pathForCobigenTemplates = getCobigenCliRootPath();
         }
 
         // initializes filesystem and sets cobigenTemplatesFolderPath
-        FileSystem fileSystem = FileSystems.getDefault();
         Path cobigenTemplatesFolderPath = null;
-        if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
+        if (pathForCobigenTemplates != null) {
             cobigenTemplatesFolderPath =
-                fileSystem.getPath(pathForCobigenTemplates + File.separator + COBIGEN_TEMPLATES);
+                pathForCobigenTemplates.resolve(pathForCobigenTemplates + File.separator + COBIGEN_TEMPLATES);
         }
+
         return cobigenTemplatesFolderPath.toFile();
     }
 
@@ -123,19 +120,6 @@ public class ConfigurationUtils {
 
         if (contextConfigurationLocation == null) {
             throw new IOException("No context.xml could be found in the classloader!");
-        } else {
-            // Make sure to create file system
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-
-            URI uri = URI.create(contextConfigurationLocation.toString());
-            FileSystem fs;
-            try {
-                fs = FileSystems.getFileSystem(uri);
-            } catch (FileSystemNotFoundException e) {
-                fs = FileSystems.newFileSystem(uri, env);
-            }
-            Paths.get(uri);
         }
         return contextConfigurationLocation;
     }

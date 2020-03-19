@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -20,8 +21,10 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 
 import net.sf.mmm.code.impl.java.JavaContext;
@@ -111,22 +114,43 @@ public class CobiGenUtils {
         File cobigenTemplatesFolderFile = configurationUtils.getCobigenTemplatesFolderFile();
 
         final List<Class<?>> result = new LinkedList<>();
-        ClassLoader inputClassLoader =
-            URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
+
+        Path templateRoot = cobigenTemplatesFolderFile.toPath();
+
+        boolean templatesFolderExists = Files.exists(templateRoot);
+
+        ClassLoader inputClassLoader;
+        if (templatesFolderExists) {
+            // TODO: Way too hackish
+            File templateFolder =
+                Paths.get(cobigenTemplatesFolderFile + File.separator + "src/main/templates").toFile();
+            inputClassLoader =
+                URLClassLoader.newInstance(new URL[] { templateFolder.toURI().toURL() }, getClass().getClassLoader());
+        } else {
+            inputClassLoader =
+                URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
+        }
 
         URL contextConfigurationLocation = configurationUtils.getContextConfiguration(inputClassLoader);
 
         final List<String> foundClasses = new LinkedList<>();
 
-        Path templateRoot = cobigenTemplatesFolderFile.toPath();
-
-        boolean templatesFolderExists = Files.exists(cobigenTemplatesFolderFile.toPath());
-        if (!Files.exists(cobigenTemplatesFolderFile.toPath())) {
-            logger.info("no files exist @ cobigenTemplatesFolderPath {}", cobigenTemplatesFolderFile);
-        }
-
-        if (contextConfigurationLocation.toString().startsWith("jar") && !templatesFolderExists) {
+        if (contextConfigurationLocation.toString().startsWith("jar")) {
             logger.info("Processing configuration archive " + contextConfigurationLocation.toString());
+
+            // Make sure to create file system for jar file
+            Map<String, String> env = new HashMap<>();
+            env.put("create", "true");
+
+            URI uri = URI.create(contextConfigurationLocation.toString());
+            FileSystem fs;
+            try {
+                fs = FileSystems.getFileSystem(uri);
+            } catch (FileSystemNotFoundException e) {
+                fs = FileSystems.newFileSystem(uri, env);
+            }
+            Paths.get(uri);
+
             try {
                 // Get the URI of the jar from the URL of the contained context.xml
                 URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
@@ -159,7 +183,6 @@ public class CobiGenUtils {
             } catch (IOException e) {
                 logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
             }
-            logger.info("foundClasses {}", foundClasses);
             for (String className : foundClasses) {
                 try {
                     result.add(inputClassLoader.loadClass(className));
@@ -177,7 +200,7 @@ public class CobiGenUtils {
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         if (file.toString().endsWith(".class")) {
                             foundPaths.add(file);
-                            logger.info("    * Found class file " + file.toString());
+                            logger.debug("    * Found class file " + file.toString());
                         }
                         return FileVisitResult.CONTINUE;
                     }
@@ -185,19 +208,19 @@ public class CobiGenUtils {
                     @Override
                     public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                         // Log errors but do not throw an exception
-                        logger.error("", exc);
+                        logger.warn(exc.getMessage());
                         return FileVisitResult.CONTINUE;
                     }
                 });
             } catch (IOException e) {
-                logger.error("{}", e);
+                logger.error("An error occured while reading the templates! {}", e);
             }
             if (foundPaths.size() > 0) {
                 for (Path path : foundPaths) {
                     try {
                         result.add(configurationUtils.loadClassByPath(templateRoot.relativize(path), inputClassLoader));
                     } catch (ClassNotFoundException e) {
-                        logger.error("", e);
+                        logger.error("Configuration class was not found in the provided path!", e);
                     }
                 }
             } else {
@@ -216,8 +239,15 @@ public class CobiGenUtils {
         try {
             registerPlugins();
             getTemplatesJar(false);
+            File cobigenTemplatesFolderFile = configurationUtils.getCobigenTemplatesFolderFile();
+            Path templateFolder = cobigenTemplatesFolderFile.toPath();
+            boolean templatesFolderExists = Files.exists(templateFolder);
             getTemplates();
-            cg = CobiGenFactory.create(templatesJar.toURI());
+            if (templatesFolderExists) {
+                cg = CobiGenFactory.create(templateFolder.toUri());
+            } else {
+                cg = CobiGenFactory.create(templatesJar.toURI());
+            }
             return cg;
 
         } catch (InvalidConfigurationException e) {
