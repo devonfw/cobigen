@@ -119,13 +119,17 @@ public class CobiGenUtils {
 
         boolean templatesFolderExists = Files.exists(templateRoot);
 
+        // extra check to make sure that configuration file is not pointing to non existing folder
+        configurationUtils.customTemplatesLocationExists();
+
         ClassLoader inputClassLoader;
         if (templatesFolderExists) {
-            // TODO: Way too hackish
+            // TODO: janv_capgemini Way too hackish
             File templateFolder =
                 Paths.get(cobigenTemplatesFolderFile + File.separator + "src/main/templates").toFile();
             inputClassLoader =
-                URLClassLoader.newInstance(new URL[] { templateFolder.toURI().toURL() }, getClass().getClassLoader());
+                URLClassLoader.newInstance(new URL[] { templateFolder.toURI().toURL(), templatesJar.toURI().toURL() },
+                    getClass().getClassLoader());
         } else {
             inputClassLoader =
                 URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());

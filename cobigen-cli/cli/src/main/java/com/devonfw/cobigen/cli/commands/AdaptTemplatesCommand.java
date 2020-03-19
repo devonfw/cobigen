@@ -148,6 +148,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         } else {
             // sets default templates directory path from CLI location
             cobigenTemplatesDirectory = configurationUtils.getCobigenCliRootPath();
+            configurationUtils.createConfigFile(cobigenTemplatesDirectory.toFile());
             logger.info("Creating custom templates folder next to the CLI @ {}", cobigenTemplatesDirectory);
         }
 
