@@ -109,7 +109,6 @@ public class CobiGenUtils {
      *             {@link IOException} occurred
      */
     List<Class<?>> resolveUtilClasses() throws IOException {
-        templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
 
         File cobigenTemplatesFolderFile = configurationUtils.getCobigenTemplatesFolderFile();
 
@@ -128,9 +127,9 @@ public class CobiGenUtils {
             File templateFolder =
                 Paths.get(cobigenTemplatesFolderFile + File.separator + "src/main/templates").toFile();
             inputClassLoader =
-                URLClassLoader.newInstance(new URL[] { templateFolder.toURI().toURL(), templatesJar.toURI().toURL() },
-                    getClass().getClassLoader());
+                URLClassLoader.newInstance(new URL[] { templateFolder.toURI().toURL() }, getClass().getClassLoader());
         } else {
+            templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
             inputClassLoader =
                 URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
         }
@@ -196,8 +195,8 @@ public class CobiGenUtils {
             }
         } else {
             final List<Path> foundPaths = new LinkedList<>();
-            logger.info("Processing configuration folder " + templateRoot.toString());
-            logger.info("Searching for classes ...");
+            logger.info("Processing configuration folder " + templateRoot);
+            logger.info("Searching for classes in custom folder");
             try {
                 Files.walkFileTree(templateRoot, new SimpleFileVisitor<Path>() {
                     @Override
