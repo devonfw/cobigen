@@ -14,6 +14,9 @@ import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import net.sf.mmm.util.io.api.IoMode;
+import net.sf.mmm.util.io.api.RuntimeIoException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,10 +85,26 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         String sourcesJarPath = cobigenUtils.getTemplatesJar(true).getPath().toString();
         String classesJarPath = cobigenUtils.getTemplatesJar(false).getPath().toString();
         FileSystem fileSystem = FileSystems.getDefault();
-        Path cobigenFolderPath = destinationPath;
 
-        if (cobigenFolderPath == null) {
+        if (destinationPath == null) {
             throw new IOException("Cobigen folder path not found!");
+        }
+
+        String templatesFolderPath =
+            fileSystem.getPath(destinationPath + File.separator + ConfigurationUtils.COBIGEN_TEMPLATES).toString();
+
+        if (templatesFolderPath == null) {
+            throw new IOException("Cobigen templates folder path not found!");
+        }
+
+        Path cobigenTemplatesFolderPath = null;
+        if (fileSystem != null && destinationPath != null) {
+            cobigenTemplatesFolderPath = fileSystem.getPath(templatesFolderPath);
+        }
+
+        if (cobigenTemplatesFolderPath == null) {
+            throw new IOException(
+                "An exception occurred while processing Jar files to create CobiGen_Templates folder");
         }
 
         logger.debug("Processing jar file @ {}", sourcesJarPath);
@@ -94,41 +113,18 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         if (sourcesJarPath.contains("sources")) {
             try (ZipFile file = new ZipFile(classesJarPath)) {
                 Enumeration<? extends ZipEntry> entries = file.entries();
-                Path cobigenTemplatesFolderPath = null;
-                if (fileSystem != null && cobigenFolderPath != null) {
-                    cobigenTemplatesFolderPath =
-                        fileSystem.getPath(cobigenFolderPath + File.separator + ConfigurationUtils.COBIGEN_TEMPLATES);
-                }
-
-                if (cobigenTemplatesFolderPath == null) {
-                    throw new IOException(
-                        "An exception occurred while processing Jar files to create CobiGen_Templates folder");
-                }
-
                 if (Files.notExists(cobigenTemplatesFolderPath)) {
                     Files.createDirectory(cobigenTemplatesFolderPath);
                 }
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
                     if (entry.getName().equals("pom.xml")) {
-                        Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
-                            + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + File.separator + entry.getName());
-
-                        Files.deleteIfExists(saveForFileCreationPath);
-                        Files.createFile(saveForFileCreationPath);
-                        try (InputStream is = file.getInputStream(entry);
-                            BufferedInputStream bis = new BufferedInputStream(is);
-                            FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());) {
-
-                            while (bis.available() > 0) {
-                                fileOutput.write(bis.read());
-                            }
-
-                        }
+                        Path saveForFileCreationPath =
+                            fileSystem.getPath(templatesFolderPath + File.separator + entry.getName());
+                        createFile(file, entry, saveForFileCreationPath);
                     }
                 }
             } catch (IOException e) {
-
                 logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
             }
         }
@@ -136,74 +132,73 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         // unpack sources
         try (ZipFile file = new ZipFile(sourcesJarPath)) {
             Enumeration<? extends ZipEntry> entries = file.entries();
-            if (Files.notExists(cobigenFolderPath)) {
-                Files.createDirectory(cobigenFolderPath);
+            if (Files.notExists(cobigenTemplatesFolderPath)) {
+                Files.createDirectory(cobigenTemplatesFolderPath);
             }
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
-                    + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + File.separator + entry.getName());
+                Path saveForFileCreationPath =
+                    fileSystem.getPath(templatesFolderPath + File.separator + entry.getName());
                 if (entry.getName().contains("context.xml")) {
-                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
-                        + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + File.separator + entry.getName());
+                    saveForFileCreationPath =
+                        fileSystem.getPath(templatesFolderPath + File.separator + entry.getName());
                 } else if (entry.getName().contains("com/")) {
-                    saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
-                        + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + "src" + File.separator + "main"
-                        + File.separator + "java" + File.separator + entry.getName());
+                    saveForFileCreationPath = fileSystem.getPath(templatesFolderPath + File.separator + "src"
+                        + File.separator + "main" + File.separator + "java" + File.separator + entry.getName());
                 }
-                if (entry.isDirectory()) {
-                    Files.createDirectories(saveForFileCreationPath);
-                } else {
-                    Files.deleteIfExists(saveForFileCreationPath);
-                    Files.createFile(saveForFileCreationPath);
-                    try (InputStream is = file.getInputStream(entry);
-                        BufferedInputStream bis = new BufferedInputStream(is);
-                        FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());) {
-
-                        while (bis.available() > 0) {
-                            fileOutput.write(bis.read());
-                        }
-                    }
-                }
+                createFile(file, entry, saveForFileCreationPath);
             }
         } catch (IOException e) {
-            logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
+            logger.error("An exception occurred while unpacking sources from Jar file to templates folder", e);
         }
 
         // unpack classes to target directory
         try (ZipFile file = new ZipFile(classesJarPath)) {
             Enumeration<? extends ZipEntry> entries = file.entries();
-            Path sourcesClassPath = fileSystem.getPath(
-                cobigenFolderPath + File.separator + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + "target");
+            Path sourcesClassPath = fileSystem.getPath(templatesFolderPath + File.separator + "target");
             if (Files.notExists(sourcesClassPath)) {
                 Files.createDirectory(sourcesClassPath);
             }
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-
                 if (entry.getName().contains("com/")) {
                     Path saveForFileCreationPath = fileSystem.getPath(sourcesClassPath + File.separator + "src"
                         + File.separator + "main" + File.separator + "java" + File.separator + entry.getName());
-                    if (entry.isDirectory()) {
-                        Files.createDirectories(saveForFileCreationPath);
-                    } else {
-                        Files.deleteIfExists(saveForFileCreationPath);
-                        Files.createFile(saveForFileCreationPath);
-                        try (InputStream is = file.getInputStream(entry);
-                            BufferedInputStream bis = new BufferedInputStream(is);
-                            FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());) {
-
-                            while (bis.available() > 0) {
-                                fileOutput.write(bis.read());
-                            }
-                        }
-                    }
+                    createFile(file, entry, saveForFileCreationPath);
                 }
-
             }
         } catch (IOException e) {
-            logger.error("An exception occurred while processing sources Jar files to create CobiGen_Templates folder",
-                e);
+            logger.error("An exception occurred while unpacking classes from Jar files to templates folder", e);
+        }
+    }
+
+    /**
+     * Creates a file or directory and cleans up current file if it exists already
+     * @param file
+     *            ZipFile to access
+     * @param entry
+     *            ZipEntry to get input stream from
+     * @param saveForFileCreationPath
+     *            Path to save file at
+     * @throws IOException
+     *             if file could not be created
+     */
+    private static void createFile(ZipFile file, ZipEntry entry, Path saveForFileCreationPath) throws IOException {
+        if (entry.isDirectory()) {
+            Files.createDirectories(saveForFileCreationPath);
+        } else {
+            Files.deleteIfExists(saveForFileCreationPath);
+            Files.createFile(saveForFileCreationPath);
+            try (InputStream is = file.getInputStream(entry);
+                BufferedInputStream bis = new BufferedInputStream(is);
+                FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());) {
+
+                while (bis.available() > 0) {
+                    fileOutput.write(bis.read());
+                }
+            } catch (IOException e) {
+                throw new RuntimeIoException(e, IoMode.WRITE);
+            }
         }
     }
 
