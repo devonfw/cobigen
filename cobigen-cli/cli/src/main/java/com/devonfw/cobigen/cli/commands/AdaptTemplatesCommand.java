@@ -9,9 +9,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -136,7 +134,6 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         }
 
         // unpack sources
-        List<String> templateNames = new ArrayList<>();
         try (ZipFile file = new ZipFile(sourcesJarPath)) {
             Enumeration<? extends ZipEntry> entries = file.entries();
             if (Files.notExists(cobigenFolderPath)) {
@@ -146,8 +143,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
                 ZipEntry entry = entries.nextElement();
                 Path saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
                     + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + File.separator + entry.getName());
-                if (templateNames.parallelStream().anyMatch(entry.getName()::contains)
-                    || entry.getName().contains("context.xml")) {
+                if (entry.getName().contains("context.xml")) {
                     saveForFileCreationPath = fileSystem.getPath(cobigenFolderPath + File.separator
                         + ConfigurationUtils.COBIGEN_TEMPLATES + File.separator + File.separator + entry.getName());
                 } else if (entry.getName().contains("com/")) {
@@ -175,7 +171,6 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         }
 
         // unpack classes to target directory
-        List<String> classNames = new ArrayList<>();
         try (ZipFile file = new ZipFile(classesJarPath)) {
             Enumeration<? extends ZipEntry> entries = file.entries();
             Path sourcesClassPath = fileSystem.getPath(
