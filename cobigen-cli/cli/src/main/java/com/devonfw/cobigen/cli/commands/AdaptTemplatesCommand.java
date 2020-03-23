@@ -125,7 +125,8 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
                     }
                 }
             } catch (IOException e) {
-                logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
+                throw new IOException(
+                    "An exception occurred while unpacking pom.xml from Jar file to templates folder");
             }
         }
 
@@ -149,7 +150,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
                 createFile(file, entry, saveForFileCreationPath);
             }
         } catch (IOException e) {
-            logger.error("An exception occurred while unpacking sources from Jar file to templates folder", e);
+            throw new IOException("An exception occurred while unpacking sources from Jar file to templates folder");
         }
 
         // unpack classes to target directory
@@ -168,7 +169,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
                 }
             }
         } catch (IOException e) {
-            logger.error("An exception occurred while unpacking classes from Jar files to templates folder", e);
+            throw new IOException("An exception occurred while unpacking classes from Jar files to templates folder");
         }
     }
 
