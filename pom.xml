@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+initoiv<?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
@@ -16,7 +16,7 @@
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
     <tycho.version>1.5.1</tycho.version>
-    <bintray.url>https://api.bintray.com/content/devonfw</bintray.url>
+    <bintray.url>https://dl.bintray.com/devonfw</bintray.url>
     <!-- bintray.repository needs to be set by cmd and needs to be one of https://bintray.com/devonfw repositories -->
     <bintray.repository.url>${bintray.url}/${bintray.repository}</bintray.repository.url>
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
