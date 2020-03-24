@@ -16,7 +16,7 @@
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
     <tycho.version>1.5.1</tycho.version>
-    <bintray.url>https://dl.bintray.com/devonfw</bintray.url>
+    <bintray.url>https://api.bintray.com/content/devonfw</bintray.url>
     <!-- bintray.repository needs to be set by cmd and needs to be one of https://bintray.com/devonfw repositories -->
     <bintray.repository.url>${bintray.url}/${bintray.repository}</bintray.repository.url>
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
@@ -476,8 +476,7 @@
                   <fromDir>${p2.repository.upload.dir.plugin}</fromDir>
                   <excludes>*.jar</excludes>
                   <!-- We need to duplicate /cobigen-${project.artifactId} as a workaround for bintray -->
-                  <url>${bintray.repository.url}</url>
-                  <toDir>updatesite/cobigen-${project.artifactId}/cobigen-${project.artifactId}</toDir>
+                  <url>${bintray.repository.url}/updatesite/cobigen-${project.artifactId}/cobigen-${project.artifactId};publish=1</url>
                   <serverId>bintray-repo</serverId>
                 </configuration>
               </execution>
