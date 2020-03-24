@@ -461,7 +461,8 @@
                 <configuration>
                   <fromDir>${p2.repository.upload.dir.plugin}</fromDir>
                   <includes>*.jar</includes>
-                  <url>${bintray.repository.url}/cobigen-${project.artifactId}</url>
+                  <url>${bintray.repository.url}</url>
+                  <toDir>cobigen-${project.artifactId}</toDir>
                   <serverId>bintray-repo</serverId>
                 </configuration>
               </execution>
@@ -476,7 +477,8 @@
                   <fromDir>${p2.repository.upload.dir.plugin}</fromDir>
                   <excludes>*.jar</excludes>
                   <!-- We need to duplicate /cobigen-${project.artifactId} as a workaround for bintray -->
-                  <url>${bintray.repository.url}/updatesite/cobigen-${project.artifactId}/cobigen-${project.artifactId}</url>
+                  <url>${bintray.repository.url}</url>
+                  <toDir>updatesite/cobigen-${project.artifactId}/cobigen-${project.artifactId}</toDir>
                   <serverId>bintray-repo</serverId>
                 </configuration>
               </execution>
