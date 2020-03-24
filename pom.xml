@@ -461,8 +461,7 @@
                 <configuration>
                   <fromDir>${p2.repository.upload.dir.plugin}</fromDir>
                   <includes>*.jar</includes>
-                  <url>${bintray.repository.url}</url>
-                  <toDir>cobigen-${project.artifactId}</toDir>
+                  <url>${bintray.repository.url}/cobigen-${project.artifactId};publish=1</url>
                   <serverId>bintray-repo</serverId>
                 </configuration>
               </execution>
