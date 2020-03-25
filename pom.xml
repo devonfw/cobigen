@@ -469,7 +469,7 @@
               <subject>devonfw</subject>
               <repository>${bintray.repository}</repository>
               <serverId>bintray-repo</serverId>
-              <bintrayVersion>${project.version}</bintrayVersion>
+              <bintrayVersion>${qualifiedVersion}</bintrayVersion>
               <sourceFolder>${p2.repository.upload.dir.plugin}</sourceFolder>
               <targetFolder>cobigen-${project.artifactId}</targetFolder>
             </configuration>
