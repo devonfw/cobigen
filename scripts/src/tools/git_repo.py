@@ -111,7 +111,7 @@ class GitRepo:
         else:
             files_to_add = files
 
-        self.__repo.index.add([i for i in files_to_add if self.__is_tracked_and_dirty(i)])
+        self.__repo.git.add(u=True)
 
     def merge(self, source: str, target: str) -> None:
         if self.__config.dry_run:
