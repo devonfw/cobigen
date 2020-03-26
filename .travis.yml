@@ -28,7 +28,7 @@ stages:
   - name: Build & Test
     if: (branch != gh-pages) AND (branch != dev_oomph_setup)
   - name: Deploy
-    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup)
+    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (type = push)
 jobs:
   include:
     - stage: Build & Test
