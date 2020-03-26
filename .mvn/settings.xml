@@ -11,5 +11,10 @@
       <username>${env.SONATYPE_USERNAME}</username>
       <password>${env.SONATYPE_PASSWORD}</password>
     </server>
+	<server>
+      <id>bintray-repo</id>
+      <username>${env.BINTRAY_USERNAME}</username>
+      <password>${env.BINTRAY_PASSWORD}</password>
+    </server>
   </servers>
 </settings>

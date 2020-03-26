@@ -8,13 +8,13 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -69,7 +69,7 @@ public class AbstractMavenTest {
     public void getSettingsFile() throws IOException {
         mvnSettingsFile = tmpFolder.newFile();
         Files.write(mvnSettingsFile.toPath(),
-            IOUtil.toByteArray(AbstractMavenTest.class.getResourceAsStream("/test-maven-settings.xml")));
+            IOUtils.toByteArray(AbstractMavenTest.class.getResourceAsStream("/test-maven-settings.xml")));
         LOG.info("Temporary settings file created in " + mvnSettingsFile.getAbsolutePath());
     }
 
@@ -89,7 +89,7 @@ public class AbstractMavenTest {
     }
 
     /**
-     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
+     * Runs the maven invoker with goal package and the default devonfw settings file. Makes sure, that the
      * local repository of the executing maven process is used.
      * @param testProject
      *            the test project to build
@@ -106,7 +106,7 @@ public class AbstractMavenTest {
     }
 
     /**
-     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
+     * Runs the maven invoker with goal package and the default devonfw settings file. Makes sure, that the
      * local repository of the executing maven process is used.
      * @param testProject
      *            the test project to build
@@ -125,7 +125,7 @@ public class AbstractMavenTest {
         assertThat(testProject).exists();
 
         File testProjectRoot = tmpFolder.newFolder();
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
+        FileUtils.copyDirectory(testProject, testProjectRoot);
 
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(testProjectRoot);
