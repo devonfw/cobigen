@@ -411,6 +411,28 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+          <!-- sets ${qualifiedVersion} for bintray upload -->
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-packaging-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <executions>
+              <execution>
+                <id>build-qualifier</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>build-qualifier</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
             <groupId>org.eclipse.tycho.extras</groupId>
             <artifactId>tycho-p2-extras-plugin</artifactId>
             <version>1.1.0</version>
@@ -451,34 +473,26 @@
                   <serverId>bintray-repo</serverId>
                 </configuration>
               </execution>
-              <!-- Here we are going to upload artifacts.jar and content.jar -->
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>com.carrotgarden.maven</groupId>
+            <artifactId>bintray-maven-plugin</artifactId>
+            <version>1.5.20191113165555</version>
+            <configuration>
+              <skip>false</skip>
+              <subject>devonfw</subject>
+              <repository>${bintray.repository}</repository>
+              <serverId>bintray-repo</serverId>
+              <bintrayVersion>${qualifiedVersion}</bintrayVersion>
+              <sourceFolder>${p2.repository.upload.dir.plugin}</sourceFolder>
+              <targetFolder>cobigen-${project.artifactId}</targetFolder>
+            </configuration>
+            <executions>
               <execution>
-                <id>upload-jars</id>
-                <phase>deploy</phase>
                 <goals>
                   <goal>upload</goal>
                 </goals>
-                <configuration>
-                  <fromDir>${p2.repository.upload.dir.plugin}</fromDir>
-                  <includes>*.jar</includes>
-                  <url>${bintray.repository.url}/cobigen-${project.artifactId}</url>
-                  <serverId>bintray-repo</serverId>
-                </configuration>
-              </execution>
-              <!-- Here we are going to upload the /plugins folder -->
-              <execution>
-                <id>upload-directory</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <fromDir>${p2.repository.upload.dir.plugin}</fromDir>
-                  <excludes>*.jar</excludes>
-                  <!-- We need to duplicate /cobigen-${project.artifactId} as a workaround for bintray -->
-                  <url>${bintray.repository.url}/updatesite/cobigen-${project.artifactId}/cobigen-${project.artifactId}</url>
-                  <serverId>bintray-repo</serverId>
-                </configuration>
               </execution>
             </executions>
           </plugin>
