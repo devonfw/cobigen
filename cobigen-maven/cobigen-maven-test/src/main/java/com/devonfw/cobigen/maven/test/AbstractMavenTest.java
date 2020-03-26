@@ -89,7 +89,7 @@ public class AbstractMavenTest {
     }
 
     /**
-     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
+     * Runs the maven invoker with goal package and the default devonfw settings file. Makes sure, that the
      * local repository of the executing maven process is used.
      * @param testProject
      *            the test project to build
@@ -106,7 +106,7 @@ public class AbstractMavenTest {
     }
 
     /**
-     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
+     * Runs the maven invoker with goal package and the default devonfw settings file. Makes sure, that the
      * local repository of the executing maven process is used.
      * @param testProject
      *            the test project to build
