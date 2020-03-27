@@ -99,6 +99,57 @@ public class CobiGenUtils {
     private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
 
     /**
+     * Stores the URLs for the ClassLoader
+     */
+    private URL[] classLoaderUrls = {};
+
+    /**
+     *
+     */
+    File configurationFolder = configurationUtils.getCobigenTemplatesFolderFile();
+
+    /**
+     * Initializes the ClassLoader with given URLs array
+     * @param urls
+     *            URL[] Array of URLs to load into ClassLoader
+     * @return ClassLoader to load resources from
+     */
+    private ClassLoader getUrlClassLoader(URL[] urls) {
+        ClassLoader inputClassLoader = null;
+        inputClassLoader = URLClassLoader.newInstance(urls, getClass().getClassLoader());
+        return inputClassLoader;
+    }
+
+    /**
+     * Adds the given URL to the classLoaderUrls array
+     * @param url
+     *            URL to add to classLoaderUrls array
+     */
+    private void addUrlToClassLoaderUrls(URL url) {
+        ArrayList<URL> newUrls = new ArrayList<URL>(Arrays.asList((classLoaderUrls)));
+        newUrls.add(url);
+        classLoaderUrls = newUrls.toArray(new URL[] {});
+    }
+
+    /**
+     * Adds folders to class loader urls e.g. src/main/templates for config.xml detection
+     * @param configurationFolder
+     *            File configuration folder for which to generate paths
+     * @throws MalformedURLException
+     */
+    private void addFoldersToClassLoaderUrls(File configurationFolder) throws MalformedURLException {
+        String[] possibleLocations = new String[] { "src/main/templates", "target/classes", "target/test-classes" };
+
+        for (String possibleLocation : possibleLocations) {
+            File folder = Paths.get(configurationFolder + File.separator + possibleLocation).toFile();
+            if (Files.exists(folder.toPath())) {
+                addUrlToClassLoaderUrls(folder.toURI().toURL());
+                logger.debug("Added " + folder.toURI().toURL().toString() + " to class path");
+            }
+        }
+    }
+
+    /**
      * Resolves all utilities classes, which have been defined in the custom template folder or the templates
      * jar.
      *
@@ -110,34 +161,22 @@ public class CobiGenUtils {
      */
     List<Class<?>> resolveUtilClasses() throws IOException {
 
-        File cobigenTemplatesFolderFile = configurationUtils.getCobigenTemplatesFolderFile();
-
         final List<Class<?>> result = new LinkedList<>();
 
-        Path templateRoot = cobigenTemplatesFolderFile.toPath();
-
-        boolean templatesFolderExists = Files.exists(templateRoot);
-
-        // extra check to make sure that configuration file is not pointing to non existing folder
-        configurationUtils.customTemplatesLocationExists();
-
+        Path templateRoot = null;
         ClassLoader inputClassLoader;
-        if (templatesFolderExists) {
-            // TODO: janv_capgemini Way too hackish
-            File templateFolder =
-                Paths.get(cobigenTemplatesFolderFile + File.separator + "src/main/templates").toFile();
-            inputClassLoader =
-                URLClassLoader.newInstance(new URL[] { templateFolder.toURI().toURL() }, getClass().getClassLoader());
-        } else {
-            templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-            inputClassLoader =
-                URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
+        if (configurationFolder != null) {
+            addUrlToClassLoaderUrls(configurationFolder.toURI().toURL());
+            logger.debug("Added " + configurationFolder.toURI().toURL().toString() + " to class path");
+            templateRoot = configurationFolder.toPath();
+            addFoldersToClassLoaderUrls(configurationFolder);
+
         }
 
+        inputClassLoader = getUrlClassLoader(classLoaderUrls);
         URL contextConfigurationLocation = configurationUtils.getContextConfiguration(inputClassLoader);
 
         final List<String> foundClasses = new LinkedList<>();
-
         if (contextConfigurationLocation.toString().startsWith("jar")) {
             logger.info("Processing configuration archive " + contextConfigurationLocation.toString());
 
@@ -239,9 +278,11 @@ public class CobiGenUtils {
      */
     public CobiGen initializeCobiGen() {
         CobiGen cg = null;
+        // extra check to make sure that configuration file is not pointing to non existing folder
+        configurationUtils.customTemplatesLocationExists();
         try {
             registerPlugins();
-            getTemplatesJar(false);
+            templatesJar = getTemplatesJar(false);
             File cobigenTemplatesFolderFile = configurationUtils.getCobigenTemplatesFolderFile();
             Path templateFolder = cobigenTemplatesFolderFile.toPath();
             boolean templatesFolderExists = Files.exists(templateFolder);
