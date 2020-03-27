@@ -26,9 +26,9 @@ stages:
   - name: Documentation
     if: (branch = master) AND (type = push) AND (fork = false)
   - name: Build & Test
-    if: (branch != gh-pages) AND (branch != dev_oomph_setup)
+    if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
   - name: Deploy
-    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (type = push) AND (fork = false)
+    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (type = push) AND (fork = false) AND (tag IS blank)
 jobs:
   include:
     - stage: Build & Test
