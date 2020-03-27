@@ -258,6 +258,24 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     /**
+     * Adds folders to class loader urls e.g. src/main/templates for config.xml detection
+     * @param configurationFolder
+     *            File configuration folder for which to generate paths
+     * @throws MalformedURLException
+     */
+    private void addFoldersToClassLoaderUrls(File configurationFolder) throws MalformedURLException {
+        String[] possibleLocations = new String[] { "src/main/templates", "target/classes", "target/test-classes" };
+
+        for (String possibleLocation : possibleLocations) {
+            File folder = Paths.get(configurationFolder + File.separator + possibleLocation).toFile();
+            if (Files.exists(folder.toPath())) {
+                addUrlToClassLoaderUrls(folder.toURI().toURL());
+                getLog().debug("Added " + folder.toURI().toURL().toString() + " to class path");
+            }
+        }
+    }
+
+    /**
      * Walks the class path in search of an 'context.xml' resource to identify the enclosing folder or jar
      * file. That location is then searched for class files and a list with those loaded classes is returned.
      * If the sources are not compiled, the templates will not be able to be generated.
@@ -272,38 +290,15 @@ public class GenerateMojo extends AbstractMojo {
         Path templateRoot = null;
         ClassLoader inputClassLoader = null;
         if (configurationFolder != null) {
-            // TODO: janv_capgemini Way too hackishh
-            File templateFolder = Paths.get(configurationFolder + File.separator + "src/main/templates").toFile();
-            File classFolder = Paths.get(configurationFolder + File.separator + "target/classes").toFile();
-            File testClassFolder = Paths.get(configurationFolder + File.separator + "target/test-classes").toFile();
-            File configFolder = configurationFolder.toPath().toFile();
-
+            addUrlToClassLoaderUrls(configurationFolder.toURI().toURL());
+            getLog().debug("Added " + configurationFolder.toURI().toURL().toString() + " to class path");
             templateRoot = configurationFolder.toPath();
-
-            if (Files.exists(templateFolder.toPath())) {
-                addUrlToClassLoaderUrls(templateFolder.toURI().toURL());
-                getLog().info("Added " + templateFolder.toURI().toURL().toString() + " to class path");
-            }
-
-            if (Files.exists(classFolder.toPath())) {
-                addUrlToClassLoaderUrls(classFolder.toURI().toURL());
-                getLog().info("Added " + classFolder.toURI().toURL().toString() + " to class path");
-            }
-
-            if (Files.exists(testClassFolder.toPath())) {
-                addUrlToClassLoaderUrls(testClassFolder.toURI().toURL());
-                getLog().info("Added " + testClassFolder.toURI().toURL().toString() + " to class path");
-            }
-
-            if (Files.exists(configFolder.toPath())) {
-                addUrlToClassLoaderUrls(configFolder.toURI().toURL());
-                getLog().info("Added " + configFolder.toURI().toURL().toString() + " to class path");
-            }
-
+            addFoldersToClassLoaderUrls(configurationFolder);
         } else {
             File templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
             if (Files.exists(templatesJar.toPath())) {
                 addUrlToClassLoaderUrls(templatesJar.toURI().toURL());
+                getLog().debug("Added " + templatesJar.toURI().toURL().toString() + " to class path");
             }
         }
 
