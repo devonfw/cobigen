@@ -29,10 +29,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.io.Charsets;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
@@ -46,11 +42,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
@@ -284,16 +275,10 @@ public class GenerateMojo extends AbstractMojo {
             // TODO: janv_capgemini Way too hackishh
             File templateFolder = Paths.get(configurationFolder + File.separator + "src/main/templates").toFile();
             File classFolder = Paths.get(configurationFolder + File.separator + "target/classes").toFile();
-            File classFolder2 = Paths.get(configurationFolder + File.separator + "target/src").toFile();
             File testClassFolder = Paths.get(configurationFolder + File.separator + "target/test-classes").toFile();
-            File configFolder = Paths.get(configurationFolder + "").toFile();
+            File configFolder = configurationFolder.toPath().toFile();
 
             templateRoot = configurationFolder.toPath();
-
-            if (Files.exists(classFolder2.toPath())) {
-                addUrlToClassLoaderUrls(classFolder2.toURI().toURL());
-                getLog().info("Added " + classFolder2.toURI().toURL().toString() + " to class path");
-            }
 
             if (Files.exists(templateFolder.toPath())) {
                 addUrlToClassLoaderUrls(templateFolder.toURI().toURL());
@@ -423,46 +408,6 @@ public class GenerateMojo extends AbstractMojo {
         }
 
         return result;
-    }
-
-    /**
-     * Reads the .classpath file top level to root and reads the classpathentry of kind output and returns its
-     * value
-     * @param root
-     *            the root folder to search .classpath file in
-     * @return the output path or null
-     */
-    private String getClassOutputPathFromDotClasspathFile(Path root) {
-        Path file = root.resolve(".classpath");
-        if (Files.exists(file) && Files.isRegularFile(file)) {
-            getLog().info("Found a .classpath file");
-
-            try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document doc = db.parse(file.toFile());
-                Element classpath = doc.getDocumentElement(); // should be classpath
-
-                NodeList childs = classpath.getChildNodes(); // should be classpathentry
-                for (int i = 0; i < childs.getLength(); i++) {
-                    Node classpathentry = childs.item(i);
-                    if (classpathentry.getNodeName().equals("classpathentry")) {
-                        Node kind = classpathentry.getAttributes().getNamedItem("kind");
-                        if (kind.getTextContent().equals("output")
-                            && classpathentry.getAttributes().getNamedItem("path") != null) {
-                            String outputPath = classpathentry.getAttributes().getNamedItem("path").getTextContent();
-                            getLog().info("Found class output path: " + outputPath);
-                            return outputPath;
-                        }
-                    }
-                }
-            } catch (ParserConfigurationException | SAXException e) {
-                getLog().warn("Could not read .classpath file. Uknown format.");
-            } catch (IOException e) {
-                getLog().warn("Could not access .classpath file.");
-            }
-        }
-        return null;
     }
 
     /**
