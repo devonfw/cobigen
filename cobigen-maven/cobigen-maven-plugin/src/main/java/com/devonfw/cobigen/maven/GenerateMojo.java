@@ -52,7 +52,6 @@ import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -264,7 +263,8 @@ public class GenerateMojo extends AbstractMojo {
      * @throws MalformedURLException
      */
     private void addFoldersToClassLoaderUrls(File configurationFolder) throws MalformedURLException {
-        String[] possibleLocations = new String[] { "src/main/templates", "target/classes", "target/test-classes" };
+        String[] possibleLocations =
+            new String[] { "src/main/templates", "target/classes", "target/src", "target/test-classes" };
 
         for (String possibleLocation : possibleLocations) {
             File folder = Paths.get(configurationFolder + File.separator + possibleLocation).toFile();
@@ -294,12 +294,6 @@ public class GenerateMojo extends AbstractMojo {
             getLog().debug("Added " + configurationFolder.toURI().toURL().toString() + " to class path");
             templateRoot = configurationFolder.toPath();
             addFoldersToClassLoaderUrls(configurationFolder);
-        } else {
-            File templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-            if (Files.exists(templatesJar.toPath())) {
-                addUrlToClassLoaderUrls(templatesJar.toURI().toURL());
-                getLog().debug("Added " + templatesJar.toURI().toURL().toString() + " to class path");
-            }
         }
 
         inputClassLoader = getUrlClassLoader(classLoaderUrls);
