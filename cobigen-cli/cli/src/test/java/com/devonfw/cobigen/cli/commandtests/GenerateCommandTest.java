@@ -26,7 +26,7 @@ public class GenerateCommandTest {
     private static String testFileRootPath = "src/test/resources/testdata/";
 
     /** Declare ArrayList variable for adding generate increment */
-    ArrayList<File> geneatedList = new ArrayList<>();
+    ArrayList<File> generatedList = new ArrayList<>();
 
     /**
      * Input Java entity used in the tests
@@ -61,9 +61,9 @@ public class GenerateCommandTest {
 
         File generatedFiles = baseProject.toPath()
             .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
-        geneatedList.add(generatedFiles);
-        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
-        geneatedList.clear();
+        generatedList.add(generatedFiles);
+        GenerateCommandTest.deleteGeneratedFiles(generatedList);
+        generatedList.clear();
     }
 
     /**
@@ -87,12 +87,12 @@ public class GenerateCommandTest {
         File generatedFiles = outputRootPath.toPath()
             .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
 
-        geneatedList.add(generatedFiles);
+        generatedList.add(generatedFiles);
         // If you want to remove the generated files
-        geneatedList.add(outputRootPath.toPath().resolve("src").toFile());
-        geneatedList.add(outputRootPath.getParentFile().toPath().resolve("api").toFile());
-        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
-        geneatedList.clear();
+        generatedList.add(outputRootPath.toPath().resolve("src").toFile());
+        generatedList.add(outputRootPath.getParentFile().toPath().resolve("api").toFile());
+        GenerateCommandTest.deleteGeneratedFiles(generatedList);
+        generatedList.clear();
     }
 
     /**
@@ -118,16 +118,16 @@ public class GenerateCommandTest {
 
         Path rootPath = outputRootFile.toPath();
         File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
-        geneatedList.add(generatedFiles);
+        generatedList.add(generatedFiles);
         generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/shopmanagement").toFile();
-        geneatedList.add(generatedFiles);
+        generatedList.add(generatedFiles);
         generatedFiles = new File(testFileRootPath + "/devon4ng-ionic-application-template");
-        geneatedList.add(generatedFiles);
-        geneatedList.add(rootPath.resolve("src").toFile());
-        geneatedList.add(rootPath.resolve("docs").toFile());
-        geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
-        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
-        geneatedList.clear();
+        generatedList.add(generatedFiles);
+        generatedList.add(rootPath.resolve("src").toFile());
+        generatedList.add(rootPath.resolve("docs").toFile());
+        generatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
+        GenerateCommandTest.deleteGeneratedFiles(generatedList);
+        generatedList.clear();
     }
 
     /**
@@ -164,9 +164,9 @@ public class GenerateCommandTest {
         CobiGenCLI.main(args);
 
         File generatedFiles = baseProject.toPath().resolve("src/main/java/com/maven/project/general/").toFile();
-        geneatedList.add(generatedFiles);
-        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
-        geneatedList.clear();
+        generatedList.add(generatedFiles);
+        GenerateCommandTest.deleteGeneratedFiles(generatedList);
+        generatedList.clear();
     }
 
     /**
@@ -189,17 +189,17 @@ public class GenerateCommandTest {
 
         Path rootPath = outputRootFile.toPath();
         File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
-        geneatedList.add(generatedFiles);
+        generatedList.add(generatedFiles);
         File generateFiles =
             outputRootFile.toPath().resolve("src/main/java/com/maven/project/general/logic/base").toFile();
-        geneatedList.add(generateFiles);
+        generatedList.add(generateFiles);
         generateFiles = outputRootFile.toPath().resolve("src/main/java/com/maven/project/general/common").toFile();
-        geneatedList.add(generateFiles);
+        generatedList.add(generateFiles);
 
-        geneatedList.add(outputRootFile.toPath().resolve("src/").toFile());
-        geneatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
-        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
-        geneatedList.clear();
+        generatedList.add(outputRootFile.toPath().resolve("src/").toFile());
+        generatedList.add(outputRootFile.getParentFile().toPath().resolve("api").toFile());
+        GenerateCommandTest.deleteGeneratedFiles(generatedList);
+        generatedList.clear();
     }
 
     /**
@@ -222,15 +222,15 @@ public class GenerateCommandTest {
 
         Path rootPath = new File(testFileRootPath).toPath();
         File generatedFiles = rootPath.resolve("devon4ng-application-template/src/app").toFile();
-        geneatedList.add(generatedFiles);
+        generatedList.add(generatedFiles);
         generatedFiles = rootPath.resolve("devon4ng-application-template/src/assets").toFile();
-        geneatedList.add(generatedFiles);
+        generatedList.add(generatedFiles);
         generatedFiles = rootPath.resolve("devon4ng-application-template/src/environments").toFile();
-        geneatedList.add(generatedFiles);
+        generatedList.add(generatedFiles);
         generatedFiles = new File(testFileRootPath + "/devon4ng-application-template"); //$NON-NLS-1$
-        geneatedList.add(generatedFiles);
-        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
-        geneatedList.clear();
+        generatedList.add(generatedFiles);
+        GenerateCommandTest.deleteGeneratedFiles(generatedList);
+        generatedList.clear();
     }
 
     /**
@@ -260,9 +260,9 @@ public class GenerateCommandTest {
         CobiGenCLI.main(args);
 
         Path rootPath = outputRootFile.toPath();
-        geneatedList.add(rootPath.resolve("docs").toFile());
-        GenerateCommandTest.deleteGeneratedFiles(geneatedList);
+        generatedList.add(rootPath.resolve("docs").toFile());
+        GenerateCommandTest.deleteGeneratedFiles(generatedList);
         openApiFile.delete();
-        geneatedList.clear();
+        generatedList.clear();
     }
 }
