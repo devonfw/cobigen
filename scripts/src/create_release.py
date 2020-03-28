@@ -255,7 +255,7 @@ __log_step("Deploy artifacts to nexus and update sites...")
 def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
     activation_str = ""
     if oss:
-        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable        
+        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable
     run_maven_process_and_handle_error("mvn clean package -U bundle:bundle -Pp2-bundle -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn install -U bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true", execpath=execpath)
     run_maven_process_and_handle_error("mvn deploy -U "+activation_str+" -Dmaven.test.skip=true -Dbintray.repository=cobigen.p2", execpath=execpath)
@@ -276,6 +276,7 @@ if config.dry_run or config.test_run:
     log_info_dry("Would now deploy to maven central/OSS & updatesite. Skipping...")
 else:
     if config.branch_to_be_released not in [config.branch_eclipseplugin, config.branch_mavenplugin, config.branch_core, config.branch_javaplugin, config.branch_openapiplugin]:
+        __deploy_m2_only(config.oss)
         __deploy_m2_as_p2(config.oss)
     elif config.branch_to_be_released == config.branch_javaplugin:
         __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-javaplugin-model"))
