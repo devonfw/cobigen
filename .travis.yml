@@ -22,28 +22,22 @@ env:
     - secure: ax002sOgbQova/2ofIFEDKbUssJiFDbyDLQzYbAHRLKB06KpKx4yCRk6OicTC7cD9iMe0Ftm82+ZrL9Pt1CMqvZX/CVo+qxVV6Pj6LPHZvSssyzp3HCHcaHo3Wss/+GlEwkR7xV5c2wKzVoRcOSmVwonBR7Xr+ivOC04kamDWnart+P1Iwr7CL9zQo8g7m9kq+hCjmdj000pd9DncgJoZN/CS58HOaRbHZdVD9CRgxVi6lYpldtpAQo2YQUARgc4R/+vTozvNSyLKxEEbylWMifn0cND/NjJd2pk7WGVUiqSPdGF6ByOCXYGa6eLjc9Zp2N9iCPdXszrw+MuC8g0fm9/wXueNO2Fa13oO3hWhi3uxDO9XZ6QRjW+6OyrqSb6Cm2F3T0In07GHNXcfr/PkzDGoXJGCymYn/NYJQhI+kNbaVq+Pz0xisOl79By1zcJuc16PQDoMFZN5vpcqW8O/IK9XhNxok8eW5bH+/r+cgRWM3ZUSxamMgH4SuWz7iotLtKlyHOHpMjTb0s/5nEY5OHbgTtaXvAmwX74LiL/FS49o7lbYfbtMsPySghIUrsaJ936gBCmhS1aWuF/K2ew9jkZT6m3eWZ7+H6/hT49C17jnmey89J7PGNwrkQJtNPAic/MxiyHTpzD1/fE9qw4+VBssvZPH+abokMxF8e1joI=
     - secure: XTEsjRiKbOWMF4M4SGduuxukYsRS+Lh41JU3ABVTS2zWpj21MXxzBc9T4o9fmbwRaPh8O3uDrBcG4Qp3BidI6JjVgZWKx7kNQsuSIsJH3Tz5eTptUp0buLKqa06lSHJarvTvHjcpNbgzlzby/ivmvo5kCrp3ekpRZAz70Tp8FubMSjJ6pT0LmOYVugveOnRAzraPoDvUbc4vWl2oKNzeIW++Gg3iBvOr+//6/AEJc2K5zdSCtm6oNleA4TRCT/G/Lg8XP7DSnDtHBAVx73knQihYjG8UhbFL7BCzBwpApwj2X6z6LVWPPCSe68J6P7gzqCYqz6Es2UomtFoMb/TFkhST/UFmqdPq2mBWrrsHThyLNAyUoGenZDQHTWfPv76B9F7uCvju3fwjPDhIsGWFbZWYBBYie1pzhngJYcICC6Yi1qhcqBSl73eHj0dubQuiW8zYrbY1Xj9KqRKF6UxRQru/DwRf1Ao/FiU1Y3CfTpJZcLedS5Wy8CgnkVLcK1SxX+UVc6VCuH9K9IrbbZM/Hx0HBDI/g4B8BN7+wBO68OTYmaALVlRdGTvfdCbUHsWGB8Zf/sqVIH2nv7XB6nojG6W1ANc3P/45LpZhmDGb1iwZ0rT+1t49Me0Cl4+cyQnPwlr8W5K9wHu0iVdtg/l0d9Q95bjhO6TJU/S6zDsusn0=
     - secure: kwP9fFcGxzE1usORJH0zRFlzxvi9LOC+FcgMbFxU0GOqkEAFFwOdnUoelk26/73wRuJpPww2W0pAFPYO5LSa5HjTeEdWDHrSadbn2L2B9lZY3rYI3ZLrXSMi1rsC2rtZnEZbs08BzmXu/u9YSgiArijaUTgObGXzTAtIoem+Mj8za7bVYznbc5YEFk4/NGzxPiw7DmtNLtMd9F0fYrOLslpDoXgCTqYfMweUCJ2ZnF7zfOjtL7pc8RA2MN0CEZUGZ9/isUQ5FUE5GSl+HKP+NHIhpx+sMWOGLIu2NuMLPEMiv6W8m4n814CRhf9yuDKKuEDhvhF06hQpRpnAGwaIxwXLIhwvndASa/rsy1gguvNYCWxi0dSIYTdHRr80iiJFtAWTP/6ddhO+E5vltRrclTsYnpQ2Im8Oz51pzP2mQ8iax4cY+kqAPibpF/k6qVc6YCIHykWQQbp0iVGDquhNqoEYKc/Oyd6wOqSzeGkme8M+pk3tQP7Eb9Ffyve5PdZauuz7bohSJN5CII+pydVJCnTThxejnDiNDYWjEur6LSdfBlMqVUsBvmH9wQ0nCrlKcx+5H+i3nqWImrY+DfoVeyDS7HVIZBj1NZhVia3AnN74n40hxY1NuQ//QkUu2p9FrweNCjc/tTf171LxKs3/0my3QvLgeOdvHD0Jq8mkMX8=
-stages:
-  - name: Build Docs as PDF
-    if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
-  - name: Build & Test
-    if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
-  - name: Deploy M2
-    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_eclipseplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
-  - name: Deploy P2
-    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_core) AND (branch != dev_mavenplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
-  - name: Deploy docs to devonfw-guide & devonfw.com
-    if: (branch = master) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
 jobs:
   include:
     - stage: Build
-      script: ./scripts/travis-build-test.sh
       name: Build & Test
-    - script: ./scripts/travis-build-docs.sh
-      name: Build docs as PDF
+      script: ./scripts/travis-build-test.sh
+      if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
+    - name: Build docs as PDF
+      script: ./scripts/travis-build-docs.sh
+      if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
     - stage: Deploy
-      script: ./scripts/travis-deploy-m2.sh
       name: Deploy M2
-    - script: ./scripts/travis-deploy-p2.sh
-      name: Deploy P2
-    - script: ./scripts/travis-sync-docs.sh
-      name: Deploy docs to devonfw-guide & devonfw.com
+      script: ./scripts/travis-deploy-m2.sh
+      if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_eclipseplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
+    - name: Deploy P2
+      script: ./scripts/travis-deploy-p2.sh
+      if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_core) AND (branch != dev_mavenplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
+    - name: Deploy docs to devonfw-guide & devonfw.com
+      script: ./scripts/travis-sync-docs.sh
+      if: (branch = master) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
