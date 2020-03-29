@@ -1,4 +1,4 @@
-language: generic
+language: java
 jdk:
   - openjdk8
   - openjdk11
@@ -31,13 +31,17 @@ jobs:
     - name: Build docs as PDF
       script: ./scripts/travis-build-docs.sh
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
+      jdk: openjdk11
     - stage: Deploy
       name: Deploy M2
       script: ./scripts/travis-deploy-m2.sh
       if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_eclipseplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
+      jdk: openjdk11
     - name: Deploy P2
       script: ./scripts/travis-deploy-p2.sh
       if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_core) AND (branch != dev_mavenplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
+      jdk: openjdk11
     - name: Deploy docs to devonfw-guide & devonfw.com
       script: ./scripts/travis-sync-docs.sh
       if: (branch = master) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
+      jdk: openjdk11
