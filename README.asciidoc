@@ -47,13 +47,11 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 |===
 | Top-level folder | Description
 
-| `cobigen-documentation`      | Contains git submodules for building and tagging the wiki. 
+| `cobigen-cli` | Contains the cobigen command line interface implementation.
 
-| `cobigen-eclipse`      | Contains the cobigen eclipse bundles. The implementation of the plug-in is driven in `cobigen-eclipse/cobigen-eclipse` folder.  
+| `cobigen-eclipse` | Contains the cobigen eclipse bundles. The implementation of the plug-in is driven in `cobigen-eclipse/cobigen-eclipse` folder.  
 
 | `cobigen-maven` | Contains the maven plug-in implementation.     
-
-| `cobigen-review` | Project to be used for https://github.com/AgileReview-Project/AgileReview-Legacy-Plugin[AgileReview] 
 
 | `cobigen-templates` | Contains template sets for different architectures 
 
