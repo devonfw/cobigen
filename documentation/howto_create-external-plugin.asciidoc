@@ -19,7 +19,7 @@ Below you will find a very high level description of how CobiGen worked in previ
 
 image::images/howtos/todo-plugin/oldCobiGen.png[Old CobiGen,width="450"link="images/howtos/todo-plugin/oldCobiGen.png"]
 
-Basically, when a new input file was sent to CobiGen, it called the input reader to create a model of it (see link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-tsplugin#object-model[here] an example of a model). That model was sent to the template engine. 
+Basically, when a new input file was sent to CobiGen, it called the input reader to create a model of it (see link:https://github.com/devonfw/cobigen/wiki/cobigen-tsplugin#object-model[here] an example of a model). That model was sent to the template engine. 
 
 Afterwards, the template engine generated a new file which had to be merged with the original one. All this code was implemented in Java.
 
@@ -49,7 +49,7 @@ As you can see, the endpoints have the following naming convention: `processmana
 
 When implementing service `getInputModel` which returns a model from the input file there are only two restrictions:
 
-* A `path` key must be added. Its value can be the full path of the input file or just the file name. It is needed because in CobiGen there is a link:https://github.com/devonfw/tools-cobigen/wiki/eclipse-plugin_development#batch-mode[batch mode], in which you can have multiple input objects inside the same input file. You do not need to worry about batch mode for now.
+* A `path` key must be added. Its value can be the full path of the input file or just the file name. It is needed because in CobiGen there is a link:https://github.com/devonfw/cobigen/wiki/eclipse-plugin_development#batch-mode[batch mode], in which you can have multiple input objects inside the same input file. You do not need to worry about batch mode for now.
 
 * On the root of your model, for each found key that is an object (defined with brackets `[{}]`), CobiGen will try to use it as an input object. For example, this could be a valid model:
 +
@@ -242,7 +242,7 @@ After following above steps, we now have a CobiGen plug-in that connects to a se
 
 However, we need a key component for our plug-in to be useful. We need to define templates:
 
-* Fork our CobiGen main repository, from link:https://github.com/devonfw/tools-cobigen.git[here] and clone it into your PC. Stay in the `master` branch and import into your IDE `cobigen-templates\templates-devon4j`. Set the Java version of the project to 1.8 if needed.
+* Fork our CobiGen main repository, from link:https://github.com/devonfw/cobigen.git[here] and clone it into your PC. Stay in the `master` branch and import into your IDE `cobigen-templates\templates-devon4j`. Set the Java version of the project to 1.8 if needed.
 
 * Create a new folder on `src/main/templates`, this will contain all your templates. You can use any name, but please use underscores as separators. In our case, we created a folder `crud_typescript_angular_client_app` to generate an Angular client from a TypeORM entity (NodeJS entity).
 +
@@ -252,7 +252,7 @@ image::images/howtos/todo-plugin/templatesProject.png[Templates project,width="4
 +
 image::images/howtos/todo-plugin/templatesInside.png[Templates project,width="450"link="images/howtos/todo-plugin/templatesInside.png"]
 
-* Start creating your own templates. Our default templates language is Freemarker, but you can also use Velocity. Add the extension to the file (`.ftl`) and start developing templates! You can find useful documentation link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-templates_helpful-links[here].
+* Start creating your own templates. Our default templates language is Freemarker, but you can also use Velocity. Add the extension to the file (`.ftl`) and start developing templates! You can find useful documentation link:https://github.com/devonfw/cobigen/wiki/cobigen-templates_helpful-links[here].
 
 
 * After creating all the templates, you need to modify `context.xml` which is located on the root of `src/main/templates`. There you need to define a trigger, which is used for CobiGen to know when to trigger a plug-in. I recommend you to copy and paste the following trigger:
@@ -267,9 +267,9 @@ image::images/howtos/todo-plugin/templatesInside.png[Templates project,width="45
   </trigger>
 ```
 
-* Change `templateFolder` to your templates folder name. `id` you can use any, but it is recommendable to use the same as the template folder name. `type` is the `TRIGGER_TYPE` we defined above on the `NestPluginActivator` class. On `matcher` just change the `value`: `([^\.]+).entity.ts` means that we will only accept input files that contain "anyString.entity.ts". This improves usability, so that users only generate using the correct input files. You will find more info about `variableAssignment` link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration#variableassignment-node[here].
+* Change `templateFolder` to your templates folder name. `id` you can use any, but it is recommendable to use the same as the template folder name. `type` is the `TRIGGER_TYPE` we defined above on the `NestPluginActivator` class. On `matcher` just change the `value`: `([^\.]+).entity.ts` means that we will only accept input files that contain "anyString.entity.ts". This improves usability, so that users only generate using the correct input files. You will find more info about `variableAssignment` link:https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration#variableassignment-node[here].
 
-* Finally, is time to configure `templates.xml`. It is needed for organizing templates into increments, please take a look into this link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration#templates-configuration[documentation].
+* Finally, is time to configure `templates.xml`. It is needed for organizing templates into increments, please take a look into this link:https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration#templates-configuration[documentation].
 
 === Testing templates
 
@@ -279,13 +279,13 @@ image::images/howtos/todo-plugin/templatesSnapshot.png[Templates snapshot versio
 
 NOTE: We always recommend using the devonfw console, which already contains a working Maven version.
 
-* Now we have your last version of the templates ready to be used. We need to use that latest version in CobiGen. We will use the CobiGen CLI that you will find in your cloned repo, at `cobigen-cli/`. Import the project into your IDE.
+* Now we have your last version of the templates ready to be used. We need to use that latest version in CobiGen. We will use the CobiGen CLI that you will find in your cloned repo, at `cobigen-cli/cli`. Import the project into your IDE.
 
 * Inside the project, go to `src/main/resources/pom.xml`. This pom.xml is used on runtime in order to install all the CobiGen plug-ins and templates. Add there your latest templates version and the previously created plug-in:
 +
 image::images/howtos/todo-plugin/cliPom.png[CLI pom,width="450"link="images/howtos/todo-plugin/cliPom.png"]
 
-* Afterwards, run `mvn clean install -DskipTests` and CobiGen will get your plug-ins. Now you have two options to test templates:
+* Afterwards, run `mvn clean install -DskipTests` and CobiGen will get your plug-ins. Now you have three options to test templates:
 
 1. Using Eclipse run as:
 +
@@ -306,7 +306,17 @@ image::images/howtos/todo-plugin/runAsArgs.png[Run version,width="450"link="imag
  name:= nestplugin version = 1.0.0
  ...
 ```
-c. If that worked, now you can send any arguments to the CLI in order to generate with your templates. Please follow link:https://github.com/devonfw/tools-cobigen/wiki/howto_Cobigen-CLI-generation[this guide] that explains all the CLI commands.
+c. If that worked, now you can send any arguments to the CLI in order to generate with your templates. Please follow link:https://github.com/devonfw/cobigen/wiki/howto_Cobigen-CLI-generation[this guide] that explains all the CLI commands.
 
-2. Modify the already present JUnit tests: They test the generation of templates from multiple plug-ins, you can add your own tests and input files.
+2. Modify the already present JUnit tests on the CLI project: They test the generation of templates from multiple plug-ins, you can add your own tests and input files.
 
+3. Use the CLI jar to execute commands:
+
++
+a. The `mvn clean install -DskipTests` command will have created a Cobigen.jar inside your target folder (_cobigen-cli/cli/target_). Open the jar with any unzipper and extract to the current location _class-loader-agent.jar_, _cobigen.bat_ and _cg.bat_:
++
+image::images/howtos/todo-plugin/extractFilesCLI.png[Extract files,width="450"link="images/howtos/todo-plugin/extractFilesCLI.png"]
++
+b. Now you can run any CobiGen CLI commands using a console. link:https://github.com/devonfw/cobigen/wiki/howto_Cobigen-CLI-generation[This guide] explains all the CLI commands.
++
+image::images/howtos/todo-plugin/runningCLI.png[Run CLI,width="450"link="images/howtos/todo-plugin/runningCLI.png]

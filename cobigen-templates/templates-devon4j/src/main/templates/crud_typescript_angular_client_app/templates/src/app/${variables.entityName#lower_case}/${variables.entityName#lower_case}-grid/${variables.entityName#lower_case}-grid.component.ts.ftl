@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ${variables.entityName?cap_first}Service } from '../services/${variables.entityName?lower_case}.service';
 import { AuthService } from '../../core/security/auth.service';
 
+import { Pageable } from '../../core/interfaces/pageable';
 import { ${variables.entityName?cap_first}DialogComponent } from '../${variables.entityName?lower_case}-dialog/${variables.entityName?lower_case}-dialog.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ${variables.entityName?cap_first}AlertComponent } from '../${variables.entityName?lower_case}-alert/${variables.entityName?lower_case}-alert.component';
@@ -19,6 +20,10 @@ import { ${variables.entityName?cap_first}AlertComponent } from '../${variables.
 })
 export class ${variables.entityName?cap_first}GridComponent implements OnInit {
 
+  private pageable: Pageable = {
+      pageSize: 8,
+      pageNumber: 0,
+  };
   private sorting: any[] = [];
 
   @ViewChild('pagingBar', { static: true })
@@ -40,7 +45,7 @@ export class ${variables.entityName?cap_first}GridComponent implements OnInit {
     </#list>
     ];
   pageSize: number = 8;
-  pageSizes: string[] = ['8', '16', '24'];
+  pageSizes: number[] = [8, 16, 24];
   selectedRow: any;
   dialogRef: MatDialogRef<${variables.entityName?cap_first}DialogComponent>;
   totalItems: number;
@@ -66,13 +71,15 @@ export class ${variables.entityName?cap_first}GridComponent implements OnInit {
     this.removeEmptySearchTerms();  
     this.dataGridService
       .get${variables.entityName?cap_first}(
+        this.pageable.pageSize,
+        this.pageable.pageNumber,
         this.searchTerms,
         this.sorting,
       )
       .subscribe(
         (res: any) => {
-          this.data = res;
-          this.totalItems = res.length;
+          this.data = res.data;
+          this.totalItems = res.total;
         },
         (error: any) => {
           setTimeout(() => {
@@ -110,6 +117,11 @@ export class ${variables.entityName?cap_first}GridComponent implements OnInit {
   }
   
   page(pagingEvent: PageEvent): void {
+    this.pageable = {
+        pageSize: pagingEvent.pageSize,
+        pageNumber: pagingEvent.pageIndex,
+        sort: this.pageable.sort,
+    };
     this.get${variables.entityName?cap_first}();
   }
   
@@ -138,11 +150,14 @@ export class ${variables.entityName?cap_first}GridComponent implements OnInit {
             this.get${variables.entityName?cap_first}();
           },
           (error: any) => {
+            const additionalError = error.error && error.error.message[0] && error.error.message[0].constraints;
+            const errorMessage = JSON.stringify(additionalError) + '\n' + error.message;
+            
             this.dialog.open(${variables.entityName?cap_first}AlertComponent, {
               width: '400px',
               data: {
                 confirmDialog: false,
-                message: this.getTranslation(error.message),
+                message: this.getTranslation(errorMessage),
                 title: this.getTranslation('${variables.component?lower_case}.alert.title'),
                 cancelButton: this.getTranslation('CLOSE'),
               },
