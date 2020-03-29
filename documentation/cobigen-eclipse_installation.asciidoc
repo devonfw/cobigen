@@ -19,13 +19,12 @@ menu bar -> _Help_ -> _Install new Software..._
 image:images/installation/01-install-new-software.png[]
 . Open CobiGen's update site +
 Insert the update site of your interest into the filed _Work with_ and press _Add ..._
-    * Stable releases: http://de-mucevolve02/files/cobigen/updatesite/stable/ 
-    * Beta/RC releases: http://de-mucevolve02/files/cobigen/updatesite/experimental/ +
+    * Stable releases: https://dl.bintray.com/devonfw/cobigen.p2/ +
 image:images/installation/02-select-update-site.png[]
 . Follow the installation wizard +
 Select _CobiGen Eclipse Plug-in_ -> _Next_ -> _Next_ -> accept the license -> _Finish_ -> _OK_ -> _Yes_
 . Once installed, a new menu entry named "CobiGen" will show up in the _Package Explorer's_ context menu. In the sub menu there will the _Generate..._ command, which may ask you to update the templates, and then you can start the generation wizard of CobiGen. You can adapt the templates by clicking on _Adapt Templates_ which will give you the possibility to import the _CobiGen_Templates_ automatically so that you can modified them.
-. Checkout (clone) your project's templates folder or use the current templates released with CobiGen (https://github.com/devonfw/tools-cobigen/tree/master/cobigen-templates) and then choose +Import -> General -> Existing Projects into Workspace+ to import the templates into your workspace. +
+. Checkout (clone) your project's templates folder or use the current templates released with CobiGen (https://github.com/devonfw/cobigen/tree/master/cobigen-templates) and then choose +Import -> General -> Existing Projects into Workspace+ to import the templates into your workspace. +
 . Now you can start generating. To get an introduction of CobiGen try the devon4j templates and work on the devon4j sample application. There you might want to start with Entity objects as a selection to run CobiGen with, which will give you a good overview of what CobiGen can be used for right out of the box in devon4j based development. If you need some more introduction in how to come up with your templates and increments, please be referred to the documentation of the link:cobigen-core_configuration#context-configuration[context configuration] and the link:cobigen-core_configuration#templates-configuration[templates configuration]
 
 Dependent on your context configuration menu entry _Generate..._ may be greyed out or not. See  for more information about valid selections for generation.

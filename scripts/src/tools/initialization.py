@@ -63,7 +63,7 @@ def init_non_git_config(config: Config):
     while(not repo_pattern.match(config.github_repo)):
         if config.github_repo:
             log_error("'" + config.github_repo + "' is not a valid GitHub repository name.")
-        config.github_repo = prompt_enter_value("repository to be released (e.g. devonfw/tools-cobigen)")
+        config.github_repo = prompt_enter_value("repository to be released (e.g. devonfw/cobigen)")
     log_info("Releasing against GitHub repository '"+config.github_repo+"'")
     config.git_repo_name = config.github_repo.split(sep='/')[1]
     config.git_repo_org = config.github_repo.split(sep='/')[0]
