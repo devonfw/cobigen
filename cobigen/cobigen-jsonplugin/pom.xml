@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>jsonplugin</artifactId>
   <name>CobiGen - JSON Plug-in</name>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <packaging>jar</packaging>
   <description>CobiGen - JSON Plug-in</description>
 
@@ -42,4 +42,16 @@
     </dependency>
  
   </dependencies>
+
+    <build>
+    <resources> 
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
 </project>

@@ -21,7 +21,6 @@
       <variableAssignment type="regex" key="entityName" value="5"/>
     </matcher>
   </trigger>
-  <!-- 
   <trigger id="crud_typescript_angular_client_app" type="typescript" templateFolder="crud_typescript_angular_client_app">
     <matcher type="fqn" value="([^\.]+).entity">
       <variableAssignment type="regex" key="entityName" value="1"/>
@@ -29,7 +28,6 @@
       <variableAssignment type="constant" key="domain" value="demo"/>
     </matcher>
   </trigger>
-   -->
   <trigger id="testdata_builder" type="java" templateFolder="testdata_builder">
     <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"
       retrieveObjectsRecursively="false"/>

@@ -11,12 +11,12 @@ For maven integration of CobiGen you can include the following build plugin into
   <plugins>
     <plugin>
       <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>maven-plugin</artifactId>
+      <artifactId>cobigen-maven-plugin</artifactId>
       <version>VERSION-YOU-LIKE</version>
       <executions>
         <execution>
           <id>cobigen-generate</id>
-          <phase>site</phase>
+          <phase>generate-resources</phase>
           <goals>
             <goal>generate</goal>
           </goals>
@@ -127,7 +127,7 @@ Since version 3.0.0, the link:cobigen-core_configuration#plugin-mechanism[plug-i
   <plugins>
     <plugin>
       <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>maven-plugin</artifactId>
+      <artifactId>cobigen-maven-plugin</artifactId>
       <version>VERSION-YOU-LIKE</version>
       <executions>
         ...
@@ -165,8 +165,8 @@ Since version 3.0.0, the link:cobigen-core_configuration#plugin-mechanism[plug-i
   <plugins>
     <plugin>
       <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>maven-plugin</artifactId>
-      <version>3.0.0</version>
+      <artifactId>cobigen-maven-plugin</artifactId>
+      <version>6.0.0</version>
       <executions>
         <execution>
           <id>generate</id>
@@ -195,7 +195,7 @@ Since version 3.0.0, the link:cobigen-core_configuration#plugin-mechanism[plug-i
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>tempeng-freemarker</artifactId>
-          <version>1.0.0</version>
+          <version>2.0.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
