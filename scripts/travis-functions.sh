@@ -56,8 +56,11 @@ function navigateToBuildRoot() {
 
   if [ -z "$ROOT" ]; then
     echo "Execute build in root directory of the repository"
-  else
+  elif [ -d "$ROOT" ]; then
     echo "Execute build in $ROOT"
     cd $ROOT
+  else 
+    echo "Branch $TRAVIS_BRANCH was intended to be built in $ROOT, which does not exist!"
+    exit 1
   fi
 }
