@@ -10,8 +10,8 @@ from tools.logger import log_error, log_info
 
 def exit_if_not_executed_in_ide_environment():
     '''This part checks if environment variables is set or not.'''
-    if not ("ICSD_FILESERVER_USER" and "ICSD_FILESERVER_PASSWD") in os.environ:
-        log_error("Please use CobiGen IDE initialized console and set the variables in the variables-customized.bat.")
+    if not ("OSSRH_USER" and "OSSRH_PASSWD" and "GPG_SIGNING_PASSWD" and "BINTRAY_USER" and "BINTRAY_TOKEN") in os.environ:
+        log_error("Please use CobiGen IDE initialized console and set the variables OSSRH_USER, OSSRH_PASSWD, GPG_SIGNING_PASSWD, BINTRAY_USER, and BINTRAY_TOKEN in the variables-customized.bat.")
         sys.exit()
 
 

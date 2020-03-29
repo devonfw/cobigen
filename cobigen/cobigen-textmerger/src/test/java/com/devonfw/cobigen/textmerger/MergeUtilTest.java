@@ -86,7 +86,7 @@ public class MergeUtilTest {
         } catch (Exception e) {
             assertThat(e).hasMessage("Error at anchor for documentpart: // anchor:anotherone::anchorend."
                 + " Incorrect anchor definition, no proper mergestrategy defined.\nSee "
-                + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#mergestrategies "
+                + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#mergestrategies "
                 + "for additional info");
         }
     }
@@ -141,8 +141,8 @@ public class MergeUtilTest {
         } catch (Exception e) {
             assertThat(e).hasMessage(
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
-                    + "See https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#error-list "
+                    + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
                     + "for more details");
         }
     }
