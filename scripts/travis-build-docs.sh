@@ -3,10 +3,12 @@ set -e
 
 source ./scripts/travis-functions.sh
 
+MAVEN_SETTINGS=$(pwd)/.mvn/settings.xml
+
 if ! folderChanged "documentation/"; then
   echo "Nothing new to build. Closing..."
 fi
 
 cd documentation
 
-mvn -s $(pwd)/.mvn/settings.xml clean package -U
+mvn -s ${MAVEN_SETTINGS} clean package -U
