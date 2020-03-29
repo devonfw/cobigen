@@ -17,5 +17,5 @@ jobs:
         stale-pr-message: 'Stale pull request. Please negotiate discussing the remaining work to get this PR done.'
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
-        days-before-stale: 180
+        days-before-stale: 365
         days-before-close: 1825
