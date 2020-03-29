@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tempeng-freemarker</artifactId>
   <name>CobiGen - FreeMarker Template Engine</name>
-  <version>2.0.1</version>
+  <version>2.1.0</version>
   <packaging>jar</packaging>
   <description>CobiGen - FreeMarker Template Engine</description>
 
@@ -14,7 +14,7 @@
 
   <properties>
     <skip.deployment>false</skip.deployment>
-    <freemarker.version>2.3.23</freemarker.version>
+    <freemarker.version>2.3.29</freemarker.version>
   </properties>
 
   <dependencies>
