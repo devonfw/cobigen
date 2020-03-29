@@ -27,13 +27,21 @@ stages:
     if: (branch = master) AND (type != pull_request) AND (fork = false)
   - name: Build & Test
     if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
-  - name: Deploy
-    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
+  - name: Deploy M2
+    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_eclipseplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
+  - name: Deploy P2
+    if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_core) AND (branch != dev_mavenplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
 jobs:
   include:
-    - stage: Build & Test
+    - stage: Build
       script: ./scripts/travis-build-test.sh
+      name: Build & Test
+    - script: ./scripts/travis-sync-docs.sh
+      name: Documentation
     - stage: Deploy
-      script: ./scripts/travis-deploy.sh
-    - stage: Documentation
-      script: ./scripts/travis-sync-docs.sh
+      script: ./scripts/travis-deploy-m2.sh
+      name: Deploy M2
+    - script: ./scripts/travis-deploy-p2.sh
+      name: Deploy P2
+    - script: ./scripts/travis-sync-docs.sh
+      name: Documentation
