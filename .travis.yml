@@ -48,7 +48,7 @@ jobs:
     - name: Deploy P2
       install: []
       script: ./scripts/travis-deploy-p2.sh
-      if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_core) AND (branch != dev_mavenplugin) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
+      if: (branch != master) AND (branch != gh-pages) AND (branch != dev_oomph_setup) AND (branch != dev_core) AND (branch != dev_mavenplugin) AND (branch != dev_cli) AND (type != pull_request) AND (fork = false) AND (tag IS blank)
       jdk: openjdk11
     - name: Deploy docs to devonfw-guide & devonfw.com
       install: []
