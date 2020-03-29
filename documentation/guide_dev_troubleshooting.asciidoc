@@ -20,7 +20,7 @@ act descriptor for org.apache.maven.wagon:wagon-ftp:jar:1.0-beta-6 @
 [ERROR] The build could not read 1 project -> [Help 1]
 [ERROR]
 [ERROR]   The project com.capgemini:cobigen-htmlplugin:1.1.0 (D:\toolscobigen\to
-ols-cobigen2\tools-cobigen\cobigen\cobigen-htmlplugin\pom.xml) has 1 error
+ols-cobigen2\cobigen\cobigen\cobigen-htmlplugin\pom.xml) has 1 error
 [ERROR]     Unresolveable build extension: Plugin org.apache.maven.wagon:wagon-f
 tp:1.0-beta-6 or one of its dependencies could not be resolved: Failed to read a
 rtifact descriptor for org.apache.maven.wagon:wagon-ftp:jar:1.0-beta-6: Could no

@@ -122,7 +122,7 @@ public class UpdateTemplatesDialog extends Dialog {
                 } catch (MalformedURLException malformedURLException) {
                     PlatformUIUtil.openErrorDialog(
                         "Templates were not downloaded because the maven central repo url or path doesn't exist. \n "
-                            + "Please create a new issue on GitHub https://github.com/devonfw/tools-cobigen/issues",
+                            + "Please create a new issue on GitHub https://github.com/devonfw/cobigen/issues",
                         malformedURLException);
                     throw new CobiGenRuntimeException(
                         "Invalid maven central repo url or path doesn't exist " + malformedURLException);

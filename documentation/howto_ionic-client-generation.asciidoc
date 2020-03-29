@@ -6,7 +6,7 @@ toc::[]
 We are going to show you **how to** generate a CRUD Ionic application from an **ETO**
 using CobiGen. 
 
-NOTE: This is a short introduction to the Ionic generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-Devonfw-3.0.0-CobiGen-PoC-E2E_v3.11.pdf[this document].
+NOTE: This is a short introduction to the Ionic generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-devonfw-ide-CobiGen-PoC-E2E_v3.2.pdf[this document].
 
 == Prerequisites
 

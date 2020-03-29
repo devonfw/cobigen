@@ -7,7 +7,7 @@ The HTML Plug-in enables merging result HTML files to existing ones. This plug-i
 
 == Trigger Extensions
 
-As for the Angular2 generation the input is a java object, the trigger expressions (including matchers and variable assignments) are implemented as link:https://github.com/devonfw/tools-cobigen/wiki/cobigen-javaplugin#trigger-extension[Java]. 
+As for the Angular2 generation the input is a java object, the trigger expressions (including matchers and variable assignments) are implemented as link:https://github.com/devonfw/cobigen/wiki/cobigen-javaplugin#trigger-extension[Java]. 
 
 == Merger extensions
 There are currently two merge strategies:

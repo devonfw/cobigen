@@ -29,6 +29,7 @@ import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
+import com.google.googlejavaformat.java.FormatterException;
 
 import ch.qos.logback.classic.Level;
 import picocli.CommandLine.Command;
@@ -223,23 +224,23 @@ public class GenerateCommand implements Callable<Integer> {
 
     /**
      * Processes the input file's path. Strips the quotes from the file path if they are given.
-     * @param inputFile the input file
+     * @param inputFile
+     *            the input file
      * @return input file with processed path
      */
-    private File preprocessInputFile (File inputFile)
-    {
+    private File preprocessInputFile(File inputFile) {
         String path = inputFile.getPath();
         String pattern = "[\\\"|\\'](.+)[\\\"|\\']";
         boolean matches = path.matches(pattern);
-        if (matches)
-        {
+        if (matches) {
             path = path.replace("\"", "");
             path = path.replace("\'", "");
             return new File(path);
         }
-        
+
         return inputFile;
     }
+
     /**
      * Validates the user arguments in the context of the generate command. Tries to check whether all the
      * input files and the output root path are valid.
@@ -268,11 +269,10 @@ public class GenerateCommand implements Callable<Integer> {
                 return false;
             }
         }
-        
-        if (outputRootPath != null)
-        {
+
+        if (outputRootPath != null) {
             outputRootPath = preprocessInputFile(outputRootPath);
-        }     
+        }
         return ValidationUtils.isOutputRootPathValid(outputRootPath);
 
     }
@@ -342,7 +342,14 @@ public class GenerateCommand implements Callable<Integer> {
                 logger.info("Generating increments for input '" + inputFile.getName() + "', this can take a while...");
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
             }
-            ValidationUtils.checkGenerationReport(report);
+            if (ValidationUtils.checkGenerationReport(report) && isJavaInput) {
+                try {
+                    ParsingUtils.formatJavaSources(report.getGeneratedFiles());
+                } catch (FormatterException e) {
+                    logger.info(
+                        "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
+                }
+            }
         } catch (InputReaderException e) {
             logger.error("Invalid input for CobiGen, please check your input file.");
 

@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tempeng-velocity</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
   <name>CobiGen - Velocity Template Engine</name>
   <description>CobiGen - Velocity Template Engine</description>
 
@@ -31,13 +31,13 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.0.0</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.0.0</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -49,6 +49,15 @@
   </dependencies>
   
   <build>
+    <resources> 
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <plugins>
       <!-- Inject Velocity Properties in java-templates source folder -->
       <plugin>
