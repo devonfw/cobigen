@@ -5,6 +5,10 @@ toc::[]
 
 Our new command line interface (CLI) for CobiGen enables the generation of code using few commands. This feature allows us to decouple CobiGen from Eclipse.
 
+== Install CobiGen CLI
+
+In order to install the CobiGen CLI you will need to use the https://github.com/devonfw/ide[devonfw/ide]. In a console run `devon cobigen`.
+
 == Commands and options
 Using the following command and option you will be able to customize your generation as follows:
 

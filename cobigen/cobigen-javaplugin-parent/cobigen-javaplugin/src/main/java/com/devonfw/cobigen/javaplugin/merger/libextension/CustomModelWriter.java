@@ -25,6 +25,13 @@ import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaGenericDeclaration;
 import com.thoughtworks.qdox.model.JavaInitializer;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaModule;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaExports;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaOpens;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaProvides;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaRequires;
+import com.thoughtworks.qdox.model.JavaModuleDescriptor.JavaUses;
 import com.thoughtworks.qdox.model.JavaPackage;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
@@ -348,7 +355,7 @@ public class CustomModelWriter implements ModelWriter {
         return true;
     }
 
-    private void writeNonAccessibilityModifiers(List<String> modifiers) {
+    private void writeNonAccessibilityModifiers(Collection<String> modifiers) {
         for (String modifier : modifiers) {
             if (!modifier.startsWith("p")) {
                 buffer.write(modifier);
@@ -357,7 +364,7 @@ public class CustomModelWriter implements ModelWriter {
         }
     }
 
-    private void writeAccessibilityModifier(List<String> modifiers) {
+    private void writeAccessibilityModifier(Collection<String> modifiers) {
         for (String modifier : modifiers) {
             if (modifier.startsWith("p")) {
                 buffer.write(modifier);
@@ -478,6 +485,131 @@ public class CustomModelWriter implements ModelWriter {
     @Override
     public String toString() {
         return buffer.toString();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ModelWriter writeModuleDescriptor(JavaModuleDescriptor descriptor) {
+        if (descriptor.isOpen()) {
+            buffer.write("open ");
+        }
+        buffer.write("module " + descriptor.getName() + " {");
+        buffer.newline();
+        buffer.indent();
+
+        for (JavaRequires requires : descriptor.getRequires()) {
+            buffer.newline();
+            writeModuleRequires(requires);
+        }
+
+        for (JavaExports exports : descriptor.getExports()) {
+            buffer.newline();
+            writeModuleExports(exports);
+        }
+
+        for (JavaOpens opens : descriptor.getOpens()) {
+            buffer.newline();
+            writeModuleOpens(opens);
+        }
+
+        for (JavaProvides provides : descriptor.getProvides()) {
+            buffer.newline();
+            writeModuleProvides(provides);
+        }
+
+        for (JavaUses uses : descriptor.getUses()) {
+            buffer.newline();
+            writeModuleUses(uses);
+        }
+
+        buffer.newline();
+        buffer.deindent();
+        buffer.write('}');
+        buffer.newline();
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ModelWriter writeModuleExports(JavaExports exports) {
+        buffer.write("exports ");
+        buffer.write(exports.getSource().getName());
+        if (!exports.getTargets().isEmpty()) {
+            buffer.write(" to ");
+            Iterator<JavaModule> targets = exports.getTargets().iterator();
+            while (targets.hasNext()) {
+                JavaModule target = targets.next();
+                buffer.write(target.getName());
+                if (targets.hasNext()) {
+                    buffer.write(", ");
+                }
+            }
+        }
+        buffer.write(';');
+        buffer.newline();
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ModelWriter writeModuleOpens(JavaOpens opens) {
+        buffer.write("opens ");
+        buffer.write(opens.getSource().getName());
+        if (!opens.getTargets().isEmpty()) {
+            buffer.write(" to ");
+            Iterator<JavaModule> targets = opens.getTargets().iterator();
+            while (targets.hasNext()) {
+                JavaModule target = targets.next();
+                buffer.write(target.getName());
+                if (targets.hasNext()) {
+                    buffer.write(", ");
+                }
+            }
+        }
+        buffer.write(';');
+        buffer.newline();
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ModelWriter writeModuleProvides(JavaProvides provides) {
+        buffer.write("provides ");
+        buffer.write(provides.getService().getName());
+        buffer.write(" with ");
+        Iterator<JavaClass> providers = provides.getProviders().iterator();
+        while (providers.hasNext()) {
+            JavaClass provider = providers.next();
+            buffer.write(provider.getName());
+            if (providers.hasNext()) {
+                buffer.write(", ");
+            }
+        }
+        buffer.write(';');
+        buffer.newline();
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ModelWriter writeModuleRequires(JavaRequires requires) {
+        buffer.write("requires ");
+        writeAccessibilityModifier(requires.getModifiers());
+        writeNonAccessibilityModifiers(requires.getModifiers());
+        buffer.write(requires.getModule().getName());
+        buffer.write(';');
+        buffer.newline();
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ModelWriter writeModuleUses(JavaUses uses) {
+        buffer.write("uses ");
+        buffer.write(uses.getService().getName());
+        buffer.write(';');
+        buffer.newline();
+        return this;
     }
 
 }

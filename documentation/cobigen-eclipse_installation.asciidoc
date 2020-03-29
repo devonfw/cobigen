@@ -19,8 +19,7 @@ menu bar -> _Help_ -> _Install new Software..._
 image:images/installation/01-install-new-software.png[]
 . Open CobiGen's update site +
 Insert the update site of your interest into the filed _Work with_ and press _Add ..._
-    * Stable releases: http://de-mucevolve02/files/cobigen/updatesite/stable/ 
-    * Beta/RC releases: http://de-mucevolve02/files/cobigen/updatesite/experimental/ +
+    * Stable releases: https://dl.bintray.com/devonfw/cobigen.p2/ +
 image:images/installation/02-select-update-site.png[]
 . Follow the installation wizard +
 Select _CobiGen Eclipse Plug-in_ -> _Next_ -> _Next_ -> accept the license -> _Finish_ -> _OK_ -> _Yes_
