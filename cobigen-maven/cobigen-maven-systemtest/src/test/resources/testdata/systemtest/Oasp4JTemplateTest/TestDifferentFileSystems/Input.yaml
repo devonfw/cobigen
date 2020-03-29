@@ -6,7 +6,7 @@ info:
   title: Devon Example
   description: Example of a API definition
   version: 1.0.0
-  x-rootpackage: com.capgemini.spoc.openapi
+  x-rootpackage: com.devonfw.spoc.openapi
 paths:
   /shopmanagement/v1/shop/{shopId}:
     get:

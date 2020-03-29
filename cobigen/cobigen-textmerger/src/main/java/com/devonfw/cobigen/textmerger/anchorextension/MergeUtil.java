@@ -62,8 +62,8 @@ public class MergeUtil {
             .matches(anchorRegexTrimmed)) {
             throw new Exception(
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
-                    + "See https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#error-list "
+                    + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
                     + "for more details");
         }
 
@@ -97,7 +97,7 @@ public class MergeUtil {
                 if (anchor.getMergeStrat().equals(MergeStrategy.ERROR)) {
                     throw new Exception("Error at anchor for documentpart: " + anchor.getAnchor()
                         + ". Incorrect anchor definition, no proper mergestrategy defined.\nSee "
-                        + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#mergestrategies "
+                        + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#mergestrategies "
                         + "for additional info");
                 } else if (anchor.getAnchor().matches(correctAnchorRegexTrimmed)) {
                     result.put(anchor, value.trim());

@@ -185,7 +185,7 @@ public final class ValidationUtils {
                 + "Explained on https://github.com/devonfw/devon4j/wiki/coding-conventions");
         } else if (isOpenApiInput) {
             logger.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
-                + "More info here https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage");
+                + "More info here https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage");
         }
         System.exit(1);
     }

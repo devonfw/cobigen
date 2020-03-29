@@ -54,22 +54,29 @@ public class ParsingUtils {
      */
     public static JavaContext getJavaContext(File inputFile, File inputProject) {
 
-        JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject, true);
-        String fqn = ParsingUtils.getFQN(inputFile);
         try {
+            JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject, true);
+            String fqn = ParsingUtils.getFQN(inputFile);
             context.getClassLoader().loadClass(fqn);
+            return context;
         } catch (NoClassDefFoundError | ClassNotFoundException e) {
             logger.error("Compiled class " + e.getMessage()
                 + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
             System.exit(1);
+        } catch (Exception e) {
+            logger.error("Transitive dependencies have not been found on your m2 repository (Maven). "
+                + "Please run 'mvn package' in your input project in order to download all the needed dependencies.");
+            System.exit(1);
         }
-        return context;
+        // Will never happen as every exception is catch
+        return null;
     }
 
     /**
      * This method is traversing parent folders until it reaches java folder in order to get the FQN
      *
      * @param inputFile
+     *            Java input file to retrieve FQN (Full Qualified Name)
      * @return qualified name with full package
      */
     private static String getFQN(File inputFile) {
