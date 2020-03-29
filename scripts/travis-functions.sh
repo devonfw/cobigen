@@ -40,6 +40,8 @@ function navigateToBuildRoot() {
     ROOT="cobigen/cobigen-htmlplugin"
   elif [[ $TRAVIS_BRANCH == "dev_mavenplugin" ]]; then
     ROOT="cobigen-maven"
+  elif [[ $TRAVIS_BRANCH == "dev_cli" ]]; then
+    ROOT="cobigen-cli"
   elif [[ $TRAVIS_BRANCH == "dev_tempeng_freemarker" ]]; then
     ROOT="cobigen/cobigen-templateengines/cobigen-tempeng-freemarker"
   elif [[ $TRAVIS_BRANCH == "dev_tempeng_velocity" ]]; then
