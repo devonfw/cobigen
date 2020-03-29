@@ -8,13 +8,13 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -40,6 +40,27 @@ public class AbstractMavenTest {
     protected File mvnSettingsFile;
 
     /**
+     * Set maven.home system property to enable maven invoker execution
+     */
+    @Before
+    public void setMavenHome() {
+
+        String m2Home = System.getenv().get("MAVEN_HOME");
+        if (m2Home != null) {
+            System.setProperty("maven.home", m2Home);
+        } else {
+            m2Home = System.getenv().get("M2_HOME");
+            if (m2Home != null) {
+                System.setProperty("maven.home", m2Home);
+            } else if ("true".equals(System.getenv("TRAVIS"))) {
+                System.setProperty("maven.home", "/usr/local/maven"); // travis only
+            } else {
+                LOG.warn("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME");
+            }
+        }
+    }
+
+    /**
      * Copy settings file to get a file handle required by maven invoker API
      * @throws IOException
      *             if the file could not be read/written
@@ -48,13 +69,13 @@ public class AbstractMavenTest {
     public void getSettingsFile() throws IOException {
         mvnSettingsFile = tmpFolder.newFile();
         Files.write(mvnSettingsFile.toPath(),
-            IOUtil.toByteArray(AbstractMavenTest.class.getResourceAsStream("/test-maven-settings.xml")));
+            IOUtils.toByteArray(AbstractMavenTest.class.getResourceAsStream("/test-maven-settings.xml")));
         LOG.info("Temporary settings file created in " + mvnSettingsFile.getAbsolutePath());
     }
 
     /**
-     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
-     * local repository of the executing maven process is used.
+     * Runs the maven invoker with goal package. Makes sure, that the local repository of the executing maven
+     * process is used.
      * @param testProject
      *            the test project to build
      * @param localRepoPath
@@ -68,7 +89,7 @@ public class AbstractMavenTest {
     }
 
     /**
-     * Runs the maven invoker with goal package and the default devon settings file. Makes sure, that the
+     * Runs the maven invoker with goal package and the default devonfw settings file. Makes sure, that the
      * local repository of the executing maven process is used.
      * @param testProject
      *            the test project to build
@@ -81,10 +102,30 @@ public class AbstractMavenTest {
      *             if anything fails
      */
     protected File runMavenInvoker(File testProject, File templatesProject, String localRepoPath) throws Exception {
+        return runMavenInvoker(testProject, templatesProject, localRepoPath, false);
+    }
+
+    /**
+     * Runs the maven invoker with goal package and the default devonfw settings file. Makes sure, that the
+     * local repository of the executing maven process is used.
+     * @param testProject
+     *            the test project to build
+     * @param templatesProject
+     *            the templates project to be used for generation. May be {@code null}
+     * @param localRepoPath
+     *            local repository path of the current execution
+     * @param debug
+     *            enable debug logging
+     * @return the temporary copy of the test project, the build was executed in
+     * @throws Exception
+     *             if anything fails
+     */
+    protected File runMavenInvoker(File testProject, File templatesProject, String localRepoPath, boolean debug)
+        throws Exception {
         assertThat(testProject).exists();
 
         File testProjectRoot = tmpFolder.newFolder();
-        FileUtils.copyDirectoryStructure(testProject, testProjectRoot);
+        FileUtils.copyDirectory(testProject, testProjectRoot);
 
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(testProjectRoot);
@@ -92,7 +133,7 @@ public class AbstractMavenTest {
         setTestProperties(request, templatesProject);
         request.getProperties().put("locRep", localRepoPath);
         request.setShowErrors(true);
-        request.setDebug(false);
+        request.setDebug(debug);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);
         request.setMavenOpts("-Xmx4096m");
