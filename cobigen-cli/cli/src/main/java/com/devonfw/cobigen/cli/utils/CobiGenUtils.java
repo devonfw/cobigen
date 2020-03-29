@@ -132,7 +132,17 @@ public class CobiGenUtils {
 
             }
         } else {
-            Paths.get(URI.create(contextConfigurationLocation.toString()));
+            Map<String, String> env = new HashMap<>();
+            env.put("create", "true");
+
+            URI uri = URI.create(contextConfigurationLocation.toString());
+            FileSystem fs;
+            try {
+                fs = FileSystems.getFileSystem(uri);
+            } catch (FileSystemNotFoundException e) {
+                fs = FileSystems.newFileSystem(uri, env);
+            }
+            Paths.get(uri);
         }
         logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
         final List<String> foundClasses = new LinkedList<>();
@@ -389,7 +399,7 @@ public class CobiGenUtils {
      *            list containing elements to be retained in this list
      * @param listToIntersect
      *            second list to be used for the intersection
-     * @return <tt>resultant list</tt> containing increments that are in both lists
+     * @return resultant list containing increments that are in both lists
      */
     public static List<IncrementTo> retainAllIncrements(List<IncrementTo> currentList,
         List<IncrementTo> listToIntersect) {
@@ -420,7 +430,7 @@ public class CobiGenUtils {
      *            list containing elements to be retained in this list
      * @param listToIntersect
      *            second list to be used for the intersection
-     * @return <tt>resultant list</tt> containing increments that are in both lists
+     * @return resultant list containing increments that are in both lists
      */
     public static List<TemplateTo> retainAllTemplates(List<TemplateTo> currentList, List<TemplateTo> listToIntersect) {
 

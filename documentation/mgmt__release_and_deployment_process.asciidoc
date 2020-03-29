@@ -34,7 +34,7 @@ Create a new issue with the following markdown contents for each release of any 
     * [ ] check new dependencies with legal (in case of not yet used licenses).
     * **If there are any issues with the dependencies. Abort, get in contact.**
     * [ ] document the changes in the [ChangeLog of the dependency tracking](https://github.com/devonfw/cobigen/wiki/mgmt_dependency-and-license-tracking).
-    * [ ] create a new licensing document for the new version (just once for each eclipse/maven release). Find the latest document in [TeamForge](https://coconet.capgemini.com/sf/go/projects.apps2_devon/docman.root.devonfw.licenses.de) and upload a new version next to it. Chapter one is the only to be updated according to changed dependencies and included components.
+    * [ ] create a new licensing document 
   * [ ] Perform final review of merged contents
     * [ ] Are there any changes in a different module not corresponding to the current development branch? Try to find the cause and potentially discuss with the guy failing.
     * [ ] Any major issues, which would prevent from merging? Missing files, changes?

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>openapiplugin</artifactId>
   <name>CobiGen - Open API Plug-in</name>
-  <version>2.3.0</version>
+  <version>2.4.0</version>
   <packaging>jar</packaging>
   <description>CobiGen - OpenAPI Plug-in</description>
 
@@ -43,13 +43,13 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.3.0</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.3.0</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -59,4 +59,15 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+  <resources> 
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>false</filtering>
+      <excludes>
+        <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
+      </excludes>
+    </resource>
+  </resources>
+</build>
 </project>
