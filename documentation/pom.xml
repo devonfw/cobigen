@@ -9,13 +9,11 @@
 
   <parent>
     <groupId>com.devonfw.tools</groupId>
-    <artifactId>devon-docgen</artifactId>
-    <version>2.0.0</version>
+    <artifactId>devonfw-docgen-pdf</artifactId>
+    <version>5.0.1</version>
   </parent>
 
   <properties>
-    <docgen.wiki.page>master-cobigen</docgen.wiki.page>
-    <docgen.asciidoc.pdf.stylesdir>./theme</docgen.asciidoc.pdf.stylesdir>
+    <docgen.asciidoc.page>master-cobigen</docgen.asciidoc.page>
   </properties>
-
 </project>
