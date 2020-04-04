@@ -3,7 +3,7 @@ toc::[]
 
 = Release and Deployment Process
 
-*Updated:* This explains the manual process of releasing. We now have an automatic script that enables a fast and easy release. Please check it link:https://github.com/devonfw/tools-cobigen/wiki/howto_Release-creation[here]
+*Updated:* This explains the manual process of releasing. We now have an automatic script that enables a fast and easy release. Please check it link:https://github.com/devonfw/cobigen/wiki/howto_Release-creation[here]
 
 Create a new issue with the following markdown contents for each release of any plugin/module containing the following tasks to be performed on release:
 
@@ -16,13 +16,13 @@ Create a new issue with the following markdown contents for each release of any 
   * especially for eclipse plugin release run `mvn clean install -Pp2-build-mars,p2-build-stable` in cobigen-eclipse folder to run SWTBot UI tests locally. **Be patient, do not touch mouse and keyboard.**
 * [ ] Check if all tests are green and if there are no ignored ones left. As there are ignored ones, please check them if they can be removed or they only should be temporarily ignored. Potentially fix them.
 * [ ] Check/Update documentation according to changelog to be released
-  * [ ] especially update version number of module to be released [here](https://github.com/devonfw/tools-cobigen/wiki/CobiGen)
+  * [ ] especially update version number of module to be released [here](https://github.com/devonfw/cobigen/wiki/CobiGen)
   * [ ] Update the wiki submodule and commit the latest version to target the updated release version of the wiki 
     \```
-    cd cobigen-documentation/tools-cobigen.wiki
+    cd cobigen-documentation/cobigen.wiki
     git pull origin master
     cd ..
-    git add tools-cobigen.wiki
+    git add cobigen.wiki
     git commit -m"#<releaseIssueNo> update docs"
     git push
     \```
@@ -33,8 +33,8 @@ Create a new issue with the following markdown contents for each release of any 
   * [ ] Check for changed maven dependencies and document them. _As dependencies have been changed:_
     * [ ] check new dependencies with legal (in case of not yet used licenses).
     * **If there are any issues with the dependencies. Abort, get in contact.**
-    * [ ] document the changes in the [ChangeLog of the dependency tracking](https://github.com/devonfw/tools-cobigen/wiki/mgmt_dependency-and-license-tracking).
-    * [ ] create a new licensing document for the new version (just once for each eclipse/maven release). Find the latest document in [TeamForge](https://coconet.capgemini.com/sf/go/projects.apps2_devon/docman.root.devonfw.licenses.de) and upload a new version next to it. Chapter one is the only to be updated according to changed dependencies and included components.
+    * [ ] document the changes in the [ChangeLog of the dependency tracking](https://github.com/devonfw/cobigen/wiki/mgmt_dependency-and-license-tracking).
+    * [ ] create a new licensing document 
   * [ ] Perform final review of merged contents
     * [ ] Are there any changes in a different module not corresponding to the current development branch? Try to find the cause and potentially discuss with the guy failing.
     * [ ] Any major issues, which would prevent from merging? Missing files, changes?
@@ -81,7 +81,7 @@ In this section, the testing process of certain CobiGen features will be describ
 
 === Update templates feature
 
-Starting from a clean devonfw 3.0.0 distribution, follow the next steps to test the link:https://github.com/devonfw/tools-cobigen/projects/9[new feature for updating templates]:
+Starting from a clean devonfw 3.0.0 distribution, follow the next steps to test the link:https://github.com/devonfw/cobigen/projects/9[new feature for updating templates]:
 
 * Open devonfw distribution, right click on a Java entity. Click on `CobiGen -> Healtcheck`. It should:
 
@@ -100,7 +100,7 @@ Starting from a clean devonfw 3.0.0 distribution, follow the next steps to test 
 **Quality assurance plan Update Templates feature:**
 
 ***1. Preparation***
-* [ ] Follow [this tutorial](https://github.com/devonfw/tools-cobigen/wiki/mgmt__release_and_deployment_process#update-templates-feature) to start the testing phase
+* [ ] Follow [this tutorial](https://github.com/devonfw/cobigen/wiki/mgmt__release_and_deployment_process#update-templates-feature) to start the testing phase
 
 ***2. Testing scenarios***
 * [ ] A message is thrown informing that there are no templates.
@@ -195,7 +195,7 @@ public class EmployeeEntity {
 **Quality assurance plan Ionic and Angular:**
 
 ***1. Preparation***
-* [ ] Follow [this tutorial](https://github.com/devonfw/tools-cobigen/wiki/mgmt__release_and_deployment_process#ionic-and-angular) to start the testing phase
+* [ ] Follow [this tutorial](https://github.com/devonfw/cobigen/wiki/mgmt__release_and_deployment_process#ionic-and-angular) to start the testing phase
 
 ***2. Testing scenarios***
 * [ ] You are able to log-in into both Ionic and Angular apps using JWT authentication.
