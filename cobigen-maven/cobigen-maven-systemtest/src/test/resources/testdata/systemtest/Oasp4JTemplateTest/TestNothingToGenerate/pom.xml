@@ -5,11 +5,17 @@
   <artifactId>Oasp4JTemplateTest-TestClassLoadingWithTemplateFolder</artifactId>
   <version>dev-SNAPSHOT</version>
 
+  <properties>
+    <!-- < JDK 8 not supported -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
         <groupId>com.devonfw.cobigen</groupId>
-        <artifactId>maven-plugin</artifactId>
+        <artifactId>cobigen-maven-plugin</artifactId>
         <version>${pluginVersion}</version>
         <executions>
           <execution>
@@ -33,12 +39,12 @@
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tempeng-freemarker</artifactId>
-            <version>2.0.0</version>
+            <version>2.0.1</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>javaplugin</artifactId>
-            <version>2.0.0</version>
+            <version>2.2.0</version>
           </dependency>
         </dependencies>
       </plugin>

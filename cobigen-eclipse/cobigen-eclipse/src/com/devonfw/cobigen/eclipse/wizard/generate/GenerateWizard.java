@@ -43,8 +43,8 @@ public class GenerateWizard extends AbstractGenerateWizard {
     private void initializeWizard() {
         page1 = new SelectFilesPage(cobigenWrapper, false);
         if (cobigenWrapper instanceof JavaInputGeneratorWrapper) {
-            page2 =
-                new SelectAttributesPage(((JavaInputGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
+            page2 = new SelectAttributesPage(
+                ((JavaInputGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput());
         }
     }
 
@@ -74,7 +74,7 @@ public class GenerateWizard extends AbstractGenerateWizard {
         LOG.info("Start generation process job...");
         GenerateSelectionJob job = new GenerateSelectionJob(cobigenWrapper, page1.getTemplatesToBeGenerated());
         try {
-            dialog.run(true, false, job);
+            dialog.run(true, true, job);
         } catch (InvocationTargetException e) {
             LOG.error("An internal error occured while invoking the generation job.", e);
         } catch (InterruptedException e) {

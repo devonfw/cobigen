@@ -1,7 +1,5 @@
 === Overview
 * link:Home[Introduction]
-* link:mgmt_license-agreement[License Agreement]
-* link:mgmt_shared-service[Shared Service]
 * link:Guide-to-the-Reader[Guide to the Reader]
 * link:cobigen-usecases[General CobiGen Use Cases]
 
