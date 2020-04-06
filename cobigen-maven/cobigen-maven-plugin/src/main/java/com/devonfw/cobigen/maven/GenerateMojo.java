@@ -52,6 +52,7 @@ import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.util.TemplatesUtilsClassesUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -121,6 +122,11 @@ public class GenerateMojo extends AbstractMojo {
     private URL[] classLoaderUrls = {};
 
     /**
+     * Util to access the Template Util Classes
+     */
+    private TemplatesUtilsClassesUtil templatesUtilsClassesUtil = new TemplatesUtilsClassesUtil();
+
+    /**
      * Initializes the ClassLoader with given URLs array
      * @param urls
      *            URL[] Array of URLs to load into ClassLoader
@@ -146,7 +152,13 @@ public class GenerateMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        CobiGen cobiGen = createCobiGenInstance();
+        CobiGen cobiGen = null;
+        try {
+            cobiGen = createCobiGenInstance();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
         List<Object> inputs = collectInputs(cobiGen);
         if (inputs.isEmpty()) {
@@ -165,7 +177,7 @@ public class GenerateMojo extends AbstractMojo {
         try {
             for (Object input : inputs) {
                 getLog().debug("Invoke CobiGen for input " + input);
-                List<Class<?>> utilClasses = resolveUtilClasses();
+                List<Class<?>> utilClasses = templatesUtilsClassesUtil.resolveUtilClasses(configurationFolder);
                 GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
                     Paths.get(destinationRoot.toURI()), forceOverride, utilClasses);
 
@@ -225,8 +237,10 @@ public class GenerateMojo extends AbstractMojo {
      * @return the initialized {@link CobiGen} instance
      * @throws MojoExecutionException
      *             if the configuration could not be read
+     * @throws IOException
+     *             if the configuration could not be read
      */
-    private CobiGen createCobiGenInstance() throws MojoExecutionException {
+    private CobiGen createCobiGenInstance() throws MojoExecutionException, IOException {
         CobiGen cobiGen;
 
         if (configurationFolder != null) {
@@ -240,7 +254,7 @@ public class GenerateMojo extends AbstractMojo {
         } else {
 
             final ClassRealm classRealm = pluginDescriptor.getClassRealm();
-            URL contextConfigurationLocation = getContextConfiguration(classRealm);
+            URL contextConfigurationLocation = templatesUtilsClassesUtil.getContextConfiguration(classRealm);
 
             URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
 
