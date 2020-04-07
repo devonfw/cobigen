@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,7 +37,7 @@ public class TemplatesClassloaderUtil {
     /**
      * Stores the URLs for the ClassLoader
      */
-    private URL[] classLoaderUrls = {};
+    private ArrayList<URL> classLoaderUrls;
 
     /**
      * Checks the ClassLoader for any context.xml provided either in configurationFolder or in
@@ -81,17 +80,6 @@ public class TemplatesClassloaderUtil {
     }
 
     /**
-     * Adds the given URL to the classLoaderUrls array
-     * @param url
-     *            URL to add to classLoaderUrls array
-     */
-    private void addUrlToClassLoaderUrls(URL url) {
-        ArrayList<URL> newUrls = new ArrayList<>(Arrays.asList((classLoaderUrls)));
-        newUrls.add(url);
-        classLoaderUrls = newUrls.toArray(new URL[] {});
-    }
-
-    /**
      * Adds folders to class loader urls e.g. src/main/templates for config.xml detection
      * @param configurationFolder
      *            File configuration folder for which to generate paths
@@ -104,7 +92,7 @@ public class TemplatesClassloaderUtil {
         for (String possibleLocation : possibleLocations) {
             File folder = Paths.get(configurationFolder + File.separator + possibleLocation).toFile();
             if (Files.exists(folder.toPath())) {
-                addUrlToClassLoaderUrls(folder.toURI().toURL());
+                classLoaderUrls.add(folder.toURI().toURL());
                 LOG.debug("Added " + folder.toURI().toURL().toString() + " to class path");
             }
         }
@@ -126,13 +114,13 @@ public class TemplatesClassloaderUtil {
         Path templateRoot = null;
         ClassLoader inputClassLoader = null;
         if (configurationFolder != null) {
-            addUrlToClassLoaderUrls(configurationFolder.toURI().toURL());
+            classLoaderUrls.add(configurationFolder.toURI().toURL());
             LOG.debug("Added " + configurationFolder.toURI().toURL().toString() + " to class path");
             templateRoot = configurationFolder.toPath();
             addFoldersToClassLoaderUrls(configurationFolder);
         }
 
-        inputClassLoader = getUrlClassLoader(classLoaderUrls);
+        inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}));
 
         URL contextConfigurationLocation = getContextConfiguration(inputClassLoader);
 
