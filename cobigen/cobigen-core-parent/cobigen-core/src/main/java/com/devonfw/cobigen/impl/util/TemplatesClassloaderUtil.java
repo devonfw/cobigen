@@ -28,12 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Utilities related to the retrieval of Templates utility classes
  */
-public class TemplatesUtilsClassesUtil {
+public class TemplatesClassloaderUtil {
 
     /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(TemplatesJarUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TemplatesClassloaderUtil.class);
 
     /**
      * Stores the URLs for the ClassLoader
