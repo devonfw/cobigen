@@ -21,6 +21,12 @@ public class TextAppenderTest {
      * Root path to all resources used in this test case
      */
     private static String testFileRootPath = "src/test/resources/";
+	
+	 /**
+     * Newline charecter for replacement.
+     */
+	private final static String ALL_LINE_ENDINGS = "\\r\\n|\\r|\\n";
+
 
     /**
      * Tests a merge without adding a new line before appending the patch
@@ -32,7 +38,8 @@ public class TextAppenderTest {
     public void testMerge_appendWithoutNewLineNoAnchors() throws Exception {
         TextAppender appender = new TextAppender("textmerge_append", false);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Test3", "UTF-8");
-        assertThat(mergedString).isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile.txt")));
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
+        assertThat(mergedString).isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -45,8 +52,9 @@ public class TextAppenderTest {
     public void testMerge_appendWithNewLineNoAnchors() throws Exception {
         TextAppender appender = new TextAppender("textmerge_append", true);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Test3", "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString)
-            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile_withNewLine.txt")));
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedFile_withNewLine.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -59,7 +67,8 @@ public class TextAppenderTest {
     public void testMerge_appendWithNewLineNoAnchors_onlyIfPathIsNotEmpty() throws Exception {
         TextAppender appender = new TextAppender("textmerge_append", true);
         String mergedString = appender.merge(new File(testFileRootPath + "BaseFile.txt"), "", "UTF-8");
-        assertThat(mergedString).isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "BaseFile.txt")));
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
+        assertThat(mergedString).isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "BaseFile.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -73,8 +82,9 @@ public class TextAppenderTest {
         TextAppender appender = new TextAppender("textmerge_override", false);
         String mergedString =
             appender.merge(new File(testFileRootPath + "BaseFile.txt"), "Lorem Ipsum Dolor Sit Amet", "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString)
-            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedOverride.txt")));
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedOverride.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -88,8 +98,9 @@ public class TextAppenderTest {
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestEmptyMergeStrategy.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchEmptyMergeStrategy.txt")),
             "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedEmptyMergeStrategy.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedEmptyMergeStrategy.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -104,8 +115,9 @@ public class TextAppenderTest {
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestEmptyMergeStrategy.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchEmptyMergeStrategy.txt")),
             "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedEmptyMergeStrategy.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedEmptyMergeStrategy.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -122,8 +134,9 @@ public class TextAppenderTest {
             new File(testFileRootPath + "anchortests/base/TestAnchorOnlyInOneFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchAnchorOnlyInOneFile.txt")),
             "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(FileUtils
-            .readFileToString(new File(testFileRootPath + "anchortests/merged/MergedAnchorOnlyInOneFile.txt")));
+            .readFileToString(new File(testFileRootPath + "anchortests/merged/MergedAnchorOnlyInOneFile.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -138,8 +151,9 @@ public class TextAppenderTest {
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestCorrectPartOrder.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchCorrectPartOrder.txt")),
             "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedCorrectPartOrder.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedCorrectPartOrder.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -153,8 +167,9 @@ public class TextAppenderTest {
         TextAppender appender = new TextAppender("textmerge_append", false);
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestAppending.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchAppending.txt")), "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedAppending.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedAppending.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -169,8 +184,9 @@ public class TextAppenderTest {
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestHeaderFooter.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchHeaderFooter.txt")),
             "UTF-8");
+			 mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedHeaderFooter.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedHeaderFooter.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -187,8 +203,9 @@ public class TextAppenderTest {
                 new File(testFileRootPath + "anchortests/base/TestOnlyPatchHeaderFooter.txt"), FileUtils
                     .readFileToString(new File(testFileRootPath + "anchortests/patch/PatchOnlyPatchHeaderFooter.txt")),
                 "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(FileUtils
-            .readFileToString(new File(testFileRootPath + "anchortests/merged/MergedOnlyPatchHeaderFooter.txt")));
+            .readFileToString(new File(testFileRootPath + "anchortests/merged/MergedOnlyPatchHeaderFooter.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -202,8 +219,9 @@ public class TextAppenderTest {
         TextAppender appender = new TextAppender("textmerge_append", false);
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestNewlineFile.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchNewLineFile.txt")), "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedNewlineFile.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedNewlineFile.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -218,8 +236,9 @@ public class TextAppenderTest {
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestNewlineDefaults.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchNewlineDefaults.txt")),
             "UTF-8");
+		mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedNewlineDefaults.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedNewlineDefaults.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
@@ -232,8 +251,9 @@ public class TextAppenderTest {
         TextAppender appender = new TextAppender("textmerge_append", false);
         String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestOverride.txt"),
             FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchOverride.txt")), "UTF-8");
+        mergedString = mergedString.replaceAll(ALL_LINE_ENDINGS, "");
         assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedOverride.txt")));
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedOverride.txt")).replaceAll(ALL_LINE_ENDINGS, ""));
     }
 
     /**
