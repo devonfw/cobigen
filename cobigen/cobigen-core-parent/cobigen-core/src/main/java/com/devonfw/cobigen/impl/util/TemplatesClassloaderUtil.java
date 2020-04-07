@@ -82,18 +82,19 @@ public class TemplatesClassloaderUtil {
     /**
      * Adds folders to class loader urls e.g. src/main/templates for config.xml detection
      * @param configurationFolder
-     *            File configuration folder for which to generate paths
+     *            Path configuration folder for which to generate paths
      * @throws MalformedURLException
      *             if the URL was malformed
      */
-    private void addFoldersToClassLoaderUrls(File configurationFolder) throws MalformedURLException {
+    private void addFoldersToClassLoaderUrls(Path configurationFolder) throws MalformedURLException {
         String[] possibleLocations = new String[] { "src/main/templates", "target/classes" };
 
         for (String possibleLocation : possibleLocations) {
-            File folder = Paths.get(configurationFolder + File.separator + possibleLocation).toFile();
-            if (Files.exists(folder.toPath())) {
-                classLoaderUrls.add(folder.toURI().toURL());
-                LOG.debug("Added " + folder.toURI().toURL().toString() + " to class path");
+            Path folder = configurationFolder;
+            folder = folder.resolve(possibleLocation);
+            if (Files.exists(folder)) {
+                classLoaderUrls.add(folder.toUri().toURL());
+                LOG.debug("Added " + folder.toUri().toURL().toString() + " to class path");
             }
         }
     }
@@ -103,20 +104,20 @@ public class TemplatesClassloaderUtil {
      * file. That location is then searched for class files and a list with those loaded classes is returned.
      * If the sources are not compiled, the templates will not be able to be generated.
      * @param configurationFolder
-     *            to add to ClassLoader
+     *            Path to add to ClassLoader
      * @return a List of Classes for template generation.
      * @throws IOException
      *             if either templates jar or templates folder could not be read
      */
-    public List<Class<?>> resolveUtilClasses(File configurationFolder) throws IOException {
+    public List<Class<?>> resolveUtilClasses(Path configurationFolder) throws IOException {
         final List<Class<?>> result = new LinkedList<>();
 
         Path templateRoot = null;
         ClassLoader inputClassLoader = null;
         if (configurationFolder != null) {
-            classLoaderUrls.add(configurationFolder.toURI().toURL());
-            LOG.debug("Added " + configurationFolder.toURI().toURL().toString() + " to class path");
-            templateRoot = configurationFolder.toPath();
+            classLoaderUrls.add(configurationFolder.toUri().toURL());
+            LOG.debug("Added " + configurationFolder.toUri().toURL().toString() + " to class path");
+            templateRoot = configurationFolder;
             addFoldersToClassLoaderUrls(configurationFolder);
         }
 
