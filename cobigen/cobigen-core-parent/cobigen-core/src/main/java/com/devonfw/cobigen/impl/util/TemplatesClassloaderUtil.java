@@ -51,7 +51,7 @@ public class TemplatesClassloaderUtil {
             URL configLocation = classLoader.getResource(possibleLocation);
             if (configLocation != null) {
                 contextConfigurationLocation = configLocation;
-                LOG.debug("Found context.xml URL in the classpath @ " + contextConfigurationLocation.toString());
+                LOG.debug("Found context.xml URL in the classpath @ {}", contextConfigurationLocation);
                 break;
             }
         }
@@ -90,7 +90,7 @@ public class TemplatesClassloaderUtil {
             folder = folder.resolve(possibleLocation);
             if (Files.exists(folder)) {
                 classLoaderUrls.add(folder.toUri().toURL());
-                LOG.debug("Added " + folder.toUri().toURL().toString() + " to class path");
+                LOG.debug("Added {} to class path", folder);
             }
         }
         return classLoaderUrls;
@@ -113,7 +113,7 @@ public class TemplatesClassloaderUtil {
         ClassLoader inputClassLoader = null;
         if (configurationFolder != null) {
             classLoaderUrls.add(configurationFolder.toUri().toURL());
-            LOG.debug("Added " + configurationFolder.toUri().toURL().toString() + " to class path");
+            LOG.debug("Added {} to class path", configurationFolder);
             templateRoot = configurationFolder;
             classLoaderUrls = addFoldersToClassLoaderUrls(configurationFolder);
         }
@@ -122,9 +122,9 @@ public class TemplatesClassloaderUtil {
 
         URL contextConfigurationLocation = getContextConfiguration(inputClassLoader);
 
-        LOG.debug("Found context.xml @ " + contextConfigurationLocation.toString());
+        LOG.debug("Found context.xml @ {}", contextConfigurationLocation);
         if (contextConfigurationLocation.toString().startsWith("jar")) {
-            LOG.info("Processing configuration archive " + contextConfigurationLocation.toString());
+            LOG.info("Processing configuration archive {}", contextConfigurationLocation);
 
             // Make sure to create file system for jar file
             Map<String, String> env = new HashMap<>();
@@ -176,9 +176,9 @@ public class TemplatesClassloaderUtil {
                 Iterator<Path> it = foundPaths.iterator();
                 while (it.hasNext()) {
                     Path next = it.next();
-                    LOG.info("    * found class file " + next.toString());
+                    LOG.info("    * found class file {}", next);
                     if (!templateRoot.relativize(next).startsWith("target/classes")) {
-                        LOG.info("    * Removed class file " + next.toString());
+                        LOG.info("    * Removed class file {}", next);
                         it.remove();
                     }
                 }
@@ -212,9 +212,9 @@ public class TemplatesClassloaderUtil {
         Files.walkFileTree(templateRoot, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (file.toString().endsWith(".class")) {
+                if (file.endsWith(".class")) {
                     foundPaths.add(file);
-                    LOG.debug("    * Found class file " + file.toString());
+                    LOG.debug("    * Found class file {}", file);
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -243,13 +243,13 @@ public class TemplatesClassloaderUtil {
     private List<String> walkJarFile(URI jarUri, FileSystem jarfs) throws IOException {
         List<String> foundClasses = new LinkedList<>();
         // walk the jar file
-        LOG.debug("Searching for classes in " + jarUri.toString());
+        LOG.debug("Searching for classes in {}", jarUri);
         Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (file.toString().endsWith(".class")) {
-                    LOG.debug("    * Found class file " + file.toString());
+                if (file.endsWith(".class")) {
+                    LOG.debug("    * Found class file {}", file);
                     // remove the leading '/' and the trailing '.class'
                     String fileName = file.toString().substring(1, file.toString().length() - 6);
                     // replace the path separator '/' with package separator '.' and add it to the
