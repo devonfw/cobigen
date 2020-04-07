@@ -67,12 +67,12 @@
       <templateRef ref="${variables.component#cap_first}RestServiceImpl.java"/>
       <templateRef ref="${variables.component#cap_first}RestService.java"/>
     </increment>
-   <!--  <increment name="rest_service_impl_ctos" description="CRUD REST services (CTOs)">
+    <increment name="rest_service_impl_ctos" description="CRUD REST services (CTOs)">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceImplCtos.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceCtos.java"/>
-    </increment> -->
+    </increment> 
     <!-- <increment name="soap_service_impl" description="CRUD SOAP services">
       <templateRef ref="ServiceConfig.java"/> 
       <templateRef ref="WebApplicationContextLocator.java"/>
