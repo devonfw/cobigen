@@ -167,18 +167,19 @@ public class TemplatesClassloaderUtil {
                     @Override
                     public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                         // Log errors but do not throw an exception
-                        LOG.warn("visitFileFailed @ " + exc);
+                        LOG.warn("visitFileFailed @", exc);
                         return FileVisitResult.CONTINUE;
                     }
                 });
             } catch (IOException e) {
-                LOG.error("Could not read templates jar file " + e);
+                LOG.error("Could not read templates jar file", e);
             }
             for (String className : foundClasses) {
                 try {
                     result.add(inputClassLoader.loadClass(className));
                 } catch (ClassNotFoundException e) {
-                    LOG.warn("Could not load " + className + " from classpath", e);
+                    LOG.warn("Could not load " + className + " from classpath");
+                    LOG.debug("Class was not found", e);
                 }
             }
         } else {
@@ -200,12 +201,12 @@ public class TemplatesClassloaderUtil {
                     @Override
                     public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                         // Log errors but do not throw an exception
-                        LOG.warn("visitFileFailed @" + exc);
+                        LOG.warn("visitFileFailed @", exc);
                         return FileVisitResult.CONTINUE;
                     }
                 });
             } catch (IOException e) {
-                LOG.error("Could not read templates folder " + e);
+                LOG.error("Could not read templates folder", e);
             }
             if (foundPaths.size() > 0) {
 
@@ -224,7 +225,7 @@ public class TemplatesClassloaderUtil {
                     try {
                         result.add(loadClassByPath(templateRoot.relativize(path), inputClassLoader));
                     } catch (ClassNotFoundException e) {
-                        LOG.error("Class could not be loaded into ClassLoader " + e);
+                        LOG.error("Class could not be loaded into ClassLoader", e);
                     }
                 }
             } else {
