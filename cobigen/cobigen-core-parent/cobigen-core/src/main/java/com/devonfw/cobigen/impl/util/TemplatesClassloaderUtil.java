@@ -126,7 +126,6 @@ public class TemplatesClassloaderUtil {
         URL contextConfigurationLocation = getContextConfiguration(inputClassLoader);
 
         LOG.debug("Found context.xml @ " + contextConfigurationLocation.toString());
-        final List<String> foundClasses = new LinkedList<>();
         if (contextConfigurationLocation.toString().startsWith("jar")) {
             LOG.info("Processing configuration archive " + contextConfigurationLocation.toString());
 
@@ -142,70 +141,35 @@ public class TemplatesClassloaderUtil {
                 fs = FileSystems.newFileSystem(uri, env);
             }
             Paths.get(uri);
-
+            List<String> foundClasses = new LinkedList<>();
             try {
                 // Get the URI of the jar from the URL of the contained context.xml
                 URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
                 FileSystem jarfs = FileSystems.getFileSystem(jarUri);
 
-                // walk the jar file
-                LOG.debug("Searching for classes in " + jarUri.toString());
-                Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
-
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(".class")) {
-                            LOG.debug("    * Found class file " + file.toString());
-                            // remove the leading '/' and the trailing '.class'
-                            String fileName = file.toString().substring(1, file.toString().length() - 6);
-                            // replace the path separator '/' with package separator '.' and add it to the
-                            // list of found files
-                            foundClasses.add(fileName.replace("/", "."));
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                        // Log errors but do not throw an exception
-                        LOG.warn("visitFileFailed @", exc);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
+                foundClasses = walkJarFile(jarUri, jarfs);
             } catch (IOException e) {
                 LOG.error("Could not read templates jar file", e);
             }
-            for (String className : foundClasses) {
-                try {
-                    result.add(inputClassLoader.loadClass(className));
-                } catch (ClassNotFoundException e) {
-                    LOG.warn("Could not load " + className + " from classpath");
-                    LOG.debug("Class was not found", e);
+            if (foundClasses.size() > 0) {
+                for (String className : foundClasses) {
+                    try {
+                        result.add(inputClassLoader.loadClass(className));
+                    } catch (ClassNotFoundException e) {
+                        LOG.warn("Could not load " + className + " from classpath");
+                        LOG.debug("Class was not found", e);
+                    }
                 }
+            } else {
+                LOG.info("Could not find any compiled classes to be loaded as util classes in jar file.");
             }
         } else {
             LOG.info("Processing configuration folder " + templateRoot.toString());
             LOG.debug("Searching for classes ...");
-            final List<Path> foundPaths = new LinkedList<>();
+            List<Path> foundPaths = new LinkedList<>();
 
             try {
-                Files.walkFileTree(templateRoot, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(".class")) {
-                            foundPaths.add(file);
-                            LOG.debug("    * Found class file " + file.toString());
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                        // Log errors but do not throw an exception
-                        LOG.warn("visitFileFailed @", exc);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
+                foundPaths = walkTemplateFolder(templateRoot);
             } catch (IOException e) {
                 LOG.error("Could not read templates folder", e);
             }
@@ -230,11 +194,82 @@ public class TemplatesClassloaderUtil {
                     }
                 }
             } else {
-                LOG.info("Could not find any compiled classes to be loaded as util classes.");
+                LOG.info("Could not find any compiled classes to be loaded as util classes in template folder.");
             }
         }
 
         return result;
+    }
+
+    /**
+     * Walks the template folder in search of utility classes
+     *
+     * @param templateRoot
+     *            Path to template folder
+     * @return List<Path> of paths containing a class file
+     * @throws IOException
+     *             if file could not be visited
+     */
+    private List<Path> walkTemplateFolder(Path templateRoot) throws IOException {
+        final List<Path> foundPaths = new LinkedList<>();
+        Files.walkFileTree(templateRoot, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (file.toString().endsWith(".class")) {
+                    foundPaths.add(file);
+                    LOG.debug("    * Found class file " + file.toString());
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                // Log errors but do not throw an exception
+                LOG.warn("visitFileFailed @", exc);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return foundPaths;
+    }
+
+    /**
+     * Walks the jar file in search of utility classes
+     *
+     * @param jarUri
+     *            URI of jar file
+     * @param jarfs
+     *            FileSystem of jar file
+     * @return List<String> of file paths containing class files
+     * @throws IOException
+     *             if file could not be visited
+     */
+    private List<String> walkJarFile(URI jarUri, FileSystem jarfs) throws IOException {
+        List<String> foundClasses = new LinkedList<>();
+        // walk the jar file
+        LOG.debug("Searching for classes in " + jarUri.toString());
+        Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (file.toString().endsWith(".class")) {
+                    LOG.debug("    * Found class file " + file.toString());
+                    // remove the leading '/' and the trailing '.class'
+                    String fileName = file.toString().substring(1, file.toString().length() - 6);
+                    // replace the path separator '/' with package separator '.' and add it to the
+                    // list of found files
+                    foundClasses.add(fileName.replace("/", "."));
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                // Log errors but do not throw an exception
+                LOG.warn("visitFileFailed @", exc);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return foundClasses;
     }
 
     /**
