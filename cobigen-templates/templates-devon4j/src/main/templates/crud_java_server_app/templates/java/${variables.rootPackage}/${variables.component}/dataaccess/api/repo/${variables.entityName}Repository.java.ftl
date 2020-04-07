@@ -20,10 +20,20 @@ import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.
 import com.devonfw.module.jpa.dataaccess.api.QueryUtil;
 import com.devonfw.module.jpa.dataaccess.api.data.DefaultRepository;
 
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 /**
  * {@link DefaultRepository} for {@link ${variables.entityName}Entity}
   */
-public interface ${variables.entityName}Repository extends DefaultRepository<${variables.entityName}Entity> {
+public interface ${variables.entityName}Repository extends <#if compositeIdVar = true>GenericRepository<${variables.entityName}Entity, ${compositeIdTypeVar}><#else>DefaultRepository<${variables.entityName}Entity></#if> {
 
   /**
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo} with the criteria to search.

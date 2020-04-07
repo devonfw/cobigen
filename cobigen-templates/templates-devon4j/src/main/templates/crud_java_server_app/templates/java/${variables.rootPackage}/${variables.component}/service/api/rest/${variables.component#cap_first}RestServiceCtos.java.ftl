@@ -17,6 +17,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 /**
  * The service interface for REST calls in order to execute the logic of component {@link ${variables.component?cap_first}}.
  */
@@ -33,7 +43,7 @@ public interface ${variables.component?cap_first}RestService {
   */
   @GET
   @Path("/${variables.entityName?lower_case}/cto/{id}/")
-  public ${variables.entityName}Cto get${variables.entityName}Cto(@PathParam("id") long id);
+  public ${variables.entityName}Cto get${variables.entityName}Cto(@PathParam("id") <#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id);
 
   /**
    * Delegates to {@link ${variables.component?cap_first}#find${variables.entityName}Ctos}.

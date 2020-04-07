@@ -7,12 +7,23 @@ import ${variables.rootPackage}.general.dataaccess.api.ApplicationPersistenceEnt
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.general.dataaccess.api.ApplicationComposedKeyPersistenceEntity;
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 /**
  * Data access object for ${variables.entityName} entities
  */
 @Entity
 @javax.persistence.Table(name = "${variables.entityName}")
-public class ${pojo.name} extends ApplicationPersistenceEntity implements ${variables.entityName} {
+public class ${pojo.name} extends <#if compositeIdVar = true>ApplicationComposedKeyPersistenceEntity<${compositeIdTypeVar}><#else>ApplicationPersistenceEntity</#if> implements ${variables.entityName} {
 
   private static final long serialVersionUID = 1L;
 

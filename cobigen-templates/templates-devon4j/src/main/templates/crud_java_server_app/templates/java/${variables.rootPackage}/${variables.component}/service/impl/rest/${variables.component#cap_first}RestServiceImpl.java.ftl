@@ -13,6 +13,16 @@ import javax.inject.Named;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 /**
  * The service implementation for REST calls in order to execute the logic of component {@link ${variables.component?cap_first}}.
  */
@@ -23,7 +33,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   private ${variables.component?cap_first} ${variables.component?lower_case};
 
   @Override
-  public ${variables.entityName}Eto get${variables.entityName}(long id) {
+  public ${variables.entityName}Eto get${variables.entityName}(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id) {
     return this.${variables.component?uncap_first}.find${variables.entityName}(id);
   }
 
@@ -33,7 +43,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   }
 
   @Override
-  public void delete${variables.entityName}(long id) {
+  public void delete${variables.entityName}(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id) {
     this.${variables.component?uncap_first}.delete${variables.entityName}(id);
   }
 

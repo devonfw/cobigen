@@ -3,11 +3,22 @@ package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 public interface UcFind${variables.entityName} {
+
 
   /**
    * Returns a ${variables.entityName} by its id 'id'.
@@ -15,8 +26,8 @@ public interface UcFind${variables.entityName} {
    * @param id The id 'id' of the ${variables.entityName}.
    * @return The {@link ${variables.entityName}Eto} with id 'id'
    */
-  ${variables.entityName}Eto find${variables.entityName}(long id);
-
+  ${variables.entityName}Eto find${variables.entityName}(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id);
+  
 
   /**
    * Returns a paginated list of ${variables.entityName}s matching the search criteria.

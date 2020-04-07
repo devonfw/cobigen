@@ -2,15 +2,27 @@
 package ${variables.rootPackage}.${variables.component}.logic.api.to;
 
 import com.devonfw.module.basic.common.api.to.AbstractEto;
+import ${variables.rootPackage}.general.common.api.to.AbstractComposedKeyEto;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 
 import java.util.List;
 import java.util.Set;
 
+
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
 /**
  * Entity transport object of ${variables.entityName}
  */
-public class ${variables.entityName}Eto extends <#if pojo.extendedType.canonicalName=="java.lang.Object" || pojo.extendedType.package!=pojo.package || pojo.extendedType.name == "ApplicationPersistenceEntity">AbstractEto<#else>${pojo.extendedType.name?replace("Entity","Eto")}</#if> implements ${variables.entityName} {
+public class ${variables.entityName}Eto extends <#if compositeIdVar = true>AbstractComposedKeyEto<${compositeIdTypeVar}><#elseif pojo.extendedType.canonicalName=="java.lang.Object" || pojo.extendedType.package!=pojo.package || pojo.extendedType.name == "ApplicationPersistenceEntity">AbstractEto<#else>${pojo.extendedType.name?replace("Entity","Eto")}</#if> implements ${variables.entityName} { 
+
 
 	private static final long serialVersionUID = 1L;
 

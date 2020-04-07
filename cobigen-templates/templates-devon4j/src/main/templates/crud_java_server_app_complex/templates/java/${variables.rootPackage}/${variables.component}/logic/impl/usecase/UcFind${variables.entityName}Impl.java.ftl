@@ -17,6 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
 
 /**
  * Use case implementation for searching, filtering and getting ${variables.entityName}s
@@ -31,7 +40,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
 
 
     @Override
-    public ${variables.entityName}Eto find${variables.entityName}(long id) {
+    public ${variables.entityName}Eto find${variables.entityName}(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if>id) {
       LOG.debug("Get ${variables.entityName} with id {} from database.", id);
       Optional<${variables.entityName}Entity> foundEntity = get${variables.entityName}Repository().findById(id);
       if (foundEntity.isPresent())

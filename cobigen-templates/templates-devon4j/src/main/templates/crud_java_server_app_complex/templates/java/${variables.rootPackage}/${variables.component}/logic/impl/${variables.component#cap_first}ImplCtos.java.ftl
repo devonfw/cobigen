@@ -13,6 +13,16 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 /**
  * Implementation of component interface of ${variables.component}
  */
@@ -23,7 +33,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     private UcFind${variables.entityName} ucFind${variables.entityName};
 
     @Override
-    public ${variables.entityName}Cto find${variables.entityName}Cto(long id) {
+    public ${variables.entityName}Cto find${variables.entityName}Cto(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id) {
     
       return ucFind${variables.entityName}.find${variables.entityName}Cto(id);
     }

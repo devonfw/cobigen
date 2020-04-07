@@ -2,6 +2,16 @@ package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 /**
  * Interface of UcManage${variables.entityName} to centralize documentation and signatures of methods.
  */
@@ -13,7 +23,7 @@ public interface UcManage${variables.entityName} {
    * @param ${variables.entityName?uncap_first}Id Id of the ${variables.entityName?uncap_first} to delete
    * @return boolean <code>true</code> if the ${variables.entityName?uncap_first} can be deleted, <code>false</code> otherwise
    */
-  boolean delete${variables.entityName}(long ${variables.entityName?uncap_first}Id);
+  boolean delete${variables.entityName}(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if>${variables.entityName?uncap_first}Id);
 
   /**
    * Saves a ${variables.entityName?uncap_first} and store it in the database.

@@ -14,6 +14,16 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+<#list pojo.fields as field>
+		<#if field.name="id">
+			<#assign compositeIdVar = true>
+			<#assign compositeIdTypeVar = field.type>
+		</#if>
+	</#list>
+<#if compositeIdVar = true>
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 /**
  * Implementation of component interface of ${variables.component}
  */
@@ -27,7 +37,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     private UcManage${variables.entityName} ucManage${variables.entityName};
 
     @Override
-    public ${variables.entityName}Eto find${variables.entityName}(long id) {
+    public ${variables.entityName}Eto find${variables.entityName}(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id) {
 
       return this.ucFind${variables.entityName}.find${variables.entityName}(id);
     }
@@ -44,7 +54,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     }
 
     @Override
-    public boolean delete${variables.entityName}(long id) {
+    public boolean delete${variables.entityName}(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id) {
 
       return this.ucManage${variables.entityName}.delete${variables.entityName}(id);
     }
