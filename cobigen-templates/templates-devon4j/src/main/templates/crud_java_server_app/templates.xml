@@ -40,9 +40,11 @@
     </increment>
     <increment name="tos" description="TO's">
       <templateRef ref="AbstractSearchCriteriaTo.java"/>
-      <templateRef ref="AbstractComposedKeyEto.java"/>
       <templateRef ref="${variables.entityName}Eto.java"/>
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
+    </increment>
+    <increment name="tos_composedkeys" description="TO's (ComposedKey)">
+      <templateRef ref="AbstractComposedKeyEto.java"/>
     </increment>
     <increment name="ctos" description="CTO's">
       <templateRef ref="${variables.entityName}Cto.java"/>
@@ -55,11 +57,13 @@
     </increment>-->
     <increment name="dataaccess_infrastructure" description="Entity infrastructure">
       <templateRef ref="ApplicationPersistenceEntity.java"/>
-      <templateRef ref="ApplicationComposedKeyPersistenceEntity.java"/>
       <templateRef ref="ApplicationEntity.java"/>
-      <templateRef ref="ApplicationComposedKeyEntity.java"  />
       <templateRef ref="${variables.entityName}Entity.java"/>
       <templateRef ref="${variables.entityName}.java"/>
+    </increment>
+    <increment name="dataaccess_infrastructure_composedkey" description="Entity infrastructure (ComposedKey)">
+      <templateRef ref="ApplicationComposedKeyPersistenceEntity.java"/>
+      <templateRef ref="ApplicationComposedKeyEntity.java"  />
     </increment>
     <increment name="rest_service_impl" description="CRUD REST services">
       <templateRef ref="AbstractBeanMapperSupport.java"/>

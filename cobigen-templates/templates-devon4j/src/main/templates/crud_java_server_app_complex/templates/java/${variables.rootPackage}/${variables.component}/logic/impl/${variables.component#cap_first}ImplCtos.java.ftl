@@ -13,12 +13,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+<#assign compositeIdVar = false>
 <#list pojo.fields as field>
-		<#if field.name="id">
-			<#assign compositeIdVar = true>
-			<#assign compositeIdTypeVar = field.type>
-		</#if>
-	</#list>
+	<#if field.type?starts_with("Composite")>
+		<#assign compositeIdVar = true>
+		<#assign compositeIdTypeVar = field.type>
+	</#if>
+</#list>
 <#if compositeIdVar = true>
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>

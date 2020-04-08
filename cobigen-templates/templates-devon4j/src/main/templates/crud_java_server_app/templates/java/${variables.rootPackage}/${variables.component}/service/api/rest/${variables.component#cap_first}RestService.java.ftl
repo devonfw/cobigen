@@ -16,12 +16,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+<#assign compositeIdVar = false>
 <#list pojo.fields as field>
-		<#if field.name="id">
-			<#assign compositeIdVar = true>
-			<#assign compositeIdTypeVar = field.type>
-		</#if>
-	</#list>
+	<#if field.type?starts_with("Composite")>
+		<#assign compositeIdVar = true>
+		<#assign compositeIdTypeVar = field.type>
+	</#if>
+</#list>
 <#if compositeIdVar = true>
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>

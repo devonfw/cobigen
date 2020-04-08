@@ -7,12 +7,13 @@ import ${variables.rootPackage}.general.dataaccess.api.ApplicationPersistenceEnt
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+<#assign compositeIdVar = false>
 <#list pojo.fields as field>
-		<#if field.name="id">
-			<#assign compositeIdVar = true>
-			<#assign compositeIdTypeVar = field.type>
-		</#if>
-	</#list>
+	<#if field.type?starts_with("Composite")>
+		<#assign compositeIdVar = true>
+		<#assign compositeIdTypeVar = field.type>
+	</#if>
+</#list>
 <#if compositeIdVar = true>
 import ${variables.rootPackage}.general.dataaccess.api.ApplicationComposedKeyPersistenceEntity;
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};

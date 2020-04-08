@@ -2,12 +2,13 @@
 package ${variables.rootPackage}.${variables.component}.common.api;
 
 import ${variables.rootPackage}.general.common.api.ApplicationEntity;
+<#assign compositeIdVar = false>
 <#list pojo.fields as field>
-		<#if field.name="id">
-			<#assign compositeIdVar = true>
-			<#assign compositeIdTypeVar = field.type>
-		</#if>
-	</#list>
+	<#if field.type?starts_with("Composite")>
+		<#assign compositeIdVar = true>
+		<#assign compositeIdTypeVar = field.type>
+	</#if>
+</#list>
 <#if compositeIdVar = true>
 import ${variables.rootPackage}.general.common.api.ApplicationComposedKeyEntity;
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
