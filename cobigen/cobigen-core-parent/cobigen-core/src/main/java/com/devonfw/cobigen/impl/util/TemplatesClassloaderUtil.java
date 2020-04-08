@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.impl.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -296,10 +296,8 @@ public class TemplatesClassloaderUtil {
         // Get a list with all path segments, starting with the class name
         Queue<String> pathSegments = new LinkedList<>();
         // Split the path by the systems file separator and without the .class suffix
-        String[] pathSegmentsArray = classPath.toString().substring(0, classPath.toString().length() - 6)
-            .split("\\".equals(File.separator) ? "\\\\" : File.separator);
-        for (int i = pathSegmentsArray.length - 1; i > -1; i--) {
-            pathSegments.add(pathSegmentsArray[i]);
+        for (int i = classPath.getNameCount() - 1; i > -1; i--) {
+            pathSegments.add(FilenameUtils.removeExtension(classPath.getName(i).getFileName().toString()));
         }
 
         if (!pathSegments.isEmpty()) {
