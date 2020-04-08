@@ -70,6 +70,14 @@ public class TemplatesConfiguration {
 
         templates = reader.loadTemplates(trigger);
         increments = reader.loadIncrements(templates, trigger);
+        for (Increment inc : increments.values()) {
+            for (Increment incDep : inc.getDependentIncrements()) {
+                for (Template template : incDep.getTemplates()) {
+                    templates.put(template.getName(), template);
+                    inc.getTemplates().add(template);
+                }
+            }
+        }
         templateEngine = reader.getTemplateEngine();
         this.trigger = trigger;
     }
