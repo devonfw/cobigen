@@ -366,7 +366,8 @@ public class JavaMergerTest {
 
         for (JavaMethod method : resultClazz.getMethods()) {
             JavaMethod origMethod = origClazz.getMethodBySignature(method.getName(), method.getParameterTypes());
-            assertThat(method.getCodeBlock()).isEqualTo(origMethod.getCodeBlock());
+      assertThat(method.getCodeBlock().replaceAll("\r\n|\r|\n", ""))
+          .isEqualTo(origMethod.getCodeBlock().replaceAll("\r\n|\r|\n", ""));
         }
     }
 
