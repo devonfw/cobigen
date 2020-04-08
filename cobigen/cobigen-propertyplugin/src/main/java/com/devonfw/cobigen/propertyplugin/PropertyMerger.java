@@ -131,7 +131,7 @@ public class PropertyMerger implements Merger {
         String lastObservedComment = null;
         int observedEmptyLines = 0;
         count = 0;
-        for (String patchLine : patch.split(LINE_SEPARATOR)) {
+        for (String patchLine : patch.split("\\r\\n|\\n|\\r")) {
             m = p.matcher(patchLine);
             if (m.matches()) {
                 // no conflicts
