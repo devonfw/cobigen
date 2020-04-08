@@ -35,6 +35,17 @@ public class TemplatesClassloaderUtil {
     private static final Logger LOG = LoggerFactory.getLogger(TemplatesClassloaderUtil.class);
 
     /**
+     * Locations to check for context.xml
+     */
+    private static final String[] configFileLocations =
+        new String[] { "context.xml", "src/main/templates/context.xml" };
+
+    /**
+     * Locations to check for template utility classes
+     */
+    private static final String[] classFolderLocations = new String[] { "src/main/templates", "target/classes" };
+
+    /**
      * Checks the ClassLoader for any context.xml provided either in configurationFolder or in
      * templates-plugin and returns its URL
      * @param classLoader
@@ -45,13 +56,11 @@ public class TemplatesClassloaderUtil {
      */
     public URL getContextConfiguration(ClassLoader classLoader) throws IOException {
         URL contextConfigurationLocation = null;
-        String[] possibleLocations = new String[] { "context.xml", "src/main/templates/context.xml" };
-
-        for (String possibleLocation : possibleLocations) {
+        for (String possibleLocation : configFileLocations) {
             URL configLocation = classLoader.getResource(possibleLocation);
             if (configLocation != null) {
                 contextConfigurationLocation = configLocation;
-                LOG.debug("Found context.xml URL in the classpath @ {}", contextConfigurationLocation);
+                LOG.debug("Found context.xml URL @ {}", contextConfigurationLocation);
                 break;
             }
         }
@@ -83,9 +92,8 @@ public class TemplatesClassloaderUtil {
      *             if the URL was malformed
      */
     private ArrayList<URL> addFoldersToClassLoaderUrls(Path configurationFolder) throws MalformedURLException {
-        String[] possibleLocations = new String[] { "src/main/templates", "target/classes" };
         ArrayList<URL> classLoaderUrls = new ArrayList<>();
-        for (String possibleLocation : possibleLocations) {
+        for (String possibleLocation : classFolderLocations) {
             Path folder = configurationFolder;
             folder = folder.resolve(possibleLocation);
             if (Files.exists(folder)) {
@@ -122,10 +130,9 @@ public class TemplatesClassloaderUtil {
 
         URL contextConfigurationLocation = getContextConfiguration(inputClassLoader);
 
-        LOG.debug("Found context.xml @ {}", contextConfigurationLocation);
         if (contextConfigurationLocation.toString().startsWith("jar")) {
-            LOG.info("Processing configuration archive {}", contextConfigurationLocation);
-
+            LOG.debug("Processing configuration archive {}", contextConfigurationLocation);
+            LOG.info("Searching for classes in configuration archive...");
             // Make sure to create file system for jar file
             Map<String, String> env = new HashMap<>();
             env.put("create", "true");
@@ -161,8 +168,8 @@ public class TemplatesClassloaderUtil {
                 LOG.info("Could not find any compiled classes to be loaded as util classes in jar file.");
             }
         } else {
-            LOG.info("Processing configuration folder " + templateRoot.toString());
-            LOG.debug("Searching for classes ...");
+            LOG.debug("Processing configuration folder " + templateRoot.toString());
+            LOG.info("Searching for classes in configuration folder...");
             List<Path> foundPaths = new LinkedList<>();
 
             try {
@@ -176,9 +183,8 @@ public class TemplatesClassloaderUtil {
                 Iterator<Path> it = foundPaths.iterator();
                 while (it.hasNext()) {
                     Path next = it.next();
-                    LOG.info("    * found class file {}", next);
                     if (!templateRoot.relativize(next).startsWith("target/classes")) {
-                        LOG.info("    * Removed class file {}", next);
+                        LOG.info("    * Removed test class file {}", next);
                         it.remove();
                     }
                 }
@@ -212,7 +218,7 @@ public class TemplatesClassloaderUtil {
         Files.walkFileTree(templateRoot, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (file.endsWith(".class")) {
+                if (file.toString().endsWith(".class")) {
                     foundPaths.add(file);
                     LOG.debug("    * Found class file {}", file);
                 }
@@ -248,7 +254,7 @@ public class TemplatesClassloaderUtil {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (file.endsWith(".class")) {
+                if (file.toString().endsWith(".class")) {
                     LOG.debug("    * Found class file {}", file);
                     // remove the leading '/' and the trailing '.class'
                     String fileName = file.toString().substring(1, file.toString().length() - 6);
