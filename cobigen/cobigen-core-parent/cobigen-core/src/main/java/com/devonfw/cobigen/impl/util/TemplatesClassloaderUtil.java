@@ -26,6 +26,8 @@ import java.util.Queue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+
 /**
  * Utilities related to the retrieval of Templates utility classes
  */
@@ -51,10 +53,10 @@ public class TemplatesClassloaderUtil {
      * @param classLoader
      *            ClassLoader to check resources from
      * @return URL of the context configuration file path
-     * @throws IOException
+     * @throws CobiGenRuntimeException
      *             if no configuration file was found
      */
-    public URL getContextConfiguration(ClassLoader classLoader) throws IOException {
+    public URL getContextConfiguration(ClassLoader classLoader) throws CobiGenRuntimeException {
         URL contextConfigurationLocation = null;
         for (String possibleLocation : configFileLocations) {
             URL configLocation = classLoader.getResource(possibleLocation);
@@ -66,7 +68,7 @@ public class TemplatesClassloaderUtil {
         }
 
         if (contextConfigurationLocation == null) {
-            throw new IOException("No context.xml could be found in the classpath!");
+            throw new CobiGenRuntimeException("No context.xml could be found in the classpath!");
         }
         return contextConfigurationLocation;
     }
