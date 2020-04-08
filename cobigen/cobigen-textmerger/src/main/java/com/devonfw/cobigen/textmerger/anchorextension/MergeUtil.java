@@ -58,8 +58,8 @@ public class MergeUtil {
         throws Exception {
         LinkedHashMap<Anchor, String> result = new LinkedHashMap<>();
         toSplit.trim();
-        if (!StringUtils.substring(toSplit, 0, StringUtils.ordinalIndexOf(toSplit, "\n", 1) - lineSepLength).trim()
-            .matches(anchorRegexTrimmed)) {
+       Matcher anchorMatcher = Pattern.compile(anchorRegexTrimmed).matcher(toSplit);
+	   if (anchorMatcher.find() && anchorMatcher.start() > 0) {
             throw new Exception(
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
                     + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
