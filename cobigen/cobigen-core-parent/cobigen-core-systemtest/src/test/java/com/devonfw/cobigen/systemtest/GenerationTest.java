@@ -90,21 +90,25 @@ public class GenerationTest extends AbstractApiTest {
         List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
         List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
 
-        // assert
-        IncrementTo externalIncrement = null;
         // we try to get an increment containing external increments
         for (IncrementTo inc : increments) {
             if (inc.getId().equals("3")) {
-                externalIncrement = inc;
+                // We expect increment 3 to have an external increment 0 containing one template
+                assertThat(inc).isNotNull();
+                assertThat(inc.getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
+            }
+            if (inc.getId().equals("4") || inc.getId().equals("5")) {
+                // We expect increment 4 or 5 to have an external increment 0 containing 4 templates
+                assertThat(inc).isNotNull();
+                assertThat(inc.getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
             }
         }
 
+        // We expect there is 5 templates matched in total, both by the trigger which is matched and from
+        // external increments
         assertThat(templates).hasSize(5);
-        // We expect increment 3 to have an external increment 0 containing one template
-        assertThat(externalIncrement).isNotNull();
-        assertThat(externalIncrement.getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
-        // We expect two triggers, the main one and the external one
-        assertThat(triggersIds.size()).isEqualTo(2);
+        // We expect 1 trigger matched, the external trigger should not be counted as matching
+        assertThat(triggersIds.size()).isEqualTo(1);
     }
 
     /**

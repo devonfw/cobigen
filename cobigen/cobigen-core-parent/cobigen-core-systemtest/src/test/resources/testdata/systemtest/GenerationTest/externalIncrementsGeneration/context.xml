@@ -5,7 +5,7 @@
         </matcher>
     </trigger>
     <trigger id="valid_increment_composition" type="mockplugin" templateFolder="valid_increment_composition">
-        <matcher type="fqn" value=".+">
+        <matcher type="unvalid" value="What ever is still unmatched">
         </matcher>
     </trigger>
 </contextConfiguration>
