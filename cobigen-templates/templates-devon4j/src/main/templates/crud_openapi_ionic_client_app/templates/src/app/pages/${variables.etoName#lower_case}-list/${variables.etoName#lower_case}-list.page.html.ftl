@@ -13,7 +13,7 @@
           <ion-label class="label label-md">
             <ion-grid class="header-grid">
               <ion-row> <#list model.properties as field>
-                <ion-col class="crop">{{'${variables.component?lower_case}.${variables.etoName?lower_case}.${field.name}'| translate}}</ion-col></#list>
+                <ion-col class="crop">{{'${variables.component?lower_case}.${variables.etoName?lower_case}.${field.name}'| transloco}}</ion-col></#list>
               </ion-row>
             </ion-grid>
           </ion-label>
@@ -22,8 +22,8 @@
     </span>
   </header>
 </ion-header>
-<ion-content padding>
-  <ion-refresher (ionRefresh)="doRefresh($event)">
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   <ion-list #slidingList>
@@ -48,7 +48,7 @@
         <ion-item-option
           expandable
           color="danger"
-          (tap)="setSelectedItemIndex(i); deleteSelected${variables.etoName?cap_first}()"
+          (click)="setSelectedItemIndex(i); deleteSelected${variables.etoName?cap_first}()"
           tappable
         >
           <ion-icon size="large" name="trash"></ion-icon>
@@ -60,7 +60,7 @@
       >
         <ion-item-option
           expandable
-          (tap)="setSelectedItemIndex(i); updateSelected${variables.etoName?cap_first}()"
+          (click)="setSelectedItemIndex(i); updateSelected${variables.etoName?cap_first}()"
           color="secondary"
           tappable
         >
@@ -77,20 +77,20 @@
   </ion-infinite-scroll>
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button color="primary">
-      <ion-icon name="arrow-dropright"></ion-icon>
+      <ion-icon name="arrow-up-outline"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
       <ion-fab-button
         color="primary"
         class="fabButton fab-button-size"
-        (tap)="create${variables.etoName?cap_first}()"
+        (click)="create${variables.etoName?cap_first}()"
       >
         <ion-icon name="add-circle"></ion-icon>
       </ion-fab-button>
 
       <ion-fab-button
         color="primary"
-        (tap)="updateSelected${variables.etoName?cap_first}()"
+        (click)="updateSelected${variables.etoName?cap_first}()"
         [disabled]="deleteModifiedButtonsDisabled"
       >
         <ion-icon name="brush"></ion-icon>
@@ -98,13 +98,13 @@
 
       <ion-fab-button
         color="primary"
-        (tap)="deleteSelected${variables.etoName?cap_first}()"
+        (click)="deleteSelected${variables.etoName?cap_first}()"
         [disabled]="deleteModifiedButtonsDisabled"
       >
         <ion-icon name="trash"></ion-icon>
       </ion-fab-button>
 
-      <ion-fab-button color="primary" (tap)="search${variables.etoName?cap_first}s()">
+      <ion-fab-button color="primary" (click)="search${variables.etoName?cap_first}s()">
         <ion-icon name="search"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
