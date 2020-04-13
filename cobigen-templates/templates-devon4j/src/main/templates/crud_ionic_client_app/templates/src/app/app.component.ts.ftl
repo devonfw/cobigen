@@ -39,8 +39,6 @@ export class AppComponent {
         },
       ];
     });
-    this.translate.setDefaultLang('en');
-    this.translate.currentLang = 'en';
   }
 
   initializeApp() {
