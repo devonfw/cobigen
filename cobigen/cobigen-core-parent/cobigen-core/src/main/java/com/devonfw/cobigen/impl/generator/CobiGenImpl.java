@@ -53,33 +53,35 @@ public class CobiGenImpl implements CobiGen {
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
         Path targetRootPath) {
-        return generate(input, generableArtifacts, targetRootPath, false, null, null);
+        return generate(input, generableArtifacts, targetRootPath, false, null, null, null);
     }
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
         Path targetRootPath, boolean forceOverride) {
-        return generate(input, generableArtifacts, targetRootPath, forceOverride, null, null);
+        return generate(input, generableArtifacts, targetRootPath, forceOverride, null, null, null);
     }
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses) {
-        return generate(input, generableArtifacts, targetRootPath, forceOverride, logicClasses, null);
+        Path targetRootPath, boolean forceOverride, ClassLoader classLoader, Path templateFolderPath) {
+        return generate(input, generableArtifacts, targetRootPath, forceOverride, classLoader, null,
+            templateFolderPath);
     }
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
-        return generate(input, generableArtifacts, targetRootPath, forceOverride, logicClasses, null,
+        Path targetRootPath, boolean forceOverride, ClassLoader classLoader, Map<String, Object> rawModel,
+        Path templateFolderPath) {
+        return generate(input, generableArtifacts, targetRootPath, forceOverride, classLoader, null,
             (String taskName, Integer progress) -> {
-            });
+            }, templateFolderPath);
     }
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel,
-        BiConsumer<String, Integer> progressCallback) {
+        Path targetRootPath, boolean forceOverride, ClassLoader classLoader, Map<String, Object> rawModel,
+        BiConsumer<String, Integer> progressCallback, Path templateFolderPath) {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         if (generableArtifacts.contains(null)) {
@@ -90,36 +92,36 @@ public class CobiGenImpl implements CobiGen {
         Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
         return new GenerationProcessorImpl(configurationHolder, inputResolver).generate(input, generableArtifacts,
-            targetRootPath, forceOverride, logicClasses, rawModel, progressCallback);
+            targetRootPath, forceOverride, classLoader, rawModel, progressCallback, templateFolderPath);
     }
 
     @Override
     public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath) {
-        return generate(input, generableArtifact, targetRootPath, false, null, null);
+        return generate(input, generableArtifact, targetRootPath, false, null, null, null);
     }
 
     @Override
     public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
         boolean forceOverride) {
-        return generate(input, generableArtifact, targetRootPath, forceOverride, null, null);
+        return generate(input, generableArtifact, targetRootPath, forceOverride, null, null, null);
     }
 
     @Override
     public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
-        boolean forceOverride, List<Class<?>> logicClasses) {
-        return generate(input, generableArtifact, targetRootPath, forceOverride, logicClasses, null);
+        boolean forceOverride, ClassLoader classLoader, Path templateFolderPath) {
+        return generate(input, generableArtifact, targetRootPath, forceOverride, classLoader, null, templateFolderPath);
     }
 
     @Override
     public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
-        boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+        boolean forceOverride, ClassLoader classLoader, Map<String, Object> rawModel, Path templateFolderPath) {
         Objects.requireNonNull(input, "Input");
         Objects.requireNonNull(generableArtifact, "Artifact to be generated");
         Objects.requireNonNull(targetRootPath, "targetRootPath");
         return new GenerationProcessorImpl(configurationHolder, inputResolver).generate(input,
-            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, logicClasses, rawModel,
+            Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, classLoader, rawModel,
             (String taskName, Integer progress) -> {
-            });
+            }, templateFolderPath);
     }
 
     @Override

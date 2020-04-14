@@ -112,97 +112,130 @@ public class TemplatesClassloaderUtil {
      * If the sources are not compiled, the templates will not be able to be generated.
      * @param configurationFolder
      *            Path to add to ClassLoader
+     * @param classLoader
+     *            ClassLoader to load jar from
      * @return a List of Classes for template generation.
      * @throws IOException
      *             if either templates jar or templates folder could not be read
      */
-    public List<Class<?>> resolveUtilClasses(Path configurationFolder) throws IOException {
-        final List<Class<?>> result = new LinkedList<>();
+    public List<Class<?>> resolveUtilClasses(Path configurationFolder, ClassLoader classLoader) throws IOException {
+        List<Class<?>> result = new LinkedList<>();
         ArrayList<URL> classLoaderUrls = new ArrayList<>(); // stores ClassLoader URLs
         Path templateRoot = null;
         ClassLoader inputClassLoader = null;
+        URL contextConfigurationLocation = null;
         if (configurationFolder != null) {
             classLoaderUrls.add(configurationFolder.toUri().toURL());
             LOG.debug("Added {} to class path", configurationFolder);
             templateRoot = configurationFolder;
             classLoaderUrls = addFoldersToClassLoaderUrls(configurationFolder);
+            inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}));
+            contextConfigurationLocation = configurationFolder.toUri().toURL();
+        } else {
+            inputClassLoader = classLoader;
+            contextConfigurationLocation = getContextConfiguration(inputClassLoader);
         }
-
-        inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}));
-
-        URL contextConfigurationLocation = getContextConfiguration(inputClassLoader);
 
         if (contextConfigurationLocation.toString().startsWith("jar")) {
-            LOG.debug("Processing configuration archive {}", contextConfigurationLocation);
-            LOG.info("Searching for classes in configuration archive...");
-            // Make sure to create file system for jar file
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-
-            URI uri = URI.create(contextConfigurationLocation.toString());
-            FileSystem fs;
-            try {
-                fs = FileSystems.getFileSystem(uri);
-            } catch (FileSystemNotFoundException e) {
-                fs = FileSystems.newFileSystem(uri, env);
-            }
-            Paths.get(uri);
-            List<String> foundClasses = new LinkedList<>();
-            try {
-                // Get the URI of the jar from the URL of the contained context.xml
-                URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
-                FileSystem jarfs = FileSystems.getFileSystem(jarUri);
-
-                foundClasses = walkJarFile(jarUri, jarfs);
-            } catch (IOException e) {
-                LOG.error("Could not read templates jar file", e);
-            }
-            if (foundClasses.size() > 0) {
-                for (String className : foundClasses) {
-                    try {
-                        result.add(inputClassLoader.loadClass(className));
-                    } catch (ClassNotFoundException e) {
-                        LOG.warn("Could not load " + className + " from classpath");
-                        LOG.debug("Class was not found", e);
-                    }
-                }
-            } else {
-                LOG.info("Could not find any compiled classes to be loaded as util classes in jar file.");
-            }
+            result = resolveFromJar(result, inputClassLoader, contextConfigurationLocation);
         } else {
-            LOG.debug("Processing configuration folder " + templateRoot.toString());
-            LOG.info("Searching for classes in configuration folder...");
-            List<Path> foundPaths = new LinkedList<>();
-
-            try {
-                foundPaths = walkTemplateFolder(templateRoot);
-            } catch (IOException e) {
-                LOG.error("Could not read templates folder", e);
-            }
-            if (foundPaths.size() > 0) {
-
-                // clean up test classes
-                Iterator<Path> it = foundPaths.iterator();
-                while (it.hasNext()) {
-                    Path next = it.next();
-                    if (!templateRoot.relativize(next).startsWith("target/classes")) {
-                        LOG.info("    * Removed test class file {}", next);
-                        it.remove();
-                    }
-                }
-
-                for (Path path : foundPaths) {
-                    try {
-                        result.add(loadClassByPath(templateRoot.relativize(path), inputClassLoader));
-                    } catch (ClassNotFoundException e) {
-                        LOG.error("Class could not be loaded into ClassLoader", e);
-                    }
-                }
-            } else {
-                LOG.info("Could not find any compiled classes to be loaded as util classes in template folder.");
-            }
+            result = resolveFromFolder(result, templateRoot, inputClassLoader);
         }
 
+        return result;
+    }
+
+    /**
+     * Resolves utility classes from Folder
+     *
+     * @param result
+     *            List to store utility classes in
+     * @param templateRoot
+     *            Path to template folder containing classes
+     * @param inputClassLoader
+     *            ClassLoader to use for storing of classes
+     * @return List of classes to load utilities from
+     */
+    private List<Class<?>> resolveFromFolder(List<Class<?>> result, Path templateRoot, ClassLoader inputClassLoader) {
+        LOG.debug("Processing configuration folder " + templateRoot.toString());
+        LOG.info("Searching for classes in configuration folder...");
+        List<Path> foundPaths = new LinkedList<>();
+
+        try {
+            foundPaths = walkTemplateFolder(templateRoot);
+        } catch (IOException e) {
+            LOG.error("Could not read templates folder", e);
+        }
+        if (foundPaths.size() > 0) {
+
+            // clean up test classes
+            Iterator<Path> it = foundPaths.iterator();
+            while (it.hasNext()) {
+                Path next = it.next();
+                if (!templateRoot.relativize(next).startsWith("target/classes")) {
+                    LOG.info("    * Removed test class file {}", next);
+                    it.remove();
+                }
+            }
+
+            for (Path path : foundPaths) {
+                try {
+                    result.add(loadClassByPath(templateRoot.relativize(path), inputClassLoader));
+                } catch (ClassNotFoundException e) {
+                    LOG.error("Class could not be loaded into ClassLoader", e);
+                }
+            }
+        } else {
+            LOG.info("Could not find any compiled classes to be loaded as util classes in template folder.");
+        }
+
+        return result;
+    }
+
+    /**
+     * @param result
+     * @param inputClassLoader
+     * @param contextConfigurationLocation
+     * @throws IOException
+     */
+    private List<Class<?>> resolveFromJar(List<Class<?>> result, ClassLoader inputClassLoader,
+        URL contextConfigurationLocation) throws IOException {
+        LOG.debug("Processing configuration archive {}", contextConfigurationLocation);
+        LOG.info("Searching for classes in configuration archive...");
+        // Make sure to create file system for jar file
+        Map<String, String> env = new HashMap<>();
+        env.put("create", "true");
+
+        URI uri = URI.create(contextConfigurationLocation.toString());
+        FileSystem fs;
+        try {
+            fs = FileSystems.getFileSystem(uri);
+        } catch (FileSystemNotFoundException e) {
+            fs = FileSystems.newFileSystem(uri, env);
+        }
+        Paths.get(uri);
+        List<String> foundClasses = new LinkedList<>();
+        try {
+            // Get the URI of the jar from the URL of the contained context.xml
+            URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
+            FileSystem jarfs = FileSystems.getFileSystem(jarUri);
+
+            foundClasses = walkJarFile(jarUri, jarfs);
+        } catch (IOException e) {
+            LOG.error("Could not read templates jar file", e);
+        }
+        if (foundClasses.size() > 0) {
+            for (String className : foundClasses) {
+                try {
+                    result.add(inputClassLoader.loadClass(className));
+                } catch (ClassNotFoundException e) {
+                    LOG.warn("Could not load " + className + " from classpath");
+                    LOG.debug("Class was not found", e);
+                }
+            }
+        } else {
+            LOG.info("Could not find any compiled classes to be loaded as util classes in jar file.");
+        }
         return result;
     }
 
