@@ -137,15 +137,18 @@ public class GenerateMojo extends AbstractMojo {
         try {
             for (Object input : inputs) {
                 getLog().debug("Invoke CobiGen for input " + input);
-                List<Class<?>> utilClasses;
-                if (configurationFolder != null) {
-                    utilClasses = templatesUtilsClassesUtil.resolveUtilClasses(configurationFolder.toPath());
-                } else {
-                    utilClasses = templatesUtilsClassesUtil.resolveUtilClasses(null);
-                }
 
-                GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
-                    Paths.get(destinationRoot.toURI()), forceOverride, utilClasses);
+                final ClassRealm classRealm = pluginDescriptor.getClassRealm();
+
+                GenerationReportTo report;
+                if (configurationFolder != null) {
+                    classRealm.addURL(configurationFolder.toURI().toURL());
+                    report = cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()),
+                        forceOverride, classRealm, null, configurationFolder.toPath());
+                } else {
+                    report = cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()),
+                        forceOverride, classRealm, null, null);
+                }
 
                 if (!report.isSuccessful()) {
                     for (Throwable e : report.getErrors()) {
