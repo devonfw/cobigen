@@ -112,7 +112,7 @@ public class TemplateClassTest extends AbstractUnitTest {
     public void testGetContextConfigurationFromArchive() throws IOException {
         String filename = "archive";
 
-        Path path = Paths.get(TEST_FILES_ROOT_PATH + filename + File.separator + "templates-devon4j-3.1.6.jar");
+        Path path = Paths.get(TEST_FILES_ROOT_PATH + filename + File.separator + "templates.jar");
 
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
