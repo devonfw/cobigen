@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.3.0</version>
+      <version>6.0.0</version>
     </dependency>
     <dependency>
       <artifactId>lexeme</artifactId>
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>6.0.0</version>
+      <version>6.1.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>6.0.0</version>
+      <version>6.1.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
