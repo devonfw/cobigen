@@ -43,11 +43,6 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
     private static CobiGenUtils cobigenUtils = new CobiGenUtils();
 
     /**
-     * Utils class for configuration related operations
-     */
-    private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
-
-    /**
      * If this options is enabled, we will print also debug messages
      */
     @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
@@ -213,15 +208,15 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
 
         Path cobigenTemplatesDirectory = null;
         if (customTemplatesLocation != null) {
-            customTemplatesLocation = configurationUtils.preprocessInputFile(customTemplatesLocation);
-            configurationUtils.createConfigFile(customTemplatesLocation);
+            customTemplatesLocation = ConfigurationUtils.preprocessInputFile(customTemplatesLocation);
+            ConfigurationUtils.createConfigFile(customTemplatesLocation);
             // sets custom templates directory path from configuration file property
-            cobigenTemplatesDirectory = configurationUtils.getCustomTemplatesLocation();
+            cobigenTemplatesDirectory = ConfigurationUtils.getCustomTemplatesLocation();
             logger.info("Creating custom templates folder at custom location @ {}", cobigenTemplatesDirectory);
         } else {
             // sets default templates directory path from CLI location
-            cobigenTemplatesDirectory = configurationUtils.getCobigenCliRootPath();
-            configurationUtils.createConfigFile(cobigenTemplatesDirectory.toFile());
+            cobigenTemplatesDirectory = ConfigurationUtils.getCobigenCliRootPath();
+            ConfigurationUtils.createConfigFile(cobigenTemplatesDirectory.toFile());
             logger.info("Creating custom templates folder next to the CLI @ {}", cobigenTemplatesDirectory);
         }
 

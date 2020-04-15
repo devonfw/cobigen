@@ -5,14 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
 import java.util.Properties;
-import java.util.Queue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +46,7 @@ public class ConfigurationUtils {
      * Checks if the configuration file exists and returns the path of the custom templates location key
      * @return Path of custom templates location or null
      */
-    public Path getCustomTemplatesLocation() {
+    public static Path getCustomTemplatesLocation() {
         if (Files.exists(Paths.get(getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG))) {
             Properties props = readConfigFileProperties();
             return Paths.get(props.getProperty(COBIGEN_CONFIG_LOCATION_KEY));
@@ -61,7 +58,7 @@ public class ConfigurationUtils {
     /**
      * @return Path of Cobigen CLI root
      */
-    public Path getCobigenCliRootPath() {
+    public static Path getCobigenCliRootPath() {
         Path rootCLIPath = null;
         try {
             File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -77,7 +74,7 @@ public class ConfigurationUtils {
      * next to the CLI or the custom templates location defined in the configuration
      * @return File of Cobigen templates folder
      */
-    public File getCobigenTemplatesFolderFile() {
+    public static File getCobigenTemplatesFolderFile() {
         Path pathForCobigenTemplates;
 
         Path customTemplatesLocation = getCustomTemplatesLocation();
@@ -99,7 +96,7 @@ public class ConfigurationUtils {
     /**
      * @return boolean true if the folder specified in configuration file exists, false if not
      */
-    public boolean customTemplatesLocationExists() {
+    public static boolean customTemplatesLocationExists() {
 
         Path pathForCobigenTemplates = getCustomTemplatesLocation();
 
@@ -117,33 +114,6 @@ public class ConfigurationUtils {
     }
 
     /**
-     *
-     * @param classLoader
-     *            Classloader to load resources from
-     * @return URL of context configuration
-     * @throws IOException
-     *             if no context.xml was found
-     */
-    public URL getContextConfiguration(ClassLoader classLoader) throws IOException {
-        URL contextConfigurationLocation = null;
-        String[] possibleLocations = new String[] { "context.xml", "src/main/templates/context.xml" };
-
-        for (String possibleLocation : possibleLocations) {
-            URL configLocation = classLoader.getResource(possibleLocation);
-            if (configLocation != null) {
-                contextConfigurationLocation = configLocation;
-                logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
-                break;
-            }
-        }
-
-        if (contextConfigurationLocation == null) {
-            throw new IOException("No context.xml could be found in the classloader!");
-        }
-        return contextConfigurationLocation;
-    }
-
-    /**
      * Creates a configuration file next to the CLI executable and stores the location of the custom templates
      * folder in it
      * @param customTemplatesLocation
@@ -151,7 +121,7 @@ public class ConfigurationUtils {
      * @throws IOException
      *             if the configuration file could not created
      */
-    public void createConfigFile(File customTemplatesLocation) throws IOException {
+    public static void createConfigFile(File customTemplatesLocation) throws IOException {
         Path path = Paths.get(getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG);
         Properties props = new Properties();
         props.setProperty(COBIGEN_CONFIG_LOCATION_KEY, customTemplatesLocation.toString());
@@ -162,7 +132,7 @@ public class ConfigurationUtils {
      * Reads the configuration file and returns all of its properties
      * @return Properties
      */
-    public Properties readConfigFileProperties() {
+    public static Properties readConfigFileProperties() {
         Properties props = new Properties();
 
         Path path = Paths.get(getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG);
@@ -180,7 +150,7 @@ public class ConfigurationUtils {
      *            the input file
      * @return input file with processed path
      */
-    public File preprocessInputFile(File inputFile) {
+    public static File preprocessInputFile(File inputFile) {
         String path = inputFile.getPath();
         String pattern = "[\\\"|\\'](.+)[\\\"|\\']";
         boolean matches = path.matches(pattern);
@@ -191,50 +161,5 @@ public class ConfigurationUtils {
         }
 
         return inputFile;
-    }
-
-    /**
-     * Tries to load a class over it's file path. If the path is /a/b/c/Some.class this method tries to load
-     * the following classes in this order: <list>
-     * <li>Some</li>
-     * <li>c.Some</li>
-     * <li>b.c.Some</li>
-     * <li>a.b.c.Some</> </list>
-     * @param classPath
-     *            the {@link Path} of the Class file
-     * @param cl
-     *            the used ClassLoader
-     * @return Class<?> of the class file
-     * @throws ClassNotFoundException
-     *             if no class could be found all the way up to the path root
-     */
-    public Class<?> loadClassByPath(Path classPath, ClassLoader cl) throws ClassNotFoundException {
-        // Get a list with all path segments, starting with the class name
-        Queue<String> pathSegments = new LinkedList<>();
-        // Split the path by the systems file separator and without the .class suffix
-        String[] pathSegmentsArray = classPath.toString().substring(0, classPath.toString().length() - 6)
-            .split("\\".equals(File.separator) ? "\\\\" : File.separator);
-        for (int i = pathSegmentsArray.length - 1; i > -1; i--) {
-            pathSegments.add(pathSegmentsArray[i]);
-        }
-
-        if (!pathSegments.isEmpty()) {
-            String className = "";
-            while (!pathSegments.isEmpty()) {
-                if (className == "") {
-                    className = pathSegments.poll();
-                } else {
-                    className = pathSegments.poll() + "." + className;
-                }
-                try {
-                    logger.debug("Try to load " + className);
-                    return cl.loadClass(className);
-                } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                    continue;
-                }
-            }
-        }
-        throw new ClassNotFoundException("Could not find class on path " + classPath.toString());
-
     }
 }

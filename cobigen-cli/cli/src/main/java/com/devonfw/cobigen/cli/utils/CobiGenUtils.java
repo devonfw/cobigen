@@ -69,22 +69,17 @@ public class CobiGenUtils {
     private boolean templateDependencyIsGiven = false;
 
     /**
-     * Utils class for configuration related operations
-     */
-    private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
-
-    /**
      * Registers CobiGen plug-ins and instantiates CobiGen
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
         CobiGen cg = null;
         // extra check to make sure that configuration file is not pointing to non existing folder
-        configurationUtils.customTemplatesLocationExists();
+        ConfigurationUtils.customTemplatesLocationExists();
         try {
             registerPlugins();
             templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-            File cobigenTemplatesFolderFile = configurationUtils.getCobigenTemplatesFolderFile();
+            File cobigenTemplatesFolderFile = ConfigurationUtils.getCobigenTemplatesFolderFile();
             Path templateFolder = cobigenTemplatesFolderFile.toPath();
             boolean templatesFolderExists = Files.exists(templateFolder);
             if (templatesFolderExists) {

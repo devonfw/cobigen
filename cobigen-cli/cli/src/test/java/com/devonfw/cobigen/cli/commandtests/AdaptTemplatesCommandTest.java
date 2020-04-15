@@ -38,12 +38,7 @@ public class AdaptTemplatesCommandTest {
     }
 
     /** Declare ArrayList variable for adding generated files */
-    ArrayList<File> generatedFilesList = new ArrayList<>();
-
-    /**
-     * Utils class for configuration related operations
-     */
-    private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
+    private ArrayList<File> generatedFilesList = new ArrayList<>();
 
     /**
      * Checks if adapt-templates command successfully created custom cobigen templates folder
@@ -59,7 +54,7 @@ public class AdaptTemplatesCommandTest {
         FileSystem fileSystem = FileSystems.getDefault();
 
         Path cobigenTemplatesFolderPath = fileSystem.getPath(
-            configurationUtils.getCobigenCliRootPath() + File.separator + ConfigurationUtils.COBIGEN_TEMPLATES);
+            ConfigurationUtils.getCobigenCliRootPath() + File.separator + ConfigurationUtils.COBIGEN_TEMPLATES);
 
         assertTrue(Files.exists(cobigenTemplatesFolderPath));
     }
@@ -80,7 +75,7 @@ public class AdaptTemplatesCommandTest {
 
         CobiGenCLI.main(args);
 
-        Path cobigenTemplatesFolderPath = configurationUtils.getCobigenTemplatesFolderFile().toPath();
+        Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderFile().toPath();
 
         assertTrue(Files.exists(cobigenTemplatesFolderPath));
 
