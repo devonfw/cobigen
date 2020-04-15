@@ -56,12 +56,12 @@ public class CobiGenUtils {
     /**
      * File of the templates jar
      */
-    File templatesJar;
+    private File templatesJar;
 
     /**
      * Directory where all our templates jar are located
      */
-    File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
+    private File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
 
     /**
      * Whether the template dependency is given.
@@ -72,11 +72,6 @@ public class CobiGenUtils {
      * Utils class for configuration related operations
      */
     private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
-
-    /**
-     *
-     */
-    File configurationFolder = configurationUtils.getCobigenTemplatesFolderFile();
 
     /**
      * Registers CobiGen plug-ins and instantiates CobiGen
