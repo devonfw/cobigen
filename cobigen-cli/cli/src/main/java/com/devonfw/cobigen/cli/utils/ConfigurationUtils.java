@@ -14,7 +14,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 
 /**
@@ -40,7 +39,7 @@ public class ConfigurationUtils {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+    private static Logger LOG = LoggerFactory.getLogger(ConfigurationUtils.class);
 
     /**
      * Checks if the configuration file exists and returns the path of the custom templates location key
@@ -64,7 +63,7 @@ public class ConfigurationUtils {
             File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             rootCLIPath = locationCLI.getParentFile().toPath();
         } catch (URISyntaxException e) {
-            logger.error("An error occured while building the URI of the CLI location {}", e);
+            LOG.error("An error occured while building the URI of the CLI location {}", e);
         }
         return rootCLIPath;
     }
@@ -107,7 +106,7 @@ public class ConfigurationUtils {
         }
 
         if (pathForCobigenTemplates != null && !Files.exists(cobigenTemplatesFolder.toPath())) {
-            logger.info("Please check your configuration file as no templates folder was found at the provided path!");
+            LOG.info("Please check your configuration file as no templates folder was found at the provided path!");
             return false;
         }
         return true;
@@ -139,7 +138,7 @@ public class ConfigurationUtils {
         try (BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"))) {
             props.load(reader);
         } catch (IOException e) {
-            logger.error("An error occured while reading the config file", e);
+            LOG.error("An error occured while reading the config file", e);
         }
         return props;
     }
