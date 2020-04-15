@@ -51,7 +51,7 @@ public class PluginMockFactory {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(input)))))
             .thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))))).thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("unvalid"), ANY, sameInstance(input)))))
+        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("invalid"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
         // Simulate variable resolving of any plug-in

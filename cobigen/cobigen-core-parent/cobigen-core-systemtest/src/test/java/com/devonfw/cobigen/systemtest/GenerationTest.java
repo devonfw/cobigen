@@ -2,6 +2,7 @@ package com.devonfw.cobigen.systemtest;
 
 import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.mockito.Matchers.any;
@@ -90,25 +91,20 @@ public class GenerationTest extends AbstractApiTest {
         List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
         List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
 
-        // we try to get an increment containing external increments
-        for (IncrementTo inc : increments) {
-            if (inc.getId().equals("3")) {
-                // We expect increment 3 to have an external increment 0 containing one template
-                assertThat(inc).isNotNull();
-                assertThat(inc.getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
-            }
-            if (inc.getId().equals("4") || inc.getId().equals("5")) {
-                // We expect increment 4 or 5 to have an external increment 0 containing 4 templates
-                assertThat(inc).isNotNull();
-                assertThat(inc.getDependentIncrements().get(0).getTemplates().size()).isEqualTo(4);
-            }
-        }
+        // We expect
+        // Increment 3 to have a templateRef, an external increment 0 containing one template
+        // Increment 4 to have an internal incrementRef to 3, an external increment 0 containing 4 templates
+        // Increment 5 to have an external increment 0 containing 4 templates
+        assertThat(increments)
+            .extracting(e -> e.getId(), e -> e.getTemplates().size(),
+                e -> e.getDependentIncrements().get(0).getTemplates().size())
+            .containsExactlyInAnyOrder(tuple("3", 2, 1), tuple("4", 5, 4), tuple("5", 4, 4));
 
         // We expect there is 5 templates matched in total, both by the trigger which is matched and from
         // external increments
-        assertThat(templates).hasSize(5);
+        assertThat(templates).hasSize(6);
         // We expect 1 trigger matched, the external trigger should not be counted as matching
-        assertThat(triggersIds.size()).isEqualTo(1);
+        assertThat(triggersIds).hasSize(1);
     }
 
     /**
