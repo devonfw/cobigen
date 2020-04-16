@@ -1,131 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
-
   <localRepository>${locRep}</localRepository>
-
-  <servers>
-    <server>
-      <id>nexus.central</id>
-      <username>${DEVON_NEXUS_USER}</username>
-      <password>${DEVON_NEXUS_PASSWD}</password>
-    </server>
-    <server>
-      <id>public</id>
-      <username>${DEVON_NEXUS_USER}</username>
-      <password>${DEVON_NEXUS_PASSWD}</password>
-    </server>
-    <server>
-      <id>3rd.party</id>
-      <username>${DEVON_NEXUS_USER}</username>
-      <password>${DEVON_NEXUS_PASSWD}</password>
-    </server>
-    <server>
-      <id>oasp.releases</id>
-      <username>${DEVON_NEXUS_USER}</username>
-      <password>${DEVON_NEXUS_PASSWD}</password>
-    </server>
-    <server>
-      <id>oasp.snapshots</id>
-      <username>${DEVON_NEXUS_USER}</username>
-      <password>${DEVON_NEXUS_PASSWD}</password>
-    </server>
-    <server>
-      <id>devon.releases</id>
-      <username>${DEVON_NEXUS_USER}</username>
-      <password>${DEVON_NEXUS_PASSWD}</password>
-    </server>
-    <server>
-      <id>devon.snapshots</id>
-      <username>${DEVON_NEXUS_USER}</username>
-      <password>${DEVON_NEXUS_PASSWD}</password>
-    </server>
-  </servers>
-
-  <mirrors>
-    <mirror>
-      <id>nexus.central</id>
-      <mirrorOf>central</mirrorOf>
-      <name>central-mirror</name>
-      <url>https://devon.s2-eu.capgemini.com/nexus3/repository/central</url>
-    </mirror>
-  </mirrors>
 
   <profiles>
     <profile>
-      <id>devon.nexus</id>
-      <properties>
-        <nexusurl>https://devon.s2-eu.capgemini.com/nexus3/repository</nexusurl>
-      </properties>
+      <id>sonartype</id>
       <repositories>
         <repository>
-          <id>public</id>
-          <name>Public Repositories</name>
-          <url>${nexusurl}/public/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>3rd.party</id>
-          <name>3rd party</name>
-          <url>${nexusurl}/thirdparty</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>oasp.releases</id>
-          <name>OASP Releases</name>
-          <url>${nexusurl}/oasp.releases</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>oasp.snapshots</id>
-          <name>OASP Snapshots</name>
-          <url>${nexusurl}/oasp.snapshots</url>
-          <releases>
-            <enabled>false</enabled>
-            <updatePolicy>always</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>devon.releases</id>
-          <name>Devon Releases</name>
-          <url>${nexusurl}/releases</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>devon.snapshots</id>
-          <name>Devon Snapshots</name>
-          <url>${nexusurl}/snapshots</url>
+          <id>sonartype.snapshots</id>
+          <name>Sonartype Snapshots</name>
+          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
           <releases>
             <enabled>false</enabled>
             <updatePolicy>always</updatePolicy>
@@ -136,24 +20,10 @@
           </snapshots>
         </repository>
       </repositories>
-      <pluginRepositories>
-        <pluginRepository>
-          <id>public</id>
-          <name>Public Repositories</name>
-          <url>${nexusurl}/public/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>always</updatePolicy>
-          </snapshots>
-        </pluginRepository>
-      </pluginRepositories>
     </profile>
   </profiles>
+
   <activeProfiles>
-    <activeProfile>devon.nexus</activeProfile>
+    <activeProfile>sonartype</activeProfile>
   </activeProfiles>
 </settings>

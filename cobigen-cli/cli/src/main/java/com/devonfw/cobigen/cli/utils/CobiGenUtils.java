@@ -132,7 +132,17 @@ public class CobiGenUtils {
 
             }
         } else {
-            Paths.get(URI.create(contextConfigurationLocation.toString()));
+            Map<String, String> env = new HashMap<>();
+            env.put("create", "true");
+
+            URI uri = URI.create(contextConfigurationLocation.toString());
+            FileSystem fs;
+            try {
+                fs = FileSystems.getFileSystem(uri);
+            } catch (FileSystemNotFoundException e) {
+                fs = FileSystems.newFileSystem(uri, env);
+            }
+            Paths.get(uri);
         }
         logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
         final List<String> foundClasses = new LinkedList<>();
