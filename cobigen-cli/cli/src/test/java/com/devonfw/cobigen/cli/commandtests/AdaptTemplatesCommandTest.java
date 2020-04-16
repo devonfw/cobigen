@@ -19,7 +19,8 @@ import com.ea.agentloader.AgentLoader;
 import classloader.Agent;
 
 /**
- *
+ * Tests the usage of the adapt-templates command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true
+ * to be present among JVM startup arguments.
  */
 public class AdaptTemplatesCommandTest {
 

@@ -46,14 +46,14 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
      * If this options is enabled, we will print also debug messages
      */
     @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
-    boolean verbose;
+    private boolean verbose;
 
     /**
      * If this option is provided, we will unpack the templates jar at the given location
      */
     @Option(names = { "--custom-location", "-cl" }, arity = "0..1",
         description = MessagesConstants.CUSTOM_LOCATION_OPTION_DESCRIPTION)
-    File customTemplatesLocation = null;
+    private File customTemplatesLocation = null;
 
     /**
      * Logger to output useful information to the user
