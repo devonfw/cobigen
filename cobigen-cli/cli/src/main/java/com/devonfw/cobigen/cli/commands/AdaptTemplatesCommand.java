@@ -29,7 +29,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 /**
- *
+ * This class handles the user defined template directory e.g. determining and obtaining the latest templates
+ * jar, unpacking the sources and compiled classes and storing the custom location path in a configuration
+ * file
  */
 @Command(description = MessagesConstants.ADAPT_TEMPLATES_DESCRIPTION, name = "adapt-templates", aliases = { "a" },
     mixinStandardHelpOptions = true)
@@ -193,26 +195,26 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         Path cobigenTemplatesDirectory = null;
         if (customTemplatesLocation != null) {
             customTemplatesLocation = ConfigurationUtils.preprocessInputFile(customTemplatesLocation);
-            ConfigurationUtils.createConfigFile(customTemplatesLocation);
+            ConfigurationUtils.createConfigFile(customTemplatesLocation.toPath());
             // sets custom templates directory path from configuration file property
             cobigenTemplatesDirectory = ConfigurationUtils.getCustomTemplatesLocation();
             LOG.info("Creating custom templates folder at custom location @ {}", cobigenTemplatesDirectory);
         } else {
             // sets default templates directory path from CLI location
             cobigenTemplatesDirectory = ConfigurationUtils.getCobigenCliRootPath();
-            ConfigurationUtils.createConfigFile(cobigenTemplatesDirectory.toFile());
+            ConfigurationUtils.createConfigFile(cobigenTemplatesDirectory);
             LOG.info("Creating custom templates folder next to the CLI @ {}", cobigenTemplatesDirectory);
         }
 
         if (Files.exists(cobigenTemplatesDirectory)) {
             processJar(cobigenTemplatesDirectory);
         } else {
-            LOG.error("Could not find target directory to extract templates @", cobigenTemplatesDirectory);
+            LOG.error("Could not find target directory to extract templates @ {}", cobigenTemplatesDirectory);
             return 0;
         }
 
         LOG.info("Successfully created custom templates folder @ {}",
-            cobigenTemplatesDirectory + File.separator + ConfigurationUtils.COBIGEN_TEMPLATES);
+            cobigenTemplatesDirectory.resolve(ConfigurationUtils.COBIGEN_TEMPLATES));
         return 1;
     }
 }

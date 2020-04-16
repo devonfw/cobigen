@@ -18,7 +18,8 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 
 /**
- *
+ * Utilities class for CobiGen related operations. Handles everything related to custom templates folder
+ * destination and configuration file management
  */
 public class ConfigurationUtils {
 
@@ -124,7 +125,7 @@ public class ConfigurationUtils {
      * @throws IOException
      *             if the configuration file could not created
      */
-    public static void createConfigFile(File customTemplatesLocation) throws IOException {
+    public static void createConfigFile(Path customTemplatesLocation) throws IOException {
         Path path = getCobigenCliRootPath().resolve(COBIGEN_CONFIG);
         Properties props = new Properties();
         props.setProperty(COBIGEN_CONFIG_LOCATION_KEY, customTemplatesLocation.toString());
