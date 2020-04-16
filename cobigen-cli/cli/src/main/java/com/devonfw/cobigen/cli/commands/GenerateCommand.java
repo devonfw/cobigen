@@ -4,6 +4,9 @@ import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,11 +105,6 @@ public class GenerateCommand implements Callable<Integer> {
     private static final Scanner inputReader = new Scanner(System.in);
 
     /**
-     * Utils class for configuration related operations
-     */
-    private static ConfigurationUtils configurationUtils = new ConfigurationUtils();
-
-    /**
      * Constructor needed for Picocli
      */
     public GenerateCommand() {
@@ -120,6 +118,12 @@ public class GenerateCommand implements Callable<Integer> {
             CLILogger.setLevel(Level.DEBUG);
         }
 
+        // TODO: janv_capgemini improve that
+        Path templateFolder = null;
+        if (ConfigurationUtils.getCobigenTemplatesFolderFile() != null) {
+            templateFolder = ConfigurationUtils.getCobigenTemplatesFolderFile().toPath();
+        }
+
         if (areArgumentsValid()) {
             logger.debug("Input files and output root path confirmed to be valid.");
             CobiGen cg = cobigenUtils.initializeCobiGen();
@@ -131,11 +135,19 @@ public class GenerateCommand implements Callable<Integer> {
                     finalTemplates = toTemplateTo(preprocess(cg, TemplateTo.class));
                 }
 
-                ClassLoader inputClassLoader = getClass().getClassLoader();
+                ClassLoader inputClassLoader;
+
+                // TODO: janv_capgemini check that
+                if (templateFolder != null) {
+                    inputClassLoader = URLClassLoader.newInstance(new URL[] { templateFolder.toUri().toURL() },
+                        getClass().getClassLoader());
+                } else {
+                    inputClassLoader = getClass().getClassLoader();
+                }
 
                 for (File inputFile : inputFiles) {
                     generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg, inputClassLoader,
-                        TemplateTo.class);
+                        TemplateTo.class, templateFolder);
                 }
             } else {
 
@@ -146,7 +158,7 @@ public class GenerateCommand implements Callable<Integer> {
                 ClassLoader inputClassLoader = getClass().getClassLoader();
                 for (File inputFile : inputFiles) {
                     generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg, inputClassLoader,
-                        IncrementTo.class);
+                        IncrementTo.class, templateFolder);
                 }
             }
             return 0;
@@ -242,7 +254,7 @@ public class GenerateCommand implements Callable<Integer> {
 
         int index = 0;
         for (File inputFile : inputFiles) {
-            inputFile = configurationUtils.preprocessInputFile(inputFile);
+            inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
             // Input file can be: C:\folder\input.java
             if (inputFile.exists() == false) {
                 logger.debug("We could not find input file: " + inputFile.getAbsolutePath()
@@ -262,7 +274,7 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         if (outputRootPath != null) {
-            outputRootPath = configurationUtils.preprocessInputFile(outputRootPath);
+            outputRootPath = ConfigurationUtils.preprocessInputFile(outputRootPath);
         }
         return ValidationUtils.isOutputRootPathValid(outputRootPath);
 
@@ -287,10 +299,10 @@ public class GenerateCommand implements Callable<Integer> {
      *
      */
     public void generate(File inputFile, File inputProject, List<? extends GenerableArtifact> finalTos, CobiGen cg,
-        ClassLoader classLoader, Class<?> c) {
+        ClassLoader classLoader, Class<?> c, Path templateFolder) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
-        inputFile = configurationUtils.preprocessInputFile(inputFile);
+        inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
         try {
             Object input;
             String extension = inputFile.getName().toLowerCase();
@@ -328,12 +340,12 @@ public class GenerateCommand implements Callable<Integer> {
 
             if (!isIncrements) {
                 logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
-                report =
-                    cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader, null);
+                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
+                    templateFolder);
             } else {
                 logger.info("Generating increments for input '" + inputFile.getName() + "', this can take a while...");
-                report =
-                    cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader, null);
+                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
+                    templateFolder);
             }
             if (ValidationUtils.checkGenerationReport(report) && isJavaInput) {
                 try {
