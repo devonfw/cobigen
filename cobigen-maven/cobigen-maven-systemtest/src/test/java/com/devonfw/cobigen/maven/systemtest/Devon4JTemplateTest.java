@@ -155,12 +155,13 @@ public class Devon4JTemplateTest extends AbstractMavenTest {
     @Test
     public void testDifferentFileSystemThrowsNoProviderMismatchException() throws Exception {
         File testProject = new File(TEST_RESOURCES_ROOT + "TestDifferentFileSystems/");
-        File templatesProject = new File(TEST_RESOURCES_ROOT, "templates-devon4j");
-        File testProjectRoot = runMavenInvoker(testProject, templatesProject, MavenMetadata.LOCAL_REPO);
-        long numFilesInTarget =
-            Files.walk(testProjectRoot.toPath().getParent().resolve("api")).filter(Files::isRegularFile).count();
+        File testProjectRoot = runMavenInvoker(testProject, MavenMetadata.LOCAL_REPO);
         // 4 from from daos + 4 from entity infrastructure + 6 from TOs + 4 from Logic (all in one) + 2 rest
         // service imp = 18
-        assertThat(numFilesInTarget).isEqualTo(33);
+        long numFilesInApi =
+            Files.walk(testProjectRoot.toPath().getParent().resolve("api")).filter(Files::isRegularFile).count();
+        long numFilesInSrc = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
+        assertThat(numFilesInSrc).isEqualTo(28);
+        assertThat(numFilesInApi).isEqualTo(11);
     }
 }
