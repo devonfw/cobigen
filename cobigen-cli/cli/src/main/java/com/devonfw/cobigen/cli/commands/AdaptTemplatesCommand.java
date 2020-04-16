@@ -61,13 +61,6 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
     private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
-     * Constructor needed for Picocli
-     */
-    public AdaptTemplatesCommand() {
-        super();
-    }
-
-    /**
      * Process Jar method is responsible for unzip the source Jar and create new CobiGen_Templates folder
      * structure at /main/CobiGen_Templates location
      * @param destinationPath
