@@ -90,6 +90,15 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
                     templatesConfiguration.getTrigger().getId()));
             }
         }
+        List<IncrementTo> increments = getMatchingIncrements(matcherInput);
+        for (IncrementTo inc : increments) {
+            for (TemplateTo tmp : inc.getTemplates()) {
+                if (templates.stream().anyMatch(e -> e.getId().equals(tmp.getId()))) {
+                    continue;
+                }
+                templates.add(tmp);
+            }
+        }
         LOG.debug("{} matching templates found.", templates.size());
         return templates;
     }
@@ -134,8 +143,17 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
             for (Template template : increment.getTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), triggerId));
             }
-            incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), triggerId, templates,
-                convertIncrements(increment.getDependentIncrements(), trigger)));
+            List<IncrementTo> dep = convertIncrements(increment.getDependentIncrements(), trigger);
+            for (IncrementTo inc : dep) {
+                for (TemplateTo tmp : inc.getTemplates()) {
+                    if (templates.stream().anyMatch(e -> e.getId().equals(tmp.getId()))) {
+                        continue;
+                    }
+                    templates.add(tmp);
+                }
+            }
+            incrementTos
+                .add(new IncrementTo(increment.getName(), increment.getDescription(), triggerId, templates, dep));
         }
         return incrementTos;
     }
