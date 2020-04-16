@@ -233,9 +233,9 @@ public class CobiGenUtils {
      * Tries to find the templates jar. If it was not found, it will download it and then return it.
      * @param isSource
      *            true if we want to get source jar file path
-     * @return the jar file of the templates
+     * @return Path of the jar file of the templates
      */
-    public File getTemplatesJar(boolean isSource) {
+    public Path getTemplatesJar(boolean isSource) {
         File jarFileDir = jarsDirectory.getAbsoluteFile();
         if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
             try {
@@ -252,7 +252,7 @@ public class CobiGenUtils {
                     + "Please try again later.", e);
             }
         }
-        return TemplatesJarUtil.getJarFile(isSource, jarFileDir);
+        return TemplatesJarUtil.getJarFile(isSource, jarFileDir).toPath();
     }
 
     /**

@@ -33,6 +33,11 @@ public class ConfigurationUtils {
     private static final String COBIGEN_CONFIG = "config.txt";
 
     /**
+     * Folder to store template utility classes in
+     */
+    public static final String COBIGEN_UTILITY_CLASSES_FOLDER = "target/classes";
+
+    /**
      * Name of configuration key for custom templates file path
      */
     private static final String COBIGEN_CONFIG_LOCATION_KEY = "cobigen.custom-templates-location";
@@ -47,7 +52,7 @@ public class ConfigurationUtils {
      * @return Path of custom templates location or null
      */
     public static Path getCustomTemplatesLocation() {
-        if (Files.exists(Paths.get(getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG))) {
+        if (Files.exists(getCobigenCliRootPath().resolve(COBIGEN_CONFIG))) {
             Properties props = readConfigFileProperties();
             return Paths.get(props.getProperty(COBIGEN_CONFIG_LOCATION_KEY));
         } else {
@@ -86,8 +91,7 @@ public class ConfigurationUtils {
 
         File cobigenTemplatesFolder = null;
         if (pathForCobigenTemplates != null) {
-            cobigenTemplatesFolder =
-                pathForCobigenTemplates.resolve(pathForCobigenTemplates + File.separator + COBIGEN_TEMPLATES).toFile();
+            cobigenTemplatesFolder = pathForCobigenTemplates.resolve(COBIGEN_TEMPLATES).toFile();
         }
 
         return cobigenTemplatesFolder;
@@ -102,8 +106,7 @@ public class ConfigurationUtils {
 
         File cobigenTemplatesFolder = null;
         if (pathForCobigenTemplates != null) {
-            cobigenTemplatesFolder =
-                pathForCobigenTemplates.resolve(pathForCobigenTemplates + File.separator + COBIGEN_TEMPLATES).toFile();
+            cobigenTemplatesFolder = pathForCobigenTemplates.resolve(COBIGEN_TEMPLATES).toFile();
         }
 
         if (pathForCobigenTemplates != null && !Files.exists(cobigenTemplatesFolder.toPath())) {
@@ -122,7 +125,7 @@ public class ConfigurationUtils {
      *             if the configuration file could not created
      */
     public static void createConfigFile(File customTemplatesLocation) throws IOException {
-        Path path = Paths.get(getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG);
+        Path path = getCobigenCliRootPath().resolve(COBIGEN_CONFIG);
         Properties props = new Properties();
         props.setProperty(COBIGEN_CONFIG_LOCATION_KEY, customTemplatesLocation.toString());
         props.store(new FileOutputStream(path.toFile()), MessagesConstants.CUSTOM_LOCATION_OPTION_DESCRIPTION);
@@ -135,7 +138,7 @@ public class ConfigurationUtils {
     public static Properties readConfigFileProperties() {
         Properties props = new Properties();
 
-        Path path = Paths.get(getCobigenCliRootPath() + File.separator + COBIGEN_CONFIG);
+        Path path = getCobigenCliRootPath().resolve(COBIGEN_CONFIG);
         try (BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"))) {
             props.load(reader);
         } catch (IOException e) {

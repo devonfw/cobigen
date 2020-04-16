@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
@@ -77,95 +75,80 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
      */
     public static void processJar(Path destinationPath) throws IOException {
 
-        String sourcesJarPath = cobigenUtils.getTemplatesJar(true).getPath().toString();
-        String classesJarPath = cobigenUtils.getTemplatesJar(false).getPath().toString();
-        FileSystem fileSystem = FileSystems.getDefault();
+        Path sourcesJarPath = cobigenUtils.getTemplatesJar(true);
+        Path classesJarPath = cobigenUtils.getTemplatesJar(false);
 
         if (destinationPath == null) {
             throw new IOException("Cobigen folder path not found!");
         }
 
-        String templatesFolderPath =
-            fileSystem.getPath(destinationPath + File.separator + ConfigurationUtils.COBIGEN_TEMPLATES).toString();
+        Path templatesFolderPath = destinationPath.resolve(ConfigurationUtils.COBIGEN_TEMPLATES);
 
         if (templatesFolderPath == null) {
             throw new IOException("Cobigen templates folder path not found!");
         }
 
-        Path cobigenTemplatesFolderPath = null;
-        if (fileSystem != null && destinationPath != null) {
-            cobigenTemplatesFolderPath = fileSystem.getPath(templatesFolderPath);
-        }
-
-        if (cobigenTemplatesFolderPath == null) {
-            throw new IOException(
-                "An exception occurred while processing Jar files to create CobiGen_Templates folder");
-        }
-
         LOG.debug("Processing jar file @ {}", sourcesJarPath);
 
         // If we are unzipping a sources jar, we need to get the pom.xml from the normal jar
-        if (sourcesJarPath.contains("sources")) {
-            try (ZipFile file = new ZipFile(classesJarPath)) {
+        if (sourcesJarPath.resolve("sources") != null) {
+            try (ZipFile file = new ZipFile(classesJarPath.toFile().toString())) {
                 Enumeration<? extends ZipEntry> entries = file.entries();
-                if (Files.notExists(cobigenTemplatesFolderPath)) {
-                    Files.createDirectory(cobigenTemplatesFolderPath);
+                if (Files.notExists(templatesFolderPath)) {
+                    Files.createDirectory(templatesFolderPath);
                 }
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
                     if (entry.getName().equals("pom.xml")) {
-                        Path saveForFileCreationPath =
-                            fileSystem.getPath(templatesFolderPath + File.separator + entry.getName());
+                        Path saveForFileCreationPath = templatesFolderPath.resolve(entry.getName());
                         createFile(file, entry, saveForFileCreationPath);
                     }
                 }
             } catch (IOException e) {
-                throw new IOException(
-                    "An exception occurred while unpacking pom.xml from Jar file to templates folder");
+                throw new IOException("An exception occurred while unpacking pom.xml from Jar file to templates folder",
+                    e);
             }
         }
 
         // unpack sources
-        try (ZipFile file = new ZipFile(sourcesJarPath)) {
+        try (ZipFile file = new ZipFile(sourcesJarPath.toFile().toString())) {
             Enumeration<? extends ZipEntry> entries = file.entries();
-            if (Files.notExists(cobigenTemplatesFolderPath)) {
-                Files.createDirectory(cobigenTemplatesFolderPath);
+            if (Files.notExists(templatesFolderPath)) {
+                Files.createDirectory(templatesFolderPath);
             }
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                Path saveForFileCreationPath =
-                    fileSystem.getPath(templatesFolderPath + File.separator + entry.getName());
+                Path saveForFileCreationPath = templatesFolderPath.resolve(entry.getName());
                 if (entry.getName().contains("context.xml")) {
-                    saveForFileCreationPath =
-                        fileSystem.getPath(templatesFolderPath + File.separator + entry.getName());
+                    saveForFileCreationPath = templatesFolderPath.resolve(entry.getName());
                 } else if (entry.getName().contains("com/")) {
-                    saveForFileCreationPath = fileSystem.getPath(templatesFolderPath + File.separator + "src"
-                        + File.separator + "main" + File.separator + "java" + File.separator + entry.getName());
+                    saveForFileCreationPath =
+                        templatesFolderPath.resolve("src").resolve("main").resolve("java").resolve(entry.getName());
                 }
                 createFile(file, entry, saveForFileCreationPath);
             }
         } catch (IOException e) {
-            throw new IOException("An exception occurred while unpacking sources from Jar file to templates folder");
+            throw new IOException("An exception occurred while unpacking sources from Jar file to templates folder", e);
         }
 
         // unpack classes to target directory
-        try (ZipFile file = new ZipFile(classesJarPath)) {
+        try (ZipFile file = new ZipFile(classesJarPath.toFile().toString())) {
             Enumeration<? extends ZipEntry> entries = file.entries();
-            Path sourcesClassPath =
-                fileSystem.getPath(templatesFolderPath + File.separator + "target" + File.separator + "classes");
-            if (Files.notExists(sourcesClassPath)) {
-                Files.createDirectory(sourcesClassPath);
+            Path sourcesClassPath = templatesFolderPath.resolve(ConfigurationUtils.COBIGEN_UTILITY_CLASSES_FOLDER);
+            if (Files.notExists(templatesFolderPath)) {
+                Files.createDirectory(templatesFolderPath);
             }
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 if (entry.getName().contains("com/")) {
-                    Path saveForFileCreationPath = fileSystem.getPath(sourcesClassPath + File.separator + "src"
-                        + File.separator + "main" + File.separator + "java" + File.separator + entry.getName());
+                    Path saveForFileCreationPath =
+                        sourcesClassPath.resolve("src").resolve("main").resolve("java").resolve(entry.getName());
                     createFile(file, entry, saveForFileCreationPath);
                 }
             }
         } catch (IOException e) {
-            throw new IOException("An exception occurred while unpacking classes from Jar files to templates folder");
+            throw new IOException("An exception occurred while unpacking classes from Jar files to templates folder",
+                e);
         }
     }
 
