@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 
 /**
@@ -39,7 +40,7 @@ public class ConfigurationUtils {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger LOG = LoggerFactory.getLogger(ConfigurationUtils.class);
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Checks if the configuration file exists and returns the path of the custom templates location key

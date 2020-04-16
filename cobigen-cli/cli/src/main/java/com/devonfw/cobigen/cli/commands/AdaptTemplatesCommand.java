@@ -20,6 +20,7 @@ import net.sf.mmm.util.io.api.RuntimeIoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
@@ -57,7 +58,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger LOG = LoggerFactory.getLogger(AdaptTemplatesCommand.class);
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Constructor needed for Picocli
@@ -150,7 +151,8 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         // unpack classes to target directory
         try (ZipFile file = new ZipFile(classesJarPath)) {
             Enumeration<? extends ZipEntry> entries = file.entries();
-            Path sourcesClassPath = fileSystem.getPath(templatesFolderPath + File.separator + "target");
+            Path sourcesClassPath =
+                fileSystem.getPath(templatesFolderPath + File.separator + "target" + File.separator + "classes");
             if (Files.notExists(sourcesClassPath)) {
                 Files.createDirectory(sourcesClassPath);
             }

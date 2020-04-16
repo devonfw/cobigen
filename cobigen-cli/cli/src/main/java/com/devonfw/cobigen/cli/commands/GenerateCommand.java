@@ -92,7 +92,7 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Utils class for CobiGen related operations
@@ -125,7 +125,7 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         if (areArgumentsValid()) {
-            logger.debug("Input files and output root path confirmed to be valid.");
+            LOG.debug("Input files and output root path confirmed to be valid.");
             CobiGen cg = cobigenUtils.initializeCobiGen();
 
             if (increments == null && templates != null) {
@@ -211,7 +211,7 @@ public class GenerateCommand implements Callable<Integer> {
                 }
 
             } catch (InputReaderException e) {
-                logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
+                LOG.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
 
             }
 
@@ -257,17 +257,17 @@ public class GenerateCommand implements Callable<Integer> {
             inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
             // Input file can be: C:\folder\input.java
             if (inputFile.exists() == false) {
-                logger.debug("We could not find input file: " + inputFile.getAbsolutePath()
+                LOG.debug("We could not find input file: " + inputFile.getAbsolutePath()
                     + " . But we will keep trying, maybe you are using relative paths");
 
                 // Input file can be: folder\input.java. We should use current working directory
                 if (ParsingUtils.parseRelativePath(inputFiles, inputFile, index) == false) {
-                    logger.error("Your <inputFile> '" + inputFile.toString() + "' has not been found");
+                    LOG.error("Your <inputFile> '" + inputFile.toString() + "' has not been found");
                     return false;
                 }
             }
             if (inputFile.isDirectory()) {
-                logger.error("Your input file: " + inputFile.getAbsolutePath()
+                LOG.error("Your input file: " + inputFile.getAbsolutePath()
                     + " is a directory. CobiGen cannot understand that. Please use files.");
                 return false;
             }
@@ -339,11 +339,11 @@ public class GenerateCommand implements Callable<Integer> {
             GenerationReportTo report = null;
 
             if (!isIncrements) {
-                logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
+                LOG.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
                     templateFolder);
             } else {
-                logger.info("Generating increments for input '" + inputFile.getName() + "', this can take a while...");
+                LOG.info("Generating increments for input '" + inputFile.getName() + "', this can take a while...");
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
                     templateFolder);
             }
@@ -351,12 +351,12 @@ public class GenerateCommand implements Callable<Integer> {
                 try {
                     ParsingUtils.formatJavaSources(report.getGeneratedFiles());
                 } catch (FormatterException e) {
-                    logger.info(
+                    LOG.info(
                         "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
                 }
             }
         } catch (InputReaderException e) {
-            logger.error("Invalid input for CobiGen, please check your input file.");
+            LOG.error("Invalid input for CobiGen, please check your input file.");
 
         }
     }
@@ -368,10 +368,10 @@ public class GenerateCommand implements Callable<Integer> {
      *            project where the code will be generated to
      */
     private void setOutputRootPath(File inputProject) {
-        logger.info("As you did not specify where the code will be generated, we will use the project of your current"
+        LOG.info("As you did not specify where the code will be generated, we will use the project of your current"
             + " Input file.");
 
-        logger.debug("Generating to: " + inputProject.getAbsolutePath());
+        LOG.debug("Generating to: " + inputProject.getAbsolutePath());
 
         outputRootPath = inputProject;
     }
@@ -418,7 +418,7 @@ public class GenerateCommand implements Callable<Integer> {
 
                     // We need to generate all
                     if (selectedArtifactNumber == 0) {
-                        logger.info("(0) All");
+                        LOG.info("(0) All");
                         userSelection = (List<GenerableArtifact>) matching;
                         return userSelection;
                     }
@@ -426,12 +426,12 @@ public class GenerateCommand implements Callable<Integer> {
 
                     String artifactDescription = isIncrements ? ((IncrementTo) matching.get(index)).getDescription()
                         : ((TemplateTo) matching.get(index)).getId();
-                    logger.info("(" + selectedArtifactNumber + ") " + artifactDescription);
+                    LOG.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("The " + artifactType + " number you have specified is out of bounds!");
+                    LOG.error("The " + artifactType + " number you have specified is out of bounds!");
                     System.exit(1);
                 } catch (NumberFormatException e) {
-                    logger.error("Error parsing your input. You need to specify " + artifactType
+                    LOG.error("Error parsing your input. You need to specify " + artifactType
                         + "s using numbers separated by comma (2,5,6).");
                     System.exit(1);
                 }
@@ -441,7 +441,7 @@ public class GenerateCommand implements Callable<Integer> {
             else {
                 // Select all increments
                 if ("all".toUpperCase().equals(currentSelectedArtifact.toUpperCase())) {
-                    logger.info("(0) All");
+                    LOG.info("(0) All");
                     userSelection = (List<GenerableArtifact>) matching;
                     return userSelection;
                 }
@@ -461,11 +461,11 @@ public class GenerateCommand implements Callable<Integer> {
                     String artifactDescription =
                         isIncrements ? ((IncrementTo) possibleArtifacts.get(0)).getDescription()
                             : ((TemplateTo) possibleArtifacts.get(0)).getId();
-                    logger.info("Exact match found: " + artifactDescription + ".");
+                    LOG.info("Exact match found: " + artifactDescription + ".");
                     userSelection.add(possibleArtifacts.get(0));
                     return userSelection;
                 } else if (possibleArtifacts.size() < 1) {
-                    logger.info(
+                    LOG.info(
                         "No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
 
                     System.exit(1);
@@ -496,16 +496,15 @@ public class GenerateCommand implements Callable<Integer> {
     private void printFoundArtifacts(ArrayList<GenerableArtifact> possibleArtifacts, Boolean isIncrements,
         String artifactType, ArrayList<String> userInputIncrements) {
         if (userInputIncrements != null) {
-            logger.info("Here are the " + artifactType + "s that may match your search.");
+            LOG.info("Here are the " + artifactType + "s that may match your search.");
         }
-        logger.info("(0) " + "All");
+        LOG.info("(0) " + "All");
         for (GenerableArtifact artifact : possibleArtifacts) {
             String artifactDescription =
                 isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
-            logger.info("(" + (possibleArtifacts.indexOf(artifact) + 1) + ") " + artifactDescription);
+            LOG.info("(" + (possibleArtifacts.indexOf(artifact) + 1) + ") " + artifactDescription);
         }
-        logger.info(
-            "Please enter the number(s) of " + artifactType + "(s) that you want to generate separated by comma.");
+        LOG.info("Please enter the number(s) of " + artifactType + "(s) that you want to generate separated by comma.");
     }
 
     /**
@@ -532,12 +531,12 @@ public class GenerateCommand implements Callable<Integer> {
                     userSelection.add(currentArtifact);
                 }
             } catch (NumberFormatException e) {
-                logger.error("Error parsing your input. You need to specify " + artifactType
+                LOG.error("Error parsing your input. You need to specify " + artifactType
                     + "s using numbers separated by comma (2,5,6).");
                 System.exit(1);
 
             } catch (ArrayIndexOutOfBoundsException e) {
-                logger.error("Error parsing your input. Please give a valid number from the list above.");
+                LOG.error("Error parsing your input. Please give a valid number from the list above.");
                 System.exit(1);
             }
         }
