@@ -53,7 +53,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit, OnDe
   <#list pojo.fields as field>
     {
       name: '${field.name?uncap_first}',
-      label: '${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${field.name?uncap_first}'),
+      label: '${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${field.name?uncap_first}',
     },
   </#list>
   ];
