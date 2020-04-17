@@ -274,7 +274,7 @@ public class JavaInputReaderTest {
                 simpleNames.add(((JavaClass) o).getName());
             }
         }
-        assertThat(simpleNames).containsExactly("RootClass", "SuperClass1", "SuperClass2");
+        assertThat(simpleNames).containsExactlyInAnyOrder("RootClass", "SuperClass1", "SuperClass2");
     }
 
 }
