@@ -8,10 +8,15 @@ const TEST_ID = 0;
 const detailsdata: SearchCriteriaDataModel = {
   criteria: {},
   data: {
-   
+      id: TEST_ID,
 	 <#list pojo.fields as field>
-	    ${field.name?uncap_first}: '',
+	   <#if JavaUtil.getAngularType(field.type) == 'number'>
+	     ${field.name?uncap_first}: 1,  
+	   <#else>
+	    ${field.name?uncap_first}: 'TEST${field.name?upper_case}',	 
+	    </#if>      
 	  </#list>
+
   },
 };
 
@@ -60,9 +65,14 @@ describe('${variables.etoName?cap_first}ReducersTestCase', () => {
       const update: Update<${variables.etoName?cap_first}Model> = {
         id: TEST_ID,
         changes: {
-           <#list pojo.fields as field>
-    		${field.name?uncap_first}: '',
-  	   </#list>
+              id: TEST_ID,
+         <#list pojo.fields as field>
+         <#if JavaUtil.getAngularType(field.type) == 'number'>
+           ${field.name?uncap_first}: 12,  
+         <#else>
+            ${field.name?uncap_first}: 'TEST${field.name?upper_case}2',   
+          </#if>      
+        </#list>
         },
       };
 

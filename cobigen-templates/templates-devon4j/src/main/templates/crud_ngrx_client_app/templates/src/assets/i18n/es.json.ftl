@@ -1,42 +1,17 @@
 {
   "buttons": {
-    "submit": "Enviar",
-    "close": "Cerrar",
     "cancel": "CANCELAR",
-    "save": "GUARDAR",
-    "search": "BUSCAR",
-    "clean": "LIMPIAR",
     "addItem": "Añadir fila",
+    "search": "BUSCAR",
+    "submit": "Enviar",
     "editItem": "Editar fila",
-    "deleteItem": "Eliminar fila"
+    "deleteItem": "Eliminar fila",
+    "save": "GUARDAR",
+    "clean": "LIMPIAR",
+    "close": "Cerrar"
   },
-  "header": {
-    "title": "devon4ng",
-    "error": "Error de acceso",
-    "EN": "Inglés",
-    "ES": "Español"
-  },
-  "login": {
-    "title": "Acceso",
-    "username": "Nombre de usuario",
-    "password": "Contraseña",
-    "errorMsg": "Nombre de usuario o contraseña incorrectos"
-  },
-  "home": "Inicio",
-  "description": "Descripción",
-  "example": "Ejemplo",
-  "example description": "Descripción de Ejemplo",
   "LIKE": "ME GUSTA",
-  "SHARE": "COMPARTIR",
-  "CLOSE": "CERRAR",
-  "ERROR": "ERROR",
   "${variables.component?lower_case}": {
-    "title": "${variables.etoName?cap_first}Data_ES_Tabla",
-    "subtitle": "${variables.etoName?cap_first}Data_ES_Descripción",
-    "addtitle": "Añadir nueva fila",
-    "editTitle": "Editar fila existente",
-    "searchTip": "Panel de búsqueda",
-    "sortTip": "Limpiar Ordenación",
     "alert": {
       "acceptBtn": "Sí, Eliminar",
       "cancelBtn": "No, Cancelar",
@@ -44,16 +19,41 @@
       "message": "¿Seguro que deseas eliminar esta fila?"
     },
     "${variables.etoName?cap_first}": {
-      "title": "${variables.etoName?cap_first}_ES_Grid",
-      "subtitle": "${variables.etoName?cap_first}_ES_Descripción",
-      "navData": "${variables.etoName?cap_first}_ES",
+      "navDataSubDescription": "${variables.etoName?cap_first}_EN_Descripción",
       "navDataSub": "${variables.etoName?cap_first}_ES",
-      "navDataSubDescription": "${variables.etoName?cap_first}_EN_Descripción",          
       "columns": {
-      <#list pojo.fields as field>
+       <#list pojo.fields as field>
         "${field.name?uncap_first}": "${field.name?cap_first}_ES"<#if field?has_next>,</#if>
-      </#list>
-      }
-    }
-  }
+       </#list>
+      },
+      "subtitle": "${variables.etoName?cap_first}_ES_Descripción",
+      "title": "${variables.etoName?cap_first}_ES_Grid",
+      "navData": "${variables.etoName?cap_first}_ES"
+    },
+    "subtitle": "${variables.etoName?cap_first}_ES_Descripción",
+    "editTitle": "Editar fila existente",
+    "title": "${variables.etoName?cap_first}_ES_Tabla",
+    "addtitle": "Añadir nueva fila",
+    "searchTip": "Panel de búsqueda",
+    "sortTip": "Limpiar Ordenación"
+  },
+  "example description": "Descripción de Ejemplo",
+  "header": {
+    "EN": "Inglés",
+    "title": "devon4ng",
+    "error": "Error de acceso",
+    "ES": "Español"
+  },
+  "description": "Descripción",
+  "ERROR": "ERROR",
+  "CLOSE": "CERRAR",
+  "login": {
+    "password": "Contraseña",
+    "title": "Acceso",
+    "username": "Nombre de usuario",
+    "errorMsg": "Nombre de usuario o contraseña incorrectos"
+  },
+  "SHARE": "COMPARTIR",
+  "home": "Inicio",
+  "example": "Ejemplo"
 }

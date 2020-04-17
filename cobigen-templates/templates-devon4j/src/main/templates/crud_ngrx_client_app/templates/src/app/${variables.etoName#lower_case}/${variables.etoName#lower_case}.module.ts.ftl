@@ -20,7 +20,7 @@ import { reducers } from './store/reducers/index';
 
     ${variables.etoName?cap_first}RoutingModule,
     StoreModule.forFeature('${variables.etoName?lower_case}reducer', reducers),
-    EffectsModule.forFeature(${variables.etoName?cap_first}Effects),
+    EffectsModule.forFeature([${variables.etoName?cap_first}Effects]),
   ],
   declarations: [
     ${variables.etoName?cap_first}GridComponent,

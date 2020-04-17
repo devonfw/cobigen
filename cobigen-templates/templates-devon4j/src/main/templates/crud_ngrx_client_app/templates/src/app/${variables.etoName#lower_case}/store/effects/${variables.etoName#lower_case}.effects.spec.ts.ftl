@@ -9,9 +9,9 @@ import {
   generateUser,
   generateUserUpdate,
 } from '../../models/datadetailstest.model';
-import { ${variables.etoName?cap_first}Service } from '../../../${variables.etoName?lower_case}/services/${variables.etoName?lower_case}.service';
-import * as ${variables.etoName?lower_case}Actions from '../actions/${variables.etoName?lower_case}.actions';
-import { ${variables.etoName?cap_first} } from './${variables.etoName?lower_case}.effects';
+import { ${variables.etoName?cap_first}Service } from '../../services/${variables.etoName?lower_case}.service';
+import * as ${variables.etoName?uncap_first}Actions from '../actions/${variables.etoName?lower_case}.actions';
+import { ${variables.etoName?cap_first}Effects } from './${variables.etoName?lower_case}.effects';
 
 describe('${variables.etoName?cap_first}ffects', () => {
   let actions$: Observable<Action>;
