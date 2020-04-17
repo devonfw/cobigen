@@ -1,19 +1,16 @@
 package com.devonfw.cobigen.cli.commands;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Enumeration;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Comparator;
 import java.util.concurrent.Callable;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import net.sf.mmm.util.io.api.IoMode;
-import net.sf.mmm.util.io.api.RuntimeIoException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +58,9 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
     private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
-     * Process Jar method is responsible for unzip the source Jar and create new CobiGen_Templates folder
-     * structure at /main/CobiGen_Templates location
+     * Unpacks the source CobiGen_Templates Jar and creates a new CobiGen_Templates folder structure at
+     * $destinationPath/CobiGen_Templates location
+     *
      * @param destinationPath
      *            path to be used as target directory
      * @throws IOException
@@ -85,96 +83,69 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
 
         LOG.debug("Processing jar file @ {}", sourcesJarPath);
 
+        extractArchive(sourcesJarPath, templatesFolderPath);
+        deleteDirectoryRecursively(templatesFolderPath.resolve("META-INF"));
+
+        extractArchive(classesJarPath, templatesFolderPath.resolve(ConfigurationUtils.COBIGEN_UTILITY_CLASSES_FOLDER));
+        Files.deleteIfExists(templatesFolderPath.resolve("pom.xml"));
         // If we are unzipping a sources jar, we need to get the pom.xml from the normal jar
-        if (sourcesJarPath.resolve("sources") != null) {
-            try (ZipFile file = new ZipFile(classesJarPath.toFile().toString())) {
-                Enumeration<? extends ZipEntry> entries = file.entries();
-                if (Files.notExists(templatesFolderPath)) {
-                    Files.createDirectory(templatesFolderPath);
-                }
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    if (entry.getName().equals("pom.xml")) {
-                        Path saveForFileCreationPath = templatesFolderPath.resolve(entry.getName());
-                        createFile(file, entry, saveForFileCreationPath);
-                    }
-                }
-            } catch (IOException e) {
-                throw new IOException("An exception occurred while unpacking pom.xml from Jar file to templates folder",
-                    e);
-            }
-        }
+        Files.copy(templatesFolderPath.resolve("target/classes/pom.xml"), templatesFolderPath.resolve("pom.xml"));
+        Files.deleteIfExists(templatesFolderPath.resolve("target/classes/pom.xml"));
+        deleteDirectoryRecursively(templatesFolderPath.resolve("target/classes/src"));
+        deleteDirectoryRecursively(templatesFolderPath.resolve("target/classes/META-INF"));
 
-        // unpack sources
-        try (ZipFile file = new ZipFile(sourcesJarPath.toFile().toString())) {
-            Enumeration<? extends ZipEntry> entries = file.entries();
-            if (Files.notExists(templatesFolderPath)) {
-                Files.createDirectory(templatesFolderPath);
-            }
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                Path saveForFileCreationPath = templatesFolderPath.resolve(entry.getName());
-                if (entry.getName().contains("context.xml")) {
-                    saveForFileCreationPath = templatesFolderPath.resolve(entry.getName());
-                } else if (entry.getName().contains("com/")) {
-                    saveForFileCreationPath =
-                        templatesFolderPath.resolve("src").resolve("main").resolve("java").resolve(entry.getName());
-                }
-                createFile(file, entry, saveForFileCreationPath);
-            }
-        } catch (IOException e) {
-            throw new IOException("An exception occurred while unpacking sources from Jar file to templates folder", e);
-        }
-
-        // unpack classes to target directory
-        try (ZipFile file = new ZipFile(classesJarPath.toFile().toString())) {
-            Enumeration<? extends ZipEntry> entries = file.entries();
-            Path sourcesClassPath = templatesFolderPath.resolve(ConfigurationUtils.COBIGEN_UTILITY_CLASSES_FOLDER);
-            if (Files.notExists(templatesFolderPath)) {
-                Files.createDirectory(templatesFolderPath);
-            }
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                if (entry.getName().contains("com/")) {
-                    Path saveForFileCreationPath =
-                        sourcesClassPath.resolve("src").resolve("main").resolve("java").resolve(entry.getName());
-                    createFile(file, entry, saveForFileCreationPath);
-                }
-            }
-        } catch (IOException e) {
-            throw new IOException("An exception occurred while unpacking classes from Jar files to templates folder",
-                e);
-        }
     }
 
     /**
-     * Creates a file or directory and cleans up current file if it exists already
-     * @param file
-     *            ZipFile to access
-     * @param entry
-     *            ZipEntry to get input stream from
-     * @param saveForFileCreationPath
-     *            Path to save file at
+     * Deletes a directory and its sub directories recursively
+     *
+     * @param pathToBeDeleted
+     *            the directory which should be deleted recursively
      * @throws IOException
-     *             if file could not be created
+     *             if the file could not be deleted
      */
-    private static void createFile(ZipFile file, ZipEntry entry, Path saveForFileCreationPath) throws IOException {
-        if (entry.isDirectory()) {
-            Files.createDirectories(saveForFileCreationPath);
-        } else {
-            Files.deleteIfExists(saveForFileCreationPath);
-            Files.createFile(saveForFileCreationPath);
-            try (InputStream is = file.getInputStream(entry);
-                BufferedInputStream bis = new BufferedInputStream(is);
-                FileOutputStream fileOutput = new FileOutputStream(saveForFileCreationPath.toString());) {
+    public static void deleteDirectoryRecursively(Path pathToBeDeleted) throws IOException {
+        Files.walk(pathToBeDeleted).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+    }
 
-                while (bis.available() > 0) {
-                    fileOutput.write(bis.read());
-                }
-            } catch (IOException e) {
-                throw new RuntimeIoException(e, IoMode.WRITE);
+    /**
+     * Extracts an archive as is to a target directory while keeping its folder structure
+     *
+     * @param sourcePath
+     *            Path of the archive to unpack
+     * @param targetPath
+     *            Path of the target directory to unpack the source archive to
+     * @throws IOException
+     *             if an error occurred while processing the jar or its target directory
+     */
+    private static void extractArchive(Path sourcePath, Path targetPath) throws IOException {
+
+        // TODO: janv_capgemini check if sourcePath is an archive and throw exception if not
+        FileSystem fs = FileSystems.newFileSystem(sourcePath, null);
+
+        Path path = fs.getPath("/");
+        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Path relativePath = path.relativize(file);
+                Path targetPathResolved = targetPath.resolve(relativePath.toString());
+                Files.deleteIfExists(targetPathResolved);
+                Files.createDirectories(targetPathResolved.getParent());
+                Files.copy(file, targetPathResolved);
+                return FileVisitResult.CONTINUE;
             }
-        }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                // Log errors but do not throw an exception
+                LOG.warn("An IOException occurred while reading a file on path {} with message: {}", file,
+                    exc.getMessage());
+                LOG.debug("An IOException occurred while reading a file on path {} with message: {}", file,
+                    LOG.isDebugEnabled() ? exc : null);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
     }
 
     @Override
