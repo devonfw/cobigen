@@ -27,11 +27,6 @@ public class TemplateClassTest extends AbstractUnitTest {
     private static final String TEST_FILES_ROOT_PATH =
         "src/test/resources/testdata/unittest/config/entity/TemplateClassTest/";
 
-    /**
-     * Util to access the Template Util Classes
-     */
-    private TemplatesClassloaderUtil templatesUtilsClassesUtil = new TemplatesClassloaderUtil();
-
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(TemplateClassTest.class);
 
@@ -45,7 +40,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         String filename = "folder";
         Path path = Paths.get(TEST_FILES_ROOT_PATH + filename);
 
-        List<Class<?>> classes = templatesUtilsClassesUtil.resolveUtilClasses(path, null);
+        List<Class<?>> classes = TemplatesClassloaderUtil.resolveUtilClasses(path, null);
         assertThat(classes.get(0).getName()).contains("IDGenerator");
     }
 
@@ -63,7 +58,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
 
-        List<Class<?>> classes = templatesUtilsClassesUtil.resolveUtilClasses(null, inputClassLoader);
+        List<Class<?>> classes = TemplatesClassloaderUtil.resolveUtilClasses(null, inputClassLoader);
         assertThat(classes.get(0).getName()).contains("IDGenerator");
     }
 
@@ -81,7 +76,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         ClassLoader inputClassLoader = URLClassLoader.newInstance(
             new URL[] { pathArchive.toUri().toURL(), pathFolder.toUri().toURL() }, getClass().getClassLoader());
 
-        List<Class<?>> classes = templatesUtilsClassesUtil.resolveUtilClasses(pathFolder, inputClassLoader);
+        List<Class<?>> classes = TemplatesClassloaderUtil.resolveUtilClasses(pathFolder, inputClassLoader);
         assertThat(classes.get(0).getName()).contains("IDGenerator");
     }
 
@@ -99,7 +94,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
 
-        URL url = templatesUtilsClassesUtil.getContextConfiguration(inputClassLoader);
+        URL url = TemplatesClassloaderUtil.getContextConfiguration(inputClassLoader);
         assertThat(url).isNotNull();
     }
 
@@ -117,7 +112,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
 
-        URL url = templatesUtilsClassesUtil.getContextConfiguration(inputClassLoader);
+        URL url = TemplatesClassloaderUtil.getContextConfiguration(inputClassLoader);
         assertThat(url).isNotNull();
     }
 

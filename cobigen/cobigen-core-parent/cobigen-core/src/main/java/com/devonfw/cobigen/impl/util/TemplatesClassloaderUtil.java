@@ -45,7 +45,7 @@ public class TemplatesClassloaderUtil {
     /**
      * Locations to check for template utility classes
      */
-    private static final String[] classFolderLocations = new String[] { "src/main/templates", "target/classes" };
+    private static final String[] classFolderLocations = new String[] { "target/classes" };
 
     /**
      * Checks the ClassLoader for any context.xml provided either in configurationFolder or in
@@ -56,7 +56,7 @@ public class TemplatesClassloaderUtil {
      * @throws CobiGenRuntimeException
      *             if no configuration file was found
      */
-    public URL getContextConfiguration(ClassLoader classLoader) throws CobiGenRuntimeException {
+    public static URL getContextConfiguration(ClassLoader classLoader) throws CobiGenRuntimeException {
         URL contextConfigurationLocation = null;
         for (String possibleLocation : configFileLocations) {
             URL configLocation = classLoader.getResource(possibleLocation);
@@ -79,9 +79,9 @@ public class TemplatesClassloaderUtil {
      *            URL[] Array of URLs to load into ClassLoader
      * @return ClassLoader to load resources from
      */
-    private ClassLoader getUrlClassLoader(URL[] urls) {
+    private static ClassLoader getUrlClassLoader(URL[] urls) {
         ClassLoader inputClassLoader = null;
-        inputClassLoader = URLClassLoader.newInstance(urls, getClass().getClassLoader());
+        inputClassLoader = URLClassLoader.newInstance(urls, TemplatesClassloaderUtil.class.getClassLoader());
         return inputClassLoader;
     }
 
@@ -93,7 +93,7 @@ public class TemplatesClassloaderUtil {
      * @throws MalformedURLException
      *             if the URL was malformed
      */
-    private ArrayList<URL> addFoldersToClassLoaderUrls(Path configurationFolder) throws MalformedURLException {
+    private static ArrayList<URL> addFoldersToClassLoaderUrls(Path configurationFolder) throws MalformedURLException {
         ArrayList<URL> classLoaderUrls = new ArrayList<>();
         for (String possibleLocation : classFolderLocations) {
             Path folder = configurationFolder;
@@ -118,15 +118,14 @@ public class TemplatesClassloaderUtil {
      * @throws IOException
      *             if either templates jar or templates folder could not be read
      */
-    public List<Class<?>> resolveUtilClasses(Path configurationFolder, ClassLoader classLoader) throws IOException {
+    public static List<Class<?>> resolveUtilClasses(Path configurationFolder, ClassLoader classLoader)
+        throws IOException {
         List<Class<?>> result = new LinkedList<>();
         ArrayList<URL> classLoaderUrls = new ArrayList<>(); // stores ClassLoader URLs
         Path templateRoot = null;
         ClassLoader inputClassLoader = null;
         URL contextConfigurationLocation = null;
         if (configurationFolder != null) {
-            classLoaderUrls.add(configurationFolder.toUri().toURL());
-            LOG.debug("Added {} to class path", configurationFolder);
             templateRoot = configurationFolder;
             classLoaderUrls = addFoldersToClassLoaderUrls(configurationFolder);
             inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}));
@@ -156,7 +155,8 @@ public class TemplatesClassloaderUtil {
      *            ClassLoader to use for storing of classes
      * @return List of classes to load utilities from
      */
-    private List<Class<?>> resolveFromFolder(List<Class<?>> result, Path templateRoot, ClassLoader inputClassLoader) {
+    private static List<Class<?>> resolveFromFolder(List<Class<?>> result, Path templateRoot,
+        ClassLoader inputClassLoader) {
         LOG.debug("Processing configuration folder " + templateRoot.toString());
         LOG.info("Searching for classes in configuration folder...");
         List<Path> foundPaths = new LinkedList<>();
@@ -193,12 +193,19 @@ public class TemplatesClassloaderUtil {
     }
 
     /**
+     * Resolves utility classes from Jar archive
+     *
      * @param result
+     *            List to store utility classes in
      * @param inputClassLoader
+     *            ClassLoader to use for storing of classes
      * @param contextConfigurationLocation
+     *            URL to check for classes
+     * @return List of classes to load utilities from
      * @throws IOException
+     *             if jar file could not be read
      */
-    private List<Class<?>> resolveFromJar(List<Class<?>> result, ClassLoader inputClassLoader,
+    private static List<Class<?>> resolveFromJar(List<Class<?>> result, ClassLoader inputClassLoader,
         URL contextConfigurationLocation) throws IOException {
         LOG.debug("Processing configuration archive {}", contextConfigurationLocation);
         LOG.info("Searching for classes in configuration archive...");
@@ -248,7 +255,7 @@ public class TemplatesClassloaderUtil {
      * @throws IOException
      *             if file could not be visited
      */
-    private List<Path> walkTemplateFolder(Path templateRoot) throws IOException {
+    private static List<Path> walkTemplateFolder(Path templateRoot) throws IOException {
         final List<Path> foundPaths = new LinkedList<>();
         Files.walkFileTree(templateRoot, new SimpleFileVisitor<Path>() {
             @Override
@@ -263,7 +270,10 @@ public class TemplatesClassloaderUtil {
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                 // Log errors but do not throw an exception
-                LOG.warn("visitFileFailed @", exc);
+                LOG.warn("An IOException occurred while reading file on path {} with message: {}", file,
+                    exc.getMessage());
+                LOG.debug("An IOException occurred while reading file on path {} with message: {}", file,
+                    LOG.isDebugEnabled() ? exc : null);
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -281,7 +291,7 @@ public class TemplatesClassloaderUtil {
      * @throws IOException
      *             if file could not be visited
      */
-    private List<String> walkJarFile(URI jarUri, FileSystem jarfs) throws IOException {
+    private static List<String> walkJarFile(URI jarUri, FileSystem jarfs) throws IOException {
         List<String> foundClasses = new LinkedList<>();
         // walk the jar file
         LOG.debug("Searching for classes in {}", jarUri);
@@ -303,7 +313,10 @@ public class TemplatesClassloaderUtil {
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                 // Log errors but do not throw an exception
-                LOG.warn("visitFileFailed @", exc);
+                LOG.warn("An IOException occurred while reading file on path {} with message: {}", file,
+                    exc.getMessage());
+                LOG.debug("An IOException occurred while reading file on path {} with message: {}", file,
+                    LOG.isDebugEnabled() ? exc : null);
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -325,7 +338,7 @@ public class TemplatesClassloaderUtil {
      * @throws ClassNotFoundException
      *             if no class could be found all the way up to the path root
      */
-    public Class<?> loadClassByPath(Path classPath, ClassLoader cl) throws ClassNotFoundException {
+    private static Class<?> loadClassByPath(Path classPath, ClassLoader cl) throws ClassNotFoundException {
         // Get a list with all path segments, starting with the class name
         Queue<String> pathSegments = new LinkedList<>();
         // Split the path by the systems file separator and without the .class suffix

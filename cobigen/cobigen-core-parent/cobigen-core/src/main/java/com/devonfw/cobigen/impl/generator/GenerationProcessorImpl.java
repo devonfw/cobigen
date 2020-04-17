@@ -132,14 +132,12 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         BiConsumer<String, Integer> progressCallback, Path templateFolderPath) {
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
-        TemplatesClassloaderUtil classLoaderUtil = new TemplatesClassloaderUtil();
-
         List<Class<?>> logicClasses = null;
 
         if (templateFolderPath != null || classLoader != null) {
 
             try {
-                logicClasses = classLoaderUtil.resolveUtilClasses(templateFolderPath, classLoader);
+                logicClasses = TemplatesClassloaderUtil.resolveUtilClasses(templateFolderPath, classLoader);
             } catch (IOException e) {
                 LOG.error("An IOException occured while resolving utility classes!", e);
             }
