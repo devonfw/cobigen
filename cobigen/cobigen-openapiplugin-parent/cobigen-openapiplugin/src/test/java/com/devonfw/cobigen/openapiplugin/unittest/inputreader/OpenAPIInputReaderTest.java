@@ -355,7 +355,7 @@ public class OpenAPIInputReaderTest {
     /**
      * Not possible to properly test, see input file for example of the error to test (SomeData items schema
      * is a reference to FurtherData, parent of FurtherData is SomeData). See
-     * https://github.com/devonfw/tools-cobigen/issues/578 for more detail.
+     * https://github.com/devonfw/cobigen/issues/578 for more detail.
      */
     @Test
     public void testReadDoesNotResultInStackOverFlow() {

@@ -160,7 +160,9 @@ public class TemplatesConfigurationReader {
         // workaround to make JAXB work in OSGi context by
         // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
         final ClassLoader orig = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+        if (JvmUtil.isRunningJava9OrLater()) {
+            Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+        }
 
         try {
             Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
@@ -449,7 +451,7 @@ public class TemplatesConfigurationReader {
             if (scanSourcePath != null) {
                 // The relative template path has to be specifically parsed to string and back to a path so
                 // the templateFile and scanSourcePath are using the same file system. More info can be found
-                // at https://github.com/devonfw/tools-cobigen/issues/715
+                // at https://github.com/devonfw/cobigen/issues/715
                 String templateFilePath = templateFile.getRootRelativePath().toString();
                 Path destinationPath = Paths.get(scanSourcePath).relativize(Paths.get(templateFilePath));
                 unresolvedDestinationPath =

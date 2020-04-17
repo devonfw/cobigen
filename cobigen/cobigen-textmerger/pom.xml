@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>textmerger</artifactId>
   <packaging>jar</packaging>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <name>CobiGen - Text Merger Plug-in</name>
   <description>CobiGen - Text Merger Plug-in</description>
 
@@ -35,5 +35,17 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
 
 </project>

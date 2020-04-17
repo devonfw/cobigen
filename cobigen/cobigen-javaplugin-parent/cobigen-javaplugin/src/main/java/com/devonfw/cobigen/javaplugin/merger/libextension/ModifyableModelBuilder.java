@@ -23,8 +23,10 @@ import com.thoughtworks.qdox.model.JavaAnnotatedElement;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
+import com.thoughtworks.qdox.model.JavaExecutable;
 import com.thoughtworks.qdox.model.JavaGenericDeclaration;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaModule;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
 import com.thoughtworks.qdox.model.JavaType;
@@ -35,21 +37,34 @@ import com.thoughtworks.qdox.model.impl.DefaultJavaConstructor;
 import com.thoughtworks.qdox.model.impl.DefaultJavaField;
 import com.thoughtworks.qdox.model.impl.DefaultJavaInitializer;
 import com.thoughtworks.qdox.model.impl.DefaultJavaMethod;
+import com.thoughtworks.qdox.model.impl.DefaultJavaModule;
+import com.thoughtworks.qdox.model.impl.DefaultJavaModuleDescriptor;
+import com.thoughtworks.qdox.model.impl.DefaultJavaModuleDescriptor.DefaultJavaExports;
+import com.thoughtworks.qdox.model.impl.DefaultJavaModuleDescriptor.DefaultJavaOpens;
+import com.thoughtworks.qdox.model.impl.DefaultJavaModuleDescriptor.DefaultJavaProvides;
+import com.thoughtworks.qdox.model.impl.DefaultJavaModuleDescriptor.DefaultJavaRequires;
+import com.thoughtworks.qdox.model.impl.DefaultJavaModuleDescriptor.DefaultJavaUses;
 import com.thoughtworks.qdox.model.impl.DefaultJavaPackage;
 import com.thoughtworks.qdox.model.impl.DefaultJavaParameter;
 import com.thoughtworks.qdox.model.impl.DefaultJavaSource;
 import com.thoughtworks.qdox.model.impl.DefaultJavaType;
-import com.thoughtworks.qdox.model.impl.DefaultJavaTypeVariable;
 import com.thoughtworks.qdox.parser.expression.ExpressionDef;
 import com.thoughtworks.qdox.parser.structs.AnnoDef;
 import com.thoughtworks.qdox.parser.structs.ClassDef;
 import com.thoughtworks.qdox.parser.structs.FieldDef;
 import com.thoughtworks.qdox.parser.structs.InitDef;
 import com.thoughtworks.qdox.parser.structs.MethodDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.ExportsDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.OpensDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.ProvidesDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.RequiresDef;
+import com.thoughtworks.qdox.parser.structs.ModuleDef.UsesDef;
 import com.thoughtworks.qdox.parser.structs.PackageDef;
 import com.thoughtworks.qdox.parser.structs.TagDef;
 import com.thoughtworks.qdox.parser.structs.TypeDef;
 import com.thoughtworks.qdox.parser.structs.TypeVariableDef;
+import com.thoughtworks.qdox.type.TypeResolver;
 import com.thoughtworks.qdox.writer.ModelWriterFactory;
 
 /**
@@ -83,9 +98,16 @@ public class ModifyableModelBuilder implements Builder {
 
     private ModelWriterFactory modelWriterFactory;
 
+    private ClassLibrary classLibrary;
+
+    private DefaultJavaModule module;
+
+    private DefaultJavaModuleDescriptor moduleDescriptor;
+
     public ModifyableModelBuilder(ClassLibrary classLibrary, DocletTagFactory docletTagFactory) {
 
         this.docletTagFactory = docletTagFactory;
+        this.classLibrary = classLibrary;
         source = new DefaultJavaSource(classLibrary);
         currentAnnoDefs = new LinkedList<>();
         currentArguments = new LinkedList<>();
@@ -162,7 +184,7 @@ public class ModifyableModelBuilder implements Builder {
 
         // typeParameters
         if (def.getTypeParameters() != null) {
-            List<DefaultJavaTypeVariable<JavaClass>> typeParams = new LinkedList<>();
+            List<ModifyableJavaTypeVariable<JavaClass>> typeParams = new LinkedList<>();
             for (TypeVariableDef typeVariableDef : def.getTypeParameters()) {
                 typeParams.add(createTypeVariable(typeVariableDef, (JavaClass) newClass));
             }
@@ -172,12 +194,6 @@ public class ModifyableModelBuilder implements Builder {
         // javadoc
         addJavaDoc(newClass);
 
-        // // ignore annotation types (for now)
-        // if (ClassDef.ANNOTATION_TYPE.equals(def.type)) {
-        // System.out.println( currentClass.getFullyQualifiedName() );
-        // return;
-        // }
-
         // annotations
         setAnnotations(newClass);
 
@@ -185,13 +201,12 @@ public class ModifyableModelBuilder implements Builder {
     }
 
     protected ModifyableJavaClass bindClass(ModifyableJavaClass newClass) {
-
         if (currentField != null) {
             classStack.getFirst().addClass(newClass);
             currentField.setEnumConstantClass(newClass);
         } else if (!classStack.isEmpty()) {
             classStack.getFirst().addClass(newClass);
-            newClass.setParentClass(classStack.getFirst());
+            newClass.setDeclaringClass(classStack.getFirst());
         } else {
             source.addClass(newClass);
         }
@@ -217,8 +232,15 @@ public class ModifyableModelBuilder implements Builder {
         if (typeDef == null) {
             return null;
         }
-        return TypeAssembler.createUnresolved(typeDef, dimensions,
-            classStack.isEmpty() ? source : classStack.getFirst());
+        TypeResolver typeResolver;
+        if (classStack.isEmpty()) {
+            typeResolver = TypeResolver.byPackageName(source.getPackageName(), classLibrary, source.getImports());
+        } else {
+            typeResolver =
+                TypeResolver.byClassName(classStack.getFirst().getBinaryName(), classLibrary, source.getImports());
+        }
+
+        return TypeAssembler.createUnresolved(typeDef, dimensions, typeResolver);
     }
 
     private void addJavaDoc(AbstractBaseJavaEntity entity) {
@@ -253,7 +275,7 @@ public class ModifyableModelBuilder implements Builder {
 
         currentConstructor = new DefaultJavaConstructor();
 
-        currentConstructor.setParentClass(classStack.getFirst());
+        currentConstructor.setDeclaringClass(classStack.getFirst());
 
         currentConstructor.setModelWriterFactory(modelWriterFactory);
 
@@ -303,7 +325,7 @@ public class ModifyableModelBuilder implements Builder {
 
         currentMethod = new DefaultJavaMethod();
         if (currentField == null) {
-            currentMethod.setParentClass(classStack.getFirst());
+            currentMethod.setDeclaringClass(classStack.getFirst());
             classStack.getFirst().addMethod(currentMethod);
         }
         currentMethod.setModelWriterFactory(modelWriterFactory);
@@ -348,17 +370,26 @@ public class ModifyableModelBuilder implements Builder {
         currentMethod.setSourceCode(def.getBody());
     }
 
-    private <G extends JavaGenericDeclaration> DefaultJavaTypeVariable<G> createTypeVariable(
+    private <G extends JavaGenericDeclaration> ModifyableJavaTypeVariable<G> createTypeVariable(
         TypeVariableDef typeVariableDef, G genericDeclaration) {
-
         if (typeVariableDef == null) {
             return null;
         }
-        DefaultJavaTypeVariable<G> result =
-            new DefaultJavaTypeVariable<>(typeVariableDef.getName(), genericDeclaration);
+
+        JavaClass declaringClass = getContext(genericDeclaration);
+
+        if (declaringClass == null) {
+            return null;
+        }
+
+        TypeResolver typeResolver =
+            TypeResolver.byClassName(declaringClass.getBinaryName(), classLibrary, source.getImports());
+
+        ModifyableJavaTypeVariable<G> result =
+            new ModifyableJavaTypeVariable<G>(typeVariableDef.getName(), typeResolver);
 
         if (typeVariableDef.getBounds() != null && !typeVariableDef.getBounds().isEmpty()) {
-            List<JavaType> bounds = new LinkedList<>();
+            List<JavaType> bounds = new LinkedList<JavaType>();
             for (TypeDef typeDef : typeVariableDef.getBounds()) {
                 bounds.add(createType(typeDef, 0));
             }
@@ -367,15 +398,26 @@ public class ModifyableModelBuilder implements Builder {
         return result;
     }
 
+    private static JavaClass getContext(JavaGenericDeclaration genericDeclaration) {
+        JavaClass result;
+        if (genericDeclaration instanceof JavaClass) {
+            result = (JavaClass) genericDeclaration;
+        } else if (genericDeclaration instanceof JavaExecutable) {
+            result = ((JavaExecutable) genericDeclaration).getDeclaringClass();
+        } else {
+            throw new IllegalArgumentException("Unknown JavaGenericDeclaration implementation");
+        }
+        return result;
+    }
+
     @Override
     public void beginField(FieldDef def) {
 
-        currentField = new DefaultJavaField();
-        currentField.setParentClass(classStack.getFirst());
+        currentField = new DefaultJavaField(def.getName());
+        currentField.setDeclaringClass(classStack.getFirst());
         currentField.setLineNumber(def.getLineNumber());
         currentField.setModelWriterFactory(modelWriterFactory);
 
-        currentField.setName(def.getName());
         currentField.setType(createType(def.getType(), def.getDimensions()));
 
         currentField.setEnumConstant(def.isEnumConstant());
@@ -397,12 +439,20 @@ public class ModifyableModelBuilder implements Builder {
 
     @Override
     public void endField() {
-
         if (currentArguments != null && !currentArguments.isEmpty()) {
-            // DefaultExpressionTransformer??
-            DefaultJavaAnnotationAssembler assembler = new DefaultJavaAnnotationAssembler(currentField);
+            TypeResolver typeResolver;
+            if (classStack.isEmpty()) {
+                typeResolver = TypeResolver.byPackageName(source.getPackageName(), classLibrary, source.getImports());
+            } else {
+                typeResolver =
+                    TypeResolver.byClassName(classStack.getFirst().getBinaryName(), classLibrary, source.getImports());
+            }
 
-            List<Expression> arguments = new LinkedList<>();
+            // DefaultExpressionTransformer??
+            DefaultJavaAnnotationAssembler assembler =
+                new DefaultJavaAnnotationAssembler(currentField.getDeclaringClass(), classLibrary, typeResolver);
+
+            List<Expression> arguments = new LinkedList<Expression>();
             for (ExpressionDef annoDef : currentArguments) {
                 arguments.add(assembler.assemble(annoDef));
             }
@@ -422,9 +472,9 @@ public class ModifyableModelBuilder implements Builder {
             new ExtendedJavaParameter(createType(fieldDef.getType(), fieldDef.getDimensions()), fieldDef.getName(),
                 fieldDef.getModifiers(), fieldDef.isVarArgs());
         if (currentMethod != null) {
-            jParam.setDeclarator(currentMethod);
+            jParam.setExecutable(currentMethod);
         } else {
-            jParam.setDeclarator(currentConstructor);
+            jParam.setExecutable(currentMethod);
         }
         jParam.setModelWriterFactory(modelWriterFactory);
         addJavaDoc(jParam);
@@ -433,12 +483,19 @@ public class ModifyableModelBuilder implements Builder {
     }
 
     private void setAnnotations(final AbstractBaseJavaEntity entity) {
-
         if (!currentAnnoDefs.isEmpty()) {
-            DefaultJavaAnnotationAssembler assembler =
-                new DefaultJavaAnnotationAssembler((JavaAnnotatedElement) entity);
+            TypeResolver typeResolver;
+            if (classStack.isEmpty()) {
+                typeResolver = TypeResolver.byPackageName(source.getPackageName(), classLibrary, source.getImports());
+            } else {
+                typeResolver =
+                    TypeResolver.byClassName(classStack.getFirst().getBinaryName(), classLibrary, source.getImports());
+            }
 
-            List<JavaAnnotation> annotations = new LinkedList<>();
+            DefaultJavaAnnotationAssembler assembler =
+                new DefaultJavaAnnotationAssembler(entity.getDeclaringClass(), classLibrary, typeResolver);
+
+            List<JavaAnnotation> annotations = new LinkedList<JavaAnnotation>();
             for (AnnoDef annoDef : currentAnnoDefs) {
                 annotations.add(assembler.assemble(annoDef));
             }
@@ -470,5 +527,72 @@ public class ModifyableModelBuilder implements Builder {
     public void setUrl(URL url) {
 
         source.setURL(url);
+    }
+
+    @Override
+    public void setModule(ModuleDef moduleDef) {
+        moduleDescriptor = new DefaultJavaModuleDescriptor(moduleDef.getName());
+        module = new DefaultJavaModule(moduleDef.getName(), moduleDescriptor);
+    }
+
+    @Override
+    public void addExports(ExportsDef exportsDef) {
+        List<JavaModule> targets = new ArrayList<JavaModule>(exportsDef.getTargets().size());
+        for (String moduleName : exportsDef.getTargets()) {
+            targets.add(new DefaultJavaModule(moduleName, null));
+        }
+
+        DefaultJavaExports exports = new DefaultJavaExports(new DefaultJavaPackage(exportsDef.getSource()), targets);
+        exports.setLineNumber(exportsDef.getLineNumber());
+        exports.setModelWriterFactory(modelWriterFactory);
+        moduleDescriptor.addExports(exports);
+    }
+
+    @Override
+    public void addRequires(RequiresDef requiresDef) {
+        JavaModule module = new DefaultJavaModule(requiresDef.getName(), null);
+        DefaultJavaRequires requires = new DefaultJavaRequires(module, requiresDef.getModifiers());
+        requires.setLineNumber(requiresDef.getLineNumber());
+        requires.setModelWriterFactory(modelWriterFactory);
+        moduleDescriptor.addRequires(requires);
+    }
+
+    @Override
+    public void addOpens(OpensDef opensDef) {
+        List<JavaModule> targets = new ArrayList<JavaModule>(opensDef.getTargets().size());
+        for (String moduleName : opensDef.getTargets()) {
+            targets.add(new DefaultJavaModule(moduleName, null));
+        }
+
+        DefaultJavaOpens exports = new DefaultJavaOpens(new DefaultJavaPackage(opensDef.getSource()), targets);
+        exports.setLineNumber(opensDef.getLineNumber());
+        exports.setModelWriterFactory(modelWriterFactory);
+        moduleDescriptor.addOpens(exports);
+    }
+
+    @Override
+    public void addProvides(ProvidesDef providesDef) {
+        JavaClass service = createType(providesDef.getService(), 0);
+        List<JavaClass> implementations = new LinkedList<JavaClass>();
+        for (TypeDef implementType : providesDef.getImplementations()) {
+            implementations.add(createType(implementType, 0));
+        }
+        DefaultJavaProvides provides = new DefaultJavaProvides(service, implementations);
+        provides.setLineNumber(providesDef.getLineNumber());
+        provides.setModelWriterFactory(modelWriterFactory);
+        moduleDescriptor.addProvides(provides);
+    }
+
+    @Override
+    public void addUses(UsesDef usesDef) {
+        DefaultJavaUses uses = new DefaultJavaUses(createType(usesDef.getService(), 0));
+        uses.setLineNumber(usesDef.getLineNumber());
+        uses.setModelWriterFactory(modelWriterFactory);
+        moduleDescriptor.addUses(uses);
+    }
+
+    @Override
+    public JavaModule getModuleInfo() {
+        return module;
     }
 }

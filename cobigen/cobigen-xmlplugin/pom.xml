@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>xmlplugin</artifactId>
   <name>CobiGen - XML Plug-In</name>
-  <version>4.1.0</version>
+  <version>4.2.0</version>
   <packaging>jar</packaging>
   <description>CobiGen - XML Plug-In</description>
 
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.3.0</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.3.0</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -57,4 +57,15 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+   <build>
+    <resources>
+	    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>false</filtering>
+      <excludes>
+        <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
+      </excludes>
+    </resource>
+  </resources>
+  </build>
 </project>

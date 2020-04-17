@@ -1,228 +1,252 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>cli</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <name>cobigen-cli</name>
-  
-  <parent>
-    <groupId>com.devonfw.cobigen</groupId>
-    <artifactId>cli-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
-  </parent>
-
-  <properties>
-    <junit.version>4.11</junit.version>
-    <logback.version>1.1.2</logback.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <slf4j-api.version>1.7.7</slf4j-api.version>
-    <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core</artifactId>
-      <version>5.4.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-api</artifactId>
-      <version>5.4.0</version>
-    </dependency>
-    <dependency>
-      <groupId>info.picocli</groupId>
-      <artifactId>picocli</artifactId>
-      <version>4.0.0-beta-1b</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.maven.shared</groupId>
-        <artifactId>maven-invoker</artifactId>
-        <version>3.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-java-impl</artifactId>
-      <version>1.0.0-beta2</version>
-    </dependency>
-    <!-- SLF4J - API -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.7</version>
-    </dependency>
-    <!-- logback -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-    <!-- JUnit -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-       <groupId>org.apache.commons</groupId>
-       <artifactId>commons-text</artifactId>
-       <version>1.6</version>
-    </dependency>
-    <dependency>
-       <groupId>com.devonfw.cobigen</groupId>
-       <artifactId>class-loader-agent</artifactId>
-       <version>1.0.0-SNAPSHOT</version> 
-    </dependency>
-    <!-- We need an agent loader for the JUnit tests in Eclipse -->
-    <dependency>
-        <groupId>com.ea.agentloader</groupId>
-        <artifactId>ea-agent-loader</artifactId>
-        <version>1.0.3</version>
-    </dependency>
-    <dependency>
-        <groupId>com.google.googlejavaformat</groupId>
-        <artifactId>google-java-format</artifactId>
-        <version>1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>23.6-jre</version>
-    </dependency>
-  </dependencies>
-
-  <build>
-   <!-- Add correct version to artificial pom -->
-   <resources>
-      <resource>
-         <filtering>true</filtering>
-         <directory>src/main/resources</directory>
-         <includes>
-            <include>pom.xml</include>
-         </includes>
-      </resource>
-   </resources>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>cli</artifactId>
+   <version>1.1.0</version>
+   <name>cobigen-cli</name>
+   <description>Command Line Interface for CobiGen</description>
    
-   <plugins>
-      <!-- Add CobiGen bat files for executing the CLI on a console -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.0.0</version>
-        <executions>
-          <execution>
-            <id>add-resources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>add-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/src/main/resources/batchFiles</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Add Class loader agent jar for correct class loading. In test-compile phase for running tests -->
-      <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <executions>
-              <execution>
+   <parent>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>cli-parent</artifactId>
+      <version>dev-SNAPSHOT</version>
+   </parent>
+   
+   <properties>
+      <junit.version>4.11</junit.version>
+      <logback.version>1.1.2</logback.version>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <slf4j-api.version>1.7.7</slf4j-api.version>
+      <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
+      <skip.deployment>false</skip.deployment>
+   </properties>
+   
+   <dependencies>
+      <dependency>
+         <groupId>com.devonfw.cobigen</groupId>
+         <artifactId>core</artifactId>
+         <version>5.4.0</version>
+      </dependency>
+      <dependency>
+         <groupId>com.devonfw.cobigen</groupId>
+         <artifactId>core-api</artifactId>
+         <version>5.4.0</version>
+      </dependency>
+      <dependency>
+         <groupId>info.picocli</groupId>
+         <artifactId>picocli</artifactId>
+         <version>4.0.0-beta-1b</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.maven.shared</groupId>
+         <artifactId>maven-invoker</artifactId>
+         <version>3.0.1</version>
+      </dependency>
+      <dependency>
+         <groupId>net.sf.m-m-m</groupId>
+         <artifactId>mmm-code-java-impl</artifactId>
+         <version>1.0.0-beta5</version>
+      </dependency>
+      <!-- SLF4J - API -->
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>1.7.7</version>
+      </dependency>
+      <!-- logback -->
+      <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+         <version>1.1.2</version>
+      </dependency>
+      <!-- JUnit -->
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.11</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-text</artifactId>
+         <version>1.6</version>
+      </dependency>
+      <dependency>
+         <groupId>com.devonfw.cobigen</groupId>
+         <artifactId>class-loader-agent</artifactId>
+         <version>1.1.0</version>
+      </dependency>
+      <!-- We need an agent loader for the JUnit tests in Eclipse -->
+      <dependency>
+         <groupId>com.ea.agentloader</groupId>
+         <artifactId>ea-agent-loader</artifactId>
+         <version>1.0.3</version>
+      </dependency>
+      <dependency>
+         <groupId>com.google.googlejavaformat</groupId>
+         <artifactId>google-java-format</artifactId>
+         <version>1.7</version>
+      </dependency>
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+         <version>23.6-jre</version>
+      </dependency>
+   </dependencies>
+   
+   <build>
+      <!-- Add correct version to artificial pom -->
+      <resources>
+         <resource>
+            <filtering>true</filtering>
+            <directory>src/main/resources</directory>
+            <includes>
+               <include>pom.xml</include>
+            </includes>
+         </resource>
+      </resources>
+      <plugins>
+      
+         <!-- Add CobiGen bat files for executing the CLI on a console -->
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+               <execution>
+                  <id>add-resources</id>
+                  <phase>generate-resources</phase>
+                  <goals>
+                     <goal>add-resource</goal>
+                  </goals>
+                  <configuration>
+                     <resources>
+                        <resource>
+                           <directory>${project.basedir}/src/main/resources/batchFiles</directory>
+                        </resource>
+                        <resource>
+                           <directory>${project.basedir}/src/main/resources/META-INF</directory>
+                        </resource>
+                     </resources>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         
+         <!-- Add Class loader agent jar for correct class loading. In test-compile phase for running tests -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+               <execution>
                   <id>copy-dependencies</id>
                   <phase>test-compile</phase>
                   <goals>
-                      <goal>copy-dependencies</goal>
+                     <goal>copy-dependencies</goal>
                   </goals>
                   <configuration>
-                      <includeArtifactIds>class-loader-agent</includeArtifactIds>              
-                      <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                      <stripVersion>true</stripVersion>
-                      <overWriteReleases>false</overWriteReleases>
-                      <overWriteSnapshots>false</overWriteSnapshots>
-                      <overWriteIfNewer>true</overWriteIfNewer>
+                     <includeArtifactIds>class-loader-agent</includeArtifactIds>
+                     <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                     <stripVersion>true</stripVersion>
+                     <overWriteReleases>false</overWriteReleases>
+                     <overWriteSnapshots>false</overWriteSnapshots>
+                     <overWriteIfNewer>true</overWriteIfNewer>
                   </configuration>
-              </execution>
-          </executions>
-      </plugin>      
-      <!-- Building a Maven project that is used on the tests -->
-      <plugin>
-         <groupId>org.codehaus.mojo</groupId>
-         <artifactId>exec-maven-plugin</artifactId>
-         <version>1.6.0</version>
-         <executions>
-            <execution>
-               <id>Install test project</id>
-               <phase>test-compile</phase>
-               <goals>
-                  <goal>exec</goal>
-               </goals>
-            </execution>
-         </executions>
-         <configuration>
-            <executable>mvn</executable>
-            <workingDirectory>${maven.test.path}</workingDirectory>
-            <arguments>
-               <argument>install</argument>
-            </arguments>
-         </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         
+         <!-- Building a Maven project that is used on the tests -->
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <executions>
+               <execution>
+                  <id>Install test project</id>
+                  <phase>test-compile</phase>
+                  <goals>
+                     <goal>exec</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <executable>mvn</executable>
+               <workingDirectory>${maven.test.path}</workingDirectory>
+               <arguments>
+                  <argument>install</argument>
+               </arguments>
+            </configuration>
+         </plugin>
+         
+         <!-- Run tests using the java-agent -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.22.2</version>
+            <configuration>
+               <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
+               <!-- Needed for JDK 9+ -->
+               <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
+            </configuration>
+         </plugin>
+         
+         <!-- Don't create the default jar -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>default-jar</id>
+                  <phase>none</phase>
+               </execution>
+            </executions>
+         </plugin>
+         
+         <!-- Create a fat jar with all the dependencies -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.1.1</version>
+            <configuration>
+               <finalName>cobigen</finalName>
+               <appendAssemblyId>false</appendAssemblyId>
+               <descriptorRefs>
+                  <descriptorRef>jar-with-dependencies</descriptorRef>
+               </descriptorRefs>
+               <archive>
+                  <manifest>
+                     <addClasspath>true</addClasspath>
+                     <mainClass>com.devonfw.cobigen.cli.CobiGenCLI</mainClass>
+                  </manifest>
+               </archive>
+            </configuration>
+            <executions>
+               <execution>
+                  <id>assemble-all</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>single</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+         
+        <!-- Add sources jar -->
+        <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
-      <!-- Run tests using the java-agent -->
-      <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-surefire-plugin</artifactId>
-         <version>2.22.2</version>
-         <configuration>
-             <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
-             <!-- Needed for JDK 9+ -->
-             <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
-         </configuration>
-      </plugin>
-      <!-- Don't create the default jar -->
-      <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-jar-plugin</artifactId>
-         <executions>
-            <execution>
-               <id>default-jar</id>
-               <phase>none</phase>
-            </execution>
-         </executions>
-      </plugin>
-      
-      <!-- Create a fat jar with all the dependencies -->
-      <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-assembly-plugin</artifactId>
-         <version>3.1.1</version>
-         <configuration>
-            <finalName>cobigen</finalName>
-            <appendAssemblyId>false</appendAssemblyId>
-            <descriptorRefs>
-               <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-            <archive>
-               <manifest>
-                  <addClasspath>true</addClasspath>
-                  <mainClass>com.devonfw.cobigen.cli.CobiGenCLI</mainClass>
-               </manifest>
-            </archive>
-         </configuration>
-         <executions>
-            <execution>
-               <id>assemble-all</id>
-               <phase>package</phase>
-               <goals>
-                  <goal>single</goal>
-               </goals>
-            </execution>
-         </executions>
-      </plugin>
-   </plugins>
-</build>
+      </plugins>
+   </build>
 </project>

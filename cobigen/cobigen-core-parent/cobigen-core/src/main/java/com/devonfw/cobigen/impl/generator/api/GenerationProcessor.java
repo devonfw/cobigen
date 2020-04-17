@@ -3,6 +3,7 @@ package com.devonfw.cobigen.impl.generator.api;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
@@ -32,5 +33,6 @@ public interface GenerationProcessor {
      * @return {@link GenerationReportTo the GenerationReport}
      */
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel);
+        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel,
+        BiConsumer<String, Integer> progressCallback);
 }

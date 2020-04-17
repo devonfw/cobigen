@@ -253,7 +253,7 @@ public class TextAppenderTest {
             assertThat(e).hasMessage(getMergeExceptionMessage(file,
                 "Error at anchor for documentpart: // anchor:part1::anchorend. "
                     + "Incorrect anchor definition, no proper mergestrategy defined.\nSee "
-                    + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#mergestrategies "
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#mergestrategies "
                     + "for additional info"));
         }
     }
@@ -275,8 +275,8 @@ public class TextAppenderTest {
         } catch (MergeException e) {
             assertThat(e).hasMessage(getMergeExceptionMessage(file,
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
-                    + "See https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#error-list "
+                    + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
                     + "for more details"));
         }
     }
@@ -298,8 +298,8 @@ public class TextAppenderTest {
         } catch (MergeException e) {
             assertThat(e).hasMessage(getMergeExceptionMessage(file,
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
-                    + "See https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/tools-cobigen/wiki/cobigen-textmerger#error-list "
+                    + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
                     + "for more details"));
         }
     }
