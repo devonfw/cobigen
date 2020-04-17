@@ -21,7 +21,6 @@
     <templateExtension ref="datadetailstest.model.ts" mergeStrategy="override"/>
     <templateExtension ref="httpresponse.model.ts" mergeStrategy="override"/>
     <templateExtension ref="searchcriteriadata.model.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.actions.spec.ts" mergeStrategy="override"/>
 	<templateExtension ref="${variables.etoName#lower_case}.actions.ts" mergeStrategy="override"/>
     <templateExtension ref="${variables.etoName#lower_case}.effects.spec.ts" mergeStrategy="override"/>
 	<templateExtension ref="${variables.etoName#lower_case}.effects.ts" mergeStrategy="override"/>
@@ -73,10 +72,9 @@
       <templateRef ref="searchcriteriadata.model.ts"/>
       <templateRef ref="store_index.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.actions.ts"/>
-	  <templateRef ref="${variables.etoName#lower_case}.actions.spec.ts"/>
       <templateRef ref="actions_index.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.effects.ts"/>
-	  <templateRef ref="${variables.etoName#lower_case}.effects.ts.spec.ts"/>
+	  <templateRef ref="${variables.etoName#lower_case}.effects.spec.ts"/>
       <templateRef ref="effects_index.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.reducers.ts"/>
 	  <templateRef ref="${variables.etoName#lower_case}.reducers.spec.ts"/>
