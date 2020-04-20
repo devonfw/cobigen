@@ -8,7 +8,7 @@ import { LoginComponent } from './auth/login.component';
 import { CoreModule } from './core/core.module';
 import { LayoutModule } from './layout/layout.module';
 import { AuthDataModule } from './auth/auth.module';
-import { { ${variables.etoName?cap_first}GridComponent }Module } from './${variables.etoName?lower_case}/${variables.etoName?lower_case}.module';
+import { ${variables.etoName?cap_first}Module } from './${variables.etoName?lower_case}/${variables.etoName?lower_case}.module';
 
 @NgModule({
   declarations: [AppComponent, LoginComponent],
@@ -19,7 +19,7 @@ import { { ${variables.etoName?cap_first}GridComponent }Module } from './${varia
     CoreModule,
     AuthDataModule,
     LayoutModule,
-    { ${variables.etoName?cap_first}Module,
+    ${variables.etoName?cap_first}Module,
     HttpClientModule,
   ],
   providers: [],

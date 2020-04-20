@@ -33,7 +33,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   <#list pojo.fields as field>
     {
       name: '${field.name?uncap_first}',
-      label: this.getTranslation('${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${field.name?uncap_first}'),
+      label: '${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${field.name?uncap_first}',
     },
   </#list>
   ];
@@ -73,7 +73,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
         this.pageable.pageSize,
         this.pageable.pageNumber,
         this.searchTerms,
-        this.pageable.sort = this.sorting,
+        (this.pageable.sort = this.sorting),
       )
       .subscribe(
         (res: any) => {
@@ -117,7 +117,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   checkboxLabel(row?: any): string {
     return ${r"`${
       this.selection.isSelected(row) ? 'deselect' : 'select'
-    } row ${row.position + 1}`"}
+    } row ${row.position + 1}`"};
   }
   openDialog(): void {
     this.dialogRef = this.dialog.open(${variables.etoName?cap_first}DialogComponent);
