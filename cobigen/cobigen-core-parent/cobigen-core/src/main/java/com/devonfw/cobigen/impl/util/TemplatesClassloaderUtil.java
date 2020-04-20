@@ -6,20 +6,17 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 import org.apache.commons.io.FilenameUtils;
@@ -202,30 +199,19 @@ public class TemplatesClassloaderUtil {
      * @param contextConfigurationLocation
      *            URL to check for classes
      * @return List of classes to load utilities from
-     * @throws IOException
-     *             if jar file could not be read
      */
     private static List<Class<?>> resolveFromJar(List<Class<?>> result, ClassLoader inputClassLoader,
-        URL contextConfigurationLocation) throws IOException {
+        URL contextConfigurationLocation) {
         LOG.debug("Processing configuration archive {}", contextConfigurationLocation);
         LOG.info("Searching for classes in configuration archive...");
-        // Make sure to create file system for jar file
-        Map<String, String> env = new HashMap<>();
-        env.put("create", "true");
 
-        URI uri = URI.create(contextConfigurationLocation.toString());
-        FileSystem fs;
-        try {
-            fs = FileSystems.getFileSystem(uri);
-        } catch (FileSystemNotFoundException e) {
-            fs = FileSystems.newFileSystem(uri, env);
-        }
-        Paths.get(uri);
         List<String> foundClasses = new LinkedList<>();
         try {
             // Get the URI of the jar from the URL of the contained context.xml
             URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
-            FileSystem jarfs = FileSystems.getFileSystem(jarUri);
+
+            // Make sure to create file system for jar file
+            FileSystem jarfs = FileSystems.newFileSystem(jarUri, Collections.EMPTY_MAP);
 
             foundClasses = walkJarFile(jarUri, jarfs);
         } catch (IOException e) {
