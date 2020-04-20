@@ -13,7 +13,6 @@
     <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="home.component.html" mergeStrategy="override"/>
   </templates>
 
   <templateScans>
@@ -48,8 +47,8 @@
       <templateRef ref="${variables.etoName#lower_case}-alert.component.spec.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.service.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.service.spec.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.module.ts"/>
-      <templateRef ref="home.component.html"/>
+      <templateRef ref="${variables.etoName#lower_case}.module.ts-routing.module.ts"/>
+	  <templateRef ref="${variables.etoName#lower_case}.module.ts"/>
       <templateRef ref="app.module.ts"/>
       <templateRef ref="app-routing.module.ts"/>
     </increment>
