@@ -154,16 +154,19 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
             CLILogger.setLevel(Level.DEBUG);
         }
 
-        LOG.info("Running AdaptTemplatesCommand!, please wait...");
-
         Path cobigenTemplatesDirectory = null;
         if (customTemplatesLocation != null) {
+
+            LOG.info(
+                "CobiGen is attempting to download the latest CobiGen_Templates.jar and will extract it to a target directory of your choice. please wait...");
             customTemplatesLocation = ConfigurationUtils.preprocessInputFile(customTemplatesLocation);
             ConfigurationUtils.createConfigFile(customTemplatesLocation.toPath());
             // sets custom templates directory path from configuration file property
             cobigenTemplatesDirectory = ConfigurationUtils.getCustomTemplatesLocation();
             LOG.info("Creating custom templates folder at custom location @ {}", cobigenTemplatesDirectory);
         } else {
+            LOG.info(
+                "CobiGen is attempting to download the latest CobiGen_Templates.jar and will extract it to a default target directory. please wait...");
             // sets default templates directory path from CLI location
             cobigenTemplatesDirectory = ConfigurationUtils.getCobigenCliRootPath();
             ConfigurationUtils.createConfigFile(cobigenTemplatesDirectory);
