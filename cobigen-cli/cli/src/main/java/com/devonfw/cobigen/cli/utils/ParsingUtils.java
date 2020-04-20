@@ -199,8 +199,8 @@ public class ParsingUtils {
                 return true;
             }
         } catch (InvalidPathException e) {
-            LOG.debug("The path string " + System.getProperty("user.dir") + " + " + inputFile.toString()
-                + " cannot be converted to a path");
+            LOG.debug("The path string {} {} cannot be converted to a path", System.getProperty("user.dir"),
+                inputFile.toString());
         }
         return false;
     }
@@ -220,8 +220,8 @@ public class ParsingUtils {
         if (pomFile != null) {
             return pomFile.getParentFile();
         }
-        LOG.debug("Projec root could not be found, therefore we use your current input file location.");
-        LOG.debug("Using '" + inputFile.getParent() + "' as location where code will be generated");
+        LOG.debug("Project root could not be found, therefore we use your current input file location.");
+        LOG.debug("Using '{}' as location where code will be generated", inputFile.getParent());
         return inputFile.getAbsoluteFile().getParentFile();
     }
 
@@ -244,8 +244,8 @@ public class ParsingUtils {
                 String formattedCode = formatter.formatSource(unformattedCode);
                 Files.write(generatedFilePath, formattedCode.getBytes());
             } catch (IOException e) {
-                LOG.error("Unable to read or write the generated file " + generatedFilePath.toString()
-                    + " when trying to format it");
+                LOG.error("Unable to read or write the generated file {} when trying to format it",
+                    generatedFilePath.toString());
                 return;
             }
         }

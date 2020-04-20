@@ -99,8 +99,8 @@ public class PluginUpdateUtil {
             conn.setRequestMethod("GET");
             conn.connect();
         } catch (IOException e) {
-            LOG.error(
-                "Not able to initialize connection to Maven Central. Please check your connection and try again.");
+            LOG.error("Not able to initialize connection to Maven Central. Please check your connection and try again.",
+                e);
         }
         return conn;
     }

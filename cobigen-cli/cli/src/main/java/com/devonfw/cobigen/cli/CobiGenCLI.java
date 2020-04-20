@@ -39,7 +39,7 @@ public class CobiGenCLI {
     public static void main(String... args) {
 
         CLILogger.layoutLogger();
-        LOG.debug("Current working directory: " + System.getProperty("user.dir"));
+        LOG.debug("Current working directory: {}", System.getProperty("user.dir"));
         if (commandLine.execute(args) == 0) {
             LOG.debug("Commands were executed correctly");
         }

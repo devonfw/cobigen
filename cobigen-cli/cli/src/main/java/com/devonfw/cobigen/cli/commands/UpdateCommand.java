@@ -133,7 +133,7 @@ public class UpdateCommand implements Callable<Integer> {
                         updatePluginVersions.put(lclDependencies.getArtifactId(), centralVersionValues[ver]);
                         listOfArtifacts.put(count, requiresUpdate);
                         // Print the dependecy need to update
-                        LOG.info("(" + count + ") " + requiresUpdate + ", " + lclDependencies.getVersion());
+                        LOG.info("({}) {}, {}", count, requiresUpdate, lclDependencies.getVersion());
                         break;
                     }
                 }
@@ -188,7 +188,7 @@ public class UpdateCommand implements Callable<Integer> {
                 } else {
                     // Updating selected plugin
                     String plugin = listOfArtifacts.get(selectedArtifactNumber);
-                    LOG.info("(" + selectedArtifactNumber + ") " + plugin);
+                    LOG.info("({}) {}", selectedArtifactNumber, plugin);
                     for (Dependency selectedDependencies : localPomDependencies) {
                         if ((plugin).equals(selectedDependencies.getArtifactId())) {
                             selectedDependencies.setVersion(centralMavenVersionList.get(index));

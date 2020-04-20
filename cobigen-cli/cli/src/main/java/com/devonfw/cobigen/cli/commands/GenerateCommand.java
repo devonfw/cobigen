@@ -211,7 +211,7 @@ public class GenerateCommand implements Callable<Integer> {
                 }
 
             } catch (InputReaderException e) {
-                LOG.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
+                LOG.error("Invalid input for CobiGen, please check your input file '{}'", inputFile.toString());
 
             }
 
@@ -257,18 +257,19 @@ public class GenerateCommand implements Callable<Integer> {
             inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
             // Input file can be: C:\folder\input.java
             if (inputFile.exists() == false) {
-                LOG.debug("We could not find input file: " + inputFile.getAbsolutePath()
-                    + " . But we will keep trying, maybe you are using relative paths");
+                LOG.debug(
+                    "We could not find input file: {}. But we will keep trying, maybe you are using relative paths",
+                    inputFile.getAbsolutePath());
 
                 // Input file can be: folder\input.java. We should use current working directory
                 if (ParsingUtils.parseRelativePath(inputFiles, inputFile, index) == false) {
-                    LOG.error("Your <inputFile> '" + inputFile.toString() + "' has not been found");
+                    LOG.error("Your <inputFile> '{}' has not been found", inputFile.toString());
                     return false;
                 }
             }
             if (inputFile.isDirectory()) {
-                LOG.error("Your input file: " + inputFile.getAbsolutePath()
-                    + " is a directory. CobiGen cannot understand that. Please use files.");
+                LOG.error("Your input file: {} is a directory. CobiGen cannot understand that. Please use files.",
+                    inputFile.getAbsolutePath());
                 return false;
             }
         }
@@ -339,11 +340,11 @@ public class GenerateCommand implements Callable<Integer> {
             GenerationReportTo report = null;
 
             if (!isIncrements) {
-                LOG.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
+                LOG.info("Generating templates for input '{}', this can take a while...", inputFile.getName());
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
                     templateFolder);
             } else {
-                LOG.info("Generating increments for input '" + inputFile.getName() + "', this can take a while...");
+                LOG.info("Generating increments for input '{}, this can take a while...", inputFile.getName());
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
                     templateFolder);
             }
@@ -368,10 +369,10 @@ public class GenerateCommand implements Callable<Integer> {
      *            project where the code will be generated to
      */
     private void setOutputRootPath(File inputProject) {
-        LOG.info("As you did not specify where the code will be generated, we will use the project of your current"
-            + " Input file.");
+        LOG.info(
+            "As you did not specify where the code will be generated, we will use the project of your current Input file.");
 
-        LOG.debug("Generating to: " + inputProject.getAbsolutePath());
+        LOG.debug("Generating to: {}", inputProject.getAbsolutePath());
 
         outputRootPath = inputProject;
     }
@@ -428,11 +429,12 @@ public class GenerateCommand implements Callable<Integer> {
                         : ((TemplateTo) matching.get(index)).getId();
                     LOG.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
-                    LOG.error("The " + artifactType + " number you have specified is out of bounds!");
+                    LOG.error("The {} number you have specified is out of bounds!", artifactType);
                     System.exit(1);
                 } catch (NumberFormatException e) {
-                    LOG.error("Error parsing your input. You need to specify " + artifactType
-                        + "s using numbers separated by comma (2,5,6).");
+                    LOG.error(
+                        "Error parsing your input. You need to specify {}s using numbers separated by comma (2,5,6).",
+                        artifactType);
                     System.exit(1);
                 }
             }
@@ -461,7 +463,7 @@ public class GenerateCommand implements Callable<Integer> {
                     String artifactDescription =
                         isIncrements ? ((IncrementTo) possibleArtifacts.get(0)).getDescription()
                             : ((TemplateTo) possibleArtifacts.get(0)).getId();
-                    LOG.info("Exact match found: " + artifactDescription + ".");
+                    LOG.info("Exact match found: {}.", artifactDescription);
                     userSelection.add(possibleArtifacts.get(0));
                     return userSelection;
                 } else if (possibleArtifacts.size() < 1) {
@@ -496,7 +498,7 @@ public class GenerateCommand implements Callable<Integer> {
     private void printFoundArtifacts(ArrayList<GenerableArtifact> possibleArtifacts, Boolean isIncrements,
         String artifactType, ArrayList<String> userInputIncrements) {
         if (userInputIncrements != null) {
-            LOG.info("Here are the " + artifactType + "s that may match your search.");
+            LOG.info("Here are the {}s that may match your search.", artifactType);
         }
         LOG.info("(0) " + "All");
         for (GenerableArtifact artifact : possibleArtifacts) {
@@ -504,7 +506,7 @@ public class GenerateCommand implements Callable<Integer> {
                 isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
             LOG.info("(" + (possibleArtifacts.indexOf(artifact) + 1) + ") " + artifactDescription);
         }
-        LOG.info("Please enter the number(s) of " + artifactType + "(s) that you want to generate separated by comma.");
+        LOG.info("Please enter the number(s) of {}(s) that you want to generate separated by comma.", artifactType);
     }
 
     /**
@@ -531,8 +533,8 @@ public class GenerateCommand implements Callable<Integer> {
                     userSelection.add(currentArtifact);
                 }
             } catch (NumberFormatException e) {
-                LOG.error("Error parsing your input. You need to specify " + artifactType
-                    + "s using numbers separated by comma (2,5,6).");
+                LOG.error("Error parsing your input. You need to specify {}s using numbers separated by comma (2,5,6).",
+                    artifactType);
                 System.exit(1);
 
             } catch (ArrayIndexOutOfBoundsException e) {

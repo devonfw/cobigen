@@ -42,8 +42,8 @@ public final class ValidationUtils {
         }
 
         if (!inputFile.canRead()) {
-            LOG.error("The input file " + inputFile.getAbsolutePath()
-                + " cannot be read. Please check file permissions on the file");
+            LOG.error("The input file '{}' cannot be read. Please check file permissions on the file",
+                inputFile.getAbsolutePath());
             return false;
         }
         return true;
@@ -138,7 +138,7 @@ public final class ValidationUtils {
         if (outputRootPath == null || outputRootPath.exists()) {
             return true;
         } else {
-            LOG.error("Your <outputRootPath> does not exist, please use a valid path.");
+            LOG.error("Your <outputRootPath> '{}' does not exist, please use a valid path.", outputRootPath);
             return false;
         }
     }
@@ -152,7 +152,7 @@ public final class ValidationUtils {
     public static Boolean checkGenerationReport(GenerationReportTo report) {
 
         for (String warning : report.getWarnings()) {
-            LOG.debug("Warning: " + warning);
+            LOG.debug("Warning: {}", warning);
         }
 
         if (report.getErrors() == null || report.getErrors().isEmpty()) {
@@ -178,8 +178,9 @@ public final class ValidationUtils {
      *            true when input file is OpenAPI
      */
     public static void printNoTriggersMatched(File inputFile, Boolean isJavaInput, Boolean isOpenApiInput) {
-        LOG.error("Your input file '" + inputFile.getName()
-            + "' is not valid as input for any generation purpose. It does not match any trigger.");
+        LOG.error(
+            "Your input file '{}' is not valid as input for any generation purpose. It does not match any trigger.",
+            inputFile.getName());
         if (isJavaInput) {
             LOG.error("Check that your Java input file is following devon4j naming convention. "
                 + "Explained on https://github.com/devonfw/devon4j/wiki/coding-conventions");
