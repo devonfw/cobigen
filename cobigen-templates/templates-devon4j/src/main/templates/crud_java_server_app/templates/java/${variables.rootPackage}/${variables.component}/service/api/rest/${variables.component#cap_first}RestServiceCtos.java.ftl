@@ -17,14 +17,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-<#assign compositeIdVar = false>
-<#list pojo.fields as field>
-	<#if field.type?starts_with("Composite")>
-		<#assign compositeIdVar = true>
-		<#assign compositeIdTypeVar = field.type>
-	</#if>
-</#list>
-<#if compositeIdVar = true>
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>
 
@@ -44,7 +38,7 @@ public interface ${variables.component?cap_first}RestService {
   */
   @GET
   @Path("/${variables.entityName?lower_case}/cto/{id}/")
-  public ${variables.entityName}Cto get${variables.entityName}Cto(@PathParam("id") <#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id);
+  public ${variables.entityName}Cto get${variables.entityName}Cto(@PathParam("id") <#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if> id);
 
   /**
    * Delegates to {@link ${variables.component?cap_first}#find${variables.entityName}Ctos}.

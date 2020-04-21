@@ -11,7 +11,6 @@
     <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.entityName}SearchCriteriaTo.java" mergeStrategy="javamerge"/>    
     <templateExtension ref="AbstractSearchCriteriaTo.java" mergeStrategy="javamerge"/>
-    <templateExtension ref="ApplicationComposedKeyEntity.java" destinationPath="../api/src/main/java/${variables.rootPackage}/general/common/api/ApplicationComposedKeyEntity.java" mergeStrategy="javamerge"/>
 
     <templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge"/>
     <templateExtension ref="${variables.component#cap_first}RestService.java" mergeStrategy="javamerge"/>
@@ -43,9 +42,6 @@
       <templateRef ref="${variables.entityName}Eto.java"/>
       <templateRef ref="${variables.entityName}SearchCriteriaTo.java"/>
     </increment>
-    <increment name="tos_composedkeys" description="TO's (ComposedKey)">
-      <templateRef ref="AbstractComposedKeyEto.java"/>
-    </increment>
     <increment name="ctos" description="CTO's">
       <templateRef ref="${variables.entityName}Cto.java"/>
     </increment>
@@ -61,10 +57,6 @@
       <templateRef ref="${variables.entityName}Entity.java"/>
       <templateRef ref="${variables.entityName}.java"/>
     </increment>
-    <increment name="dataaccess_infrastructure_composedkey" description="Entity infrastructure (ComposedKey)">
-      <templateRef ref="ApplicationComposedKeyPersistenceEntity.java"/>
-      <templateRef ref="ApplicationComposedKeyEntity.java"  />
-    </increment>
     <increment name="rest_service_impl" description="CRUD REST services">
       <templateRef ref="AbstractBeanMapperSupport.java"/>
       <templateRef ref="AbstractComponentFacade.java"/>
@@ -76,7 +68,7 @@
       <templateRef ref="AbstractComponentFacade.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceImplCtos.java"/>
       <templateRef ref="${variables.component#cap_first}RestServiceCtos.java"/>
-    </increment> 
+    </increment>
     <!-- <increment name="soap_service_impl" description="CRUD SOAP services">
       <templateRef ref="ServiceConfig.java"/> 
       <templateRef ref="WebApplicationContextLocator.java"/>

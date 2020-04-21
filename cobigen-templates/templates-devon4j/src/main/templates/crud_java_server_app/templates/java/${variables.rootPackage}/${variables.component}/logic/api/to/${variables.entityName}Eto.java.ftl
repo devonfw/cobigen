@@ -8,21 +8,14 @@ import ${variables.rootPackage}.${variables.component}.common.api.${variables.en
 import java.util.List;
 import java.util.Set;
 
-
-<#assign compositeIdVar = false>
-<#list pojo.fields as field>
-	<#if field.type?starts_with("Composite")>
-		<#assign compositeIdVar = true>
-		<#assign compositeIdTypeVar = field.type>
-	</#if>
-</#list>
-<#if compositeIdVar = true>
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>
 /**
  * Entity transport object of ${variables.entityName}
  */
-public class ${variables.entityName}Eto extends <#if compositeIdVar = true>AbstractComposedKeyEto<${compositeIdTypeVar}><#elseif pojo.extendedType.canonicalName=="java.lang.Object" || pojo.extendedType.package!=pojo.package || pojo.extendedType.name == "ApplicationPersistenceEntity">AbstractEto<#else>${pojo.extendedType.name?replace("Entity","Eto")}</#if> implements ${variables.entityName} { 
+public class ${variables.entityName}Eto extends <#if compositeIdTypeVar!="null">AbstractComposedKeyEto<${compositeIdTypeVar}><#elseif pojo.extendedType.canonicalName=="java.lang.Object" || pojo.extendedType.package!=pojo.package || pojo.extendedType.name == "ApplicationPersistenceEntity">AbstractEto<#else>${pojo.extendedType.name?replace("Entity","Eto")}</#if> implements ${variables.entityName} { 
 
 
 	private static final long serialVersionUID = 1L;
