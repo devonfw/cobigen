@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+    <trigger id="external_incrementref" type="mockplugin" templateFolder="valid_external_incrementref">
+        <matcher type="fqn" value="Whatever is still matched">
+        </matcher>
+    </trigger>
+    <trigger id="valid_increment_composition" type="mockplugin" templateFolder="valid_increment_composition">
+        <matcher type="invalid" value="Whatever is still not matched">
+        </matcher>
+    </trigger>
+</contextConfiguration>
