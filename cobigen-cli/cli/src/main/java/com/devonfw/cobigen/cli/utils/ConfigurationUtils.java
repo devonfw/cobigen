@@ -70,7 +70,7 @@ public class ConfigurationUtils {
             File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             rootCLIPath = locationCLI.getParentFile().toPath();
         } catch (URISyntaxException e) {
-            LOG.error("An error occured while building the URI of the CLI location {}", e);
+            LOG.error("An URISyntaxException occured while building the URI of the CLI location", e);
         }
         return rootCLIPath;
     }
