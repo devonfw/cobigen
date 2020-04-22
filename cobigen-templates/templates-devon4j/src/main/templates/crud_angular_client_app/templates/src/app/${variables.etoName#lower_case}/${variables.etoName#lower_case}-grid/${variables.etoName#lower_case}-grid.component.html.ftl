@@ -47,6 +47,7 @@
               <mat-form-field color="accent">
                 <input
                   matInput
+				  <#if JavaUtil.getAngularType(field.type) == 'number'>type="number"</#if>
                   placeholder="${field.name?cap_first}"
                   [(ngModel)]="searchTerms.${field.name?uncap_first}"
                   name="${field.name?uncap_first}"
