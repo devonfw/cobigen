@@ -6,14 +6,12 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -211,7 +209,7 @@ public class TemplatesClassloaderUtil {
             URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
 
             // Make sure to create file system for jar file
-            FileSystem jarfs = FileSystems.newFileSystem(jarUri, Collections.EMPTY_MAP);
+            FileSystem jarfs = FileSystemUtil.getOrCreateFileSystem(jarUri);
 
             foundClasses = walkJarFile(jarUri, jarfs);
         } catch (IOException e) {
