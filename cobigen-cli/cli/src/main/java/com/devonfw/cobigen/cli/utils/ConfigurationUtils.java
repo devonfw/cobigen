@@ -78,9 +78,9 @@ public class ConfigurationUtils {
     /**
      * Checks if custom templates location path exists and either returns the path of the default location
      * next to the CLI or the custom templates location defined in the configuration
-     * @return File of Cobigen templates folder
+     * @return Path of Cobigen templates folder
      */
-    public static File getCobigenTemplatesFolderFile() {
+    public static Path getCobigenTemplatesFolderPath() {
         Path pathForCobigenTemplates;
 
         Path customTemplatesLocation = getCustomTemplatesLocation();
@@ -90,9 +90,9 @@ public class ConfigurationUtils {
             pathForCobigenTemplates = getCobigenCliRootPath();
         }
 
-        File cobigenTemplatesFolder = null;
+        Path cobigenTemplatesFolder = null;
         if (pathForCobigenTemplates != null) {
-            cobigenTemplatesFolder = pathForCobigenTemplates.resolve(COBIGEN_TEMPLATES).toFile();
+            cobigenTemplatesFolder = pathForCobigenTemplates.resolve(COBIGEN_TEMPLATES);
         }
 
         return cobigenTemplatesFolder;
@@ -105,12 +105,12 @@ public class ConfigurationUtils {
 
         Path pathForCobigenTemplates = getCustomTemplatesLocation();
 
-        File cobigenTemplatesFolder = null;
+        Path cobigenTemplatesFolder = null;
         if (pathForCobigenTemplates != null) {
-            cobigenTemplatesFolder = pathForCobigenTemplates.resolve(COBIGEN_TEMPLATES).toFile();
+            cobigenTemplatesFolder = pathForCobigenTemplates.resolve(COBIGEN_TEMPLATES);
         }
 
-        if (pathForCobigenTemplates != null && !Files.exists(cobigenTemplatesFolder.toPath())) {
+        if (pathForCobigenTemplates != null && !Files.exists(cobigenTemplatesFolder)) {
             LOG.info("Please check your configuration file as no templates folder was found at the provided path!");
             return false;
         }

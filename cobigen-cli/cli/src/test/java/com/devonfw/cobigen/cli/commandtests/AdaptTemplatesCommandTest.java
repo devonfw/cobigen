@@ -1,11 +1,13 @@
 package com.devonfw.cobigen.cli.commandtests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
@@ -13,10 +15,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.devonfw.cobigen.cli.CobiGenCLI;
+import com.devonfw.cobigen.cli.commands.CobiGenCommand;
 import com.devonfw.cobigen.cli.utils.ConfigurationUtils;
 import com.ea.agentloader.AgentLoader;
 
 import classloader.Agent;
+import picocli.CommandLine;
 
 /**
  * Tests the usage of the adapt-templates command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true
@@ -63,16 +67,16 @@ public class AdaptTemplatesCommandTest {
     @Test
     public void customTemplatesLocationTest() {
 
-        File outputRootPath = new File(testFileRootPath + "generatedcode/root");
+        Path outputRootPath = Paths.get(testFileRootPath).resolve("generatedcode/root").toAbsolutePath();
 
         String args[] = new String[3];
         args[0] = "adapt-templates";
         args[1] = "--custom-location";
-        args[2] = outputRootPath.getAbsolutePath();
+        args[2] = outputRootPath.toString();
 
         CobiGenCLI.main(args);
 
-        Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderFile().toPath();
+        Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderPath();
 
         assertTrue(Files.exists(cobigenTemplatesFolderPath));
 
@@ -82,6 +86,21 @@ public class AdaptTemplatesCommandTest {
         // If you want to remove the generated files
         AdaptTemplatesCommandTest.deleteGeneratedFiles(generatedFilesList);
         generatedFilesList.clear();
+    }
+
+    /**
+     * Checks if adapt-templates command throws an error if the input path is faulty/not existing
+     */
+    @Test
+    public void customTemplateLocationInvalidInputThrowsErrorTest() {
+
+        final CommandLine commandLine = new CommandLine(new CobiGenCommand());
+        String args[] = new String[3];
+        args[0] = "adapt-templates";
+        args[1] = "--custom-location";
+        args[2] = "invalid/path/to/test";
+
+        assertEquals(1, commandLine.execute(args));
     }
 
     /**

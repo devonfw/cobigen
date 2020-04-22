@@ -118,31 +118,30 @@ public class GenerateCommand implements Callable<Integer> {
             CLILogger.setLevel(Level.DEBUG);
         }
 
-        // TODO: janv_capgemini improve that
-        Path templateFolder = null;
-        if (ConfigurationUtils.getCobigenTemplatesFolderFile() != null) {
-            templateFolder = ConfigurationUtils.getCobigenTemplatesFolderFile().toPath();
-        }
-
         if (areArgumentsValid()) {
             LOG.debug("Input files and output root path confirmed to be valid.");
             CobiGen cg = cobigenUtils.initializeCobiGen();
+
+            // TODO: janv_capgemini improve that
+            Path templateFolder = null;
+            if (ConfigurationUtils.getCobigenTemplatesFolderPath() != null) {
+                templateFolder = ConfigurationUtils.getCobigenTemplatesFolderPath();
+            }
+
+            ClassLoader inputClassLoader;
+
+            if (templateFolder != null) {
+                inputClassLoader = URLClassLoader.newInstance(new URL[] { templateFolder.toUri().toURL() },
+                    getClass().getClassLoader());
+            } else {
+                inputClassLoader = getClass().getClassLoader();
+            }
 
             if (increments == null && templates != null) {
                 // User specified only templates, not increments
                 List<TemplateTo> finalTemplates = null;
                 if (inputFiles.size() > 1) {
                     finalTemplates = toTemplateTo(preprocess(cg, TemplateTo.class));
-                }
-
-                ClassLoader inputClassLoader;
-
-                // TODO: janv_capgemini check that
-                if (templateFolder != null) {
-                    inputClassLoader = URLClassLoader.newInstance(new URL[] { templateFolder.toUri().toURL() },
-                        getClass().getClassLoader());
-                } else {
-                    inputClassLoader = getClass().getClassLoader();
                 }
 
                 for (File inputFile : inputFiles) {
@@ -155,7 +154,7 @@ public class GenerateCommand implements Callable<Integer> {
                 if (inputFiles.size() > 1) {
                     finalIncrements = toIncrementTo(preprocess(cg, IncrementTo.class));
                 }
-                ClassLoader inputClassLoader = getClass().getClassLoader();
+
                 for (File inputFile : inputFiles) {
                     generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg, inputClassLoader,
                         IncrementTo.class, templateFolder);

@@ -50,7 +50,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
      */
     @Option(names = { "--custom-location", "-cl" }, arity = "0..1",
         description = MessagesConstants.CUSTOM_LOCATION_OPTION_DESCRIPTION)
-    private File customTemplatesLocation = null;
+    private Path customTemplatesLocation = null;
 
     /**
      * Logger to output useful information to the user
@@ -159,8 +159,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
 
             LOG.info(
                 "CobiGen is attempting to download the latest CobiGen_Templates.jar and will extract it to a target directory of your choice. please wait...");
-            customTemplatesLocation = ConfigurationUtils.preprocessInputFile(customTemplatesLocation);
-            ConfigurationUtils.createConfigFile(customTemplatesLocation.toPath());
+            ConfigurationUtils.createConfigFile(customTemplatesLocation);
             // sets custom templates directory path from configuration file property
             cobigenTemplatesDirectory = ConfigurationUtils.getCustomTemplatesLocation();
             LOG.info("Creating custom templates folder at custom location @ {}", cobigenTemplatesDirectory);
@@ -177,11 +176,11 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
             processJar(cobigenTemplatesDirectory);
         } else {
             LOG.error("Could not find target directory to extract templates @ {}", cobigenTemplatesDirectory);
-            return 0;
+            return 1;
         }
 
         LOG.info("Successfully created custom templates folder @ {}",
             cobigenTemplatesDirectory.resolve(ConfigurationUtils.COBIGEN_TEMPLATES));
-        return 1;
+        return 0;
     }
 }

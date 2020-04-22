@@ -79,8 +79,8 @@ public class CobiGenUtils {
         try {
             registerPlugins();
             templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-            File cobigenTemplatesFolderFile = ConfigurationUtils.getCobigenTemplatesFolderFile();
-            Path templateFolder = cobigenTemplatesFolderFile.toPath();
+            Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderPath();
+            Path templateFolder = cobigenTemplatesFolderPath;
             boolean templatesFolderExists = Files.exists(templateFolder);
             if (templatesFolderExists) {
                 cg = CobiGenFactory.create(templateFolder.toUri());
