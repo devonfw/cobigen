@@ -7,11 +7,7 @@ import { ${variables.etoName?cap_first}GridComponent } from './${variables.etoNa
 import { ${variables.etoName?cap_first}RoutingModule } from './${variables.etoName?lower_case}-routing.module';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    CoreModule,
-    TranslateModule,
-  ],
+  imports: [ CommonModule, CoreModule, ${variables.etoName?cap_first}RoutingModule ],
   declarations: [
     ${variables.etoName?cap_first}GridComponent,
     ${variables.etoName?cap_first}DialogComponent,
@@ -19,7 +15,7 @@ import { ${variables.etoName?cap_first}RoutingModule } from './${variables.etoNa
   ],
   entryComponents: [
     ${variables.etoName?cap_first}DialogComponent,
-    ${variables.etoName?cap_first}AlertComponent,
+    ${variables.etoName?cap_first}AlertComponent
   ],
   providers: [],
 })

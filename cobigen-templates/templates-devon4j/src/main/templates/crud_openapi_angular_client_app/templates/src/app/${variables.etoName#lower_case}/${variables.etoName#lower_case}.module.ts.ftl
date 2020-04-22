@@ -12,7 +12,6 @@ import { ${variables.etoName?cap_first}AlertComponent } from './${variables.etoN
   imports: [
     CommonModule,
     CoreModule,
-    TranslateModule,
   ],
   declarations: [
     ${variables.etoName?cap_first}GridComponent,
