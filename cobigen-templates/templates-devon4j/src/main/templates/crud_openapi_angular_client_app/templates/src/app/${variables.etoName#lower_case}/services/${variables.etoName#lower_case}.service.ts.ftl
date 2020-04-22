@@ -23,7 +23,7 @@ export class ${variables.etoName?cap_first}Service {
         pageNumber: page,
         sort: sort,
       },
-    <#list pojo.fields as field>
+    <#list model.properties as field>
       ${field.name?uncap_first}: searchTerms.${field.name?uncap_first},
     </#list>
     };
@@ -34,7 +34,7 @@ export class ${variables.etoName?cap_first}Service {
     const obj: any = {
       id: data.id,
       modificationCounter: data.modificationCounter,
-    <#list pojo.fields as field>
+    <#list model.properties as field>
       ${field.name?uncap_first}: data.${field.name?uncap_first},
     </#list>
     };

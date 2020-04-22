@@ -30,16 +30,16 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
 
   data: any = [];
   columns: any[] = [
-  <#list pojo.fields as field>
+<#list model.properties as property>
     {
-      name: '${field.name?uncap_first}',
-      label: '${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${field.name?uncap_first}',
+      name: '${property.name?uncap_first}',
+      label: '${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${property.name?uncap_first}',
     },
   </#list>
   ];
   displayedColumns: string[] = [
     'select',
-    <#list pojo.fields as field>
+    <#list model.properties as field>
       '${field.name?uncap_first}',
     </#list>
     ];
@@ -50,7 +50,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   dialogRef: MatDialogRef<${variables.etoName?cap_first}DialogComponent>;
   totalItems: number;
   searchTerms: any = {
-  <#list pojo.fields as field>
+  <#list model.properties as field>
     ${field.name?uncap_first}: undefined,
   </#list>
   };

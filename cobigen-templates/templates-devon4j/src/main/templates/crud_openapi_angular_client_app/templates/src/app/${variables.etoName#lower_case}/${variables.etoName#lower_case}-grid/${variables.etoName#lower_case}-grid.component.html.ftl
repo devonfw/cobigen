@@ -43,26 +43,27 @@
           </mat-expansion-panel-header>
           <div class="filter-form-fields">
             <div class="filter-form-fields-mobile justify-space-around">
-			<#list pojo.fields as field>
+			<#list model.properties as property>
               <mat-form-field color="accent">
                 <input
                   matInput
-                  placeholder="${field.name?cap_first}"
-                  [(ngModel)]="searchTerms.${field.name?uncap_first}"
-                  name="${field.name?uncap_first}"
+				  <#if JavaUtil.getAngularType(property.type) == 'number'>type="number"</#if>
+                  placeholder="${property.name?cap_first}"
+                  [(ngModel)]="searchTerms.${property.name?uncap_first}"
+                  name="${property.name?uncap_first}"
                 />
               </mat-form-field>
 		 </#list>
 
             </div>
             <div class="filter-form-fields-desktop justify-space-around">
-		     <#list pojo.fields as field>
+		     <#list model.properties as property>
               <mat-form-field color="accent">
                 <input
                   matInput
-                  placeholder="${field.name?cap_first}"
-                  [(ngModel)]="searchTerms.${field.name?uncap_first}"
-                  name="${field.name?uncap_first}"
+                  placeholder="${property.name?cap_first}"
+                  [(ngModel)]="searchTerms.${property.name?uncap_first}"
+                  name="${property.name?uncap_first}"
                 />
               </mat-form-field>
             </#list>
@@ -99,8 +100,7 @@
         >
           <!-- Checkbox Column -->
           <ng-container matColumnDef="select">
-            <th mat-header-cell *matHeaderCellDef style="width:42px;">
-            </th>
+            <th mat-header-cell *matHeaderCellDef style="width:42px;"></th>
             <td mat-cell *matCellDef="let row">
               <mat-checkbox
                 (click)="$event.stopPropagation()"
@@ -111,23 +111,23 @@
               </mat-checkbox>
             </td>
           </ng-container>
-          <#list pojo.fields as field>
-          <!-- ${field.name?capitalize} Column -->
-          <ng-container matColumnDef="${field.name?uncap_first}">
+          <#list model.properties as property>
+          <!-- ${property.name?capitalize} Column -->
+          <ng-container matColumnDef="${property.name?uncap_first}">
             <th
               mat-header-cell
               *matHeaderCellDef
               mat-sort-header
               style="width:197px;"
             >
-              {{ columns[${field?index}].label | transloco }}
+              {{ columns[${property?index}].label | transloco }}
             </th>
-            <td mat-cell *matCellDef="let element">{{ element.${field.name?uncap_first} }}</td>
+            <td mat-cell *matCellDef="let element">{{ element.${property.name?uncap_first} }}</td>
           </ng-container>
+		   </#list>
 
-          </#list>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
       <div
