@@ -2,45 +2,43 @@
 
 = CobiGen (Code-based incremental Generator)
 
-wiki clone job: image:https://api.travis-ci.com/devonfw/tools-cobigen.svg?branch=master[link="https://travis-ci.com/devonfw/tools-cobigen"] 
-
-image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=shield[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_shield"]
+image:https://travis-ci.com/devonfw/cobigen.svg?branch=master["Docs Sync Status", link="https://travis-ci.com/devonfw/cobigen"]
 
 |===
-| Component | Release
-| maven-plugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin]
-| templates-oasp4j | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j]
-| templates-oasp4js | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js]
-| core | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core]
-| javaplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin]
-| xmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin]
-| openapiplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin]
-| tsplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tsplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tsplugin]
-| jsonplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/jsonplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/jsonplugin]
-| propertyplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/propertyplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/propertyplugin]
-| htmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/htmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/htmlplugin]
-| textmerger | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/textmerger/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/textmerger]
-| tempeng-velocity | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-velocity/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-velocity]
-| tempeng-freemarker | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-freemarker/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-freemarker]
+| Component | Release | Build
+| maven-plugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/maven-plugin] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_mavenplugin["Build Status", link="https://travis-ci.com/devonfw/cobigen"] 
+| templates-devon4j | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4j] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=master["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| templates-devon4ng | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/templates-oasp4js] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=master["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| core | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/core] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_core["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| javaplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/javaplugin] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_javaplugin["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| xmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/xmlplugin] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_xmlplugin["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| openapiplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/openapiplugin] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_openapiplugin["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| tsplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tsplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tsplugin] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_tsplugin["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| jsonplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/jsonplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/jsonplugin] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_jsonplugin["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| propertyplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/propertyplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/propertyplugin] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_propertyplugin["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| htmlplugin | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/htmlplugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/htmlplugin] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_htmlmerger["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| textmerger | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/textmerger/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/textmerger] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_textmerger["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| tempeng-velocity | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-velocity/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-velocity] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_tempeng_velocity["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
+| tempeng-freemarker | image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-freemarker/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/tempeng-freemarker] | image:https://travis-ci.com/devonfw/cobigen.svg?branch=dev_tempeng_freemarker["Build Status", link="https://travis-ci.com/devonfw/cobigen"]
 |===
 
 
 == Usage
 
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage[OpenAPI Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/howto_ionic-client-generation[Ionic/Cordova Client Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/howto_angular-client-generation[Angular Client Generation]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-maven_configuration[Usage in Maven Builds]
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-core_configuration[Configuration of the Templates]
+* https://github.com/devonfw/cobigen/wiki/cobigen-eclipse_usage[Usage of the eclipse UI]
+* https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage[OpenAPI Generation]
+* https://github.com/devonfw/cobigen/wiki/howto_ionic-client-generation[Ionic/Cordova Client Generation]
+* https://github.com/devonfw/cobigen/wiki/howto_angular-client-generation[Angular Client Generation]
+* https://github.com/devonfw/cobigen/wiki/cobigen-maven_configuration[Usage in Maven Builds]
+* https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration[Configuration of the Templates]
 
 ==  Installation
 
-* https://github.com/devonfw/tools-cobigen/wiki/cobigen-eclipse_installation[For eclipse users]
+* https://github.com/devonfw/cobigen/wiki/cobigen-eclipse_installation[For eclipse users]
 
 ==  Architecture
 
-https://github.com/devonfw/tools-cobigen/wiki#architecture[CobiGen is build as an extensible framework for incremental code generation...]
+https://github.com/devonfw/cobigen/wiki#architecture[CobiGen is build as an extensible framework for incremental code generation...]
 
 == Repository Organization
 
@@ -49,19 +47,17 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 |===
 | Top-level folder | Description
 
-| `cobigen-documentation`      | Contains git submodules for building and tagging the wiki. 
+| `cobigen-cli` | Contains the cobigen command line interface implementation.
 
-| `cobigen-eclipse`      | Contains the cobigen eclipse bundles. The implementation of the plug-in is driven in `cobigen-eclipse/cobigen-eclipse` folder.  
+| `cobigen-eclipse` | Contains the cobigen eclipse bundles. The implementation of the plug-in is driven in `cobigen-eclipse/cobigen-eclipse` folder.  
 
 | `cobigen-maven` | Contains the maven plug-in implementation.     
-
-| `cobigen-review` | Project to be used for https://github.com/AgileReview-Project/AgileReview-Legacy-Plugin[AgileReview] 
 
 | `cobigen-templates` | Contains template sets for different architectures 
 
 | `cobigen` | Containts the code implementation of CobiGen as well as all plug-in implementations besides the eclipse plug-in and maven plug-in 
 
-| `ide-settings` | Contains the shared settings processed by the https://github.com/oasp/oasp4j-ide[oasp4j-ide]
+| `ide-settings` | Contains the shared settings processed by the https://github.com/devonfw/ide[devonfw-ide]
 |===
 
 == Build
@@ -85,10 +81,10 @@ mvn clean package bundle:bundle -Pp2-bundle
 # Uses the created bundle and builds a p2 update site for it. Do NOT use clean
 mvn install bundle:bundle -Pp2-bundle,p2-build-photon,p2-build-experimental p2:site
 # Uploades the p2 update site to the experimental repository. Do NOT use clean
-mvn deploy -Pp2-build-photon,p2-build-experimental -Dp2.upload=experimental
+mvn deploy -Pp2-build-photon,p2-build-experimental -Dbintray.repository=cobigen.p2.experimental
 ```
 
-| `cobigen-eclipse/` | ECLIPSE | `mvn clean deploy -Pp2-build-photon,p2-build-experimental -Dp2.upload=experimental`
+| `cobigen-eclipse/` | ECLIPSE | `mvn clean deploy -Pp2-build-photon,p2-build-experimental -Dbintray.repository=cobigen.p2.experimental`
 |===
 
 == Debugging with Maven
@@ -106,7 +102,10 @@ To debug Maven tests follow https://doc.nuxeo.com/corg/how-to-debug-a-test-run-w
 
 == Contribute
 
-https://github.com/devonfw/tools-cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
+https://github.com/devonfw/cobigen/blob/master/.github/CONTRIBUTING.md[See the contribution guidelines]
 
 ## License
-image::https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen.svg?type=large[link="https://app.fossa.io/projects/git%2Bgithub.com%2Fdevonfw%2Ftools-cobigen?ref=badge_large"]
+
+The source code and maven bundles are released under https://github.com/devonfw/cobigen/blob/master/LICENSE.txt[APL 2.0]
+
+Eclipse bundles are released with respect to https://github.com/devonfw/cobigen/blob/master/cobigen/cobigen-htmlplugin/src/main/resources/META-INF/LICENSEP2BUNDLE.html[it's bundled OSS software licenses]

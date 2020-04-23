@@ -22,13 +22,18 @@
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
-      <version>3.0.0</version>
+      <version>3.0.1</version>
     </dependency>
 
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.0.0</version>
+      <version>6.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+      <version>6.0.0</version>
     </dependency>
   </dependencies>
 

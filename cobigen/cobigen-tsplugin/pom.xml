@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tsplugin</artifactId>
   <name>CobiGen - TypeScript Plug-in</name>
-  <version>2.3.3</version>
+  <version>2.4.2</version>
   <packaging>jar</packaging>
   <description>CobiGen - TypeScript Plug-in</description>
 
@@ -15,7 +15,7 @@
   <properties>
     <plugin.name>${project.artifactId}</plugin.name>
     <server.name>nestserver</server.name>
-    <server.version>1.1.1</server.version>
+    <server.version>1.1.2</server.version>
     <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
     <server.url.linux>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</server.url.linux>
     <server.url.macos>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-macos/-/cobigen-nestserver-macos-${server.version}.tgz</server.url.macos>
@@ -31,10 +31,9 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>5.4.0</version>
+      <version>[5.4.0,)</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -71,6 +70,7 @@
       <filtering>false</filtering>
       <excludes>
         <exclude>**/META-INF/externalservers/server.properties</exclude>
+        <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
       </excludes>
     </resource>
   </resources>

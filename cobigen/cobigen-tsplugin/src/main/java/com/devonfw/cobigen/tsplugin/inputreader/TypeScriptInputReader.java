@@ -8,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,10 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +25,10 @@ import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.to.InputFileTo;
 import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
 import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * TypeScript input reader that uses a server to read TypeScript code
@@ -101,25 +100,14 @@ public class TypeScriptInputReader implements InputReader {
     public boolean isValidInput(Object input) {
         String fileContents = null;
 
-        Path path;
+        Path path = null;
 
         if (input instanceof Path) {
             path = (Path) input;
         } else if (input instanceof File) {
             path = ((File) input).toPath();
-        }
-
-        else {
-            try {
-                // Input corresponds to the parsed file
-                Map<String, Object> mapModel = createModel(input);
-                mapModel = (Map<String, Object>) mapModel.get("model");
-                path = Paths.get(mapModel.get("path").toString());
-                return isValidInput(path);
-            } catch (NullPointerException e) {
-                return false;
-            }
-
+        } else {
+            return false;
         }
 
         if (serverIsNotDeployed) {
