@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
-import javax.xml.bind.annotation.XmlAnyElement;
+import java.beans.BeanProperty;
 
 public class TestClassWithAnnotations {
 
@@ -9,9 +9,8 @@ public class TestClassWithAnnotations {
     /**
      * Returns the field 'boolvalue'
      * @return value of boolvalue
-     * @author mbrunnli (05.12.2014)
      */
-    @XmlAnyElement(lax = true)
+    @BeanProperty(bound = true)
     public boolean isBoolvalue() {
         return boolvalue;
     }

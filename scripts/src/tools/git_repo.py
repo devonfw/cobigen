@@ -44,7 +44,7 @@ class GitRepo:
 
     def reset(self):
         if (self.__config.cleanup_silently or prompt_yesno_question(
-            'Should the repository and file system to be reset automatically?\nThis will reset the entire repository inlcuding latest commits to comply to remote.\nThis will also delete untrackted files!')):
+                'Should the repository and file system to be reset automatically?\nThis will reset the entire repository inlcuding latest commits to comply to remote.\nThis will also delete untrackted files!')):
             # arbitrary 20, but extensive enough to reset all hopefully
             log_info("Executing reset (git reset --hard HEAD~20)")
             self.__repo.git.reset('--hard', 'HEAD~20')
@@ -57,7 +57,10 @@ class GitRepo:
         if not self.is_working_copy_clean():
             log_error("Reset and cleanup did not work out. Other branches have local commits not yet pushed:")
             log_info("\n" + self.__list_unpushed_commits())
-            sys.exit()
+            if not prompt_yesno_question(
+                    "Something went wrong during cleanup. Please check if you can perform the cleanup on your own. Resume the script?"):
+                self.reset()
+                sys.exit()
 
     def checkout(self, branch_name):
         log_info("Checkout " + branch_name)
@@ -82,7 +85,7 @@ class GitRepo:
             return
 
         if (self.__config.test_run or self.__config.debug) and not prompt_yesno_question(
-            "[DEBUG] Changes will be pushed now. Continue?"):
+                "[DEBUG] Changes will be pushed now. Continue?"):
             self.reset()
             sys.exit()
         if self.__config.dry_run:
@@ -98,7 +101,7 @@ class GitRepo:
                 log_info("No file is changed, nothing to commit.")
             else:
                 if not prompt_yesno_question(
-                    "Something went wrong during pushing. Please check if you can perform pushing on your own. Resume the script?"):
+                        "Something went wrong during pushing. Please check if you can perform pushing on your own. Resume the script?"):
                     self.reset()
 
     def add(self, files: List[str], consider_as_build_folder_path: bool = True) -> None:
@@ -108,7 +111,7 @@ class GitRepo:
         else:
             files_to_add = files
 
-        self.__repo.index.add([i for i in files_to_add if self.__is_tracked_and_dirty(i)])
+        self.__repo.git.add(u=True)
 
     def merge(self, source: str, target: str) -> None:
         if self.__config.dry_run:
@@ -124,7 +127,7 @@ class GitRepo:
             log_info("Adapting automatically generated merge commit message to include issue no.")
             automatic_commit_message = self.__repo.git.execute("git log -1 --pretty=%B")
             if "Merge" in automatic_commit_message and str(
-                self.__config.github_issue_no) not in automatic_commit_message:
+                    self.__config.github_issue_no) not in automatic_commit_message:
                 self.__repo.git.execute('git commit --amend -m"#' + str(
                     self.__config.github_issue_no) + ' ' + automatic_commit_message + '"')
         except Exception as ex:
@@ -132,7 +135,7 @@ class GitRepo:
             if self.__config.debug:
                 print(ex)
             if not prompt_yesno_question(
-                "If there were conflicts you solved and committed, would you like to resume the script?"):
+                    "If there were conflicts you solved and committed, would you like to resume the script?"):
                 self.__repo.git.execute("git merge --abort")
                 self.reset()
                 sys.exit()
@@ -144,7 +147,7 @@ class GitRepo:
         log_info("Changing the " + self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl + " v" + self.__config.release_version
-        modified_file = os.path.join(self.__config.root_path,"documentation", self.__config.wiki_version_overview_page)
+        modified_file = os.path.join(self.__config.root_path, "documentation", self.__config.wiki_version_overview_page)
         with FileInput(modified_file,
                        inplace=True) as file:
             for line in file:
@@ -167,7 +170,7 @@ class GitRepo:
         if not self.is_working_copy_clean(True):
             log_error("Working copy is not clean!")
             if self.__config.cleanup_silently or prompt_yesno_question(
-                "Should I clean the repo for you? This will delete all untracked files and hardly reset the repository!"):
+                    "Should I clean the repo for you? This will delete all untracked files and hardly reset the repository!"):
                 self.reset()
             else:
                 log_info("Please cleanup your working copy first. Then run the script again.")
