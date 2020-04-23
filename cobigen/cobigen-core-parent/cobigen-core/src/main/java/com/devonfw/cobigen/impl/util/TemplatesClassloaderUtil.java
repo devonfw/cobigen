@@ -152,7 +152,7 @@ public class TemplatesClassloaderUtil {
      */
     private static List<Class<?>> resolveFromFolder(List<Class<?>> result, Path templateRoot,
         ClassLoader inputClassLoader) {
-        LOG.debug("Processing configuration folder " + templateRoot.toString());
+        LOG.debug("Processing configuration folder {}", templateRoot.toString());
         LOG.info("Searching for classes in configuration folder...");
         List<Path> foundPaths = new LinkedList<>();
 
@@ -168,7 +168,7 @@ public class TemplatesClassloaderUtil {
             while (it.hasNext()) {
                 Path next = it.next();
                 if (!templateRoot.relativize(next).startsWith("target/classes")) {
-                    LOG.info("    * Removed test class file {}", next);
+                    LOG.debug("    * Removed test class file {}", next);
                     it.remove();
                 }
             }
@@ -220,7 +220,7 @@ public class TemplatesClassloaderUtil {
                 try {
                     result.add(inputClassLoader.loadClass(className));
                 } catch (ClassNotFoundException e) {
-                    LOG.warn("Could not load " + className + " from classpath");
+                    LOG.warn("Could not load {} from classpath", className);
                     LOG.debug("Class was not found", e);
                 }
             }
@@ -255,7 +255,7 @@ public class TemplatesClassloaderUtil {
             public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                 // Log errors but do not throw an exception
                 LOG.warn("An IOException occurred while reading file on path {} with message: {}", file,
-                    exc.getMessage());
+                    LOG.isDebugEnabled() ? exc : null);
                 LOG.debug("An IOException occurred while reading file on path {} with message: {}", file,
                     LOG.isDebugEnabled() ? exc : null);
                 return FileVisitResult.CONTINUE;
@@ -298,7 +298,7 @@ public class TemplatesClassloaderUtil {
             public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                 // Log errors but do not throw an exception
                 LOG.warn("An IOException occurred while reading file on path {} with message: {}", file,
-                    exc.getMessage());
+                    LOG.isDebugEnabled() ? exc : null);
                 LOG.debug("An IOException occurred while reading file on path {} with message: {}", file,
                     LOG.isDebugEnabled() ? exc : null);
                 return FileVisitResult.CONTINUE;
