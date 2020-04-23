@@ -14,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.commands.CobiGenCommand;
 import com.devonfw.cobigen.cli.utils.ConfigurationUtils;
 import com.ea.agentloader.AgentLoader;
@@ -30,6 +29,11 @@ public class AdaptTemplatesCommandTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";
+
+    /**
+     * Commandline to pass arguments to
+     */
+    private final CommandLine commandLine = new CommandLine(new CobiGenCommand());
 
     /**
      * We need to dynamically load the Java agent before the tests. Note that Java 9 requires
@@ -52,7 +56,7 @@ public class AdaptTemplatesCommandTest {
         String args[] = new String[1];
         args[0] = "adapt-templates";
 
-        CobiGenCLI.main(args);
+        commandLine.execute(args);
 
         Path cobigenTemplatesFolderPath =
             ConfigurationUtils.getCobigenCliRootPath().resolve(ConfigurationUtils.COBIGEN_TEMPLATES);
@@ -74,7 +78,7 @@ public class AdaptTemplatesCommandTest {
         args[1] = "--custom-location";
         args[2] = outputRootPath.toString();
 
-        CobiGenCLI.main(args);
+        commandLine.execute(args);
 
         Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderPath();
 
@@ -94,7 +98,6 @@ public class AdaptTemplatesCommandTest {
     @Test
     public void customTemplateLocationInvalidInputThrowsErrorTest() {
 
-        final CommandLine commandLine = new CommandLine(new CobiGenCommand());
         String args[] = new String[3];
         args[0] = "adapt-templates";
         args[1] = "--custom-location";
