@@ -122,11 +122,7 @@ public class GenerateCommand implements Callable<Integer> {
             LOG.debug("Input files and output root path confirmed to be valid.");
             CobiGen cg = cobigenUtils.initializeCobiGen();
 
-            // TODO: janv_capgemini improve that
-            Path templateFolder = null;
-            if (ConfigurationUtils.getCobigenTemplatesFolderPath() != null) {
-                templateFolder = ConfigurationUtils.getCobigenTemplatesFolderPath();
-            }
+            Path templateFolder = ConfigurationUtils.getCobigenTemplatesFolderPath();
 
             ClassLoader inputClassLoader;
 
@@ -296,6 +292,8 @@ public class GenerateCommand implements Callable<Integer> {
      *            class type, specifies whether Templates or Increments should be preprocessed
      * @param classLoader
      *            a {@link ClassLoader}, containing the archive to load template utility classes from
+     * @param templateFolder
+     *            Path to load template utility classes from (root path of CobiGen templates)
      *
      */
     public void generate(File inputFile, File inputProject, List<? extends GenerableArtifact> finalTos, CobiGen cg,

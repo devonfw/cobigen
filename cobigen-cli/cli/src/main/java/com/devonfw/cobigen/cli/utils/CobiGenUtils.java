@@ -80,10 +80,9 @@ public class CobiGenUtils {
             registerPlugins();
             templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
             Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderPath();
-            Path templateFolder = cobigenTemplatesFolderPath;
-            boolean templatesFolderExists = Files.exists(templateFolder);
-            if (templatesFolderExists) {
-                cg = CobiGenFactory.create(templateFolder.toUri());
+
+            if (cobigenTemplatesFolderPath != null) {
+                cg = CobiGenFactory.create(cobigenTemplatesFolderPath.toUri());
             } else {
                 cg = CobiGenFactory.create(templatesJar.toURI());
             }
@@ -91,10 +90,10 @@ public class CobiGenUtils {
 
         } catch (InvalidConfigurationException e) {
             // if the context configuration is not valid
-            LOG.error("Invalid configuration of context ");
+            LOG.error("Invalid configuration of context", e);
         } catch (IOException e) {
             // If I/O operation failed then it will throw exception
-            LOG.error("I/O operation is failed ");
+            LOG.error("I/O operation is failed", e);
         }
 
         return cg;
