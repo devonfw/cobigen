@@ -16,7 +16,7 @@
     <templateExtension ref="environment.prod.ts" mergeStrategy="override"/>
     <templateExtension ref="nav-bar.component.html" mergeStrategy="html-ng*"/>
   	<templateExtension ref="header.component.ts" mergeStrategy="override"/>
-  	
+  	 <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
   	<templateExtension ref="${variables.etoName#lower_case}.model.ts" mergeStrategy="override"/>
     <templateExtension ref="datadetailstest.model.ts" mergeStrategy="override"/>
     <templateExtension ref="httpresponse.model.ts" mergeStrategy="override"/>
@@ -83,6 +83,7 @@
       <templateRef ref="selectors_index.ts"/>
       <templateRef ref="header.component.ts"/>
       <templateRef ref="nav-bar.component.html"/>
+      <templateRef ref="app-routing.module.ts"/>
     </increment>
   </increments>
 </templatesConfiguration>
