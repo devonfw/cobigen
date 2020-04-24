@@ -29,7 +29,7 @@ const routes: Routes = [
         path: '${variables.etoName?uncap_first}',
         canActivate: [AuthGuard],
         loadChildren: () =>
-          import('./${variables.etoName?uncap_first}/${variables.etoName?uncap_first}.module').then(
+          import('./${variables.etoName?lower_case}/${variables.etoName?lower_case}.module').then(
             m => m.${variables.etoName?cap_first}Module,
           ),
       },
