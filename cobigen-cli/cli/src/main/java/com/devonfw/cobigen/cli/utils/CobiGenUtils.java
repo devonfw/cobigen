@@ -6,25 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.jar.JarFile;
 
 import net.sf.mmm.code.impl.java.JavaContext;
@@ -41,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
@@ -77,121 +64,9 @@ public class CobiGenUtils {
     File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
 
     /**
-     * Declare utiClasses as List
-     */
-    List<Class<?>> utilClasses;
-
-    /**
-     * getter for templates utils classes
-     * @return list of UtilClasses
-     */
-    public List<Class<?>> getUtilClasses() {
-        return utilClasses;
-    }
-
-    /**
      * Whether the template dependency is given.
      */
     private boolean templateDependencyIsGiven = false;
-
-    /**
-     * Resolves all utilities classes, which have been defined in the templates jar.
-     * @param templatesJar
-     *            templates jar where we will try to find the list of classes
-     *
-     * @return the list of classes
-     *
-     *         if no generator configuration project exists
-     * @throws IOException
-     *             {@link IOException} occurred
-     */
-    List<Class<?>> resolveTemplateUtilClassesFromJar(File templatesJar) throws IOException {
-        final List<Class<?>> result = new LinkedList<>();
-        ClassLoader inputClassLoader =
-            URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
-        URL contextConfigurationLocation = inputClassLoader.getResource("context.xml");
-        if (contextConfigurationLocation == null
-            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
-            contextConfigurationLocation = inputClassLoader.getResource("src/main/templates/context.xml");
-            if (contextConfigurationLocation == null) {
-                throw new CobiGenRuntimeException("No context.xml could be found in the classpath!");
-            } else {
-
-                final Map<String, String> env = new HashMap<>();
-
-                String[] pathTemplate = contextConfigurationLocation.toString().split("!");
-                FileSystem fs;
-                try {
-                    fs = FileSystems.getFileSystem(URI.create(pathTemplate[0]));
-                } catch (FileSystemNotFoundException e) {
-                    fs = FileSystems.newFileSystem(URI.create(pathTemplate[0]), env);
-                }
-                final Path path = fs.getPath(pathTemplate[1]);
-
-                Paths.get(URI.create("file://" + path.toString())).getParent().getParent().getParent();
-
-            }
-        } else {
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-
-            URI uri = URI.create(contextConfigurationLocation.toString());
-            FileSystem fs;
-            try {
-                fs = FileSystems.getFileSystem(uri);
-            } catch (FileSystemNotFoundException e) {
-                fs = FileSystems.newFileSystem(uri, env);
-            }
-            Paths.get(uri);
-        }
-        logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
-        final List<String> foundClasses = new LinkedList<>();
-        if (contextConfigurationLocation.toString().startsWith("jar")) {
-            logger.debug("Processing configuration archive " + contextConfigurationLocation.toString());
-            try {
-                // Get the URI of the jar from the URL of the contained context.xml
-                URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
-                FileSystem jarfs = FileSystems.getFileSystem(jarUri);
-
-                // walk the jar file
-                logger.debug("Searching for classes in " + jarUri.toString());
-                Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
-
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(".class")) {
-                            logger.debug("    * Found class file " + file.toString());
-                            // remove the leading '/' and the trailing '.class'
-                            String fileName = file.toString().substring(1, file.toString().length() - 6);
-                            // replace the path separator '/' with package separator '.' and add it to the
-                            // list of found files
-                            foundClasses.add(fileName.replace("/", "."));
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                        // Log errors but do not throw an exception
-                        logger.warn(exc.getMessage());
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
-            }
-            for (String className : foundClasses) {
-                try {
-                    result.add(inputClassLoader.loadClass(className));
-                } catch (ClassNotFoundException e) {
-                    logger.warn("Could not load " + className + " from classpath", e);
-                }
-            }
-        }
-
-        return result;
-
-    }
 
     /**
      * Registers CobiGen plug-ins and instantiates CobiGen
@@ -202,7 +77,7 @@ public class CobiGenUtils {
         try {
             registerPlugins();
             getTemplatesJar(false);
-            getTemplates();
+            templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
             cg = CobiGenFactory.create(templatesJar.toURI());
             return cg;
 
@@ -216,22 +91,6 @@ public class CobiGenUtils {
 
         return cg;
 
-    }
-
-    /**
-     * @return list of all classes, which have been defined in the template configuration folder from a jar
-     */
-    public List<Class<?>> getTemplates() {
-        templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-
-        try {
-            utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
-        } catch (IOException e) {
-            logger.error(
-                "IO exception due to unable to resolves all classes, which have been defined in the template configuration folder from a jar");
-
-        }
-        return utilClasses;
     }
 
     /**
