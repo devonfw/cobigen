@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>templates-devon4j</artifactId>
+  <version>3.1.8</version>
+  <name>CobiGen devon4j Templates</name>
+  <description>CobiGen devon4j Templates</description>
+  <url>https://github.com/devonfw/cobigen/templates-parent/templates-devon4j</url>
+  <licenses>
+    <license>
+      <name>Apache Software License 2.0</name>
+      <url>https://github.com/devonfw/.github/blob/master/LICENSE</url>
+      <distribution>repo</distribution>
+      <comments></comments>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Malte Brunnlieb</name>
+      <organization>Capgemini</organization>
+    </developer>
+    <developer>
+      <name>Jaime Diaz Gonzalez</name>
+      <organization>Capgemini</organization>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git@github.com:devonfw/cobigen.git/templates-parent/templates-devon4j</connection>
+    <developerConnection>scm:git:git@github.com:devonfw/cobigen.git/templates-parent/templates-devon4j</developerConnection>
+    <url>git@github.com:devonfw/cobigen.git/templates-parent/templates-devon4j</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-rest-webmvc</artifactId>
+      <version>3.0.9.RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.9.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.11.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>openapiplugin-model</artifactId>
+      <version>2.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.21</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.7.21</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>1.7.21</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <properties>
+   <maven.compiler.source>1.8</maven.compiler.source>
+   <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <build>
+   <resources>
+     <resource>
+       <directory>src/main/templates</directory>
+       <targetPath>src/main/templates</targetPath>
+     </resource>
+   </resources>
+  </build>
+</project>
