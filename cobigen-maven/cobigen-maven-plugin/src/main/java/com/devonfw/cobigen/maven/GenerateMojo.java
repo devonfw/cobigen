@@ -39,7 +39,6 @@ import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
@@ -99,25 +98,14 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter(defaultValue = "false")
     private boolean failOnNothingGenerated;
 
-    /**
-     * Directory where all our templates jar are located
-     */
-    File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
-
-    /**
-     * Util to access the Template Util Classes
-     */
-    private TemplatesClassloaderUtil templatesUtilsClassesUtil = new TemplatesClassloaderUtil();
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         CobiGen cobiGen = null;
         try {
             cobiGen = createCobiGenInstance();
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (MojoExecutionException e) {
+            throw new MojoExecutionException("An error occured while creating the CobiGen instance", e);
         }
 
         List<Object> inputs = collectInputs(cobiGen);
@@ -178,10 +166,8 @@ public class GenerateMojo extends AbstractMojo {
      * @return the initialized {@link CobiGen} instance
      * @throws MojoExecutionException
      *             if the configuration could not be read
-     * @throws IOException
-     *             if the configuration could not be read
      */
-    private CobiGen createCobiGenInstance() throws MojoExecutionException, IOException {
+    private CobiGen createCobiGenInstance() throws MojoExecutionException {
         CobiGen cobiGen;
 
         if (configurationFolder != null) {
@@ -195,7 +181,7 @@ public class GenerateMojo extends AbstractMojo {
         } else {
 
             final ClassRealm classRealm = pluginDescriptor.getClassRealm();
-            URL contextConfigurationLocation = templatesUtilsClassesUtil.getContextConfiguration(classRealm);
+            URL contextConfigurationLocation = TemplatesClassloaderUtil.getContextConfiguration(classRealm);
 
             URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
 
