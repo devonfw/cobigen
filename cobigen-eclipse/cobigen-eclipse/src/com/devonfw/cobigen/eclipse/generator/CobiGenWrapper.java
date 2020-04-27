@@ -1,19 +1,10 @@
 package com.devonfw.cobigen.eclipse.generator;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,17 +23,11 @@ import java.util.stream.Collectors;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.bindings.Trigger;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -63,9 +48,7 @@ import com.devonfw.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeExcept
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.common.tools.ClassLoaderUtil;
-import com.devonfw.cobigen.eclipse.common.tools.EclipseJavaModelUtil;
 import com.devonfw.cobigen.eclipse.common.tools.MapUtils;
-import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.google.common.collect.Lists;
@@ -192,14 +175,20 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             LOG.debug("Generating files...");
 
             SubMonitor subMonitor = SubMonitor.convert(monitor, 105);
-            List<Class<?>> utilClasses = resolveTemplateUtilClasses();
+
+            IProject configProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
+            IJavaProject configJavaProject = JavaCore.create(configProject);
+
+            ClassLoader inputClassLoader = getInputClassloader();
+            // create classpath for the configuration project while keeping the input's classpath
+            // as the parent classpath to prevent classpath shading.
+            inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
+
+            URI templateFolder = ResourcesPlugin.getWorkspace().getRoot()
+                .getProject(ResourceConstants.CONFIG_PROJECT_NAME).getLocationURI();
 
             monitor.setTaskName("load Classes...");
             SubMonitor loadClasses = subMonitor.split(2);
-            if (utilClasses == null) {
-                // Call method to get utils from jar
-                utilClasses = resolveTemplateUtilClassesFromJar();
-            }
 
             if (monitor.isCanceled()) {
                 throw new CancellationException("generation got Cancelled by the User");
@@ -239,8 +228,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 LOG.debug("Generating with single non container input ...");
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
-                report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, utilClasses,
-                    model, (String taskName, Integer progress) -> {
+                report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false,
+                    inputClassLoader, model, (String taskName, Integer progress) -> {
                         try {
                             p.split(progress);
                         } catch (OperationCanceledException e) {
@@ -248,12 +237,12 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                         }
                         monitor.setTaskName(taskName);
 
-                    });
+                    }, Paths.get(templateFolder));
             } else {
                 report = new GenerationReportTo();
                 for (Object input : inputs) {
-                    report.aggregate(
-                        cobiGen.generate(input, templates, Paths.get(generationTargetUri), false, utilClasses));
+                    report.aggregate(cobiGen.generate(input, templates, Paths.get(generationTargetUri), false,
+                        inputClassLoader, Paths.get(templateFolder)));
                 }
             }
             p.done();
@@ -268,142 +257,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         } else {
             throw new CobiGenRuntimeException("No generation target project configured! This is a Bug!");
         }
-    }
-
-    /**
-     * Resolves all classes, which have been defined in the template configuration folder from a jar.
-     * @return the list of classes
-     * @throws GeneratorProjectNotExistentException
-     *             if no generator configuration project called {@link ResourceConstants#CONFIG_PROJECT_NAME}
-     *             exists
-     * @throws IOException
-     *             {@link IOException} occurred
-     */
-    private List<Class<?>> resolveTemplateUtilClassesFromJar()
-        throws GeneratorProjectNotExistentException, IOException {
-        final List<Class<?>> result = new LinkedList<>();
-
-        IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
-        String fileName = ResourcesPluginUtil.getJarPath(false);
-
-        if (fileName.equals("") || fileName == null) {
-            // This means there are no downloaded jars
-            return null;
-        }
-
-        File jarPath =
-            new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
-
-        ClassLoader inputClassLoader =
-            URLClassLoader.newInstance(new URL[] { jarPath.toURI().toURL() }, getClass().getClassLoader());
-
-        Path templateRoot;
-        URL contextConfigurationLocation = inputClassLoader.getResource("context.xml");
-        if (contextConfigurationLocation == null
-            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
-            contextConfigurationLocation = inputClassLoader.getResource("src/main/templates/context.xml");
-            if (contextConfigurationLocation == null) {
-                throw new CobiGenRuntimeException("No context.xml could be found in the classpath!");
-            } else {
-                templateRoot =
-                    Paths.get(URI.create(contextConfigurationLocation.toString())).getParent().getParent().getParent();
-            }
-        } else {
-            templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
-        }
-        LOG.debug("Found context.xml @ " + contextConfigurationLocation.toString());
-        final List<String> foundClasses = new LinkedList<>();
-        if (contextConfigurationLocation.toString().startsWith("jar")) {
-            LOG.info("Processing configuration archive " + contextConfigurationLocation.toString());
-            try {
-                // Get the URI of the jar from the URL of the contained context.xml
-                URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
-                FileSystem jarfs = FileSystems.getFileSystem(jarUri);
-
-                // walk the jar file
-                LOG.debug("Searching for classes in " + jarUri.toString());
-                Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
-
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(".class")) {
-                            LOG.debug("    * Found class file " + file.toString());
-                            // remove the leading '/' and the trailing '.class'
-                            String fileName = file.toString().substring(1, file.toString().length() - 6);
-                            // replace the path separator '/' with package separator '.' and add it to the
-                            // list of found files
-                            foundClasses.add(fileName.replace("/", "."));
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                        // Log errors but do not throw an exception
-                        LOG.warn(exc.getMessage());
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
-                PlatformUIUtil.openErrorDialog(
-                    "An exception occurred while processing Jar file to create CobiGen_Templates folder", e);
-            }
-            for (String className : foundClasses) {
-                try {
-                    result.add(inputClassLoader.loadClass(className));
-                } catch (ClassNotFoundException e) {
-                    LOG.warn("Could not load " + className + " from classpath", e);
-                }
-            }
-        }
-
-        LOG.info("Util classes loaded: '{}' ...", result);
-
-        return result;
-    }
-
-    /**
-     * Resolves all classes, which have been defined in the template configuration folder.
-     * @return the list of classes
-     * @throws Exception
-     *             if anything during classpath resolving and class loading fails.
-     */
-    private List<Class<?>> resolveTemplateUtilClasses() throws Exception {
-        LOG.debug("Resolve template util classes...");
-        List<Class<?>> classes = Lists.newArrayList();
-
-        IProject configProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
-        IJavaProject configJavaProject = JavaCore.create(configProject);
-
-        // if it is not a Java project, do not try to load anything
-        if (configJavaProject != null && configJavaProject.exists()) {
-            ClassLoader inputClassLoader = getInputClassloader();
-            // create classpath for the configuration project while keeping the input's classpath
-            // as the parent classpath to prevent classpath shading.
-            inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
-
-            LOG.debug("Search fragment roots in project {}", configJavaProject.getElementName());
-            for (IPackageFragmentRoot root : configJavaProject.getPackageFragmentRoots()) {
-                if (!root.isExternal()) {
-                    LOG.debug("Search for compilation units in non-external fragment root '{}' ...",
-                        root.getElementName());
-                    for (IJavaElement e : root.getChildren()) {
-                        if (e instanceof IPackageFragment) {
-                            for (ICompilationUnit cu : ((IPackageFragment) e).getCompilationUnits()) {
-                                LOG.debug("Found '{}' in {} ...", cu.getElementName(), e.getElementName());
-                                IType type = EclipseJavaModelUtil.getJavaClassType(cu);
-                                classes.add(inputClassLoader.loadClass(type.getFullyQualifiedName()));
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            return null;
-        }
-        LOG.info("Util classes loaded: '{}' ...", classes);
-        return classes;
     }
 
     /**
