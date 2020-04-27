@@ -50,6 +50,7 @@ import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
 import com.devonfw.cobigen.impl.generator.api.GenerationProcessor;
 import com.devonfw.cobigen.impl.generator.api.InputResolver;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
+import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
@@ -127,9 +128,20 @@ public class GenerationProcessorImpl implements GenerationProcessor {
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel,
-        BiConsumer<String, Integer> progressCallback) {
+        Path targetRootPath, boolean forceOverride, ClassLoader classLoader, Map<String, Object> rawModel,
+        BiConsumer<String, Integer> progressCallback, Path templateFolderPath) {
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
+
+        List<Class<?>> logicClasses = null;
+
+        if (templateFolderPath != null || classLoader != null) {
+
+            try {
+                logicClasses = TemplatesClassloaderUtil.resolveUtilClasses(templateFolderPath, classLoader);
+            } catch (IOException e) {
+                LOG.error("An IOException occured while resolving utility classes!", e);
+            }
+        }
 
         // initialize
         this.forceOverride = forceOverride;
