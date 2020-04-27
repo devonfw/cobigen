@@ -7,7 +7,6 @@ import { ${variables.etoName?cap_first}Module } from '../${variables.etoName?low
 import { ${variables.etoName?cap_first}Service } from '../services/${variables.etoName?lower_case}.service';
 import { ${variables.etoName?cap_first}DialogComponent } from './${variables.etoName?lower_case}-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
 
 describe('${variables.etoName?cap_first}DialogComponent', () => {
   let component: ${variables.etoName?cap_first}DialogComponent;
@@ -18,8 +17,7 @@ describe('${variables.etoName?cap_first}DialogComponent', () => {
       providers: [${variables.etoName?cap_first}Service, HttpClient],
       imports: [
         BrowserAnimationsModule,
-        TranslateModule.forRoot(),
-        ${variables.etoName?cap_first}Module,
+	${variables.etoName?cap_first}Module,
         HttpClientModule,
         CoreModule,
       ],
