@@ -12,15 +12,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-<#assign compositeIdVar = false>
-<#list pojo.fields as field>
-	<#if field.type?starts_with("Composite")>
-		<#assign compositeIdVar = true>
-		<#assign compositeIdTypeVar = field.type>
-	</#if>
-</#list>
-<#if compositeIdVar = true>
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>
 
@@ -34,7 +27,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     private UcFind${variables.entityName} ucFind${variables.entityName};
 
     @Override
-    public ${variables.entityName}Cto find${variables.entityName}Cto(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if> id) {
+    public ${variables.entityName}Cto find${variables.entityName}Cto(<#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if> id) {
     
       return ucFind${variables.entityName}.find${variables.entityName}Cto(id);
     }

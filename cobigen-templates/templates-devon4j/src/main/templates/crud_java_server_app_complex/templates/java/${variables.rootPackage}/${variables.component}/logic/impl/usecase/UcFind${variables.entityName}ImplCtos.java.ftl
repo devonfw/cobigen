@@ -21,15 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-<#assign compositeIdVar = false>
-<#list pojo.fields as field>
-	<#if field.type?starts_with("Composite")>
-		<#assign compositeIdVar = true>
-		<#assign compositeIdTypeVar = field.type>
-	</#if>
-</#list>
-<#if compositeIdVar = true>
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>
 
@@ -45,7 +38,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
     private static final Logger LOG = LoggerFactory.getLogger(UcFind${variables.entityName}Impl.class);
 
     @Override
-    public ${variables.entityName}Cto find${variables.entityName}Cto(<#if compositeIdVar = true>${compositeIdTypeVar}<#else>long</#if> id) {
+    public ${variables.entityName}Cto find${variables.entityName}Cto(<#if compositeIdTypeVar!="null">${compositeIdTypeVar}<#else>long</#if> id) {
       LOG.debug("Get ${variables.entityName}Cto with id {} from database.", id);
       ${variables.entityName}Entity entity = get${variables.entityName}Repository().find(id);
       ${variables.entityName}Cto cto = new ${variables.entityName}Cto();

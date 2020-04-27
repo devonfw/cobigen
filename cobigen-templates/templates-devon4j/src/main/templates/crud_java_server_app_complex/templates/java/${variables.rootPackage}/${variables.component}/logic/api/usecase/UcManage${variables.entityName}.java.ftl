@@ -2,14 +2,8 @@ package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 
-<#assign compositeIdVar = false>
-<#list pojo.fields as field>
-	<#if field.type?starts_with("Composite")>
-		<#assign compositeIdVar = true>
-		<#assign compositeIdTypeVar = field.type>
-	</#if>
-</#list>
-<#if compositeIdVar = true>
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>
 
@@ -24,7 +18,7 @@ public interface UcManage${variables.entityName} {
    * @param ${variables.entityName?uncap_first}Id Id of the ${variables.entityName?uncap_first} to delete
    * @return boolean <code>true</code> if the ${variables.entityName?uncap_first} can be deleted, <code>false</code> otherwise
    */
-  boolean delete${variables.entityName}(<#if compositeIdVar = true> ${compositeIdTypeVar} <#else> long </#if>${variables.entityName?uncap_first}Id);
+  boolean delete${variables.entityName}(<#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if>${variables.entityName?uncap_first}Id);
 
   /**
    * Saves a ${variables.entityName?uncap_first} and store it in the database.

@@ -7,14 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-<#assign compositeIdVar = false>
-<#list pojo.fields as field>
-	<#if field.type?starts_with("Composite")>
-		<#assign compositeIdVar = true>
-		<#assign compositeIdTypeVar = field.type>
-	</#if>
-</#list>
-<#if compositeIdVar = true>
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>
 
@@ -26,7 +20,7 @@ public interface UcFind${variables.entityName} {
    * @param id The id 'id' of the ${variables.entityName}.
    * @return The {@link ${variables.entityName}Cto} with id 'id'
    */
-  ${variables.entityName}Cto find${variables.entityName}Cto(<#if compositeIdVar = true>${compositeIdTypeVar}<#else>long</#if> id);
+  ${variables.entityName}Cto find${variables.entityName}Cto(<#if compositeIdTypeVar!="null">${compositeIdTypeVar}<#else>long</#if> id);
   
   /**
    * Returns a paginated list of composite ${variables.entityName}s matching the search criteria.
