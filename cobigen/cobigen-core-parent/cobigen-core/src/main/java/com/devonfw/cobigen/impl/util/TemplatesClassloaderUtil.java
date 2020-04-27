@@ -256,8 +256,6 @@ public class TemplatesClassloaderUtil {
                 // Log errors but do not throw an exception
                 LOG.warn("An IOException occurred while reading file on path {} with message: {}", file,
                     exc.getMessage(), LOG.isDebugEnabled() ? exc : null);
-                LOG.debug("An IOException occurred while reading file on path {} with message: {}", file,
-                    exc.getMessage(), LOG.isDebugEnabled() ? exc : null);
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -298,8 +296,6 @@ public class TemplatesClassloaderUtil {
             public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                 // Log errors but do not throw an exception
                 LOG.warn("An IOException occurred while reading file on path {} with message: {}", file,
-                    exc.getMessage(), LOG.isDebugEnabled() ? exc : null);
-                LOG.debug("An IOException occurred while reading file on path {} with message: {}", file,
                     exc.getMessage(), LOG.isDebugEnabled() ? exc : null);
                 return FileVisitResult.CONTINUE;
             }
