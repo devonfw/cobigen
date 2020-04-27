@@ -15,11 +15,9 @@ In order to make it work we are using https://github.com/devonfw/cobigen[CobiGen
 
 === [navy]#Getting things ready#
 
-==== [navy]#devonfw Distribution#
+==== [navy]#devonfw-ide#
 
-The devonfw distributions can be obtained from the https://coconet.capgemini.com/sf/frs/do/listReleases/projects.apps2_devon/frs.devon_distribution[TeamForge releases library] and are packaged in zips files that include all the needed tools, software and configurations.
-
-It is not necessary to install nor configure anything. Just extracting the zip content is enough to have a fully functional devonfw. The only thing you have to do is run *create-or-update-workspace.bat* and then *update-all-workspaces.bat* to set up all the needed tools.
+First, we will install the devonfw-ide. It is a tool that will setup your IDE within minutes. Please follow the install guide https://github.com/devonfw/ide/blob/master/documentation/setup.asciidoc[here].
 
 ==== [navy]#devon4net Templates#
 
