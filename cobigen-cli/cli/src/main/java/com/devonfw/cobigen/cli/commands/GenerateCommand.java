@@ -124,9 +124,12 @@ public class GenerateCommand implements Callable<Integer> {
                 if (inputFiles.size() > 1) {
                     finalTemplates = toTemplateTo(preprocess(cg, TemplateTo.class));
                 }
+
+                ClassLoader inputClassLoader = getClass().getClassLoader();
+
                 for (File inputFile : inputFiles) {
-                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg,
-                        cobigenUtils.getUtilClasses(), TemplateTo.class);
+                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg, inputClassLoader,
+                        TemplateTo.class);
                 }
             } else {
 
@@ -134,9 +137,10 @@ public class GenerateCommand implements Callable<Integer> {
                 if (inputFiles.size() > 1) {
                     finalIncrements = toIncrementTo(preprocess(cg, IncrementTo.class));
                 }
+                ClassLoader inputClassLoader = getClass().getClassLoader();
                 for (File inputFile : inputFiles) {
-                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
-                        cobigenUtils.getUtilClasses(), IncrementTo.class);
+                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg, inputClassLoader,
+                        IncrementTo.class);
                 }
             }
             return 0;
@@ -291,12 +295,12 @@ public class GenerateCommand implements Callable<Integer> {
      *            Initialized CobiGen instance
      * @param c
      *            class type, specifies whether Templates or Increments should be preprocessed
-     * @param utilClasses
-     *            util classes loaded from the templates jar
+     * @param classLoader
+     *            a {@link ClassLoader}, containing the archive to load template utility classes from
      *
      */
     public void generate(File inputFile, File inputProject, List<? extends GenerableArtifact> finalTos, CobiGen cg,
-        List<Class<?>> utilClasses, Class<?> c) {
+        ClassLoader classLoader, Class<?> c) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         inputFile = preprocessInputFile(inputFile);
@@ -337,10 +341,12 @@ public class GenerateCommand implements Callable<Integer> {
 
             if (!isIncrements) {
                 logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
-                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+                report =
+                    cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader, null);
             } else {
                 logger.info("Generating increments for input '" + inputFile.getName() + "', this can take a while...");
-                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+                report =
+                    cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader, null);
             }
             if (ValidationUtils.checkGenerationReport(report) && isJavaInput) {
                 try {
