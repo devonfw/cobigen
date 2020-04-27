@@ -53,22 +53,22 @@ In order to generate the files using Eclipse we need to follow some simple steps
 First we are going to import our basic devon4net WebAPI Project into Eclipse. to do so open Eclipse with the “eclipse-main.bat” file that can be found in the devon distribution root folder. Once we are inside of Eclipse we go to *File > Open projects from file system...* and, under "Directory", search for your project.
 
 [[img-cobigen]]
-image::images/Project_selection.png["cobigen", width=="600", link=="images/Project_selection.png"]
+image::images/howtos/devon4net/Project_selection.png["cobigen", width=="600", link=="images/howtos/devon4net/Project_selection.png"]
 
 Next we copy our OpenAPI file into the root folder of the project.
 
 [[img-cobigen]]
-image::images/OpenAPI_file_root_folder.png["cobigen", width=="300", link=="images/OpenAPI_file_root_folder.png"]
+image::images/howtos/devon4net/OpenAPI_file_root_folder.png["cobigen", width=="300", link=="images/howtos/devon4net/OpenAPI_file_root_folder.png"]
 
 And then we right click on OpenAPI file and then select *CobiGen > Generate...* It will display a window like this:
 
 [[img-cobigen]]
-image::images/cobigen_generate0.png["cobigen", width=="800", link=="images/cobigen_generate0.png"]
+image::images/howtos/devon4net/cobigen_generate0.png["cobigen", width=="800", link=="images/howtos/devon4net/cobigen_generate0.png"]
 
 To select all .NET features choose *CRUD devon4net Server* otherwise you can select only those that interest you.
 
 [[img-cobigen]]
-image::images/cobigen_generate1.png["cobigen", width=="800", link=="images/cobigen_generate1.png]
+image::images/howtos/devon4net/cobigen_generate1.png["cobigen", width=="800", link=="images/howtos/devon4net/cobigen_generate1.png]
 
 Ones you select all the files that you want to generate, click on the _“Finish”_ button to generate all the source code.
 
@@ -92,7 +92,7 @@ In ordet to generate the files using the Cobigen CLI it is needed to do the foll
 Cobigen is generating an empty context that has to be filled with manualy in order to be able to work with the database. The context can be found in *[Project_Name]/Devon4Net.WebAPI.Implementation/Domain/Database/CobigenContext.cs*.
 
 [[img-cobigen]]
-image::images/CobigenContextLocation.png["cobigen", width=="350", link=="images/CobigenContextLocation.png]
+image::images/howtos/devon4net/CobigenContextLocation.png["cobigen", width=="350", link=="images/howtos/devon4net/CobigenContextLocation.png]
 
 ==== [navy]#Run the application#
 
