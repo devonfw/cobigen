@@ -89,7 +89,7 @@ export class ${variables.etoName?cap_first}Detail {
    * @param  data - Tuple containing all the objects which the server returns .
    */
   public dismiss(
-    data: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>],
+    data?: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>],
   ) {
     this.viewCtrl.dismiss(data);
     this.filterActive = true;
