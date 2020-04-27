@@ -30,7 +30,6 @@
             <inputFile>src/main/java/io/github/devonfw/cobigen/generator/dataaccess/api/InputEntity.java</inputFile>
           </inputFiles>
           <increments>
-            <increment>dataaccess_infrastructure</increment>
             <increment>tos</increment>
           </increments>
         </configuration>

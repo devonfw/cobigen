@@ -59,12 +59,9 @@ public class Devon4JTemplateTest extends AbstractMavenTest {
         File testProjectRoot = runMavenInvoker(testProject, templatesProject, MavenMetadata.LOCAL_REPO);
 
         assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
-        long numFilesInApi =
-            Files.walk(testProjectRoot.toPath().getParent().resolve("api")).filter(Files::isRegularFile).count();
         long numFilesInSrc = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-        // 3 from tos and 4 from dataaccess_infrastructure
-        assertThat(numFilesInApi).isEqualTo(4);
-        assertThat(numFilesInSrc).isEqualTo(3);
+        // 1 from tos
+        assertThat(numFilesInSrc).isEqualTo(1);
     }
 
     /**
