@@ -39,7 +39,7 @@ public class ParsingUtils {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Tries to get the Java context by creating a new class loader of the input project that is able to load
@@ -60,11 +60,11 @@ public class ParsingUtils {
             context.getClassLoader().loadClass(fqn);
             return context;
         } catch (NoClassDefFoundError | ClassNotFoundException e) {
-            logger.error("Compiled class " + e.getMessage()
+            LOG.error("Compiled class " + e.getMessage()
                 + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
             System.exit(1);
         } catch (Exception e) {
-            logger.error("Transitive dependencies have not been found on your m2 repository (Maven). "
+            LOG.error("Transitive dependencies have not been found on your m2 repository (Maven). "
                 + "Please run 'mvn package' in your input project in order to download all the needed dependencies.");
             System.exit(1);
         }
@@ -199,8 +199,8 @@ public class ParsingUtils {
                 return true;
             }
         } catch (InvalidPathException e) {
-            logger.debug("The path string " + System.getProperty("user.dir") + " + " + inputFile.toString()
-                + " cannot be converted to a path");
+            LOG.debug("The path string {} {} cannot be converted to a path", System.getProperty("user.dir"),
+                inputFile.toString());
         }
         return false;
     }
@@ -220,8 +220,8 @@ public class ParsingUtils {
         if (pomFile != null) {
             return pomFile.getParentFile();
         }
-        logger.debug("Projec root could not be found, therefore we use your current input file location.");
-        logger.debug("Using '" + inputFile.getParent() + "' as location where code will be generated");
+        LOG.debug("Project root could not be found, therefore we use your current input file location.");
+        LOG.debug("Using '{}' as location where code will be generated", inputFile.getParent());
         return inputFile.getAbsoluteFile().getParentFile();
     }
 
@@ -236,7 +236,7 @@ public class ParsingUtils {
         Set<Path> filesToFormat = generatedFiles;
         Formatter formatter = new Formatter();
         Iterator<Path> itr = filesToFormat.iterator();
-        logger.info("Formatting code...");
+        LOG.info("Formatting code...");
         while (itr.hasNext()) {
             Path generatedFilePath = itr.next();
             try {
@@ -244,12 +244,12 @@ public class ParsingUtils {
                 String formattedCode = formatter.formatSource(unformattedCode);
                 Files.write(generatedFilePath, formattedCode.getBytes());
             } catch (IOException e) {
-                logger.error("Unable to read or write the generated file " + generatedFilePath.toString()
-                    + " when trying to format it");
+                LOG.error("Unable to read or write the generated file {} when trying to format it",
+                    generatedFilePath.toString());
                 return;
             }
         }
-        logger.info("Finished successfully");
+        LOG.info("Finished successfully");
 
     }
 

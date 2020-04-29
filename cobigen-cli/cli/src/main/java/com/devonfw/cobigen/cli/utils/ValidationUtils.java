@@ -17,7 +17,7 @@ public final class ValidationUtils {
     /**
      * Logger useful for printing information
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Extension of a POM file
@@ -37,13 +37,13 @@ public final class ValidationUtils {
         }
 
         if (!inputFile.exists()) {
-            logger.error("The input file " + inputFile.getAbsolutePath() + " has not been found on your system.");
+            LOG.error("The input file " + inputFile.getAbsolutePath() + " has not been found on your system.");
             return false;
         }
 
         if (!inputFile.canRead()) {
-            logger.error("The input file " + inputFile.getAbsolutePath()
-                + " cannot be read. Please check file permissions on the file");
+            LOG.error("The input file '{}' cannot be read. Please check file permissions on the file",
+                inputFile.getAbsolutePath());
             return false;
         }
         return true;
@@ -66,7 +66,7 @@ public final class ValidationUtils {
                 basename = filename.substring(0, lastDot);
                 pomFile = new File(source.getParent(), basename + '.' + POM_EXTENSION);
                 if (pomFile.exists() || pomFile.toString().contains("pom.xml")) {
-                    logger.info("This is a valid maven project project ");
+                    LOG.info("This is a valid maven project project ");
                     return pomFile;
 
                 }
@@ -138,7 +138,7 @@ public final class ValidationUtils {
         if (outputRootPath == null || outputRootPath.exists()) {
             return true;
         } else {
-            logger.error("Your <outputRootPath> does not exist, please use a valid path.");
+            LOG.error("Your <outputRootPath> '{}' does not exist, please use a valid path.", outputRootPath);
             return false;
         }
     }
@@ -152,16 +152,16 @@ public final class ValidationUtils {
     public static Boolean checkGenerationReport(GenerationReportTo report) {
 
         for (String warning : report.getWarnings()) {
-            logger.debug("Warning: " + warning);
+            LOG.debug("Warning: {}", warning);
         }
 
         if (report.getErrors() == null || report.getErrors().isEmpty()) {
-            logger.info("Successful generation.\n");
+            LOG.info("Successful generation.\n");
             return true;
         } else {
-            logger.error("Generation failed due to the following problems:");
+            LOG.error("Generation failed due to the following problems:");
             for (Throwable throwable : report.getErrors()) {
-                logger.error(throwable.getMessage());
+                LOG.error(throwable.getMessage());
             }
             return false;
         }
@@ -178,13 +178,14 @@ public final class ValidationUtils {
      *            true when input file is OpenAPI
      */
     public static void printNoTriggersMatched(File inputFile, Boolean isJavaInput, Boolean isOpenApiInput) {
-        logger.error("Your input file '" + inputFile.getName()
-            + "' is not valid as input for any generation purpose. It does not match any trigger.");
+        LOG.error(
+            "Your input file '{}' is not valid as input for any generation purpose. It does not match any trigger.",
+            inputFile.getName());
         if (isJavaInput) {
-            logger.error("Check that your Java input file is following devon4j naming convention. "
+            LOG.error("Check that your Java input file is following devon4j naming convention. "
                 + "Explained on https://github.com/devonfw/devon4j/wiki/coding-conventions");
         } else if (isOpenApiInput) {
-            logger.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
+            LOG.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
                 + "More info here https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage");
         }
         System.exit(1);
