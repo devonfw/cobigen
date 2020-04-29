@@ -16,7 +16,7 @@ public class CobiGenCLI {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
+    private static Logger LOG = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Picocli command line object
@@ -39,9 +39,9 @@ public class CobiGenCLI {
     public static void main(String... args) {
 
         CLILogger.layoutLogger();
-        logger.debug("Current working directory: " + System.getProperty("user.dir"));
+        LOG.debug("Current working directory: {}", System.getProperty("user.dir"));
         if (commandLine.execute(args) == 0) {
-            logger.debug("Commands were executed correctly");
+            LOG.debug("Commands were executed correctly");
         }
 
     }
