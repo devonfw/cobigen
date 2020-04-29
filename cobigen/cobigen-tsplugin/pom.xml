@@ -15,7 +15,7 @@
   <properties>
     <plugin.name>${project.artifactId}</plugin.name>
     <server.name>nestserver</server.name>
-    <server.version>1.1.2</server.version>
+    <server.version>1.1.5</server.version>
     <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
     <server.url.linux>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</server.url.linux>
     <server.url.macos>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-macos/-/cobigen-nestserver-macos-${server.version}.tgz</server.url.macos>
