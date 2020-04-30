@@ -160,7 +160,9 @@ public class TemplatesConfigurationReader {
         // workaround to make JAXB work in OSGi context by
         // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
         final ClassLoader orig = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+        if (JvmUtil.isRunningJava9OrLater()) {
+            Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+        }
 
         try {
             Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
