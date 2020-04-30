@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tsplugin</artifactId>
   <name>CobiGen - TypeScript Plug-in</name>
-  <version>2.4.3</version>
+  <version>2.4.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>CobiGen - TypeScript Plug-in</description>
 
