@@ -8,7 +8,7 @@ This document contains the documentation of the CobiGen core module as well as a
 
 * CobiGen - Eclipse Plug-in v5.2.0
 * CobiGen - Maven Build Plug-in v5.2.0
-* CobiGen CLI v1.1.0
+* CobiGen CLI v1.2.0
 
 ---
 
