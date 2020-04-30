@@ -1,3 +1,5 @@
+from tempfile import TemporaryDirectory
+
 class Config():
 
     def __init__(self):
@@ -45,6 +47,8 @@ class Config():
 
         self.expected_milestone_name: str
         self.expected_core_milestone_name: str
+
+        self.temp_release_dir: TemporaryDirectory
 
     def github_closed_milestone_url(self, milestone_number: int):
         return "https://github.com/" + self.github_repo + "/milestone/" + str(milestone_number)+"?closed=1"
