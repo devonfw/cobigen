@@ -35,8 +35,8 @@ public class UpdateCommand implements Callable<Integer> {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
-    
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
+
     /**
      * If this options is enabled, all plugins get updated.
      */
@@ -59,24 +59,21 @@ public class UpdateCommand implements Callable<Integer> {
             Model model = reader.read(new FileReader(pomFile));
             List<Dependency> localPomDependencies = model.getDependencies();
             printOutdatedPlugin(localPomDependencies, centralMavenVersionList, updatePluginVersions, listOfArtifacts);
-            
-            if (updateAll)
-            {
-                userInputPluginForUpdate.add("0"); 
-                logger.info("(0) ALL is selected!"); 
-            }
-            else {
+
+            if (updateAll) {
+                userInputPluginForUpdate.add("0");
+                LOG.info("(0) ALL is selected!");
+            } else {
                 // User selects which dependencies to update
                 userInputPluginSelection(userInputPluginForUpdate);
-                if (userInputPluginForUpdate.size() == 1 ) {
-                    if (!StringUtils.isNumeric(userInputPluginForUpdate.get(0)))
-                    {
-                        logger.info("Nothing selected to update...");
+                if (userInputPluginForUpdate.size() == 1) {
+                    if (!StringUtils.isNumeric(userInputPluginForUpdate.get(0))) {
+                        LOG.info("Nothing selected to update...");
                         System.exit(0);
                     }
                 }
             }
-            logger.info("Updating the following components:");
+            LOG.info("Updating the following components:");
 
             updateOutdatedPlugins(localPomDependencies, listOfArtifacts, centralMavenVersionList, model,
                 userInputPluginForUpdate);
@@ -85,7 +82,7 @@ public class UpdateCommand implements Callable<Integer> {
             writer.write(new FileWriter(pomFile), model);
             File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
             cpFile.deleteOnExit();
-            logger.info("Updated successfully. Next time you generate, the plug-ins will be downloaded.");
+            LOG.info("Updated successfully. Next time you generate, the plug-ins will be downloaded.");
         }
 
         return 1;
@@ -128,7 +125,7 @@ public class UpdateCommand implements Callable<Integer> {
                 for (int ver = 0; ver < localVersion.length; ver++) {
                     if (Integer.parseInt(localVersion[ver]) < Integer.parseInt(centralVersionValues[ver])) {
                         if (count == 0) {
-                            logger.info("(0) " + "All");
+                            LOG.info("(0) " + "All");
                         }
                         count++;
                         centralMavenVersionList.add(centralMavenVersion);
@@ -136,7 +133,7 @@ public class UpdateCommand implements Callable<Integer> {
                         updatePluginVersions.put(lclDependencies.getArtifactId(), centralVersionValues[ver]);
                         listOfArtifacts.put(count, requiresUpdate);
                         // Print the dependecy need to update
-                        logger.info("(" + count + ") " + requiresUpdate + ", " + lclDependencies.getVersion());
+                        LOG.info("({}) {}, {}", count, requiresUpdate, lclDependencies.getVersion());
                         break;
                     }
                 }
@@ -144,10 +141,10 @@ public class UpdateCommand implements Callable<Integer> {
         }
         // Finished checking all the plug-ins
         if (count == 0) {
-            logger.info("All plug-ins are up to date...");
+            LOG.info("All plug-ins are up to date...");
             System.exit(0);
         }
-        logger.info("Here are the components that can be updated, which ones do you want to  update? "
+        LOG.info("Here are the components that can be updated, which ones do you want to  update? "
             + "Please list the number of artifact(s) to update separated by comma:");
     }
 
@@ -180,7 +177,7 @@ public class UpdateCommand implements Callable<Integer> {
                     // Updating all plugin
                     for (Dependency lclDependencies : localPomDependencies) {
                         if ((listOfArtifacts).containsValue(lclDependencies.getArtifactId())) {
-                            logger.info(lclDependencies.getArtifactId());
+                            LOG.info(lclDependencies.getArtifactId());
                             lclDependencies.setVersion(centralMavenVersionList.get(all));
                             all++;
                         }
@@ -191,7 +188,7 @@ public class UpdateCommand implements Callable<Integer> {
                 } else {
                     // Updating selected plugin
                     String plugin = listOfArtifacts.get(selectedArtifactNumber);
-                    logger.info("(" + selectedArtifactNumber + ") " + plugin);
+                    LOG.info("({}) {}", selectedArtifactNumber, plugin);
                     for (Dependency selectedDependencies : localPomDependencies) {
                         if ((plugin).equals(selectedDependencies.getArtifactId())) {
                             selectedDependencies.setVersion(centralMavenVersionList.get(index));
