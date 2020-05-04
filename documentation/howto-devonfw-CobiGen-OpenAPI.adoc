@@ -1,73 +1,22 @@
 :toc:
 toc::[]
 
-
-=== What’s Devonfw
-
-Java-based standard platform , an industrialized approach to efficiently deliver projects to  customers. This platform is aimed to engagements where the client is flexible in the use of technology or uses outdated technology,
-
-It can offer a modern technology approach using our experience as a group. The main idea is to not create a monolithic framework but to provide proven patterns.
-
-Devonfw provides a solution to building applications which combine best-in-class frameworks and
-libraries as well as industry proven practices and code conventions. It massively speeds up development, reduces risks and helps you to deliver better results.
-
-The current version of the platform is oriented to develop single-page web applications based on the Java EE programming model using the spring framework as the default implementation.
-
-As any modern java application today, Devonfw is based on a large number of technologies and standards that build the software architecture. Devonfw defines how to use these technologies in a layered component-oriented architecture to solve all the technical aspects that make the business code work.
-
+:toc:
+toc::[]
 [.text-center]
-image:images/howtos/e2e_gen/image4.png[devonfw Architecuture]
+= End to End POC Code generation using OpenAPI
+This article helps to create a sample application using cobigen.
 
-=== Devonfw Web site URL
+== Prerequisites
 
-The Devonfw site is available here:
-[source, URL]
-http://www.devonfw.com/
+Download and install devonnfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
 
-image:images/howtos/e2e_gen/image5.png[Devonfw Web site]
+If _CobiGen_Templates_ is not already imported into your workspace, follow the next steps:
 
-The Devonfw for JAVA (devon4j) can be downloaded from here
-[source, URL]
-https://devon4j.github.io/
+- Click on the Eclipse's menu _File > Import > Existing Projects into Workspace_ and browse to select the `workspaces/main/CobiGen_Templates` directory.
 
+- Click _Finish_ and you should have the _CobiGen_Templates_ as a new project in Eclipse's workspace.
 
-image:images/howtos/e2e_gen/image6.png[Devonfw Web site]
-
-All the documentation about devonfw can be found under https://devonfw.com/website/pages/docs/master.html[docs]. There is a search bar which you can use to quickly find documentation:
-
-image:images/howtos/e2e_gen/docs.png[Devonfw Web site]
-
-=== What’s CobiGen
-
-CobiGen is a high value asset that is used by *devonfw* projects to generate code across all layers of a devon-application, including the clients. It works iteratively without leaving marks or regions in the code due to its basic understanding of Java. Due to architecture patterns set in devonfw, the generator is able to support generation of higher-level concepts than just - class. It is best integrated into the provided eclipse package.
-
-image:images/howtos/e2e_gen/image7.png[cobigen]
-
-Cobigen can be used to generate the Java backend code as well as the front end Angular code.
-[arabic]
-. A complete *CRUD* application can be generated from a *single Entity class.*
-. Cobigen generates backend classes and client UI (Angular and Ionic) required for CRUD application.
-. Agility: Boost development-speed, reduce cost, industrialize.
-. Innovation: always evolving, keep the fast pace of technology and incorporate new trends that add value for the engagements.
-. Security: Rest assured, devonfw follows best practices to secure your applications.
-. DevOps-ready: Supports development and operations with proven solutions for continuous integration, deployment and delivery.
-
-=== HOW TO install Devonfw
-
-In order to install Devonfw please make the following steps:
-[arabic]
-. Download from https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.devonfw.tools.ide&a=devonfw-ide-scripts&v=LATEST&p=tar.gz[here] and extract the Devonfw distribution in your computer
-
-image:images/howtos/e2e_gen/devonextracted.png[Devon extracted]
-
-. Run setup file.
-image:images/howtos/e2e_gen/ide-install.png[Devon install]
-press enter when it prompts Settings URL:
-Here is the folder structure after exicuting the setup command;
-
-image:images/howtos/e2e_gen/dir-after-ide-install.png[Devon install]
-
-This will setup the devon IDE.
 
 == Steps to create a Sample Project using Cobigen
 
@@ -78,7 +27,9 @@ The HOW_TO is divided in 2 parts:
 
 image:images/howtos/e2e_gen/image9.png[cobigen ionic code genartion]
 
-So, ready to go! We’re going to start from the BE part …
+So, ready to go! We’re going to star
+
+t from the BE part …
 
 === Back End
 
