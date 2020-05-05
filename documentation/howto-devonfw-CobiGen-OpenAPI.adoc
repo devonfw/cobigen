@@ -11,13 +11,6 @@ This article helps to create a sample application using cobigen.
 
 Download and install devonnfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
 
-If _CobiGen_Templates_ is not already imported into your workspace, follow the next steps:
-
-- Click on the Eclipse's menu _File > Import > Existing Projects into Workspace_ and browse to select the `workspaces/main/CobiGen_Templates` directory.
-
-- Click _Finish_ and you should have the _CobiGen_Templates_ as a new project in Eclipse's workspace.
-
-
 == Steps to create a Sample Project using Cobigen
 
 The HOW_TO is divided in 2 parts:
@@ -81,11 +74,10 @@ image:images/howtos/e2e_gen/image16.png[sql file]
 
 *_WARNING_*: please note that there are 2 underscore in the name !
 
-*INSERT* *INTO* EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) *VALUES* (1, 1, 1, 'Stefano','Rossini','stefano.rossini@capgemini.com');
-
-*INSERT* *INTO* EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) *VALUES* (2, 2, 2, 'Angelo','Muresu', 'angelo.muresu@capgemini.com');
-
-*INSERT* *INTO* EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) *VALUES* (3, 3, 3, 'Jaime','Gonzalez', 'jaime.diaz-gonzalez@capgemini.com');
+[source, sql]
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Stefano','Rossini','stefano.rossini@capgemini.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Angelo','Muresu', 'angelo.muresu@capgemini.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Jaime','Gonzalez', 'jaime.diaz-gonzalez@capgemini.com');
 
 image:images/howtos/e2e_gen/image17.png[sql insert]
 
@@ -132,7 +124,7 @@ image:images/howtos/e2e_gen/image23.png[core folder]
 
 *BEFORE to generate the FE*, please start the Tomcat server to check that BE Layer has been generated properly.
 
-To start a server you just have to right click on “_SpringBootApp.java_” -> _run as -> Spring Boot app_
+To start a server you just have to right click on _SpringBootApp.java_ -> _run as -> Spring Boot app_
 
 image:images/howtos/e2e_gen/image24.png[Eclipse run as]
 
@@ -171,11 +163,11 @@ For the specific employee
 http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
 
-Now download Postman tool
-[source, URL]
-https://www.getpostman.com/apps
+Now download https://www.getpostman.com/apps[Postman] to test the rest services.
 
-Once done, you have to create a POST Request for the LOGIN and insert in the body the JSON containing the username and password “waiter”
+
+
+Once done, you have to create a POST Request for the LOGIN and insert in the body the JSON containing the username and password _waiter_
 
 image:images/howtos/e2e_gen/image29.png[postman]
 
@@ -208,7 +200,7 @@ Let’s start now with angular Web and then Ionic app.
 ==== Angular Web App
 
 [arabic]
-.  To generate angular structure, download or clone “*devon4ng-application-template*” from
+.  To generate angular structure, download or clone _*devon4ng-application-template*_ from
 [source, URL]
 https://github.com/devonfw/devon4ng-application-template
 
@@ -234,14 +226,11 @@ image:images/howtos/e2e_gen/image39.png[angular ee layer]
 [arabic, start=6]
 . IMPORTANT now you have to add in the *_app-routing.module.ts_* file the next content, as a child of HomeComponent, in order to enable the route of the new generated component
 
+[source, ts]
 ,\{
-
 path: 'employee',
-
 component: EmployeeGridComponent,
-
 canActivate: [AuthGuard],
-
 },
 
 Following picture explain where to place the above content:
@@ -250,7 +239,7 @@ image:images/howtos/e2e_gen/image40.png[routes]
 
 [arabic, start=7]
 
-. Open the command prompt and execute "devon yarn install" from the base folder, which would download all the required libraries..
+. Open the command prompt and execute _devon yarn install_ from the base folder, which would download all the required libraries..
 
 
 [arabic, start=8]
@@ -275,7 +264,7 @@ security: 'jwt'
 
 *Warning*: REMEMBER to set security filed to *jwt* , if it is not configured already.
 [arabic, start=9]
-. Now run the “*ng serve -o*” command to run the Angular Application.
+. Now run the _*ng serve -o*_ command to run the Angular Application.
 
 image:images/howtos/e2e_gen/image44.png[]
 
@@ -291,7 +280,7 @@ image:images/howtos/e2e_gen/image45.png[]
 ==== Ionic Mobile App
 
 [arabic]
-.   To generate Ionic structure, download or clone “*devon4ng-application-template*” from
+.   To generate Ionic structure, download or clone _*devon4ng-application-template*_ from
 [source, URL]
 https://github.com/devonfw/devon4ng-ionic-application-template
 . Once done, Right click on the *_devonfw.yml_* as you already did before in order to use CobiGen.
@@ -348,7 +337,7 @@ Since We’re going to create apk remember the following pre-conditions:
 
 
 [arabic]
-. Now, open cmd and type the path where your “devon4ng-ionic-application-template” project is present.
+. Now, open cmd and type the path where your _devon4ng-ionic-application-template_ project is present.
 . Run the following commands:
 [loweralpha]
 .. npx cap init
