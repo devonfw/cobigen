@@ -83,19 +83,19 @@ include::cobigen-eclipse_logging[leveloffset=2]
 
 == How to
 
-include::howto_angular-client-generation[leveloffset=2]
+include::howto_angular-client-generation.adoc[leveloffset=2]
 
-include::howto_ionic-client-generation[leveloffset=2]
+include::howto_ionic-client-generation.adoc[leveloffset=2]
 
-include::howto_create-a-new-plugin[leveloffset=2]
+include::howto_create-a-new-plugin.adoc[leveloffset=2]
 
-include::howto_create-external-plugin[leveloffset=2]
+include::howto_create-external-plugin.adoc[leveloffset=2]
 
-include::howto_devon4net[leveloffset=2]
+include::howto_devon4net.adoc[leveloffset=2]
 
-include::howto_update_CobiGen[leveloffset=2]
+include::howto_update_CobiGen.adoc[leveloffset=2]
 
-include::howto_Release-creation[leveloffset=2]
+include::howto_Release-creation.adoc[leveloffset=2]
 
 include::howto-devonfw-CobiGen-OpenAPI.adoc[leveloffset=2]
 
@@ -103,4 +103,4 @@ include::howto-devonfw-ide-CobiGen-PoC-E2E.adoc[leveloffset=2]
 
 == Template Development
 
-include::cobigen-templates_helpful-links[leveloffset=2]
+include::cobigen-templates_helpful-links.adoc[leveloffset=2]
