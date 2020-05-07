@@ -389,9 +389,7 @@ public class JavaUtil {
      * @return Return type of the method annotated with the given annotation, else "null"
      * @throws ClassNotFoundException 
      */
-    @SuppressWarnings("unchecked")
-   	public String getReturnTypeOfMethodAnnotatedWith(Class<?> pojoClass, String annotatedClassName) throws ClassNotFoundException {
-       	Class<? extends Annotation> classObj = (Class<? extends Annotation>)Class.forName(annotatedClassName);
+    public String getReturnTypeOfMethodAnnotatedWith(Class<?> pojoClass, String annotatedClassName) {
        	if (pojoClass == null) {
        		throw new IllegalAccessError(
                        "Class object is null. Cannot generate template as it might obviously depend on reflection.");
@@ -400,8 +398,11 @@ public class JavaUtil {
        	for (Method method : methods) {
            	if (!method.getName().startsWith("get"))
                    continue;
-           	if(method.isAnnotationPresent(classObj)) {
-           		return method.getReturnType().getSimpleName();
+           	Annotation[] annotations = method.getAnnotations();
+           	for(Annotation annotation : annotations) {
+           		if(annotation.annotationType().getTypeName().equals(annotatedClassName)) {
+	           		return method.getReturnType().getSimpleName();
+	           	}
            	}
    		}
        	return "null";
