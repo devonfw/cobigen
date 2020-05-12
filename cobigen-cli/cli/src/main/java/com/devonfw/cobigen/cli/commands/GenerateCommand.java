@@ -350,11 +350,12 @@ public class GenerateCommand implements Callable<Integer> {
                     ParsingUtils.formatJavaSources(report.getGeneratedFiles());
                 } catch (FormatterException e) {
                     LOG.info(
-                        "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
+                        "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.",
+                        LOG.isDebugEnabled() ? e : null);
                 }
             }
         } catch (InputReaderException e) {
-            LOG.error("Invalid input for CobiGen, please check your input file.");
+            LOG.error("Invalid input for CobiGen, please check your input file.", e);
 
         }
     }
