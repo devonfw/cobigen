@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -87,9 +88,9 @@ public class GeneratorWrapperFactory {
                     return new JavaInputGeneratorWrapper(cobigen,
                         ((IJavaElement) firstElement).getJavaProject().getProject(),
                         JavaInputConverter.convertInput(extractedInputs, cobigen));
-                } else if (firstElement instanceof IFile) {
+                } else if (firstElement instanceof IResource) {
                     LOG.info("Create new CobiGen instance for file inputs...");
-                    return new FileInputGeneratorWrapper(cobigen, ((IFile) firstElement).getProject(),
+                    return new FileInputGeneratorWrapper(cobigen, ((IResource) firstElement).getProject(),
                         FileInputConverter.convertInput(cobigen, extractedInputs));
                 }
             } finally {
@@ -183,6 +184,20 @@ public class GeneratorWrapperFactory {
                     }
                     if (initialized) {
                         type = 2;
+                        break;
+                    }
+                    //$FALL-THROUGH$
+                case 3:
+                    if (o instanceof IResource) {
+                        inputObjects.add(o);
+                        initialized = true;
+                    } else if (initialized) {
+                        throw new InvalidInputException(
+                            "Multiple different inputs have been selected of the following types: " + IFile.class + ", "
+                                + o.getClass());
+                    }
+                    if (initialized) {
+                        type = 3;
                         break;
                     }
                     //$FALL-THROUGH$

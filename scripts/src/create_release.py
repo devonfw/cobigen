@@ -35,7 +35,9 @@ def __log_step(message: str):
 #####################################################################
 
 #####################################################################
-def __load_config_file(config : Config):
+
+
+def __load_config_file(config: Config):
     def load_file(path):
         with open(path, 'r') as file:
             try:
@@ -44,7 +46,7 @@ def __load_config_file(config : Config):
                 log_error(exc)
 
     config_dir = "config"
-    non_git_config_path = os.path.join(config_dir,"non_git_config.yml")
+    non_git_config_path = os.path.join(config_dir, "non_git_config.yml")
     git_config_path = os.path.join(config_dir, "git_config.yml")
     if os.path.isfile(git_config_path) and os.path.isfile(git_config_path):
         msg = "[INFO ] We have found a configuration file from your previous execution," \
@@ -53,12 +55,14 @@ def __load_config_file(config : Config):
         if load_file_flag:
             data = {**load_file(non_git_config_path), **load_file(git_config_path)}
             for attr in data:
-                setattr(config,attr,data[attr])
+                setattr(config, attr, data[attr])
             return True
     return False
 #####################################################################
 
 #####################################################################
+
+
 def __store_config(config: Config):
     def config2dic(config, attrs):
         data = dict()
@@ -67,10 +71,10 @@ def __store_config(config: Config):
                 data[attr] = getattr(config, attr)
         return data
 
-    def store_as_yaml(data,path,prefix=""):
+    def store_as_yaml(data, path, prefix=""):
         with open(path, 'w') as outfile:
             yaml.dump(data, outfile, default_flow_style=False)
-        log_info("{}Git configuration has been stored in {}!".format(prefix,path))
+        log_info("{}Git configuration has been stored in {}!".format(prefix, path))
 
     config_dir = "config"
     if not os.path.isdir(config_dir):
@@ -81,7 +85,7 @@ def __store_config(config: Config):
              "gpg_loaded",
              "gpg_keyname"]
     non_git_config_dic = config2dic(config, attrs)
-    non_git_config_path = os.path.join(config_dir,"non_git_config.yml")
+    non_git_config_path = os.path.join(config_dir, "non_git_config.yml")
     store_as_yaml(non_git_config_dic, non_git_config_path, prefix="Non ")
 
     attrs = ["git_username",
@@ -96,6 +100,7 @@ def __store_config(config: Config):
 
 #####################################################################
 
+
 #############################
 log_step("Initialization...")
 #############################
@@ -104,8 +109,8 @@ check_running_in_bash()
 exit_if_not_executed_in_ide_environment()
 
 config = Config()
-loaded_config_flag = __load_config_file(config)
 init_non_git_config(config)
+loaded_config_flag = __load_config_file(config)
 __store_config(config)
 
 git_repo = GitRepo(config)
@@ -132,7 +137,7 @@ report_messages = []
 #####################################################################
 
 
-def run_maven_process_and_handle_error(command: str, execpath: str=config.build_folder_abs):
+def run_maven_process_and_handle_error(command: str, execpath: str = config.build_folder_abs):
     log_info("Execute command '" + command + "'")
     returncode = maven.run_maven_process(execpath, command)
 
@@ -165,16 +170,16 @@ git_repo.checkout(config.branch_to_be_released)
 __log_step("Set the SNAPSHOT version...")
 #############################
 log_info("Set SNAPSHOT version of target release")
-changed_files = maven.set_version(config.release_version + "-SNAPSHOT")
+maven.set_version(config.release_version + "-SNAPSHOT")
 log_info("Git add and commit...")
-git_repo.add(changed_files)
+git_repo.add_modified_files()
 git_repo.commit("set release snapshot version")
 
 #############################
 __log_step("Upgrade dependencies of SNAPSHOT versions and committing it...")
 #############################
 (core_version_in_eclipse_pom, changed_files) = maven.upgrade_snapshot_dependencies()
-git_repo.add(changed_files)
+git_repo.add_modified_files()
 git_repo.commit("upgrade SNAPSHOT dependencies")
 log_info("Pushing Upgrade SNAPSHOT dependencies.")
 git_repo.push()
@@ -192,22 +197,29 @@ __log_step("Update documentation...")
 #############################
 continue_run = True
 if config.test_run:
-    continue_run = prompt_yesno_question("[TEST] Would now update documentation. Continue (yes) or skip (no)?")    
+    continue_run = prompt_yesno_question("[TEST] Would now update documentation. Continue (yes) or skip (no)?")
 
 if continue_run:
     git_repo.update_documentation()
     git_repo.commit("update wiki docs")
-    git_repo.push()
 
 #############################
-__log_step("Check for working CI build and tests...")
+# __log_step("Check for working CI build and tests...")
 #############################
-if not prompt_yesno_question("Wait until the build of the last push ran through. Are the tests on branch " + config.branch_to_be_released + " passing in CI?"):
-    log_error("Please correct the build failures before releasing!")
-    sys.exit()
-else:
-    report_messages.append("User confirmed that tests are running on CI and the build is not failing after pushing release changes to development branch.")
-    log_info("Build is reported to be successful.")
+# if not prompt_yesno_question("Wait until the build of the last push ran through. Are the tests on branch " + config.branch_to_be_released + " passing in CI?"):
+#    log_error("Please correct the build failures before releasing!")
+#    sys.exit()
+# else:
+#    report_messages.append("User confirmed that tests are running on CI and the build is not failing after pushing release changes to development branch.")
+#    log_info("Build is reported to be successful.")
+
+#############################
+__log_step("Set release version...")
+#############################
+changed_files = maven.set_version(config.release_version)
+git_repo.add_modified_files()
+git_repo.commit("Set release version")
+git_repo.push()
 
 #############################
 __log_step("Merging " + config.branch_to_be_released + " to master...")
@@ -242,17 +254,11 @@ if is_pom_changed:
 log_info("Validation finished.")
 
 #############################
-__log_step("Set release version...")
-#############################
-changed_files = maven.set_version(config.release_version)
-git_repo.add(changed_files)
-git_repo.commit("Set release version")
-
-#############################
 __log_step("Deploy artifacts to nexus and update sites...")
 #############################
 
-def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
+
+def __deploy_m2_as_p2(oss: bool, execpath: str = config.build_folder_abs):
     activation_str = ""
     if oss:
         activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable
@@ -261,21 +267,22 @@ def __deploy_m2_as_p2(oss: bool, execpath: str=config.build_folder_abs):
     run_maven_process_and_handle_error("mvn deploy -U "+activation_str+" -Dmaven.test.skip=true -Dbintray.repository=cobigen.p2", execpath=execpath)
 
 
-def __deploy_m2_only(oss: bool, execpath: str=config.build_folder_abs):
+def __deploy_m2_only(oss: bool, execpath: str = config.build_folder_abs):
     activation_str = ""
     if oss:
-        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable    
+        activation_str = "-Poss -Dgpg.keyname="+config.gpg_keyname + " -Dgpg.executable="+config.gpg_executable
     run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U "+activation_str, execpath=execpath)
 
 
-def __deploy_p2(oss: bool, execpath: str=config.build_folder_abs):
-    run_maven_process_and_handle_error("mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-photon -Dbintray.repository=cobigen.p2", execpath=execpath)
+def __deploy_p2(oss: bool, execpath: str = config.build_folder_abs):
+    run_maven_process_and_handle_error(
+        "mvn clean -Dmaven.test.skip=true deploy -U -Pp2-build-stable,p2-build-photon -Dbintray.repository=cobigen.p2", execpath=execpath)
 
 
 if config.dry_run or config.test_run:
     log_info_dry("Would now deploy to maven central/OSS & updatesite. Skipping...")
 else:
-    if config.branch_to_be_released not in [config.branch_eclipseplugin, config.branch_mavenplugin, config.branch_core, config.branch_javaplugin, config.branch_openapiplugin]:
+    if config.branch_to_be_released not in [config.branch_eclipseplugin, config.branch_mavenplugin, config.branch_core, config.branch_javaplugin, config.branch_openapiplugin, 'dev_cli']:
         __deploy_m2_only(config.oss)
         __deploy_m2_as_p2(config.oss)
     elif config.branch_to_be_released == config.branch_javaplugin:
@@ -289,7 +296,7 @@ else:
     else:  # core + maven
         __deploy_m2_only(config.oss)
 
-    if config.branch_to_be_released != config.branch_core and config.branch_to_be_released != config.branch_mavenplugin and not prompt_yesno_question("Please check installation of module from update site! Was the installation of the newly deployed bundle successful?"):
+    if config.branch_to_be_released != config.branch_core and config.branch_to_be_released != config.branch_mavenplugin and config.branch_to_be_released != 'dev_cli' and not prompt_yesno_question("Please check installation of module from update site! Was the installation of the newly deployed bundle successful?"):
         log_info("Aborting release...")
         git_repo.reset()
         sys.exit()
@@ -314,7 +321,7 @@ else:
         log_info("Milestone '"+milestone.title + "' is already closed, please check.")
     else:
         if milestone.description is None:
-            #TODO: milestone.description is sometimes None
+            # TODO: milestone.description is sometimes None
             milestone.edit(milestone.title, "closed", "Void description error")
         else:
             milestone.edit(milestone.title, "closed", milestone.description)
@@ -348,7 +355,7 @@ __log_step("Set next release version...")
 #############################
 git_repo.checkout(config.branch_to_be_released)
 changed_files = maven.set_version(config.next_version + "-SNAPSHOT")
-git_repo.add(changed_files)
+git_repo.add_modified_files()
 git_repo.commit("Set next development version")
 git_repo.push(True)
 
@@ -366,5 +373,13 @@ else:
     release_issue.create_comment(closing_comment)
     release_issue.edit(state="closed")
     log_info("Closed issue #" + str(release_issue.number) + ": " + release_issue.title)
+
+#############################
+__log_step("Cleaning up temporary files on your pc...")
+#############################
+if hasattr(config, "temp_release_dir"):
+    log_info("Cleaning up " + config.temp_release_dir + " ...")
+else:
+    log_info("Nothing to cleanup!")
 
 log_info("Congratz! A new release! Script executed successfully!")

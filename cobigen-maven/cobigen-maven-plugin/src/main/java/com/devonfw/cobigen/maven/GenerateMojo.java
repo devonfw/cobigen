@@ -9,31 +9,17 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.io.Charsets;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -45,11 +31,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
@@ -59,9 +40,9 @@ import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.inject.internal.util.Sets;
 
 /**
  * CobiGen generation Mojo, which handles generation using a configuration folder/archive
@@ -120,7 +101,12 @@ public class GenerateMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        CobiGen cobiGen = createCobiGenInstance();
+        CobiGen cobiGen = null;
+        try {
+            cobiGen = createCobiGenInstance();
+        } catch (MojoExecutionException e) {
+            throw new MojoExecutionException("An error occured while creating the CobiGen instance", e);
+        }
 
         List<Object> inputs = collectInputs(cobiGen);
         if (inputs.isEmpty()) {
@@ -139,9 +125,18 @@ public class GenerateMojo extends AbstractMojo {
         try {
             for (Object input : inputs) {
                 getLog().debug("Invoke CobiGen for input " + input);
-                List<Class<?>> utilClasses = resolveUtilClasses();
-                GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
-                    Paths.get(destinationRoot.toURI()), forceOverride, utilClasses);
+
+                final ClassRealm classRealm = pluginDescriptor.getClassRealm();
+
+                GenerationReportTo report;
+                if (configurationFolder != null) {
+                    classRealm.addURL(configurationFolder.toURI().toURL());
+                    report = cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()),
+                        forceOverride, classRealm, null, configurationFolder.toPath());
+                } else {
+                    report = cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()),
+                        forceOverride, classRealm, null, null);
+                }
 
                 if (!report.isSuccessful()) {
                     for (Throwable e : report.getErrors()) {
@@ -171,223 +166,35 @@ public class GenerateMojo extends AbstractMojo {
      * @return the initialized {@link CobiGen} instance
      * @throws MojoExecutionException
      *             if the configuration could not be read
-     * @throws MojoFailureException
-     *             if no configuration is given
      */
-    private CobiGen createCobiGenInstance() throws MojoExecutionException, MojoFailureException {
+    private CobiGen createCobiGenInstance() throws MojoExecutionException {
         CobiGen cobiGen;
+
         if (configurationFolder != null) {
+
+            getLog().debug("configurationFolder found in:" + configurationFolder.toURI().toString());
             try {
                 cobiGen = CobiGenFactory.create(configurationFolder.toURI());
             } catch (IOException e) {
                 throw new MojoExecutionException("The configured configuration folder could not be read.", e);
             }
         } else {
-            List<Dependency> dependencies =
-                execution.getMojoDescriptor().getPluginDescriptor().getPlugin().getDependencies();
 
-            if (dependencies != null && !dependencies.isEmpty()) {
-                Dependency dependency = dependencies.iterator().next();
-                Artifact templatesArtifact = execution.getMojoDescriptor().getPluginDescriptor().getArtifactMap()
-                    .get(dependency.getGroupId() + ":" + dependency.getArtifactId());
-                try {
-                    cobiGen = CobiGenFactory.create(templatesArtifact.getFile().toURI());
-                } catch (IOException e) {
-                    throw new MojoExecutionException("The templates artifact could not be read in location '"
-                        + templatesArtifact.getFile().toURI() + "'.", e);
-                }
-            } else {
-                throw new MojoFailureException(
-                    "No configuration injected. Please inject a 'configurationFolder' to a local folder"
-                        + " or inject an archive as plugin dependency.");
+            final ClassRealm classRealm = pluginDescriptor.getClassRealm();
+            URL contextConfigurationLocation = TemplatesClassloaderUtil.getContextConfiguration(classRealm);
+
+            URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
+
+            getLog().debug("reading configuration from file:" + configFile.toString());
+
+            try {
+                cobiGen = CobiGenFactory.create(configFile);
+            } catch (IOException e) {
+                throw new MojoExecutionException("The templates artifact could not be read in location '"
+                    + contextConfigurationLocation.getFile() + "'.", e);
             }
         }
         return cobiGen;
-    }
-
-    /**
-     * Walks the class path in search of an 'context.xml' resource to identify the enclosing folder or jar
-     * file. That location is then searched for class files and a list with those loaded classes is returned.
-     * If the sources are not compiled, the templates will not be able to be generated.
-     * @return a List of Classes for template generation.
-     * @throws MojoExecutionException
-     *             When no context.xml can be found
-     */
-    private List<Class<?>> resolveUtilClasses() throws MojoExecutionException {
-        final List<Class<?>> result = new LinkedList<>();
-        final ClassRealm classRealm = pluginDescriptor.getClassRealm();
-        if (configurationFolder != null) {
-            try {
-                pluginDescriptor.getClassRealm().addURL(configurationFolder.toURI().toURL());
-                getLog().debug("Added " + configurationFolder.toURI().toURL().toString() + " to class path");
-            } catch (MalformedURLException e) {
-                getLog().error("Could not add configuration folder " + configurationFolder.toString(), e);
-            }
-        }
-
-        Path templateRoot;
-        URL contextConfigurationLocation = classRealm.getResource("context.xml");
-        if (contextConfigurationLocation == null
-            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
-            contextConfigurationLocation = classRealm.getResource("src/main/templates/context.xml");
-            if (contextConfigurationLocation == null) {
-                throw new MojoExecutionException("No context.xml could be found in the classpath!");
-            } else {
-                templateRoot =
-                    Paths.get(URI.create(contextConfigurationLocation.toString())).getParent().getParent().getParent();
-            }
-        } else {
-            templateRoot = Paths.get(URI.create(contextConfigurationLocation.toString()));
-        }
-        getLog().debug("Found context.xml @ " + contextConfigurationLocation.toString());
-        final List<String> foundClasses = new LinkedList<>();
-        if (contextConfigurationLocation.toString().startsWith("jar")) {
-            getLog().info("Processing configuration archive " + contextConfigurationLocation.toString());
-            try {
-                // Get the URI of the jar from the URL of the contained context.xml
-                URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
-                FileSystem jarfs = FileSystems.getFileSystem(jarUri);
-
-                // walk the jar file
-                getLog().debug("Searching for classes in " + jarUri.toString());
-                Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
-
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(".class")) {
-                            getLog().debug("    * Found class file " + file.toString());
-                            // remove the leading '/' and the trailing '.class'
-                            String fileName = file.toString().substring(1, file.toString().length() - 6);
-                            // replace the path separator '/' with package separator '.' and add it to the
-                            // list of found files
-                            foundClasses.add(fileName.replace("/", "."));
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                        // Log errors but do not throw an exception
-                        getLog().warn(exc);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                getLog().error(e);
-            }
-            for (String className : foundClasses) {
-                try {
-                    result.add(classRealm.loadClass(className));
-                } catch (ClassNotFoundException e) {
-                    getLog().warn("Could not load " + className + " from classpath", e);
-                }
-            }
-        } else {
-            templateRoot = templateRoot.getParent();
-            getLog().info("Processing configuration folder " + templateRoot.toString());
-            getLog().debug("Searching for classes ...");
-            final List<Path> foundPaths = new LinkedList<>();
-            try {
-                Files.walkFileTree(templateRoot, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(".class")) {
-                            foundPaths.add(file);
-                            getLog().debug("    * Found class file " + file.toString());
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                        // Log errors but do not throw an exception
-                        getLog().warn(exc);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                getLog().error(e);
-            }
-            if (foundPaths.size() > 0) {
-
-                getLog().debug("Cleanup test classes ...");
-                String classOutput = getClassOutputPathFromDotClasspathFile(templateRoot);
-                if (classOutput != null) {
-                    Path classOutputPath = Paths.get(classOutput);
-                    Iterator<Path> it = foundPaths.iterator();
-                    while (it.hasNext()) {
-                        Path next = it.next();
-                        if (!templateRoot.relativize(next).startsWith(classOutputPath)) {
-                            getLog().debug("    * Removed class file " + next.toString());
-                            it.remove();
-                        }
-                    }
-
-                    Path absoluteClassOutputPath = templateRoot.resolve(classOutputPath);
-                    try {
-                        URL classOutputUrl = absoluteClassOutputPath.toUri().toURL();
-                        pluginDescriptor.getClassRealm().addURL(classOutputUrl);
-                        getLog().debug("Added " + classOutputUrl + " to class path");
-                    } catch (MalformedURLException e) {
-                        getLog().error("Could not add class output folder " + absoluteClassOutputPath, e);
-                    }
-
-                    for (Path path : foundPaths) {
-                        try {
-                            result.add(loadClassByPath(templateRoot.relativize(path), classRealm));
-                        } catch (ClassNotFoundException e) {
-                            getLog().error(e);
-                        }
-                    }
-                } else {
-                    getLog().warn("Could not load any classes as of absence of .classpath file");
-                }
-            } else {
-                getLog().info("Could not find any compiled classes to be loaded as util classes.");
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Reads the .classpath file top level to root and reads the classpathentry of kind output and returns its
-     * value
-     * @param root
-     *            the root folder to search .classpath file in
-     * @return the output path or null
-     */
-    private String getClassOutputPathFromDotClasspathFile(Path root) {
-        Path file = root.resolve(".classpath");
-        if (Files.exists(file) && Files.isRegularFile(file)) {
-            getLog().info("Found a .classpath file");
-
-            try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document doc = db.parse(file.toFile());
-                Element classpath = doc.getDocumentElement(); // should be classpath
-
-                NodeList childs = classpath.getChildNodes(); // should be classpathentry
-                for (int i = 0; i < childs.getLength(); i++) {
-                    Node classpathentry = childs.item(i);
-                    if (classpathentry.getNodeName().equals("classpathentry")) {
-                        Node kind = classpathentry.getAttributes().getNamedItem("kind");
-                        if (kind.getTextContent().equals("output")
-                            && classpathentry.getAttributes().getNamedItem("path") != null) {
-                            String outputPath = classpathentry.getAttributes().getNamedItem("path").getTextContent();
-                            getLog().info("Found class output path: " + outputPath);
-                            return outputPath;
-                        }
-                    }
-                }
-            } catch (ParserConfigurationException | SAXException e) {
-                getLog().warn("Could not read .classpath file. Uknown format.");
-            } catch (IOException e) {
-                getLog().warn("Could not access .classpath file.");
-            }
-        }
-        return null;
     }
 
     /**
@@ -401,7 +208,7 @@ public class GenerateMojo extends AbstractMojo {
      */
     private List<Object> collectInputs(CobiGen cobigen) throws MojoFailureException {
         getLog().debug("Collect inputs...");
-        List<Object> inputs = Lists.newLinkedList();
+        List<Object> inputs = new LinkedList<>();
 
         ClassLoader cl = getProjectClassLoader();
         if (inputPackages != null && !inputPackages.isEmpty()) {
@@ -409,12 +216,12 @@ public class GenerateMojo extends AbstractMojo {
                 getLog().debug("Resolve package '" + inputPackage + "'");
 
                 // collect all source roots to resolve input paths
-                List<String> sourceRoots = Lists.newLinkedList();
+                List<String> sourceRoots = new LinkedList<>();
                 sourceRoots.addAll(project.getCompileSourceRoots());
                 sourceRoots.addAll(project.getTestCompileSourceRoots());
 
                 boolean sourceFound = false;
-                List<Path> sourcePathsObserved = Lists.newLinkedList();
+                List<Path> sourcePathsObserved = new LinkedList<>();
                 for (String sourceRoot : sourceRoots) {
                     String packagePath =
                         inputPackage.replaceAll("\\.", Matcher.quoteReplacement(System.getProperty("file.separator")));
@@ -572,64 +379,12 @@ public class GenerateMojo extends AbstractMojo {
                 for (URL url : loader.getURLs()) {
                     getLog().debug("    * " + url.toString());
                 }
-                URL contextURL = loader.getResource("context.xml");
-                if (contextURL != null) {
-                    getLog().debug("Found content.xml @ " + contextURL.toString());
-                } else {
-                    getLog().warn("No context.xml found in classpath");
-                }
-
             }
             return loader;
         } catch (DependencyResolutionRequiredException e) {
             getLog().error("Dependency resolution failed", e);
             throw new MojoFailureException("Dependency resolution failed", e);
         }
-    }
-
-    /**
-     * Tries to load a class over it's file path. If the path is /a/b/c/Some.class this method tries to load
-     * the following classes in this order: <list>
-     * <li>Some</li>
-     * <li>c.Some</li>
-     * <li>b.c.Some</li>
-     * <li>a.b.c.Some</> </list>
-     * @param classPath
-     *            the {@link Path} of the Class file
-     * @param cl
-     *            the used ClassLoader
-     * @return Class<?> of the class file
-     * @throws ClassNotFoundException
-     *             if no class could be found all the way up to the path root
-     */
-    private Class<?> loadClassByPath(Path classPath, ClassLoader cl) throws ClassNotFoundException {
-        // Get a list with all path segments, starting with the class name
-        Queue<String> pathSegments = new LinkedList<>();
-        // Split the path by the systems file separator and without the .class suffix
-        String[] pathSegmentsArray = classPath.toString().substring(0, classPath.toString().length() - 6)
-            .split("\\".equals(File.separator) ? "\\\\" : File.separator);
-        for (int i = pathSegmentsArray.length - 1; i > -1; i--) {
-            pathSegments.add(pathSegmentsArray[i]);
-        }
-
-        if (!pathSegments.isEmpty()) {
-            String className = "";
-            while (!pathSegments.isEmpty()) {
-                if (className == "") {
-                    className = pathSegments.poll();
-                } else {
-                    className = pathSegments.poll() + "." + className;
-                }
-                try {
-                    getLog().debug("Try to load " + className);
-                    return cl.loadClass(className);
-                } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                    continue;
-                }
-            }
-        }
-        throw new ClassNotFoundException("Could not find class on path " + classPath.toString());
-
     }
 
     /**

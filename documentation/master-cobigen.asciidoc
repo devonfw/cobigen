@@ -6,15 +6,16 @@ This document contains the documentation of the CobiGen core module as well as a
 
 **Current versions:**
 
-* CobiGen - Eclipse Plug-in v5.1.0
-* CobiGen - Maven Build Plug-in v5.0.0
+* CobiGen - Eclipse Plug-in v5.2.0
+* CobiGen - Maven Build Plug-in v5.2.0
+* CobiGen CLI v1.2.0
 
 ---
 
-* CobiGen v6.0.0
+* CobiGen v6.1.0
 * CobiGen - Java Plug-in v2.2.0
 * CobiGen - XML Plug-in v4.2.0
-* CobiGen - TypeScript Plug-in v2.4.2
+* CobiGen - TypeScript Plug-in v2.4.3
 * CobiGen - Property Plug-in v2.1.0
 * CobiGen - Text Merger v2.1.0
 * CobiGen - JSON Plug-in v2.1.0
@@ -100,6 +101,8 @@ include::howto_Release-creation[leveloffset=2]
 include::howto-devonfw-CobiGen-OpenAPI.adoc[leveloffset=2]
 
 include::howto-devonfw-ide-CobiGen-PoC-E2E.adoc[leveloffset=2]
+
+include::howto_enable_composite_primary_keys_in_entity[leveloffset=2]
 
 == Template Development
 
