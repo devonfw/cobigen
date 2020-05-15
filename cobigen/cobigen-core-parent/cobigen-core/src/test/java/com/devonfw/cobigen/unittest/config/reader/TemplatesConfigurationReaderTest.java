@@ -492,7 +492,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         } catch (Exception e) {
             message = e.getMessage();
         }
-        assertFalse(message.indexOf("Bar") == -1);
+        assertThat(message).contains("Bar");
     }
 
     /**
