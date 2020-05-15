@@ -98,8 +98,12 @@ include::howto_update_CobiGen[leveloffset=2]
 
 include::howto_Release-creation[leveloffset=2]
 
+include::howto-devonfw-CobiGen-OpenAPI.adoc[leveloffset=2]
+
+include::howto-devonfw-ide-CobiGen-PoC-E2E.adoc[leveloffset=2]
+
 include::howto_enable_composite_primary_keys_in_entity[leveloffset=2]
 
 == Template Development
 
-include::cobigen-templates_helpful-links[leveloffset=2]
+include::cobigen-templates_helpful-links.adoc[leveloffset=2]
