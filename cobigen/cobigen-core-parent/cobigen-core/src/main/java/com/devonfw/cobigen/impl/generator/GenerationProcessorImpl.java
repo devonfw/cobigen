@@ -165,7 +165,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
         // generate
-        Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
+        Map<File, File> origToTmpFileTrace = Maps.newHashMap();
         try {
             for (TemplateTo template : templatesToBeGenerated) {
                 try {
@@ -173,7 +173,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                         configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
                     TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
                     InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-                    tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
+                    generate(template, triggerInterpreter, origToTmpFileTrace);
                     progressCallback.accept("generates... ",
                         Math.round(1 / (float) templatesToBeGenerated.size() * 800));
                 } catch (CobiGenCancellationException e) {
@@ -198,11 +198,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             // do nothing if cancelled
         } else if (generationReport.isSuccessful()) {
             try {
-                for (Entry<File, File> tmpToOrigFile : tmpToOrigFileTrace.entrySet()) {
-                    Files.createDirectories(tmpToOrigFile.getValue().toPath().getParent());
-                    Files.copy(tmpToOrigFile.getKey().toPath(), tmpToOrigFile.getValue().toPath(),
+                for (Entry<File, File> origToTmpFile : origToTmpFileTrace.entrySet()) {
+                    Files.createDirectories(origToTmpFile.getKey().toPath().getParent());
+                    Files.copy(origToTmpFile.getValue().toPath(), origToTmpFile.getKey().toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
-                    generationReport.addGeneratedFile(tmpToOrigFile.getValue().toPath());
+                    generationReport.addGeneratedFile(origToTmpFile.getKey().toPath());
                 }
                 deleteTemporaryFiles();
             } catch (IOException e) {
@@ -298,12 +298,14 @@ public class GenerationProcessorImpl implements GenerationProcessor {
      *            to be processed for generation
      * @param triggerInterpreter
      *            {@link TriggerInterpreter} to be used for reading the input and creating the model
+     * @param origToTmpFileTrace
+     *            the mapping of temporary generated files to their original target destination to eventually
+     *            finalizing the generation process
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
-     * @return the mapping of temporary generated files to their original target destination to eventually
-     *         finalizing the generation process
      */
-    private Map<File, File> generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
+    private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter,
+        Map<File, File> origToTmpFileTrace) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
 
@@ -326,7 +328,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             throw new UnknownTemplateException(template.getId());
         }
 
-        Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (Object generatorInput : inputObjects) {
 
             Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput, templateEty);
@@ -343,9 +344,15 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTemplatePath());
 
             File originalFile = targetRootPath.resolve(resolvedTargetDestinationPath).toFile();
-            File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
-            // remember mapping to later on copy the generated resources to its target destinations
-            tmpToOrigFileTrace.put(tmpOriginalFile, originalFile);
+            File tmpOriginalFile;
+            if (origToTmpFileTrace.containsKey(originalFile)) {
+                // use the available temporary file
+                tmpOriginalFile = origToTmpFileTrace.get(originalFile);
+            } else {
+                tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
+                // remember mapping to later on copy the generated resources to its target destinations
+                origToTmpFileTrace.put(originalFile, tmpOriginalFile);
+            }
 
             if (originalFile.exists() || tmpOriginalFile.exists()) {
                 if (!tmpOriginalFile.exists()) {
@@ -415,7 +422,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
             }
         }
-        return tmpToOrigFileTrace;
     }
 
     /**

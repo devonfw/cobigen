@@ -287,7 +287,6 @@ public class TemplatesConfigurationReader {
                 if (templates.containsKey(ext.getRef())) {
                     Template template = templates.get(ext.getRef());
                     if (ext.getDestinationPath() != null) {
-                        template.setUnresolvedTemplatePath(ext.getDestinationPath());
                         template.setUnresolvedTargetPath(ext.getDestinationPath());
                     }
                     if (ext.getMergeStrategy() != null) {
