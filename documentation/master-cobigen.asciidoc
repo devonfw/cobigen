@@ -6,7 +6,7 @@ This document contains the documentation of the CobiGen core module as well as a
 
 **Current versions:**
 
-* CobiGen - Eclipse Plug-in v5.2.0
+* CobiGen - Eclipse Plug-in v5.2.1
 * CobiGen - Maven Build Plug-in v5.0.0
 
 ---
