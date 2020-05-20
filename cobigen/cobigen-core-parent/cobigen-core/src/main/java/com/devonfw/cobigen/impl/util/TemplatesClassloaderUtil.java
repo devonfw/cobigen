@@ -72,11 +72,18 @@ public class TemplatesClassloaderUtil {
      * Initializes the ClassLoader with given URLs array
      * @param urls
      *            URL[] Array of URLs to load into ClassLoader
+     * @param classLoader
+     *            to add urls to
      * @return ClassLoader to load resources from
      */
-    private static ClassLoader getUrlClassLoader(URL[] urls) {
+    private static ClassLoader getUrlClassLoader(URL[] urls, ClassLoader classLoader) {
         ClassLoader inputClassLoader = null;
-        inputClassLoader = URLClassLoader.newInstance(urls, TemplatesClassloaderUtil.class.getClassLoader());
+        if (classLoader != null) {
+            inputClassLoader = URLClassLoader.newInstance(urls, classLoader);
+        } else {
+            inputClassLoader = URLClassLoader.newInstance(urls, TemplatesClassloaderUtil.class.getClassLoader());
+        }
+
         return inputClassLoader;
     }
 
@@ -123,7 +130,7 @@ public class TemplatesClassloaderUtil {
         if (configurationFolder != null) {
             templateRoot = configurationFolder;
             classLoaderUrls = addFoldersToClassLoaderUrls(configurationFolder);
-            inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}));
+            inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
             contextConfigurationLocation = configurationFolder.toUri().toURL();
         } else {
             inputClassLoader = classLoader;
