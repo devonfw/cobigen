@@ -18,13 +18,12 @@ class GitRepo:
         self.__config: Config = config
         try:
             if not path:
-                self.__repo = Repo(config.root_path)
-            else:
-                self.__repo = Repo(path)
+                path = config.root_path
+            self.__repo = Repo(path)
             assert not self.__repo.bare
             self.origin = self.__repo.remote('origin')
         except InvalidGitRepositoryError:
-            log_error("Path is not a git repository. Please go to valid git repository!")
+            log_error("Path " + path + " is not a git repository. Please go to valid git repository!")
             sys.exit()
 
     def pull(self, branch_name: str = None):

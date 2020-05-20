@@ -5,6 +5,7 @@ class Config():
     def __init__(self):
         self.wiki_version_overview_page: str = "master-cobigen.asciidoc"
         self.root_path: str
+        self.temp_root_path: str
 
         self.oss: bool = False
         self.gpg_keyname: str
@@ -32,6 +33,7 @@ class Config():
 
         self.groupid_cobigen: str = "com.devonfw.cobigen"
         self.artifactid_core: str = "core"
+        self.artifactid_core_api: str = "core-api"
 
         self.build_folder: str
         self.build_folder_abs: str

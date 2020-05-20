@@ -2,10 +2,10 @@ import getopt
 import os
 import re
 import sys
-import tempfile
 
 from git.cmd import Git
 from git.exc import InvalidGitRepositoryError
+from git.repo.base import Repo
 
 from tools.config import Config
 from tools.git_repo import GitRepo
@@ -28,8 +28,7 @@ def init_non_git_config(config: Config):
     def __set_path(config: Config, attr: str):
         while True:
             if not hasattr(config, attr) or not getattr(config, attr):
-                tempdir = tempfile.TemporaryDirectory()
-                path = tempdir.name
+                path = config.temp_root_path
                 if not hasattr(config, "two_factor_authentication"):
                     config.two_factor_authentication = prompt_yesno_question(
                         "Are you using two-factor authentication on GitHub?")
@@ -38,7 +37,7 @@ def init_non_git_config(config: Config):
                 else:
                     repository_url = "https://github.com/" + config.github_repo + ".git"
                 log_info("Cloning temporary repository from " + repository_url + " to " + str(path) + " for processing the release...")
-                Git(path).clone(repository_url)
+                Repo.clone_from(repository_url, path, multi_options=["--config core.longpaths=true"])
             else:
                 path = getattr(config, attr)  # set by script param
 
@@ -54,7 +53,7 @@ def init_non_git_config(config: Config):
             try:
                 Git(path)
             except InvalidGitRepositoryError:
-                log_error("Path is not a git repository.")
+                log_error("Path " + path + " is not a git repository.")
 
             setattr(config, attr, path)
 
@@ -66,8 +65,6 @@ def init_non_git_config(config: Config):
 
     ###################################################################################################################################
 
-    __set_path(config, "root_path")
-
     if not hasattr(config, 'github_repo'):
         config.github_repo = ""
     repo_pattern = re.compile(r'[a-zA-Z]+/[a-zA-Z]+')
@@ -78,6 +75,8 @@ def init_non_git_config(config: Config):
     log_info("Releasing against GitHub repository '"+config.github_repo+"'")
     config.git_repo_name = config.github_repo.split(sep='/')[1]
     config.git_repo_org = config.github_repo.split(sep='/')[0]
+
+    __set_path(config, "root_path")
 
     if not config.oss:
         config.oss = prompt_yesno_question("Should the release been published to maven central as open source?")
