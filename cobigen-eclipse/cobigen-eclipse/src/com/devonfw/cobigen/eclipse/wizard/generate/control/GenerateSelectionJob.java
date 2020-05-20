@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -27,12 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.eclipse.common.AbstractCobiGenJob;
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;
+import com.devonfw.cobigen.eclipse.common.tools.ExceptionHandler;
 import com.devonfw.cobigen.eclipse.common.tools.PathUtil;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.generator.CobiGenWrapper;
@@ -156,16 +155,8 @@ public class GenerateSelectionJob extends AbstractCobiGenJob {
                     LOG.error("An error occurred during generation:", e);
                 }
             }
-        } catch (CoreException e) {
-            LOG.error("Eclipse internal Exception", e);
-            PlatformUIUtil.openErrorDialog("An eclipse internal exception occurred during processing:\n"
-                + e.getMessage() + "\n If this problem persists please report it to the CobiGen developers.", e);
-        } catch (CobiGenRuntimeException e) {
-            LOG.error("CobiGen Exception:\n{}", e.getMessage(), e);
-            PlatformUIUtil.openErrorDialog(e.getMessage(), e);
         } catch (Throwable e) {
-            LOG.error("An unexpected exception occurred!", e);
-            PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
+            ExceptionHandler.handle(e, null);
         } finally {
             LOG.info("Finished processing generation.");
             monitor.done();

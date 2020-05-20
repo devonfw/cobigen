@@ -472,28 +472,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     }
 
     /**
-     * Resolves all target files for the given templates. Only resources which are located in the workspace
-     * will be returned.
-     * @param generatedTemplates
-     *            templates for which the target files should be resolved
-     * @return workspace dependent paths of all possible generated resources.
-     */
-    public Set<String> getAllTargetPathsInWorkspace(List<TemplateTo> generatedTemplates) {
-        Set<String> paths = new HashSet<>();
-
-        List<Object> inputs = cobiGen.resolveContainers(this.inputs.get(0));
-        for (TemplateTo template : generatedTemplates) {
-            for (Object input : inputs) {
-                String path = resolveWorkspaceDependentTemplateDestinationPath(template, input);
-                if (path != null) {
-                    paths.add(path);
-                }
-            }
-        }
-        return paths;
-    }
-
-    /**
      * Returns the set of all workspace relative destination paths for the templates of the given
      * {@link ComparableIncrement} mapped to the correlated {@link TemplateTo}. This is done for the
      * {@link #getCurrentRepresentingInput() current representing input}.
@@ -748,21 +726,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             LOG.debug("Ended checking selection validity for the use as Java input.");
         }
         return firstTriggers != null && !firstTriggers.isEmpty();
-    }
-
-    /**
-     * Resolves the template's destination paths by while using the {@link #getCurrentRepresentingInput()} as
-     * input
-     * @param template
-     *            the destination path should be resolved for
-     * @return the destination {@link Path}
-     */
-    public Path resolveTemplateDestinationPath(TemplateTo template) {
-        Path resolvedPath = resolvedDestPathsCache.get(template);
-        if (resolvedPath != null) {
-            return resolvedPath;
-        }
-        return resolveTemplateDestinationPath(template, getCurrentRepresentingInput());
     }
 
     /**
