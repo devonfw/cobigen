@@ -564,15 +564,14 @@ public class GenerateCommand implements Callable<Integer> {
         	if(!isIncrements) {
         		String description = ((TemplateTo) matching.get(i)).getId();
         		JaccardDistance distance = new JaccardDistance();
-                scores.put(matching.get(i), distance.apply(description.toUpperCase(), userInput.toUpperCase()));
+        		scores.put(matching.get(i), distance.apply(description.toUpperCase(), userInput.toUpperCase()));
         	} else {
         		String description = ((IncrementTo) matching.get(i)).getDescription();
         		String id = ((IncrementTo) matching.get(i)).getId();
         		JaccardDistance distance = new JaccardDistance();
         		Double descriptionDistance = distance.apply(description.toUpperCase(), userInput.toUpperCase());
         		Double idDistance = distance.apply(id.toUpperCase(), userInput.toUpperCase());
-        		Double finalDistance = (idDistance<descriptionDistance)? idDistance : descriptionDistance;
-        		scores.put(matching.get(i), finalDistance);
+        		scores.put(matching.get(i), Math.min(idDistance, descriptionDistance));
         	}
         }
 
