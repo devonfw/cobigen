@@ -600,6 +600,12 @@ public class GenerateCommand implements Callable<Integer> {
             } else {
                 String description = ((IncrementTo) artifact).getDescription();
                 String id = ((IncrementTo) artifact).getId();
+                if ((description.equalsIgnoreCase(userInput)
+                        || id.equalsIgnoreCase(userInput))
+                        || sorted.get(artifact) <= SELECTION_THRESHOLD) {
+                    chosen.add(tmp);
+                    return (ArrayList<? extends GenerableArtifact>) chosen;
+                }
                 if ((description.toUpperCase().contains(userInput.toUpperCase())
                         || id.toUpperCase().contains(userInput.toUpperCase()))
                         || sorted.get(artifact) <= SELECTION_THRESHOLD) {
