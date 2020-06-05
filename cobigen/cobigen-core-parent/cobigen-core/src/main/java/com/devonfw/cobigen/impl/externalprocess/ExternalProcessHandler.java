@@ -251,6 +251,8 @@ public class ExternalProcessHandler {
             LOG.error("Unable to start the exe/server", e);
         }
 
+        LOG.info("Try to start server at port " + port);
+
         return true;
     }
 
@@ -266,17 +268,6 @@ public class ExternalProcessHandler {
             return true;
         }
 
-        try {
-            if (removeOldVersions(exeName, exeFile.getName())) {
-                LOG.info(
-                    "Cleaning up the external servers folder because something strange was found. Server: " + exeName);
-                Files.deleteIfExists(Paths.get(filePath));
-                return true;
-            }
-        } catch (IOException e) {
-            LOG.error(
-                "Not able to clean externalservers folder, but we will keep the execution as this is not a blocker", e);
-        }
         return false;
     }
 
@@ -386,8 +377,6 @@ public class ExternalProcessHandler {
 
         // Remove tar file
         Files.deleteIfExists(tarPath);
-        // Now we remove old versions of this file
-        removeOldVersions(fileName, currentFileName);
         return filePath;
 
     }
@@ -401,33 +390,6 @@ public class ExternalProcessHandler {
      */
     private String getLastPartOfTarPath(String path) {
         return path.substring(path.lastIndexOf("/") + 1);
-    }
-
-    /**
-     * If found, remove all the files that contain this file name. This is used for removing not needed
-     * versions of the current external process.
-     * @param fileName
-     *            name of the external server (e.g. "nestserver")
-     * @param currentFileName
-     *            name of the current external server including the version number and its extension (e.g.
-     *            "nestserver-1.0.7.exe")
-     * @return true if any file was removed
-     * @throws IOException
-     *             {@link IOException} occurred while removing the file
-     */
-    private Boolean removeOldVersions(String fileName, String currentFileName) throws IOException {
-        File folder = new File(ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString());
-        File[] listOfFiles = folder.listFiles();
-        Boolean somethingWasRemoved = false;
-
-        for (File currFile : listOfFiles) {
-            if (currFile.getName().contains(fileName) && !currFile.getName().equals(currentFileName)) {
-                // Remove old version of file
-                Files.deleteIfExists(currFile.toPath());
-                somethingWasRemoved = true;
-            }
-        }
-        return somethingWasRemoved;
     }
 
     /**
