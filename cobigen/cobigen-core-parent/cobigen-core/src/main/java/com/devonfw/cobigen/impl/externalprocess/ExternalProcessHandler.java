@@ -1,10 +1,12 @@
 package com.devonfw.cobigen.impl.externalprocess;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -407,6 +409,8 @@ public class ExternalProcessHandler {
                 // Just check correct port acquisition
                 if (acquirePort()) {
                     return true;
+                } else {
+                    continue;
                 }
             } catch (Exception e) {
                 LOG.error("Connection to server failed, attempt number " + retry + ".");
@@ -487,7 +491,22 @@ public class ExternalProcessHandler {
         try {
             getConnection("GET", "Content-Type", "text/plain", ExternalProcessConstants.IS_CONNECTION_READY);
             if (conn.getResponseCode() < 300) {
-                return false;
+
+                // Check if it is the correct server version
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String response = br.readLine();
+
+                if (response.equals(processProperties.getServerVersion())) {
+                    return false;
+                }
+
+                if (response.equals("true")) {
+                    LOG.warn(
+                        "An old version is currently deployed. Please consider deploying the newest version to get the current bug fixes/features");
+                    return false;
+                }
+
+                return true;
             }
         } catch (IOException e) {
             LOG.error("Connection to server failed, maybe the server is not yet deployed...");
