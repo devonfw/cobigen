@@ -281,7 +281,6 @@ public class CustomModelWriter implements ModelWriter {
         }
 
         buffer.write(" {");
-        buffer.newline();
         if (constructor.getSourceCode() != null) {
             buffer.write(constructor.getSourceCode());
         }
