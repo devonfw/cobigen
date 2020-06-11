@@ -493,17 +493,21 @@ public class ExternalProcessHandler {
             if (conn.getResponseCode() < 300) {
 
                 // Check if it is the correct server version
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String response = br.readLine();
+                try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+                    BufferedReader br = new BufferedReader(isr)) {
+                    String response = br.readLine();
 
-                if (response.equals(processProperties.getServerVersion())) {
-                    return false;
-                }
+                    if (response.equals(processProperties.getServerVersion())) {
+                        return false;
+                    }
 
-                if (response.equals("true")) {
-                    LOG.warn(
-                        "An old version is currently deployed. Please consider deploying the newest version to get the current bug fixes/features");
-                    return false;
+                    if (response.equals("true")) {
+                        LOG.warn(
+                            "An old version is currently deployed. Please consider deploying the newest version to get the current bug fixes/features");
+                        return false;
+                    }
+                } catch (Exception e) {
+                    LOG.info("Reading server version failed");
                 }
 
                 return true;
