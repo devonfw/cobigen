@@ -40,7 +40,6 @@ public class JavaMergerTest {
 
     /**
      * Test of {@link JavaMerger} merging imports
-     * 
      * @throws Exception
      *             test fails
      * @author mbrunnli (04.04.2013)
@@ -59,7 +58,6 @@ public class JavaMergerTest {
 
     /**
      * Test of {@link JavaMerger} merging fields
-     * 
      * @throws Exception
      *             test fails
      * @author mbrunnli (04.04.2013)
@@ -85,7 +83,6 @@ public class JavaMergerTest {
 
     /**
      * Test of {@link JavaMerger} merging methods
-     * 
      * @throws Exception
      *             test fails
      * @author mbrunnli (04.04.2013)
@@ -116,7 +113,6 @@ public class JavaMergerTest {
 
     /**
      * Test of {@link JavaMerger} merging classes recursively
-     * 
      * @throws Exception
      *             test fails
      * @author mbrunnli (04.04.2013)
@@ -161,7 +157,6 @@ public class JavaMergerTest {
 
     /**
      * Test of {@link JavaMerger} merging imports
-     * 
      * @throws Exception
      *             test fails
      * @author mbrunnli (04.04.2013)
@@ -180,7 +175,6 @@ public class JavaMergerTest {
 
     /**
      * Test of {@link JavaMerger} merging fields
-     * 
      * @throws Exception
      *             test fails
      * @author mbrunnli (04.04.2013)
@@ -206,7 +200,6 @@ public class JavaMergerTest {
 
     /**
      * Test of {@link JavaMerger} merging methods
-     * 
      * @throws Exception
      *             test fails
      * @author mbrunnli (04.04.2013)
@@ -237,7 +230,6 @@ public class JavaMergerTest {
 
     /**
      * Test of {@link JavaMerger} merging classes recursively
-     * 
      * @throws Exception
      *             test fails
      * @author mbrunnli (04.04.2013)
@@ -283,7 +275,6 @@ public class JavaMergerTest {
     /**
      * Tests whether the contents will be rewritten after parsing and printing with QDox with the right
      * encoding
-     * 
      * @throws IOException
      *             test fails
      * @throws MergeException
@@ -307,7 +298,6 @@ public class JavaMergerTest {
 
     /**
      * Tests whether the output file does not contain different line endings
-     * 
      * @throws IOException
      *             test fails
      * @throws MergeException
@@ -330,7 +320,6 @@ public class JavaMergerTest {
 
     /**
      * Tests whether all generics of the original file will be existent after merging
-     * 
      * @throws IOException
      *             test fails
      * @throws MergeException
@@ -354,7 +343,6 @@ public class JavaMergerTest {
 
     /**
      * Tests merging java without adding new lines to method bodies (was a bug)
-     * 
      * @throws IOException
      *             test fails
      * @throws MergeException
@@ -385,7 +373,6 @@ public class JavaMergerTest {
     /**
      * Tests issue <a href=https://github.com/oasp/cobigen/issues/39>#39</a>: inheritance relation should be
      * merged also if the base class (natively) extends java.lang.Object
-     * 
      * @throws IOException
      *             test fails
      * @throws MergeException
@@ -415,7 +402,6 @@ public class JavaMergerTest {
     /**
      * Tests the behavior if one file imports a type while the other uses an explicit type. Corresponds to <a
      * href=https://github.com/devonfw/cobigen/issues/108>#108</a>
-     * 
      * @throws IOException
      *             shouldn't happen
      * @throws MergeException
@@ -440,7 +426,6 @@ public class JavaMergerTest {
     /**
      * Tests whether static and object Initializers are getting merged
      * https://github.com/devonfw/cobigen/issues/791
-     *
      * @throws IOException
      *             shouldn't happen
      * @throws MergeException
@@ -460,7 +445,6 @@ public class JavaMergerTest {
 
     /**
      * Calls the {@link JavaMerger} to merge the base and patch file wit the given overriding behavior
-     * 
      * @param baseFile
      *            base file
      * @param patchFile
