@@ -124,6 +124,7 @@ public class JavaMerger implements Merger {
      * @param lineDelimiter
      *            the line delimiter of the file or null if none
      * @return the consolidated code block
+     * @author mbrunnli (04.06.2013)
      */
     private String consolidateLineEndings(String codeBlock, String lineDelimiter) {
         if (lineDelimiter != null) {
@@ -289,8 +290,7 @@ public class JavaMerger implements Merger {
      */
     private void mergeMethods(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
-        // merge all non-conflicting imports from (final) base class to patch, to check
-        // for conflicting
+        // merge all non-conflicting imports from (final) base class to patch, to check for conflicting
         // method signatures
         mergeImports(patchClass, baseClass);
 

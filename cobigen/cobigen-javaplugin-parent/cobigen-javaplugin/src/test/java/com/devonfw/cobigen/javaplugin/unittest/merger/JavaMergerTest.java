@@ -426,6 +426,7 @@ public class JavaMergerTest {
     /**
      * Tests whether static and object Initializers are getting merged
      * https://github.com/devonfw/cobigen/issues/791
+     *
      * @throws IOException
      *             shouldn't happen
      * @throws MergeException
