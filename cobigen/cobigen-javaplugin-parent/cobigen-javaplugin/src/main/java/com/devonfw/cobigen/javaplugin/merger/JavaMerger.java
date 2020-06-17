@@ -97,9 +97,13 @@ public class JavaMerger implements Merger {
 
     /**
      * @param bis
+     *            The {@link BufferedInputStream} containing the input file
      * @param reader
-     * @return
+     *            The {@link InputStreamReader} iterating over the Stream
+     * @return The line delimiter corresponding to the input file
      * @throws IOException
+     *             If an exception occurs while processing the {@link BufferedInputStream} or the
+     *             {@link InputStreamReader}
      */
     private String determineLineDelimiter(BufferedInputStream bis, InputStreamReader reader) throws IOException {
 
@@ -126,7 +130,9 @@ public class JavaMerger implements Merger {
 
     /**
      * @param reader
+     *            The {@link InputStreamReader} that is to be emptied
      * @throws IOException
+     *             If an exception occurs while processing the {@link InputStreamReader}
      */
     private void emptyReader(InputStreamReader reader) throws IOException {
         while (reader.ready()) {
