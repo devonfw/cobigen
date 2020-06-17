@@ -14,9 +14,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.apache.commons.text.similarity.JaccardDistance;
+import org.apache.maven.shared.utils.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,9 +306,9 @@ public class GenerateCommand implements Callable<Integer> {
         inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
         try {
             Object input;
-            String extension = inputFile.getName().toLowerCase();
-            Boolean isJavaInput = extension.endsWith(".java");
-            Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
+            String extension = FileUtils.getExtension(inputFile.getName());
+            Boolean isJavaInput = extension.equals("java");
+            Boolean isOpenApiInput = extension.equals("yaml") || extension.equals("yml");
 
             input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
@@ -345,13 +348,18 @@ public class GenerateCommand implements Callable<Integer> {
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
                     templateFolder);
             }
-            if (ValidationUtils.checkGenerationReport(report) && isJavaInput) {
-                try {
-                    ParsingUtils.formatJavaSources(report.getGeneratedFiles());
-                } catch (FormatterException e) {
-                    LOG.info(
-                        "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.",
-                        LOG.isDebugEnabled() ? e : null);
+            if (ValidationUtils.checkGenerationReport(report)) {
+                Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream()
+                    .filter(e -> FileUtils.getExtension(e.toAbsolutePath().toString()).equals("java"))
+                    .collect(Collectors.toSet());
+                if (!generatedJavaFiles.isEmpty()) {
+                    try {
+                        ParsingUtils.formatJavaSources(generatedJavaFiles);
+                    } catch (FormatterException e) {
+                        LOG.info(
+                            "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.",
+                            LOG.isDebugEnabled() ? e : null);
+                    }
                 }
             }
         } catch (InputReaderException e) {

@@ -73,6 +73,29 @@ public class GenerateCommandTest {
     }
 
     /**
+     * Test generating non-java files from java input
+     */
+    @Test
+    public void generateNonJavaFilesFromJavaInputTest() {
+        File inputFile = new File(testFileRootPath
+            + "localmavenproject/maven.project/api/src/main/java/com/maven/project/sampledatamanagement/logic/api/to/SampleDataEto.java");
+
+        String args[] = new String[4];
+        args[0] = "generate";
+        args[1] = inputFile.getAbsolutePath();
+        args[2] = "--increments";
+        args[3] = "16";
+
+        commandLine.execute(args);
+
+        // clean up generated files
+        File generatedFiles = new File(testFileRootPath + "localmavenproject/devon4ng-application-template");
+        generatedList.add(generatedFiles);
+        GenerateCommandTest.deleteGeneratedFiles(generatedList);
+        generatedList.clear();
+    }
+
+    /**
      * Integration test of the generation of templates from a Java Entity. It will generate all the templates
      * in the output root path passed.
      */
