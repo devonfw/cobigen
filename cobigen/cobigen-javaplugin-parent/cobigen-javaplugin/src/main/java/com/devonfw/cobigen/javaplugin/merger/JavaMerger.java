@@ -67,7 +67,7 @@ public class JavaMerger implements Merger {
         String lineDelimiter;
         try (FileInputStream stream = new FileInputStream(base);
             BufferedInputStream bis = new BufferedInputStream(stream);
-            InputStreamReader reader = new InputStreamReader(stream, targetCharset)) {
+            InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
             lineDelimiter = determineLineDelimiter(bis, reader);
             baseClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
         } catch (IOException e) {
@@ -78,6 +78,7 @@ public class JavaMerger implements Merger {
         }
         ModifyableJavaClass patchClass;
         try (StringReader reader = new StringReader(patch)) {
+
             patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
         } catch (ParseException e) {
             throw new MergeException(base, "The syntax of the generated patch is invalid. Error in line: " + e.getLine()
@@ -94,6 +95,12 @@ public class JavaMerger implements Merger {
         return consolidateLineEndings(mergedClass.getSource().getCodeBlock(), lineDelimiter);
     }
 
+    /**
+     * @param bis
+     * @param reader
+     * @return
+     * @throws IOException
+     */
     private String determineLineDelimiter(BufferedInputStream bis, InputStreamReader reader) throws IOException {
 
         bis.mark(0);
@@ -112,8 +119,20 @@ public class JavaMerger implements Merger {
             }
             return null;
         } finally {
+            emptyReader(reader);
             bis.reset();
         }
+    }
+
+    /**
+     * @param reader
+     * @throws IOException
+     */
+    private void emptyReader(InputStreamReader reader) throws IOException {
+        while (reader.ready()) {
+            reader.read();
+        }
+
     }
 
     /**
