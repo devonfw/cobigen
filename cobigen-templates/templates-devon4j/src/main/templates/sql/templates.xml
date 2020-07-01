@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templates>
+        <template name="create_table" templateFile="templates/V0000__Create_${variables.entityName}.sql.ftl"
+        destinationPath="src/main/resources/db/type/h2/V0000__Create_${variables.entityName}.sql" mergeStrategy="override"/>
+  </templates>
+
+  <increments>
+    <increment name="sql" description="SQL">
+      <templateRef ref="create_table"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
