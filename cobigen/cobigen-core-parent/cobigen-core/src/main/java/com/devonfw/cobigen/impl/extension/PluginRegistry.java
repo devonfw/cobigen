@@ -1,7 +1,9 @@
 package com.devonfw.cobigen.impl.extension;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,10 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -32,6 +36,11 @@ public class PluginRegistry {
      */
     private static Map<String, TriggerInterpreter> registeredTriggerInterpreter =
         Collections.synchronizedMap(Maps.<String, TriggerInterpreter> newHashMap());
+
+    /**
+     * List of registered plugins
+     */
+    private static List<Object> pluginsList = Lists.newLinkedList();
 
     /**
      * Assigning logger to PluginRegistry
@@ -58,6 +67,8 @@ public class PluginRegistry {
                     for (Merger merger : ((GeneratorPluginActivator) plugin).bindMerger()) {
                         PluginRegistry.registerMerger(merger);
                     }
+                    // adds merger plugins to notifyable list
+                    pluginsList.add(plugin);
                 }
                 // Collect ITriggerInterpreter
                 if (((GeneratorPluginActivator) plugin).bindTriggerInterpreter() != null) {
@@ -152,6 +163,25 @@ public class PluginRegistry {
      */
     public static Set<String> getTriggerInterpreterKeySet() {
         return new HashSet<>(registeredTriggerInterpreter.keySet());
+    }
+
+    /**
+     * Notifies plugins about the new template root path
+     *
+     * @param configFolder
+     *            Path to update on registered plugins
+     */
+    public static void notifyPlugins(Path configFolder) {
+
+        for (Object plugin : pluginsList) {
+            if (plugin instanceof GeneratorPluginActivator) {
+                try {
+                    ((GeneratorPluginActivator) plugin).setProjectRoot(configFolder);
+                } catch (NotYetSupportedException e) {
+                    LOG.debug("setProjectRoot() Method is not implemented yet!", e);
+                }
+            }
+        }
     }
 
 }
