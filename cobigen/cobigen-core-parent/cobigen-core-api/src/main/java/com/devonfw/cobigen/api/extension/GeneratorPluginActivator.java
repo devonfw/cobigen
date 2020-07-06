@@ -28,7 +28,10 @@ public interface GeneratorPluginActivator {
      * @throws NotYetSupportedException
      *             if not implemented yet
      */
-    public void setProjectRoot(Path path) throws NotYetSupportedException;
+    default void setProjectRoot(Path path) throws NotYetSupportedException {
+        throw new NotYetSupportedException(
+            "Method should pass the path " + path + " of the new template root to the plugin");
+    }
 
     /**
      * This function should return all {@link TriggerInterpreter} implementations, which should be provided by

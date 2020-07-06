@@ -178,7 +178,7 @@ public class PluginRegistry {
                 try {
                     ((GeneratorPluginActivator) plugin).setProjectRoot(configFolder);
                 } catch (NotYetSupportedException e) {
-                    LOG.debug("setProjectRoot() Method is not implemented yet!", e);
+                    LOG.debug("setProjectRoot() method is not implemented in this plugin yet!", e);
                 }
             }
         }
