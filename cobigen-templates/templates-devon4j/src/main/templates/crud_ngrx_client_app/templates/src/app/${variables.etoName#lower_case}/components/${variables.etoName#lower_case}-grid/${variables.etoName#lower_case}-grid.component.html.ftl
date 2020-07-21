@@ -42,11 +42,11 @@
               <mat-panel-title>Filters</mat-panel-title>
           </mat-expansion-panel-header>
           <div class="filter-form-fields">
-			      <#list pojo.fields as field>
+            <#list pojo.fields as field>
               <mat-form-field color="accent">
                 <input
                   matInput
-				          <#if JavaUtil.getAngularType(field.type) == 'number'>type="number"</#if>
+                  <#if JavaUtil.getAngularType(field.type) == 'number'>type="number"</#if>
                   placeholder="${field.name?cap_first}"
                   [(ngModel)]="searchTerms.${field.name?uncap_first}"
                   name="${field.name?uncap_first}"
