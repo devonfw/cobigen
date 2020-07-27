@@ -570,25 +570,54 @@ public class GenerateCommand implements Callable<Integer> {
         Map<? super GenerableArtifact, Double> scores = new HashMap<>();
 
         for (int i = 0; i < matching.size(); i++) {
-            String description = isIncrements ? ((IncrementTo) matching.get(i)).getDescription()
-                : ((TemplateTo) matching.get(i)).getId();
-            JaccardDistance distance = new JaccardDistance();
-            scores.put(matching.get(i), distance.apply(description.toUpperCase(), userInput.toUpperCase()));
+            if (!isIncrements) {
+                String description = ((TemplateTo) matching.get(i)).getId();
+                JaccardDistance distance = new JaccardDistance();
+                scores.put(matching.get(i), distance.apply(
+                        description.toUpperCase(), userInput.toUpperCase()));
+            } else {
+                String description =
+                        ((IncrementTo) matching.get(i)).getDescription();
+                String id = ((IncrementTo) matching.get(i)).getId();
+                JaccardDistance distance = new JaccardDistance();
+                Double descriptionDistance = distance.apply(
+                        description.toUpperCase(), userInput.toUpperCase());
+                Double idDistance = distance.apply(id.toUpperCase(),
+                        userInput.toUpperCase());
+                scores.put(matching.get(i),
+                        Math.min(idDistance, descriptionDistance));
+            }
         }
 
-        Map<? super GenerableArtifact, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
-            .collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
+        Map<? super GenerableArtifact, Double> sorted =
+                scores.entrySet().stream().sorted(comparingByValue())
+                        .collect(toMap(e -> e.getKey(), e -> e.getValue(),
+                                (e1, e2) -> e2, LinkedHashMap::new));
 
         ArrayList<? super GenerableArtifact> chosen = new ArrayList<>();
 
         for (Object artifact : sorted.keySet()) {
             GenerableArtifact tmp;
             tmp = isIncrements ? (IncrementTo) artifact : (TemplateTo) artifact;
-            String description =
-                isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
-            if (description.toUpperCase().contains(userInput.toUpperCase())
-                || sorted.get(artifact) <= SELECTION_THRESHOLD) {
-                chosen.add(tmp);
+            if (!isIncrements) {
+                String description = ((TemplateTo) artifact).getId();
+                if (description.toUpperCase().contains(userInput.toUpperCase())
+                        || sorted.get(artifact) <= SELECTION_THRESHOLD) {
+                    chosen.add(tmp);
+                }
+            } else {
+                String description = ((IncrementTo) artifact).getDescription();
+                String id = ((IncrementTo) artifact).getId();
+                if (description.equalsIgnoreCase(userInput)
+                        || id.equalsIgnoreCase(userInput)) {
+                    chosen.add(tmp);
+                    return (ArrayList<? extends GenerableArtifact>) chosen;
+                }
+                if ((description.toUpperCase().contains(userInput.toUpperCase())
+                        || id.toUpperCase().contains(userInput.toUpperCase()))
+                        || sorted.get(artifact) <= SELECTION_THRESHOLD) {
+                    chosen.add(tmp);
+                }
             }
         }
 
