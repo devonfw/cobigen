@@ -25,7 +25,7 @@ describe('${variables.etoName?cap_first}DialogComponent', () => {
   }));
 
   beforeEach(() => {
-    dialog = TestBed.get(MatDialog);
+    dialog = TestBed.inject(MatDialog);
     component = dialog.open(${variables.etoName?cap_first}DialogComponent).componentInstance;
   });
 

@@ -27,7 +27,6 @@ import { reducers } from './store/reducers/index';
     ${variables.etoName?cap_first}DialogComponent,
     ${variables.etoName?cap_first}AlertComponent,
   ],
-  entryComponents: [${variables.etoName?cap_first}DialogComponent, ${variables.etoName?cap_first}AlertComponent],
   providers: [],
 })
 export class ${variables.etoName?cap_first}Module { }
