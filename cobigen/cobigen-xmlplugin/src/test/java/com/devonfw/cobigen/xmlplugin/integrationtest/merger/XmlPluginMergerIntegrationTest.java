@@ -54,9 +54,9 @@ public class XmlPluginMergerIntegrationTest {
     @Before
     public void setUp() {
         final String mergeSchemaLocation = "src/main/resources/mergeSchemas/";
-        patchPreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE);
+        patchPreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE, false);
         // ((XmlLawMergerDelegate) patchPreferingMerger).setValidation(false);
-        basePreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE);
+        basePreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE, false);
         ((XmlMergerDelegate) basePreferingMerger).setValidation(false);
     }
 
