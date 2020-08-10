@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.impl.extension;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +18,6 @@ import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -40,7 +40,7 @@ public class PluginRegistry {
     /**
      * List of registered plugins
      */
-    private static List<Object> pluginsList = Lists.newLinkedList();
+    private static List<Object> pluginsList = new ArrayList<>();
 
     /**
      * Assigning logger to PluginRegistry
@@ -174,12 +174,10 @@ public class PluginRegistry {
     public static void notifyPlugins(Path configFolder) {
 
         for (Object plugin : pluginsList) {
-            if (plugin instanceof GeneratorPluginActivator) {
-                try {
-                    ((GeneratorPluginActivator) plugin).setProjectRoot(configFolder);
-                } catch (NotYetSupportedException e) {
-                    LOG.debug("setProjectRoot() method is not implemented in this plugin yet!", e);
-                }
+            try {
+                ((GeneratorPluginActivator) plugin).setProjectRoot(configFolder);
+            } catch (NotYetSupportedException e) {
+                LOG.debug("setProjectRoot() method is not implemented in this plugin yet!", e);
             }
         }
     }
