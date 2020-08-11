@@ -2,9 +2,6 @@ package com.devonfw.cobigen.xmlplugin.integrationtest;
 
 import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -25,8 +22,7 @@ import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 
 import com.devonfw.cobigen.api.CobiGen;
-import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.exception.PluginNotAvailableException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
@@ -261,20 +257,16 @@ public class XmlPluginIntegrationTest {
     }
 
     /**
-     * Regression test that the error message of cobigen-core has not be changed, which indicates a merge
+     * Regression test that the error message of cobigen-core has not been changed, which indicates a merge
      * strategy to not being found. This is necessary for the tests checking the already implemented merge
      * strategies to exist.
      * @throws Exception
      *             test fails
      */
-    @Test
+    @Test(expected = PluginNotAvailableException.class)
     public void testMergeStrategyNotFoundErrorMessageRegression() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
-        try {
-            generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
-        } catch (InvalidConfigurationException e) {
-            assertThat(e.getMessage(), containsString("No merger for merge strategy"));
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
     }
 
     /**
@@ -284,13 +276,19 @@ public class XmlPluginIntegrationTest {
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_attachTexts() throws Exception {
-
         generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
-        try {
-            generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
-        } catch (MergeException e) {
-            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_attachTexts_validate to exist and being registered.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_attachTexts_validate() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_TextNodesValidate", "xmlTestOutput_TextNodes.txt", null);
+        generateTemplateAndTestOutput("xmlTestTemplate_TextNodesValidate", "xmlTestOutput_TextNodes.txt", null);
     }
 
     /**
@@ -300,13 +298,19 @@ public class XmlPluginIntegrationTest {
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_override_attachTexts() throws Exception {
-
         generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
-        try {
-            generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
-        } catch (MergeException e) {
-            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_override_attachTexts_validate to exist and being registered.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_override_attachTexts_validate() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleChildValidate", "xmlTestOutput_SingleChild.txt", null);
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleChildValidate", "xmlTestOutput_SingleChild.txt", null);
     }
 
     /**
@@ -316,13 +320,19 @@ public class XmlPluginIntegrationTest {
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge() throws Exception {
-
         generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
-        try {
-            generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
-        } catch (MergeException e) {
-            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_validate to exist and being registered.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_validate() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_ChildListValidate", "xmlTestOutput_ChildList.txt", null);
+        generateTemplateAndTestOutput("xmlTestTemplate_ChildListValidate", "xmlTestOutput_ChildList.txt", null);
     }
 
     /**
@@ -332,14 +342,21 @@ public class XmlPluginIntegrationTest {
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_override() throws Exception {
-
         generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt", null);
-        try {
-            generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt",
-                null);
-        } catch (MergeException e) {
-            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
-        }
+        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt", null);
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_override_validate to exist and being registered.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_override_validate() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstantValidate",
+            "xmlTestOutput_VariablesConstant.txt", null);
+        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstantValidate",
+            "xmlTestOutput_VariablesConstant.txt", null);
     }
 
     /**
@@ -375,7 +392,21 @@ public class XmlPluginIntegrationTest {
         boolean templateFound = false;
         for (TemplateTo template : templates) {
             if (template.getId().equals(templateId)) {
-                cobiGen.generate(inputDocument, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
+                GenerationReportTo report =
+                    cobiGen.generate(inputDocument, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
+
+                // required to throw Plugin not available Exceptions in testMergeStrategy tests
+                if (!report.isSuccessful()) {
+                    List<Throwable> errors = report.getErrors();
+                    if (!errors.isEmpty()) {
+                        for (Throwable error : errors) {
+                            if (error.getClass().equals(PluginNotAvailableException.class)) {
+                                throw new PluginNotAvailableException(null, null);
+                            }
+                        }
+                    }
+                }
+
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + outputFileName);
 
