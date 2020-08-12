@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
+import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.google.common.collect.Maps;
 
 /**
@@ -29,6 +30,8 @@ public class ConfigurationHolder {
      */
     public ConfigurationHolder(Path configurationPath) {
         this.configurationPath = configurationPath;
+        // updates the root template path and informs all of its observers
+        PluginRegistry.notifyPlugins(configurationPath);
     }
 
     /**
