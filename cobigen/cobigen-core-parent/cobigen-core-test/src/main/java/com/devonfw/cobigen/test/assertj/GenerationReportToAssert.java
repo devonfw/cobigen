@@ -43,4 +43,43 @@ public class GenerationReportToAssert extends AbstractAssert<GenerationReportToA
         }
         return this;
     }
+
+    /**
+     * Checks if an Exception of the given class was found in the {@link GenerationReportTo} error reports.
+     *
+     * @param exception
+     *            Class of Exception to check for
+     * @return {@link GenerationReportToAssert}
+     * @throws AssertionError
+     *             if another or no Exception was found in the report
+     */
+    public GenerationReportToAssert containsException(Class exception) throws AssertionError {
+
+        for (Throwable error : actual.getErrors()) {
+            if (error.getClass().equals(exception)) {
+                return this;
+            }
+        }
+        throw new AssertionError(
+            "Expected an Exception of class: " + exception + " in error reports but got something else.");
+    }
+
+    /**
+     * Checks if an Exception of the given class was NOT found in the {@link GenerationReportTo} error
+     * reports. errors.
+     *
+     * @param exception
+     *            Class of Exception to check for
+     * @return boolean
+     * @throws AssertionError
+     *             if the Exception was found in the report
+     */
+    public boolean notContainsException(Class exception) throws AssertionError {
+        for (Throwable error : actual.getErrors()) {
+            if (error.getClass().equals(exception)) {
+                throw new AssertionError("Expected no Exception of class: " + exception + " in error reports.");
+            }
+        }
+        return true;
+    }
 }
