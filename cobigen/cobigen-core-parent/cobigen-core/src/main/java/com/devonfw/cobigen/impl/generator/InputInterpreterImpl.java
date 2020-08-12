@@ -3,6 +3,7 @@ package com.devonfw.cobigen.impl.generator;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -68,15 +69,45 @@ public class InputInterpreterImpl implements InputInterpreter {
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
         Set<String> keySet = PluginRegistry.getTriggerInterpreterKeySet();
         // We first try to find an input reader that is most likely readable
+        HashMap<String, Boolean> readableCache = new HashMap<String, Boolean>();
+
+        // Create cache for readable states
         for (String s : keySet) {
+            readableCache.put(s, isMostLikelyReadable(s, path));
+        }
+
+        // Check external input readers first
+        for (String s : readableCache.keySet()) {
             try {
-                if (isMostLikelyReadable(s, path)) {
-                    LOG.debug("Try reading input {} with inputreader '{}'...", path, s);
+                if (readableCache.get(s) != null && readableCache.get(s)) {
+                    LOG.info("Try reading input {} with EXTERNAL inputreader '{}'...", path, s);
                     return getInputReader(s).read(path, inputCharset, additionalArguments);
                 }
             } catch (InputReaderException e) {
                 LOG.debug(
-                    "Was not able to read input {} with inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
+                    "Was not able to read input {} with EXTERNAL inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
+                    path, s, e);
+            } catch (Throwable e) {
+                LOG.debug(
+                    "While reading the input {} with the EXTERNAL inputreader {}, an Exception occured. Trying next input reader...",
+                    path, s, e);
+            }
+        }
+
+        // If no external input reader was found, check internal input readers
+        for (String s : readableCache.keySet()) {
+            try {
+                if (readableCache.get(s) == null) {
+                    LOG.info("Try reading input {} with DEFAULT inputreader '{}'...", path, s);
+                    return getInputReader(s).read(path, inputCharset, additionalArguments);
+                }
+            } catch (InputReaderException e) {
+                LOG.debug(
+                    "Was not able to read input {} with DEFAULT inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
+                    path, s, e);
+            } catch (Throwable e) {
+                LOG.debug(
+                    "While reading the input {} with the DEFAULT inputreader {}, an Exception occured. Trying next input reader...",
                     path, s, e);
             }
         }
@@ -84,7 +115,7 @@ public class InputInterpreterImpl implements InputInterpreter {
     }
 
     @Override
-    public boolean isMostLikelyReadable(String type, Path path) {
+    public Boolean isMostLikelyReadable(String type, Path path) {
         return getInputReader(type).isMostLikelyReadable(path);
     }
 
