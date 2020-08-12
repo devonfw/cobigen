@@ -124,12 +124,15 @@ In contrast to the java input reader, this xml input reader does currently not p
 
 == Merger extensions
 
-The XML plugin uses the link:https://github.com/maybeec/lexeme[LeXeMe] merger library to produce semantically correct merge products. The following four merge strategies are implemented and can be configured in the `templates.xml`:
+The XML plugin uses the link:https://github.com/maybeec/lexeme[LeXeMe] merger library to produce semantically correct merge products. The merge strategies can be found in the link:https://github.com/devonfw/cobigen/blob/master/cobigen/cobigen-xmlplugin/src/main/java/com/devonfw/cobigen/xmlplugin/merger/delegates/MergeType.java#L11[MergeType enum] and can be configured in the `templates.xml` as a mergeStrategy attribute:
 
-* `xmlmerge`: In case of a conflict the base value is preferred
-* `xmlmerge_override`: In case of a conflict the patch value is preferred
-* `xmlmerge_attachTexts`: In case of a conflict the base value is preferred. Attributes and text nodes will be merged where possible
-* `xmlmerge_override_attachTexts`: In case of a conflict the patch value is preferred. Attributes and text nodes will be merged where possible
+* mergeStrategy 'xmlmerge'
++
+.Example of a template using the mergeStrategy `xmlmerge`
+[source,xml]
+<templates>
+	<template name="..." destinationPath="..." templateFile="..." mergeStrategy="xmlmerge"/>
+</templates>
 
 Currently only the document types included in LeXeMe are supported.
 On how the merger works consult the link:https://github.com/maybeec/lexeme/wiki[LeXeMe Wiki].
