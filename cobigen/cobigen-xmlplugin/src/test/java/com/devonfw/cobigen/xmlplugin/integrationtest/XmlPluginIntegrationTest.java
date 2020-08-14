@@ -26,6 +26,7 @@ import com.devonfw.cobigen.api.exception.PluginNotAvailableException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.test.assertj.GenerationReportToAssert;
 
 import junit.framework.AssertionFailedError;
 
@@ -263,10 +264,13 @@ public class XmlPluginIntegrationTest {
      * @throws Exception
      *             test fails
      */
-    @Test(expected = PluginNotAvailableException.class)
+    @Test
     public void testMergeStrategyNotFoundErrorMessageRegression() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
+
+        asserts.containsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -277,7 +281,11 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyDefined_xmlmerge_attachTexts() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
+
     }
 
     /**
@@ -288,7 +296,10 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyDefined_xmlmerge_attachTexts_validate() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_TextNodesValidate", "xmlTestOutput_TextNodes.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_TextNodesValidate", "xmlTestOutput_TextNodes.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_TextNodesValidate", "xmlTestOutput_TextNodes.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -299,7 +310,10 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyDefined_xmlmerge_override_attachTexts() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -310,7 +324,10 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyDefined_xmlmerge_override_attachTexts_validate() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_SingleChildValidate", "xmlTestOutput_SingleChild.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_SingleChildValidate", "xmlTestOutput_SingleChild.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_SingleChildValidate", "xmlTestOutput_SingleChild.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -321,7 +338,10 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyDefined_xmlmerge() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -332,7 +352,10 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyDefined_xmlmerge_validate() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_ChildListValidate", "xmlTestOutput_ChildList.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_ChildListValidate", "xmlTestOutput_ChildList.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_ChildListValidate", "xmlTestOutput_ChildList.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -343,7 +366,10 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyDefined_xmlmerge_override() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt", null);
+        GenerationReportToAssert asserts = generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant",
+            "xmlTestOutput_VariablesConstant.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -355,8 +381,10 @@ public class XmlPluginIntegrationTest {
     public void testMergeStrategyDefined_xmlmerge_override_validate() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstantValidate",
             "xmlTestOutput_VariablesConstant.txt", null);
-        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstantValidate",
+        GenerationReportToAssert asserts = generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstantValidate",
             "xmlTestOutput_VariablesConstant.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -371,8 +399,8 @@ public class XmlPluginIntegrationTest {
      * @throws Exception
      *             if anything fails.
      */
-    private void generateTemplateAndTestOutput(String templateId, String outputFileName, String expectedFileContents)
-        throws Exception {
+    private GenerationReportToAssert generateTemplateAndTestOutput(String templateId, String outputFileName,
+        String expectedFileContents) throws Exception {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
 
         // wenn der temporäre Output Ordner breits existiert, dann wird dieser wiederverwendet.
@@ -390,22 +418,13 @@ public class XmlPluginIntegrationTest {
         // find matching templates and use test template for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
         boolean templateFound = false;
+        GenerationReportToAssert asserts = null;
         for (TemplateTo template : templates) {
             if (template.getId().equals(templateId)) {
                 GenerationReportTo report =
                     cobiGen.generate(inputDocument, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
 
-                // required to throw Plugin not available Exceptions in testMergeStrategy tests
-                if (!report.isSuccessful()) {
-                    List<Throwable> errors = report.getErrors();
-                    if (!errors.isEmpty()) {
-                        for (Throwable error : errors) {
-                            if (error.getClass().equals(PluginNotAvailableException.class)) {
-                                throw new PluginNotAvailableException(null, null);
-                            }
-                        }
-                    }
-                }
+                asserts = assertThat(report);
 
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + outputFileName);
@@ -423,5 +442,6 @@ public class XmlPluginIntegrationTest {
         if (!templateFound) {
             throw new AssertionFailedError("Test template not found");
         }
+        return asserts;
     }
 }
