@@ -4,6 +4,11 @@
 == Document Description
 This document contains the documentation of the CobiGen core module as well as all CobiGen plug-ins and the CobiGen eclipse integration.
 
+[IMPORTANT]
+--
+DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonfw unless otherwise denoted.
+--
+
 **Current versions:**
 
 * CobiGen - Eclipse Plug-in v5.2.1
