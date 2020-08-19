@@ -68,23 +68,26 @@ public class InputInterpreterImpl implements InputInterpreter {
 
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
-        Set<String> keySet = PluginRegistry.getTriggerInterpreterKeySet();
+        Set<String> triggerInterpreterKeySet = PluginRegistry.getTriggerInterpreterKeySet();
         // We first try to find an input reader that is most likely readable
         Map<String, Boolean> readableCache = new HashMap<>();
         Object readable = null;
 
         // Create cache for readable states
-        for (String s : keySet) {
-            readable = getValidInputReader(path, inputCharset, readableCache, s, additionalArguments);
+        for (String triggerType : triggerInterpreterKeySet) {
+            Boolean isMostLikelyReadably = isMostLikelyReadable(triggerType, path);
+            readable = getValidInputReader(path, isMostLikelyReadably, inputCharset, readableCache, triggerType,
+                additionalArguments);
             if (readable != null) {
                 return readable;
             }
-            readableCache.put(s, isMostLikelyReadable(s, path));
+            readableCache.put(triggerType, isMostLikelyReadably);
         }
 
         // If no external input reader was found, check internal input readers
-        for (String s : readableCache.keySet()) {
-            readable = getValidInputReader(path, inputCharset, readableCache, s, additionalArguments);
+        for (String triggerType : readableCache.keySet()) {
+            readable = getValidInputReader(path, readableCache.get(triggerType), inputCharset, readableCache,
+                triggerType, additionalArguments);
             if (readable != null) {
                 return readable;
             }
@@ -99,44 +102,46 @@ public class InputInterpreterImpl implements InputInterpreter {
      *
      * @param path
      *            the Path to the object. Can also point to a folder
+     * @param isMostLikelyReadable
+     *            Boolean result of isMostLikelyReadable check
      * @param inputCharset
      *            of the input to be used
      * @param readableCache
      *            HashMap of TriggerInterpreter and Boolean
-     * @param s
-     *            TriggerInterpreter
+     * @param triggerType
+     *            type of TriggerInterpreter
      * @param additionalArguments
      *            depending on the InputReader implementation
      * @return Object that is a valid input or null if the file cannot be read by any InputReader
      */
-    private Object getValidInputReader(Path path, Charset inputCharset, Map<String, Boolean> readableCache, String s,
-        Object... additionalArguments) {
+    private Object getValidInputReader(Path path, Boolean isMostLikelyReadable, Charset inputCharset,
+        Map<String, Boolean> readableCache, String triggerType, Object... additionalArguments) {
         String readerType = "EXTERNAL";
         try {
-            if (isMostLikelyReadable(s, path) != null && isMostLikelyReadable(s, path)) {
-                LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, s);
-                return getInputReader(s).read(path, inputCharset, additionalArguments);
+            if (isMostLikelyReadable != null && isMostLikelyReadable) {
+                LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, triggerType);
+                return getInputReader(triggerType).read(path, inputCharset, additionalArguments);
             }
             if (!readableCache.isEmpty()) {
-                if (readableCache.get(s) != null && readableCache.get(s)) {
-                    LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, s);
-                    return getInputReader(s).read(path, inputCharset, additionalArguments);
+                if (readableCache.get(triggerType) != null && readableCache.get(triggerType)) {
+                    LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, triggerType);
+                    return getInputReader(triggerType).read(path, inputCharset, additionalArguments);
                 }
-                if (readableCache.get(s) == null) {
+                if (readableCache.get(triggerType) == null) {
                     readerType = "INTERNAL";
-                    LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, s);
-                    return getInputReader(s).read(path, inputCharset, additionalArguments);
+                    LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, triggerType);
+                    return getInputReader(triggerType).read(path, inputCharset, additionalArguments);
                 }
             }
 
         } catch (InputReaderException e) {
             LOG.debug(
                 "Was not able to read input {} with {} inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
-                path, readerType, s, e);
+                path, readerType, triggerType, e);
         } catch (Throwable e) {
             LOG.debug(
                 "While reading the input {} with the {} inputreader {}, an Exception occured. Trying next input reader...",
-                path, readerType, s, e);
+                path, readerType, triggerType, e);
         }
         return null;
     }
