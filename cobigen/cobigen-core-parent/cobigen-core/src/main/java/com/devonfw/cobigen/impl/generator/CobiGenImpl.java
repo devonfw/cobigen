@@ -165,7 +165,7 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
-    public boolean isMostLikelyReadable(String type, Path path) {
+    public Boolean isMostLikelyReadable(String type, Path path) {
         return inputInterpreter.isMostLikelyReadable(type, path);
     }
 

@@ -3,7 +3,9 @@ package com.devonfw.cobigen.impl.generator;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -66,25 +68,91 @@ public class InputInterpreterImpl implements InputInterpreter {
 
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
-        Set<String> keySet = PluginRegistry.getTriggerInterpreterKeySet();
+        Set<String> triggerInterpreterKeySet = PluginRegistry.getTriggerInterpreterKeySet();
         // We first try to find an input reader that is most likely readable
-        for (String s : keySet) {
-            try {
-                if (isMostLikelyReadable(s, path)) {
-                    LOG.debug("Try reading input {} with inputreader '{}'...", path, s);
-                    return getInputReader(s).read(path, inputCharset, additionalArguments);
-                }
-            } catch (InputReaderException e) {
-                LOG.debug(
-                    "Was not able to read input {} with inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
-                    path, s, e);
+        Map<String, Boolean> readableCache = new HashMap<>();
+        Object readable = null;
+
+        // Create cache for readable states
+        for (String triggerType : triggerInterpreterKeySet) {
+            readable = readInput(path, inputCharset, readableCache, triggerType, true, additionalArguments);
+            if (readable != null) {
+                return readable;
             }
         }
+
+        // If no external input reader was found, check internal input readers
+        for (String triggerType : readableCache.keySet()) {
+            readable = readInput(path, inputCharset, readableCache, triggerType, null, additionalArguments);
+            if (readable != null) {
+                return readable;
+            }
+        }
+
         throw new InputReaderException("Could not read input at path " + path + " with any installed plugin.");
+
+    }
+
+    /**
+     * Checks and returns a valid input either directly or from a provided cache.
+     *
+     * @param path
+     *            the Path to the object. Can also point to a folder
+     * @param inputCharset
+     *            of the input to be used
+     * @param readableCache
+     *            HashMap of TriggerInterpreter and Boolean
+     * @param triggerType
+     *            type of TriggerInterpreter
+     * @param expectedResult
+     *            Boolean expected result of isMostLikelyReadable check
+     * @param additionalArguments
+     *            depending on the InputReader implementation
+     * @return Object that is a valid input or null if the file cannot be read by any InputReader
+     */
+    private Object readInput(Path path, Charset inputCharset, Map<String, Boolean> readableCache, String triggerType,
+        Boolean expectedResult, Object... additionalArguments) {
+        String readerType = "EXTERNAL";
+        if (expectedResult == null) {
+            readerType = "INTERNAL";
+        }
+        try {
+            if (isMostLikelyReadable(triggerType, path, readableCache) == expectedResult) {
+                LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, triggerType);
+                return getInputReader(triggerType).read(path, inputCharset, additionalArguments);
+            }
+        } catch (InputReaderException e) {
+            LOG.debug(
+                "Was not able to read input {} with {} inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
+                path, readerType, triggerType, e);
+        } catch (Throwable e) {
+            LOG.debug(
+                "While reading the input {} with the {} inputreader {}, an Exception occured. Trying next input reader...",
+                path, readerType, triggerType, e);
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the input is most likely readable and fills the provided cache
+     *
+     * @param type
+     *            String of TriggerType
+     * @param path
+     *            the file Path
+     * @param cache
+     *            Map of TriggerType and isMostLikelyReadable check results
+     * @return Boolean true if readable by external plugin, null for internal plugin and false if not readable
+     */
+    private Boolean isMostLikelyReadable(String type, Path path, Map<String, Boolean> cache) {
+        if (!cache.containsKey(type)) {
+            cache.put(type, isMostLikelyReadable(type, path));
+        }
+        return cache.get(type);
     }
 
     @Override
-    public boolean isMostLikelyReadable(String type, Path path) {
+    public Boolean isMostLikelyReadable(String type, Path path) {
         return getInputReader(type).isMostLikelyReadable(path);
     }
 

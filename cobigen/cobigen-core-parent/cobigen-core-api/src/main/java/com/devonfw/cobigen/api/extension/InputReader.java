@@ -93,7 +93,7 @@ public interface InputReader {
      *         false, if the reader is most likely not able to read the file.
      */
     @SuppressWarnings("unused")
-    default public boolean isMostLikelyReadable(Path path) {
+    default public Boolean isMostLikelyReadable(Path path) {
         return false;
     }
 }
