@@ -75,19 +75,15 @@ public class InputInterpreterImpl implements InputInterpreter {
 
         // Create cache for readable states
         for (String triggerType : triggerInterpreterKeySet) {
-            Boolean isMostLikelyReadably = isMostLikelyReadable(triggerType, path);
-            readable = getValidInputReader(path, isMostLikelyReadably, inputCharset, readableCache, triggerType,
-                additionalArguments);
+            readable = readInput(path, inputCharset, readableCache, triggerType, true, additionalArguments);
             if (readable != null) {
                 return readable;
             }
-            readableCache.put(triggerType, isMostLikelyReadably);
         }
 
         // If no external input reader was found, check internal input readers
         for (String triggerType : readableCache.keySet()) {
-            readable = getValidInputReader(path, readableCache.get(triggerType), inputCharset, readableCache,
-                triggerType, additionalArguments);
+            readable = readInput(path, inputCharset, readableCache, triggerType, null, additionalArguments);
             if (readable != null) {
                 return readable;
             }
@@ -98,42 +94,33 @@ public class InputInterpreterImpl implements InputInterpreter {
     }
 
     /**
-     * Checks and returns a valid input reader either directly or from a provided cache.
+     * Checks and returns a valid input either directly or from a provided cache.
      *
      * @param path
      *            the Path to the object. Can also point to a folder
-     * @param isMostLikelyReadable
-     *            Boolean result of isMostLikelyReadable check
      * @param inputCharset
      *            of the input to be used
      * @param readableCache
      *            HashMap of TriggerInterpreter and Boolean
      * @param triggerType
      *            type of TriggerInterpreter
+     * @param expectedResult
+     *            Boolean expected result of isMostLikelyReadable check
      * @param additionalArguments
      *            depending on the InputReader implementation
      * @return Object that is a valid input or null if the file cannot be read by any InputReader
      */
-    private Object getValidInputReader(Path path, Boolean isMostLikelyReadable, Charset inputCharset,
-        Map<String, Boolean> readableCache, String triggerType, Object... additionalArguments) {
+    private Object readInput(Path path, Charset inputCharset, Map<String, Boolean> readableCache, String triggerType,
+        Boolean expectedResult, Object... additionalArguments) {
         String readerType = "EXTERNAL";
+        if (expectedResult == null) {
+            readerType = "INTERNAL";
+        }
         try {
-            if (isMostLikelyReadable != null && isMostLikelyReadable) {
+            if (isMostLikelyReadable(triggerType, path, readableCache) == expectedResult) {
                 LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, triggerType);
                 return getInputReader(triggerType).read(path, inputCharset, additionalArguments);
             }
-            if (!readableCache.isEmpty()) {
-                if (readableCache.get(triggerType) != null && readableCache.get(triggerType)) {
-                    LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, triggerType);
-                    return getInputReader(triggerType).read(path, inputCharset, additionalArguments);
-                }
-                if (readableCache.get(triggerType) == null) {
-                    readerType = "INTERNAL";
-                    LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, triggerType);
-                    return getInputReader(triggerType).read(path, inputCharset, additionalArguments);
-                }
-            }
-
         } catch (InputReaderException e) {
             LOG.debug(
                 "Was not able to read input {} with {} inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
@@ -144,6 +131,24 @@ public class InputInterpreterImpl implements InputInterpreter {
                 path, readerType, triggerType, e);
         }
         return null;
+    }
+
+    /**
+     * Checks if the input is most likely readable and fills the provided cache
+     *
+     * @param type
+     *            String of TriggerType
+     * @param path
+     *            the file Path
+     * @param cache
+     *            Map of TriggerType and isMostLikelyReadable check results
+     * @return Boolean true if readable by external plugin, null for internal plugin and false if not readable
+     */
+    private Boolean isMostLikelyReadable(String type, Path path, Map<String, Boolean> cache) {
+        if (!cache.containsKey(type)) {
+            cache.put(type, isMostLikelyReadable(type, path));
+        }
+        return cache.get(type);
     }
 
     @Override
