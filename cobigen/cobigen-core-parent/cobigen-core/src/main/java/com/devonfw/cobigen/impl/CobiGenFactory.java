@@ -15,6 +15,7 @@ import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.extension.ServiceLookup;
 import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
+import com.devonfw.cobigen.impl.util.ConfigurationUtil;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
@@ -49,6 +50,20 @@ public class CobiGenFactory {
         // Notifies all plugins of new template root path
         PluginRegistry.notifyPlugins(configFolder);
         return createBean;
+    }
+
+    /**
+     * Creates a new {@link CobiGen}
+     *
+     * @return a new instance of {@link CobiGen}
+     * @throws IOException
+     *             if the {@link URI} points to a file or folder, which could not be read.
+     * @throws InvalidConfigurationException
+     *             if the context configuration could not be read properly.
+     */
+    public static CobiGen create() throws InvalidConfigurationException, IOException {
+        URI configFileOrFolder = ConfigurationUtil.findTemplatesLocation();
+        return create(configFileOrFolder);
     }
 
     /**
