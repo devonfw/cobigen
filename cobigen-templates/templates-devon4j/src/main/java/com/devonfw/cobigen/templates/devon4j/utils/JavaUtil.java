@@ -509,6 +509,10 @@ public class JavaUtil {
      * @return the annotated table name if existed or class name without the word Entity
      */
     public String getEntityTableName(String className) {
+        if (!className.endsWith("Entity")) {
+            LOG.error("Could not return table name because {} is not an Entity class", className);
+            return null;
+        }
         try {
             Class<?> entityClass = Class.forName(className);
             Table table = entityClass.getAnnotation(Table.class);

@@ -8,6 +8,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.TestClass;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.TestFirstEntity;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.TestSecondEntity;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.TestTwoClass;
 import com.devonfw.cobigen.templates.devon4j.utils.JavaUtil;
 
@@ -20,11 +22,20 @@ public class JavaUtilTest {
 
     private static Class<?> clazzTwo;
 
+    private static Class<?> firstEntity;
+
+    private static Class<?> secondEntity;
+
+    private static JavaUtil util;
+
     @BeforeClass
     public static void beforeAll() {
 
         clazz = new TestClass().getClass();
         clazzTwo = new TestTwoClass().getClass();
+        firstEntity = new TestFirstEntity().getClass();
+        secondEntity = new TestSecondEntity().getClass();
+        util = new JavaUtil();
     }
 
     /**
@@ -307,5 +318,43 @@ public class JavaUtilTest {
         }
         assertThat(new JavaUtil().getReturnType(clazz, "methodWithReturnType")).isEqualTo("String");
         assertThat(new JavaUtil().getReturnType(clazz, "methodWithVoidReturnType")).isEqualTo("-");
+    }
+
+    /**
+     * tests if the table name of a given entity is properly returned
+     */
+    @Test
+    public void testGetEntityTableName() {
+        assertThat(util.getEntityTableName(firstEntity.getCanonicalName())).isEqualTo("my_table");
+        assertThat(util.getEntityTableName(secondEntity.getCanonicalName())).isEqualTo("TestSecond");
+        assertThat(util.getEntityTableName(clazz.getCanonicalName())).isNull();
+    }
+
+    /**
+     * tests if a given field (including field from parent class) is a collection or not
+     */
+    @Test
+    public void testIsCollection2() {
+        assertThat(util.isCollection2(firstEntity, "listIntegers")).isTrue();
+    }
+
+    /**
+     * tests if the canonical name of a given field is return properly
+     */
+    @Test
+    public void testGetCanonicalNameOfField() {
+        assertThat(util.getCanonicalNameOfField(firstEntity.getCanonicalName(), "firstName"))
+            .isEqualTo("java.lang.String");
+        assertThat(util.getCanonicalNameOfField(firstEntity.getCanonicalName(), "id")).isEqualTo("java.lang.Long");
+    }
+
+    /**
+     * tests if the primary key of a given entity class is properly returned
+     */
+    @Test
+    public void testGetPrimaryKey() {
+        assertThat(util.getPrimaryKey(firstEntity.getCanonicalName())).isEqualTo("java.lang.Long,id");
+        assertThat(util.getPrimaryKey(secondEntity.getCanonicalName()))
+            .isEqualTo("java.lang.String,self_assigned_name");
     }
 }
