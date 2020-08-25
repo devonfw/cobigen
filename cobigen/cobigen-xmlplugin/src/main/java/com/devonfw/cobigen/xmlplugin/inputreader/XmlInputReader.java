@@ -254,9 +254,13 @@ public class XmlInputReader implements InputReader {
     }
 
     @Override
-    public boolean isMostLikelyReadable(Path path) {
+    public Boolean isMostLikelyReadable(Path path) {
         List<String> validExtensions = Arrays.asList("xml", "xmi");
         String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
-        return validExtensions.contains(fileExtension);
+        if (validExtensions.contains(fileExtension)) {
+            return null;
+        } else {
+            return false;
+        }
     }
 }

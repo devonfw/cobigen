@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ms:merge-schema for="html" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
-  <ms:definition namespace="http://www.w3.org/1999/xhtml" type="dtd">
+  <ms:definition namespace="http://www.w3.org/1999/xhtml" type="xsd" location="https://www.w3.org/MarkUp/SCHEMA/xhtml11.xsd">
     <ms:additional-namespace namespace="//W3C//ENTITIES Latin 1 for XHTML//EN"/>
   </ms:definition>
 

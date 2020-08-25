@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ms:merge-schema for="" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
-  <ms:definition namespace="http://java.sun.com/jsf/html"/>
-
-  <!-- Incomplete and dependent MergeSchema. The namespace http://java.sun.com/jsf/core needs to use the prefix 'f' -->
-
+  <ms:definition location="src/main/resources/mergeSchemas/xsd/myfaces_facelets_html_2_2.xsd" type="xsd" namespace="http://xmlns.jcp.org/jsf/html">
+    <ms:additional-namespace location="src/main/resources/mergeSchemas/xsd/html-basic-2.0.xsd" namespace="http://java.sun.com/jsf/html"/>
+  </ms:definition>
+  
+    <!-- Incomplete and dependent MergeSchema. The namespace http://java.sun.com/jsf/core needs to use the prefix 'f' -->
+  
   <ms:handling for="dataTable"><ms:criterion xpath="./@id"/></ms:handling>
   <ms:handling for="column"><ms:criterion xpath="./*[namespace-uri()='http://java.sun.com/jsf/core' and local-name()='facet' and @name='header']/text()"/></ms:handling>
+  <ms:handling for="define"><ms:criterion xpath="./@name"/></ms:handling>
+  <ms:handling for="include"><ms:criterion xpath="./@src"/></ms:handling>
 
 </ms:merge-schema>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:unknown xmlns:p="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans src/test/resources/systemtests/Schemas/SpringBeans.xsd ">
+  <p:unknown id="bean2" class="..." abstract="true"/>
+  <p:unknown name="bean1" class="..." parent="bean2"/>
+</p:unknown>
