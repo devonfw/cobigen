@@ -28,9 +28,8 @@ public interface GeneratorPluginActivator {
      * @throws NotYetSupportedException
      *             if not implemented yet
      */
-    default void setProjectRoot(Path path) throws NotYetSupportedException {
-        throw new NotYetSupportedException(
-            "Method should pass the path " + path + " of the new template root to the plugin");
+    default void setProjectRoot(@SuppressWarnings("unused") Path path) {
+        // do nothing
     }
 
     /**

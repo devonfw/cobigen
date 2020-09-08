@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -68,12 +67,13 @@ public class InputInterpreterImpl implements InputInterpreter {
 
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
-        Set<String> triggerInterpreterKeySet = PluginRegistry.getTriggerInterpreterKeySet();
+        List<String> triggerInterpreterKeySet = PluginRegistry.getTriggerInterpreterKeySet();
+
         // We first try to find an input reader that is most likely readable
         Map<String, Boolean> readableCache = new HashMap<>();
         Object readable = null;
 
-        // Create cache for readable states
+        // First find plug-ins which might come from outside of cobigen space (externally developed plugins)
         for (String triggerType : triggerInterpreterKeySet) {
             readable = readInput(path, inputCharset, readableCache, triggerType, true, additionalArguments);
             if (readable != null) {
@@ -127,7 +127,7 @@ public class InputInterpreterImpl implements InputInterpreter {
                 path, readerType, triggerType, e);
         } catch (Throwable e) {
             LOG.debug(
-                "While reading the input {} with the {} inputreader {}, an Exception occured. Trying next input reader...",
+                "While reading the input {} with the {} inputreader {}, an exception occured. Trying next input reader...",
                 path, readerType, triggerType, e);
         }
         return null;

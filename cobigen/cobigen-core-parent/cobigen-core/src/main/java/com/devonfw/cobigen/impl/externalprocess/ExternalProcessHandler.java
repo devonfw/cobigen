@@ -503,7 +503,8 @@ public class ExternalProcessHandler {
 
                     if (response.equals("true")) {
                         LOG.warn(
-                            "An old version is currently deployed. Please consider deploying the newest version to get the current bug fixes/features");
+                            "The old version {} of {} is currently deployed. Please consider deploying the newest version to get the current bug fixes/features.",
+                            processProperties.getServerVersion(), exeName);
                         return false;
                     }
                 } catch (Exception e) {

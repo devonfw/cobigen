@@ -3,22 +3,23 @@ package com.devonfw.cobigen.impl.extension;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.annotation.ReaderPriority;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.extension.Priority;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
 import com.google.common.collect.Maps;
+import com.google.common.primitives.SignedBytes;
 
 /**
  * The {@link PluginRegistry} manages registrations of {@link Merger}s and {@link TriggerInterpreter}s
@@ -62,7 +63,7 @@ public class PluginRegistry {
             Object plugin = generatorPlugin.newInstance();
             LOG.info("Register CobiGen Plug-in '{}'.", generatorPlugin.getCanonicalName());
             if (plugin instanceof GeneratorPluginActivator) {
-                // Collect IMerger
+                // Collect Mergers
                 if (((GeneratorPluginActivator) plugin).bindMerger() != null) {
                     for (Merger merger : ((GeneratorPluginActivator) plugin).bindMerger()) {
                         PluginRegistry.registerMerger(merger);
@@ -70,7 +71,7 @@ public class PluginRegistry {
                     // adds merger plugins to notifyable list
                     pluginsList.add(plugin);
                 }
-                // Collect ITriggerInterpreter
+                // Collect TriggerInterpreters
                 if (((GeneratorPluginActivator) plugin).bindTriggerInterpreter() != null) {
                     for (TriggerInterpreter triggerInterpreter : ((GeneratorPluginActivator) plugin)
                         .bindTriggerInterpreter()) {
@@ -161,24 +162,46 @@ public class PluginRegistry {
      *
      * @return all {@link TriggerInterpreter} keys as a set of strings.
      */
-    public static Set<String> getTriggerInterpreterKeySet() {
-        return new HashSet<>(registeredTriggerInterpreter.keySet());
+    public static List<String> getTriggerInterpreterKeySet() {
+        return registeredTriggerInterpreter.entrySet().stream().sorted((a, b) -> {
+            Priority priorityA = getPriority(a.getValue());
+            Priority priorityB = getPriority(b.getValue());
+            return SignedBytes.compare(priorityA.getRank(), priorityB.getRank());
+        }).map(e -> e.getKey()).collect(Collectors.toList());
     }
 
     /**
-     * Notifies plugins about the new template root path
+     * @param triggerInterpreter
+     *            {@link TriggerInterpreter}
+     * @return the priority of the input reader
+     */
+    private static Priority getPriority(TriggerInterpreter triggerInterpreter) {
+        Priority priority;
+        if (triggerInterpreter.getClass().isAnnotationPresent(ReaderPriority.class)) {
+            ReaderPriority[] annotation = triggerInterpreter.getClass().getAnnotationsByType(ReaderPriority.class);
+            priority = annotation[0].value();
+        } else {
+            try {
+                priority = (Priority) ReaderPriority.class.getMethod("value").getDefaultValue();
+            } catch (NoSuchMethodException | SecurityException e) {
+                LOG.error(
+                    "Could not find value() method of ReaderPriority. This should be an invalid case. Setting priority to hardcoded LOW to proceed. Please anyhow report a bug please.");
+                priority = Priority.LOW;
+            }
+        }
+        return priority;
+    }
+
+    /**
+     * Notifies plug-ins about the new template root path
      *
      * @param configFolder
-     *            Path to update on registered plugins
+     *            Path to update on registered plug-ins
      */
     public static void notifyPlugins(Path configFolder) {
 
         for (Object plugin : pluginsList) {
-            try {
-                ((GeneratorPluginActivator) plugin).setProjectRoot(configFolder);
-            } catch (NotYetSupportedException e) {
-                LOG.debug("setProjectRoot() method is not implemented in this plugin yet!", e);
-            }
+            ((GeneratorPluginActivator) plugin).setProjectRoot(configFolder);
         }
     }
 
