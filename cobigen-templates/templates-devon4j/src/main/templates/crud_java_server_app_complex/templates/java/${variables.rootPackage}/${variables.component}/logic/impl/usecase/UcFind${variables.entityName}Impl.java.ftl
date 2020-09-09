@@ -17,6 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
 
 /**
  * Use case implementation for searching, filtering and getting ${variables.entityName}s
@@ -31,7 +35,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
 
 
     @Override
-    public ${variables.entityName}Eto find${variables.entityName}(long id) {
+    public ${variables.entityName}Eto find${variables.entityName}(<#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if>id) {
       LOG.debug("Get ${variables.entityName} with id {} from database.", id);
       Optional<${variables.entityName}Entity> foundEntity = get${variables.entityName}Repository().findById(id);
       if (foundEntity.isPresent())

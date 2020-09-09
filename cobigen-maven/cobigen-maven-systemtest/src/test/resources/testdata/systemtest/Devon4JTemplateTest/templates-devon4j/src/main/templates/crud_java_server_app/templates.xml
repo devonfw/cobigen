@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templates>
+    <templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath="src/main"/>
+  </templateScans>
+
+  <increments>
+    <increment name="tos" description="TO's">
+      <templateRef ref="${variables.entityName}Eto.java"/>
+    </increment>
+  </increments>
+</templatesConfiguration>

@@ -1,15 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>class-loader-agent</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
   <name>Class loader agent</name>
-  
+  <description>Class loader agent for CobiGen CLI</description>
+
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>cli-parent</artifactId>
     <version>dev-SNAPSHOT</version>
   </parent>
-  
+
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
@@ -17,11 +22,11 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-          <manifestEntries>
-          <Launcher-Agent-Class>classloader.Agent</Launcher-Agent-Class>
-          <Agent-Class>classloader.Agent</Agent-Class>
-          <Premain-Class>classloader.Agent</Premain-Class>
-          </manifestEntries>
+            <manifestEntries>
+              <Launcher-Agent-Class>classloader.Agent</Launcher-Agent-Class>
+              <Agent-Class>classloader.Agent</Agent-Class>
+              <Premain-Class>classloader.Agent</Premain-Class>
+            </manifestEntries>
           </archive>
         </configuration>
       </plugin>

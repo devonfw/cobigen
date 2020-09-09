@@ -8,6 +8,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.annotation.Cached;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
@@ -24,6 +27,9 @@ import com.devonfw.cobigen.impl.generator.api.TriggerMatchingEvaluator;
  * Implementation of the CobiGen API for input processing
  */
 public class InputInterpreterImpl implements InputInterpreter {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(InputInterpreterImpl.class);
 
     /** Configuration interpreter instance */
     @Inject
@@ -65,23 +71,16 @@ public class InputInterpreterImpl implements InputInterpreter {
         for (String s : keySet) {
             try {
                 if (isMostLikelyReadable(s, path)) {
+                    LOG.debug("Try reading input {} with inputreader '{}'...", path, s);
                     return getInputReader(s).read(path, inputCharset, additionalArguments);
                 }
             } catch (InputReaderException e) {
-                // nothing to do.
+                LOG.debug(
+                    "Was not able to read input {} with inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
+                    path, s, e);
             }
         }
-
-        // No input reader is most likely readable, then we try with every of them until we find the correct
-        // one
-        for (String s : keySet) {
-            try {
-                return getInputReader(s).read(path, inputCharset, additionalArguments);
-            } catch (InputReaderException e) {
-                // nothing to do.
-            }
-        }
-        return null;
+        throw new InputReaderException("Could not read input at path " + path + " with any installed plugin.");
     }
 
     @Override

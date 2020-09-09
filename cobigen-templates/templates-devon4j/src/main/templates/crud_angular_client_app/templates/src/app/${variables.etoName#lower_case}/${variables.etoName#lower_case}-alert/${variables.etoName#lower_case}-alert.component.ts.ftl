@@ -7,12 +7,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./${variables.etoName?lower_case}-alert.component.scss'],
 })
 export class ${variables.etoName?cap_first}AlertComponent implements OnInit {
-  confirmDialog: boolean = false;
-  message: string = '';
-  title: string = '';
-  cancelButton: string = 'Cancel';
-  acceptButton: string = 'Delete';
-  cancelButtonColor: string = '';
+  confirmDialog = false;
+  message = '';
+  title = '';
+  cancelButton = 'Cancel';
+  acceptButton = 'Delete';
+  cancelButtonColor = '';
   constructor(
     public dialogRef: MatDialogRef<${variables.etoName?cap_first}AlertComponent>,
     @Inject(MAT_DIALOG_DATA) private dialogData: any,

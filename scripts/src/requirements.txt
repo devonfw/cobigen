@@ -1,5 +1,5 @@
 GitPython
 lxml
 PyGithub
-PyYAML==5.1.1
+PyYAML
 
