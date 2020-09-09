@@ -19,6 +19,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -39,6 +41,9 @@ import com.google.common.collect.Maps;
 
 /** The {@link ContextConfigurationReader} reads the context xml */
 public class ContextConfigurationReader {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
     /** XML Node 'context' of the context.xml */
     private ContextConfiguration contextNode;
@@ -84,7 +89,9 @@ public class ContextConfigurationReader {
         // workaround to make JAXB work in OSGi context by
         // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
         final ClassLoader orig = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+        if (JvmUtil.isRunningJava9OrLater()) {
+            Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+        }
 
         try {
             Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();

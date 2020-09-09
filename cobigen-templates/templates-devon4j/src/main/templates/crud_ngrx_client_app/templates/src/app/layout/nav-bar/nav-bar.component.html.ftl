@@ -24,22 +24,29 @@
                 (click)="close()"
               >
                 <mat-icon matListAvatar>home</mat-icon>
-                <h3 matLine>{{ 'home' | translate }}</h3>
-                <p matLine class="desc">{{ 'description' | translate }}</p>
+                <h3 matLine>{{ 'home' | transloco }}</h3>
+                <p matLine class="desc">{{ 'description' | transloco }}</p>
               </a>
-              <a id="${variables.etoName?uncap_first}" mat-list-item [routerLink]="['./${variables.etoName?uncap_first}']" (click)="close()">
+              <a
+                id="${variables.etoName?uncap_first}" 
+                mat-list-item
+                [routerLink]="['./${variables.etoName?uncap_first}']"
+                (click)="close()"
+              >
                 <mat-icon matListAvatar>grid_on</mat-icon>
-                <h3 matLine>{{ '${variables.component?lower_case}.${variables.etoName?cap_first}.navData' | translate }}</h3>
-                <p matLine class="desc">{{ '${variables.component?lower_case}.${variables.etoName?cap_first}.navDataSub' | translate }}</p>
+                <h3 matLine>
+				{{ '${variables.component?lower_case}.${variables.etoName?cap_first}.navData' | transloco }}
+				</h3>
+                <p matLine class="desc">
+					{{ '${variables.component?lower_case}.${variables.etoName?cap_first}.navDataSub' | transloco }}
+				</p>
               </a>
             </mat-nav-list>
           </mat-sidenav>
           <mat-sidenav-content>
             <div class="content-container-outer">
               <div class="content-container-inner">
-                <router-outlet>
-
-                </router-outlet>
+                <router-outlet> </router-outlet>
               </div>
               <mat-toolbar class="public-footer">
                 <span>DevonFW Application</span>

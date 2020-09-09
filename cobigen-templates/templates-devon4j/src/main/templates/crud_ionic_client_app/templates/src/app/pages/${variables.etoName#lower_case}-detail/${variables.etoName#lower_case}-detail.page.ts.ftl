@@ -1,5 +1,5 @@
 import { NavParams, ModalController } from '@ionic/angular';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@ngneat/transloco';
 import { Component } from '@angular/core';
 import { ${variables.etoName?cap_first}RestService } from '../../services/${variables.etoName?lower_case}-rest.service';
 import { ${variables.etoName?cap_first} } from '../../services/interfaces/${variables.etoName?lower_case}';
@@ -55,7 +55,7 @@ export class ${variables.etoName?cap_first}Detail {
   constructor(
     public params: NavParams,
     public viewCtrl: ModalController,
-    public translate: TranslateService,
+    public translocoService: TranslocoService,
     public ${variables.etoName?lower_case}Rest: ${variables.etoName?cap_first}RestService,
   ) {
 
@@ -81,15 +81,15 @@ export class ${variables.etoName?cap_first}Detail {
    * @param  dialog - The passed dialog
    */
   private getTranslation(dialog: string) {
-    this.translations = this.translate.instant(dialog);
+    this.translations = this.translocoService.translate(dialog);
   }
 
   /**
    * Dismisses the current opened dialog and returns the result data to it's creator.
    * @param  data - Tuple containing all the objects which the server returns .
    */
-  private dismiss(
-    data: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>],
+  public dismiss(
+    data?: [${variables.etoName?cap_first}SearchCriteria, PaginatedListTo<${variables.etoName?cap_first}>],
   ) {
     this.viewCtrl.dismiss(data);
     this.filterActive = true;
