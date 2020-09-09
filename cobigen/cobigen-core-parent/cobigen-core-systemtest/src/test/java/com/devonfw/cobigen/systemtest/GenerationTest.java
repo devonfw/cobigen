@@ -2,6 +2,7 @@ package com.devonfw.cobigen.systemtest;
 
 import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.mockito.Matchers.any;
@@ -12,6 +13,7 @@ import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
@@ -105,6 +108,30 @@ public class GenerationTest extends AbstractApiTest {
         assertThat(externalIncrement.getDependentIncrements().get(0).getTemplates().size()).isEqualTo(1);
         // We expect two triggers, the main one and the external one
         assertThat(triggersIds.size()).isEqualTo(2);
+    }
+
+    /**
+     * Tests generation of external increments where its trigger does not match
+     * @throws IOException
+     *             test fails
+     */
+    public void testGenerationWithExternalIncrementsFailsWhenExternalTriggerNotMatch() throws IOException {
+        // given
+        Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
+
+        File folder = tmpFolder.newFolder("GenerationTest");
+        File target = new File(folder, "generated.txt");
+        FileUtils.write(target, "base");
+
+        // when
+        CobiGen cobigen =
+            CobiGenFactory.create(new File(testFileRootPath + "externalIncrementsGenerationException").toURI());
+
+        // exception is thrown while getting all increments
+        assertThatThrownBy(() -> {
+            cobigen.getMatchingIncrements(input);
+        }).isInstanceOf(InvalidConfigurationException.class).hasMessageContaining(
+            "An external incrementRef to valid_increment_composition::0 is referenced from external_incrementref but its trigger does not match");
     }
 
     /**

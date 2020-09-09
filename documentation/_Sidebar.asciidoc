@@ -39,6 +39,7 @@
 * link:cobigen-documentation[Maintaining Documentation]
 * link:mgmt_dependency-and-license-tracking[License tracking of dependencies]
 * link:guide_dev_troubleshooting[Troubleshooting]
+* link:setup-jre[Setup JRE in eclipse]
 
 ==== Implementation Docs
 * link:eclipse-plugin_development[Eclipse-Plugin Development]

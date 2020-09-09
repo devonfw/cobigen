@@ -492,7 +492,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         } catch (Exception e) {
             message = e.getMessage();
         }
-        assertFalse(message.indexOf("Bar") == -1);
+        assertThat(message).contains("Bar");
     }
 
     /**
@@ -528,7 +528,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         assertThat(template.getRelativeTemplatePath()).isEqualTo("templates/" + pathWithName);
         assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
             .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName);
-        assertThat(template.getUnresolvedTemplatePath()).isEqualTo(templateName);
+        assertThat(template.getUnresolvedTemplatePath())
+            .isEqualTo(templateScanDestinationPath + scanRelTemplatePath + templateName);
         assertThat(template.getUnresolvedTargetPath()).isEqualTo(templateName);
     }
 
