@@ -14,10 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.annotation.Cached;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
-import com.devonfw.cobigen.api.exception.PluginNotAvailableException;
-import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
@@ -56,13 +53,6 @@ public class InputInterpreterImpl implements InputInterpreter {
             inputs.addAll(inputResolver.resolveContainerElements(input, t));
         }
         return inputs;
-    }
-
-    // not cached by intention
-    @Override
-    public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
-        throws InputReaderException {
-        return getInputReader(type).read(path, inputCharset, additionalArguments);
     }
 
     @Override
@@ -135,25 +125,6 @@ public class InputInterpreterImpl implements InputInterpreter {
             cache.put(triggerInterpreter, triggerInterpreter.getInputReader().isMostLikelyReadable(path));
         }
         return cache.get(triggerInterpreter);
-    }
-
-    /**
-     * @param type
-     *            of the input
-     * @return InputReader for the given type.
-     * @throws CobiGenRuntimeException
-     *             if no InputReadercould be found
-     */
-    private InputReader getInputReader(String type) {
-        TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(type);
-        if (triggerInterpreter == null) {
-            throw new PluginNotAvailableException("TriggerInterpreter", type);
-        }
-        if (triggerInterpreter.getInputReader() == null) {
-            throw new PluginNotAvailableException("InputReader", type);
-        }
-
-        return triggerInterpreter.getInputReader();
     }
 
 }

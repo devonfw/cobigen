@@ -29,25 +29,6 @@ public interface InputInterpreter {
     public List<Object> resolveContainers(Object input);
 
     /**
-     * Reads the content at a path via a fitting {@link InputReader} and returns a CobiGen compliant input.
-     * @param type
-     *            of the input to be read. Is used to resolve a fitting InputReader
-     * @param path
-     *            the {@link Path} to the object. Can also point to a folder
-     * @param inputCharset
-     *            of the input to be used
-     * @param additionalArguments
-     *            depending on the InputReader implementation
-     * @return Object that is a valid input
-     * @throws InputReaderException
-     *             if the Path cannot be read
-     * @throws IllegalArgumentException
-     *             if the provided additional arguments do not suffice the used InputReader
-     */
-    public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
-        throws InputReaderException;
-
-    /**
      * Reads the content at a path via the first fitting {@link InputReader} and returns a CobiGen compliant
      * input. Supports at least one EXTERNAL input reader with the same isMostLikelyReadable criteria than an
      * INTERNAL input reader.
