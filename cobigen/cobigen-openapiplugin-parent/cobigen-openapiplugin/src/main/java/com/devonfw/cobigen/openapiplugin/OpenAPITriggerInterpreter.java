@@ -1,7 +1,9 @@
 package com.devonfw.cobigen.openapiplugin;
 
+import com.devonfw.cobigen.api.annotation.ReaderPriority;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
+import com.devonfw.cobigen.api.extension.Priority;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.openapiplugin.inputreader.OpenAPIInputReader;
 import com.devonfw.cobigen.openapiplugin.matcher.OpenAPIMatcher;
@@ -9,6 +11,7 @@ import com.devonfw.cobigen.openapiplugin.matcher.OpenAPIMatcher;
 /**
  * {@link TriggerInterpreter} implementation of a Swagger Interpreter
  */
+@ReaderPriority(Priority.LOW)
 public class OpenAPITriggerInterpreter implements TriggerInterpreter {
 
     /**
