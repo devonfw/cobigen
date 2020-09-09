@@ -23,6 +23,7 @@ public class XmlPluginActivator implements GeneratorPluginActivator {
      */
     static private String defaultMergeSchemaLocation = "src/main/resources/mergeSchemas";
 
+    /** Static Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(XmlPluginActivator.class);
 
     /**
