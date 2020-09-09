@@ -6,25 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.jar.JarFile;
 
 import net.sf.mmm.code.impl.java.JavaContext;
@@ -41,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
@@ -64,30 +51,17 @@ public class CobiGenUtils {
     /**
      * Logger instance for the CLI
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * File of the templates jar
      */
-    File templatesJar;
+    private File templatesJar;
 
     /**
      * Directory where all our templates jar are located
      */
-    File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
-
-    /**
-     * Declare utiClasses as List
-     */
-    List<Class<?>> utilClasses;
-
-    /**
-     * getter for templates utils classes
-     * @return list of UtilClasses
-     */
-    public List<Class<?>> getUtilClasses() {
-        return utilClasses;
-    }
+    private File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
 
     /**
      * Whether the template dependency is given.
@@ -95,143 +69,35 @@ public class CobiGenUtils {
     private boolean templateDependencyIsGiven = false;
 
     /**
-     * Resolves all utilities classes, which have been defined in the templates jar.
-     * @param templatesJar
-     *            templates jar where we will try to find the list of classes
-     *
-     * @return the list of classes
-     *
-     *         if no generator configuration project exists
-     * @throws IOException
-     *             {@link IOException} occurred
-     */
-    List<Class<?>> resolveTemplateUtilClassesFromJar(File templatesJar) throws IOException {
-        final List<Class<?>> result = new LinkedList<>();
-        ClassLoader inputClassLoader =
-            URLClassLoader.newInstance(new URL[] { templatesJar.toURI().toURL() }, getClass().getClassLoader());
-        URL contextConfigurationLocation = inputClassLoader.getResource("context.xml");
-        if (contextConfigurationLocation == null
-            || contextConfigurationLocation.getPath().endsWith("target/classes/context.xml")) {
-            contextConfigurationLocation = inputClassLoader.getResource("src/main/templates/context.xml");
-            if (contextConfigurationLocation == null) {
-                throw new CobiGenRuntimeException("No context.xml could be found in the classpath!");
-            } else {
-
-                final Map<String, String> env = new HashMap<>();
-
-                String[] pathTemplate = contextConfigurationLocation.toString().split("!");
-                FileSystem fs;
-                try {
-                    fs = FileSystems.getFileSystem(URI.create(pathTemplate[0]));
-                } catch (FileSystemNotFoundException e) {
-                    fs = FileSystems.newFileSystem(URI.create(pathTemplate[0]), env);
-                }
-                final Path path = fs.getPath(pathTemplate[1]);
-
-                Paths.get(URI.create("file://" + path.toString())).getParent().getParent().getParent();
-
-            }
-        } else {
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-
-            URI uri = URI.create(contextConfigurationLocation.toString());
-            FileSystem fs;
-            try {
-                fs = FileSystems.getFileSystem(uri);
-            } catch (FileSystemNotFoundException e) {
-                fs = FileSystems.newFileSystem(uri, env);
-            }
-            Paths.get(uri);
-        }
-        logger.debug("Found context.xml @ " + contextConfigurationLocation.toString());
-        final List<String> foundClasses = new LinkedList<>();
-        if (contextConfigurationLocation.toString().startsWith("jar")) {
-            logger.debug("Processing configuration archive " + contextConfigurationLocation.toString());
-            try {
-                // Get the URI of the jar from the URL of the contained context.xml
-                URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
-                FileSystem jarfs = FileSystems.getFileSystem(jarUri);
-
-                // walk the jar file
-                logger.debug("Searching for classes in " + jarUri.toString());
-                Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
-
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (file.toString().endsWith(".class")) {
-                            logger.debug("    * Found class file " + file.toString());
-                            // remove the leading '/' and the trailing '.class'
-                            String fileName = file.toString().substring(1, file.toString().length() - 6);
-                            // replace the path separator '/' with package separator '.' and add it to the
-                            // list of found files
-                            foundClasses.add(fileName.replace("/", "."));
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                        // Log errors but do not throw an exception
-                        logger.warn(exc.getMessage());
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                logger.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
-            }
-            for (String className : foundClasses) {
-                try {
-                    result.add(inputClassLoader.loadClass(className));
-                } catch (ClassNotFoundException e) {
-                    logger.warn("Could not load " + className + " from classpath", e);
-                }
-            }
-        }
-
-        return result;
-
-    }
-
-    /**
      * Registers CobiGen plug-ins and instantiates CobiGen
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
         CobiGen cg = null;
+        // extra check to make sure that configuration file is not pointing to non existing folder
+        ConfigurationUtils.customTemplatesLocationExists();
         try {
             registerPlugins();
-            getTemplatesJar(false);
-            getTemplates();
-            cg = CobiGenFactory.create(templatesJar.toURI());
+            templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
+            Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderPath();
+
+            if (cobigenTemplatesFolderPath != null) {
+                cg = CobiGenFactory.create(cobigenTemplatesFolderPath.toUri());
+            } else {
+                cg = CobiGenFactory.create(templatesJar.toURI());
+            }
             return cg;
 
         } catch (InvalidConfigurationException e) {
             // if the context configuration is not valid
-            logger.error("Invalid configuration of context ");
+            LOG.error("Invalid configuration of context", e);
         } catch (IOException e) {
             // If I/O operation failed then it will throw exception
-            logger.error("I/O operation is failed ");
+            LOG.error("I/O operation is failed", e);
         }
 
         return cg;
 
-    }
-
-    /**
-     * @return list of all classes, which have been defined in the template configuration folder from a jar
-     */
-    public List<Class<?>> getTemplates() {
-        templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-
-        try {
-            utilClasses = resolveTemplateUtilClassesFromJar(templatesJar);
-        } catch (IOException e) {
-            logger.error(
-                "IO exception due to unable to resolves all classes, which have been defined in the template configuration folder from a jar");
-
-        }
-        return utilClasses;
     }
 
     /**
@@ -258,11 +124,11 @@ public class CobiGenUtils {
 
                 addJarsToClassLoader(allJars);
             } catch (IOException e) {
-                logger.error("Unable to read classPath.txt file.", e);
+                LOG.error("Unable to read classPath.txt file.", e);
             }
 
         } catch (URISyntaxException e) {
-            logger.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
+            LOG.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
         }
 
     }
@@ -274,7 +140,7 @@ public class CobiGenUtils {
      *            POM file that defines the needed CobiGen dependencies to build
      */
     private void buildCobiGenDependencies(File pomFile) {
-        logger.info(
+        LOG.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
 
@@ -293,7 +159,7 @@ public class CobiGenUtils {
             try {
                 invoker.setMavenHome(new File(System.getenv("MAVEN_HOME")));
             } catch (NullPointerException e) {
-                logger.error(
+                LOG.error(
                     "MAVEN_HOME environment variable has not been set on your machine. CobiGen CLI needs Maven correctly configured.",
                     e);
             }
@@ -301,15 +167,15 @@ public class CobiGenUtils {
             if (t1 != null) {
                 t1.interrupt();
             }
-            logger.debug('\n' + "Download the needed dependencies successfully.");
+            LOG.debug('\n' + "Download the needed dependencies successfully.");
             if (result.getExitCode() != 0) {
-                logger.error(
+                LOG.error(
                     "Error while getting all the needed transitive dependencies. Please check your internet connection.");
             }
 
         } catch (MavenInvocationException e) {
 
-            logger.error("The maven command for getting needed dependencies was malformed. This is a bug.");
+            LOG.error("The maven command for getting needed dependencies was malformed. This is a bug.");
         }
     }
 
@@ -325,7 +191,7 @@ public class CobiGenUtils {
             try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {
                 Files.copy(resourcesIS, pomFile.getAbsoluteFile().toPath());
             } catch (IOException e1) {
-                logger.error(
+                LOG.error(
                     "Failed to extract CobiGen plugins pom into your computer. Maybe you need to use admin permissions.");
             }
         }
@@ -351,12 +217,12 @@ public class CobiGenUtils {
                 }
             }
         } catch (MalformedURLException e) {
-            logger.error("Not able to form URL of jar file.", e);
+            LOG.error("Not able to form URL of jar file.", e);
         } catch (SecurityException e) {
-            logger.error(
+            LOG.error(
                 "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.");
         } catch (IOException e) {
-            logger.error("CobiGen plug-in jar file that was being loaded was not found. "
+            LOG.error("CobiGen plug-in jar file that was being loaded was not found. "
                 + "Please try again or file an issue in cobigen GitHub repo.");
         }
 
@@ -366,9 +232,9 @@ public class CobiGenUtils {
      * Tries to find the templates jar. If it was not found, it will download it and then return it.
      * @param isSource
      *            true if we want to get source jar file path
-     * @return the jar file of the templates
+     * @return Path of the jar file of the templates
      */
-    public File getTemplatesJar(boolean isSource) {
+    public Path getTemplatesJar(boolean isSource) {
         File jarFileDir = jarsDirectory.getAbsoluteFile();
         if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
             try {
@@ -378,16 +244,14 @@ public class CobiGenUtils {
 
             } catch (MalformedURLException e) {
                 // if a path of one of the class path entries is not a valid URL
-                logger.error("Problem while downloading the templates, URL not valid. This is a bug", e);
+                LOG.error("Problem while downloading the templates, URL not valid. This is a bug", e);
             } catch (IOException e) {
                 // IOException occurred
-                logger.error(
-                    "Problem while downloading the templates, most probably you are facing connection issues.\n\n"
-                        + "Please try again later.",
-                    e);
+                LOG.error("Problem while downloading the templates, most probably you are facing connection issues.\n\n"
+                    + "Please try again later.", e);
             }
         }
-        return TemplatesJarUtil.getJarFile(isSource, jarFileDir);
+        return TemplatesJarUtil.getJarFile(isSource, jarFileDir).toPath();
     }
 
     /**

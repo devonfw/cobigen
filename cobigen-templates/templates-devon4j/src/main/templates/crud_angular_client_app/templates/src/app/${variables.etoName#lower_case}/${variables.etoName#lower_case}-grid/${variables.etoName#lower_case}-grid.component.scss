@@ -14,38 +14,31 @@ mat-card-subtitle {
 }
 
 .filter-form-fields {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
   margin-bottom: 8px;
-  border-bottom: 1px solid lightgrey;
 }
 
-.filter-form-fields-desktop {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex: 1;
-  mat-form-field {
-    padding: 8px;
-  }
-}
 
-.filter-form-fields-mobile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-}
+@media (min-width: 1024px) {
+  .filter-form-fields {
+    display: flex;
+    justify-content: space-between;
 
-@media (max-width: 599px) {
-  .filter-form-fields-desktop {
-    display: none;
-  }
-}
+    & > mat-form-field {
+      box-sizing: border-box;
+      max-width: 25%;
+    }
 
-@media (min-width: 600px) {
-  .filter-form-fields-mobile {
-    display: none;
+    & > mat-form-field:first-of-type {
+      padding-right: 0.5em;
+    }
+
+    & > mat-form-field:last-of-type {
+      padding-left: 0.5em;
+    }
+
+    & > mat-form-field:not(:first-of-type):not(:last-of-type) {
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+    }
   }
 }

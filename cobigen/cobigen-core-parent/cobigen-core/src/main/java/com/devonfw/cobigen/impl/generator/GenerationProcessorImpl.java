@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.CobiGenCancellationException;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.MergeException;
@@ -48,6 +50,7 @@ import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
 import com.devonfw.cobigen.impl.generator.api.GenerationProcessor;
 import com.devonfw.cobigen.impl.generator.api.InputResolver;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
+import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
@@ -105,10 +108,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
      * @param logicClasses
      *            logic classes to instantiate.
      */
-    private void loadLogicClasses(List<Class<?>> logicClasses) {
+    private void loadLogicClasses(BiConsumer<String, Integer> progressCallback, List<Class<?>> logicClasses) {
         logicClassesModel = Maps.newHashMap();
         for (Class<?> logicClass : logicClasses) {
             try {
+                progressCallback.accept(logicClass.getCanonicalName(), 100 / logicClasses.size());
                 if (logicClass.isEnum()) {
                     logicClassesModel.put(logicClass.getSimpleName(), logicClass.getEnumConstants());
                 } else {
@@ -124,15 +128,29 @@ public class GenerationProcessorImpl implements GenerationProcessor {
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, List<Class<?>> logicClasses, Map<String, Object> rawModel) {
+        Path targetRootPath, boolean forceOverride, ClassLoader classLoader, Map<String, Object> rawModel,
+        BiConsumer<String, Integer> progressCallback, Path templateFolderPath) {
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
+
+        List<Class<?>> logicClasses = null;
+
+        if (templateFolderPath != null || classLoader != null) {
+
+            try {
+                logicClasses = TemplatesClassloaderUtil.resolveUtilClasses(templateFolderPath, classLoader);
+            } catch (IOException e) {
+                LOG.error("An IOException occured while resolving utility classes!", e);
+            }
+        }
 
         // initialize
         this.forceOverride = forceOverride;
         this.input = input;
         if (logicClasses != null) {
-            loadLogicClasses(logicClasses);
+            loadLogicClasses(progressCallback, logicClasses);
         }
+
+        progressCallback.accept("createTempDirectory", 50);
         this.rawModel = rawModel;
         try {
             tmpTargetRootPath = Files.createTempDirectory("cobigen-");
@@ -143,35 +161,48 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         this.targetRootPath = targetRootPath;
         generationReport = new GenerationReportTo();
 
+        progressCallback.accept("load Templates", 50);
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
         // generate
-        Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
-        for (TemplateTo template : templatesToBeGenerated) {
-            try {
-                Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
-                TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-                InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-                tmpToOrigFileTrace.putAll(generate(template, triggerInterpreter));
-            } catch (CobiGenRuntimeException e) {
-                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
-                generationReport.addError(e);
-                LOG.error("An internal error occurred during generation.", e);
-            } catch (Throwable e) {
-                generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
-                generationReport.addError(new CobiGenRuntimeException(
-                    "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
-                LOG.error("An unknown exception occurred during generation.", e);
+        Map<File, File> origToTmpFileTrace = Maps.newHashMap();
+        try {
+            for (TemplateTo template : templatesToBeGenerated) {
+                try {
+                    Trigger trigger =
+                        configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+                    TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+                    InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
+                    generate(template, triggerInterpreter, origToTmpFileTrace);
+                    progressCallback.accept("generates... ",
+                        Math.round(1 / (float) templatesToBeGenerated.size() * 800));
+                } catch (CobiGenCancellationException e) {
+                    throw (e);
+                } catch (CobiGenRuntimeException e) {
+                    generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+                    generationReport.addError(e);
+                    LOG.error("An internal error occurred during generation.", e);
+                } catch (Throwable e) {
+                    generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+                    generationReport.addError(new CobiGenRuntimeException(
+                        "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
+                    LOG.error("An unknown exception occurred during generation.", e);
+                }
             }
+        } catch (CobiGenCancellationException e) {
+            LOG.error("the Generation has been Canceled.", e);
+            generationReport.setCancelled(true);
         }
-
-        if (generationReport.isSuccessful()) {
+        if (generationReport.isCancelled()) {
+            generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+            // do nothing if cancelled
+        } else if (generationReport.isSuccessful()) {
             try {
-                for (Entry<File, File> tmpToOrigFile : tmpToOrigFileTrace.entrySet()) {
-                    Files.createDirectories(tmpToOrigFile.getValue().toPath().getParent());
-                    Files.copy(tmpToOrigFile.getKey().toPath(), tmpToOrigFile.getValue().toPath(),
+                for (Entry<File, File> origToTmpFile : origToTmpFileTrace.entrySet()) {
+                    Files.createDirectories(origToTmpFile.getKey().toPath().getParent());
+                    Files.copy(origToTmpFile.getValue().toPath(), origToTmpFile.getKey().toPath(),
                         StandardCopyOption.REPLACE_EXISTING);
-                    generationReport.addGeneratedFile(tmpToOrigFile.getValue().toPath());
+                    generationReport.addGeneratedFile(origToTmpFile.getKey().toPath());
                 }
                 deleteTemporaryFiles();
             } catch (IOException e) {
@@ -267,12 +298,14 @@ public class GenerationProcessorImpl implements GenerationProcessor {
      *            to be processed for generation
      * @param triggerInterpreter
      *            {@link TriggerInterpreter} to be used for reading the input and creating the model
+     * @param origToTmpFileTrace
+     *            the mapping of temporary generated files to their original target destination to eventually
+     *            finalizing the generation process
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
-     * @return the mapping of temporary generated files to their original target destination to eventually
-     *         finalizing the generation process
      */
-    private Map<File, File> generate(TemplateTo template, TriggerInterpreter triggerInterpreter) {
+    private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter,
+        Map<File, File> origToTmpFileTrace) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
 
@@ -295,7 +328,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             throw new UnknownTemplateException(template.getId());
         }
 
-        Map<File, File> tmpToOrigFileTrace = Maps.newHashMap();
         for (Object generatorInput : inputObjects) {
 
             Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput, templateEty);
@@ -312,9 +344,15 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 pathExpressionResolver.evaluateExpressions(templateEty.getUnresolvedTemplatePath());
 
             File originalFile = targetRootPath.resolve(resolvedTargetDestinationPath).toFile();
-            File tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
-            // remember mapping to later on copy the generated resources to its target destinations
-            tmpToOrigFileTrace.put(tmpOriginalFile, originalFile);
+            File tmpOriginalFile;
+            if (origToTmpFileTrace.containsKey(originalFile)) {
+                // use the available temporary file
+                tmpOriginalFile = origToTmpFileTrace.get(originalFile);
+            } else {
+                tmpOriginalFile = tmpTargetRootPath.resolve(resolvedTmpDestinationPath).toFile();
+                // remember mapping to later on copy the generated resources to its target destinations
+                origToTmpFileTrace.put(originalFile, tmpOriginalFile);
+            }
 
             if (originalFile.exists() || tmpOriginalFile.exists()) {
                 if (!tmpOriginalFile.exists()) {
@@ -384,7 +422,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
             }
         }
-        return tmpToOrigFileTrace;
     }
 
     /**

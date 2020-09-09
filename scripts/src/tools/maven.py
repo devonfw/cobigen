@@ -86,6 +86,8 @@ class Maven:
             dnames.remove(".settings")
         if "target" in dnames:
             dnames.remove("target")
+        if "eclipse-target" in dnames:
+            dnames.remove("eclipse-target")
         if "bin" in dnames:
             dnames.remove("bin")
 
@@ -120,7 +122,7 @@ class Maven:
                             upgraded_deps.append((artifact_id_node.text, version_node.text, new_version))
                             pom.write(fpath)
                             changed_files.append(fpath)
-                            if artifact_id_node.text == self.__config.artifactid_core:
+                            if artifact_id_node.text == self.__config.artifactid_core or artifact_id_node.text == self.__config.artifactid_core_api:
                                 # new_version[0] contains the version without -SNAPSHOT
                                 core_version_in_eclipse_pom = new_version[0]
                                 cobigen_core_milestone = self.github_repo.find_cobigen_core_milestone(core_version_in_eclipse_pom)

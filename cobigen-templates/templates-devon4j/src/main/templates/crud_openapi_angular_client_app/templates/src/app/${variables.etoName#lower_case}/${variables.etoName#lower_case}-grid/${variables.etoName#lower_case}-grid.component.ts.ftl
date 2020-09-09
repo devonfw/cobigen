@@ -1,16 +1,15 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialogRef, MatDialog } from '@angular/material/dialog';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { ${variables.etoName?cap_first}Service } from '../services/${variables.etoName?lower_case}.service';
-import { AuthService } from '../../core/security/auth.service';
-
-import { ${variables.etoName?cap_first}DialogComponent } from '../${variables.etoName?lower_case}-dialog/${variables.etoName?lower_case}-dialog.component';
+import { TranslocoService, AvailableLangs } from '@ngneat/transloco';
 import { Pageable } from '../../core/interfaces/pageable';
-import { SelectionModel } from '@angular/cdk/collections';
+import { AuthService } from '../../core/security/auth.service';
 import { ${variables.etoName?cap_first}AlertComponent } from '../${variables.etoName?lower_case}-alert/${variables.etoName?lower_case}-alert.component';
+import { ${variables.etoName?cap_first}DialogComponent } from '../${variables.etoName?lower_case}-dialog/${variables.etoName?lower_case}-dialog.component';
+import { ${variables.etoName?cap_first}Service } from '../services/${variables.etoName?lower_case}.service';
 
 @Component({
   selector: 'public-${variables.etoName?lower_case}-grid',
@@ -18,6 +17,8 @@ import { ${variables.etoName?cap_first}AlertComponent } from '../${variables.eto
   styleUrls: ['./${variables.etoName?lower_case}-grid.component.scss'],
 })
 export class ${variables.etoName?cap_first}GridComponent implements OnInit {
+  currentLanguage: string;
+  langs: AvailableLangs;
   private pageable: Pageable = {
       pageSize: 8,
       pageNumber: 0,
@@ -29,32 +30,33 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
 
   data: any = [];
   columns: any[] = [
-  <#list model.properties as property>
-    {  
+<#list model.properties as property>
+    {
       name: '${property.name?uncap_first}',
-      label: this.getTranslation('${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${property.name?uncap_first}'),
+      label: '${variables.component?lower_case}.${variables.etoName?cap_first}.columns.${property.name?uncap_first}',
     },
   </#list>
   ];
   displayedColumns: string[] = [
     'select',
-    <#list model.properties as property>
-      '${property.name?uncap_first}',
+    <#list model.properties as field>
+      '${field.name?uncap_first}',
     </#list>
     ];
-  pageSize: number = 8;
-  pageSizes: string[] = ['8', '16', '24'];
+  pageSize = 8;
+  pageSizes: number[] = [8, 16, 24];
   selectedRow: any;
+
   dialogRef: MatDialogRef<${variables.etoName?cap_first}DialogComponent>;
   totalItems: number;
   searchTerms: any = {
-  <#list model.properties as property>
-    ${property.name?uncap_first}: undefined,
+  <#list model.properties as field>
+    ${field.name?uncap_first}: undefined,
   </#list>
   };
   selection: SelectionModel<any> = new SelectionModel<any>(false, []);
   constructor(
-    private translate: TranslateService,
+    private translocoService: TranslocoService,
     public dialog: MatDialog,
     public authService: AuthService,
     public router: Router,
@@ -71,7 +73,7 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
         this.pageable.pageSize,
         this.pageable.pageNumber,
         this.searchTerms,
-        this.pageable.sort = this.sorting,
+        (this.pageable.sort = this.sorting),
       )
       .subscribe(
         (res: any) => {
@@ -84,33 +86,16 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
               width: '400px',
               data: {
                 confirmDialog: false,
-                message: this.getTranslation(error.message),
-                title: this.getTranslation('ERROR'),
-                cancelButton: this.getTranslation('CLOSE'),
+                message: this.translocoService.translate(error.message),
+                title: this.translocoService.translate('ERROR'),
+                cancelButton: this.translocoService.translate('CLOSE'),
               },
             });
           });
         },
       );
   }
-  getTranslation(text: string): string {
-    let value: string;
-    this.translate.get(text).subscribe((res: string) => {
-      value = res;
-    });
-    this.translate.onLangChange.subscribe(() => {
-      this.columns.forEach((column: any) => {
-        if (text.endsWith(column.name)) {
-          this.translate
-            .get('${variables.component?lower_case}.${variables.etoName?cap_first}.columns.' + column.name)
-            .subscribe((res: string) => {
-              column.label = res;
-            });
-        }
-      });
-    });
-    return value;
-  }
+
   page(pagingEvent: PageEvent): void {
     this.pageable = {
         pageSize: pagingEvent.pageSize,
@@ -130,7 +115,9 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
     this.get${variables.etoName?cap_first}();
   }
   checkboxLabel(row?: any): string {
-    return 'row ' + row.id;
+    return ${r"`${
+      this.selection.isSelected(row) ? 'deselect' : 'select'
+    } row ${row.position + 1}`"};
   }
   openDialog(): void {
     this.dialogRef = this.dialog.open(${variables.etoName?cap_first}DialogComponent);
@@ -146,18 +133,20 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
               width: '400px',
               data: {
                 confirmDialog: false,
-                message: this.getTranslation(error.message),
-                title: this.getTranslation('${variables.component?lower_case}.alert.title'),
-                cancelButton: this.getTranslation('CLOSE'),
-              },
-            })
-            .afterClosed()
-            .subscribe((accept: boolean) => {
-              if (accept) {
-                this.authService.setLogged(false);
-                this.router.navigate(['/login']);
-              }
-            });
+                  message: this.translocoService.translate(error.message),
+                  title: this.translocoService.translate(
+                    '${variables.component?lower_case}.alert.title',
+                  ),
+                  cancelButton: this.translocoService.translate('CLOSE'),
+                },
+              })
+              .afterClosed()
+              .subscribe((accept: boolean) => {
+                if (accept) {
+                  this.authService.setLogged(false);
+                  this.router.navigate(['/login']);
+                }
+              });
           },
         );
       }
@@ -165,7 +154,9 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
   }
   selectEvent(row: any): void {
     this.selection.toggle(row);
-    this.selection.isSelected(row) ? (this.selectedRow = row) : (this.selectedRow = undefined);
+    this.selection.isSelected(row)
+      ? (this.selectedRow = row)
+      : (this.selectedRow = undefined);
   }
   openEditDialog(): void {
     this.dialogRef = this.dialog.open(${variables.etoName?cap_first}DialogComponent, {
@@ -183,9 +174,11 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
                 width: '400px',
                 data: {
                   confirmDialog: false,
-                  message: this.getTranslation(error.message),
-                  title: this.getTranslation('${variables.component?lower_case}.alert.title'),
-                  cancelButton: this.getTranslation('CLOSE'),
+                  message: this.translocoService.translate(error.message),
+                  title: this.translocoService.translate(
+                    '${variables.component?lower_case}.alert.title',
+                  ),
+                  cancelButton: this.translocoService.translate('CLOSE'),
                 },
               })
               .afterClosed()
@@ -201,18 +194,23 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
     });
   }
   openConfirm(): void {
-    this.dialog.open(${variables.etoName?cap_first}AlertComponent, {
+    this.dialog
+      .open(${variables.etoName?cap_first}AlertComponent, {
       width: '400px',
       data: {
         confirmDialog: true,
-        message: this.getTranslation('${variables.component?lower_case}.alert.message'),
-        title: this.getTranslation('${variables.component?lower_case}.alert.title'),
-        cancelButton: this.getTranslation(
-          '${variables.component?lower_case}.alert.cancelBtn',
-        ),
-        acceptButton: this.getTranslation(
-          '${variables.component?lower_case}.alert.acceptBtn',
-        ),
+          message: this.translocoService.translate(
+            '${variables.component?lower_case}management.alert.message',
+          ),
+          title: this.translocoService.translate(
+            '${variables.component?lower_case}management.alert.title',
+          ),
+          cancelButton: this.translocoService.translate(
+            '${variables.component?lower_case}management.alert.cancelBtn',
+          ),
+          acceptButton: this.translocoService.translate(
+            '${variables.component?lower_case}management.alert.acceptBtn',
+          ),
       },
     })
     .afterClosed()
@@ -228,22 +226,24 @@ export class ${variables.etoName?cap_first}GridComponent implements OnInit {
               width: '400px',
               data: {
                 confirmDialog: false,
-                message: this.getTranslation(error.message),
-                title: this.getTranslation('${variables.component?lower_case}.alert.title'),
-                cancelButton: this.getTranslation('CLOSE'),
-              },
-            })
-            .afterClosed()
-            .subscribe((acceptance: boolean) => {
-              if (acceptance) {
-                this.authService.setLogged(false);
-                this.router.navigate(['/login']);
-              }
-            });
-          },
-        );
-      }
-    });
+                    message: this.translocoService.translate(error.message),
+                    title: this.translocoService.translate(
+                      '${variables.component?lower_case}management.alert.title',
+                    ),
+                    cancelButton: this.translocoService.translate('CLOSE'),
+                  },
+                })
+                .afterClosed()
+                .subscribe((acceptance: boolean) => {
+                  if (acceptance) {
+                    this.authService.setLogged(false);
+                    this.router.navigate(['/login']);
+                  }
+                });
+            },
+          );
+        }
+      });
   }
   filter(): void {
     this.get${variables.etoName?cap_first}();
