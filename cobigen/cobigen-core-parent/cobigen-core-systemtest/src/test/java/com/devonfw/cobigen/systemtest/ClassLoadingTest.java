@@ -5,7 +5,6 @@ import static com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers.hasItemsI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -13,12 +12,10 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -67,14 +64,12 @@ public class ClassLoadingTest extends AbstractApiTest {
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
-        // very manual way to load classes
-        List<Class<?>> logicClasses = new ArrayList<>();
-        logicClasses.add(getJarClass("JarredClass"));
-        logicClasses.add(getJarClass("OtherJarredClass"));
+        File file = new File(testFileRootPath + "jarredclasses/jarred.jar");
+        ClassLoader cl = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() }, getClass().getClassLoader());
 
         // Execution
-        GenerationReportTo report = target.generate(containerInput, templates.get(0),
-            Paths.get(generationRootFolder.toURI()), false, logicClasses);
+        GenerationReportTo report =
+            target.generate(containerInput, templates.get(0), Paths.get(generationRootFolder.toURI()), false, cl, null);
 
         // Verification
         File expectedResult = new File(testFileRootPath, "expected/Test.java");
@@ -99,14 +94,12 @@ public class ClassLoadingTest extends AbstractApiTest {
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
-        // very manual way to load classes
-        List<Class<?>> logicClasses = new ArrayList<>();
-        logicClasses.add(getJarClass("JarredEnum"));
-        logicClasses.add(getJarClass("EnumTestJarredClass"));
+        File file = new File(testFileRootPath + "jarredclasses/jarred.jar");
+        ClassLoader cl = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() }, getClass().getClassLoader());
 
         // Execution
-        GenerationReportTo report = target.generate(containerInput, templates.get(1),
-            Paths.get(generationRootFolder.toURI()), false, logicClasses);
+        GenerationReportTo report =
+            target.generate(containerInput, templates.get(1), Paths.get(generationRootFolder.toURI()), false, cl, null);
 
         // Verification
         File expectedResult = new File(testFileRootPath, "expected/Test2.java");
@@ -176,25 +169,4 @@ public class ClassLoadingTest extends AbstractApiTest {
         return container;
     }
 
-    /**
-     * An impractical way of loading classes from a jar file
-     * @param name
-     *            the name of the class to load from the jar file
-     * @return the requested class
-     * @author sroeger (Aug 12, 2016)
-     */
-    private Class<?> getJarClass(String name) {
-
-        File file = new File(testFileRootPath + "jarredclasses/jarred.jar");
-
-        URLClassLoader cl;
-        Class<?> jarred = null;
-        try {
-            cl = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() });
-            jarred = cl.loadClass(name);
-        } catch (MalformedURLException | ClassNotFoundException e) {
-            fail();
-        }
-        return jarred;
-    }
 }

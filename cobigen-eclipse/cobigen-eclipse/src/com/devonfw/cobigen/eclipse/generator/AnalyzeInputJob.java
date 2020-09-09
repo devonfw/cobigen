@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -61,10 +62,12 @@ public class AnalyzeInputJob extends AbstractCobiGenJob {
 
         try {
             LOG.info("Determine matching templates...");
-            monitor.beginTask("Determine matching templates...", inputs.size() + 1);
+            SubMonitor subMonitor = SubMonitor.convert(monitor, inputs.size() + 1);
+            subMonitor.beginTask("Determine matching templates...", inputs.size() + 1);
+
             for (Object input : inputs) {
+                subMonitor.split(1);
                 resultMatchingTemplates.addAll(cobigen.getMatchingTemplates(input));
-                monitor.worked(1);
             }
             LOG.info("Determine if input is container...");
             resultSingleNonContainerInput = inputs.size() == 1 && !cobigen.combinesMultipleInputs(inputs.get(0));

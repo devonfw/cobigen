@@ -6,21 +6,21 @@ import java.lang.annotation.RetentionPolicy;
 //simple annotation types which are still available at runtime
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MyFieldAnnotation {
-    byte b();
+    byte b() default 0;
 
-    short s();
+    short s() default 0;
 
-    int i();
+    int i() default 0;
 
-    long l();
+    long l() default 0l;
 
-    float f();
+    float f() default 0;
 
-    double d();
+    double d() default 0.0;
 
-    char c();
+    char c() default '0';
 
-    String str();
+    String str() default "0";
 
-    boolean bool();
+    boolean bool() default false;
 }

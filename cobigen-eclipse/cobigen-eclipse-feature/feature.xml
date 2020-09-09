@@ -2,15 +2,15 @@
 <feature
       id="com.devonfw.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
-      version="5.1.0"
-      provider-name="DevonFw Team">
+      version="5.2.1"
+      provider-name="devonfw Team">
 
    <description>
       The CobiGen is an incremental generator framework based on text template engines like FreeMarker or Velocity.
    </description>
 
    <copyright>
-      Copyright © 2013-2017 Capgemini SE. All rights reserved.
+      Copyright © 2013-2020 Capgemini SE. All rights reserved.
    </copyright>
 
    <license url="https://devonfw.github.io/TermsOfUse">

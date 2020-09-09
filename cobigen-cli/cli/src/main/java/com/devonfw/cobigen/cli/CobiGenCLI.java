@@ -1,5 +1,7 @@
 package com.devonfw.cobigen.cli;
 
+import java.util.Arrays;
+
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.cli.commands.CobiGenCommand;
@@ -16,12 +18,12 @@ public class CobiGenCLI {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
+    private static Logger LOG = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Picocli command line object
      */
-    private final static CommandLine commandLine = new CommandLine(new CobiGenCommand());
+    private final static CommandLine commandLine = new CommandLine(new CobiGenCommand());	
 
     /**
      * @return the {@link CommandLine} object of this current execution
@@ -37,11 +39,11 @@ public class CobiGenCLI {
      *            list of arguments the user has passed
      */
     public static void main(String... args) {
-
-        CLILogger.layoutLogger();
-        logger.debug("Current working directory: " + System.getProperty("user.dir"));
+    	boolean verbose = Arrays.asList(args).contains("-v"); 
+        CLILogger.layoutLogger(verbose);
+        LOG.debug("Current working directory: {}", System.getProperty("user.dir"));
         if (commandLine.execute(args) == 0) {
-            logger.debug("Commands were executed correctly");
+            LOG.debug("Commands were executed correctly");
         }
 
     }
