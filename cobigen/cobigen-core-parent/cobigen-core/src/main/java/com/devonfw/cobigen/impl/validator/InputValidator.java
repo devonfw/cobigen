@@ -59,9 +59,8 @@ public class InputValidator {
      */
     public static void validateTriggerInterpreter(TriggerInterpreter triggerInterpreter, String triggerType) {
         if (triggerInterpreter == null) {
-            throw new InvalidConfigurationException(
-                "No TriggerInterpreter " + (triggerType != null ? "for type '" + triggerType + "' " : "")
-                    + " provided! You may miss a plug-in.");
+            throw new InvalidConfigurationException("No TriggerInterpreter "
+                + (triggerType != null ? "for type '" + triggerType + "' " : "") + "provided! You may miss a plug-in.");
         }
 
         if (triggerInterpreter.getInputReader() == null) {

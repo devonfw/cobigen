@@ -43,6 +43,9 @@ public class PluginRegistry {
     private static Multimap<String, TriggerInterpreter> registeredTriggerInterpreterByFileExtension =
         HashMultimap.<String, TriggerInterpreter> create();
 
+    /** Key-Placeholder for a path representing a folder */
+    private static final String FOLDER = "$";
+
     /** List of registered plugins */
     private static Map<Class<? extends GeneratorPluginActivator>, GeneratorPluginActivator> loadedPlugins =
         new HashMap<>();
@@ -201,15 +204,28 @@ public class PluginRegistry {
      */
     public static List<TriggerInterpreter> getTriggerInterpreters(Path inputPath) {
 
-        String extension = FilenameUtils.getExtension(inputPath.getFileName().toString());
-        if (!registeredTriggerInterpreterByFileExtension.containsKey(extension)) {
+        String extension;
+        if (inputPath.toFile().isFile()) {
+            extension = FilenameUtils.getExtension(inputPath.getFileName().toString());
             for (Class<? extends GeneratorPluginActivator> activatorClass : ClassServiceLoader
                 .getGeneratorPluginActivatorClasses()) {
                 if (activatorClass.isAnnotationPresent(Activation.class)) {
                     Activation activation = activatorClass.getAnnotation(Activation.class);
                     String[] byFileExtension = activation.byFileExtension();
                     Arrays.sort(byFileExtension);
-                    if (Arrays.binarySearch(byFileExtension, extension) >= 0) {
+                    if (Arrays.binarySearch(byFileExtension, extension) >= 0
+                        && !loadedPlugins.containsKey(activatorClass)) {
+                        loadPlugin(activatorClass);
+                    }
+                }
+            }
+        } else { // directory
+            extension = FOLDER;
+            for (Class<? extends GeneratorPluginActivator> activatorClass : ClassServiceLoader
+                .getGeneratorPluginActivatorClasses()) {
+                if (activatorClass.isAnnotationPresent(Activation.class)) {
+                    Activation activation = activatorClass.getAnnotation(Activation.class);
+                    if (activation.byFolder() && !loadedPlugins.containsKey(activatorClass)) {
                         loadPlugin(activatorClass);
                     }
                 }
@@ -227,6 +243,7 @@ public class PluginRegistry {
     }
 
     /**
+     * Extracts the {@link ReaderPriority} of a trigger interpreter
      * @param clazz
      *            class to get the {@link ReaderPriority} annotation from (commonly the TriggerInterpreter
      *            classes)

@@ -22,6 +22,11 @@ public @interface Activation {
     String[] byFileExtension() default {};
 
     /**
+     * @return whether this plug-in can read a folder as input.
+     */
+    boolean byFolder() default false;
+
+    /**
      * @return the merge strategies provided by this plug-in, which will cause the plug-in lazily to be loaded
      *         just in case a merge strategy is requested which is provided by this plug-in
      */
