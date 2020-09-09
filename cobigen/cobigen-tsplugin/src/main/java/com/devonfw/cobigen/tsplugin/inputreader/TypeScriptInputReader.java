@@ -171,7 +171,6 @@ public class TypeScriptInputReader implements InputReader {
         }
 
         return null;
-
     }
 
     @Override
@@ -283,7 +282,7 @@ public class TypeScriptInputReader implements InputReader {
     }
 
     @Override
-    public boolean isMostLikelyReadable(Path path) {
+    public Boolean isMostLikelyReadable(Path path) {
         return isValidInput(path);
     }
 

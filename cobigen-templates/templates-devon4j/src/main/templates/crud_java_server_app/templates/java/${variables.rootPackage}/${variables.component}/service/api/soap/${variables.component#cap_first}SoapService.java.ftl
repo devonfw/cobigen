@@ -14,6 +14,10 @@ import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.
 
 import com.devonfw.module.jpa.common.api.to.PaginatedListTo;
 
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
 
 @WebService
 public interface ${variables.component?cap_first}SoapService {
@@ -21,7 +25,7 @@ public interface ${variables.component?cap_first}SoapService {
   @WebMethod
   @WebResult(name = "message")
   @GET
-  public ${variables.entityName}Eto get${variables.entityName}(@WebParam(name = "id") long id);
+  public ${variables.entityName}Eto get${variables.entityName}(@WebParam(name = "id") <#if compositeIdTypeVar!="null">${compositeIdTypeVar}<#else>long</#if> id);
 
   @WebMethod
   @WebResult(name = "message")
@@ -31,7 +35,7 @@ public interface ${variables.component?cap_first}SoapService {
   @WebMethod
   @WebResult(name = "message")
   @DELETE
-  public void delete${variables.entityName}(@WebParam(name = "id") long id);
+  public void delete${variables.entityName}(@WebParam(name = "id") <#if compositeIdTypeVar!="null">${compositeIdTypeVar}<#else>long</#if> id);
 
   @WebMethod
   @WebResult(name = "message")
