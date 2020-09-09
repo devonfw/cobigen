@@ -15,7 +15,6 @@ import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.openapiplugin.model.OpenAPIFile;
 import com.devonfw.cobigen.openapiplugin.util.TestConstants;
 
 import junit.framework.AssertionFailedError;
@@ -42,8 +41,7 @@ public class InputReaderMatcherTest {
     public void testBasicElementMatcher_oneComponent() throws Exception {
         CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
 
-        Object openApiFile =
-            cobigen.read("openapi", Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
+        Object openApiFile = cobigen.read(Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
         assertThat(openApiFile).isNotNull();
 
         List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
@@ -59,8 +57,7 @@ public class InputReaderMatcherTest {
     public void testBasicElementMatcher_twoComponents() throws Exception {
         CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
 
-        Object openApiFile =
-            cobigen.read("openapi", Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
+        Object openApiFile = cobigen.read(Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
         assertThat(openApiFile).isNotNull();
 
         List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
@@ -76,8 +73,7 @@ public class InputReaderMatcherTest {
     public void testVariableAssignment_propertyName() throws Exception {
         CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
 
-        Object openApiFile =
-            cobigen.read("openapi", Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
+        Object openApiFile = cobigen.read(Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
         List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
 
         String templateName = "testVariableAssignment_propertyName.txt";
@@ -101,8 +97,7 @@ public class InputReaderMatcherTest {
     public void testVariableAssignment_rootPackage() throws Exception {
         CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
 
-        Object openApiFile = cobigen.read("openapi", Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
-        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+        Object openApiFile = cobigen.read(Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
 
         // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
         // TestConstants.UTF_8);
@@ -119,18 +114,18 @@ public class InputReaderMatcherTest {
             .hasContent("testingRootName");
     }
 
-    /*
+    /**
      * Tests variable assignment resolution of ROOTPACKAGE type, thus that the user can define the root
      * package in the "info" part of the OpenAPI file
      *
-     * @throws Exception test fails
+     * @throws Exception
+     *             test fails
      */
     @Test
     public void testVariableAssignment_rootComponent() throws Exception {
         CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
 
-        Object openApiFile = cobigen.read("openapi", Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
-        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+        Object openApiFile = cobigen.read(Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
 
         // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
         // TestConstants.UTF_8);
@@ -160,9 +155,7 @@ public class InputReaderMatcherTest {
     public void testVariableAssignment_attribute() throws Exception {
         CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
 
-        Object openApiFile =
-            cobigen.read("openapi", Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
-        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+        Object openApiFile = cobigen.read(Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
 
         // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
         // TestConstants.UTF_8);
@@ -201,8 +194,7 @@ public class InputReaderMatcherTest {
         CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
 
         Object openApiFile =
-            cobigen.read("openapi", Paths.get(testdataRoot, "two-components-no-attribute.yaml"), TestConstants.UTF_8);
-        OpenAPIFile inputFile = (OpenAPIFile) openApiFile;
+            cobigen.read(Paths.get(testdataRoot, "two-components-no-attribute.yaml"), TestConstants.UTF_8);
 
         // Previous version: List<Object> inputObjects = cobigen.getInputObjects(openApiFile,
         // TestConstants.UTF_8);
