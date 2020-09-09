@@ -4,6 +4,7 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Map;
 
+import com.devonfw.cobigen.api.annotation.Name;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.extension.TextTemplate;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
@@ -20,10 +21,8 @@ import freemarker.template.TemplateException;
 /**
  * {@link TextTemplateEngine} implementation for Apache FreeMarker.
  */
+@Name("FreeMarker")
 public class FreeMarkerTemplateEngine implements TextTemplateEngine {
-
-    /** Template Engine name */
-    private static final String ENGINE_NAME = "FreeMarker";
 
     /** The file extension of the template files. */
     private static final String TEMPLATE_EXTENSION = ".ftl";
@@ -42,11 +41,6 @@ public class FreeMarkerTemplateEngine implements TextTemplateEngine {
         freeMarkerConfig.setLocalizedLookup(false);
         freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader());
         freeMarkerConfig.setCacheStorage(new NullCacheStorage());
-    }
-
-    @Override
-    public String getName() {
-        return ENGINE_NAME;
     }
 
     @Override
