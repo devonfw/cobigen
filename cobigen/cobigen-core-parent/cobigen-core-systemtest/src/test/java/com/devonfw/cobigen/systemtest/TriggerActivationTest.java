@@ -16,14 +16,15 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
+import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
 
 /**
  * Test suite, which tests activation of triggers due to matcher accumulation types.
@@ -49,6 +50,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -66,7 +68,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // execution
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
@@ -89,6 +91,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -106,7 +109,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // execution
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
@@ -128,6 +131,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -145,7 +149,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // execution
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
@@ -168,6 +172,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -184,7 +189,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(false);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(true);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // execution
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
@@ -206,6 +211,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -223,7 +229,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // execution
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
@@ -245,6 +251,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -261,7 +268,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(true);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // execution
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
@@ -283,6 +290,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         Object input = new Object();
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -296,7 +304,7 @@ public class TriggerActivationTest extends AbstractApiTest {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input)))))
             .thenReturn(false);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // execution
         CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());

@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
@@ -134,6 +135,7 @@ public class ClassLoadingTest extends AbstractApiTest {
         };
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -164,7 +166,7 @@ public class ClassLoadingTest extends AbstractApiTest {
                     .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
                         .put("entityName", "Test").build());
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         return container;
     }

@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
@@ -150,6 +151,7 @@ public class GenerationTest extends AbstractApiTest {
         };
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -166,7 +168,7 @@ public class GenerationTest extends AbstractApiTest {
         variables.put("contextVar", "contextValue");
         when(matcher.resolveVariables(any(MatcherTo.class), any(List.class))).thenReturn(variables);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // further setup
         File folder = tmpFolder.newFolder();
@@ -200,6 +202,7 @@ public class GenerationTest extends AbstractApiTest {
         };
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -216,7 +219,7 @@ public class GenerationTest extends AbstractApiTest {
         variables.put("contextVar", "contextValue");
         when(matcher.resolveVariables(any(MatcherTo.class), any(List.class))).thenReturn(variables);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // further setup
         File folder = tmpFolder.newFolder();

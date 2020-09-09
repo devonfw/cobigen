@@ -67,23 +67,14 @@ public class InputInterpreterImpl implements InputInterpreter {
 
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
-        List<String> triggerInterpreterKeySet = PluginRegistry.getTriggerInterpreterKeySet();
+        List<TriggerInterpreter> triggerInterpreters = PluginRegistry.getTriggerInterpreters(path);
 
         // We first try to find an input reader that is most likely readable
-        Map<String, Boolean> readableCache = new HashMap<>();
+        Map<TriggerInterpreter, Boolean> readableCache = new HashMap<>();
         Object readable = null;
 
-        // First find plug-ins which might come from outside of cobigen space (externally developed plugins)
-        for (String triggerType : triggerInterpreterKeySet) {
-            readable = readInput(path, inputCharset, readableCache, triggerType, true, additionalArguments);
-            if (readable != null) {
-                return readable;
-            }
-        }
-
-        // If no external input reader was found, check internal input readers
-        for (String triggerType : readableCache.keySet()) {
-            readable = readInput(path, inputCharset, readableCache, triggerType, null, additionalArguments);
+        for (TriggerInterpreter triggerInterpreter : triggerInterpreters) {
+            readable = readInput(path, inputCharset, readableCache, triggerInterpreter, additionalArguments);
             if (readable != null) {
                 return readable;
             }
@@ -102,33 +93,27 @@ public class InputInterpreterImpl implements InputInterpreter {
      *            of the input to be used
      * @param readableCache
      *            HashMap of TriggerInterpreter and Boolean
-     * @param triggerType
+     * @param triggerInterpreter
      *            type of TriggerInterpreter
-     * @param expectedResult
-     *            Boolean expected result of isMostLikelyReadable check
      * @param additionalArguments
      *            depending on the InputReader implementation
      * @return Object that is a valid input or null if the file cannot be read by any InputReader
      */
-    private Object readInput(Path path, Charset inputCharset, Map<String, Boolean> readableCache, String triggerType,
-        Boolean expectedResult, Object... additionalArguments) {
-        String readerType = "EXTERNAL";
-        if (expectedResult == null) {
-            readerType = "INTERNAL";
-        }
+    private Object readInput(Path path, Charset inputCharset, Map<TriggerInterpreter, Boolean> readableCache,
+        TriggerInterpreter triggerInterpreter, Object... additionalArguments) {
         try {
-            if (isMostLikelyReadable(triggerType, path, readableCache) == expectedResult) {
-                LOG.info("Try reading input {} with {} inputreader '{}'...", path, readerType, triggerType);
-                return getInputReader(triggerType).read(path, inputCharset, additionalArguments);
+            if (isMostLikelyReadable(triggerInterpreter, path, readableCache)) {
+                LOG.info("Try reading input {} with inputreader '{}'...", path, triggerInterpreter);
+                return triggerInterpreter.getInputReader().read(path, inputCharset, additionalArguments);
             }
         } catch (InputReaderException e) {
             LOG.debug(
-                "Was not able to read input {} with {} inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
-                path, readerType, triggerType, e);
+                "Was not able to read input {} with inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
+                path, triggerInterpreter, e);
         } catch (Throwable e) {
             LOG.debug(
-                "While reading the input {} with the {} inputreader {}, an exception occured. Trying next input reader...",
-                path, readerType, triggerType, e);
+                "While reading the input {} with the inputreader {}, an exception occured. Trying next input reader...",
+                path, triggerInterpreter, e);
         }
         return null;
     }
@@ -136,24 +121,20 @@ public class InputInterpreterImpl implements InputInterpreter {
     /**
      * Checks if the input is most likely readable and fills the provided cache
      *
-     * @param type
-     *            String of TriggerType
+     * @param triggerInterpreter
+     *            {@link TriggerInterpreter} to be used
      * @param path
      *            the file Path
      * @param cache
      *            Map of TriggerType and isMostLikelyReadable check results
      * @return Boolean true if readable by external plugin, null for internal plugin and false if not readable
      */
-    private Boolean isMostLikelyReadable(String type, Path path, Map<String, Boolean> cache) {
-        if (!cache.containsKey(type)) {
-            cache.put(type, isMostLikelyReadable(type, path));
+    private Boolean isMostLikelyReadable(TriggerInterpreter triggerInterpreter, Path path,
+        Map<TriggerInterpreter, Boolean> cache) {
+        if (!cache.containsKey(triggerInterpreter)) {
+            cache.put(triggerInterpreter, triggerInterpreter.getInputReader().isMostLikelyReadable(path));
         }
-        return cache.get(type);
-    }
-
-    @Override
-    public Boolean isMostLikelyReadable(String type, Path path) {
-        return getInputReader(type).isMostLikelyReadable(path);
+        return cache.get(triggerInterpreter);
     }
 
     /**

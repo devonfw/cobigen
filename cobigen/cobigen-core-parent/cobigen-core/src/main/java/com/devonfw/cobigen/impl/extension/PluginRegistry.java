@@ -1,16 +1,18 @@
 package com.devonfw.cobigen.impl.extension;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.annotation.Activation;
 import com.devonfw.cobigen.api.annotation.ReaderPriority;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
@@ -18,7 +20,9 @@ import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.extension.Priority;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.primitives.SignedBytes;
 
 /**
@@ -29,23 +33,21 @@ public class PluginRegistry {
     /**
      * Currently registered {@link Merger}s mapped by their type
      */
-    private static Map<String, Merger> registeredMerger =
-        Collections.synchronizedMap(Maps.<String, Merger> newHashMap());
+    private static Map<String, Merger> registeredMerger = Maps.<String, Merger> newHashMap();
 
-    /**
-     * Currently registered {@link TriggerInterpreter}s mapped by their type
-     */
+    /** Currently registered {@link TriggerInterpreter}s mapped by their type */
     private static Map<String, TriggerInterpreter> registeredTriggerInterpreter =
-        Collections.synchronizedMap(Maps.<String, TriggerInterpreter> newHashMap());
+        Maps.<String, TriggerInterpreter> newHashMap();
 
-    /**
-     * List of registered plugins
-     */
-    private static List<Object> pluginsList = new ArrayList<>();
+    /** Currently registered {@link TriggerInterpreter}s mapped by their supporting file extensions */
+    private static Multimap<String, TriggerInterpreter> registeredTriggerInterpreterByFileExtension =
+        HashMultimap.<String, TriggerInterpreter> create();
 
-    /**
-     * Assigning logger to PluginRegistry
-     */
+    /** List of registered plugins */
+    private static Map<Class<? extends GeneratorPluginActivator>, GeneratorPluginActivator> loadedPlugins =
+        new HashMap<>();
+
+    /** Assigning logger to PluginRegistry */
     private static final Logger LOG = LoggerFactory.getLogger(PluginRegistry.class);
 
     /***
@@ -56,28 +58,34 @@ public class PluginRegistry {
      *            plug-in to be loaded
      * @param <T>
      *            Type of the plug-in interface
+     * @return the instantiated {@link GeneratorPluginActivator}
      */
-    public static <T extends GeneratorPluginActivator> void loadPlugin(Class<T> generatorPlugin) {
+    private static <T extends GeneratorPluginActivator> GeneratorPluginActivator loadPlugin(Class<T> generatorPlugin) {
 
         try {
             Object plugin = generatorPlugin.newInstance();
             LOG.info("Register CobiGen Plug-in '{}'.", generatorPlugin.getCanonicalName());
             if (plugin instanceof GeneratorPluginActivator) {
                 // Collect Mergers
-                if (((GeneratorPluginActivator) plugin).bindMerger() != null) {
-                    for (Merger merger : ((GeneratorPluginActivator) plugin).bindMerger()) {
-                        PluginRegistry.registerMerger(merger);
+                GeneratorPluginActivator activator = (GeneratorPluginActivator) plugin;
+                if (activator.bindMerger() != null) {
+                    for (Merger merger : activator.bindMerger()) {
+                        registerMerger(merger);
                     }
                     // adds merger plugins to notifyable list
-                    pluginsList.add(plugin);
                 }
                 // Collect TriggerInterpreters
-                if (((GeneratorPluginActivator) plugin).bindTriggerInterpreter() != null) {
-                    for (TriggerInterpreter triggerInterpreter : ((GeneratorPluginActivator) plugin)
-                        .bindTriggerInterpreter()) {
-                        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+                if (activator.bindTriggerInterpreter() != null) {
+                    for (TriggerInterpreter triggerInterpreter : activator.bindTriggerInterpreter()) {
+                        registerTriggerInterpreter(triggerInterpreter, activator);
                     }
                 }
+                loadedPlugins.put(activator.getClass(), activator);
+                return activator;
+            } else {
+                LOG.warn("Instantiated plugin of class {}, which is not subclass of {}",
+                    plugin.getClass().getCanonicalName(), GeneratorPluginActivator.class.getCanonicalName());
+                return null;
             }
         } catch (InstantiationException | IllegalAccessException e) {
             throw new CobiGenRuntimeException(
@@ -91,7 +99,7 @@ public class PluginRegistry {
      * @param merger
      *            to be registered
      */
-    public static void registerMerger(Merger merger) {
+    private static void registerMerger(Merger merger) {
 
         if (merger == null || StringUtils.isEmpty(merger.getType())) {
             throw new IllegalArgumentException(
@@ -106,14 +114,23 @@ public class PluginRegistry {
      *
      * @param triggerInterpreter
      *            to be registered
+     * @param plugin
+     *            the plugin the trigger interpreter is located in
      */
-    public static void registerTriggerInterpreter(TriggerInterpreter triggerInterpreter) {
+    public static void registerTriggerInterpreter(TriggerInterpreter triggerInterpreter,
+        GeneratorPluginActivator plugin) {
 
         if (triggerInterpreter == null || StringUtils.isEmpty(triggerInterpreter.getType())) {
             throw new IllegalArgumentException(
                 "You cannot register a new TriggerInterpreter with triggerInterpreter==null or type==null or empty!");
         }
         registeredTriggerInterpreter.put(triggerInterpreter.getType(), triggerInterpreter);
+        Activation annotation = plugin.getClass().getAnnotation(Activation.class);
+        if (annotation != null) {
+            for (String ext : annotation.byFileExtension()) {
+                registeredTriggerInterpreterByFileExtension.put(ext, triggerInterpreter);
+            }
+        }
         LOG.debug("TriggerInterpreter for type '{}' registered ({}).", triggerInterpreter.getType(),
             triggerInterpreter.getClass().getCanonicalName());
     }
@@ -131,7 +148,23 @@ public class PluginRegistry {
         if (mergerType == null) {
             return null;
         }
+
         Merger merger = registeredMerger.get(mergerType);
+        if (merger == null) {
+            for (Class<? extends GeneratorPluginActivator> activator : ClassServiceLoader
+                .getGeneratorPluginActivatorClasses()) {
+                if (activator.isAnnotationPresent(Activation.class)) {
+                    Activation activation = activator.getAnnotation(Activation.class);
+                    String[] byMergeStrategy = activation.byMergeStrategy();
+                    Arrays.sort(byMergeStrategy);
+                    if (Arrays.binarySearch(byMergeStrategy, mergerType) >= 0) {
+                        loadPlugin(activator);
+                        break;
+                    }
+                }
+            }
+            merger = registeredMerger.get(mergerType);
+        }
         if (merger != null) {
             merger = ProxyFactory.getProxy(merger);
         }
@@ -150,6 +183,7 @@ public class PluginRegistry {
         if (triggerType == null) {
             return null;
         }
+
         TriggerInterpreter triggerInterpreter = registeredTriggerInterpreter.get(triggerType);
         if (triggerInterpreter != null) {
             triggerInterpreter = ProxyFactory.getProxy(triggerInterpreter);
@@ -159,26 +193,49 @@ public class PluginRegistry {
 
     /**
      * Returns a {@link Map} of all {@link TriggerInterpreter} keys.
+     * @param inputPath
+     *            the path of the input to be read to just return the valid {@link TriggerInterpreter}s in
+     *            order sorted by {@link Priority}
      *
      * @return all {@link TriggerInterpreter} keys as a set of strings.
      */
-    public static List<String> getTriggerInterpreterKeySet() {
-        return registeredTriggerInterpreter.entrySet().stream().sorted((a, b) -> {
-            Priority priorityA = getPriority(a.getValue());
-            Priority priorityB = getPriority(b.getValue());
-            return SignedBytes.compare(priorityA.getRank(), priorityB.getRank());
-        }).map(e -> e.getKey()).collect(Collectors.toList());
+    public static List<TriggerInterpreter> getTriggerInterpreters(Path inputPath) {
+
+        String extension = FilenameUtils.getExtension(inputPath.getFileName().toString());
+        if (!registeredTriggerInterpreterByFileExtension.containsKey(extension)) {
+            for (Class<? extends GeneratorPluginActivator> activatorClass : ClassServiceLoader
+                .getGeneratorPluginActivatorClasses()) {
+                if (activatorClass.isAnnotationPresent(Activation.class)) {
+                    Activation activation = activatorClass.getAnnotation(Activation.class);
+                    String[] byFileExtension = activation.byFileExtension();
+                    Arrays.sort(byFileExtension);
+                    if (Arrays.binarySearch(byFileExtension, extension) >= 0) {
+                        loadPlugin(activatorClass);
+                    }
+                }
+            }
+        }
+
+        List<TriggerInterpreter> sortedPlugins =
+            registeredTriggerInterpreterByFileExtension.get(extension).stream().sorted((a, b) -> {
+                Priority priorityA = getPriority(a.getClass());
+                Priority priorityB = getPriority(b.getClass());
+                return SignedBytes.compare(priorityA.getRank(), priorityB.getRank());
+            }).collect(Collectors.toList());
+
+        return sortedPlugins;
     }
 
     /**
-     * @param triggerInterpreter
-     *            {@link TriggerInterpreter}
+     * @param clazz
+     *            class to get the {@link ReaderPriority} annotation from (commonly the TriggerInterpreter
+     *            classes)
      * @return the priority of the input reader
      */
-    private static Priority getPriority(TriggerInterpreter triggerInterpreter) {
+    private static Priority getPriority(Class<? extends TriggerInterpreter> clazz) {
         Priority priority;
-        if (triggerInterpreter.getClass().isAnnotationPresent(ReaderPriority.class)) {
-            ReaderPriority[] annotation = triggerInterpreter.getClass().getAnnotationsByType(ReaderPriority.class);
+        if (clazz.getClass().isAnnotationPresent(ReaderPriority.class)) {
+            ReaderPriority[] annotation = clazz.getClass().getAnnotationsByType(ReaderPriority.class);
             priority = annotation[0].value();
         } else {
             try {
@@ -200,7 +257,7 @@ public class PluginRegistry {
      */
     public static void notifyPlugins(Path configFolder) {
 
-        for (Object plugin : pluginsList) {
+        for (Object plugin : loadedPlugins.values()) {
             ((GeneratorPluginActivator) plugin).setProjectRoot(configFolder);
         }
     }

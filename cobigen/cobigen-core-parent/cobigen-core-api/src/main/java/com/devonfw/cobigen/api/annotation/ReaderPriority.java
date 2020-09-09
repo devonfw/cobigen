@@ -7,9 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.devonfw.cobigen.api.extension.Priority;
+import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 
 /**
- * The priority to take into account when try reading an input.
+ * The priority to take into account when try reading an input. This annotation is meant to be set on
+ * {@link TriggerInterpreter} classes
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
@@ -17,5 +19,5 @@ import com.devonfw.cobigen.api.extension.Priority;
 public @interface ReaderPriority {
 
     /** The input readers priority */
-    Priority value();
+    Priority value() default Priority.LOW;
 }

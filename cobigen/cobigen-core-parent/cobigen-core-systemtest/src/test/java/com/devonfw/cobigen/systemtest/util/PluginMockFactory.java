@@ -11,15 +11,17 @@ import static org.mockito.internal.matchers.Any.ANY;
 
 import java.util.HashMap;
 
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
-import com.devonfw.cobigen.test.matchers.VariableAssignmentToMatcher;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
+import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
+import com.devonfw.cobigen.test.matchers.VariableAssignmentToMatcher;
 
 /** A mock factory to simply setup a mocked java plug-in to enable system tests. */
 public class PluginMockFactory {
+
     /**
      * Creates simple to debug test data, which includes only one object as input. A {@link TriggerInterpreter
      * TriggerInterpreter} will be mocked with all necessary supplier classes to mock a simple java trigger
@@ -39,6 +41,7 @@ public class PluginMockFactory {
         };
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -68,7 +71,7 @@ public class PluginMockFactory {
                 new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
                     .thenReturn(variables);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         return input;
     }

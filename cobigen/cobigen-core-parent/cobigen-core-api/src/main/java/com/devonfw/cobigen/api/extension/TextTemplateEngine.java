@@ -14,12 +14,6 @@ import com.devonfw.cobigen.api.annotation.ExceptionFacade;
 public interface TextTemplateEngine {
 
     /**
-     * Returns the identifying name of the template engine.
-     * @return name of the template engine
-     */
-    public String getName();
-
-    /**
      * The return value is considered for automatically retrieving file names from templates within a
      * template-scan. The template file ending will be eliminated (if exists) from a template's file name to
      * recover the target file name.

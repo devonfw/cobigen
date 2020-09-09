@@ -165,11 +165,6 @@ public class CobiGenImpl implements CobiGen {
     }
 
     @Override
-    public Boolean isMostLikelyReadable(String type, Path path) {
-        return inputInterpreter.isMostLikelyReadable(type, path);
-    }
-
-    @Override
     public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException {
         return configurationInterpreter.getMatchingIncrements(matcherInput);
     }

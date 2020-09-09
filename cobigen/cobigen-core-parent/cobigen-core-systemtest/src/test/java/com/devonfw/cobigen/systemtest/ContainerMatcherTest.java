@@ -21,10 +21,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
-import com.devonfw.cobigen.test.matchers.VariableAssignmentToMatcher;
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
@@ -34,6 +32,9 @@ import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
+import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
+import com.devonfw.cobigen.test.matchers.VariableAssignmentToMatcher;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
@@ -211,6 +212,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
         };
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -242,7 +244,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
         when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2)))))
             .thenReturn(false);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         // create CobiGen instance
         File templatesFolder = new File(testFileRootPath + "selectiveContainerGeneration");
@@ -303,6 +305,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
         };
 
         // Pre-processing: Mocking
+        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
         TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
         MatcherInterpreter matcher = mock(MatcherInterpreter.class);
         InputReader inputReader = mock(InputReader.class);
@@ -345,7 +348,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
                     .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
                         .put("entityName", "Test").build());
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter);
+        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
         return container;
     }
