@@ -1,7 +1,5 @@
 package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
-import java.beans.BeanProperty;
-
 public class TestClassWithAnnotations {
 
     private boolean boolvalue;
@@ -10,7 +8,7 @@ public class TestClassWithAnnotations {
      * Returns the field 'boolvalue'
      * @return value of boolvalue
      */
-    @BeanProperty(bound = true)
+    @MyFieldAnnotation(bool = true)
     public boolean isBoolvalue() {
         return boolvalue;
     }

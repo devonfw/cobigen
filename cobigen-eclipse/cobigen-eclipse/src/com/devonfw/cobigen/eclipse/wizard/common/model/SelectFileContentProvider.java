@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -259,7 +258,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         String debugInfo = null;
         if (parentElement instanceof IJavaElement) {
 
-            for (String path : getNonExistentChildren(((IJavaElement) parentElement).getPath())) {
+            List<String> nonExistentChildren = getNonExistentChildren(((IJavaElement) parentElement).getPath());
+            for (String path : nonExistentChildren) {
 
                 // check inclusion and exclusion patterns to stub the correct elements
                 if (!JavaClasspathUtil.isCompiledSource((IJavaElement) parentElement, path)) {
@@ -270,7 +270,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                 IPath elementpath = new Path(path);
 
                 IJavaElementStub javaElementStub;
-                if (targetIsFile(elementpath)) {
+                if (targetIsFile(elementpath, nonExistentChildren)) {
 
                     // If the file is not a direct child of the parent, we will skip it
                     IPath p = elementpath.removeFirstSegments(((IJavaElement) parentElement).getPath().segmentCount());
@@ -373,7 +373,8 @@ public class SelectFileContentProvider implements ITreeContentProvider {
         String debugInfo;
 
         IPath parentPath = parentElement.getFullPath();
-        for (String path : getNonExistentChildren(parentPath)) {
+        List<String> nonExistentChildren = getNonExistentChildren(parentPath);
+        for (String path : nonExistentChildren) {
 
             IResourceStub resourceStub = null;
             IPath childPath = new Path(path);
@@ -399,7 +400,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     continue;
                 }
 
-                if (targetIsFile(atomicChildPath)) {
+                if (targetIsFile(atomicChildPath, nonExistentChildren)) {
                     resourceStub = new IFileStub();
                     debugInfo = "File";
                 } else {
@@ -418,7 +419,7 @@ public class SelectFileContentProvider implements ITreeContentProvider {
                     continue;
                 }
 
-                if (targetIsFile(childPath)) {
+                if (targetIsFile(childPath, nonExistentChildren)) {
                     resourceStub = new IFileStub();
                     debugInfo = "File";
                 } else {
@@ -458,12 +459,19 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      *
      * @param path
      *            to target
-     * @return <code>true</code> if the last element of the path contains a dot<br>
+     * @param paths
+     *            paths to all files and containing folders which aren't generated
+     * @return <code>true</code> if the path isn't contained by another path<br>
      *         <code>false</code>, otherwise
      */
-    private boolean targetIsFile(IPath path) {
-
-        return path.lastSegment().contains(".");
+    private boolean targetIsFile(IPath path, List<String> paths) {
+        int index = paths.indexOf(path.toString());
+        if (index + 1 <= paths.size() - 1) {
+            if (paths.get(index + 1).contains(path.toString())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -517,9 +525,9 @@ public class SelectFileContentProvider implements ITreeContentProvider {
      *            parent path, which will be included in all resulting non existent child paths
      * @return the list of paths for all non existent but addressed children
      */
-    private Set<String> getNonExistentChildren(IPath parentPath) {
+    private List<String> getNonExistentChildren(IPath parentPath) {
 
-        Set<String> paths = new LinkedHashSet<>();
+        List<String> paths = new ArrayList<>();
         for (String fp : filteredPaths) {
             IPath filteredPath = new Path(fp);
             if (parentPath.isPrefixOf(filteredPath)) {

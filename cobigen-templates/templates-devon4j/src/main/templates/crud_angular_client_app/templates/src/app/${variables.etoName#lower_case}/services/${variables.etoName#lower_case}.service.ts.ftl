@@ -1,21 +1,21 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { SearchCriteria } from '../../core/interfaces/search-criteria';
-import { Sort } from '../../core/interfaces/sort';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ${variables.etoName?cap_first}Service {
-  private urlService: string = environment.restServiceRoot +
-  '${variables.component?lower_case}/v1/${variables.etoName?lower_case}/';
-
+  private urlService: string = 
+    environment.restServiceRoot + '${variables.component?lower_case}/v1/${variables.etoName?lower_case}/';
   constructor(private http: HttpClient) {}
   get${variables.etoName?cap_first}(
     size: number,
     page: number,
     searchTerms: any,
-    sort: Sort[],
+    sort: any[],
   ): Observable<any> {
     const searchCriteria: SearchCriteria = {
       pageable: {

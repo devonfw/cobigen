@@ -5,12 +5,13 @@ import java.util.UUID;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
-import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
+import com.devonfw.cobigen.eclipse.common.tools.ExceptionHandler;
 import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
 
 /**
@@ -31,9 +32,7 @@ public class UpdateTemplatesHandler extends AbstractHandler {
             UpdateTemplatesDialog updateTemplatesDialog = new UpdateTemplatesDialog();
             updateTemplatesDialog.open();
         } catch (Throwable e) {
-            LOG.error("An unexpected error occurred while opening update dialog. This is a bug.", e);
-            PlatformUIUtil
-                .openErrorDialog("An unexpected error occurred while opening update dialog. This might be a bug.", e);
+            ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
         }
 
         MDC.remove(InfrastructureConstants.CORRELATION_ID);
