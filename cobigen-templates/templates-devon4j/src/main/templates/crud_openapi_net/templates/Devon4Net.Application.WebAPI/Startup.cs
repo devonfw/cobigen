@@ -1,10 +1,11 @@
 using Devon4Net.Application.WebAPI.Configuration;
+using Devon4Net.Domain.UnitOfWork.Common;
+using Devon4Net.Domain.UnitOfWork.Enums;
 using Devon4Net.WebAPI.Implementation.Configure;
 using Devon4Net.WebAPI.Implementation.Domain.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -44,8 +45,9 @@ namespace Devon4Net.Application.WebAPI
 
         private void SetupDatabase(IServiceCollection services)
         {
-            services.SetupDatabase<TodoContext>(Configuration, "Default", WebAPI.Configuration.Enums.DatabaseType.InMemory);
-            services.AddDbContext<CobigenContext>(options => options.UseInMemoryDatabase("Cobigen"));
+            services.SetupDatabase<TodoContext>(Configuration, "Default", DatabaseType.InMemory);
+            services.SetupDatabase<EmployeeContext>(Configuration, "Employee", DatabaseType.InMemory);
+            services.SetupDatabase<CobigenContext>(Configuration, "Cobigen", DatabaseType.InMemory);
         }
 
         /// <summary>
