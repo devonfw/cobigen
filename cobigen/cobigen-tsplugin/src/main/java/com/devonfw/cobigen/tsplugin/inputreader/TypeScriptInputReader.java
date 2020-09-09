@@ -283,7 +283,7 @@ public class TypeScriptInputReader implements InputReader {
 
     @Override
     public boolean isMostLikelyReadable(Path path) {
-        return path.toFile().isFile() && path.getFileName().endsWith("." + VALID_EXTENSION);
+        return path.toFile().isFile() && path.toString().endsWith("." + VALID_EXTENSION);
     }
 
     /**
