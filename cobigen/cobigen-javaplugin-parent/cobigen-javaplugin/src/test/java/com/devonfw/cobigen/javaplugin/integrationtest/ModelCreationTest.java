@@ -4,7 +4,7 @@ import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.FileReader;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -15,7 +15,6 @@ import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 
 import junit.framework.AssertionFailedError;
@@ -43,9 +42,9 @@ public class ModelCreationTest extends AbstractIntegrationTest {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
-        Object[] input = new Object[] { this.getClass(),
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
-                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+        Object input = cobiGen.read(
+            new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java").toPath(),
+            Charset.forName("UTF-8"), getClass().getClassLoader());
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
@@ -78,9 +77,9 @@ public class ModelCreationTest extends AbstractIntegrationTest {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
-        Object[] input = new Object[] { this.getClass(),
-            JavaParserUtil.getFirstJavaClass(getClass().getClassLoader(), new FileReader(
-                new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java"))) };
+        Object input = cobiGen.read(
+            new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java").toPath(),
+            Charset.forName("UTF-8"), getClass().getClassLoader());
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
