@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
-import com.devonfw.cobigen.eclipse.test.common.swtbot.HasBeenBuilt;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
@@ -72,8 +71,7 @@ public class OpenAPITest extends SystemTest {
         FileUtils.copyFile(new File(resourcesRootPath + "input/devonfw.yml"),
             project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-        EclipseUtils.updateMavenProject(bot, testProjName);
-        bot.waitUntil(new HasBeenBuilt(project), 2000, 100);
+        tmpMavenProjectRule.updateProject();
 
         EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
         EclipseUtils.openErrorsTreeInProblemsView(bot);
@@ -154,8 +152,7 @@ public class OpenAPITest extends SystemTest {
         FileUtils.copyFile(new File(resourcesRootPath + "input/devonfw.yml"),
             project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
         project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-        EclipseUtils.updateMavenProject(bot, testProjName);
-        bot.waitUntil(new HasBeenBuilt(project), 2000, 100);
+        tmpMavenProjectRule.updateProject();
 
         EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
         EclipseUtils.openErrorsTreeInProblemsView(bot);

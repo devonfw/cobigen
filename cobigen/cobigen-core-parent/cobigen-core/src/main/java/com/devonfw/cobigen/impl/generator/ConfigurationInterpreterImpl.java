@@ -69,9 +69,10 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
 
         LOG.debug("Matching increments requested.");
         List<IncrementTo> increments = Lists.newLinkedList();
+        List<String> matchingTriggerIds = getMatchingTriggerIds(matcherInput);
         for (TemplatesConfiguration templatesConfiguration : getMatchingTemplatesConfigurations(matcherInput)) {
             increments.addAll(convertIncrements(templatesConfiguration.getAllGenerationPackages(),
-                templatesConfiguration.getTrigger()));
+                templatesConfiguration.getTrigger(), matchingTriggerIds));
         }
         LOG.debug("{} matching increments found.", increments.size());
         return increments;
@@ -122,20 +123,32 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
      *            the {@link List} of {@link Increment}s
      * @param trigger
      *            the parent {@link Trigger}
+     * @param matchingTriggerIds
+     *            the {@link List} of matching trigger Id
      * @return the {@link List} of {@link IncrementTo}s
      */
     // TODO create ToConverter
-    private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger) {
+    private List<IncrementTo> convertIncrements(List<Increment> increments, Trigger trigger,
+        List<String> matchingTriggerIds) {
 
         List<IncrementTo> incrementTos = Lists.newLinkedList();
         for (Increment increment : increments) {
             String triggerId = increment.getTrigger().getId();
+            if (!triggerId.equals(trigger.getId())) {
+                // Check if the external trigger also matches
+                if (!matchingTriggerIds.contains(triggerId)) {
+                    // Abort generation
+                    throw new InvalidConfigurationException(
+                        "An external incrementRef to " + increment.getTrigger().getId() + "::" + increment.getName()
+                            + " is referenced from " + trigger.getId() + " but its trigger does not match");
+                }
+            }
             List<TemplateTo> templates = Lists.newLinkedList();
             for (Template template : increment.getTemplates()) {
                 templates.add(new TemplateTo(template.getName(), template.getMergeStrategy(), triggerId));
             }
             incrementTos.add(new IncrementTo(increment.getName(), increment.getDescription(), triggerId, templates,
-                convertIncrements(increment.getDependentIncrements(), trigger)));
+                convertIncrements(increment.getDependentIncrements(), trigger, matchingTriggerIds)));
         }
         return incrementTos;
     }

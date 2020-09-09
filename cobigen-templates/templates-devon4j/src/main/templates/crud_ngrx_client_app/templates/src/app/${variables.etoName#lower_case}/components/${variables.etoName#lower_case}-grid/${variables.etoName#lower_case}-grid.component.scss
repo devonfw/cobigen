@@ -1,0 +1,43 @@
+mat-card-title {
+  padding-top: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+mat-card-subtitle {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.data-action-button {
+  margin-right: 8px;
+}
+
+.filter-form-fields {
+  margin-bottom: 8px;
+}
+
+@media (min-width: 1024px) {
+  .filter-form-fields {
+    display: flex;
+    justify-content: space-between;
+
+    & > mat-form-field {
+      box-sizing: border-box;
+      max-width: 25%;
+    }
+
+    & > mat-form-field:first-of-type {
+      padding-right: 0.5em;
+    }
+
+    & > mat-form-field:last-of-type {
+      padding-left: 0.5em;
+    }
+
+    & > mat-form-field:not(:first-of-type):not(:last-of-type) {
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+    }
+  }
+}

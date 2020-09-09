@@ -3,6 +3,7 @@
     <templates>
         <template name="t1" destinationPath="TestOutput.txt" templateFile="TestOutput.txt.ftl"/>
         <template name="t2" destinationPath="InternalClassloading.txt" templateFile="InternalClassloading.txt.ftl"/>
+        <template name="dotPathGeneration" destinationPath="x.y/dotPathInTemplate.txt" templateFile="dotPathGeneration.ftl" mergeStrategy="override"/>
     </templates>
     <increments>
         <increment name="i1" description="increment1">
@@ -10,6 +11,9 @@
         </increment>
         <increment name="i2" description="increment2">
             <templateRef ref="t2"/>
+        </increment>
+        <increment name="dotPathGeneration" description="increment3">
+            <templateRef ref="dotPathGeneration"/>
         </increment>
     </increments>
 </templatesConfiguration>

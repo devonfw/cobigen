@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@ngneat/transloco';
 
 @Component({
   selector: 'public-${variables.etoName?lower_case}-dialog',
@@ -16,14 +16,18 @@ export class ${variables.etoName?cap_first}DialogComponent {
   };
 
   constructor(
-    private translate: TranslateService,
+    private translocoService: TranslocoService,
     public dialogRef: MatDialogRef<${variables.etoName?cap_first}DialogComponent>,
     @Inject(MAT_DIALOG_DATA) dialogData: any,
   ) {
     if (!dialogData) {
-      this.title = this.getTranslation('${variables.component}.addTitle');
+      this.title = this.translocoService.translate(
+        '${variables.component}management.addTitle',
+      );
     } else {
-      this.title = this.getTranslation('${variables.component}.editTitle');
+      this.title = this.translocoService.translate(
+        '${variables.component}management.editTitle',
+      );
       <#list pojo.fields as field>
         this.items.${field.name?uncap_first} = dialogData.${field.name?uncap_first};
       </#list>
@@ -32,11 +36,11 @@ export class ${variables.etoName?cap_first}DialogComponent {
     }
   }
 
-  getTranslation(text: string): string {
+  /* getTranslation(text: string): string {
     let value: string;
-    this.translate.get(text).subscribe((res: any) => {
+    this.translocoService.get(text).subscribe((res: any) => {
       value = res;
     });
     return value;
-  }
+  } */
 }

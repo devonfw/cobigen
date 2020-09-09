@@ -27,6 +27,11 @@ public class GenerationReportTo {
     private Set<Path> generatedFiles = new TreeSet<>();
 
     /**
+     * @see #isCancelled()
+     */
+    private boolean cancelled = false;
+
+    /**
      * @see #getGeneratedFiles()
      * @param file
      *            generated/touched file
@@ -165,4 +170,22 @@ public class GenerationReportTo {
     public boolean isSuccessful() {
         return errors.isEmpty();
     }
+
+    /**
+     * Return whether the generation got cancelled by the user
+     * @return <code>true</code> if it got cancelled, <code>false</code> otherwise
+     */
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    /**
+     * set's whether the generation got cancelled or not
+     * @param cancelled
+     *            if generation got cancelled
+     */
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
 }
