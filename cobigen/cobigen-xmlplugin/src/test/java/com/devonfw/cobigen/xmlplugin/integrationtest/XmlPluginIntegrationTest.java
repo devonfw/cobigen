@@ -10,16 +10,12 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.w3c.dom.Document;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.PluginNotAvailableException;
@@ -411,9 +407,7 @@ public class XmlPluginIntegrationTest {
         }
 
         // read xml File as Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(testinput);
+        Object inputDocument = cobiGen.read(testinput.toPath(), Charset.forName("UTF-8"));
 
         // find matching templates and use test template for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
