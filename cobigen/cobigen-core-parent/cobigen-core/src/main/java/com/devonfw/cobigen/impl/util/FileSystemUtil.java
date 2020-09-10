@@ -59,7 +59,7 @@ public class FileSystemUtil {
      *             if the {@link FileSystem} could not be created.
      * @author mbrunnli (16.02.2015)
      */
-    private static FileSystem getOrCreateFileSystem(URI fileSystemUri) throws IOException {
+    public static FileSystem getOrCreateFileSystem(URI fileSystemUri) throws IOException {
         FileSystem configFileSystem;
         try {
             configFileSystem = FileSystems.getFileSystem(fileSystemUri);

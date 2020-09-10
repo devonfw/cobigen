@@ -371,8 +371,8 @@ public class JavaMergerTest {
     }
 
     /**
-     * Tests issue <a href=https://github.com/oasp/cobigen/issues/39>#39</a>: inheritance relation
-     * should be merged also if the base class (natively) extends java.lang.Object
+     * Tests issue <a href=https://github.com/devonfw/cobigen/issues/39>#39</a>: inheritance relation should
+     * be merged also if the base class (natively) extends java.lang.Object
      * @throws IOException
      *             test fails
      * @throws MergeException

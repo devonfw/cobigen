@@ -23,11 +23,11 @@ public class CLILogger {
     /**
      * This method is setting the custom layout of logger 
      */
-    public static void layoutLogger() {
+    public static void layoutLogger(boolean verbose) {
         LoggerContext loggerContext = rootLogger.getLoggerContext();
-        // we are not interested in auto-configuration
-        loggerContext.reset();
-
+        if(!verbose) {
+        	loggerContext.reset();
+        }
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(loggerContext);
         encoder.setPattern("[%-5level] %message%n");
@@ -38,7 +38,9 @@ public class CLILogger {
         appender.setEncoder(encoder);
         appender.start();
 
-        rootLogger.setLevel(Level.INFO);
+        if(rootLogger.getLevel() == null) {
+        	rootLogger.setLevel(Level.INFO);
+        }
         rootLogger.addAppender(appender);
     }
 /**

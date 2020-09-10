@@ -18,13 +18,12 @@ class GitRepo:
         self.__config: Config = config
         try:
             if not path:
-                self.__repo = Repo(config.root_path)
-            else:
-                self.__repo = Repo(path)
+                path = config.root_path
+            self.__repo = Repo(path)
             assert not self.__repo.bare
             self.origin = self.__repo.remote('origin')
         except InvalidGitRepositoryError:
-            log_error("Path is not a git repository. Please go to valid git repository!")
+            log_error("Path " + path + " is not a git repository. Please go to valid git repository!")
             sys.exit()
 
     def pull(self, branch_name: str = None):
@@ -104,13 +103,7 @@ class GitRepo:
                         "Something went wrong during pushing. Please check if you can perform pushing on your own. Resume the script?"):
                     self.reset()
 
-    def add(self, files: List[str], consider_as_build_folder_path: bool = True) -> None:
-        files_to_add: List[str]
-        if consider_as_build_folder_path:
-            files_to_add = [os.path.join(self.__config.build_folder, i) for i in files]
-        else:
-            files_to_add = files
-
+    def add_modified_files(self) -> None:
         self.__repo.git.add(u=True)
 
     def merge(self, source: str, target: str) -> None:
@@ -141,9 +134,6 @@ class GitRepo:
                 sys.exit()
 
     def update_documentation(self) -> None:
-        self.checkout('master')
-        self.pull()
-
         log_info("Changing the " + self.__config.wiki_version_overview_page + " file, updating the version number...")
         version_decl = self.__config.cobigenwiki_title_name
         new_version_decl = version_decl + " v" + self.__config.release_version
@@ -154,7 +144,7 @@ class GitRepo:
                 line = re.sub(r'' + version_decl + r'\s+v[0-9]\.[0-9]\.[0-9]', new_version_decl, line)
                 sys.stdout.write(line)
 
-        self.add([modified_file], False)
+        self.add_modified_files()
 
     def exists_tag(self, tag_name) -> bool:
         return tag_name in self.__repo.tags
@@ -189,7 +179,13 @@ class GitRepo:
         return self.__list_uncommitted_files() != ""
 
     def __list_unpushed_commits(self) -> str:
-        return self.__repo.git.execute("git log --branches --not --remotes".split(" "))
+        # just check for the current branch
+        return self.__repo.git.execute("git log origin/" + self.__get_current_branch_name() + "..HEAD")
+        # check for all branches:
+        # return self.__repo.git.execute("git log --branches --not --remotes".split(" "))
+
+    def __get_current_branch_name(self) -> str:
+        return self.__repo.git.execute("git rev-parse --abbrev-ref HEAD")
 
     def has_unpushed_commits(self) -> bool:
         return self.__list_unpushed_commits() != ""

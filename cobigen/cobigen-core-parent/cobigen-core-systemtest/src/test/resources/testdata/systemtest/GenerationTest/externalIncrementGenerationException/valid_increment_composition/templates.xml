@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  version="2.1">
+
+  <templates>
+    <template name="templateDecl" destinationPath="src/main/java/templateDecl.java" templateFile="templates/templateDecl.ftl" />
+  </templates>
+
+  <increments>
+    <increment name="0" description="0">
+      <templateRef ref="templateDecl"/>
+    </increment>
+  </increments>
+</templatesConfiguration>

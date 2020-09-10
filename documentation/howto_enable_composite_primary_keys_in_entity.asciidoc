@@ -1,0 +1,69 @@
+:toc: macro
+toc::[]
+
+= Enable Composite Primary Keys in Entity
+
+In order to enable Composite Primary Keys in entity in CobiGen, the below approach is suggested
+
+The templates in cobigen have been enhanced to support Composite primary keys while still supporting the default devonfw/Cobigen values with Long id.
+
+Also, the current generation from Entity still holds good - right click from an Entity object, CobiGen -> Generate will show the CobiGen wizard relative to the entity generation.
+
+After generating, below example shows how composite primary keys can be enabled.
+
+[source, java]
+@Entity
+@Table(name = "employee")
+public class EmployeeEntity {
+	private CompositeEmployeeKey id;
+	private String name;
+	private String lastName;
+	@Override
+	@EmbeddedId
+	public CompositeEmployeeKey getId() {
+		return id;
+	}
+	@Override
+	public void setId(CompositeEmployeeKey id) {
+		this.id = id;
+	}
+	.
+	.
+	.
+	
+
+[source, java]
+public class CompositeEmployeeKey implements Serializable {
+  private String companyId;
+  private String employeeId;
+  
+Once the generation is complete, implement PersistenceEntity<ID>.java in the EmployeeEntity and pass the composite primary key object which is CompositeEmployeeKey in this case as the parameter ID. 
+
+[source, java]
+import com.devonfw.module.basic.common.api.entity.PersistenceEntity;
+@Entity
+@Table(name = "employee")
+public class EmployeeEntity implements PersistenceEntity<CompositeEmployeeKey> {
+	private CompositeEmployeeKey id;
+	private String name;
+	private String lastName;
+
+Also, the modificationCounter methods needs to be implemented from the interface PersistenceEntity<ID>. The sample implementation of the modification counter can be referred below.
+
+[source, java]
+@Override
+  public int getModificationCounter() {
+    if (this.persistentEntity != null) {
+      // JPA implementations will update modification counter only after the transaction has been committed.
+      // Conversion will typically happen before and would result in the wrong (old) modification counter.
+      // Therefore we update the modification counter here (that has to be called before serialization takes
+      // place).
+      this.modificationCounter = this.persistentEntity.getModificationCounter();
+    }
+    return this.modificationCounter;
+  }
+  @Override
+  public void setModificationCounter(int version) {
+    this.modificationCounter = version;
+  }
+

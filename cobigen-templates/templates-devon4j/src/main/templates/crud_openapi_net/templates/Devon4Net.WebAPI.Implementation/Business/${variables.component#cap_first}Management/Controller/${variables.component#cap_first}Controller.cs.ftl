@@ -2,17 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Devon4Net.Infrastructure.Log;
-using Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_first}Management.Service;
-using Devon4Net.WebAPI.Implementation.Business.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_first}Management.Service;
+using Devon4Net.WebAPI.Implementation.Business.${variables.entityName?cap_first}Management.Dto;
 
 namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_first}Management.Controller
 {
+    /// <summary>
+    /// ${variables.component?cap_first} controller
+    /// </summary>
     [ApiController]
     public class ${variables.component?cap_first}Controller : ControllerBase
     {
-        I${variables.component?cap_first}Service _${variables.component?cap_first}Service;
+        private readonly I${variables.component?cap_first}Service _${variables.component?cap_first}Service;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="${variables.component?uncap_first}Service"></param>
         public ${variables.component?cap_first}Controller(I${variables.component?cap_first}Service ${variables.component}Service)
         {
             _${variables.component?cap_first}Service = ${variables.component}Service;
@@ -41,7 +48,7 @@ namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_fir
         /// <summary>
         ///  Create ${variables.entityName?cap_first}
         /// </summary>
-        /// <param name="${variables.entityName}Dto"></param>
+        /// <param name="${variables.entityName?uncap_first}Dto"></param>
         /// <response code="200">Ok.</response>
         /// <response code="400">Bad request. Parser data error.</response>
         /// <response code="404">Forbidden. Authorization error.</response>
@@ -57,7 +64,7 @@ namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_fir
             Devon4NetLogger.Debug("Executing Save${variables.entityName?cap_first} from controller ${variables.component?cap_first}Controller");
             return Ok(await _${variables.component?cap_first}Service.Create${variables.entityName?cap_first}(${variables.entityName?uncap_first}Dto).ConfigureAwait(false));
         }
-        
+
         /// <summary>
         ///  Delete ${variables.entityName?cap_first}
         /// </summary>
@@ -77,11 +84,10 @@ namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_fir
             Devon4NetLogger.Debug("Executing Get${variables.entityName?cap_first} from controller ${variables.component?cap_first}Controller");
             return Ok(await _${variables.component?cap_first}Service.Delete${variables.entityName?cap_first}ById(id).ConfigureAwait(false));
         }
-        
+
         /// <summary>
         ///  Get all ${variables.entityName?cap_first}
         /// </summary>
-        /// <param name="id"></param>
         /// <response code="200">Ok.</response>
         /// <response code="400">Bad request. Parser data error.</response>
         /// <response code="404">Forbidden. Authorization error.</response>
@@ -97,7 +103,6 @@ namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_fir
             Devon4NetLogger.Debug("Executing FindAll${variables.entityName?cap_first} from controller ${variables.component?cap_first}Controller");    
             return Ok(await _${variables.component?cap_first}Service.FindAll${variables.entityName?cap_first}s().ConfigureAwait(false));
         }
-    
     <#assign pathInUse = "/" + variables.entityName?lower_case + "/{id}/,/" + variables.entityName?lower_case + "/search/">
     <#list model.component.paths as path>
 	    <#list path.operations as operation>
@@ -107,7 +112,7 @@ namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_fir
 
         /// <summary>
         /// </summary>
-        /// <param name="<#if parameter.isEntity>${parameter.type}Dto<#elseif parameter.type == "integer">int<#elseif parameter.type == "number">long</#if>"></param>
+        /// <param name="<#if parameter.isEntity>${parameter.type?uncap_first}Dto<#elseif parameter.type == "integer">int<#elseif parameter.type == "number">long</#if>"></param>
         /// <response code="200">Ok.</response>
         /// <response code="400">Bad request. Parser data error.</response>
         /// <response code="404">Forbidden. Authorization error.</response>
@@ -118,9 +123,9 @@ namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_fir
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)?cap_first} (<#if parameter.isEntity>${parameter.type}Dto<#elseif parameter.type == "integer">int<#elseif parameter.type == "number">long</#if> ${parameter.name}<#if parameter?has_next>, </#if>)
+        public IActionResult ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)?cap_first} (<#if parameter.isEntity>${parameter.type}Dto<#elseif parameter.type == "integer">int<#elseif parameter.type == "number">long</#if> ${parameter.name}<#if parameter.isEntity>Dto</#if><#if parameter?has_next>, </#if>)
         {
-          Devon4NetLogger.Debug("Executing ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)?cap_first} from controller ${variables.component?cap_first}Controller");    
+          Devon4NetLogger.Debug("Executing ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)?cap_first} from controller ${variables.component?cap_first}Controller");
           throw new NotImplementedException();
         }
                 </#if>

@@ -4,6 +4,9 @@ import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +30,7 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
+import com.devonfw.cobigen.cli.utils.ConfigurationUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
 import com.google.googlejavaformat.java.FormatterException;
@@ -88,7 +92,7 @@ public class GenerateCommand implements Callable<Integer> {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = LoggerFactory.getLogger(CobiGenCLI.class);
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Utils class for CobiGen related operations
@@ -115,8 +119,19 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         if (areArgumentsValid()) {
-            logger.debug("Input files and output root path confirmed to be valid.");
+            LOG.debug("Input files and output root path confirmed to be valid.");
             CobiGen cg = cobigenUtils.initializeCobiGen();
+
+            Path templateFolder = ConfigurationUtils.getCobigenTemplatesFolderPath();
+
+            ClassLoader inputClassLoader;
+
+            if (templateFolder != null) {
+                inputClassLoader = URLClassLoader.newInstance(new URL[] { templateFolder.toUri().toURL() },
+                    getClass().getClassLoader());
+            } else {
+                inputClassLoader = getClass().getClassLoader();
+            }
 
             if (increments == null && templates != null) {
                 // User specified only templates, not increments
@@ -124,9 +139,10 @@ public class GenerateCommand implements Callable<Integer> {
                 if (inputFiles.size() > 1) {
                     finalTemplates = toTemplateTo(preprocess(cg, TemplateTo.class));
                 }
+
                 for (File inputFile : inputFiles) {
-                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg,
-                        cobigenUtils.getUtilClasses(), TemplateTo.class);
+                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalTemplates, cg, inputClassLoader,
+                        TemplateTo.class, templateFolder);
                 }
             } else {
 
@@ -134,9 +150,10 @@ public class GenerateCommand implements Callable<Integer> {
                 if (inputFiles.size() > 1) {
                     finalIncrements = toIncrementTo(preprocess(cg, IncrementTo.class));
                 }
+
                 for (File inputFile : inputFiles) {
-                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg,
-                        cobigenUtils.getUtilClasses(), IncrementTo.class);
+                    generate(inputFile, ParsingUtils.getProjectRoot(inputFile), finalIncrements, cg, inputClassLoader,
+                        IncrementTo.class, templateFolder);
                 }
             }
             return 0;
@@ -189,7 +206,7 @@ public class GenerateCommand implements Callable<Integer> {
                 }
 
             } catch (InputReaderException e) {
-                logger.error("Invalid input for CobiGen, please check your input file '" + inputFile.toString() + "'");
+                LOG.error("Invalid input for CobiGen, please check your input file '{}'", inputFile.toString());
 
             }
 
@@ -223,25 +240,6 @@ public class GenerateCommand implements Callable<Integer> {
     }
 
     /**
-     * Processes the input file's path. Strips the quotes from the file path if they are given.
-     * @param inputFile
-     *            the input file
-     * @return input file with processed path
-     */
-    private File preprocessInputFile(File inputFile) {
-        String path = inputFile.getPath();
-        String pattern = "[\\\"|\\'](.+)[\\\"|\\']";
-        boolean matches = path.matches(pattern);
-        if (matches) {
-            path = path.replace("\"", "");
-            path = path.replace("\'", "");
-            return new File(path);
-        }
-
-        return inputFile;
-    }
-
-    /**
      * Validates the user arguments in the context of the generate command. Tries to check whether all the
      * input files and the output root path are valid.
      *
@@ -251,27 +249,28 @@ public class GenerateCommand implements Callable<Integer> {
 
         int index = 0;
         for (File inputFile : inputFiles) {
-            inputFile = preprocessInputFile(inputFile);
+            inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
             // Input file can be: C:\folder\input.java
             if (inputFile.exists() == false) {
-                logger.debug("We could not find input file: " + inputFile.getAbsolutePath()
-                    + " . But we will keep trying, maybe you are using relative paths");
+                LOG.debug(
+                    "We could not find input file: {}. But we will keep trying, maybe you are using relative paths",
+                    inputFile.getAbsolutePath());
 
                 // Input file can be: folder\input.java. We should use current working directory
                 if (ParsingUtils.parseRelativePath(inputFiles, inputFile, index) == false) {
-                    logger.error("Your <inputFile> '" + inputFile.toString() + "' has not been found");
+                    LOG.error("Your <inputFile> '{}' has not been found", inputFile.toString());
                     return false;
                 }
             }
             if (inputFile.isDirectory()) {
-                logger.error("Your input file: " + inputFile.getAbsolutePath()
-                    + " is a directory. CobiGen cannot understand that. Please use files.");
+                LOG.error("Your input file: {} is a directory. CobiGen cannot understand that. Please use files.",
+                    inputFile.getAbsolutePath());
                 return false;
             }
         }
 
         if (outputRootPath != null) {
-            outputRootPath = preprocessInputFile(outputRootPath);
+            outputRootPath = ConfigurationUtils.preprocessInputFile(outputRootPath);
         }
         return ValidationUtils.isOutputRootPathValid(outputRootPath);
 
@@ -291,15 +290,17 @@ public class GenerateCommand implements Callable<Integer> {
      *            Initialized CobiGen instance
      * @param c
      *            class type, specifies whether Templates or Increments should be preprocessed
-     * @param utilClasses
-     *            util classes loaded from the templates jar
+     * @param classLoader
+     *            a {@link ClassLoader}, containing the archive to load template utility classes from
+     * @param templateFolder
+     *            Path to load template utility classes from (root path of CobiGen templates)
      *
      */
     public void generate(File inputFile, File inputProject, List<? extends GenerableArtifact> finalTos, CobiGen cg,
-        List<Class<?>> utilClasses, Class<?> c) {
+        ClassLoader classLoader, Class<?> c, Path templateFolder) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
-        inputFile = preprocessInputFile(inputFile);
+        inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
         try {
             Object input;
             String extension = inputFile.getName().toLowerCase();
@@ -336,22 +337,24 @@ public class GenerateCommand implements Callable<Integer> {
             GenerationReportTo report = null;
 
             if (!isIncrements) {
-                logger.info("Generating templates for input '" + inputFile.getName() + "', this can take a while...");
-                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+                LOG.info("Generating templates for input '{}', this can take a while...", inputFile.getName());
+                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
+                    templateFolder);
             } else {
-                logger.info("Generating increments for input '" + inputFile.getName() + "', this can take a while...");
-                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, utilClasses);
+                LOG.info("Generating increments for input '{}, this can take a while...", inputFile.getName());
+                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
+                    templateFolder);
             }
             if (ValidationUtils.checkGenerationReport(report) && isJavaInput) {
                 try {
                     ParsingUtils.formatJavaSources(report.getGeneratedFiles());
                 } catch (FormatterException e) {
-                    logger.info(
+                    LOG.info(
                         "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
                 }
             }
         } catch (InputReaderException e) {
-            logger.error("Invalid input for CobiGen, please check your input file.");
+            LOG.error("Invalid input for CobiGen, please check your input file.");
 
         }
     }
@@ -363,10 +366,10 @@ public class GenerateCommand implements Callable<Integer> {
      *            project where the code will be generated to
      */
     private void setOutputRootPath(File inputProject) {
-        logger.info("As you did not specify where the code will be generated, we will use the project of your current"
-            + " Input file.");
+        LOG.info(
+            "As you did not specify where the code will be generated, we will use the project of your current Input file.");
 
-        logger.debug("Generating to: " + inputProject.getAbsolutePath());
+        LOG.debug("Generating to: {}", inputProject.getAbsolutePath());
 
         outputRootPath = inputProject;
     }
@@ -413,7 +416,7 @@ public class GenerateCommand implements Callable<Integer> {
 
                     // We need to generate all
                     if (selectedArtifactNumber == 0) {
-                        logger.info("(0) All");
+                        LOG.info("(0) All");
                         userSelection = (List<GenerableArtifact>) matching;
                         return userSelection;
                     }
@@ -421,13 +424,14 @@ public class GenerateCommand implements Callable<Integer> {
 
                     String artifactDescription = isIncrements ? ((IncrementTo) matching.get(index)).getDescription()
                         : ((TemplateTo) matching.get(index)).getId();
-                    logger.info("(" + selectedArtifactNumber + ") " + artifactDescription);
+                    LOG.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
-                    logger.error("The " + artifactType + " number you have specified is out of bounds!");
+                    LOG.error("The {} number you have specified is out of bounds!", artifactType);
                     System.exit(1);
                 } catch (NumberFormatException e) {
-                    logger.error("Error parsing your input. You need to specify " + artifactType
-                        + "s using numbers separated by comma (2,5,6).");
+                    LOG.error(
+                        "Error parsing your input. You need to specify {}s using numbers separated by comma (2,5,6).",
+                        artifactType);
                     System.exit(1);
                 }
             }
@@ -436,7 +440,7 @@ public class GenerateCommand implements Callable<Integer> {
             else {
                 // Select all increments
                 if ("all".toUpperCase().equals(currentSelectedArtifact.toUpperCase())) {
-                    logger.info("(0) All");
+                    LOG.info("(0) All");
                     userSelection = (List<GenerableArtifact>) matching;
                     return userSelection;
                 }
@@ -456,11 +460,11 @@ public class GenerateCommand implements Callable<Integer> {
                     String artifactDescription =
                         isIncrements ? ((IncrementTo) possibleArtifacts.get(0)).getDescription()
                             : ((TemplateTo) possibleArtifacts.get(0)).getId();
-                    logger.info("Exact match found: " + artifactDescription + ".");
+                    LOG.info("Exact match found: {}.", artifactDescription);
                     userSelection.add(possibleArtifacts.get(0));
                     return userSelection;
                 } else if (possibleArtifacts.size() < 1) {
-                    logger.info(
+                    LOG.info(
                         "No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
 
                     System.exit(1);
@@ -491,16 +495,15 @@ public class GenerateCommand implements Callable<Integer> {
     private void printFoundArtifacts(ArrayList<GenerableArtifact> possibleArtifacts, Boolean isIncrements,
         String artifactType, ArrayList<String> userInputIncrements) {
         if (userInputIncrements != null) {
-            logger.info("Here are the " + artifactType + "s that may match your search.");
+            LOG.info("Here are the {}s that may match your search.", artifactType);
         }
-        logger.info("(0) " + "All");
+        LOG.info("(0) " + "All");
         for (GenerableArtifact artifact : possibleArtifacts) {
             String artifactDescription =
                 isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
-            logger.info("(" + (possibleArtifacts.indexOf(artifact) + 1) + ") " + artifactDescription);
+            LOG.info("(" + (possibleArtifacts.indexOf(artifact) + 1) + ") " + artifactDescription);
         }
-        logger.info(
-            "Please enter the number(s) of " + artifactType + "(s) that you want to generate separated by comma.");
+        LOG.info("Please enter the number(s) of {}(s) that you want to generate separated by comma.", artifactType);
     }
 
     /**
@@ -527,12 +530,12 @@ public class GenerateCommand implements Callable<Integer> {
                     userSelection.add(currentArtifact);
                 }
             } catch (NumberFormatException e) {
-                logger.error("Error parsing your input. You need to specify " + artifactType
-                    + "s using numbers separated by comma (2,5,6).");
+                LOG.error("Error parsing your input. You need to specify {}s using numbers separated by comma (2,5,6).",
+                    artifactType);
                 System.exit(1);
 
             } catch (ArrayIndexOutOfBoundsException e) {
-                logger.error("Error parsing your input. Please give a valid number from the list above.");
+                LOG.error("Error parsing your input. Please give a valid number from the list above.");
                 System.exit(1);
             }
         }

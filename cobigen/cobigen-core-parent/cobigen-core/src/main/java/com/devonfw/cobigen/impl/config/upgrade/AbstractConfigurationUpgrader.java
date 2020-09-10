@@ -31,6 +31,7 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
+import com.devonfw.cobigen.impl.config.reader.JvmUtil;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
 import com.devonfw.cobigen.impl.util.ExceptionUtil;
 
@@ -342,7 +343,9 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
         // workaround to make JAXB work in OSGi context by
         // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
         final ClassLoader orig = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+        if (JvmUtil.isRunningJava9OrLater()) {
+            Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+        }
 
         try {
             Unmarshaller unmarschaller = JAXBContext.newInstance(jaxbConfigurationClass).createUnmarshaller();

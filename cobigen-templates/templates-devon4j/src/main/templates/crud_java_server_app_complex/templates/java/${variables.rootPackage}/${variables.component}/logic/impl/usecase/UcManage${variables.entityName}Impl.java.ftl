@@ -13,6 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 
 /**
  * Use case implementation for modifying and deleting ${variables.entityName}s
@@ -26,7 +31,7 @@ public class UcManage${variables.entityName}Impl extends Abstract${variables.ent
   private static final Logger LOG = LoggerFactory.getLogger(UcManage${variables.entityName}Impl.class);
 
   @Override
-  public boolean delete${variables.entityName}(long ${variables.entityName?uncap_first}Id) {
+  public boolean delete${variables.entityName}(<#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if> ${variables.entityName?uncap_first}Id) {
 
     ${variables.entityName}Entity ${variables.entityName?uncap_first} = get${variables.entityName}Repository().find(${variables.entityName?uncap_first}Id);
     get${variables.entityName}Repository().delete(${variables.entityName?uncap_first});
