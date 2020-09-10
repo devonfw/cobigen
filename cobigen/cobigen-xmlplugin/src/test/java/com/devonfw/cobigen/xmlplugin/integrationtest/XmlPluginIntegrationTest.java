@@ -60,7 +60,7 @@ public class XmlPluginIntegrationTest {
         Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
         File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
         CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
-        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
         File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
         // act
@@ -98,7 +98,7 @@ public class XmlPluginIntegrationTest {
         Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
         File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
         CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
-        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
         File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
         // act
@@ -139,7 +139,7 @@ public class XmlPluginIntegrationTest {
         Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
         File xmlFile = configFolder.resolve("nullMultiplicity.xml").toFile();
         CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
-        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
         File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
         // act

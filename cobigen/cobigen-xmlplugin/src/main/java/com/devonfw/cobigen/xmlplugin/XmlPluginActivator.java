@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.annotation.Activation;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
@@ -16,6 +17,9 @@ import com.google.common.collect.Lists;
 /**
  * Plug-in activator to be detected by CobiGen's service loader lookup.
  */
+@Activation(byMergeStrategy = { "xmlmerge_override", "xmlmerge", "xmlmerge_attachTexts",
+    "xmlmerge_override_attachTexts", "xmlmerge_override_validate", "xmlmerge_validate", "xmlmerge_attachTexts_validate",
+    "xmlmerge_override_attachTexts_validate" }, byFileExtension = { "xml", "xmi" })
 public class XmlPluginActivator implements GeneratorPluginActivator {
 
     /**
