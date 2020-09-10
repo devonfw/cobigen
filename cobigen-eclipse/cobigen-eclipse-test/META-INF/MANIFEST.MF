@@ -9,7 +9,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/slf4j-api-1.7.21.jar,
  lib/assertj-core-3.8.0.jar,
- lib/core-test-5.3.1.jar,
  lib/jcl-over-slf4j-1.7.21.jar,
  lib/log4j-over-slf4j-1.7.21.jar,
  lib/logback-classic-1.1.2.jar,
