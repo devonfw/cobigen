@@ -1,0 +1,111 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/server/services/rest'
+    description: Just some data
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+  x-rootpackage: com.devonfw.angular.test
+paths:
+  /shopmanagement/v1/shop/{shopId}:
+    x-component: shopmanagement
+    get:
+      operationId: findShop
+      parameters:
+        - name: shopId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 50
+      responses:
+        '200':
+          description: Any
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shop'
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Not found
+  /salemanagement/v1/sale/{saleId}:
+    x-component: salemanagement
+    get:
+      operationId: findSale
+      parameters:
+        - name: saleId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Any
+  /salemanagement/v1/sale/:
+    x-component: salemanagement
+    post:
+      responses:
+        '200':
+          description: Any
+      requestBody:
+        $ref: '#/components/requestBodies/SaleData'
+      tags:
+       - searchCriteria
+  /shopmanagement/v1/shop/new:
+    x-component: shopmanagement
+    post:
+      responses:
+       '200':
+          description: Any
+      requestBody:
+        $ref: '#/components/requestBodies/ShopData'
+components:
+    schemas:
+        Shop:
+          x-component: shopmanagement
+          description: Entity definiton of Shop
+          type: object
+          properties:
+            shopExample:
+              type: string
+              maxLength: 100
+              minLength: 5
+              uniqueItems: true
+            sales:
+              type: array # Many to One relationship
+              items:
+                $ref: '#/components/schemas/Sale'
+        Sale:
+          x-component: salemanagement
+          description: Entity definiton of Shop
+          type: object
+          properties:
+            saleExample:
+              type: number
+              format: int64
+              maximum: 100
+              minimum: 0
+          required:
+            - saleExample
+
+    requestBodies:
+        ShopData:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shop'
+          required: true
+        SaleData:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+          required: true
+ 
+ 
