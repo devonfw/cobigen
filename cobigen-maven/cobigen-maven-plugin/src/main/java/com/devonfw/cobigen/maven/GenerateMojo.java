@@ -231,7 +231,7 @@ public class GenerateMojo extends AbstractMojo {
                         Object packageFolder;
                         try {
                             packageFolder =
-                                cobigen.read("java", Paths.get(sourcePath.toUri()), Charsets.UTF_8, inputPackage, cl);
+                                cobigen.read(Paths.get(sourcePath.toUri()), Charsets.UTF_8, inputPackage, cl);
                             inputs.add(packageFolder);
                             sourceFound = true;
                         } catch (InputReaderException e) {
