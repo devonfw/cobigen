@@ -42,7 +42,7 @@ import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
-import com.google.inject.internal.util.Sets;
+import com.google.common.collect.Sets;
 
 /**
  * CobiGen generation Mojo, which handles generation using a configuration folder/archive

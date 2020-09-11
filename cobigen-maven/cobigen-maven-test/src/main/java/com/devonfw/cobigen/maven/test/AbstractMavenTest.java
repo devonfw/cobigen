@@ -133,6 +133,7 @@ public class AbstractMavenTest {
         setTestProperties(request, templatesProject);
         request.getProperties().put("locRep", localRepoPath);
         request.setShowErrors(true);
+        request.setUpdateSnapshots(true);
         request.setDebug(debug);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);
