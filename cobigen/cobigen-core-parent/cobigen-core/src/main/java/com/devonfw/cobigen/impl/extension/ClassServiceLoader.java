@@ -29,33 +29,49 @@ public class ClassServiceLoader {
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(ClassServiceLoader.class);
 
+    /** Classes detected as GeneratorPluginActivators */
     private static Set<Class<? extends GeneratorPluginActivator>> generatorPluginActivatorClasses = new HashSet<>();
 
+    /** Classes detected as TemplateEngines */
     private static Set<Class<? extends TextTemplateEngine>> templateEngineClasses = new HashSet<>();
 
     static {
+        LOG.info("Loading plug-in activators...");
         lookupServices(GeneratorPluginActivator.class, generatorPluginActivatorClasses);
+        LOG.info("Loading template engines...");
         lookupServices(TextTemplateEngine.class, templateEngineClasses);
     }
 
+    /**
+     * Detects services of extensions type and adds them to the clazzSet
+     * @param <T>
+     *            the extension type to be found by {@link ServiceLoader} mechanism
+     * @param extensionType
+     *            the extension type
+     * @param clazzSet
+     *            the set to add the detected classes
+     */
     @SuppressWarnings("unchecked")
     private static <T> void lookupServices(Class<T> extensionType, Set<Class<? extends T>> clazzSet) {
         try {
-            Enumeration<URL> foundGeneratorPluginActivators =
-                ClassLoader.getSystemResources("META-INF/services/" + extensionType.getCanonicalName());
+            Enumeration<URL> foundGeneratorPluginActivators = Thread.currentThread().getContextClassLoader()
+                .getResources("META-INF/services/" + extensionType.getName());
 
             while (foundGeneratorPluginActivators.hasMoreElements()) {
                 URL url = foundGeneratorPluginActivators.nextElement();
+                LOG.debug("Found classpath entry: {}", url);
                 String activatorClassName = null;
                 try {
                     URLConnection con = url.openConnection();
                     try (InputStream in = con.getInputStream()) {
                         List<String> lines = IOUtils.readLines(in, Charsets.UTF_8);
+                        LOG.debug("Lines of service loader file: {}", lines);
                         if (!lines.isEmpty()) {
                             activatorClassName = lines.get(0);
                             Class<?> loadClass =
                                 ClassServiceLoader.class.getClassLoader().loadClass(activatorClassName);
                             if (extensionType.isAssignableFrom(loadClass)) {
+                                LOG.info("Found {} {}", extensionType.getSimpleName(), activatorClassName);
                                 clazzSet.add((Class<T>) loadClass);
                             } else {
                                 LOG.warn("ServiceLoader extension with class {} is not a subclass of {}. Skipping...",
@@ -70,15 +86,24 @@ public class ClassServiceLoader {
                         LOG.isDebugEnabled() ? e : null);
                 }
             }
+            if (clazzSet.isEmpty()) {
+                LOG.error("At least one plug-in should be registered of type {}", extensionType.getSimpleName());
+            }
         } catch (Throwable e1) {
             LOG.error("Unable to retrieve {} by ServiceLoader interface", extensionType, e1);
         }
     }
 
+    /**
+     * @return the detected classes of {@link GeneratorPluginActivator}
+     */
     public static Set<Class<? extends GeneratorPluginActivator>> getGeneratorPluginActivatorClasses() {
         return generatorPluginActivatorClasses;
     }
 
+    /**
+     * @return the detected classes of {@link TextTemplateEngine}
+     */
     public static Set<Class<? extends TextTemplateEngine>> getTemplateEngineClasses() {
         return templateEngineClasses;
     }

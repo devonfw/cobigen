@@ -207,27 +207,39 @@ public class PluginRegistry {
         String extension;
         if (inputPath.toFile().isFile()) {
             extension = FilenameUtils.getExtension(inputPath.getFileName().toString());
+            LOG.debug("Trying to find trigger interpreter by file extension '{}'", extension);
             for (Class<? extends GeneratorPluginActivator> activatorClass : ClassServiceLoader
                 .getGeneratorPluginActivatorClasses()) {
+                LOG.debug("Checking found plug-in activator '{}'", activatorClass);
                 if (activatorClass.isAnnotationPresent(Activation.class)) {
                     Activation activation = activatorClass.getAnnotation(Activation.class);
                     String[] byFileExtension = activation.byFileExtension();
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Plug-in will be activated by file extensions '{}'.",
+                            Arrays.stream(byFileExtension).collect(Collectors.joining(",")));
+                    }
                     Arrays.sort(byFileExtension);
                     if (Arrays.binarySearch(byFileExtension, extension) >= 0
                         && !loadedPlugins.containsKey(activatorClass)) {
                         loadPlugin(activatorClass);
                     }
+                } else {
+                    LOG.debug("Activator annotation not present. Skipping.");
                 }
             }
         } else { // directory
             extension = FOLDER;
+            LOG.debug("Trying to find trigger interpreter by for folder inputs");
             for (Class<? extends GeneratorPluginActivator> activatorClass : ClassServiceLoader
                 .getGeneratorPluginActivatorClasses()) {
+                LOG.debug("Checking found plug-in activator '{}'", activatorClass);
                 if (activatorClass.isAnnotationPresent(Activation.class)) {
                     Activation activation = activatorClass.getAnnotation(Activation.class);
                     if (activation.byFolder() && !loadedPlugins.containsKey(activatorClass)) {
                         loadPlugin(activatorClass);
                     }
+                } else {
+                    LOG.debug("Activator annotation not present. Skipping.");
                 }
             }
         }
