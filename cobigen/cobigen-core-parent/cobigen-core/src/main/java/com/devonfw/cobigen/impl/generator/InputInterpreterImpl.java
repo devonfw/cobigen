@@ -95,6 +95,10 @@ public class InputInterpreterImpl implements InputInterpreter {
             if (isMostLikelyReadable(triggerInterpreter, path, readableCache)) {
                 LOG.info("Try reading input {} with inputreader '{}'...", path, triggerInterpreter);
                 return triggerInterpreter.getInputReader().read(path, inputCharset, additionalArguments);
+            } else {
+                LOG.debug(
+                    "Do not try inputreader of trigger interpreter '{}' as it has been reported to most probably not match",
+                    triggerInterpreter.getType());
             }
         } catch (InputReaderException e) {
             LOG.debug(
@@ -117,7 +121,8 @@ public class InputInterpreterImpl implements InputInterpreter {
      *            the file Path
      * @param cache
      *            Map of TriggerType and isMostLikelyReadable check results
-     * @return Boolean true if readable by external plugin, null for internal plugin and false if not readable
+     * @return Boolean true if readable by external plug-in, null for internal plug-in and false if not
+     *         readable
      */
     private Boolean isMostLikelyReadable(TriggerInterpreter triggerInterpreter, Path path,
         Map<TriggerInterpreter, Boolean> cache) {

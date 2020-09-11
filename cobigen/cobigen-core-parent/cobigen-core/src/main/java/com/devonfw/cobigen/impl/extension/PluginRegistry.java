@@ -133,6 +133,9 @@ public class PluginRegistry {
             for (String ext : annotation.byFileExtension()) {
                 registeredTriggerInterpreterByFileExtension.put(ext, triggerInterpreter);
             }
+            if (annotation.byFolder()) {
+                registeredTriggerInterpreterByFileExtension.put(FOLDER, triggerInterpreter);
+            }
         }
         LOG.debug("TriggerInterpreter for type '{}' registered ({}).", triggerInterpreter.getType(),
             triggerInterpreter.getClass().getCanonicalName());
