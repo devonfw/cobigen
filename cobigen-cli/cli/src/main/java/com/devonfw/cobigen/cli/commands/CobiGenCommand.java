@@ -10,7 +10,8 @@ import picocli.CommandLine.Command;
  */
 
 @Command(description = MessagesConstants.WELCOME_MESSAGE, name = "cobigen", aliases = { "cg" },
-    mixinStandardHelpOptions = true, subcommands = { GenerateCommand.class, UpdateCommand.class },
+    mixinStandardHelpOptions = true,
+    subcommands = { GenerateCommand.class, UpdateCommand.class, AdaptTemplatesCommand.class },
     versionProvider = CobiGenVersionProvider.class)
 public class CobiGenCommand implements Runnable {
 

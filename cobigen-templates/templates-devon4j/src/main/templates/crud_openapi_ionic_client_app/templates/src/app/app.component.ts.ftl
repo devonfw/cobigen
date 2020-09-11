@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { Capacitor, Plugins } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
 import { AuthService } from './services/security/auth.service';
-import { TranslateService } from '@ngx-translate/core';
-import { Router } from '@angular/router';
 
-import { Plugins, Capacitor } from '@capacitor/core';
 const SplashScreen = Plugins.SplashScreen;
-const StatusBar = Plugins.StatusBar;
 
 @Component({
   selector: 'app-root',
@@ -19,7 +17,6 @@ export class AppComponent {
   constructor(
     private platform: Platform,
     private auth: AuthService,
-    private translate: TranslateService,
     private router: Router,
   ) {
     this.initializeApp();
@@ -42,8 +39,6 @@ export class AppComponent {
         },
       ];
     });
-    this.translate.setDefaultLang('en');
-    this.translate.currentLang = 'en';
   }
 
   initializeApp() {

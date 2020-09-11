@@ -24,6 +24,10 @@ Using the following command and option you will be able to customize your genera
 
 ** `< --outputRootPath, -out >`: The project file path in which you want to generate your code. If no output path is given, CobiGen will use the project of your input file.
 
+• `[adapt-templates, a]`: Generates a new templates folder next to the cobigen cli and stores its location inside a configuration file. After executing this command, the CLI will attempt to use the specified Templates folder.
+
+** `< --custom-location, -cl >`  : Allows the user to choose an absolute file path to a custom location where the CobiGen Templates should be stored and read from.
+
 • `< --verbose, -v >` : Prints debug information, verbose log.
 
 • `< --help, -h >` : Prints man page.
@@ -53,6 +57,8 @@ A selection of commands that you can use with the CLI:
 image::images/selectedIncr.PNG[Generation path, link="images/selectedIncr.PNG"]
 
 * `cg g foo\bar\webServices.yml -i 1,4,6`: Directly generates increments with IDs `1`, `4` and `6`. CobiGen will not request you any other input.
+* `cg a`: Downloads the latest CobiGen_Templates and unpacks them next to the CLI. CobiGen will from now on use these unpacked Templates for generation. 
+* `cg a -cl C:\my\custom\location`: Downloads the latest CobiGen_Templates and unpacks them in `C:\my\custom\location`. CobiGen will from now on use these unpacked Templates for generation. 
 
 == CLI update command
 Example of Update Command :

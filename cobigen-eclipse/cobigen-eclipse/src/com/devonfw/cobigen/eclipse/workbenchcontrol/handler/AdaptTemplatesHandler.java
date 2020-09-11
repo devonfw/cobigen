@@ -22,12 +22,14 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.m2e.core.ui.internal.actions.EnableNatureAction;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.common.tools.ExceptionHandler;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 
@@ -95,6 +97,8 @@ public class AdaptTemplatesHandler extends AbstractHandler {
                     LOG.error("An exception occurred while writing Jar files to .metadata folder", e);
                     PlatformUIUtil.openErrorDialog("An exception occurred while writing Jar files to .metadata folder",
                         e);
+                } catch (Throwable e) {
+                    ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
                 }
             }
             MDC.remove(InfrastructureConstants.CORRELATION_ID);

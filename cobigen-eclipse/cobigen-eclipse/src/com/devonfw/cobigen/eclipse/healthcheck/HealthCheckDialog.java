@@ -72,7 +72,7 @@ public class HealthCheckDialog {
             // check configuration project existence
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
-            IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+            IPath ws = generatorConfProj.getLocation();
             pathForCobigenTemplates = ws.toPortableString();
 
             if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
@@ -97,12 +97,10 @@ public class HealthCheckDialog {
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep;
             boolean healthyCheckWarning = false;
-            File tempFile = new File(
-                pathForCobigenTemplates + "/CobiGen_Templates/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            File tempFile = new File(pathForCobigenTemplates + "/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
             boolean contextFileExists = tempFile.exists();
-            File newtempFile = new File(
-                pathForCobigenTemplates + "/CobiGen_Templates/" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER + "/"
-                    + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            File newtempFile = new File(pathForCobigenTemplates + "/" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER
+                + "/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
             boolean newcontextFileExists = newtempFile.exists();
             if (newcontextFileExists || contextFileExists) {
                 healthyCheckMessage += "OK.";
@@ -130,9 +128,9 @@ public class HealthCheckDialog {
                     healthyCheckMessage +=
                         "\n\nAutomatic upgrade of the context configuration available.\n" + "Detected: "
                             + currentVersion + " / Currently Supported: " + ContextConfigurationVersion.getLatest();
-                    healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
                     report = openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject,
                         BackupPolicy.ENFORCE_BACKUP);
+                    healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
                     if (!report.containsError(RuntimeException.class)) {
                         // re-run Health Check
                         Display.getCurrent().asyncExec(new Runnable() {
@@ -142,15 +140,17 @@ public class HealthCheckDialog {
                             }
                         });
                     }
-                    return;
                 } else {
                     healthyCheckMessage += "\n\nNo automatic upgrade of the context configuration possible. "
                         + "Maybe just a mistake in the context configuration?";
-                    healthyCheckMessage += "\n\n=> " + e.getLocalizedMessage();
+                    healthyCheckMessage += "\n\n=> " + e.getMessage();
                     healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, report);
+                    PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
                 }
+            } else {
+                healthyCheckMessage += "\n\nCould not find configuration.";
+                PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
             }
-            PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
             LOG.warn(healthyCheckMessage, e);
         } catch (Throwable e) {
             healthyCheckMessage = "An unexpected error occurred! Templates were not found.";
@@ -220,8 +220,8 @@ public class HealthCheckDialog {
         int result = dialog.open();
         if (result == 0) {
             try {
-                IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
-                String healthProj = ws.toPortableString() + "/" + ResourceConstants.CONFIG_PROJECT_NAME;
+                IPath ws = ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation();
+                String healthProj = ws.toPortableString();
                 File healthcheckFile = new File(healthProj);
                 if (ResourcesPluginUtil.getGeneratorConfigurationProject() != null) {
                     report = healthCheck.perform(healthcheckFile.toPath());

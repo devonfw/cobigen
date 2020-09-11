@@ -29,6 +29,7 @@ import org.slf4j.MDC;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
+import com.devonfw.cobigen.eclipse.common.tools.ExceptionHandler;
 import com.devonfw.cobigen.eclipse.common.tools.MapUtils;
 import com.devonfw.cobigen.eclipse.generator.CobiGenWrapper;
 import com.devonfw.cobigen.eclipse.generator.entity.ComparableIncrement;
@@ -86,44 +87,50 @@ public class CheckStateListener implements ICheckStateListener, SelectionListene
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
         LOG.info("Increment selection changed. Calculating generation preview file tree...");
 
-        CheckboxTreeViewer resourcesTree = page.getResourcesTree();
-        CheckboxTreeViewer incrementSelector = page.getPackageSelector();
+        try {
+            CheckboxTreeViewer resourcesTree = page.getResourcesTree();
+            CheckboxTreeViewer incrementSelector = page.getPackageSelector();
 
-        if (event.getSource().equals(resourcesTree)) {
-            resourcesTree.setSubtreeChecked(event.getElement(), event.getChecked());
-            ((SelectFileLabelProvider) resourcesTree.getLabelProvider())
-                .setSelectedResources(resourcesTree.getCheckedElements());
-            refreshNodes(event);
-        } else if (event.getSource().equals(incrementSelector)) {
-            performCheckLogic(event, incrementSelector);
-            Set<Object> checkedElements = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
-            performCheckLogicForALLIncrement(incrementSelector, checkedElements);
+            if (event.getSource().equals(resourcesTree)) {
+                resourcesTree.setSubtreeChecked(event.getElement(), event.getChecked());
+                ((SelectFileLabelProvider) resourcesTree.getLabelProvider())
+                    .setSelectedResources(resourcesTree.getCheckedElements());
+                refreshNodes(event);
+            } else if (event.getSource().equals(incrementSelector)) {
+                performCheckLogic(event, incrementSelector);
+                Set<Object> checkedElements = new HashSet<>(Arrays.asList(incrementSelector.getCheckedElements()));
+                performCheckLogicForALLIncrement(incrementSelector, checkedElements);
 
-            Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
-            Set<String> workspaceExternalPaths = Sets.newHashSet();
-            for (String path : paths.keySet()) {
-                if (cobigenWrapper.isWorkspaceExternalPath(path)) {
-                    workspaceExternalPaths.add(path);
+                Map<String, Set<TemplateTo>> paths = cobigenWrapper.getTemplateDestinationPaths(selectedIncrements);
+                Set<String> workspaceExternalPaths = Sets.newHashSet();
+                for (String path : paths.keySet()) {
+                    if (cobigenWrapper.isWorkspaceExternalPath(path)) {
+                        workspaceExternalPaths.add(path);
+                    }
+                }
+                List<OffWorkspaceResourceTreeNode> offScopeResourceTree =
+                    buildOffScopeResourceTree(workspaceExternalPaths);
+                ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths.keySet(),
+                    offScopeResourceTree);
+                page.setDisplayedfilePathToTemplateMapping(paths);
+
+                resourcesTree.setCheckedElements(new Object[0]);
+                resourcesTree.refresh();
+                resourcesTree.expandAll();
+                if (!batch) {
+                    selectNewResources();
+                    selectMergeableResources();
+                    selectOverridingResources();
+                } else {
+                    selectAllResources(paths.keySet());
                 }
             }
-            List<OffWorkspaceResourceTreeNode> offScopeResourceTree = buildOffScopeResourceTree(workspaceExternalPaths);
-            ((SelectFileContentProvider) resourcesTree.getContentProvider()).filter(paths.keySet(),
-                offScopeResourceTree);
-            page.setDisplayedfilePathToTemplateMapping(paths);
 
-            resourcesTree.setCheckedElements(new Object[0]);
-            resourcesTree.refresh();
-            resourcesTree.expandAll();
-            if (!batch) {
-                selectNewResources();
-                selectMergeableResources();
-                selectOverridingResources();
-            } else {
-                selectAllResources(paths.keySet());
-            }
+            checkPageComplete();
+
+        } catch (Throwable e) {
+            ExceptionHandler.handle(e, null);
         }
-
-        checkPageComplete();
 
         LOG.info("Calculating of changed preview file tree finished.");
         MDC.remove(InfrastructureConstants.CORRELATION_ID);

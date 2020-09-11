@@ -20,10 +20,15 @@ import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.
 import com.devonfw.module.jpa.dataaccess.api.QueryUtil;
 import com.devonfw.module.jpa.dataaccess.api.data.DefaultRepository;
 
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null"> 
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
+
 /**
  * {@link DefaultRepository} for {@link ${variables.entityName}Entity}
   */
-public interface ${variables.entityName}Repository extends DefaultRepository<${variables.entityName}Entity> {
+public interface ${variables.entityName}Repository extends <#if compositeIdTypeVar!="null"> GenericRepository<${variables.entityName}Entity, ${compositeIdTypeVar}><#else>DefaultRepository<${variables.entityName}Entity></#if> {
 
   /**
    * @param criteria the {@link ${variables.entityName}SearchCriteriaTo} with the criteria to search.
@@ -93,9 +98,9 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
           <#if !JavaUtil.isCollection(classObject, field.name)>
           case "${field.name}":
             if (next.isAscending()) {
-                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).asc());
+                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()<#if field.name=="id">.toString()</#if></#if><#if field.type?ends_with("Entity") >.getId().toString()</#if>).asc());
             } else {
-                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()</#if><#if field.type?ends_with("Entity")>.getId()</#if>).desc());
+                query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()<#if field.name=="id">.toString()</#if></#if><#if field.type?ends_with("Entity")>.getId().toString()</#if>).desc());
             }   
           break;
           </#if>

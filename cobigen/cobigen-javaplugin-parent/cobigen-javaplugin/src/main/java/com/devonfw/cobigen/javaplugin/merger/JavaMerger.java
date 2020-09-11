@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.javaplugin.merger;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -63,9 +64,12 @@ public class JavaMerger implements Merger {
     public String merge(File base, String patch, String targetCharset) throws MergeException {
 
         ModifyableJavaClass baseClass;
-        try {
-            baseClass = (ModifyableJavaClass) JavaParserUtil
-                .getFirstJavaClass(new InputStreamReader(new FileInputStream(base), targetCharset));
+        String lineDelimiter;
+        try (FileInputStream stream = new FileInputStream(base);
+            BufferedInputStream bis = new BufferedInputStream(stream);
+            InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
+            lineDelimiter = determineLineDelimiter(bis, reader);
+            baseClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
         } catch (IOException e) {
             throw new MergeException(base, "Cannot read base file.", e);
         } catch (ParseException e) {
@@ -73,8 +77,9 @@ public class JavaMerger implements Merger {
                 + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
         }
         ModifyableJavaClass patchClass;
-        try {
-            patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(new StringReader(patch));
+        try (StringReader reader = new StringReader(patch)) {
+
+            patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
         } catch (ParseException e) {
             throw new MergeException(base, "The syntax of the generated patch is invalid. Error in line: " + e.getLine()
                 + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
@@ -87,7 +92,53 @@ public class JavaMerger implements Merger {
         }
 
         ModifyableJavaClass mergedClass = merge(baseClass, patchClass);
-        return consolidateLineEndings(mergedClass.getSource().getCodeBlock());
+        return consolidateLineEndings(mergedClass.getSource().getCodeBlock(), lineDelimiter);
+    }
+
+    /**
+     * @param bis
+     *            The {@link BufferedInputStream} containing the input file
+     * @param reader
+     *            The {@link InputStreamReader} iterating over the Stream
+     * @return The line delimiter corresponding to the input file
+     * @throws IOException
+     *             If an exception occurs while processing the {@link BufferedInputStream} or the
+     *             {@link InputStreamReader}
+     */
+    private String determineLineDelimiter(BufferedInputStream bis, InputStreamReader reader) throws IOException {
+
+        bis.mark(0);
+        try {
+            while (reader.ready()) {
+                int nextChar = reader.read();
+                if (nextChar == '\r') {
+                    nextChar = reader.read();
+                    if (nextChar == '\n') {
+                        return "\r\n";
+                    }
+                    return "\r";
+                } else if (nextChar == '\n') {
+                    return "\n";
+                }
+            }
+            return null;
+        } finally {
+            emptyReader(reader);
+            bis.reset();
+        }
+    }
+
+    /**
+     * @param reader
+     *            The {@link InputStreamReader} that is to be emptied
+     * @throws IOException
+     *             If an exception occurs while processing the {@link InputStreamReader}
+     */
+    private void emptyReader(InputStreamReader reader) throws IOException {
+        while (reader.ready()) {
+            reader.read();
+        }
+
     }
 
     /**
@@ -95,12 +146,16 @@ public class JavaMerger implements Merger {
      *
      * @param codeBlock
      *            which should be consolidate
+     * @param lineDelimiter
+     *            the line delimiter of the file or null if none
      * @return the consolidated code block
      * @author mbrunnli (04.06.2013)
      */
-    private String consolidateLineEndings(String codeBlock) {
-
-        return codeBlock.replaceAll("\r\n|\r|\n", System.getProperty("line.separator"));
+    private String consolidateLineEndings(String codeBlock, String lineDelimiter) {
+        if (lineDelimiter != null) {
+            return codeBlock.replaceAll("\r\n|\r|\n", lineDelimiter);
+        }
+        return codeBlock;
     }
 
     /**

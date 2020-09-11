@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,7 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import ch.qos.logback.classic.Logger;
+import com.devonfw.cobigen.cli.CobiGenCLI;
 
 /**
  * This class facilitates to check plug-in is outdated or not as per central plug-in and provide latest
@@ -27,7 +28,7 @@ public class PluginUpdateUtil {
     /**
      * Logger to output useful information to the user
      */
-    private static Logger logger = (Logger) LoggerFactory.getLogger(PluginUpdateUtil.class);
+    private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Checks which is the last version of a plug-in. It connects to Maven central in order to find this
@@ -73,9 +74,9 @@ public class PluginUpdateUtil {
             }
 
         } catch (IOException e) {
-            logger.error("Error while creating an input stream to read Maven metadata file. Please try again.", e);
+            LOG.error("Error while creating an input stream to read Maven metadata file. Please try again.", e);
         } catch (SAXException | ParserConfigurationException e) {
-            logger.error("Not able to parse the Maven metadata file in order to find the latest plug-in version. "
+            LOG.error("Not able to parse the Maven metadata file in order to find the latest plug-in version. "
                 + "Please check your connection and try again", e);
         }
 
@@ -98,8 +99,8 @@ public class PluginUpdateUtil {
             conn.setRequestMethod("GET");
             conn.connect();
         } catch (IOException e) {
-            logger.error(
-                "Not able to initialize connection to Maven Central. Please check your connection and try again.");
+            LOG.error("Not able to initialize connection to Maven Central. Please check your connection and try again.",
+                e);
         }
         return conn;
     }

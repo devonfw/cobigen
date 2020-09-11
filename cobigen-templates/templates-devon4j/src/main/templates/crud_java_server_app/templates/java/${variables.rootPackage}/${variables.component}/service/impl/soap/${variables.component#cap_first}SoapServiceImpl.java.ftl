@@ -18,7 +18,10 @@ import ${variables.rootPackage}.general.service.impl.config.WebApplicationContex
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 import org.springframework.data.domain.Page;
-
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
 /**
  * @author riraman
  *
@@ -40,7 +43,7 @@ public class ${variables.component?cap_first}SoapServiceImpl implements ${variab
     }
 
    @Override
-   public ${variables.entityName}Eto get${variables.entityName}(@WebParam(name = "id") long id){
+   public ${variables.entityName}Eto get${variables.entityName}(@WebParam(name = "id") <#if compositeIdTypeVar!="null">${compositeIdTypeVar}<#else>long</#if> id){
     return this.${variables.component?lower_case}.find${variables.entityName}(id);
    }
  
@@ -56,7 +59,7 @@ public class ${variables.component?cap_first}SoapServiceImpl implements ${variab
     }
    
   @Override
-  public void delete${variables.entityName}(@WebParam(name = "id") long id){
+  public void delete${variables.entityName}(@WebParam(name = "id") <#if compositeIdTypeVar!="null">${compositeIdTypeVar}<#else>long</#if> id){
     this.${variables.component?lower_case}.delete${variables.entityName}(id);
   }
   
