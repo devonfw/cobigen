@@ -477,7 +477,6 @@ public class JavaInputReader implements InputReader {
     @Override
     public boolean isMostLikelyReadable(Path path) {
         String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
-        LOG.debug("{} is most likely not readable as of extension {} != java", path, fileExtension);
         return VALID_EXTENSION.equals(fileExtension) || Files.isDirectory(path);
     }
 
