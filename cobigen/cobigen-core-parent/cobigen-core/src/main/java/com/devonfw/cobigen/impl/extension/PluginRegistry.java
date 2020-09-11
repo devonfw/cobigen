@@ -31,7 +31,7 @@ import com.google.common.primitives.SignedBytes;
 public class PluginRegistry {
 
     /**
-     * Currently registered {@link Merger}s mapped by their type
+     * Currently registered {@link Merger}s mapped by their merge strategy
      */
     private static Map<String, Merger> registeredMerger = Maps.<String, Merger> newHashMap();
 
@@ -142,34 +142,44 @@ public class PluginRegistry {
     }
 
     /**
-     * Returns the {@link Merger} for the given mergerType
+     * Returns the {@link Merger} for the given merge strategy
      *
-     * @param mergerType
+     * @param mergeStrategy
      *            the {@link Merger} should be able to interpret
      * @return the {@link Merger} for the given mergerType or <code>null</code> if there is no {@link Merger}
      *         for this mergerType
      */
-    public static Merger getMerger(String mergerType) {
+    public static Merger getMerger(String mergeStrategy) {
 
-        if (mergerType == null) {
+        if (mergeStrategy == null) {
             return null;
         }
 
-        Merger merger = registeredMerger.get(mergerType);
+        Merger merger = registeredMerger.get(mergeStrategy);
         if (merger == null) {
-            for (Class<? extends GeneratorPluginActivator> activator : ClassServiceLoader
+            LOG.debug("Trying to find merger for type '{}'", mergeStrategy);
+            for (Class<? extends GeneratorPluginActivator> activatorClass : ClassServiceLoader
                 .getGeneratorPluginActivatorClasses()) {
-                if (activator.isAnnotationPresent(Activation.class)) {
-                    Activation activation = activator.getAnnotation(Activation.class);
+                LOG.debug("Checking found plug-in activator '{}'", activatorClass);
+                if (activatorClass.isAnnotationPresent(Activation.class)) {
+                    Activation activation = activatorClass.getAnnotation(Activation.class);
                     String[] byMergeStrategy = activation.byMergeStrategy();
-                    Arrays.sort(byMergeStrategy);
-                    if (Arrays.binarySearch(byMergeStrategy, mergerType) >= 0) {
-                        loadPlugin(activator);
-                        break;
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Plug-in will be activated by merge strategies '{}'.",
+                            Arrays.stream(byMergeStrategy).collect(Collectors.joining(",")));
                     }
+                    Arrays.sort(byMergeStrategy);
+                    if (Arrays.binarySearch(byMergeStrategy, mergeStrategy) >= 0) {
+                        loadPlugin(activatorClass);
+                        break;
+                    } else {
+                        LOG.debug("Merge strategy not found. Skipping.");
+                    }
+                } else {
+                    LOG.debug("Activator annotation not present. Skipping.");
                 }
             }
-            merger = registeredMerger.get(mergerType);
+            merger = registeredMerger.get(mergeStrategy);
         }
         if (merger != null) {
             merger = ProxyFactory.getProxy(merger);
@@ -225,6 +235,8 @@ public class PluginRegistry {
                     if (Arrays.binarySearch(byFileExtension, extension) >= 0
                         && !loadedPlugins.containsKey(activatorClass)) {
                         loadPlugin(activatorClass);
+                    } else {
+                        LOG.debug("File extension not found. Skipping.");
                     }
                 } else {
                     LOG.debug("Activator annotation not present. Skipping.");
