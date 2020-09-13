@@ -54,8 +54,9 @@ public class ClassServiceLoader {
     @SuppressWarnings("unchecked")
     private static <T> void lookupServices(Class<T> extensionType, Set<Class<? extends T>> clazzSet) {
         try {
-            Enumeration<URL> foundGeneratorPluginActivators = Thread.currentThread().getContextClassLoader()
-                .getResources("META-INF/services/" + extensionType.getName());
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            Enumeration<URL> foundGeneratorPluginActivators =
+                contextClassLoader.getResources("META-INF/services/" + extensionType.getName());
 
             while (foundGeneratorPluginActivators.hasMoreElements()) {
                 URL url = foundGeneratorPluginActivators.nextElement();
@@ -68,8 +69,7 @@ public class ClassServiceLoader {
                         LOG.debug("Lines of service loader file: {}", lines);
                         if (!lines.isEmpty()) {
                             activatorClassName = lines.get(0);
-                            Class<?> loadClass =
-                                ClassServiceLoader.class.getClassLoader().loadClass(activatorClassName);
+                            Class<?> loadClass = contextClassLoader.loadClass(activatorClassName);
                             if (extensionType.isAssignableFrom(loadClass)) {
                                 LOG.info("Found {} {}", extensionType.getSimpleName(), activatorClassName);
                                 clazzSet.add((Class<T>) loadClass);
