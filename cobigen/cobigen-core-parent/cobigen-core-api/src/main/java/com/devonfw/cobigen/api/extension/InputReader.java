@@ -5,6 +5,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.annotation.ExceptionFacade;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 
@@ -15,6 +18,9 @@ import com.devonfw.cobigen.api.exception.InputReaderException;
  */
 @ExceptionFacade
 public interface InputReader {
+
+    /** Logger instance. */
+    public static final Logger LOG = LoggerFactory.getLogger(InputReader.class);
 
     /**
      * This function will be called if matching triggers or matching templates should be retrieved for a given
@@ -92,8 +98,6 @@ public interface InputReader {
      * @return true, if it is most likely, that the file can be read by this input reader's read method<br>
      *         false, if the reader is most likely not able to read the file.
      */
-    @SuppressWarnings("unused")
-    default public boolean isMostLikelyReadable(Path path) {
-        return false;
-    }
+    public boolean isMostLikelyReadable(Path path);
+
 }

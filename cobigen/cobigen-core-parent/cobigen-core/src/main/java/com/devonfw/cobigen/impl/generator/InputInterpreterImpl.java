@@ -3,8 +3,9 @@ package com.devonfw.cobigen.impl.generator;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -13,10 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.annotation.Cached;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
-import com.devonfw.cobigen.api.exception.PluginNotAvailableException;
-import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
@@ -57,54 +55,81 @@ public class InputInterpreterImpl implements InputInterpreter {
         return inputs;
     }
 
-    // not cached by intention
-    @Override
-    public Object read(String type, Path path, Charset inputCharset, Object... additionalArguments)
-        throws InputReaderException {
-        return getInputReader(type).read(path, inputCharset, additionalArguments);
-    }
-
     @Override
     public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
-        Set<String> keySet = PluginRegistry.getTriggerInterpreterKeySet();
+        List<TriggerInterpreter> triggerInterpreters = PluginRegistry.getTriggerInterpreters(path);
+
         // We first try to find an input reader that is most likely readable
-        for (String s : keySet) {
-            try {
-                if (isMostLikelyReadable(s, path)) {
-                    LOG.debug("Try reading input {} with inputreader '{}'...", path, s);
-                    return getInputReader(s).read(path, inputCharset, additionalArguments);
-                }
-            } catch (InputReaderException e) {
-                LOG.debug(
-                    "Was not able to read input {} with inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
-                    path, s, e);
+        Map<TriggerInterpreter, Boolean> readableCache = new HashMap<>();
+        Object readable = null;
+
+        for (TriggerInterpreter triggerInterpreter : triggerInterpreters) {
+            readable = readInput(path, inputCharset, readableCache, triggerInterpreter, additionalArguments);
+            if (readable != null) {
+                return readable;
             }
         }
-        throw new InputReaderException("Could not read input at path " + path + " with any installed plugin.");
-    }
 
-    @Override
-    public boolean isMostLikelyReadable(String type, Path path) {
-        return getInputReader(type).isMostLikelyReadable(path);
+        throw new InputReaderException("Could not read input at path " + path + " with any installed plugin.");
+
     }
 
     /**
-     * @param type
-     *            of the input
-     * @return InputReader for the given type.
-     * @throws CobiGenRuntimeException
-     *             if no InputReadercould be found
+     * Checks and returns a valid input either directly or from a provided cache.
+     *
+     * @param path
+     *            the Path to the object. Can also point to a folder
+     * @param inputCharset
+     *            of the input to be used
+     * @param readableCache
+     *            HashMap of TriggerInterpreter and Boolean
+     * @param triggerInterpreter
+     *            type of TriggerInterpreter
+     * @param additionalArguments
+     *            depending on the InputReader implementation
+     * @return Object that is a valid input or null if the file cannot be read by any InputReader
      */
-    private InputReader getInputReader(String type) {
-        TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(type);
-        if (triggerInterpreter == null) {
-            throw new PluginNotAvailableException("TriggerInterpreter", type);
+    private Object readInput(Path path, Charset inputCharset, Map<TriggerInterpreter, Boolean> readableCache,
+        TriggerInterpreter triggerInterpreter, Object... additionalArguments) {
+        try {
+            if (isMostLikelyReadable(triggerInterpreter, path, readableCache)) {
+                LOG.info("Try reading input {} with inputreader '{}'...", path, triggerInterpreter);
+                return triggerInterpreter.getInputReader().read(path, inputCharset, additionalArguments);
+            } else {
+                LOG.debug(
+                    "Do not try inputreader of trigger interpreter '{}' as it has been reported to most probably not match",
+                    triggerInterpreter.getType());
+            }
+        } catch (InputReaderException e) {
+            LOG.debug(
+                "Was not able to read input {} with inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
+                path, triggerInterpreter, e);
+        } catch (Throwable e) {
+            LOG.debug(
+                "While reading the input {} with the inputreader {}, an exception occured. Trying next input reader...",
+                path, triggerInterpreter, e);
         }
-        if (triggerInterpreter.getInputReader() == null) {
-            throw new PluginNotAvailableException("InputReader", type);
-        }
+        return null;
+    }
 
-        return triggerInterpreter.getInputReader();
+    /**
+     * Checks if the input is most likely readable and fills the provided cache
+     *
+     * @param triggerInterpreter
+     *            {@link TriggerInterpreter} to be used
+     * @param path
+     *            the file Path
+     * @param cache
+     *            Map of TriggerType and isMostLikelyReadable check results
+     * @return Boolean true if readable by external plug-in, null for internal plug-in and false if not
+     *         readable
+     */
+    private Boolean isMostLikelyReadable(TriggerInterpreter triggerInterpreter, Path path,
+        Map<TriggerInterpreter, Boolean> cache) {
+        if (!cache.containsKey(triggerInterpreter)) {
+            cache.put(triggerInterpreter, triggerInterpreter.getInputReader().isMostLikelyReadable(path));
+        }
+        return cache.get(triggerInterpreter);
     }
 
 }

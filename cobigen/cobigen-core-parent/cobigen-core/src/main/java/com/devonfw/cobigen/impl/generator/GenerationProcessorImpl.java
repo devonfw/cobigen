@@ -105,6 +105,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     /**
      * Loads the logic classes passed to assure a singleton instance for the complete generation. Mapping from
      * simple type to instance.
+     * @param progressCallback
+     *            callback for tracking the progress
      * @param logicClasses
      *            logic classes to instantiate.
      */
@@ -486,56 +488,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         }
         return model;
     }
-
-    // /**
-    // * Collects all input objects. Especially, resolves container inputs.
-    // * @param input
-    // * object
-    // * @param triggerInterpreter
-    // * {@link TriggerInterpreter} to be used
-    // * @param trigger
-    // * {@link Trigger} to be used
-    // * @return the {@link List} of collected input objects.
-    // */
-    // private List<Object> collectInputObjects(Object input, TriggerInterpreter triggerInterpreter, Trigger
-    // trigger) {
-    //
-    // InputReader inputReader = triggerInterpreter.getInputReader();
-    // List<Object> inputObjects = new ArrayList<>();
-    // if (inputInterpreter.combinesMultipleInputs(input)) {
-    //
-    // // check whether the inputs should be retrieved recursively
-    // boolean retrieveInputsRecursively = false;
-    // for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-    // MatcherTo matcherTo = new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
-    // if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-    // if (!retrieveInputsRecursively) {
-    // retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
-    // } else {
-    // break;
-    // }
-    // }
-    // }
-    //
-    // if (retrieveInputsRecursively) {
-    // inputObjects = inputReader.getInputObjectsRecursively(input, trigger.getInputCharset());
-    // } else {
-    // inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
-    // }
-    //
-    // // Remove non matching inputs
-    // Iterator<Object> it = inputObjects.iterator();
-    // while (it.hasNext()) {
-    // Object next = it.next();
-    // if (!matcherEvaluator.matches(next, trigger.getMatcher(), triggerInterpreter)) {
-    // it.remove();
-    // }
-    // }
-    // } else {
-    // inputObjects.add(input);
-    // }
-    // return inputObjects;
-    // }
 
     /**
      * Generates the given template contents using the given model and writes the contents into the given

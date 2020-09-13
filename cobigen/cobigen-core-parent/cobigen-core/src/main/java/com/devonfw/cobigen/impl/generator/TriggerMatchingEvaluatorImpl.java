@@ -46,6 +46,12 @@ public class TriggerMatchingEvaluatorImpl implements TriggerMatchingEvaluator {
         List<Trigger> matchingTrigger = Lists.newLinkedList();
         for (Trigger trigger : configurationHolder.readContextConfiguration().getTriggers()) {
             TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+            if (triggerInterpreter == null) {
+                continue;
+                // trigger interpreter not yet activated as the plug-in was not yet used.
+                // unfortunately the invariant here is, that the CobiGen user has once called CobigenImpl#read
+                // to get the matcher input
+            }
             InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
             LOG.debug("Check {} to match the input.", trigger);
 
