@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tempeng-freemarker</artifactId>
   <name>CobiGen - FreeMarker Template Engine</name>
-  <version>2.1.0</version>
+  <version>7.0.0</version>
   <packaging>jar</packaging>
   <description>CobiGen - FreeMarker Template Engine</description>
 
@@ -21,12 +21,12 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.0.0</version>
+      <version>7.0.0</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.0.0</version>
+      <version>7.0.0</version>
       <scope>test</scope>
     </dependency>
 
