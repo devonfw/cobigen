@@ -315,17 +315,20 @@ public class JavaDocumentationUtil {
         Class<?> clazz = this.getClass();
         String t = "";
         StringBuilder sb = new StringBuilder("http://localhost:");
-        InputStream in = clazz.getClassLoader().getResourceAsStream("application.properties");
-        if (in != null) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            while ((t = br.readLine()) != null) {
-                if (t.matches("server\\.port=(\\d{0,5})") || t.matches("server\\.context-path=([^\\s]*)")) {
-                    sb.append(t.substring(t.indexOf('=') + 1));
+        try (InputStream in = clazz.getClassLoader().getResourceAsStream("application.properties")) {
+            if (in != null) {
+                try (InputStreamReader reader = new InputStreamReader(in);
+                    BufferedReader br = new BufferedReader(reader)) {
+                    while ((t = br.readLine()) != null) {
+                        if (t.matches("server\\.port=(\\d{0,5})") || t.matches("server\\.context-path=([^\\s]*)")) {
+                            sb.append(t.substring(t.indexOf('=') + 1));
+                        }
+                    }
+                    return sb.toString();
                 }
+            } else {
+                return "";
             }
-            return sb.toString();
-        } else {
-            return "";
         }
     }
 
