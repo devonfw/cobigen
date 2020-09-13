@@ -47,14 +47,9 @@ public class OpenAPITest extends SystemTest {
     @BeforeClass
     public static void setupClass() throws Exception {
 
-        try {
-            // import the configuration project for this test
-            EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath());
-            EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        // import the configuration project for this test
+        EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath());
+        EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
     }
 
     /**
