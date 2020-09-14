@@ -23,7 +23,7 @@ DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonf
 * CobiGen - TypeScript Plug-in v2.4.4
 * CobiGen - Property Plug-in v2.1.0
 * CobiGen - Text Merger v2.1.0
-* CobiGen - JSON Plug-in v2.1.0
+* CobiGen - JSON Plug-in v7.0.0
 * CobiGen - HTML Plug-in v2.1.0
 * CobiGen - Open API Plug-in v2.4.0
 * CobiGen - FreeMaker Template Engine v2.1.0
