@@ -4,6 +4,7 @@ import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.junit.Rule;
@@ -32,7 +33,10 @@ public class VelocityTemplateEngineIntegrationTest {
     public void testBasicGeneration() throws Exception {
 
         CobiGen cobigen = CobiGenFactory.create(new File("src/test/resources/systemtest").toURI());
-        List<IncrementTo> increments = cobigen.getMatchingIncrements(Input.class);
+        Object input = cobigen.read(
+            new File("src/test/java/com/devonfw/cobigen/tempeng/velocity/systemtest/testobjects/Input.java").toPath(),
+            Charset.forName("UTF-8"), getClass().getClassLoader());
+        List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
 
         assertThat(increments).hasSize(1);
         assertThat(increments.get(0).getTemplates()).hasSize(1);

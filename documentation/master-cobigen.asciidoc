@@ -27,7 +27,7 @@ DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonf
 * CobiGen - HTML Plug-in v2.1.0
 * CobiGen - Open API Plug-in v2.4.0
 * CobiGen - FreeMaker Template Engine v7.0.0
-* CobiGen - Velocity Template Engine v2.0.1
+* CobiGen - Velocity Template Engine v7.0.0
 
 **Authors:**
 
