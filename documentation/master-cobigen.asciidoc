@@ -12,7 +12,7 @@ This document contains the documentation of the CobiGen core module as well as a
 ---
 
 * CobiGen v6.0.0
-* CobiGen - Java Plug-in v2.2.3
+* CobiGen - Java Plug-in v7.0.0
 * CobiGen - XML Plug-in v4.2.0
 * CobiGen - TypeScript Plug-in v2.4.2
 * CobiGen - Property Plug-in v2.1.0
