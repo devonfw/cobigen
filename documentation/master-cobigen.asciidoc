@@ -11,7 +11,7 @@ DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonf
 
 **Current versions:**
 
-* CobiGen - Eclipse Plug-in v5.2.1
+* CobiGen - Eclipse Plug-in v7.0.0
 * CobiGen - Maven Build Plug-in v5.2.0
 * CobiGen CLI v1.2.0
 
