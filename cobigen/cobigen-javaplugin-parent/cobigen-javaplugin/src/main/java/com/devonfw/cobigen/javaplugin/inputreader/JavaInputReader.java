@@ -40,6 +40,9 @@ import com.thoughtworks.qdox.parser.ParseException;
  */
 public class JavaInputReader implements InputReader {
 
+    /** Valid file extension for the reader */
+    public static final String VALID_EXTENSION = "java";
+
     /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(JavaInputReader.class);
 
@@ -473,9 +476,8 @@ public class JavaInputReader implements InputReader {
 
     @Override
     public boolean isMostLikelyReadable(Path path) {
-        String validExtension = "java";
         String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
-        return validExtension.equals(fileExtension) || Files.isDirectory(path);
+        return VALID_EXTENSION.equals(fileExtension) || Files.isDirectory(path);
     }
 
     /**

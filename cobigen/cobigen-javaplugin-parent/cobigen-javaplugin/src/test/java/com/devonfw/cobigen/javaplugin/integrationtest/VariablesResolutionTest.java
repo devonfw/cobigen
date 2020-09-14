@@ -3,7 +3,7 @@ package com.devonfw.cobigen.javaplugin.integrationtest;
 import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 
 import java.io.File;
-import java.io.FileReader;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -13,9 +13,7 @@ import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
-import com.thoughtworks.qdox.model.JavaClass;
 
 import junit.framework.AssertionFailedError;
 
@@ -39,8 +37,9 @@ public class VariablesResolutionTest extends AbstractIntegrationTest {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
         File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
 
-        JavaClass input = JavaParserUtil.getFirstJavaClass(
-            new FileReader(new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java")));
+        Object input =
+            cobiGen.read(new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java").toPath(),
+                Charset.forName("UTF-8"));
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
