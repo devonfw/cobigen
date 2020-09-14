@@ -428,6 +428,13 @@
               <skip>true</skip>
             </configuration>
           </plugin>
+		  <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>	  
           <!-- sets ${qualifiedVersion} for bintray upload -->
           <plugin>
             <groupId>org.eclipse.tycho</groupId>
