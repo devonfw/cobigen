@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
+import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.xmlplugin.merger.delegates.MergeType;
 import com.devonfw.cobigen.xmlplugin.merger.delegates.XmlMergerDelegate;
@@ -54,9 +55,9 @@ public class XmlPluginMergerIntegrationTest {
     @Before
     public void setUp() {
         final String mergeSchemaLocation = "src/main/resources/mergeSchemas/";
-        patchPreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE);
+        patchPreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITE, false);
         // ((XmlLawMergerDelegate) patchPreferingMerger).setValidation(false);
-        basePreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE);
+        basePreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.BASEATTACHOROVERWRITE, false);
         ((XmlMergerDelegate) basePreferingMerger).setValidation(false);
     }
 
@@ -271,6 +272,28 @@ public class XmlPluginMergerIntegrationTest {
         assertEquals("Not the expected amount of beans", 3, mergedDoc.split("<p:bean").length - 1);
         // Note: The test expects 2 bean elements but by the way they're retrieved their root <p:beans> is
         // returned as well and needed to be considered
+    }
+
+    /**
+     * Tests that a MergeException is thrown if the validation is enabled and the validation by LeXeMe failed
+     * and canceled the merge
+     * @throws Exception
+     *             should not happen
+     */
+    @Test(expected = MergeException.class)
+    public void testValidationEnabledThrowsMergeException() throws Exception {
+
+        String mergeSchemaLocation = "src/main/resources/mergeSchemas/";
+        patchPreferingMerger =
+            new XmlMergerDelegate(mergeSchemaLocation, MergeType.PATCHATTACHOROVERWRITEVALIDATE, true);
+        basePreferingMerger = new XmlMergerDelegate(mergeSchemaLocation, MergeType.BASEATTACHOROVERWRITEVALIDATE, true);
+
+        String basePath = resourcesRoot + "BaseFile_validation.xml";
+        String patchPath = resourcesRoot + "PatchFile_validation.xml";
+
+        File baseFile = new File(basePath);
+        String patchString = readFile(patchPath, charset);
+        basePreferingMerger.merge(baseFile, patchString, charset);
     }
 
     /**

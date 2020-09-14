@@ -37,7 +37,7 @@ public class XPathGenerationTest {
         Path input = cobigenConfigFolder.resolve("uml.xml");
 
         CobiGen cobigen = CobiGenFactory.create(cobigenConfigFolder.toUri());
-        Object compliantInput = cobigen.read("xml", input, Charset.forName("UTF-8"));
+        Object compliantInput = cobigen.read(input, Charset.forName("UTF-8"));
         List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(compliantInput);
         assertThat(matchingTemplates).isNotNull().hasSize(1);
 

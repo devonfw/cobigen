@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ms:merge-schema for="composition" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
-  <ms:definition namespace="http://java.sun.com/jsf/facelets"/>
-
-  <!-- This MergeSchema is far from beeing complete since the document definition couldn't be found. The merge rules are derived from different unit tests -->
-
+<ms:merge-schema for="" xmlns:ms="http://maybeec.github.io/lexeme/mergeschema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maybeec.github.io/lexeme/mergeschema ../../../../../../../lexeme/src/main/resources/xsd/MergeSchema.xsd ">
+  <ms:definition location="src/main/resources/mergeSchemas/xsd/myfaces_facelets_ui_2_2.xsd" type="xsd" namespace = "http://xmlns.jcp.org/jsf/facelets">
+    <ms:additional-namespace location="src/main/resources/mergeSchemas/xsd/facelets-ui-2.0.xsd" namespace="http://java.sun.com/jsf/facelets"/>
+  </ms:definition>
+  
+    <!-- This MergeSchema is far from beeing complete since the document definition couldn't be found. The merge rules are derived from different unit tests -->
+  
   <ms:handling for="define"><ms:criterion xpath="./@name"/></ms:handling>
   <ms:handling for="include"><ms:criterion xpath="./@src"/></ms:handling>
 
