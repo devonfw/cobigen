@@ -44,7 +44,7 @@ Bundle-ClassPath: .,
  lib/logback-core-1.1.2.jar,
  lib/mmm-util-core-7.4.0.jar,
  lib/slf4j-api-1.7.21.jar,
- lib/core-7.0.0-SNAPSHOT-SNAPSHOT.jar,
- lib/core-api-7.0.0-SNAPSHOT-SNAPSHOT.jar,
- lib/javaplugin-model-7.0.0-SNAPSHOT-SNAPSHOT.jar
+ lib/core-7.0.0.jar,
+ lib/core-api-7.0.0.jar,
+ lib/javaplugin-model-7.0.0.jar
 Export-Package: com.devonfw.cobigen.eclipse.common.constants.external
