@@ -35,6 +35,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class TypeScriptInputReader implements InputReader {
 
+    /** Valid file extension */
+    public static final String VALID_EXTENSION = "ts";
+
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(TypeScriptInputReader.class);
 
@@ -135,9 +138,6 @@ public class TypeScriptInputReader implements InputReader {
                 response = br.readLine();
 
                 return Boolean.parseBoolean(response);
-            } catch (NullPointerException e) {
-                return false;
-
             } catch (IOException e) {
                 connectionExc.handle(e);
             }
@@ -282,8 +282,8 @@ public class TypeScriptInputReader implements InputReader {
     }
 
     @Override
-    public Boolean isMostLikelyReadable(Path path) {
-        return isValidInput(path);
+    public boolean isMostLikelyReadable(Path path) {
+        return path.toFile().isFile() && path.toString().endsWith("." + VALID_EXTENSION);
     }
 
     /**
