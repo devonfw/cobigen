@@ -55,6 +55,10 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+      </plugin>
       <!-- Workaround as including pom.xml overwrites flattened pom, while exluding pom.xml would not add any pom at all
         to jar -->
       <plugin>
