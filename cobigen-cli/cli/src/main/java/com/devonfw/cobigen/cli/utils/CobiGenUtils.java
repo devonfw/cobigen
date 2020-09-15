@@ -220,10 +220,11 @@ public class CobiGenUtils {
             LOG.error("Not able to form URL of jar file.", e);
         } catch (SecurityException e) {
             LOG.error(
-                "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.");
+                "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.",
+                e);
         } catch (IOException e) {
             LOG.error("CobiGen plug-in jar file that was being loaded was not found. "
-                + "Please try again or file an issue in cobigen GitHub repo.");
+                + "Please try again or file an issue in cobigen GitHub repo.", e);
         }
 
     }
@@ -363,7 +364,7 @@ public class CobiGenUtils {
         try {
             input = inputInterpreter.read(Paths.get(file.toURI()), Charsets.UTF_8, cl);
         } catch (InputReaderException e) {
-            // nothing
+            LOG.debug("No input reader was able to read file {}", file.toURI(), e);
         }
         if (input != null) {
             return input;

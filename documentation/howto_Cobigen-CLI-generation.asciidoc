@@ -18,7 +18,7 @@ Using the following command and option you will be able to customize your genera
 
 ** `InputGlob`: Glob pattern of the input file or the whole path of the input file from which the code will be generated.
 
-** `< --increment, -i >`  : Specifies an increment ID to be generated. You can also search increments by name and CobiGen will output the resultant list.
+** `< --increment, -i >`  : Specifies an increment ID to be generated. You can also search increments by name and CobiGen will output the resultant list. If an exact match found, code generation will happen.
 
 ** `< --template, -t >` : specifies a template ID to be generated. You can also search templates by name and CobiGen will output the resultant list.
 
