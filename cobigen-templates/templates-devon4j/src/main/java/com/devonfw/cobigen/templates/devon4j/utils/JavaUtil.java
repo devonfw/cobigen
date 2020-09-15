@@ -378,34 +378,45 @@ public class JavaUtil {
         }
         return s;
     }
-    
+
     /**
-     * 
-     * This methods returns the return type of the method in the given pojoClass which are
-     * annotated with the parameter annotatedClass
-     * 
-     * @param pojoClass - The class in which to find if it has methods with annotatedClass
-     * @param annotatedClassName - The annotation which needs to be found
+     *
+     * This methods returns the return type of the method in the given pojoClass which are annotated with the
+     * parameter annotatedClass
+     *
+     * @param pojoClass
+     *            - The class in which to find if it has methods with annotatedClass
+     * @param annotatedClassName
+     *            - The annotation which needs to be found
      * @return Return type of the method annotated with the given annotation, else "null"
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
+     *             if the annotated class name could not be found in the class path
      */
     @SuppressWarnings("unchecked")
-   	public String getReturnTypeOfMethodAnnotatedWith(Class<?> pojoClass, String annotatedClassName) throws ClassNotFoundException {
-       	Class<? extends Annotation> classObj = (Class<? extends Annotation>)Class.forName(annotatedClassName);
-       	if (pojoClass == null) {
-       		throw new IllegalAccessError(
-                       "Class object is null. Cannot generate template as it might obviously depend on reflection.");
-           }
-       	Method[] methods = pojoClass.getDeclaredMethods();
-       	for (Method method : methods) {
-           	if (!method.getName().startsWith("get"))
-                   continue;
-           	if(method.isAnnotationPresent(classObj)) {
-           		return method.getReturnType().getSimpleName();
-           	}
-   		}
-       	return "null";
-       }
+    public String getReturnTypeOfMethodAnnotatedWith(Class<?> pojoClass, String annotatedClassName)
+        throws ClassNotFoundException {
+        if (pojoClass == null) {
+            throw new IllegalAccessError(
+                "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+        }
+
+        // Class<? extends Annotation> classObj = (Class<? extends Annotation>)
+        // Class.forName(annotatedClassName);
+        Method[] methods = pojoClass.getDeclaredMethods();
+        for (Method method : methods) {
+            if (!method.getName().startsWith("get")) {
+                continue;
+            }
+            for (Annotation a : method.getAnnotations()) {
+                // better if (method.isAnnotationPresent(classObj)) {, but postponed as of different class
+                // loaders of a.getClass() and pojoClass.getClass()
+                if (a.getClass().getCanonicalName().equals(annotatedClassName)) {
+                    return method.getReturnType().getSimpleName();
+                }
+            }
+        }
+        return "null";
+    }
 
     /**
      * returns the HTTP request type corresponding to an annotation type
