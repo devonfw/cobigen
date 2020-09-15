@@ -1,4 +1,5 @@
 from tempfile import TemporaryDirectory
+from typing import TypedDict
 
 class Config():
 
@@ -34,6 +35,7 @@ class Config():
         self.groupid_cobigen: str = "com.devonfw.cobigen"
         self.artifactid_core: str = "core"
         self.artifactid_core_api: str = "core-api"
+        self.artifactid_core_test: str = "core-test"
 
         self.build_folder: str
         self.build_folder_abs: str
@@ -48,7 +50,7 @@ class Config():
         self.next_version: str
 
         self.expected_milestone_name: str
-        self.expected_core_milestone_name: str
+        self.expected_raw_milestone_names = None
 
         self.temp_release_dir: TemporaryDirectory
 
