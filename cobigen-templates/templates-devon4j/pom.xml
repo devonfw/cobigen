@@ -3,7 +3,7 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>templates-devon4j</artifactId>
-  <version>20.08.002-SNAPSHOT</version>
+  <version>20.08.002</version>
   <packaging>jar</packaging>
   <name>CobiGen devon4j Templates</name>
   <description>CobiGen devon4j Templates</description>
