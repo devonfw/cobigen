@@ -63,6 +63,10 @@ public class CobiGenFactory {
      */
     public static CobiGen create() throws InvalidConfigurationException, IOException {
         URI configFileOrFolder = ConfigurationUtil.findTemplatesLocation();
+        if (configFileOrFolder == null) {
+            throw new InvalidConfigurationException(
+                "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
+        }
         return create(configFileOrFolder);
     }
 

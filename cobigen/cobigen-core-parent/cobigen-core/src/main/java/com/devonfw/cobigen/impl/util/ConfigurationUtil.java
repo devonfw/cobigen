@@ -11,7 +11,8 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
@@ -23,7 +24,7 @@ import com.devonfw.cobigen.api.util.CobiGenPathUtil;
  */
 public class ConfigurationUtil {
 
-    private static final Logger LOG = Logger.getLogger(ConfigurationUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationUtil.class);
 
     /**
      * The method finds location of templates. It could be CobiGen_Templates folder or a template artifact
@@ -32,7 +33,7 @@ public class ConfigurationUtil {
     public static URI findTemplatesLocation() {
         Path configFile = getConfigurationFile();
         if (configFile != null && Files.exists(configFile)) {
-            LOG.info("Configuration file is located at " + configFile);
+            LOG.info("Configuration file is located at {}", configFile);
             Properties props = readConfigrationFile(configFile);
             String templatesLocation = props.getProperty(ConfigurationConstants.COBIGEN_CONFIG_TEMPLATES_LOCATION_KEY);
             if (StringUtils.isNotEmpty(templatesLocation)) {
@@ -41,14 +42,18 @@ public class ConfigurationUtil {
                     return Paths.get(templatesLocation).toUri();
                 } else {
                     LOG.info(
-                        "Could not find the given templates location in configuration file. Try to look for templates in cobigen home");
+                        "Value of property {} in {} is invalid. Trying to look for templates in cobigen home directory {}",
+                        ConfigurationConstants.COBIGEN_CONFIG_TEMPLATES_LOCATION_KEY, configFile,
+                        CobiGenPathUtil.getCobiGenFolderPath());
                 }
             } else {
-                LOG.info(
-                    "No templates location is found in configuration file. Try to look for templates in cobigen home");
+                LOG.info("Property {} is not set in {}. Trying to look for templates in cobigen home directory {}",
+                    ConfigurationConstants.COBIGEN_CONFIG_TEMPLATES_LOCATION_KEY, configFile,
+                    CobiGenPathUtil.getCobiGenFolderPath());
             }
         } else {
-            LOG.info("No configuration file is found. Try to look for templates in cobigen home");
+            LOG.info("No configuration file is found. Trying to look for templates in cobigen home directory {}",
+                CobiGenPathUtil.getCobiGenFolderPath());
         }
         return findTemplatesInCobigenHome();
     }
@@ -81,7 +86,7 @@ public class ConfigurationUtil {
         try (BufferedReader reader = Files.newBufferedReader(cobigenConfigFile, Charset.forName("UTF-8"))) {
             props.load(reader);
         } catch (IOException e) {
-            LOG.error("An error occured while reading the config file", e);
+            LOG.error("An error occured while reading the config file {}", cobigenConfigFile, e);
         }
         return props;
     }
@@ -106,7 +111,9 @@ public class ConfigurationUtil {
                 return templateJar.toURI();
             }
         }
-        LOG.info("Could not find any templates in cobigen home");
+        LOG.info(
+            "Could not find any templates in cobigen home directory {}. Templates should be placed in the subdirectory /templates/CobiGen_Templates or /templates/<name>.jar",
+            CobiGenPathUtil.getCobiGenFolderPath());
         return null;
     }
 }
