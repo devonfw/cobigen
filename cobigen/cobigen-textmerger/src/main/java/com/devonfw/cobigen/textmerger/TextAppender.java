@@ -1,7 +1,10 @@
 package com.devonfw.cobigen.textmerger;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -11,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.textmerger.anchorextension.Anchor;
 import com.devonfw.cobigen.textmerger.anchorextension.MergeStrategy;
 import com.devonfw.cobigen.textmerger.anchorextension.MergeUtil;
@@ -26,6 +30,9 @@ public class TextAppender implements Merger {
      */
     private String type;
 
+    /**
+     * Default merge strategy
+     */
     private MergeStrategy defaultStrat;
 
     /**
@@ -68,13 +75,24 @@ public class TextAppender implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String mergedString;
+        String lineDelimiter;
         try {
             mergedString = FileUtils.readFileToString(base, targetCharset);
+            try (FileInputStream stream = new FileInputStream(base);
+                BufferedInputStream bis = new BufferedInputStream(stream);
+                InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
+                lineDelimiter = SystemUtil.determineLineDelimiter(bis, reader);
+            } catch (IOException e) {
+                throw new MergeException(base, "Could not read base file.", e);
+            }
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);
         }
         try {
-            mergedString = merge(mergedString, patch);
+            if (lineDelimiter.isEmpty()) {
+                lineDelimiter = System.lineSeparator();
+            }
+            mergedString = merge(mergedString, patch, lineDelimiter);
         } catch (Exception e) {
             throw new MergeException(base, e.getMessage(), e);
         }
@@ -87,26 +105,28 @@ public class TextAppender implements Merger {
      *            target {@link String} to be merged into
      * @param patch
      *            {@link String} patch, which should be applied to the base file
+     * @param lineDelimiter
+     *            String line delimiter to use
      * @return Merged text (not null)
      * @throws Exception
      *             When there is some problem about anchors
      */
-    public String merge(String base, String patch) throws Exception {
+    public String merge(String base, String patch, String lineDelimiter) throws Exception {
         String mergedString = "";
         if (MergeUtil.hasAnchors(patch)) {
-            LinkedHashMap<Anchor, String> splitBase = MergeUtil.splitByAnchors(base, defaultStrat);
-            LinkedHashMap<Anchor, String> splitPatch = MergeUtil.splitByAnchors(patch, defaultStrat);
+            LinkedHashMap<Anchor, String> splitBase = MergeUtil.splitByAnchors(base, defaultStrat, lineDelimiter);
+            LinkedHashMap<Anchor, String> splitPatch = MergeUtil.splitByAnchors(patch, defaultStrat, lineDelimiter);
 
             String footer = "footer";
             String header = "header";
             String toAppend = "";
 
             if (MergeUtil.hasKeyMatchingDocumentPart(header, splitBase)) {
-                toAppend = MergeUtil.appendText(toAppend, header, splitBase, true, true);
+                toAppend = MergeUtil.appendText(toAppend, header, splitBase, true, true, lineDelimiter);
                 mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend, splitPatch, splitBase,
                     MergeUtil.getKeyMatchingDocumentPart(header, splitBase));
             } else if (MergeUtil.hasKeyMatchingDocumentPart(header, splitPatch)) {
-                toAppend = MergeUtil.appendText(toAppend, header, splitPatch, true, true);
+                toAppend = MergeUtil.appendText(toAppend, header, splitPatch, true, true, lineDelimiter);
                 mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend, splitPatch, splitBase,
                     MergeUtil.getKeyMatchingDocumentPart(header, splitPatch));
             }
@@ -127,16 +147,20 @@ public class TextAppender implements Merger {
                                 if (tmpAnchor.getNewlineName().matches("(newline_).+")) {
                                     switch (tmpAnchor.getNewlineName().toLowerCase()) {
                                     case "newline_appendbefore":
-                                        toAppend += MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, true, true);
+                                        toAppend += MergeUtil.appendText(toAppend, docPart, splitBase, false, false,
+                                            lineDelimiter);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, true, true,
+                                            lineDelimiter);
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
                                     case "newline_appendafter":
                                     case "newline_append":
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend += System.lineSeparator();
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false,
+                                            lineDelimiter);
+                                        toAppend += lineDelimiter;
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true,
+                                            lineDelimiter);
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
@@ -147,18 +171,22 @@ public class TextAppender implements Merger {
                                 } else if (tmpAnchor.getNewlineName().matches(".*(newline)")) {
                                     switch (tmpAnchor.getNewlineName().toLowerCase()) {
                                     case "appendbefore_newline":
-                                        toAppend += System.lineSeparator();
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, true, true);
+                                        toAppend += lineDelimiter;
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false,
+                                            lineDelimiter);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, true, true,
+                                            lineDelimiter);
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
                                     case "newline":
                                     case "appendafter_newline":
                                     case "append_newline":
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
-                                        toAppend += System.lineSeparator();
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false,
+                                            lineDelimiter);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true,
+                                            lineDelimiter);
+                                        toAppend += lineDelimiter;
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
@@ -169,25 +197,31 @@ public class TextAppender implements Merger {
                                 } else {
                                     switch (mergeStrat) {
                                     case APPENDBEFORE:
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, true, true);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false,
+                                            lineDelimiter);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, true, true,
+                                            lineDelimiter);
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
                                     case APPENDAFTER:
                                     case APPEND:
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false);
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, false,
+                                            lineDelimiter);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true,
+                                            lineDelimiter);
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
                                     case OVERRIDE:
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true,
+                                            lineDelimiter);
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
                                     case NOMERGE:
-                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, true);
+                                        toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, true,
+                                            lineDelimiter);
                                         mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                             splitPatch, splitBase, tmpAnchor);
                                         break;
@@ -203,22 +237,23 @@ public class TextAppender implements Merger {
                                 }
 
                             } else {
-                                toAppend = MergeUtil.appendText(toAppend, docPart, splitBase, false, true);
+                                toAppend =
+                                    MergeUtil.appendText(toAppend, docPart, splitBase, false, true, lineDelimiter);
                                 mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend,
                                     splitPatch, splitBase, tmpAnchor);
                             }
                         } else if (MergeUtil.hasKeyMatchingDocumentPart(docPart, splitPatch)) {
-                            toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true);
+                            toAppend = MergeUtil.appendText(toAppend, docPart, splitPatch, false, true, lineDelimiter);
                             mergedString = MergeUtil.addTextAndDeleteCurrentAnchor(mergedString, toAppend, splitPatch,
                                 splitBase, tmpAnchor);
                         }
                     }
                 } else {
                     if (MergeUtil.hasKeyMatchingDocumentPart(footer, splitBase)) {
-                        toAppend = MergeUtil.appendText(toAppend, footer, splitBase, false, true);
+                        toAppend = MergeUtil.appendText(toAppend, footer, splitBase, false, true, lineDelimiter);
                         mergedString += toAppend;
                     } else if (MergeUtil.hasKeyMatchingDocumentPart(footer, splitPatch)) {
-                        toAppend = MergeUtil.appendText(toAppend, footer, splitPatch, false, true);
+                        toAppend = MergeUtil.appendText(toAppend, footer, splitPatch, false, true, lineDelimiter);
                         mergedString += toAppend;
                     }
                     break;
@@ -231,7 +266,7 @@ public class TextAppender implements Merger {
                     mergedString = patch;
                     return mergedString;
                 } else if (withNewLineBeforehand) {
-                    mergedString += System.lineSeparator();
+                    mergedString += lineDelimiter;
                 }
                 mergedString += patch;
             }
