@@ -80,7 +80,7 @@ image:images/howtos/e2e_gen/image17.png[sql insert]
 *Let's create the Entity Class for the code generation*
 
 [arabic, start=9]
-. Create a package *employeemanagement.dataacess.api* under the folder jwtsample-core. Note: It is important to follow this naming convention for CobiGen to work properly.
+. Create a package *employeemanagement.dataaccess.api* under the folder jwtsample-core. Note: It is important to follow this naming convention for CobiGen to work properly.
 
 image:images/howtos/e2e_gen/poc-entity-package.png[package]
 
