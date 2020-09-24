@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -68,7 +69,7 @@ public class JavaMerger implements Merger {
         try (FileInputStream stream = new FileInputStream(base);
             BufferedInputStream bis = new BufferedInputStream(stream);
             InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
-            lineDelimiter = determineLineDelimiter(bis, reader);
+            lineDelimiter = SystemUtil.determineLineDelimiter(bis, reader);
             baseClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
         } catch (IOException e) {
             throw new MergeException(base, "Cannot read base file.", e);
@@ -93,52 +94,6 @@ public class JavaMerger implements Merger {
 
         ModifyableJavaClass mergedClass = merge(baseClass, patchClass);
         return consolidateLineEndings(mergedClass.getSource().getCodeBlock(), lineDelimiter);
-    }
-
-    /**
-     * @param bis
-     *            The {@link BufferedInputStream} containing the input file
-     * @param reader
-     *            The {@link InputStreamReader} iterating over the Stream
-     * @return The line delimiter corresponding to the input file
-     * @throws IOException
-     *             If an exception occurs while processing the {@link BufferedInputStream} or the
-     *             {@link InputStreamReader}
-     */
-    private String determineLineDelimiter(BufferedInputStream bis, InputStreamReader reader) throws IOException {
-
-        bis.mark(0);
-        try {
-            while (reader.ready()) {
-                int nextChar = reader.read();
-                if (nextChar == '\r') {
-                    nextChar = reader.read();
-                    if (nextChar == '\n') {
-                        return "\r\n";
-                    }
-                    return "\r";
-                } else if (nextChar == '\n') {
-                    return "\n";
-                }
-            }
-            return null;
-        } finally {
-            emptyReader(reader);
-            bis.reset();
-        }
-    }
-
-    /**
-     * @param reader
-     *            The {@link InputStreamReader} that is to be emptied
-     * @throws IOException
-     *             If an exception occurs while processing the {@link InputStreamReader}
-     */
-    private void emptyReader(InputStreamReader reader) throws IOException {
-        while (reader.ready()) {
-            reader.read();
-        }
-
     }
 
     /**
