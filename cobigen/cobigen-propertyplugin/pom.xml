@@ -20,14 +20,14 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>7.1.0-Snapshot</version>
+      <version>[7.0.0,)</version>
     </dependency>
     
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>7.1.0-Snapshot</version>
+      <version>[7.0.0,)</version>
       <scope>test</scope>
     </dependency>
     <dependency>
