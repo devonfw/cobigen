@@ -37,7 +37,7 @@ jobs:
       lanuage: shell
       os: windows
       before_install: 
-        - choco install openjdk11
+        - choco install openjdk11 maven
       install: []
       script: ./scripts/travis-build-test.sh
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)   
