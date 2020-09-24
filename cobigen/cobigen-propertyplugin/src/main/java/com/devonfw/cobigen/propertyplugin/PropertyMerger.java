@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,7 @@ public class PropertyMerger implements Merger {
         throws IOException {
     	
         List<String> recordedComments = new LinkedList<>();
-        Map<String, String> collection = new HashMap<>();
+        Map<String, String> collection = new LinkedHashMap<>();
         String line;
         boolean lastLineWasComment = false;
         int count = 0; // count is used below to maintain uniqueness in the hash
