@@ -40,7 +40,7 @@ jobs:
       before_install: 
         - choco install openjdk11 maven
         - powershell refreshenv
-        - dir %M2_HOME%\bin
+        - bash -c 'echo %M2_HOME'
         - mvn -v
       install: []
       script: ./scripts/travis-build-test.sh
