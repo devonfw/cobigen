@@ -34,12 +34,6 @@ jobs:
       script: ./scripts/travis-build-test.sh
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
       jdk: openjdk11
-    - os: windows
-      name: Build & Test (openjdk11Windows)
-      install: []
-      script: ./scripts/travis-build-test.sh
-      if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
-      jdk: openjdk11
     - name: Build docs as PDF
       install: []
       script: ./scripts/travis-build-docs.sh
