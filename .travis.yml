@@ -39,8 +39,7 @@ jobs:
       os: windows
       before_install: 
         - choco install openjdk11 maven
-        - export PATH=$PATH:"%HOME/sdk/apache-maven-3.0.5"
-        - cmd.exe //c "RefreshEnv.cmd"
+        - powershell refreshenv
       install: []
       script: ./scripts/travis-build-test.sh
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)   
