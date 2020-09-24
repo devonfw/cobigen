@@ -35,7 +35,7 @@ jobs:
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
       jdk: openjdk11
     - name: Build & Test (openjdk11Windows)
-      language: shell
+      language: bash
       os: windows
       before_install: 
         - choco install openjdk11 maven
