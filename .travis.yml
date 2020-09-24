@@ -1,4 +1,5 @@
 dist: bionic
+os: linux
 language: java
 cache:
   directories:
@@ -34,10 +35,12 @@ jobs:
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
       jdk: openjdk11
     - name: Build & Test (openjdk11Windows)
-      lanuage: shell
+      language: shell
       os: windows
       before_install: 
         - choco install openjdk11 maven
+        - export PATH=$PATH:"%HOME/sdk/apache-maven-3.0.5"
+        - refreshenv
       install: []
       script: ./scripts/travis-build-test.sh
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)   
