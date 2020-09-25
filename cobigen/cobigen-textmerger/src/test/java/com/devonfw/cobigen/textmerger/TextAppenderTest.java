@@ -9,7 +9,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.MergeException;
-import com.devonfw.cobigen.textmerger.TextAppender;
 
 /**
  *
@@ -276,8 +275,7 @@ public class TextAppenderTest {
             assertThat(e).hasMessage(getMergeExceptionMessage(file,
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
                     + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
-                    + "for more details"));
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list " + "for more details"));
         }
     }
 
@@ -299,9 +297,24 @@ public class TextAppenderTest {
             assertThat(e).hasMessage(getMergeExceptionMessage(file,
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
                     + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
-                    + "for more details"));
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list " + "for more details"));
         }
+    }
+
+    /**
+     * Tests if line endings of base and patch file get normalized to base file if line endings of base and
+     * patch file differ
+     * @throws Exception
+     *             if errors occur while merging
+     */
+    @Test
+    public void testMerge_normalizeToBaseLineDelimiter() throws Exception {
+        TextAppender appender = new TextAppender("textmerge_append", false);
+        String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestBaseLineDelimiter.txt"),
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchBaseLineDelimiter.txt")),
+            "UTF-8");
+        assertThat(mergedString).isEqualTo(
+            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedBaseLineDelimiter.txt")));
     }
 
     /**
