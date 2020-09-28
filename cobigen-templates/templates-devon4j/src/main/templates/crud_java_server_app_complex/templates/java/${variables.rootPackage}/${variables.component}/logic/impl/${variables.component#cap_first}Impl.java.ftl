@@ -13,6 +13,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+<#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
+<#if compositeIdTypeVar!="null">
+import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
+</#if>
 
 /**
  * Implementation of component interface of ${variables.component}
@@ -27,7 +31,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     private UcManage${variables.entityName} ucManage${variables.entityName};
 
     @Override
-    public ${variables.entityName}Eto find${variables.entityName}(long id) {
+    public ${variables.entityName}Eto find${variables.entityName}(<#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if> id) {
 
       return this.ucFind${variables.entityName}.find${variables.entityName}(id);
     }
@@ -44,7 +48,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
     }
 
     @Override
-    public boolean delete${variables.entityName}(long id) {
+    public boolean delete${variables.entityName}(<#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if> id) {
 
       return this.ucManage${variables.entityName}.delete${variables.entityName}(id);
     }

@@ -210,4 +210,26 @@ public class CustomModelWriterTest {
         String reprintedClass = target.toString();
         assertThat(reprintedClass).contains("{\"abc\", \"cde\"}");
     }
+
+    /**
+     * Tests the output of the CustomModelWriter regarding an own Annotation with multiple grouped annotations
+     * and the focus on correct comma placement.
+     *
+     * See https://github.com/devonfw/cobigen/issues/1070
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testCorrectSyntaxOutputForArraysCommaPlacement() throws Exception {
+        File file = new File(testFileRootPath + "ArraySyntax.java");
+        CustomModelWriter target = new CustomModelWriter();
+        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
+        target.writeClass(parsedClass);
+
+        String reprintedClass = target.toString();
+        Pattern p1 = Pattern.compile(
+            "@[A-Za-z]+\\(\\{.+\\{.+\\s*.+\\}.+\\{.+((\\(.+\\(.+\\).+\\)\\,.+)|(\\(.+\\(.+\\).+\\).+\\,.+))+(\\(.+\\(.+\\).+\\)[^\\,]+){1,1}\\}\\).+\\}\\)\\s*public.+",
+            Pattern.DOTALL);
+        assertThat(reprintedClass).matches(p1);
+    }
 }

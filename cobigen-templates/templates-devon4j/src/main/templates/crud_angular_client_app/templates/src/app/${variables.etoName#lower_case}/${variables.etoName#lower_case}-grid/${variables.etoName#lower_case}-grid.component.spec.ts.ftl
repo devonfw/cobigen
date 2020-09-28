@@ -1,14 +1,15 @@
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { CoreModule } from '../../core/core.module';
-import { TranslateModule } from '@ngx-translate/core';
-import { ${variables.etoName?cap_first}GridComponent } from './${variables.etoName?lower_case}-grid.component';
+
 import { ${variables.etoName?cap_first}Service } from '../services/${variables.etoName?lower_case}.service';
+import { ${variables.etoName?cap_first}GridComponent } from './${variables.etoName?lower_case}-grid.component';
 
 describe('${variables.etoName?cap_first}GridComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, CoreModule, TranslateModule.forRoot()],
+      imports: [BrowserAnimationsModule, RouterTestingModule, CoreModule],
       declarations: [ ${variables.etoName?cap_first}GridComponent ],
       providers: [${variables.etoName?cap_first}Service],
     }).compileComponents();

@@ -6,9 +6,9 @@
     </ion-title>
 
     <ion-buttons slot="end">
-      <ion-button (tap)="dismiss()">
+      <ion-button (click)="dismiss()">
         <ion-text color="primary" showWhen="ios">Cancel</ion-text>
-        <ion-icon name="md-close" showWhen="android,windows"></ion-icon>
+        <ion-icon name="close-outline" showWhen="android,windows"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -20,7 +20,7 @@
     <#list model.properties as field> 
     <ion-item lines="inset" class="formItem">
       <ion-label>{{
-	  '${variables.component?lower_case}.${variables.etoName?lower_case}.${field.name}'| translate
+	  '${variables.component?lower_case}.${variables.etoName?lower_case}.${field.name}'| transloco
       }}</ion-label>
       <ion-input
 	    ${JavaUtil.getAngularType(field.type)}
@@ -36,25 +36,25 @@
   <ion-button
     class="buttonForm"
     [hidden]="!filterActive"
-    (tap)="addOrModify()"
+    (click)="addOrModify()"
     expand="block"
   >
-    {{'${variables.component?lower_case}.${variables.etoName?lower_case}.commonbuttons.send' | translate }}
+    {{'${variables.component?lower_case}.${variables.etoName?lower_case}.commonbuttons.send' | transloco }}
   </ion-button>
   <ion-button
     class="buttonForm"
     [hidden]="filterActive"
-    (tap)="search()"
+    (click)="search()"
     expand="block"
   >
-    {{'${variables.component?lower_case}.${variables.etoName?lower_case}.commonbuttons.send' | translate }}
+    {{'${variables.component?lower_case}.${variables.etoName?lower_case}.commonbuttons.send' | transloco }}
   </ion-button>
   <ion-button
     class="buttonForm"
     [hidden]="filterActive"
-    (tap)="clearSearch()"
+    (click)="clearSearch()"
     expand="block"
   >
-    {{'${variables.component?lower_case}.${variables.etoName?lower_case}.operations.filter.clear' | translate }}
+    {{'${variables.component?lower_case}.${variables.etoName?lower_case}.operations.filter.clear' | transloco }}
   </ion-button>
 </ion-footer>

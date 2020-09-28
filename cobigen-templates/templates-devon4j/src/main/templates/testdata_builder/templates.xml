@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
     <templates>
-        <template name="entityBuilder" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.java.ftl" mergeStrategy="javamerge"/>
-        <template name="entityBuilder_customFunctions" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_customFunctions.java.ftl" mergeStrategy="javamerge"/>
-        <template name="entityBuilder_fillMandatoryFields" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_fillMandatoryFields.java.ftl" mergeStrategy="javamerge_override"/>
-        <template name="entityBuilder_persistable" destinationPath="src/test/java/${variables.rootPackage}/common/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_persistable.java.ftl" mergeStrategy="javamerge"/>
+        <template name="entityBuilder" destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.java.ftl" mergeStrategy="javamerge"/>
+        <template name="entityBuilder_customFunctions" destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_customFunctions.java.ftl" mergeStrategy="javamerge"/>
+        <template name="entityBuilder_fillMandatoryFields" destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_fillMandatoryFields.java.ftl" mergeStrategy="javamerge_override"/>
+        <template name="entityBuilder_persistable" destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_persistable.java.ftl" mergeStrategy="javamerge"/>
     </templates>
     <increments>
         <increment name="testdata_builder" description="Testdata builder">

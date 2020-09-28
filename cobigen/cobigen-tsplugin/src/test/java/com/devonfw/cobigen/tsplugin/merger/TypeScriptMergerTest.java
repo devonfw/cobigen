@@ -186,4 +186,17 @@ public class TypeScriptMergerTest {
         return returnString;
     }
 
+    /**
+     * Tests if TypeScript can handle null- and undefined-aware types
+     *
+     * @test fails
+     */
+    @Test
+    public void testNullAndUndefinedTypes() {
+        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", false);
+        File baseFile = new File(testFileRootPath + "nullBase.ts");
+        String mergedContents = tsMerger.merge(baseFile, readTSFile("nullPatch.ts"), "UTF-8");
+        assertEquals(false, mergedContents.contains("Not able to merge") || mergedContents.isEmpty());
+    }
+
 }

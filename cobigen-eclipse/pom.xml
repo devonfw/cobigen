@@ -13,7 +13,6 @@
   </parent>
 
   <properties>
-    <tycho.version>1.5.1</tycho.version>
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
     <attach.source.javadoc.build>false</attach.source.javadoc.build>
   </properties>

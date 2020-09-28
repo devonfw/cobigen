@@ -1,4 +1,4 @@
-import { TranslateService } from '@ngx-translate/core';
+import { TranslocoService } from '@ngneat/transloco';
 import { Component, Input, ViewChild } from '@angular/core';
 import {
   AlertController,
@@ -45,8 +45,8 @@ export class ${variables.etoName?cap_first}List {
   };
   deleteButtonNames = ['dismiss', 'confirm'];
   deleteButtons = [
-    { text: '', handler: (data) => {} },
-    { text: '', handler: (data) => {} },
+    { text: '', handler: data => {} },
+    { text: '', handler: data => {} },
   ];
   @Input()
   deleteModifiedButtonsDisabled = true;
@@ -60,12 +60,12 @@ export class ${variables.etoName?cap_first}List {
     public navCtrl: NavController,
     public ${variables.etoName?lower_case}Rest: ${variables.etoName?cap_first}RestService,
     public alertCtrl: AlertController,
-    public translate: TranslateService,
+    public translocoService: TranslocoService,
     public modalCtrl: ModalController,
     public loadingCtrl: LoadingController,
   ) {}
 
-  @ViewChild('slidingList') slidingList: IonList;
+  @ViewChild('slidingList', { static: true }) slidingList: IonList;
   /**
    * Runs when the page is about to enter and become the active page.
    */
@@ -148,7 +148,7 @@ export class ${variables.etoName?cap_first}List {
    */
   private getTranslation(text: string): string {
     let value: string;
-    value = this.translate.instant(text);
+    value = this.translocoService.translate(text);
     return value;
   }
 
@@ -178,12 +178,12 @@ export class ${variables.etoName?cap_first}List {
       component: ${variables.etoName?cap_first}Detail,
       componentProps: {
         dialog: 'filter',
-        edit: null
-      }
+        edit: null,
+      },
     });
 
     await modal.present();
-    modal.onDidDismiss().then((data) => {
+    modal.onDidDismiss().then(data => {
       if (data && data.data == null) {
         return;
       } else {
@@ -241,10 +241,10 @@ export class ${variables.etoName?cap_first}List {
       header: this.deleteTranslations.title,
       message: this.deleteTranslations.message,
       buttons: [
-        { text: this.deleteButtons[0].text, handler: (data) => {} },
+        { text: this.deleteButtons[0].text, handler: data => {} },
         {
           text: this.deleteButtons[1].text,
-          handler: (data) => {
+          handler: data => {
             this.confirmDeletion();
           },
         },
@@ -263,12 +263,12 @@ export class ${variables.etoName?cap_first}List {
     const search = this.${variables.etoName?lower_case}s[this.selectedItemIndex];
 
     this.${variables.etoName?lower_case}Rest.delete(search.id).subscribe(
-      (deleteresponse) => {
+      deleteresponse => {
         this.${variables.etoName?lower_case}s.splice(this.selectedItemIndex, 1);
         this.selectedItemIndex = -1;
         this.deleteModifiedButtonsDisabled = true;
       },
-      (err) => {
+      err => {
         console.log(err);
       },
     );
@@ -303,7 +303,7 @@ export class ${variables.etoName?cap_first}List {
 
               infiniteScroll.target.complete();
             },
-            (err) => {
+            err => {
               console.log(err);
             },
           );

@@ -38,6 +38,6 @@ export class BusinessOperatorService {
    * @returns The url to the ${variables.etoName?lower_case} management service.
    */
   ${variables.etoName?lower_case}Service() {
-    return this.restPath + '${variables.component?uncap_first}/v1/${variables.etoName?lower_case}/';
+     return this.restPath + '${variables.component?uncap_first}/v1/${variables.etoName?lower_case}/';
   }
 }

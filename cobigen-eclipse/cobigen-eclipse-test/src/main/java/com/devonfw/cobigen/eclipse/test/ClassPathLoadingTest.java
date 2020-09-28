@@ -206,4 +206,45 @@ public class ClassPathLoadingTest extends SystemTest {
             assertThat(IOUtils.toString(in)).isEqualTo("javax.ws.rs.Path");
         }
     }
+
+    /**
+     * Tests the fix for Bug #953.
+     * @throws Exception
+     *             Test fails
+     */
+    @Test
+    public void testDotPathAcception() throws Exception {
+
+        // create a new temporary java project and copy java class used as an input for CobiGen
+        String testProjectName = "TestInputProj";
+        IJavaProject project = tmpMavenProjectRule.createProject(testProjectName);
+        tmpMavenProjectRule.createPom(
+            // @formatter:off
+            "<dependencies>" + "<dependency>" + "<groupId>javax.ws.rs</groupId>"
+                + "<artifactId>javax.ws.rs-api</artifactId>" + "<version>2.0</version>" + "</dependency>"
+                + "</dependencies>");
+        // @formatter:on
+        FileUtils.copyFile(new File(resourcesRootPath + "input/JavaClass.java"),
+            project.getUnderlyingResource().getLocation().append("src/main/java/main/JavaClass.java").toFile());
+        project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+        tmpMavenProjectRule.updateProject();
+
+        // expand the new file in the package explorer
+        SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+        // input file doesn't matter for the used template
+        SWTBotTreeItem javaClassItem =
+            view.bot().tree().expandNode(testProjectName, "src/main/java", "main", "JavaClass.java");
+        javaClassItem.select();
+
+        // execute CobiGen
+        EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment3");
+        EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
+
+        // check assertions
+        bot.waitUntil(new AllJobsAreFinished(), 10000);
+        IFile generationResult = project.getProject().getFile("x.y/dotPathInTemplate.txt");
+        try (InputStream in = generationResult.getContents()) {
+            assertThat(IOUtils.toString(in)).isEqualTo("dotPathGenerated");
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.templates.devon4j.utils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -377,6 +378,34 @@ public class JavaUtil {
         }
         return s;
     }
+    
+    /**
+     * 
+     * This methods returns the return type of the method in the given pojoClass which are
+     * annotated with the parameter annotatedClass
+     * 
+     * @param pojoClass - The class in which to find if it has methods with annotatedClass
+     * @param annotatedClassName - The annotation which needs to be found
+     * @return Return type of the method annotated with the given annotation, else "null"
+     * @throws ClassNotFoundException 
+     */
+    @SuppressWarnings("unchecked")
+   	public String getReturnTypeOfMethodAnnotatedWith(Class<?> pojoClass, String annotatedClassName) throws ClassNotFoundException {
+       	Class<? extends Annotation> classObj = (Class<? extends Annotation>)Class.forName(annotatedClassName);
+       	if (pojoClass == null) {
+       		throw new IllegalAccessError(
+                       "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+           }
+       	Method[] methods = pojoClass.getDeclaredMethods();
+       	for (Method method : methods) {
+           	if (!method.getName().startsWith("get"))
+                   continue;
+           	if(method.isAnnotationPresent(classObj)) {
+           		return method.getReturnType().getSimpleName();
+           	}
+   		}
+       	return "null";
+       }
 
     /**
      * returns the HTTP request type corresponding to an annotation type

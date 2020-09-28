@@ -81,6 +81,7 @@ public class EclipseUtils {
         SWTBotCombo comboBox = bot.comboBox();
         comboBox.setText(projectPath);
 
+        bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
         SWTBotCheckBox cbCopyProjects = bot.checkBox("Copy projects into workspace");
         SWTBotButton selectAll = bot.button("Select All");
         selectAll.setFocus();

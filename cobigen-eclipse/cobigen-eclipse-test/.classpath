@@ -10,5 +10,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/log4j-over-slf4j-1.7.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/logback-classic-1.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/logback-core-1.1.2.jar"/>
-	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="output" path="eclipse-target/classes"/>
 </classpath>

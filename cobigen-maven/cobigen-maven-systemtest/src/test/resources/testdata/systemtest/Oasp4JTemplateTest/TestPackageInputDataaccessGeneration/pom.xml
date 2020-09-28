@@ -4,13 +4,11 @@
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>Oasp4JTemplateTest-TestPackageInputDataaccessGeneration</artifactId>
   <version>dev-SNAPSHOT</version>
-
   <properties>
     <!-- < JDK 8 not supported -->
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
-
   <build>
     <plugins>
       <plugin>
