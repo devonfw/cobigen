@@ -45,6 +45,7 @@ jobs:
         - choco install openjdk11
         - powershell refreshenv
         - powershell Get-ChildItem -Path C:\
+        - powershell Get-ChildItem -Path 'C:\ProgramData\chocolatey\lib\maven'
         - export PATH="${PATH}:/c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin"
         - bash -c 'echo $PATH'
       install: []
