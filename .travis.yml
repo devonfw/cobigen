@@ -48,6 +48,7 @@ jobs:
         - powershell Get-ChildItem -Path 'C:\ProgramData\chocolatey\lib\maven\apache-maven-3.6.3\bin'
         - export PATH=${PATH}:"/c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin"
         - export PATH=${PATH}:"/c/Program Files/OpenJDK/openjdk-11.0.8_10/bin"
+        - export JAVA_HOME="/c/Program Files/OpenJDK/openjdk-11.0.8_10/"
         - bash -c 'echo $PATH'
         - bash -c 'echo $JAVA_HOME'
       install: []
