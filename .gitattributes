@@ -3,6 +3,11 @@
 * text eol=lf
 *.bat eol=crlf
 
+# special line ending handling for test files
+/cobigen/cobigen-textmerger/src/test/resources/TestBaseLineDelimter.txt eol=lf
+/cobigen/cobigen-textmerger/src/test/resources/PatchBaseLineDelimter.txt eol=crlf
+/cobigen/cobigen-textmerger/src/test/resources/MergeBaseLineDelimter.txt eol=lf
+
 #
 # The above will handle all files NOT found below
 #

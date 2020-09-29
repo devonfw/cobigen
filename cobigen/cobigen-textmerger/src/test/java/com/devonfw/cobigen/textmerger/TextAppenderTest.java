@@ -310,11 +310,10 @@ public class TextAppenderTest {
     @Test
     public void testMerge_normalizeToBaseLineDelimiter() throws Exception {
         TextAppender appender = new TextAppender("textmerge_append", false);
-        String mergedString = appender.merge(new File(testFileRootPath + "anchortests/base/TestBaseLineDelimiter.txt"),
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/patch/PatchBaseLineDelimiter.txt")),
-            "UTF-8");
-        assertThat(mergedString).isEqualTo(
-            FileUtils.readFileToString(new File(testFileRootPath + "anchortests/merged/MergedBaseLineDelimiter.txt")));
+        String mergedString = appender.merge(new File(testFileRootPath + "TestBaseLineDelimiter.txt"),
+            FileUtils.readFileToString(new File(testFileRootPath + "PatchBaseLineDelimiter.txt")), "UTF-8");
+        assertThat(mergedString)
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedBaseLineDelimiter.txt")));
     }
 
     /**

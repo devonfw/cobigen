@@ -1,10 +1,9 @@
 package com.devonfw.cobigen.textmerger;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -14,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.textmerger.anchorextension.Anchor;
 import com.devonfw.cobigen.textmerger.anchorextension.MergeStrategy;
@@ -75,24 +75,24 @@ public class TextAppender implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         String mergedString;
-        String lineDelimiter;
+        String lineDelimiterBase;
+
+        Path path = Paths.get(base.getAbsolutePath());
+
         try {
             mergedString = FileUtils.readFileToString(base, targetCharset);
-            try (FileInputStream stream = new FileInputStream(base);
-                BufferedInputStream bis = new BufferedInputStream(stream);
-                InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
-                lineDelimiter = SystemUtil.determineLineDelimiter(bis, reader);
-            } catch (IOException e) {
-                throw new MergeException(base, "Could not read base file.", e);
-            }
+            lineDelimiterBase = SystemUtil.determineLineDelimiter(path, targetCharset);
+
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);
         }
         try {
-            if (lineDelimiter.isEmpty()) {
-                lineDelimiter = System.lineSeparator();
+            if (lineDelimiterBase.isEmpty()) {
+                lineDelimiterBase = System.lineSeparator();
             }
-            mergedString = merge(mergedString, patch, lineDelimiter);
+
+            mergedString =
+                merge(mergedString, StringUtil.consolidateLineEndings(patch, lineDelimiterBase), lineDelimiterBase);
         } catch (Exception e) {
             throw new MergeException(base, e.getMessage(), e);
         }
