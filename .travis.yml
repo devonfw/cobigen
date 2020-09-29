@@ -41,8 +41,8 @@ jobs:
         directories:
         - /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3
       before_install: 
-        - choco install maven --version 3.6.3 -y
-        - choco install openjdk11
+        - choco install maven --version 11.0.8_10 -y
+        - choco install openjdk11 --version 3.6.3 -y
         - powershell refreshenv
         - powershell Get-ChildItem -Path C:\
         - powershell Get-ChildItem -Path 'C:\ProgramData\chocolatey\lib\maven\apache-maven-3.6.3\bin'
