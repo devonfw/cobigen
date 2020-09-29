@@ -46,9 +46,10 @@ jobs:
         - powershell refreshenv
         - export PATH="${PATH}:/c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin"
         - bash -c 'echo $PATH'
-        - mvn -v
       install: []
-      script: ./scripts/travis-build-test.sh
+      script: 
+        - mvn -v
+        - ./scripts/travis-build-test.sh
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)   
     - name: Build docs as PDF
       install: []
