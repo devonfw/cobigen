@@ -50,7 +50,7 @@ jobs:
         - bash -c 'echo $PATH'
       install: []
       script: 
-        - mvn -v
+        - "C:\ProgramData\chocolatey\lib\maven\apache-maven-3.6.3\bin" -v
         - ./scripts/travis-build-test.sh
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)   
     - name: Build docs as PDF
