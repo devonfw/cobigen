@@ -50,7 +50,7 @@ jobs:
         - bash -c 'echo $PATH'
       install: []
       script: 
-        - /ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin -v
+        - /ProgramData/chocolatey/lib/maven/apache-maven-3.6.3/bin/mvn -v
         - java -version
         - ./scripts/travis-build-test.sh
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)   
