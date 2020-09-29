@@ -44,12 +44,12 @@ jobs:
         - choco install maven --version 3.6.3 -y
         - choco install openjdk11
         - powershell refreshenv
-        - ls -la C:
-        - ls -la C:\ProgramData\chocolatey
-        - ls -la C:\ProgramData\chocolatey\lib
-        - ls -la C:\ProgramData\chocolatey\lib\maven
-        - ls -la C:\ProgramData\chocolatey\lib\maven\apache-maven-3.6.3
-        - ls -la C:\ProgramData\chocolatey\lib\maven\bin
+        - bash -c 'dir C:'
+        - bash -c 'dir C:\ProgramData\chocolatey'
+        - bash -c 'dir C:\ProgramData\chocolatey\lib'
+        - bash -c 'dir C:\ProgramData\chocolatey\lib\maven'
+        - bash -c 'dir C:\ProgramData\chocolatey\lib\maven\apache-maven-3.6.3'
+        - bash -c 'dir C:\ProgramData\chocolatey\lib\maven\bin'
         - export PATH="${PATH}:C:\ProgramData\chocolatey\lib\maven\apache-maven-3.6.3\bin"
         - bash -c 'echo $PATH'
         - mvn -v
