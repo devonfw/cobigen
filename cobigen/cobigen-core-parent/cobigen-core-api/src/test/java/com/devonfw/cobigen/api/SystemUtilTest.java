@@ -42,7 +42,7 @@ public class SystemUtilTest {
     }
 
     /**
-     * Tests whether determineLineDelimiter returns Windows line endings
+     * Tests whether determineLineDelimiter returns Osx line endings
      * @throws Exception
      *             test fails
      */
