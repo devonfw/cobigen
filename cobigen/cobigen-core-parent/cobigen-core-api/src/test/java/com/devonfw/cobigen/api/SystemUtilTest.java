@@ -41,4 +41,17 @@ public class SystemUtilTest {
         assertThat(lineEnding).isEqualTo("\r\n");
     }
 
+    /**
+     * Tests whether determineLineDelimiter returns Windows line endings
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testDetermineLineDelimiterOsx() throws Exception {
+        Path path = Paths.get(testdataRoot, "TestOsxLineEndings.txt");
+        String targetCharset = "UTF-8";
+        String lineEnding = SystemUtil.determineLineDelimiter(path, targetCharset);
+        assertThat(lineEnding).isEqualTo("\r");
+    }
+
 }
