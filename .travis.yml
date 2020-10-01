@@ -40,6 +40,7 @@ jobs:
       cache:
         directories:
         - /c/ProgramData/chocolatey/lib/maven/apache-maven-3.6.3
+        - /c/Program Files/OpenJDK/openjdk-11.0.8_10
       before_install: 
         - choco install openjdk11 --version 11.0.8.10 -y
         - choco install maven --version 3.6.3 -y
