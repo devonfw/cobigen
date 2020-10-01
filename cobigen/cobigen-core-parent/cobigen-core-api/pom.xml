@@ -31,6 +31,13 @@
       <artifactId>guava</artifactId>
       <version>17.0</version>
     </dependency>
+    
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
+      <version>7.0.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>
