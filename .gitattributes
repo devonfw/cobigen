@@ -3,6 +3,10 @@
 * text eol=lf
 *.bat eol=crlf
 
+# handle line endings for test files differently
+/cobigen/core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestWindowsLineEndings.txt eol=crlf
+/cobigen/core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestLinuxLineEndings.txt eol=lf
+
 #
 # The above will handle all files NOT found below
 #
