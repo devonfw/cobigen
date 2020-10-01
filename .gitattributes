@@ -48,6 +48,6 @@
 *.zip		binary
 
 # handle line endings for test files differently
-/cobigen/core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestWindowsLineEndings.txt eol=crlf
-/cobigen/core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestLinuxLineEndings.txt eol=lf
-/cobigen/core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestOsxLineEndings.txt eol=cr
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestWindowsLineEndings.txt eol=crlf
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestLinuxLineEndings.txt eol=lf
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestOsxLineEndings.txt eol=cr
