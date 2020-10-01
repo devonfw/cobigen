@@ -31,6 +31,9 @@ public class PropertyMerger implements Merger {
 
     /** The conflict resolving mode */
     private boolean patchOverrides;
+    
+
+    public static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
     /**
      * Creates a new {@link PropertyMerger}
@@ -107,10 +110,10 @@ public class PropertyMerger implements Merger {
             line = line.trim();
             // adding key of the respective value to the collection
             if (line.startsWith("#")) {
-                collection.put("recordedComments" + count, "\r" + line);
+                collection.put("recordedComments" + count, "LINE_SEPARATOR" + line);
                 if (lastLineWasComment) {
                     String lastComment = recordedComments.remove(recordedComments.size() - 1);
-                    recordedComments.add(lastComment + "\r" + line);
+                    recordedComments.add(lastComment + "LINE_SEPARATOR" + line);
                 } else {
                     lastLineWasComment = true;
                     recordedComments.add(line);
@@ -118,7 +121,7 @@ public class PropertyMerger implements Merger {
             } else {
                 lastLineWasComment = false;
                 if (!line.trim().isEmpty()) {
-                    collection.put(line.substring(0, line.indexOf("=")), "\r" + line);
+                    collection.put(line.substring(0, line.indexOf("=")), "LINE_SEPARATOR" + line);
                 }
             }
             count++;
@@ -133,23 +136,23 @@ public class PropertyMerger implements Merger {
             if (m.matches()) {
                 // no conflicts
                 if (!conflicts.contains(m.group(1))) {
-                    collection.put(m.group(1), "\r" + patchLine);
+                    collection.put(m.group(1), "LINE_SEPARATOR" + patchLine);
                     observedEmptyLines = 0;
                 } else {
                     if (patchOverrides) { // override the original by patch file
                         // patchLine;
-                        collection.put(m.group(1), "\r" + patchLine);
+                        collection.put(m.group(1), "LINE_SEPARATOR" + patchLine);
                         observedEmptyLines = 0;
                     }
                 }
             } else if (patchLine.startsWith("#")) {
                 // record comment over multiple lines
                 if (lastObservedComment != null) {
-                    lastObservedComment += "\r" + patchLine;
-                    collection.put("lastObservedComment" + count, "\r" + lastObservedComment);
+                    lastObservedComment += "LINE_SEPARATOR" + patchLine;
+                    collection.put("lastObservedComment" + count, "LINE_SEPARATOR" + lastObservedComment);
                 } else {
                     lastObservedComment = patchLine;
-                    collection.put("lastObservedComment" + count, "\r" + lastObservedComment);
+                    collection.put("lastObservedComment" + count, "LINE_SEPARATOR" + lastObservedComment);
                 }
             } else {
                 if (lastObservedComment == null && patchLine.trim().isEmpty()) {
@@ -159,16 +162,16 @@ public class PropertyMerger implements Merger {
                     // comment if not so
                     if (lastObservedComment != null && !recordedComments.contains(lastObservedComment)) {
                         for (int i = 0; i < observedEmptyLines; i++) {
-                            collection.put("_blank" + count, "\r");
+                            collection.put("_blank" + count, "LINE_SEPARATOR");
                         }
-                        collection.put("lastObservedComment" + count, "\r" + lastObservedComment);
+                        collection.put("lastObservedComment" + count, "LINE_SEPARATOR" + lastObservedComment);
                     }
                     lastObservedComment = null;
                     observedEmptyLines = 0;
 
                     if (!patchLine.trim().isEmpty()) {
                         // patchLine;
-                        collection.put("patchLineNotEmpty" + count, "\r" + patchLine);
+                        collection.put("patchLineNotEmpty" + count, "LINE_SEPARATOR" + patchLine);
                         observedEmptyLines = 0;
                     }
                 }
