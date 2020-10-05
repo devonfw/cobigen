@@ -24,12 +24,12 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>6.1.0</version>
+      <version>7.0.0</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>6.1.0</version>
+      <version>7.0.0</version>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>
