@@ -63,7 +63,9 @@ public class GenerateCommandTest {
         args[2] = "--increments";
         args[3] = "8";
 
-        commandLine.execute(args);
+        if (commandLine.execute(args) != 0) {
+            throw new AssertionError("generateFromEntityTest failed");
+        }
 
         File generatedFiles = baseProject.toPath()
             .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
@@ -86,7 +88,9 @@ public class GenerateCommandTest {
         args[2] = "--increments";
         args[3] = "16";
 
-        commandLine.execute(args);
+        if (commandLine.execute(args) != 0) {
+            throw new AssertionError("generateNonJavaFilesFromJavaInputTest failed");
+        }
 
         // clean up generated files
         File generatedFiles = new File(testFileRootPath + "localmavenproject/devon4ng-application-template");
@@ -111,7 +115,9 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "0";
 
-        commandLine.execute(args);
+        if (commandLine.execute(args) != 0) {
+            throw new AssertionError("generateFromEntityWithOutputRootPathTest failed");
+        }
 
         File generatedFiles = outputRootPath.toPath()
             .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
@@ -143,7 +149,9 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "1,15,22";
 
-        commandLine.execute(args);
+        if (commandLine.execute(args) != 0) {
+            throw new AssertionError("generateFromOpenApiTest failed");
+        }
 
         Path rootPath = outputRootFile.toPath();
         File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
@@ -190,7 +198,9 @@ public class GenerateCommandTest {
         args[2] = "-t";
         args[3] = "1";
 
-        commandLine.execute(args);
+        if (commandLine.execute(args) != 0) {
+            throw new AssertionError("generateTemplatesFromEntityTest failed");
+        }
 
         File generatedFiles = baseProject.toPath().resolve("src/main/java/com/maven/project/general/").toFile();
         generatedList.add(generatedFiles);
@@ -214,7 +224,9 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "1";
 
-        commandLine.execute(args);
+        if (commandLine.execute(args) != 0) {
+            throw new AssertionError("generateFromMultipleTypeInputTest failed");
+        }
 
         Path rootPath = outputRootFile.toPath();
         File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
@@ -247,7 +259,9 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "1,2,3,4,5,6";
 
-        commandLine.execute(args);
+        if (commandLine.execute(args) != 0) {
+            throw new AssertionError("generateFromTsFileTest failed");
+        }
 
         Path rootPath = new File(testFileRootPath).toPath();
         File generatedFiles = rootPath.resolve("devon4ng-application-template/src/app").toFile();
@@ -286,7 +300,9 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "15";
 
-        commandLine.execute(args);
+        if (commandLine.execute(args) != 0) {
+            throw new AssertionError("generateFromArgsWithQuote failed");
+        }
 
         Path rootPath = outputRootFile.toPath();
         generatedList.add(rootPath.resolve("docs").toFile());
