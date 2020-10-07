@@ -46,7 +46,7 @@ image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 *BEFORE to start to create an Entity class, remember to create the tables !*
 
 [arabic, start=7]
-. Create a new *SQL* *file* (i.e: V0005__CreateTables_ItaPoc.sql) inside __jwtsample-__core and insert the following script:
+. Create a new *SQL* *file* (i.e: V0005__CreateTables-ItaPoc.sql) inside __myapp-__core and insert the following script:
 
 [source, sql]
 
@@ -80,7 +80,7 @@ image:images/howtos/e2e_gen/image17.png[sql insert]
 *Let's create the Entity Class for the code generation*
 
 [arabic, start=9]
-. Create a package *employeemanagement.dataaccess.api* under the folder jwtsample-core. Note: It is important to follow this naming convention for CobiGen to work properly.
+. Create a package *employeemanagement.dataaccess.api* under the folder myapp-core. Note: It is important to follow this naming convention for CobiGen to work properly.
 
 image:images/howtos/e2e_gen/poc-entity-package.png[package]
 
@@ -130,11 +130,11 @@ image:images/howtos/e2e_gen/image21.png[cobigen finish]
 
 *The entire [.underline]#BE layer# structure having CRUD operation methods will be auto generated.*
 
-Some classes will be generated on the api part (_jwtsample-api)_, normally it will be interfaces, as shown below:
+Some classes will be generated on the api part (_myapp-api)_, normally it will be interfaces, as shown below:
 
 image:images/howtos/e2e_gen/image22.png[be layer]
 
-Some other classes will be generated on the core part (_jwtsample-core)_, normally it will be implementations as shown below:
+Some other classes will be generated on the core part (_myapp-core)_, normally it will be implementations as shown below:
 
 image:images/howtos/e2e_gen/image23.png[core folder]
 
