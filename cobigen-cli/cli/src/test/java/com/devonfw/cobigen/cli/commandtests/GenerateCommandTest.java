@@ -47,6 +47,10 @@ public class GenerateCommandTest {
     @Before
     public void loadJavaAgent() {
         AgentLoader.loadAgentClass(Agent.class.getName(), "");
+        String args[] = new String[2];
+        args[0] = "update";
+        args[1] = "--all";
+        commandLine.execute(args);
     }
 
     /**
