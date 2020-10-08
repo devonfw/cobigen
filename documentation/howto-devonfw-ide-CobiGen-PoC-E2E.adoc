@@ -51,7 +51,7 @@ image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 [source, sql]
 
 CREATE TABLE EMPLOYEE (
-id BIGINT auto_increment, modificationCounter *INTEGER* *NOT* *NULL*,
+id BIGINT auto_increment, modificationCounter INTEGER NOT NULL,
 employeeid BIGINT auto_increment,
 name VARCHAR(255),
 surname VARCHAR(255),
