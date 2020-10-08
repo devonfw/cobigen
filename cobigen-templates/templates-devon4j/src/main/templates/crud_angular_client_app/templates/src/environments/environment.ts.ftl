@@ -1,4 +1,4 @@
-export const environment {
+export const environment: {
   production: boolean;
   restPathRoot: string;
   restServiceRoot: string;
