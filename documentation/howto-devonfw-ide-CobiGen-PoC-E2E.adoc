@@ -187,23 +187,15 @@ image:images/howtos/e2e_gen/image29.png[postman]
 
 Once done with success (*Status: 200 OK*) …
 
+… We create a NEW GET Request in order to get one employee
+
 image:images/howtos/e2e_gen/image30.png[postman]
-
-… We create a NEW POST Request and We copy the Authorization Bearer field (see above) and We paste it in the Token field (see below)
-
-image:images/howtos/e2e_gen/image31.png[postman]
-
-and specific the JSON parameters for the pagination of the Request that We’re going to send:
-
-image:images/howtos/e2e_gen/image32.png[postman]
-
-image:images/howtos/e2e_gen/image33.png[postman]
 
 Now you can click image:images/howtos/e2e_gen/image34.png[postman]
 
-Now you ‘ve to check that response has got *Status: 200 OK* and to see the below list of Employee
+Now you ‘ve to check that response has got Status: 200 OK and to see the below Employee
 
-image:images/howtos/e2e_gen/image35.png[postman]
+image:images/howtos/e2e_gen/image31.png[postman]
 
 Now that We have successfully tested the BE is time to go to create the FE !
 
