@@ -47,6 +47,10 @@ public class GenerateCommandTest {
     @Before
     public void loadJavaAgent() {
         AgentLoader.loadAgentClass(Agent.class.getName(), "");
+        String args[] = new String[2];
+        args[0] = "update";
+        args[1] = "--all";
+        commandLine.execute(args);
     }
 
     /**
@@ -63,9 +67,9 @@ public class GenerateCommandTest {
         args[2] = "--increments";
         args[3] = "8";
 
-        if (commandLine.execute(args) != 0) {
-            throw new AssertionError("generateFromEntityTest failed");
-        }
+        // execute(args);
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
 
         File generatedFiles = baseProject.toPath()
             .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
@@ -88,9 +92,8 @@ public class GenerateCommandTest {
         args[2] = "--increments";
         args[3] = "16";
 
-        if (commandLine.execute(args) != 0) {
-            throw new AssertionError("generateNonJavaFilesFromJavaInputTest failed");
-        }
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
 
         // clean up generated files
         File generatedFiles = new File(testFileRootPath + "localmavenproject/devon4ng-application-template");
@@ -115,9 +118,8 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "0";
 
-        if (commandLine.execute(args) != 0) {
-            throw new AssertionError("generateFromEntityWithOutputRootPathTest failed");
-        }
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
 
         File generatedFiles = outputRootPath.toPath()
             .resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo").toFile();
@@ -149,9 +151,8 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "1,15,22";
 
-        if (commandLine.execute(args) != 0) {
-            throw new AssertionError("generateFromOpenApiTest failed");
-        }
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
 
         Path rootPath = outputRootFile.toPath();
         File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
@@ -198,9 +199,8 @@ public class GenerateCommandTest {
         args[2] = "-t";
         args[3] = "1";
 
-        if (commandLine.execute(args) != 0) {
-            throw new AssertionError("generateTemplatesFromEntityTest failed");
-        }
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
 
         File generatedFiles = baseProject.toPath().resolve("src/main/java/com/maven/project/general/").toFile();
         generatedList.add(generatedFiles);
@@ -224,9 +224,8 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "1";
 
-        if (commandLine.execute(args) != 0) {
-            throw new AssertionError("generateFromMultipleTypeInputTest failed");
-        }
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
 
         Path rootPath = outputRootFile.toPath();
         File generatedFiles = rootPath.resolve("src/main/java/com/devonfw/angular/test/salemanagement").toFile();
@@ -259,9 +258,8 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "1,2,3,4,5,6";
 
-        if (commandLine.execute(args) != 0) {
-            throw new AssertionError("generateFromTsFileTest failed");
-        }
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
 
         Path rootPath = new File(testFileRootPath).toPath();
         File generatedFiles = rootPath.resolve("devon4ng-application-template/src/app").toFile();
@@ -300,14 +298,22 @@ public class GenerateCommandTest {
         args[4] = "--increments";
         args[5] = "15";
 
-        if (commandLine.execute(args) != 0) {
-            throw new AssertionError("generateFromArgsWithQuote failed");
-        }
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
 
         Path rootPath = outputRootFile.toPath();
         generatedList.add(rootPath.resolve("docs").toFile());
         GenerateCommandTest.deleteGeneratedFiles(generatedList);
         openApiFile.delete();
         generatedList.clear();
+    }
+
+    /**
+     * This method check the return code from picocli
+     * @param args
+     */
+    private void execute(String[] args) {
+        int exitCode = commandLine.execute(args);
+        assertTrue(exitCode == 0);
     }
 }

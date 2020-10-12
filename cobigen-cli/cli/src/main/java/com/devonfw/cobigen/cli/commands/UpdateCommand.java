@@ -58,8 +58,12 @@ public class UpdateCommand implements Callable<Integer> {
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model model = reader.read(new FileReader(pomFile));
             List<Dependency> localPomDependencies = model.getDependencies();
-            printOutdatedPlugin(localPomDependencies, centralMavenVersionList, updatePluginVersions, listOfArtifacts);
+            boolean isAllUpdated = printOutdatedPlugin(localPomDependencies, centralMavenVersionList,
+                updatePluginVersions, listOfArtifacts);
 
+            if (isAllUpdated) {
+                return 0;
+            }
             if (updateAll) {
                 userInputPluginForUpdate.add("0");
                 LOG.info("(0) ALL is selected!");
@@ -69,7 +73,7 @@ public class UpdateCommand implements Callable<Integer> {
                 if (userInputPluginForUpdate.size() == 1) {
                     if (!StringUtils.isNumeric(userInputPluginForUpdate.get(0))) {
                         LOG.info("Nothing selected to update...");
-                        System.exit(0);
+                        return 0;
                     }
                 }
             }
@@ -110,7 +114,7 @@ public class UpdateCommand implements Callable<Integer> {
      * @param listOfArtifacts
      *            this hold list of artifact id which is need to update
      */
-    public void printOutdatedPlugin(List<Dependency> localPomDependencies, List<String> centralMavenVersionList,
+    public boolean printOutdatedPlugin(List<Dependency> localPomDependencies, List<String> centralMavenVersionList,
         HashMap<String, String> updatePluginVersions, HashMap<Integer, String> listOfArtifacts) {
         int count = 0;
         String centralMavenVersion = "";
@@ -142,10 +146,11 @@ public class UpdateCommand implements Callable<Integer> {
         // Finished checking all the plug-ins
         if (count == 0) {
             LOG.info("All plug-ins are up to date...");
-            System.exit(0);
+            return true;
         }
         LOG.info("Here are the components that can be updated, which ones do you want to  update? "
             + "Please list the number of artifact(s) to update separated by comma:");
+        return false;
     }
 
     /**
