@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.cli.commandtests;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -171,7 +171,7 @@ public class GenerateCommandTest {
     private static void deleteGeneratedFiles(ArrayList<File> generateFiles) {
 
         for (File generatedFile : generateFiles) {
-            assertTrue(generatedFile.exists());
+            assertThat(generatedFile.exists());
             try {
                 FileUtils.deleteDirectory(generatedFile);
             } catch (IOException e) {
@@ -305,6 +305,6 @@ public class GenerateCommandTest {
      */
     private void execute(String[] args) {
         int exitCode = commandLine.execute(args);
-        assertTrue(exitCode == 0);
+        assertThat(exitCode).isEqualTo(0);
     }
 }

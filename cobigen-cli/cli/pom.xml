@@ -32,9 +32,14 @@
       <version>7.0.0</version>
     </dependency>
     <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
+      <version>7.0.0</version>
+    </dependency>
+    <dependency>
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
-      <version>4.0.0-beta-1b</version>
+      <version>4.5.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -57,13 +62,6 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.1.2</version>
-    </dependency>
-    <!-- JUnit -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
