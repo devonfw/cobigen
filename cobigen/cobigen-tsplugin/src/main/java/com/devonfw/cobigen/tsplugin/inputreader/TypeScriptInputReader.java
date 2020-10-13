@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -110,7 +111,15 @@ public class TypeScriptInputReader implements InputReader {
         } else if (input instanceof File) {
             path = ((File) input).toPath();
         } else {
-            return false;
+            try {
+                // Input corresponds to the parsed file
+                Map<String, Object> mapModel = createModel(input);
+                mapModel = (Map<String, Object>) mapModel.get("model");
+                path = Paths.get(mapModel.get("path").toString());
+            } catch (Exception e) {
+                LOG.error("An exception occured while parsing the input", e);
+                return false;
+            }
         }
 
         if (serverIsNotDeployed) {

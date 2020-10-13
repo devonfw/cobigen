@@ -123,6 +123,25 @@ public class TypeScriptInputReaderTest {
     }
 
     /**
+     * Test if the path of a file can be parsed from a given object
+     *
+     * @test fails
+     */
+    @Test
+    public void testValidInputFromObject() {
+
+        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+        File baseFile = new File(testFileRootPath + "baseFile.ts");
+        String inputModel = (String) tsInputReader.read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
+
+        boolean isValidInput = tsInputReader.isValidInput(inputModel);
+
+        LOG.debug("Valid input ? " + isValidInput);
+        assertTrue(isValidInput);
+
+    }
+
+    /**
      * Sends a fileEto containing only the path of the file that needs to be parsed. Checks whether the file
      * is most likely readable.
      *
