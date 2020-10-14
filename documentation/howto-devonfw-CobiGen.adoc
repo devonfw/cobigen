@@ -4,7 +4,7 @@ toc::[]
 :toc:
 toc::[]
 [.text-center]
-= End to End POC Code generation using OpenAPI and Entity calss
+= End to End POC Code generation using OpenAPI and Entity class
 This article helps to create a sample application using cobigen.
 
 == Prerequisites
