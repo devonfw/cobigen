@@ -10,7 +10,6 @@
     <templateExtension ref="app.module.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="es.json" mergeStrategy="jsonmerge"/>
     <templateExtension ref="en.json" mergeStrategy="jsonmerge"/>
-    <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
     <templateExtension ref="nav-bar.component.html" mergeStrategy="html-ng*"/>
@@ -27,7 +26,6 @@
       <incrementRef ref="app_angular_devon4ng_component"/>
     </increment>
     <increment name="app_angular_env" description="Angular devon4ng URL">
-        <templateRef ref="environment.ts"/>
         <templateRef ref="environment.prod.ts"/>
     </increment>
     <increment name="app_angular_i18n" description="Angular i18n">
