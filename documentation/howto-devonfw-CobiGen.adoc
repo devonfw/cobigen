@@ -43,6 +43,20 @@ Now We have the following 4 projects.
 
 image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 
+Remove the existing configure method from myapp-core *com.devonfw.poc.general.service.impl.config.BaseWebSecurityConfig* and copy below security configuration code and paste.
+
+[source, java]
+@Override
+ public void configure(HttpSecurity http) throws Exception {
+   http.authorizeRequests().anyRequest().permitAll().and().csrf().disable()
+       .addFilterAfter(getSimpleRestAuthenticationFilter(), BasicAuthenticationFilter.class)
+       .addFilterAfter(getSimpleRestLogoutFilter(), LogoutFilter.class);
+   if (this.corsEnabled) {
+     http.addFilterBefore(getCorsFilter(), CsrfFilter.class);
+   }
+ }
+ 
+
 *BEFORE to start to create an Entity class, remember to create the tables !*
 
 * Create new *SQL* *file*  inside myapp-core  resources/db/migration/specific/h2 and insert the following script:
