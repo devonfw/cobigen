@@ -46,7 +46,7 @@ image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 Remove the existing configure method from myapp-core *com.devonfw.poc.general.service.impl.config.BaseWebSecurityConfig* and copy below security configuration code and paste.
 
 [source, java]
-----
+___
 @Override
  public void configure(HttpSecurity http) throws Exception {
    http.authorizeRequests().anyRequest().permitAll().and().csrf().disable()
@@ -56,13 +56,14 @@ Remove the existing configure method from myapp-core *com.devonfw.poc.general.se
      http.addFilterBefore(getCorsFilter(), CsrfFilter.class);
    }
  }
-----
+__
 
-Check resources/config/application.properties to see the values as PATH, TCP port etc …
+ Check __resources/config/application.properties__
+
+to see the values as PATH, TCP port etc …
 Also make sure the below property is present.
 
 __security.cors.enabled=true__
-
 
 image:images/howtos/e2e_gen/application_properties.png[configure]
 
@@ -362,7 +363,7 @@ http://localhost:4200/login
 
 image:images/howtos/e2e_gen/image45.png[]
 
-*WebApp Done*
+*WebApp DONE*
 
 ==== Ionic Mobile App
 
@@ -402,7 +403,7 @@ Once the execution is successful
 
 image:images/howtos/e2e_gen/image50.png[]
 
-* Mobile App Done*
+* Mobile App DONE*
 
 So: well done
 
