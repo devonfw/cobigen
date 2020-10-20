@@ -46,6 +46,7 @@ image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 Remove the existing configure method from myapp-core *com.devonfw.poc.general.service.impl.config.BaseWebSecurityConfig* and copy below security configuration code and paste.
 
 [source, java]
+----
 @Override
  public void configure(HttpSecurity http) throws Exception {
    http.authorizeRequests().anyRequest().permitAll().and().csrf().disable()
@@ -55,7 +56,15 @@ Remove the existing configure method from myapp-core *com.devonfw.poc.general.se
      http.addFilterBefore(getCorsFilter(), CsrfFilter.class);
    }
  }
- 
+----
+
+Check resources/config/application.properties to see the values as PATH, TCP port etc …
+Also make sure the below property is present.
+
+__security.cors.enabled=true__
+
+
+image:images/howtos/e2e_gen/application_properties.png[configure]
 
 *BEFORE to start to create an Entity class, remember to create the tables !*
 
@@ -325,16 +334,6 @@ image:images/howtos/e2e_gen/nav-bar.png[nav bar]
 
 image:images/howtos/e2e_gen/image42.png[environment]
 
-Check
-
-__resources/config/application.properties__
-
-to see the values as PATH, TCP port etc …
-Also make sure the below property is present.
-
-__security.cors.enabled=true__
-
-image:images/howtos/e2e_gen/application_properties.png[configure]
 
 For example in this case the URL should be since the context path is empty the server URLS should be like:
 
@@ -363,7 +362,7 @@ http://localhost:4200/login
 
 image:images/howtos/e2e_gen/image45.png[]
 
-*WebApp DONE*
+*WebApp Done*
 
 ==== Ionic Mobile App
 
@@ -403,7 +402,7 @@ Once the execution is successful
 
 image:images/howtos/e2e_gen/image50.png[]
 
-* Mobile App DONE*
+* Mobile App Done*
 
 So: well done
 
