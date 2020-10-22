@@ -70,7 +70,7 @@ image:images/howtos/e2e_gen/application_properties.png[configure]
 
 * Create new *SQL* *file*  inside myapp-core  resources/db/migration/specific/h2 and insert the following script:
 
-V0002__R001_Create_schema.sql (*Please note*  2 underscores after V0001)
+V0005__CreateTables_ItaPoc.sql (*Please note*  2 underscores after V0005)
 
 [source, sql]
 
@@ -89,7 +89,7 @@ PRIMARY KEY (employeeid)
 
 image:images/howtos/e2e_gen/image16.png[sql file]
 
-* Now create another SQL file (i.e: V0003__R001_Create_schema.sql ) and add following script about the INSERT in order to populate the table created before
+* Now create another SQL file (i.e: V0006__PopulateTables-ItaPoc.sql ) and add following script about the INSERT in order to populate the table created before
 
 
 [source, sql]
