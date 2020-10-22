@@ -320,13 +320,12 @@ image:images/howtos/e2e_gen/image39.png[angular ee layer]
           )
 }
 
-Following picture explain where to place the above content:
+Following picture explain where to place the above content, also remove if any duplicate code is there.
 
 image:images/howtos/e2e_gen/routing-module.png[routes]
 
 * Add newly generated module to the left menu.
 Modify the file  app\layout\nav-bar\nav-bar.component.html, add the below code.
-Also remove if any duplicate code is there.
 
 [source]
 <a id="employee" mat-list-item [routerLink]="['./employee']" (click)="close()">
