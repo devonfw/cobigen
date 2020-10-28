@@ -20,10 +20,10 @@
 
   <increments>
     <increment name="devon4ng-app" description="CRUD devon4ng Angular App">
-      <incrementRef ref="app_angular_env"/>
       <incrementRef ref="app_angular_i18n"/>
       <incrementRef ref="app_angular_devon4ng_component"/>
     </increment>
+
     <increment name="app_angular_i18n" description="Angular i18n">
       <templateRef ref="es.json"/>
       <templateRef ref="en.json"/>
