@@ -43,17 +43,40 @@ Now We have the following 4 projects.
 
 image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 
+Remove the existing configure method from myapp-core *com.example.domain.myapp.general.service.impl.config.BaseWebSecurityConfig* and copy below security configuration code and paste.
+
+[source, java]
+----
+@Override
+ public void configure(HttpSecurity http) throws Exception {
+   http.authorizeRequests().anyRequest().permitAll().and().csrf().disable()
+       .addFilterAfter(getSimpleRestAuthenticationFilter(), BasicAuthenticationFilter.class)
+       .addFilterAfter(getSimpleRestLogoutFilter(), LogoutFilter.class);
+   if (this.corsEnabled) {
+     http.addFilterBefore(getCorsFilter(), CsrfFilter.class);
+   }
+ }
+----
+
+Check resources/config/application.properties to see the values as PATH, TCP port etc …
+Also make sure the below property is present.
+
+__security.cors.enabled=true__
+
+
+image:images/howtos/e2e_gen/application_properties.png[configure]
+
 *BEFORE to start to create an Entity class, remember to create the tables !*
 
 * Create new *SQL* *file*  inside myapp-core  resources/db/migration/specific/h2 and insert the following script:
 
-V0001__R001_Create_schema.sql (*Please note*  2 underscores after V0001)
+V0005__CreateTables_ItaPoc.sql (*Please note*  2 underscores after V0005)
 
 [source, sql]
 
 CREATE TABLE EMPLOYEE (
 id BIGINT auto_increment,
-modificationCounter NOT NULL,
+modificationCounter INT NOT NULL,
 employeeid BIGINT auto_increment,
 name VARCHAR(255),
 surname VARCHAR(255),
@@ -66,7 +89,7 @@ PRIMARY KEY (employeeid)
 
 image:images/howtos/e2e_gen/image16.png[sql file]
 
-* Now create another SQL file (i.e: V0002__R001_Create_schema.sql ) and add following script about the INSERT in order to populate the table created before
+* Now create another SQL file (i.e: V0006__PopulateTables-ItaPoc.sql ) and add following script about the INSERT in order to populate the table created before
 
 
 [source, sql]
@@ -97,7 +120,7 @@ It will ask you to download the templates, click on _update_:
 
 *Prepare Entity class*
 
-Create a package *employeemanagement.dataaccess.api*
+Create a package *com.example.domain.myapp.employeemanagement.dataaccess.api*
 
 under the folder myapp-core. Note: It is important to follow this naming convention for CobiGen to work properly.
 
@@ -192,10 +215,14 @@ URL of getEmployee for this example is:
 
 For all employees
 [source, URL]
+POST
 http://localhost:8081/services/rest/employeemanagement/v1/employee/search
+Content-Type    application/json
+{"name":"Angelo"}
 
 For the specific employee
 [source, URL]
+GET
 http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
 
@@ -203,16 +230,20 @@ In postman, create a POST Request for the LOGIN and insert in the body the JSON 
 
 Login Test using postman
 
-* Type the URL http://localhost:8081/services/rest/login
-* Set the header
-Content-Type    application/json
-
-* Use the below JSON as body
-
-{
+[source, URL]
+----
+    POST
+    http://localhost:8081/services/rest/login
+    Content-Type    application/json
+    {
     "j_username":"admin",
     "j_password":"admin"
-}
+     }
+----
+* Set the header
+
+
+
 
 *Send* will return 200 OK as response.
 
@@ -253,6 +284,9 @@ https://github.com/devonfw/devon4ng-application-template
 
 image:images/howtos/e2e_gen/image36.png[devon dist folder]
 
+Place the files inside workspace under the folder devon4ng-application-template.
+
+eg: C:\projects\devonfw-ide-scripts-2020.08.002\workspaces\main\devon4ng-application-template
 
 In Devon IDE, right click on EmployeeEto.java file present under the package com.example.domain.myapp.employeemanagement.logic.api.to
 
@@ -286,11 +320,12 @@ image:images/howtos/e2e_gen/image39.png[angular ee layer]
           )
 }
 
-Following picture explain where to place the above content:
+Following picture explain where to place the above content, also remove if any duplicate code is there.
 
 image:images/howtos/e2e_gen/routing-module.png[routes]
 
 * Add newly generated module to the left menu.
+Modify the file  app\layout\nav-bar\nav-bar.component.html, add the below code.
 
 [source]
 <a id="employee" mat-list-item [routerLink]="['./employee']" (click)="close()">
@@ -304,23 +339,9 @@ image:images/howtos/e2e_gen/routing-module.png[routes]
 
 image:images/howtos/e2e_gen/nav-bar.png[nav bar]
 
-*  Open the command prompt and execute _devon yarn install_ from the base folder, which would download all the required libraries..
-
-
 * Check the file *environment.ts* if the server path is correct. (for production you will have to change also the environment.prod.ts file)
 
 image:images/howtos/e2e_gen/image42.png[environment]
-
-Check
-
-__resources/config/application.properties__
-
-to see the values as PATH, TCP port etc …
-Also make sure the below property is present.
-
-__security.cors.enabled=true__
-
-image:images/howtos/e2e_gen/application_properties.png[configure]
 
 For example in this case the URL should be since the context path is empty the server URLS should be like:
 
@@ -332,13 +353,16 @@ restServiceRoot: 'http://localhost:8081/services/rest/',
 security: 'jwt'
 };
 
-
 *Warning*: REMEMBER to set security filed to *jwt* , if it is not configured already.
+
+*  Open the command prompt and execute below command from the base folder, which would download all the required libraries..
+
+[source]
+devon yarn install
 
 Run the below command for the front end.
 
 [source]
-devon yarn install
 devon ng serve
 
 image:images/howtos/e2e_gen/image44.png[]
@@ -349,7 +373,7 @@ http://localhost:4200/login
 
 image:images/howtos/e2e_gen/image45.png[]
 
-*WebApp DONE*
+*WebApp Done*
 
 ==== Ionic Mobile App
 
@@ -389,7 +413,7 @@ Once the execution is successful
 
 image:images/howtos/e2e_gen/image50.png[]
 
-* Mobile App DONE*
+* Mobile App Done*
 
 So: well done
 
