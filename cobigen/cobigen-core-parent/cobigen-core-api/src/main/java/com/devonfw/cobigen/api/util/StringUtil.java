@@ -31,4 +31,21 @@ public class StringUtil {
         return in.substring(0, 1).toLowerCase() + in.substring(1, in.length());
     }
 
+    /**
+     * Consolidates all line endings to the given one
+     *
+     * @param codeBlock
+     *            which should be consolidate
+     * @param lineDelimiter
+     *            the line delimiter of the file or null if none
+     * @return the consolidated code block
+     * @author mbrunnli (04.06.2013)
+     */
+    public static String consolidateLineEndings(String codeBlock, String lineDelimiter) {
+        if (lineDelimiter != null) {
+            return codeBlock.replaceAll("\r\n|\r|\n", lineDelimiter);
+        }
+        return codeBlock;
+    }
+
 }
