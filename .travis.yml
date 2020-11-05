@@ -37,8 +37,8 @@ jobs:
         token:
           secure: azX9QiKzAwygLNibthQOJjwcyJpdzcpiwZXep+VWik6KR5q7y0qu6RnbvRF/kSIuzuSkVBnZrc6G2OPVPGfWLl7dekPw0Tyfn/+bO96bMeCjU1amvmhQxjIfXal3HegHkHjZv9Ubpij06/SSBRhovKrtnpru7JtVv30iazLIvo4YGnzcDoYn9DkRYyTSCJzzMskvD6mnKb0SSJrIdIJQx77u0dFhqGcpY9oLqSgoypYM8xD+JIptCbCdi2Qg5WT5DraWvhs77/vRgdPYj//D61aHjdJgyakLGKMc7l6elpyPW17q+lfBp+sAqB1Wxakk4nudjXQHTEx63ZxcvOZYiXS5q4TDENv/2pzQpJsR6eLoGIxhm+4KG4HLjXTxb50K12S79yuQGbb12XXxYOuvCuYgy0pKeA4qPh0tf/4XVCZcBvF+nNuTU/Bzhmk6NxonbD8X0PlRn16N31uMwkLYnmCAncWtPGYM1YsEOeAwuK8nJ/MceOeCK21lmdOWhKNR5WTp6EEp4ie5wZuOjnxBwgPCg4B6BQApdfNIqoJMmQP/dTPXWcbeLeRhGydP9hIKVvjXde8nwiWCsdCpyDmRWDBw4xG56GpCR+VxhZfrj+DPTkDeuECymyZM+Xofrc1KCXyqvvrslLfVpTJ17XVYUeEcO5YLZIy3f0fpTipJdqo=
       script: 
-        - ./scripts/travis-build-test.sh
-        - mvn sonar:sonar -Dsonar.projectKey=devonfw_cobigen -Dsonar.organization= comdevonfw -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=SonarCloudAuthToken
+        - mvn -s $(pwd)/.mvn/settings.xml clean install -e -U -Pp2-build-photon,p2-build-stable
+        #- mvn sonar:sonar -Dsonar.projectKey=devonfw_cobigen -Dsonar.organization= comdevonfw -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=SonarCloudAuthToken
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
       jdk: openjdk11
     - name: Build docs as PDF
