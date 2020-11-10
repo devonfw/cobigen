@@ -529,6 +529,38 @@
         </plugins>
       </build>
     </profile>
+	<profile>
+		<id>jacoco-report</id>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.8.6</version>
+					<executions>
+						<execution>
+							<id>default-prepare-agent</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+							<configuration>
+							  <datafile>${basedir}/target/jacoco.exec</datafile>
+							</configuration>
+						</execution>
+						<execution>
+							<id>report</id>
+							<goals>
+								<goal>report</goal>
+							</goals>
+							<configuration>
+							  <datafile>${basedir}/target/jacoco.exec</datafile>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
     <profile>
       <!-- separate eclipse build from command-line... -->
       <id>eclipse</id>

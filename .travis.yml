@@ -36,7 +36,8 @@ jobs:
       sonarcloud:
         organization: "comdevonfw"
       script: 
-        - mvn -s $(pwd)/.mvn/settings.xml clean install -e -U -Pp2-bui -f cobigen/cobigen-tsplugin
+        #- mvn -s $(pwd)/.mvn/settings.xml clean install -e -U -f cobigen/cobigen-tsplugin
+        - mvn -s $(pwd)/.mvn/settings.xml -P jacoco-report clean install -e -U -f cobigen/cobigen-tsplugin
         #- mvn -s $(pwd)/.mvn/settings.xml clean install -e -U -Pp2-build-photon,p2-build-stable sonar:sonar -Dsonar.projectKey=devonfw_cobigen -Dsonar.organization= comdevonfw -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=SonarCloudAuthToken
         #- mvn sonar:sonar -Dsonar.projectKey=devonfw_cobigen -Dsonar.organization= comdevonfw -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=SonarCloudAuthToken
       if: (branch != gh-pages) AND (branch != dev_oomph_setup) AND (tag IS blank)
