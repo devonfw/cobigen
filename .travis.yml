@@ -24,6 +24,8 @@ env:
 addons:
   sonarcloud:
     organization: "comdevonfw"
+    token: 
+      secure: "a37bWkBlNvdFgsW/MBM/qsvOhwgyXqm8qDhFWH2F4ZzyirRC/Sa8yQ5iUqWinH5TwWWWV5PsLtcSp3Iob17/S9l22XTYs0MKy02erZ+jhQ5i7TbfektmufLvh/Q5bO2oJRgbOYubvbDGbT62k0uDBD82bkhSmIFCx6D8lRbhIiWkxW09G2Bki3poELi6Ymq+RiBruSKbNHwRkpiQpy1zFrYOvAUzjG9l8bjcgXSjd5o2SIJ5+yg4fbogovjD19eA2XRzHhNlxDHSyCULETmQuOKL6ev1KxxXK4stK0lPXYXnMTjKwM2eY9htWDnPY6/MZTyi7z5ihBY1zKoI1C1EB+dJALVdohcsk0rBDkjrCfeL6yHoGu/Zhfibfrx5EGtKC2aN2O6UY8s9FA7uA5qWx5zof6Hon4s4pq8RwekGeW1f6yWlZnEe9eXtFsppvkIRVHwRL3YjTrp1q/tSjI1cSd8bmGihdHTohTPOLCInXJTo+cPQhIZiCutx3Y40PgJP3hwaxGSnxU8jaAs09Gs+CCYkQMePJcbf7OIBYhaiOXvP51KeD/NUYAbZ26JM1oHyJrTTkxR6WPuZKJSyVitUK6Z4GJakgnU3YtGxS723+5yIyC5kCxNKYHBB8xXZjdVvoQ0ejMjSIBD8TtAp0/pF1+OBArQGrHUYI/Z9Ujhtx/c="
 jobs:
   include:
     - stage: Build & Test
