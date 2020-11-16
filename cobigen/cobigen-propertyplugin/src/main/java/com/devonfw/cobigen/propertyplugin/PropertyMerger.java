@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.propertyplugin;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -27,7 +26,6 @@ import com.devonfw.cobigen.api.util.SystemUtil;
  * being provided as the file contents of the patch.
  */
 public class PropertyMerger implements Merger {
-
 
     /**
      * Merger Type to be registered
@@ -73,11 +71,10 @@ public class PropertyMerger implements Merger {
             throw new MergeException(base, "Could not read generated patch.", e);
         }
         Set<Object> conflicts = getConflictingProperties(baseProperties, patchProperties);
-        try (FileInputStream stream = new FileInputStream(base);
-            BufferedInputStream bis = new BufferedInputStream(stream); 
-        	InputStreamReader reader = new InputStreamReader(bis, targetCharset)){
+        try (FileInputStream in = new FileInputStream(base);
+            InputStreamReader reader = new InputStreamReader(in, targetCharset)) {
             BufferedReader br = new BufferedReader(reader);
-            String lineDelimiter  = SystemUtil.determineLineDelimiter(bis, reader);
+            String lineDelimiter = SystemUtil.determineLineDelimiter(base.toPath(), targetCharset);
             return concatContents(conflicts, br, patch, lineDelimiter);
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);
@@ -94,14 +91,16 @@ public class PropertyMerger implements Merger {
      *            {@link BufferedReader} reading the base file
      * @param patch
      *            which should be applied
+     * @param lineSeparator
+     *            the line Separator to use for the file
      * @return merged file contents
      * @throws IOException
      *             if the base file could not be read oder accessed
      * @author mbrunnli (11.03.2013)
      */
-    private String concatContents(Set<Object> conflicts, BufferedReader baseFileReader, String patch, String lineSeparator)
-        throws IOException {
-    	
+    private String concatContents(Set<Object> conflicts, BufferedReader baseFileReader, String patch,
+        String lineSeparator) throws IOException {
+
         List<String> recordedComments = new LinkedList<>();
         Map<String, String> collection = new LinkedHashMap<>();
         String line;
