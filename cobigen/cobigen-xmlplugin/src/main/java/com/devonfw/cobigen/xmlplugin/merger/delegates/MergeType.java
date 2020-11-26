@@ -25,7 +25,26 @@ public enum MergeType {
      * In case of a conflict the patch document is preferred. Attributes and text nodes will be attached where
      * possible
      */
-    PATCHATTACHOROVERWRITE("xmlmerge_override_attachTexts", ConflictHandlingType.PATCHATTACHOROVERWRITE);
+    PATCHATTACHOROVERWRITE("xmlmerge_override_attachTexts", ConflictHandlingType.PATCHATTACHOROVERWRITE),
+    /**
+     * In case of a conflict the patch document is preferred. Validation will be enabled.
+     */
+    PATCHOVERWRITEVALIDATE("xmlmerge_override_validate", ConflictHandlingType.PATCHOVERWRITEVALIDATE),
+    /**
+     * In case of a conflict the base document is preferred. Validation will be enabled.
+     */
+    BASEOVERWRITEVALIDATE("xmlmerge_validate", ConflictHandlingType.BASEOVERWRITEVALIDATE),
+    /**
+     * In case of a conflict the base document is preferred. Attributes and text nodes will be attached where
+     * possible. Validation will be enabled.
+     */
+    BASEATTACHOROVERWRITEVALIDATE("xmlmerge_attachTexts_validate", ConflictHandlingType.BASEATTACHOROVERWRITEVALIDATE),
+    /**
+     * In case of a conflict the patch document is preferred. Attributes and text nodes will be attached where
+     * possible. Validation will be enabled.
+     */
+    PATCHATTACHOROVERWRITEVALIDATE("xmlmerge_override_attachTexts_validate",
+        ConflictHandlingType.PATCHATTACHOROVERWRITEVALIDATE);
 
     /**
      * The ConflictHandlingType

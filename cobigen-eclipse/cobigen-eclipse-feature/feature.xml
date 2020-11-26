@@ -2,7 +2,7 @@
 <feature
       id="com.devonfw.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
-      version="5.2.1"
+      version="7.0.0"
       provider-name="devonfw Team">
 
    <description>
@@ -13,7 +13,7 @@
       Copyright © 2013-2020 Capgemini SE. All rights reserved.
    </copyright>
 
-   <license url="https://devonfw.github.io/TermsOfUse">
+   <license url="https://raw.githubusercontent.com/devonfw/cobigen/master/cobigen/cobigen-htmlplugin/src/main/resources/META-INF/LICENSEP2BUNDLE.html">
       License CobiGen
 
 

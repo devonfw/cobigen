@@ -10,12 +10,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class that implements a few very specific methods to help with working on maps and regular
  * expression and reduce code redundancy.
  */
 public class MergeUtil {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(MergeUtil.class);
 
     /**
      * Regular expression matching what correct anchors should look like.
@@ -50,6 +55,8 @@ public class MergeUtil {
      * merge(File,String,String)
      * @param toSplit
      *            The string that is to be split by anchors
+     * @param defaultMergeStrategy
+     *            the default merge strategy to fall back
      * @return a LinkedHashMap which contains anchors as keys and the following text as values
      * @throws Exception
      *             when an anchor contains a wrong definition
@@ -58,13 +65,14 @@ public class MergeUtil {
         throws Exception {
         LinkedHashMap<Anchor, String> result = new LinkedHashMap<>();
         toSplit.trim();
-        if (!StringUtils.substring(toSplit, 0, StringUtils.ordinalIndexOf(toSplit, "\n", 1) - lineSepLength).trim()
-            .matches(anchorRegexTrimmed)) {
+        String firstLine =
+            StringUtils.substring(toSplit, 0, StringUtils.ordinalIndexOf(toSplit, "\n", 1) - lineSepLength + 1).trim();
+        if (!firstLine.matches(anchorRegexTrimmed)) {
+            LOG.debug("Line {} does not match {}", firstLine, anchorRegexTrimmed);
             throw new Exception(
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
                     + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
-                    + "for more details");
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list " + "for more details");
         }
 
         toSplit = toSplit + System.lineSeparator() + "anchor:::anchorend" + System.lineSeparator();
@@ -227,7 +235,6 @@ public class MergeUtil {
         if (checkSame.retainAll(patch.keySet())) {
             int i = 0;
             int x = 0;
-            String tmp = "";
 
             for (Anchor s : base.keySet()) {
                 i++;

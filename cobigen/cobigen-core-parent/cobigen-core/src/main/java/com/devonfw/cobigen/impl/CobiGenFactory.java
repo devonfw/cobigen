@@ -12,7 +12,7 @@ import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
-import com.devonfw.cobigen.impl.extension.ServiceLookup;
+import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
@@ -20,10 +20,6 @@ import com.devonfw.cobigen.impl.util.FileSystemUtil;
  * CobiGen's Factory to create new instances of {@link CobiGen}.
  */
 public class CobiGenFactory {
-
-    static {
-        ServiceLookup.detectServices();
-    }
 
     /**
      * Creates a new {@link CobiGen} with a given {@link ContextConfiguration}.
@@ -45,6 +41,8 @@ public class CobiGenFactory {
         BeanFactory beanFactory = new BeanFactory();
         beanFactory.addManuallyInitializedBean(configurationHolder);
         CobiGen createBean = beanFactory.createBean(CobiGen.class);
+        // Notifies all plugins of new template root path
+        PluginRegistry.notifyPlugins(configFolder);
         return createBean;
     }
 

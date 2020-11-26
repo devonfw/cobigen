@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import sys
 from asyncio.subprocess import PIPE
@@ -116,16 +117,18 @@ class Maven:
                         version_node = mapping.find("./mvn:version", self.mavenNS)
                         artifact_id_node = mapping.find("./mvn:artifactId", self.mavenNS)
                         group_id_node = mapping.find("./mvn:groupId", self.mavenNS)
-                        if (group_id_node.text == self.__config.groupid_cobigen or group_id_node.text == r"${project.groupId}") and version_node.text.endswith("-SNAPSHOT"):
-                            new_version = version_node.text.split("-")
-                            log_info("Upgrading " + group_id_node.text + ":" + artifact_id_node.text + " to release version ("+str(new_version[0])+") ...")
-                            upgraded_deps.append((artifact_id_node.text, version_node.text, new_version))
+                        if (group_id_node.text == self.__config.groupid_cobigen or group_id_node.text == r"${project.groupId}") and "-SNAPSHOT" in version_node.text:
+                            p = re.compile(r'((\[|\))?(\d+\.\d+\.\d+))-SNAPSHOT(\s*,[^\]\)]*(\[|\))?)?')
+                            m = p.match(version_node.text)
+                            new_version = ''.join(filter(None,[m.group(1),m.group(4)]))
+                            log_info("Upgrading " + group_id_node.text + ":" + artifact_id_node.text + " to release version ("+str(new_version)+") ...")
+                            upgraded_deps.append((artifact_id_node.text, m.group(3), m.group(3)+'-SNAPSHOT'))
                             pom.write(fpath)
                             changed_files.append(fpath)
-                            if artifact_id_node.text == self.__config.artifactid_core or artifact_id_node.text == self.__config.artifactid_core_api:
-                                # new_version[0] contains the version without -SNAPSHOT
-                                core_version_in_eclipse_pom = new_version[0]
-                                cobigen_core_milestone = self.github_repo.find_cobigen_core_milestone(core_version_in_eclipse_pom)
+                            if artifact_id_node.text == self.__config.artifactid_core or artifact_id_node.text == self.__config.artifactid_core_api or artifact_id_node.text == self.__config.artifactid_core_test:
+                                # new_version contains the version without -SNAPSHOT (also handles ranges like "[6.2.0-SNAPSHOT,)")
+                                core_version_in_eclipse_pom = m.group(3)
+                                cobigen_core_milestone = self.github_repo.find_milestone("dev_core", core_version_in_eclipse_pom)
                                 if not cobigen_core_milestone or cobigen_core_milestone.state != "closed":
                                     log_info("Core version " + core_version_in_eclipse_pom +
                                              " is not yet released. This should be released before.\nIf the version is not correct, please set the dependency version by hand before running the script.")
@@ -133,8 +136,8 @@ class Maven:
                                 else:
                                     # We change the core version inside the eclipse pom
                                     old_core_version_in_eclipse_pom= mapping.find("mvn:cobigencore.version", self.mavenNS)
-                                    if self.__check_and_write_pom(pom, version_node, core_version_in_eclipse_pom, fpath):
-                                        log_info("Upgrading core version to " + core_version_in_eclipse_pom)
+                                    if self.__check_and_write_pom(pom, version_node, new_version, fpath):
+                                        log_info("Upgrading core version to " + new_version)
                                         # changed_files.append(pom) it is already added?
                         else:
                             continue
@@ -149,9 +152,10 @@ class Maven:
                 file.seek(0)
                 file.truncate()
                 for (artifact_id_node, old_version, new_version) in upgraded_deps:
-                    # new_version[0] contains the version without -SNAPSHOT
-                    contents = contents.replace(artifact_id_node + "-" + old_version, artifact_id_node + "-" + new_version[0])                 
-                    contents = contents.replace(artifact_id_node + "-api-" + old_version, artifact_id_node + "-api-" + new_version[0])
+                    # new_version contains the version without -SNAPSHOT
+                    contents = contents.replace(artifact_id_node + "-" + old_version, artifact_id_node + "-" + new_version)
+                    contents = contents.replace(artifact_id_node + "-api-" + old_version, artifact_id_node + "-api-" + new_version)
+                    contents = contents.replace(artifact_id_node + "-test-" + old_version, artifact_id_node + "-test-" + new_version)
                 file.write(contents)
                 file.close()
                 changed_files.append(file_path)
@@ -164,9 +168,10 @@ class Maven:
                 file.seek(0)
                 file.truncate()
                 for (artifact_id_node, old_version, new_version) in upgraded_deps:
-                    # new_version[0] contains the version without -SNAPSHOT
-                    contents = contents.replace(artifact_id_node + "-" + old_version, artifact_id_node + "-" + new_version[0])
-                    contents = contents.replace(artifact_id_node + "-api-" + old_version, artifact_id_node + "-api-" + new_version[0])
+                    # new_version contains the version without -SNAPSHOT
+                    contents = contents.replace(artifact_id_node + "-" + old_version, artifact_id_node + "-" + new_version)
+                    contents = contents.replace(artifact_id_node + "-api-" + old_version, artifact_id_node + "-api-" + new_version)
+                    contents = contents.replace(artifact_id_node + "-test-" + old_version, artifact_id_node + "-test-" + new_version)
                 file.write(contents)
                 changed_files.append(file_path)
 
@@ -178,9 +183,10 @@ class Maven:
                 file.seek(0)
                 file.truncate()
                 for (artifact_id_node, old_version, new_version) in upgraded_deps:
-                    # new_version[0] contains the version without -SNAPSHOT
-                    contents = contents.replace(artifact_id_node + "-" + old_version, artifact_id_node + "-" + new_version[0])
-                    contents = contents.replace(artifact_id_node + "-api-" + old_version, artifact_id_node + "-api-" + new_version[0])
+                    # new_version contains the version without -SNAPSHOT
+                    contents = contents.replace(artifact_id_node + "-" + old_version, artifact_id_node + "-" + new_version)
+                    contents = contents.replace(artifact_id_node + "-api-" + old_version, artifact_id_node + "-api-" + new_version)
+                    contents = contents.replace(artifact_id_node + "-test-" + old_version, artifact_id_node + "-test-" + new_version)
                 file.write(contents)
                 changed_files.append(file_path)
         return (core_version_in_eclipse_pom, changed_files)
