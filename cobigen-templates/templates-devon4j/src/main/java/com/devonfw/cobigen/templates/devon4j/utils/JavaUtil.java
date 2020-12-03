@@ -400,8 +400,6 @@ public class JavaUtil {
                 "Class object is null. Cannot generate template as it might obviously depend on reflection.");
         }
 
-        // Class<? extends Annotation> classObj = (Class<? extends Annotation>)
-        // Class.forName(annotatedClassName);
         Method[] methods = pojoClass.getDeclaredMethods();
         for (Method method : methods) {
             if (!method.getName().startsWith("get")) {
