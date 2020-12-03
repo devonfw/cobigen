@@ -17,7 +17,6 @@
     <increment name="devon4ng-app" description="CRUD devon4ng Service Based Angular">
       <incrementRef ref="app_angular_env"/>
       <incrementRef ref="app_angular_devon4j_component"/>
-      <incrementRef ref="crud_openapi_angular_client_app::app_angular_service_based"/>
     </increment>
     <increment name="app_angular_env" description="Server URL Registration">
       <templateRef ref="environment.ts"/>
