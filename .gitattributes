@@ -46,3 +46,8 @@
 *.pdf		binary
 *.exe		binary
 *.zip		binary
+
+# special line ending handling for test files
+cobigen/cobigen-textmerger/src/test/resources/TestBaseLineDelimiter.txt eol=lf
+cobigen/cobigen-textmerger/src/test/resources/PatchBaseLineDelimiter.txt eol=crlf
+cobigen/cobigen-textmerger/src/test/resources/MergeBaseLineDelimiter.txt eol=lf
