@@ -1,13 +1,12 @@
 package com.devonfw.cobigen.propertyplugin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.FileReader;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Test;
-
-import com.devonfw.cobigen.propertyplugin.PropertyMerger;
 
 import junit.framework.TestCase;
 
@@ -32,10 +31,10 @@ public class PropertyMergerTest extends TestCase {
         PropertyMerger pMerger = new PropertyMerger("", true);
         String mergedPropFile =
             pMerger.merge(base, IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
-        Assert.assertTrue("NachNameOverride", mergedPropFile.contains("NachNameOverride"));
-        Assert.assertFalse("nachNameOriginal", mergedPropFile.contains("nachNameOriginal"));
-        Assert.assertTrue("FirstName", mergedPropFile.contains("firstName"));
-        Assert.assertTrue("lastName", mergedPropFile.contains("lastName"));
+        assertThat(mergedPropFile).contains("NachNameOverride");
+        assertThat(mergedPropFile).doesNotContain("nachNameOriginal");
+        assertThat(mergedPropFile).contains("firstName");
+        assertThat(mergedPropFile).contains("lastName");
     }
 
     /**
@@ -49,10 +48,10 @@ public class PropertyMergerTest extends TestCase {
         PropertyMerger pMerger = new PropertyMerger("", false);
         String mergedPropFile =
             pMerger.merge(base, IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
-        Assert.assertFalse("NachNameOverride", mergedPropFile.contains("NachNameOverride"));
-        Assert.assertTrue("nachNameOriginal", mergedPropFile.contains("nachNameOriginal"));
-        Assert.assertTrue("FirstName", mergedPropFile.contains("firstName"));
-        Assert.assertTrue("lastName", mergedPropFile.contains("lastName"));
+        assertThat(mergedPropFile).doesNotContain("NachNameOverride");
+        assertThat(mergedPropFile).contains("nachNameOriginal");
+        assertThat(mergedPropFile).contains("firstName");
+        assertThat(mergedPropFile).contains("lastName");
     }
 
 }
