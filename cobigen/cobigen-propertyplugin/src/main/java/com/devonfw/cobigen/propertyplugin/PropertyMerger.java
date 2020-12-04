@@ -7,8 +7,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.api.util.SystemUtil;
 
 /**
  * The {@link PropertyMerger} merges two property files. One being provided as the base file and the second
@@ -26,10 +27,14 @@ import com.devonfw.cobigen.api.extension.Merger;
  */
 public class PropertyMerger implements Merger {
 
-    /** Merger Type to be registered */
+    /**
+     * Merger Type to be registered
+     */
     private String type;
 
-    /** The conflict resolving mode */
+    /**
+     * The conflict resolving mode
+     */
     private boolean patchOverrides;
 
     /**
@@ -53,27 +58,24 @@ public class PropertyMerger implements Merger {
 
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
-
         Properties baseProperties = new Properties();
-        try (FileInputStream in = new FileInputStream(base);
-            InputStreamReader reader = new InputStreamReader(in, targetCharset)) {
-            baseProperties.load(reader);
+        try {
+            baseProperties.load(new InputStreamReader(new FileInputStream(base), targetCharset));
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);
         }
-
         Properties patchProperties = new Properties();
-        try (ByteArrayInputStream inStream = new ByteArrayInputStream(patch.getBytes())) {
-            patchProperties.load(inStream);
+        try {
+            patchProperties.load(new ByteArrayInputStream(patch.getBytes()));
         } catch (IOException e) {
             throw new MergeException(base, "Could not read generated patch.", e);
         }
-
         Set<Object> conflicts = getConflictingProperties(baseProperties, patchProperties);
         try (FileInputStream in = new FileInputStream(base);
-            InputStreamReader reader = new InputStreamReader(in, targetCharset);
-            BufferedReader br = new BufferedReader(reader)) {
-            return concatContents(conflicts, br, patch);
+            InputStreamReader reader = new InputStreamReader(in, targetCharset)) {
+            BufferedReader br = new BufferedReader(reader);
+            String lineDelimiter = SystemUtil.determineLineDelimiter(base.toPath(), targetCharset);
+            return concatContents(conflicts, br, patch, lineDelimiter);
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);
         }
@@ -89,16 +91,18 @@ public class PropertyMerger implements Merger {
      *            {@link BufferedReader} reading the base file
      * @param patch
      *            which should be applied
+     * @param lineSeparator
+     *            the line Separator to use for the file
      * @return merged file contents
      * @throws IOException
      *             if the base file could not be read oder accessed
      * @author mbrunnli (11.03.2013)
      */
-    private String concatContents(Set<Object> conflicts, BufferedReader baseFileReader, String patch)
-        throws IOException {
+    private String concatContents(Set<Object> conflicts, BufferedReader baseFileReader, String patch,
+        String lineSeparator) throws IOException {
 
         List<String> recordedComments = new LinkedList<>();
-        Map<String, String> collection = new HashMap<>();
+        Map<String, String> collection = new LinkedHashMap<>();
         String line;
         boolean lastLineWasComment = false;
         int count = 0; // count is used below to maintain uniqueness in the hash
@@ -107,10 +111,10 @@ public class PropertyMerger implements Merger {
             line = line.trim();
             // adding key of the respective value to the collection
             if (line.startsWith("#")) {
-                collection.put("recordedComments" + count, "\r" + line);
+                collection.put("recordedComments" + count, lineSeparator + line);
                 if (lastLineWasComment) {
                     String lastComment = recordedComments.remove(recordedComments.size() - 1);
-                    recordedComments.add(lastComment + "\r" + line);
+                    recordedComments.add(lastComment + lineSeparator + line);
                 } else {
                     lastLineWasComment = true;
                     recordedComments.add(line);
@@ -118,38 +122,39 @@ public class PropertyMerger implements Merger {
             } else {
                 lastLineWasComment = false;
                 if (!line.trim().isEmpty()) {
-                    collection.put(line.substring(0, line.indexOf("=")), "\r" + line);
+                    collection.put(line.substring(0, line.indexOf("=")), lineSeparator + line);
                 }
             }
             count++;
         }
+        baseFileReader.close();
         Pattern p = Pattern.compile("([^=\\s]+)\\s*=.*");
         Matcher m;
         String lastObservedComment = null;
         int observedEmptyLines = 0;
         count = 0;
-        for (String patchLine : patch.split("\\r(\\n)?")) {
+        for (String patchLine : patch.split(lineSeparator)) {
             m = p.matcher(patchLine);
             if (m.matches()) {
                 // no conflicts
                 if (!conflicts.contains(m.group(1))) {
-                    collection.put(m.group(1), "\r" + patchLine);
+                    collection.put(m.group(1), lineSeparator + patchLine);
                     observedEmptyLines = 0;
                 } else {
                     if (patchOverrides) { // override the original by patch file
                         // patchLine;
-                        collection.put(m.group(1), "\r" + patchLine);
+                        collection.put(m.group(1), lineSeparator + patchLine);
                         observedEmptyLines = 0;
                     }
                 }
             } else if (patchLine.startsWith("#")) {
                 // record comment over multiple lines
                 if (lastObservedComment != null) {
-                    lastObservedComment += "\r" + patchLine;
-                    collection.put("lastObservedComment" + count, "\r" + lastObservedComment);
+                    lastObservedComment += lineSeparator + patchLine;
+                    collection.put("lastObservedComment" + count, lineSeparator + lastObservedComment);
                 } else {
                     lastObservedComment = patchLine;
-                    collection.put("lastObservedComment" + count, "\r" + lastObservedComment);
+                    collection.put("lastObservedComment" + count, lineSeparator + lastObservedComment);
                 }
             } else {
                 if (lastObservedComment == null && patchLine.trim().isEmpty()) {
@@ -159,16 +164,16 @@ public class PropertyMerger implements Merger {
                     // comment if not so
                     if (lastObservedComment != null && !recordedComments.contains(lastObservedComment)) {
                         for (int i = 0; i < observedEmptyLines; i++) {
-                            collection.put("_blank" + count, "\r");
+                            collection.put("_blank" + count, lineSeparator);
                         }
-                        collection.put("lastObservedComment" + count, "\r" + lastObservedComment);
+                        collection.put("lastObservedComment" + count, lineSeparator + lastObservedComment);
                     }
                     lastObservedComment = null;
                     observedEmptyLines = 0;
 
                     if (!patchLine.trim().isEmpty()) {
                         // patchLine;
-                        collection.put("patchLineNotEmpty" + count, "\r" + patchLine);
+                        collection.put("patchLineNotEmpty" + count, lineSeparator + patchLine);
                         observedEmptyLines = 0;
                     }
                 }
