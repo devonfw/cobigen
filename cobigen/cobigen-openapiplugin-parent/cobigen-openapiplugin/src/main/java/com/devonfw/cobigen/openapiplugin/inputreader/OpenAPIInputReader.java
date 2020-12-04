@@ -401,7 +401,11 @@ public class OpenAPIInputReader implements InputReader {
 
                 List<String> enumElements = new ArrayList<>();
                 for (Object element : enums) {
-                    enumElements.add(element.toString());
+                    if (element != null) {
+                        enumElements.add(element.toString());
+                    } else {
+                        enumElements.add("null");
+                    }
                 }
                 propModel.setEnumElements(enumElements);
             }
