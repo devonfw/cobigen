@@ -318,7 +318,7 @@ public class JavaMergerTest {
     }
 
     /**
-     * Tests whether the output file contains line endings of base file
+     * Tests whether the output file contains line endings of base file (linux line endings)
      * @throws IOException
      *             test fails
      * @throws MergeException
@@ -326,16 +326,13 @@ public class JavaMergerTest {
      */
     @Test
     public void testBaseLineEndings() throws IOException, MergeException {
-        File baseFile = new File(testFileRootPath + "BaseFile_innerClass.java");
-        File patchFile = new File(testFileRootPath + "PatchFile_innerClass.java");
+        File baseFile = new File(testFileRootPath + "BaseFile_Eol.java");
+        File patchFile = new File(testFileRootPath + "PatchFile_Eol.java");
+        File mergedFile = new File(testFileRootPath + "MergedFile_Eol.java");
+        String expectedContent = FileUtils.readFileToString(mergedFile);
         String mergedContents =
             new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
-
-        boolean eol1 = mergedContents.contains("\r\n");
-        mergedContents = mergedContents.replaceAll("\r\n", "");
-        boolean eol2 = mergedContents.contains("\n");
-        boolean eol3 = mergedContents.contains("\r");
-        assertThat(eol1 ^ eol2 ^ eol3).isTrue();
+        assertThat(mergedContents).isEqualTo(expectedContent);
     }
 
     /**
