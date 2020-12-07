@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.cli.commandtests;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -175,7 +175,7 @@ public class UpdateCommandTest {
         File updatedPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
         String newVersion = getArtifactVersion(updatedPom, pluginId);
 
-        assertNotNull(newVersion);
-        assertNotEquals(oldVersion, newVersion);
+        assertThat(newVersion).isNotNull();
+        assertThat(oldVersion).isNotEqualTo(newVersion);
     }
 }

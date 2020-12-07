@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.cli.commandtests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +60,7 @@ public class AdaptTemplatesCommandTest {
         Path cobigenTemplatesFolderPath =
             ConfigurationUtils.getCobigenCliRootPath().resolve(ConfigurationUtils.COBIGEN_TEMPLATES);
 
-        assertTrue(Files.exists(cobigenTemplatesFolderPath));
+        assertThat(Files.exists(cobigenTemplatesFolderPath));
     }
 
     /**
@@ -82,7 +81,7 @@ public class AdaptTemplatesCommandTest {
 
         Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderPath();
 
-        assertTrue(Files.exists(cobigenTemplatesFolderPath));
+        assertThat(Files.exists(cobigenTemplatesFolderPath));
 
         File generatedFiles = cobigenTemplatesFolderPath.toFile();
 
@@ -103,7 +102,7 @@ public class AdaptTemplatesCommandTest {
         args[1] = "--custom-location";
         args[2] = "invalid/path/to/test";
 
-        assertEquals(1, commandLine.execute(args));
+        assertThat(commandLine.execute(args)).isEqualTo(1);
     }
 
     /**
@@ -114,7 +113,7 @@ public class AdaptTemplatesCommandTest {
     private static void deleteGeneratedFiles(ArrayList<File> generateFiles) {
 
         for (File generatedFile : generateFiles) {
-            assertTrue(generatedFile.exists());
+            assertThat(generatedFile.exists());
             try {
                 FileUtils.deleteDirectory(generatedFile);
             } catch (IOException e) {
