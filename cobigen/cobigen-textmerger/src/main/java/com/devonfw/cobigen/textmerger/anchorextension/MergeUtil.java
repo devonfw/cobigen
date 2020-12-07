@@ -57,12 +57,14 @@ public class MergeUtil {
      *            The string that is to be split by anchors
      * @param defaultMergeStrategy
      *            the default merge strategy to fall back
+     * @param lineDelimiter
+     *            String line delimiter to use
      * @return a LinkedHashMap which contains anchors as keys and the following text as values
      * @throws Exception
      *             when an anchor contains a wrong definition
      */
-    public static LinkedHashMap<Anchor, String> splitByAnchors(String toSplit, MergeStrategy defaultMergeStrategy)
-        throws Exception {
+    public static LinkedHashMap<Anchor, String> splitByAnchors(String toSplit, MergeStrategy defaultMergeStrategy,
+        String lineDelimiter) throws Exception {
         LinkedHashMap<Anchor, String> result = new LinkedHashMap<>();
         toSplit.trim();
         String firstLine =
@@ -75,7 +77,7 @@ public class MergeUtil {
                     + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list " + "for more details");
         }
 
-        toSplit = toSplit + System.lineSeparator() + "anchor:::anchorend" + System.lineSeparator();
+        toSplit = toSplit + lineDelimiter + "anchor:::anchorend" + lineDelimiter;
         Anchor anchor;
         int anchorCount = 0;
         Pattern regex = Pattern.compile(anchorRegex);
@@ -168,26 +170,27 @@ public class MergeUtil {
      *            Specifies whether the new text should be appended before or after the existing text.
      * @param withKey
      *            Specifies whether the key of the map should be appended too, or just the value.
+     * @param lineDelimiter
+     *            String line delimiter to use
      * @return The original text with new text appended to it. An empty string if there is no key in the map
      *         matching the regular expression.
      */
-    public static String appendText(String text, String docPart, Map<Anchor, String> m, boolean before,
-        boolean withKey) {
+    public static String appendText(String text, String docPart, Map<Anchor, String> m, boolean before, boolean withKey,
+        String lineDelimiter) {
         Anchor key = MergeUtil.getKeyMatchingDocumentPart(docPart, m);
         if (key.getNewlineName().equalsIgnoreCase("newline_appendbefore") && withKey) {
-            return System.lineSeparator() + key.getAnchor() + System.lineSeparator() + System.lineSeparator()
-                + m.get(key) + text;
+            return lineDelimiter + key.getAnchor() + lineDelimiter + lineDelimiter + m.get(key) + text;
         } else if (before) {
             if (withKey) {
-                return System.lineSeparator() + key.getAnchor() + System.lineSeparator() + m.get(key) + text;
+                return lineDelimiter + key.getAnchor() + lineDelimiter + m.get(key) + text;
             } else {
-                return System.lineSeparator() + m.get(key) + text;
+                return lineDelimiter + m.get(key) + text;
             }
         } else {
             if (withKey) {
-                return System.lineSeparator() + key.getAnchor() + text + System.lineSeparator() + m.get(key);
+                return lineDelimiter + key.getAnchor() + text + lineDelimiter + m.get(key);
             } else {
-                return text + System.lineSeparator() + m.get(key);
+                return text + lineDelimiter + m.get(key);
             }
         }
     }

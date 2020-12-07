@@ -70,6 +70,14 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.10.0</version>
     </dependency>
+    
+    <!-- collection of functions to test code which uses java.lang.System -->
+    <dependency>
+      <groupId>com.github.stefanbirkner</groupId>
+      <artifactId>system-lambda</artifactId>
+      <version>1.1.0</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Needed for JDK 9+ -->
     <dependency>

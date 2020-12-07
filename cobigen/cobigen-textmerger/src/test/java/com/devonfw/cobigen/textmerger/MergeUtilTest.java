@@ -61,7 +61,7 @@ public class MergeUtilTest {
                 + "// anchor:test2213123:append:anchorend" + System.lineSeparator() + " Lorem ipsum dolor sit amet";
         Map<Anchor, String> result = new LinkedHashMap<>();
         try {
-            result = MergeUtil.splitByAnchors(testString, testStrat);
+            result = MergeUtil.splitByAnchors(testString, testStrat, System.lineSeparator());
         } catch (Exception e) {
             fail("Expected no Exception, got the following Exception instead: " + e.getMessage());
         }
@@ -80,7 +80,7 @@ public class MergeUtilTest {
             + System.lineSeparator() + "// anchor:anotherone:hgfds:anchorend" + System.lineSeparator() + "test3"
             + System.lineSeparator() + "// anchor:footer:append:anchorend" + System.lineSeparator() + "test4";
         try {
-            MergeUtil.splitByAnchors(testString, testStrat);
+            MergeUtil.splitByAnchors(testString, testStrat, System.lineSeparator());
 
             failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception e) {
@@ -111,7 +111,7 @@ public class MergeUtilTest {
 
         Map<Anchor, String> test = new LinkedHashMap<>();
         try {
-            test = MergeUtil.splitByAnchors(testString, testStrat);
+            test = MergeUtil.splitByAnchors(testString, testStrat, System.lineSeparator());
             assertThat(test).isEqualTo(expected);
         } catch (Exception e) {
             fail("Expected no Exception, got the following Exception instead: " + e.getMessage());
@@ -130,20 +130,19 @@ public class MergeUtilTest {
         String test2 =
             "blabla" + System.lineSeparator() + "// anchor:test2:test2:anchorend" + System.lineSeparator() + "test2";
         try {
-            MergeUtil.splitByAnchors(test, testStrat);
+            MergeUtil.splitByAnchors(test, testStrat, System.lineSeparator());
         } catch (Exception e) {
             fail("Expected no Exception, got the following Exception instead: " + e.getClass());
         }
         try {
-            MergeUtil.splitByAnchors(test2, testStrat);
+            MergeUtil.splitByAnchors(test2, testStrat, System.lineSeparator());
 
             failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception e) {
             assertThat(e).hasMessage(
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
                     + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
-                    + "for more details");
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list " + "for more details");
         }
     }
 
@@ -179,17 +178,17 @@ public class MergeUtilTest {
 
         String testString = "", testString2 = "", testString3 = "", testString4 = "";
 
-        testString = MergeUtil.appendText(testString, "test", test, false, false);
-        testString = MergeUtil.appendText(testString, "test", test2, true, true);
+        testString = MergeUtil.appendText(testString, "test", test, false, false, System.lineSeparator());
+        testString = MergeUtil.appendText(testString, "test", test2, true, true, System.lineSeparator());
 
-        testString2 = MergeUtil.appendText(testString2, "test", test, false, false);
-        testString2 = MergeUtil.appendText(testString2, "test", test2, false, true);
+        testString2 = MergeUtil.appendText(testString2, "test", test, false, false, System.lineSeparator());
+        testString2 = MergeUtil.appendText(testString2, "test", test2, false, true, System.lineSeparator());
 
-        testString3 = MergeUtil.appendText(testString3, "test", test, false, false);
-        testString3 = MergeUtil.appendText(testString3, "test", test2, true, false);
+        testString3 = MergeUtil.appendText(testString3, "test", test, false, false, System.lineSeparator());
+        testString3 = MergeUtil.appendText(testString3, "test", test2, true, false, System.lineSeparator());
 
-        testString4 = MergeUtil.appendText(testString4, "test", test, false, false);
-        testString4 = MergeUtil.appendText(testString4, "test", test2, false, false);
+        testString4 = MergeUtil.appendText(testString4, "test", test, false, false, System.lineSeparator());
+        testString4 = MergeUtil.appendText(testString4, "test", test2, false, false, System.lineSeparator());
 
         assertThat(testString).isEqualTo(System.lineSeparator() + "// anchor:test:append:anchorend"
             + System.lineSeparator() + "test2" + System.lineSeparator() + "test1");
