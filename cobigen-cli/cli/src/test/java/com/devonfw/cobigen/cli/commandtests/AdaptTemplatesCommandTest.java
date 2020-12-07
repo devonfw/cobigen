@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.cli.commands.CobiGenCommand;
+import com.devonfw.cobigen.cli.utils.ConfigurationUtils;
 import com.ea.agentloader.AgentLoader;
 
 import classloader.Agent;
