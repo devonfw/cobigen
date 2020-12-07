@@ -13,19 +13,18 @@ import org.apache.velocity.exception.VelocityException;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.annotation.Name;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.extension.TextTemplate;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
 import com.devonfw.cobigen.tempeng.velocity.constant.VelocityMetadata;
+import com.devonfw.cobigen.tempeng.velocity.log.LogChuteDelegate;
 import com.devonfw.cobigen.tempeng.velocity.runtime.resources.NullResourceCache;
 import com.devonfw.cobigen.tempeng.velocity.runtime.resources.ResourceManagerDelegate;
-import com.devonfw.cobigen.tempeng.velocity.log.LogChuteDelegate;
 
 /** Template engine for Apache Velocity */
+@Name("Velocity")
 public class VelocityTemplateEngine implements TextTemplateEngine {
-
-    /** Template Engine name */
-    private static final String ENGINE_NAME = "Velocity";
 
     /** The file extension of the template files. */
     private static final String TEMPLATE_EXTENSION = ".vm";
@@ -54,11 +53,6 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
         engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_CLASS, ResourceManagerDelegate.class.getName());
         engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, new Boolean(true));
         engine.setProperty(RuntimeConstants.RESOURCE_MANAGER_CACHE_CLASS, NullResourceCache.class.getName());
-    }
-
-    @Override
-    public String getName() {
-        return ENGINE_NAME;
     }
 
     @Override

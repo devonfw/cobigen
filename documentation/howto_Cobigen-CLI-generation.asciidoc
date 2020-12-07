@@ -5,6 +5,11 @@ toc::[]
 
 Our new command line interface (CLI) for CobiGen enables the generation of code using few commands. This feature allows us to decouple CobiGen from Eclipse.
 
+You can check out our interactive katacoda tutorial where you can setup and use the cobigen cli step by step.
+
+[.katacoda-links]
+https://katacoda.com/devonfw/scenarios/cobigen-cli[CobiGen CLI Katacoda Scenario]
+
 == Install CobiGen CLI
 
 In order to install the CobiGen CLI you will need to use the https://github.com/devonfw/ide[devonfw/ide]. In a console run `devon cobigen`.
@@ -18,7 +23,7 @@ Using the following command and option you will be able to customize your genera
 
 ** `InputGlob`: Glob pattern of the input file or the whole path of the input file from which the code will be generated.
 
-** `< --increment, -i >`  : Specifies an increment ID to be generated. You can also search increments by name and CobiGen will output the resultant list.
+** `< --increment, -i >`  : Specifies an increment ID to be generated. You can also search increments by name and CobiGen will output the resultant list. If an exact match found, code generation will happen.
 
 ** `< --template, -t >` : specifies a template ID to be generated. You can also search templates by name and CobiGen will output the resultant list.
 

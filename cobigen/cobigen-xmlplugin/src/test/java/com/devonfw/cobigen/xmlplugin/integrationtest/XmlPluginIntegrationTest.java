@@ -2,9 +2,6 @@ package com.devonfw.cobigen.xmlplugin.integrationtest;
 
 import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -13,23 +10,19 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.w3c.dom.Document;
 
 import com.devonfw.cobigen.api.CobiGen;
-import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.exception.PluginNotAvailableException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.test.assertj.GenerationReportToAssert;
 
 import junit.framework.AssertionFailedError;
 
@@ -63,7 +56,7 @@ public class XmlPluginIntegrationTest {
         Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
         File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
         CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
-        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
         File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
         // act
@@ -101,7 +94,7 @@ public class XmlPluginIntegrationTest {
         Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
         File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
         CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
-        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
         File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
         // act
@@ -142,7 +135,7 @@ public class XmlPluginIntegrationTest {
         Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
         File xmlFile = configFolder.resolve("nullMultiplicity.xml").toFile();
         CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
-        Object doc = cobigen.read("xml", xmlFile.toPath(), UTF_8);
+        Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
         File targetFolder = tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
         // act
@@ -261,7 +254,7 @@ public class XmlPluginIntegrationTest {
     }
 
     /**
-     * Regression test that the error message of cobigen-core has not be changed, which indicates a merge
+     * Regression test that the error message of cobigen-core has not been changed, which indicates a merge
      * strategy to not being found. This is necessary for the tests checking the already implemented merge
      * strategies to exist.
      * @throws Exception
@@ -270,11 +263,10 @@ public class XmlPluginIntegrationTest {
     @Test
     public void testMergeStrategyNotFoundErrorMessageRegression() throws Exception {
         generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
-        try {
+        GenerationReportToAssert asserts =
             generateTemplateAndTestOutput("xmlTestTemplate_SingleAttribute", "xmlTestOutput_SingleAttribute.txt", null);
-        } catch (InvalidConfigurationException e) {
-            assertThat(e.getMessage(), containsString("No merger for merge strategy"));
-        }
+
+        asserts.containsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -284,13 +276,26 @@ public class XmlPluginIntegrationTest {
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_attachTexts() throws Exception {
-
         generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
-        try {
+        GenerationReportToAssert asserts =
             generateTemplateAndTestOutput("xmlTestTemplate_TextNodes", "xmlTestOutput_TextNodes.txt", null);
-        } catch (MergeException e) {
-            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
-        }
+
+        asserts.notContainsException(PluginNotAvailableException.class);
+
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_attachTexts_validate to exist and being registered.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_attachTexts_validate() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_TextNodesValidate", "xmlTestOutput_TextNodes.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_TextNodesValidate", "xmlTestOutput_TextNodes.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -300,13 +305,25 @@ public class XmlPluginIntegrationTest {
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_override_attachTexts() throws Exception {
-
         generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
-        try {
+        GenerationReportToAssert asserts =
             generateTemplateAndTestOutput("xmlTestTemplate_SingleChild", "xmlTestOutput_SingleChild.txt", null);
-        } catch (MergeException e) {
-            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
-        }
+
+        asserts.notContainsException(PluginNotAvailableException.class);
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_override_attachTexts_validate to exist and being registered.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_override_attachTexts_validate() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_SingleChildValidate", "xmlTestOutput_SingleChild.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_SingleChildValidate", "xmlTestOutput_SingleChild.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -316,13 +333,25 @@ public class XmlPluginIntegrationTest {
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge() throws Exception {
-
         generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
-        try {
+        GenerationReportToAssert asserts =
             generateTemplateAndTestOutput("xmlTestTemplate_ChildList", "xmlTestOutput_ChildList.txt", null);
-        } catch (MergeException e) {
-            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
-        }
+
+        asserts.notContainsException(PluginNotAvailableException.class);
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_validate to exist and being registered.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_validate() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_ChildListValidate", "xmlTestOutput_ChildList.txt", null);
+        GenerationReportToAssert asserts =
+            generateTemplateAndTestOutput("xmlTestTemplate_ChildListValidate", "xmlTestOutput_ChildList.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -332,14 +361,26 @@ public class XmlPluginIntegrationTest {
      */
     @Test
     public void testMergeStrategyDefined_xmlmerge_override() throws Exception {
-
         generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt", null);
-        try {
-            generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant", "xmlTestOutput_VariablesConstant.txt",
-                null);
-        } catch (MergeException e) {
-            assertThat(e.getMessage(), not(containsString("No merger for merge strategy")));
-        }
+        GenerationReportToAssert asserts = generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstant",
+            "xmlTestOutput_VariablesConstant.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
+    }
+
+    /**
+     * Tests the merge strategy xmlmerge_override_validate to exist and being registered.
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testMergeStrategyDefined_xmlmerge_override_validate() throws Exception {
+        generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstantValidate",
+            "xmlTestOutput_VariablesConstant.txt", null);
+        GenerationReportToAssert asserts = generateTemplateAndTestOutput("xmlTestTemplate_VariablesConstantValidate",
+            "xmlTestOutput_VariablesConstant.txt", null);
+
+        asserts.notContainsException(PluginNotAvailableException.class);
     }
 
     /**
@@ -354,8 +395,8 @@ public class XmlPluginIntegrationTest {
      * @throws Exception
      *             if anything fails.
      */
-    private void generateTemplateAndTestOutput(String templateId, String outputFileName, String expectedFileContents)
-        throws Exception {
+    private GenerationReportToAssert generateTemplateAndTestOutput(String templateId, String outputFileName,
+        String expectedFileContents) throws Exception {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
 
         // wenn der temporäre Output Ordner breits existiert, dann wird dieser wiederverwendet.
@@ -366,16 +407,19 @@ public class XmlPluginIntegrationTest {
         }
 
         // read xml File as Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document inputDocument = dBuilder.parse(testinput);
+        Object inputDocument = cobiGen.read(testinput.toPath(), Charset.forName("UTF-8"));
 
         // find matching templates and use test template for generation
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(inputDocument);
         boolean templateFound = false;
+        GenerationReportToAssert asserts = null;
         for (TemplateTo template : templates) {
             if (template.getId().equals(templateId)) {
-                cobiGen.generate(inputDocument, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
+                GenerationReportTo report =
+                    cobiGen.generate(inputDocument, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
+
+                asserts = assertThat(report);
+
                 File expectedFile =
                     new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + outputFileName);
 
@@ -392,5 +436,6 @@ public class XmlPluginIntegrationTest {
         if (!templateFound) {
             throw new AssertionFailedError("Test template not found");
         }
+        return asserts;
     }
 }

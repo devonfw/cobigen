@@ -1,10 +1,12 @@
 package com.devonfw.cobigen.impl.externalprocess;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -251,6 +253,8 @@ public class ExternalProcessHandler {
             LOG.error("Unable to start the exe/server", e);
         }
 
+        LOG.info("Try to start server at port " + port);
+
         return true;
     }
 
@@ -266,17 +270,6 @@ public class ExternalProcessHandler {
             return true;
         }
 
-        try {
-            if (removeOldVersions(exeName, exeFile.getName())) {
-                LOG.info(
-                    "Cleaning up the external servers folder because something strange was found. Server: " + exeName);
-                Files.deleteIfExists(Paths.get(filePath));
-                return true;
-            }
-        } catch (IOException e) {
-            LOG.error(
-                "Not able to clean externalservers folder, but we will keep the execution as this is not a blocker", e);
-        }
         return false;
     }
 
@@ -386,8 +379,6 @@ public class ExternalProcessHandler {
 
         // Remove tar file
         Files.deleteIfExists(tarPath);
-        // Now we remove old versions of this file
-        removeOldVersions(fileName, currentFileName);
         return filePath;
 
     }
@@ -401,33 +392,6 @@ public class ExternalProcessHandler {
      */
     private String getLastPartOfTarPath(String path) {
         return path.substring(path.lastIndexOf("/") + 1);
-    }
-
-    /**
-     * If found, remove all the files that contain this file name. This is used for removing not needed
-     * versions of the current external process.
-     * @param fileName
-     *            name of the external server (e.g. "nestserver")
-     * @param currentFileName
-     *            name of the current external server including the version number and its extension (e.g.
-     *            "nestserver-1.0.7.exe")
-     * @return true if any file was removed
-     * @throws IOException
-     *             {@link IOException} occurred while removing the file
-     */
-    private Boolean removeOldVersions(String fileName, String currentFileName) throws IOException {
-        File folder = new File(ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString());
-        File[] listOfFiles = folder.listFiles();
-        Boolean somethingWasRemoved = false;
-
-        for (File currFile : listOfFiles) {
-            if (currFile.getName().contains(fileName) && !currFile.getName().equals(currentFileName)) {
-                // Remove old version of file
-                Files.deleteIfExists(currFile.toPath());
-                somethingWasRemoved = true;
-            }
-        }
-        return somethingWasRemoved;
     }
 
     /**
@@ -445,6 +409,8 @@ public class ExternalProcessHandler {
                 // Just check correct port acquisition
                 if (acquirePort()) {
                     return true;
+                } else {
+                    continue;
                 }
             } catch (Exception e) {
                 LOG.error("Connection to server failed, attempt number " + retry + ".");
@@ -525,7 +491,27 @@ public class ExternalProcessHandler {
         try {
             getConnection("GET", "Content-Type", "text/plain", ExternalProcessConstants.IS_CONNECTION_READY);
             if (conn.getResponseCode() < 300) {
-                return false;
+
+                // Check if it is the correct server version
+                try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
+                    BufferedReader br = new BufferedReader(isr)) {
+                    String response = br.readLine();
+
+                    if (response.equals(processProperties.getServerVersion())) {
+                        return false;
+                    }
+
+                    if (response.equals("true")) {
+                        LOG.warn(
+                            "The old version {} of {} is currently deployed. Please consider deploying the newest version to get the current bug fixes/features.",
+                            processProperties.getServerVersion(), exeName);
+                        return false;
+                    }
+                } catch (Exception e) {
+                    LOG.info("Reading server version failed");
+                }
+
+                return true;
             }
         } catch (IOException e) {
             LOG.error("Connection to server failed, maybe the server is not yet deployed...");

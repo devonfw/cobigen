@@ -13,10 +13,6 @@ import { ${variables.etoName?cap_first}RoutingModule } from './${variables.etoNa
     ${variables.etoName?cap_first}DialogComponent,
     ${variables.etoName?cap_first}AlertComponent,
   ],
-  entryComponents: [
-    ${variables.etoName?cap_first}DialogComponent,
-    ${variables.etoName?cap_first}AlertComponent
-  ],
   providers: [],
 })
 export class ${variables.etoName?cap_first}Module { }

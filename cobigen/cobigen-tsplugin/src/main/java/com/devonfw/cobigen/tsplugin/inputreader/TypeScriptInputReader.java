@@ -8,7 +8,9 @@ import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +37,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * TypeScript input reader that uses a server to read TypeScript code
  */
 public class TypeScriptInputReader implements InputReader {
+
+    /** Valid file extension */
+    public static final String VALID_EXTENSION = "ts";
 
     /** Logger instance. */
     private static final Logger LOG = LoggerFactory.getLogger(TypeScriptInputReader.class);
@@ -98,51 +104,26 @@ public class TypeScriptInputReader implements InputReader {
 
     @Override
     public boolean isValidInput(Object input) {
-        String fileContents = null;
-
-        Path path = null;
 
         if (input instanceof Path) {
-            path = (Path) input;
+            return true;
         } else if (input instanceof File) {
-            path = ((File) input).toPath();
+            return true;
         } else {
-            return false;
-        }
-
-        if (serverIsNotDeployed) {
-            LOG.error("We have not been able to send requests to the external server. "
-                + "Most probably there is an error on the executable file. "
-                + "Try to manually remove folder .cobigen/externalservers found at your user root folder");
-            return false;
-        }
-
-        // File content is not needed, as only the file extension is checked
-        fileContents = new String("");
-
-        String fileName = path.toString();
-        InputFileTo inputFile = new InputFileTo(fileName, fileContents, charset);
-
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "isValidInput");
-
-        if (request.sendRequest(inputFile, conn, charset)) {
-
-            String response = new String();
-            try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-                BufferedReader br = new BufferedReader(isr);) {
-
-                LOG.info("Receiving response from Server....");
-                response = br.readLine();
-
-                return Boolean.parseBoolean(response);
-            } catch (NullPointerException e) {
+            try {
+                // Input corresponds to the parsed file
+                Map<String, Object> mapModel = createModel(input);
+                mapModel = (Map<String, Object>) mapModel.get("model");
+                if (Paths.get(mapModel.get("path").toString()) == null) {
+                    return false;
+                }
+                return true;
+            } catch (Exception e) {
+                LOG.error("An exception occured while parsing the input", e);
                 return false;
-
-            } catch (IOException e) {
-                connectionExc.handle(e);
             }
         }
-        return false;
+
     }
 
     @Override
@@ -171,7 +152,6 @@ public class TypeScriptInputReader implements InputReader {
         }
 
         return null;
-
     }
 
     @Override
@@ -203,6 +183,7 @@ public class TypeScriptInputReader implements InputReader {
 
         try {
             if (isValidInput(input)) {
+
                 String inputModel = (String) read(new File(input.toString()).toPath(), inputCharset);
                 Map<String, Object> mapModel = (Map<String, Object>) createModel(inputModel).get("model");
 
@@ -271,6 +252,7 @@ public class TypeScriptInputReader implements InputReader {
                 s.parallel().forEachOrdered((String line) -> {
                     inputModel.append(line);
                 });
+
                 return inputModel.toString();
 
             } catch (Exception e) {
@@ -284,7 +266,10 @@ public class TypeScriptInputReader implements InputReader {
 
     @Override
     public boolean isMostLikelyReadable(Path path) {
-        return isValidInput(path);
+
+        List<String> validExtensions = Arrays.asList("ts", "js", "nest");
+        String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
+        return validExtensions.contains(fileExtension);
     }
 
     /**

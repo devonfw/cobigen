@@ -474,7 +474,7 @@ public class ModifyableModelBuilder implements Builder {
         if (currentMethod != null) {
             jParam.setExecutable(currentMethod);
         } else {
-            jParam.setExecutable(currentMethod);
+            jParam.setExecutable(currentConstructor);
         }
         jParam.setModelWriterFactory(modelWriterFactory);
         addJavaDoc(jParam);

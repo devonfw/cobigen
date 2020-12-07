@@ -16,16 +16,16 @@
     <templateExtension ref="environment.prod.ts" mergeStrategy="override"/>
     <templateExtension ref="nav-bar.component.html" mergeStrategy="html-ng*"/>
   	<templateExtension ref="header.component.ts" mergeStrategy="override"/>
-  	 <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
+  	<templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
   	<templateExtension ref="${variables.etoName#lower_case}.model.ts" mergeStrategy="override"/>
     <templateExtension ref="datadetailstest.model.ts" mergeStrategy="override"/>
     <templateExtension ref="httpresponse.model.ts" mergeStrategy="override"/>
     <templateExtension ref="searchcriteriadata.model.ts" mergeStrategy="override"/>
-	<templateExtension ref="${variables.etoName#lower_case}.actions.ts" mergeStrategy="override"/>
+	  <templateExtension ref="${variables.etoName#lower_case}.actions.ts" mergeStrategy="override"/>
     <templateExtension ref="${variables.etoName#lower_case}.effects.spec.ts" mergeStrategy="override"/>
-	<templateExtension ref="${variables.etoName#lower_case}.effects.ts" mergeStrategy="override"/>
+	  <templateExtension ref="${variables.etoName#lower_case}.effects.ts" mergeStrategy="override"/>
     <templateExtension ref="${variables.etoName#lower_case}.reducers.spec.ts" mergeStrategy="override"/>
-	<templateExtension ref="${variables.etoName#lower_case}.reducers.ts" mergeStrategy="override"/>
+	  <templateExtension ref="${variables.etoName#lower_case}.reducers.ts" mergeStrategy="override"/>
     <templateExtension ref="${variables.etoName#lower_case}.selectors.ts" mergeStrategy="override"/>
     <templateExtension ref="store_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/index.ts" mergeStrategy="override"/>
     <templateExtension ref="actions_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/actions/index.ts" mergeStrategy="override"/>
@@ -74,10 +74,10 @@
       <templateRef ref="${variables.etoName#lower_case}.actions.ts"/>
       <templateRef ref="actions_index.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.effects.ts"/>
-	  <templateRef ref="${variables.etoName#lower_case}.effects.spec.ts"/>
+	    <templateRef ref="${variables.etoName#lower_case}.effects.spec.ts"/>
       <templateRef ref="effects_index.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.reducers.ts"/>
-	  <templateRef ref="${variables.etoName#lower_case}.reducers.spec.ts"/>
+	    <templateRef ref="${variables.etoName#lower_case}.reducers.spec.ts"/>
       <templateRef ref="reducers_index.ts"/>
       <templateRef ref="${variables.etoName#lower_case}.selectors.ts"/>
       <templateRef ref="selectors_index.ts"/>

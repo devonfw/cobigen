@@ -1,9 +1,14 @@
 :toc: macro
 toc::[]
 
-= Angular 6 Client Generation
+= Angular 8 Client Generation
 
-The generation can create a full Angular 6 client using the devon4ng-application-template package located at workspaces/examples folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
+The generation can create a full Angular 8 client using the devon4ng-application-template package located at workspaces/examples folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
+
+You can also try out the katacoda tutorial for angular client generation.
+
+[.katacoda-links]
+https://katacoda.com/devonfw/scenarios/cobigen-angular-client-generation[CobiGen Angular Katacoda Scenario]
 
 Take into account that the TypeScript merging for CobiGen needs Node 6 or higher to be installed at your machine.
 
@@ -16,7 +21,7 @@ Install yarn globally:
 [source, cmd]
 npm install -g yarn
 
-== Angular 6 workspace
+== Angular 8 workspace
 
 The output location of the generation can be defined editing the *__cobigen.properties__* file located at *__crud_angular_client_app/templates__* folder of the *__CobiGen_Templates__* project.
 
@@ -176,14 +181,14 @@ Once the the server is running, open a Devon console at the output directory def
 [source, cmd]
 ng serve --open
 
-This will run the Angular 6 application at:
+This will run the Angular 8 application at:
 
 [source, URL]
 http://localhost:4200
 
-image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 6 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
+image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 8 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
 
-Once finished, the browser will open automatically at the previous localhost URL showing the Angular 6 application, using the credentials set at the devon4j java server you will be able to access.
+Once finished, the browser will open automatically at the previous localhost URL showing the Angular 8 application, using the credentials set at the devon4j java server you will be able to access.
 
 
 

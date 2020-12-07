@@ -2,14 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CobiGen Eclipse Plug-In Tests
 Bundle-SymbolicName: com.devonfw.cobigen.eclipse.test;singleton:=true
-Bundle-Version: 5.2.1
+Bundle-Version: 7.0.0
 Bundle-Vendor: Capgemini
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/slf4j-api-1.7.21.jar,
  lib/assertj-core-3.8.0.jar,
- lib/core-test-5.3.1.jar,
  lib/jcl-over-slf4j-1.7.21.jar,
  lib/log4j-over-slf4j-1.7.21.jar,
  lib/logback-classic-1.1.2.jar,

@@ -42,31 +42,17 @@
               <mat-panel-title>Filters</mat-panel-title>
           </mat-expansion-panel-header>
           <div class="filter-form-fields">
-            <div class="filter-form-fields-mobile justify-space-around">
-			<#list pojo.fields as field>
+            <#list pojo.fields as field>
               <mat-form-field color="accent">
                 <input
                   matInput
+                  <#if JavaUtil.getAngularType(field.type) == 'number'>type="number"</#if>
                   placeholder="${field.name?cap_first}"
                   [(ngModel)]="searchTerms.${field.name?uncap_first}"
                   name="${field.name?uncap_first}"
                 />
               </mat-form-field>
             </#list>
-            </div>
-            <div class="filter-form-fields-desktop justify-space-around">
-			<#list pojo.fields as field>
-              <mat-form-field color="accent">
-                <input
-                  matInput
-				  <#if JavaUtil.getAngularType(field.type) == 'number'>type="number"</#if>
-                  placeholder="${field.name?cap_first}"
-                  [(ngModel)]="searchTerms.${field.name?uncap_first}"
-                  name="${field.name?uncap_first}"
-                />
-              </mat-form-field>
-            </#list>
-            </div>
           </div>
           <div class="align-right">
             <button
@@ -125,9 +111,9 @@
             <td mat-cell *matCellDef="let element"> {{element.${field.name?uncap_first}}} </td>
           </ng-container>
 
- 
 
-   
+
+
 
           </#list>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
