@@ -1,9 +1,8 @@
 package com.devonfw.cobigen.cli.commandtests;
 
 
-// import static org.junit.Assert.assertTrue;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
+//import static org.assertj.core.api.Assertions.assertThat;
 
 
 import java.io.IOException;
@@ -56,14 +55,14 @@ public class AdaptTemplatesCommandTest {
 
         commandLine.execute(args);
 
-        //Path cobigenTemplatesFolderPath = CobiGenPathUtil.getTemplatesFolderPath();
-        //assertTrue(Files.exists(cobigenTemplatesFolderPath));
-        //assertTrue(Files.list(cobigenTemplatesFolderPath).count() > 0);
+        Path cobigenTemplatesFolderPath = CobiGenPathUtil.getTemplatesFolderPath();
+        assertTrue(Files.exists(cobigenTemplatesFolderPath));
+        assertTrue(Files.list(cobigenTemplatesFolderPath).count() > 0);
 
-        Path cobigenTemplatesFolderPath =
-            ConfigurationUtils.getCobigenCliRootPath().resolve(ConfigurationUtils.COBIGEN_TEMPLATES);
+        //Path cobigenTemplatesFolderPath =
+        //    ConfigurationUtils.getCobigenCliRootPath().resolve(ConfigurationUtils.COBIGEN_TEMPLATES);
 
-        assertThat(Files.exists(cobigenTemplatesFolderPath));
+        //assertThat(Files.exists(cobigenTemplatesFolderPath));
     }
 
     /**
