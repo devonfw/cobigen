@@ -279,6 +279,29 @@ public class OpenAPIInputReaderTest {
         List<Object> inputObjects = getInputs("invalidPath.yaml");
     }
 
+    /**
+     * Tests if the input reader can handle nullable enums. See:
+     * https://github.com/devonfw/cobigen/issues/1244
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testNullableEnum() throws Exception {
+        List<Object> inputObjects = getInputs("nullableEnum.yaml");
+
+        for (Object o : inputObjects) {
+            if (isEntityDef(o)) {
+                EntityDef entity = (EntityDef) o;
+                List<PropertyDef> properties = entity.getProperties();
+                for (PropertyDef p : properties) {
+                    List<String> enums = p.getEnumElements();
+                    assertThat(enums.get(0)).isEqualTo("enum1");
+                    assertThat(enums.get(1)).isEqualTo("null");
+                }
+            }
+        }
+    }
+
     @Test(expected = InvalidConfigurationException.class)
     public void testInvalidXComponent() throws Exception {
         List<Object> inputObjects = getInputs("invalidXComponent.yaml");
@@ -412,6 +435,16 @@ public class OpenAPIInputReaderTest {
      */
     private boolean isComponentDef(Object o) {
         return o.getClass() == ComponentDef.class;
+    }
+
+    /**
+     * Checks whether the object is an {@link EntityDef}
+     * @param o
+     *            object to check whether it is an EntityDef
+     * @return true if it is an EntityDef
+     */
+    private boolean isPropertyDef(Object o) {
+        return o.getClass() == PropertyDef.class;
     }
 
 }
