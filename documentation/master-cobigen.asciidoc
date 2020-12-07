@@ -17,15 +17,15 @@ DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonf
 
 ---
 
-* CobiGen v7.0.0
-* CobiGen - Java Plug-in v7.0.0
+* CobiGen v7.1.0
+* CobiGen - Java Plug-in v7.1.0
 * CobiGen - XML Plug-in v7.0.0
-* CobiGen - TypeScript Plug-in v7.0.0
-* CobiGen - Property Plug-in v7.0.0
-* CobiGen - Text Merger v7.0.0
+* CobiGen - TypeScript Plug-in v7.1.0
+* CobiGen - Property Plug-in v7.1.0
+* CobiGen - Text Merger v7.1.0
 * CobiGen - JSON Plug-in v7.0.0
 * CobiGen - HTML Plug-in v7.0.0
-* CobiGen - Open API Plug-in v7.0.0
+* CobiGen - Open API Plug-in v7.1.0
 * CobiGen - FreeMaker Template Engine v7.0.0
 * CobiGen - Velocity Template Engine v7.0.0
 

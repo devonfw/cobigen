@@ -46,3 +46,16 @@
 *.pdf		binary
 *.exe		binary
 *.zip		binary
+
+# special line ending handling for test files
+cobigen/cobigen-textmerger/src/test/resources/TestBaseLineDelimiter.txt eol=lf
+cobigen/cobigen-textmerger/src/test/resources/PatchBaseLineDelimiter.txt eol=crlf
+cobigen/cobigen-textmerger/src/test/resources/MergeBaseLineDelimiter.txt eol=lf
+
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestWindowsLineEndings.txt eol=crlf
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestLinuxLineEndings.txt eol=lf
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestOsxLineEndings.txt eol=cr
+
+cobigen/cobigen-javaplugin-parent/cobigen-javaplugin/src/test/resources/testdata/unittest/merger/BaseFile_Eol.java eol=lf
+cobigen/cobigen-javaplugin-parent/cobigen-javaplugin/src/test/resources/testdata/unittest/merger/PatchFile_Eol.java eol=crlf
+cobigen/cobigen-javaplugin-parent/cobigen-javaplugin/src/test/resources/testdata/unittest/merger/MergedFile_Eol.java eol=lf

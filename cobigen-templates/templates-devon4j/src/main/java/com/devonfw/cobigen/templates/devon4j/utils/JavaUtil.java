@@ -30,7 +30,7 @@ public class JavaUtil {
 
     /**
      * Returns the Object version of a Java primitive or the input if the input isn't a java primitive
-     *
+     * 
      * @param simpleType
      *            String
      * @return the corresponding object wrapper type simple name of the input if the input is the name of a
@@ -400,8 +400,6 @@ public class JavaUtil {
                 "Class object is null. Cannot generate template as it might obviously depend on reflection.");
         }
 
-        // Class<? extends Annotation> classObj = (Class<? extends Annotation>)
-        // Class.forName(annotatedClassName);
         Method[] methods = pojoClass.getDeclaredMethods();
         for (Method method : methods) {
             if (!method.getName().startsWith("get")) {
