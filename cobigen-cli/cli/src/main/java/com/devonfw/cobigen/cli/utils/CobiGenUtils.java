@@ -126,10 +126,10 @@ public class CobiGenUtils {
             t1.start();
 
             try {
-                invoker.setMavenHome(new File(System.getenv("MAVEN_HOME")));
+                invoker.setMavenHome(new File(getMavenHome()));
             } catch (NullPointerException e) {
                 LOG.error(
-                    "MAVEN_HOME environment variable has not been set on your machine. CobiGen CLI needs Maven correctly configured.",
+                    "Could not determine maven home from environment variables MAVEN_HOME or M2_HOME. CobiGen CLI needs Maven correctly configured.",
                     e);
             }
             result = invoker.execute(request);
@@ -309,4 +309,18 @@ public class CobiGenUtils {
         throw new InputReaderException("The file " + file.getAbsolutePath() + " is not a valid input for CobiGen.");
     }
 
+    /**
+     * Get the maven home
+     * @return maven home
+     */
+    private String getMavenHome() {
+        String m2Home = System.getenv().get("MAVEN_HOME");
+        if (m2Home == null) {
+            m2Home = System.getenv().get("M2_HOME");
+            if (m2Home == null && "true".equals(System.getenv("TRAVIS"))) {
+                m2Home = "/usr/local/maven"; // travis only
+            }
+        }
+        return m2Home;
+    }
 }

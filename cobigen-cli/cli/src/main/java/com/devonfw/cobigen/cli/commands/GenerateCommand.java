@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -438,12 +439,12 @@ public class GenerateCommand implements Callable<Integer> {
                     LOG.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
                     LOG.error("The {} number you have specified is out of bounds!", artifactType);
-                    System.exit(1);
+                    throw (e);
                 } catch (NumberFormatException e) {
                     LOG.error(
                         "Error parsing your input. You need to specify {}s using numbers separated by comma (2,5,6).",
                         artifactType);
-                    System.exit(1);
+                    throw (e);
                 }
             }
 
@@ -478,7 +479,7 @@ public class GenerateCommand implements Callable<Integer> {
                     LOG.info(
                         "No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
 
-                    System.exit(1);
+                    throw new InputMismatchException("Wrong increment name");
                 }
 
                 userSelection = artifactStringSelection(userSelection, possibleArtifacts, artifactType);
@@ -543,11 +544,11 @@ public class GenerateCommand implements Callable<Integer> {
             } catch (NumberFormatException e) {
                 LOG.error("Error parsing your input. You need to specify {}s using numbers separated by comma (2,5,6).",
                     artifactType);
-                System.exit(1);
+                throw (e);
 
             } catch (ArrayIndexOutOfBoundsException e) {
                 LOG.error("Error parsing your input. Please give a valid number from the list above.");
-                System.exit(1);
+                throw (e);
             }
         }
         return userSelection;
