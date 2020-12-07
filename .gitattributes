@@ -51,3 +51,8 @@
 cobigen/cobigen-textmerger/src/test/resources/TestBaseLineDelimiter.txt eol=lf
 cobigen/cobigen-textmerger/src/test/resources/PatchBaseLineDelimiter.txt eol=crlf
 cobigen/cobigen-textmerger/src/test/resources/MergeBaseLineDelimiter.txt eol=lf
+
+# handle line endings for test files differently
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestWindowsLineEndings.txt eol=crlf
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestLinuxLineEndings.txt eol=lf
+cobigen/cobigen-core-parent/cobigen-core-api/src/test/resources/testdata/unittest/SystemUtilTest/TestOsxLineEndings.txt eol=cr
