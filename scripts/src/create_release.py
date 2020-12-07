@@ -347,8 +347,8 @@ with make_temp_directory() as temp_dir:
             elif config.branch_to_be_released == config.branch_core:
                 # need to run it twice to as of the deployment is skipped for all modules if systemtest module is running at the end
                 __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-core-api"))
-                __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-core"))
                 __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-core-test"))
+                __deploy_m2_only(config.oss, os.path.join(config.build_folder_abs, "cobigen-core"))
             elif config.branch_to_be_released == config.branch_eclipseplugin:
                 __deploy_p2(config.oss)
             else: 
