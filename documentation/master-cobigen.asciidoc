@@ -18,7 +18,7 @@ DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonf
 ---
 
 * CobiGen v7.1.0
-* CobiGen - Java Plug-in v7.0.0
+* CobiGen - Java Plug-in v7.1.0
 * CobiGen - XML Plug-in v7.0.0
 * CobiGen - TypeScript Plug-in v7.1.0
 * CobiGen - Property Plug-in v7.1.0

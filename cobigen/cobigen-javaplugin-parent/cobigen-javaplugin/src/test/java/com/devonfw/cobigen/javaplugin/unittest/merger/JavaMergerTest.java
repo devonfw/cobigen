@@ -17,7 +17,6 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.javaplugin.merger.JavaMerger;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
-import com.google.common.io.Files;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
@@ -319,6 +318,24 @@ public class JavaMergerTest {
     }
 
     /**
+     * Tests whether the output file contains line endings of base file (linux line endings)
+     * @throws IOException
+     *             test fails
+     * @throws MergeException
+     *             test fails
+     */
+    @Test
+    public void testBaseLineEndings() throws IOException, MergeException {
+        File baseFile = new File(testFileRootPath + "BaseFile_Eol.java");
+        File patchFile = new File(testFileRootPath + "PatchFile_Eol.java");
+        File mergedFile = new File(testFileRootPath + "MergedFile_Eol.java");
+        String expectedContent = FileUtils.readFileToString(mergedFile);
+        String mergedContents =
+            new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
+        assertThat(mergedContents).isEqualTo(expectedContent);
+    }
+
+    /**
      * Tests whether all generics of the original file will be existent after merging
      * @throws IOException
      *             test fails
@@ -358,7 +375,7 @@ public class JavaMergerTest {
         JavaClass origClazz = source.getClasses().get(0);
 
         String mergedContents =
-            new JavaMerger("", true).merge(file, Files.toString(file, Charset.forName("UTF-8")), "UTF-8");
+            new JavaMerger("", true).merge(file, FileUtils.readFileToString(file, Charset.forName("UTF-8")), "UTF-8");
 
         classLibraryBuilder = new ModifyableClassLibraryBuilder();
         source = classLibraryBuilder.addSource(new StringReader(mergedContents));
@@ -387,8 +404,8 @@ public class JavaMergerTest {
         JavaClass origClazz = getFirstJavaClass(new FileReader(baseFile));
         assertThat(origClazz.getSuperClass().getCanonicalName()).isEqualTo("java.lang.Object");
 
-        String mergedContents =
-            new JavaMerger("", false).merge(baseFile, Files.toString(patchFile, Charset.forName("UTF-8")), "UTF-8");
+        String mergedContents = new JavaMerger("", false).merge(baseFile,
+            FileUtils.readFileToString(patchFile, Charset.forName("UTF-8")), "UTF-8");
 
         JavaClass resultClazz = getFirstJavaClass(new StringReader(mergedContents));
         assertThat(resultClazz.getSuperClass().getCanonicalName())
