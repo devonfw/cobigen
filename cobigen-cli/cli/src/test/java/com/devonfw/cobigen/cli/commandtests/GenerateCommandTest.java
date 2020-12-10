@@ -51,6 +51,10 @@ public class GenerateCommandTest {
         args[0] = "update";
         args[1] = "--all";
         commandLine.execute(args);
+        
+        String args2[] = new String[1];
+        args2[0] = "adapt-templates";
+        commandLine.execute(args2);
     }
 
     /**
