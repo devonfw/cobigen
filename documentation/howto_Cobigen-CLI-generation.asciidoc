@@ -67,6 +67,15 @@ Select the plug-ins which you want to update like below :
 
 image::images/updatePlugin.PNG[Generation path, link="images/updatePlugin.PNG"]
 
+== CLI custom templates
+To use custom templates, it's neccessary to set up a configuration file .cobigen. This file should be put in either cobigen home (user-dir/.cobigen/) or the environment parameter **COBIGEN_CONFIG_DIR** should be pointed to the directory where the file is located
+
+Example
+.cobigen
+----
+cobigen.templates.templates_location=path\\to\\custom\\CobiGen_Templates
+----
+
 == Troubleshooting
 
 When generating code from a Java file, CobiGen makes use of Java reflection for generating templates. In order to do that, the CLI needs to find the compiled source code of your project.
