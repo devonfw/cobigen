@@ -26,8 +26,6 @@ Using the following command and option you will be able to customize your genera
 
 • `[adapt-templates, a]`: Generates a new templates folder next to the cobigen cli and stores its location inside a configuration file. After executing this command, the CLI will attempt to use the specified Templates folder.
 
-** `< --custom-location, -cl >`  : Allows the user to choose an absolute file path to a custom location where the CobiGen Templates should be stored and read from.
-
 • `< --verbose, -v >` : Prints debug information, verbose log.
 
 • `< --help, -h >` : Prints man page.
