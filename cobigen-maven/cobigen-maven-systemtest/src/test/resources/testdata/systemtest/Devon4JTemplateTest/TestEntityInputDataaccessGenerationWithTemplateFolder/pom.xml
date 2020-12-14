@@ -37,47 +37,47 @@
           <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>javaplugin</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.1.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>xmlplugin</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.0.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>openapiplugin</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.1.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>tsplugin</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.1.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>propertyplugin</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.1.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>htmlplugin</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.0.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>textmerger</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.1.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>tempeng-velocity</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.0.0</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>tempeng-freemarker</artifactId>
-          <version>7.0.0-SNAPSHOT</version>
+          <version>7.0.0</version>
         </dependency>
         </dependencies>
       </plugin>
