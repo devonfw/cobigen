@@ -77,22 +77,22 @@ public class TextAppender implements Merger {
         String mergedString;
         String lineDelimiterBase;
 
-        Path path = Paths.get(base.getAbsolutePath());
+        Path basePath = Paths.get(base.getAbsolutePath());
 
         try {
             mergedString = FileUtils.readFileToString(base, targetCharset);
-            lineDelimiterBase = SystemUtil.determineLineDelimiter(path, targetCharset);
+            lineDelimiterBase = SystemUtil.determineLineDelimiter(basePath, targetCharset);
 
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);
         }
         try {
-            if (lineDelimiterBase.isEmpty()) {
-                lineDelimiterBase = System.lineSeparator();
+            if (lineDelimiterBase == null) {
+                mergedString = merge(mergedString, patch, lineDelimiterBase);
+            } else {
+                mergedString =
+                    merge(mergedString, StringUtil.consolidateLineEndings(patch, lineDelimiterBase), lineDelimiterBase);
             }
-
-            mergedString =
-                merge(mergedString, StringUtil.consolidateLineEndings(patch, lineDelimiterBase), lineDelimiterBase);
         } catch (Exception e) {
             throw new MergeException(base, e.getMessage(), e);
         }
