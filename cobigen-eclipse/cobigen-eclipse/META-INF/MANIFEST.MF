@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CobiGen Eclipse Plug-in
 Bundle-SymbolicName: com.devonfw.cobigen.eclipse;singleton:=true
-Bundle-Version: 7.0.0
+Bundle-Version: 7.1.0
 Bundle-Activator: com.devonfw.cobigen.eclipse.Activator
 Bundle-Vendor: devonfw Team
 Require-Bundle: org.eclipse.ui;bundle-version="3.104.0",
@@ -44,7 +44,7 @@ Bundle-ClassPath: .,
  lib/logback-core-1.1.2.jar,
  lib/mmm-util-core-7.4.0.jar,
  lib/slf4j-api-1.7.21.jar,
- lib/core-7.0.0.jar,
- lib/core-api-7.0.0.jar,
- lib/javaplugin-model-7.0.0.jar
+ lib/core-7.1.0.jar,
+ lib/core-api-7.1.0.jar,
+ lib/javaplugin-model-7.1.0.jar
 Export-Package: com.devonfw.cobigen.eclipse.common.constants.external
