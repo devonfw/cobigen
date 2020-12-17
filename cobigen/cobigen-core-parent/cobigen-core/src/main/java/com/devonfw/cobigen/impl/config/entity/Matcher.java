@@ -50,7 +50,7 @@ public class Matcher extends AbstractMatcher {
 
     @Override
     public int hashCode() {
-    	return Objects.hash(getType(), getValue(), accumulationType);
+    	return Objects.hash(super.hashCode(), accumulationType);
     }
 
     @Override
