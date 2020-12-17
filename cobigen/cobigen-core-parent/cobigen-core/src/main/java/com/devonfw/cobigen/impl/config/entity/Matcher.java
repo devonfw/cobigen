@@ -2,6 +2,7 @@ package com.devonfw.cobigen.impl.config.entity;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import com.devonfw.cobigen.impl.config.entity.io.AccumulationType;
 
@@ -45,6 +46,11 @@ public class Matcher extends AbstractMatcher {
      */
     public AccumulationType getAccumulationType() {
         return accumulationType;
+    }
+
+    @Override
+    public int hashCode() {
+    	return Objects.hash(getType(), getValue(), accumulationType);
     }
 
     @Override
