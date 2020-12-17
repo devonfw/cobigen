@@ -15,7 +15,6 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -57,7 +56,6 @@ public class ClassPathLoadingTest extends SystemTest {
      *             Test fails
      */
     @Test
-    @Ignore // does not run on jdk8 on travis only, for any reason.
     public void testPreventClassPathShading() throws Exception {
 
         // create a new temporary java project and copy java class used as an input for CobiGen
