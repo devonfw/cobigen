@@ -176,8 +176,8 @@ image:images/howtos/e2e_gen/image26.png[Spring boot run]
 
 Configure one of the below security rules.
 
-* https://github.com/devonfw/devon4j/blob/develop/documentation/guide-csrf.asciidoc[CSRF]
-* https://github.com/devonfw/devon4j/blob/develop/documentation/guide-jwt.asciidoc[JWT]
+* https://devonfw.com/website/pages/docs/devon4j.asciidoc_guides.html#guide-csrf.asciidoc[CSRF]
+* https://devonfw.com/website/pages/docs/devon4j.asciidoc_guides.html#guide-jwt.asciidoc[JWT]
 
 *BE DONE*
 
