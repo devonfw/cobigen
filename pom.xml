@@ -29,6 +29,7 @@
 
   <modules>
     <module>cobigen</module>
+    <module>cobigen-plugins</module>
     <module>cobigen-cli</module>
     <module>cobigen-eclipse</module>
     <module>cobigen-maven</module>
