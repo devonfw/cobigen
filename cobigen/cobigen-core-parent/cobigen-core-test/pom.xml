@@ -3,15 +3,13 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>core-test</artifactId>
-  <name>CobiGen Core - Test</name>
-  <version>${cobigencore.version}</version>
+  <name>CobiGen Core - Test Utils</name>
   <packaging>jar</packaging>
-  <description>Code-based incremental generator - Test Utils</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>core-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
@@ -19,12 +17,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
     <!-- Test-Dependencies -->
     <dependency>
       <groupId>junit</groupId>

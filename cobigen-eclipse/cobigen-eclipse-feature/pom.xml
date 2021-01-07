@@ -5,11 +5,10 @@
   <artifactId>com.devonfw.cobigen.eclipse.feature</artifactId>
   <name>CobiGen - Eclipse Plug-In Feature</name>
   <packaging>eclipse-feature</packaging>
-  <version>7.1.1-SNAPSHOT</version>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>eclipse-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 </project>

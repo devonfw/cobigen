@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>openapiplugin-parent</artifactId>
   <packaging>pom</packaging>
-  <name>CobiGen Openapiplugin Parent</name>
+  <name>CobiGen - OpenAPI Plug-in Parent</name>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <modules>

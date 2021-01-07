@@ -2,13 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>core-parent</artifactId>
   <name>CobiGen Core - Parent</name>
-  <version>dev-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>

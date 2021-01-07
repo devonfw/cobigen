@@ -21,10 +21,10 @@ import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.api.matchers.MatcherToMatcher;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
 
 /**
  * Test suite, which tests activation of triggers due to matcher accumulation types.

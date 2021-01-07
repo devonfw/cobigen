@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.systemtest;
 
-import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -30,6 +30,7 @@ import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.api.matchers.MatcherToMatcher;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
@@ -39,7 +40,6 @@ import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
 
 /**
  * Test suite for generation purposes.
