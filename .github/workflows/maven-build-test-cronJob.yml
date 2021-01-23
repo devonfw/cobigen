@@ -26,4 +26,6 @@ jobs:
         settings-path: ${{ github.workspace }}
 
     - name: Build with Maven
-      run: mvn clean install -e -U -Pp2-build-photon,p2-build-stable --fail-at-end
+      run: 
+        git config --system core.longpaths true
+        mvn clean install -e -U -Pp2-build-photon,p2-build-stable --fail-at-end
