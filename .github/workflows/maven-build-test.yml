@@ -1,6 +1,6 @@
 # This workflow builds and tests Cobigen run in parallel and stops if one build doesn't work
 
-name: Maven Package
+name: build & test # on Ubuntu with OpenJDK8 and OpenJDK11
 
 on: [push, pull_request]
 
