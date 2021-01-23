@@ -31,7 +31,6 @@ jobs:
         java-version: ${{ matrix.javaVersion }}
         server-id: github
         settings-path: ${{ github.workspace }}
-
     - name: Build with Maven
       run: 
-        mvn clean install -e -U --fail-at-end
+        mvn clean install -e -U -Pp2-build-photon,p2-build-stable,p2-build-experimental --fail-at-end
