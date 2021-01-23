@@ -15,7 +15,7 @@ jobs:
       matrix:
         # test against Java version 8 and 11:
         javaVersion: [ 8, 11 ]
-        os: [windows-latest,ubuntu-latest]
+        os: [windows-latest] # ,ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
     - name: Support longpaths for Windows
