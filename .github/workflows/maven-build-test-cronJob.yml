@@ -4,7 +4,7 @@ name: Maven Package
 
 on: 
   schedule:
-    - cron: '0 16 * * *'
+    - cron: '8 15 * * *'
 
 jobs:
   build-and-test:
