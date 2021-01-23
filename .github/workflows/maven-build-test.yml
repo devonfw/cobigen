@@ -10,7 +10,8 @@ jobs:
     strategy:
       matrix:
         # test against latest Java version 8 and 11:
-        - javaVersion: [ 8, 11 ]
+        javaVersion: [ 8, 11 ]
+        os: [ubuntu-latest, windows-latest]#macos-latest
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
