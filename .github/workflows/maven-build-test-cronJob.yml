@@ -2,7 +2,9 @@
 
 name: Maven Package
 
-on: [push, pull_request]
+on: 
+  schedule:
+    -cron:*16***
 
 jobs:
   build-and-test:
@@ -11,7 +13,8 @@ jobs:
       matrix:
         # test against Java version 8 and 11:
         javaVersion: [ 8, 11 ]
-    runs-on: ubuntu-latest
+        os: [windows-latest,ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up OpenJDK
@@ -21,4 +24,4 @@ jobs:
         settings-path: ${{ github.workspace }}
 
     - name: Build with Maven
-      run: mvn clean install -e -U -Pp2-build-photon,p2-build-stable -T 1C
+      run: mvn clean install -e -U -Pp2-build-photon,p2-build-stable --fail-at-end
