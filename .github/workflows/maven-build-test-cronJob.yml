@@ -33,4 +33,4 @@ jobs:
 
     - name: Build with Maven
       run: 
-        mvn clean install -e -U --fail-at-end
+        mvn clean install -s $GITHUB_WORKSPACE/settings.xml -e -U --fail-at-end
