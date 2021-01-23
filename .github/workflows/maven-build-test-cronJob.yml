@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Support longpaths
-      run: git config --system core.longpaths true
+      run: sudo git config --system core.longpaths true
     - uses: actions/checkout@v2
     - name: Set up OpenJDK
       uses: actions/setup-java@v1
