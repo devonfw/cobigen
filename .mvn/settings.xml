@@ -17,4 +17,8 @@
       <password>${env.BINTRAY_PASSWORD}</password>
     </server>
   </servers>
+  <activeProfiles>
+    <activeProfile>Pp2-build-photon</activeProfile>
+    <activeProfile>p2-build-stable</activeProfile>
+  </activeProfiles>
 </settings>
