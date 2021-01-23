@@ -3,9 +3,10 @@
 name: build & test cronJob # on Ubuntu and Windows with OpenJDK8 and OpenJDK11
 
 on: 
-  - schedule:
+  workflow_dispatch:
+  schedule:
     - cron: '0 16 * * *'
-    - workflow_dispatch
+  
 
 jobs:
   build-and-test:
