@@ -17,7 +17,7 @@
     <slf4j.version>1.7.30</slf4j.version>
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
-    <tycho.version>1.7.0</tycho.version>
+    <tycho.version>1.5.0</tycho.version>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     <bintray.url>https://dl.bintray.com/devonfw</bintray.url>
     <!-- bintray.repository needs to be set by cmd and needs to be one of https://bintray.com/devonfw repositories -->
