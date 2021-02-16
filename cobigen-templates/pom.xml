@@ -3,13 +3,13 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>templates-parent</artifactId>
-  <name>CobiGen Templates - Parent</name>
+  <name>CobiGen - Templates Parent</name>
   <packaging>pom</packaging>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>master-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <modules>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>maven-test</artifactId>
-      <version>5.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -64,7 +64,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
         <executions>
           <execution>
             <phase>prepare-package</phase>
@@ -77,30 +76,6 @@
                 <copy file=".flattened-pom.xml" tofile="${project.build.outputDirectory}/pom.xml"/>
               </tasks>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>

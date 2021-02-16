@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.unittest.healthcheck;
 
-import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
 
 import java.io.File;
 import java.io.IOException;

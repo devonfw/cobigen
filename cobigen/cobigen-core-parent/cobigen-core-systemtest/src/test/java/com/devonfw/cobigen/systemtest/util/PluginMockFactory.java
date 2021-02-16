@@ -15,9 +15,9 @@ import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.api.matchers.MatcherToMatcher;
+import com.devonfw.cobigen.api.matchers.VariableAssignmentToMatcher;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
-import com.devonfw.cobigen.test.matchers.VariableAssignmentToMatcher;
 
 /** A mock factory to simply setup a mocked java plug-in to enable system tests. */
 public class PluginMockFactory {

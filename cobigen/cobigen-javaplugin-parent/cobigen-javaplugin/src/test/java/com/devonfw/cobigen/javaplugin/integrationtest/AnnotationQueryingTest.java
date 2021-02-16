@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.javaplugin.integrationtest;
 
-import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;

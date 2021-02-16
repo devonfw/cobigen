@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.xmlplugin.integrationtest;
 
-import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -18,11 +18,11 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.assertj.GenerationReportToAssert;
 import com.devonfw.cobigen.api.exception.PluginNotAvailableException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.test.assertj.GenerationReportToAssert;
 
 import junit.framework.AssertionFailedError;
 

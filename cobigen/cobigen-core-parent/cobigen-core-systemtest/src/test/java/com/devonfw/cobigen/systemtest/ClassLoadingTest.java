@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.systemtest;
 
-import static com.devonfw.cobigen.test.assertj.CobiGenAsserts.assertThat;
+import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
 import static com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -25,13 +25,13 @@ import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.api.matchers.MatcherToMatcher;
+import com.devonfw.cobigen.api.matchers.VariableAssignmentToMatcher;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.test.matchers.MatcherToMatcher;
-import com.devonfw.cobigen.test.matchers.VariableAssignmentToMatcher;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 

@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.test.matchers;
+package com.devonfw.cobigen.api.matchers;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

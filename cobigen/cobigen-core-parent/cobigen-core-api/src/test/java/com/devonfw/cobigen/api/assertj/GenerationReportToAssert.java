@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.test.assertj;
+package com.devonfw.cobigen.api.assertj;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -27,7 +27,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 /**
- * This class handle update command
+ * This class handles the update command
  */
 @Command(description = MessagesConstants.UPDATE_OPTION_DESCRIPTION, name = "update", aliases = { "u" },
     mixinStandardHelpOptions = true)
@@ -58,8 +58,12 @@ public class UpdateCommand implements Callable<Integer> {
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model model = reader.read(new FileReader(pomFile));
             List<Dependency> localPomDependencies = model.getDependencies();
-            printOutdatedPlugin(localPomDependencies, centralMavenVersionList, updatePluginVersions, listOfArtifacts);
+            boolean isAllUpdated = printOutdatedPlugin(localPomDependencies, centralMavenVersionList,
+                updatePluginVersions, listOfArtifacts);
 
+            if (isAllUpdated) {
+                return 0;
+            }
             if (updateAll) {
                 userInputPluginForUpdate.add("0");
                 LOG.info("(0) ALL is selected!");
@@ -69,7 +73,7 @@ public class UpdateCommand implements Callable<Integer> {
                 if (userInputPluginForUpdate.size() == 1) {
                     if (!StringUtils.isNumeric(userInputPluginForUpdate.get(0))) {
                         LOG.info("Nothing selected to update...");
-                        System.exit(0);
+                        return 0;
                     }
                 }
             }
@@ -89,9 +93,9 @@ public class UpdateCommand implements Callable<Integer> {
     }
 
     /**
-     * This method take user input for update template
+     * This method takes the user input for updating templates
      * @param userInputPluginForUpdate
-     *            This parameter hold list of User Input
+     *            This parameter holds the list of User Input
      */
     private void userInputPluginSelection(ArrayList<String> userInputPluginForUpdate) {
         for (String userArtifact : GenerateCommand.getUserInput().split(",")) {
@@ -100,17 +104,17 @@ public class UpdateCommand implements Callable<Integer> {
     }
 
     /**
-     * This method printing the outdated plug-ins
+     * This method is printing the outdated plug-ins
      * @param localPomDependencies
-     *            This parameter hold the artificial dependencies
+     *            This parameter holds the artificial dependencies
      * @param centralMavenVersionList
-     *            This parameter hold version list
+     *            This parameter holds version list
      * @param updatePluginVersions
-     *            This parameter contain the key ,value pair of version
+     *            This parameter contains the key, value pair of versions
      * @param listOfArtifacts
-     *            this hold list of artifact id which is need to update
+     *            This holds a list of artifact ids which need to be updated
      */
-    public void printOutdatedPlugin(List<Dependency> localPomDependencies, List<String> centralMavenVersionList,
+    public boolean printOutdatedPlugin(List<Dependency> localPomDependencies, List<String> centralMavenVersionList,
         HashMap<String, String> updatePluginVersions, HashMap<Integer, String> listOfArtifacts) {
         int count = 0;
         String centralMavenVersion = "";
@@ -142,24 +146,25 @@ public class UpdateCommand implements Callable<Integer> {
         // Finished checking all the plug-ins
         if (count == 0) {
             LOG.info("All plug-ins are up to date...");
-            System.exit(0);
+            return true;
         }
         LOG.info("Here are the components that can be updated, which ones do you want to  update? "
             + "Please list the number of artifact(s) to update separated by comma:");
+        return false;
     }
 
     /**
-     * This method updating the outdated plug-ins
+     * This method is updating the outdated plug-ins
      * @param localPomDependencies
-     *            This is hold the dependencies of artificial pom
+     *            This is holding the dependencies of artificial pom
      * @param listOfArtifacts
-     *            This parameter hold the value of updated plug-ins version
+     *            This parameter holds the value of updated plug-ins version
      * @param centralMavenVersionList
-     *            This parameter hold version list
+     *            This parameter holds the version list
      * @param model
-     *            This parameter hold the after pom file reader dependencies
+     *            This parameter holds the after pom file reader dependencies
      * @param userInputPluginForUpdate
-     *            This is hold user input for update plug-ins
+     *            This is holding user input for update plug-ins
      */
     public void updateOutdatedPlugins(List<Dependency> localPomDependencies, HashMap<Integer, String> listOfArtifacts,
         List<String> centralMavenVersionList, Model model, ArrayList<String> userInputPluginForUpdate) {

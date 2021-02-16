@@ -4,20 +4,19 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>maven-systemtest</artifactId>
   <packaging>jar</packaging>
-  <version>${cobigen.maven.version}</version>
-  <name>CobiGen Maven Plugin - Systemtests</name>
+  <name>CobiGen - Maven Plug-in E2E Test</name>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>maven-test</artifactId>
-      <version>${cobigen.maven.version}</version>
+      <version>${revision}</version>
     </dependency>
   </dependencies>
 

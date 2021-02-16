@@ -317,6 +317,21 @@ public class TextAppenderTest {
     }
 
     /**
+     * Tests if a merge of a base file without line endings with a patch file with line endings will create a
+     * valid result
+     * @throws Exception
+     *             if errors occur while merging
+     */
+    @Test
+    public void testMerge_noBaseLineDelimiterToConsolidate() throws Exception {
+        TextAppender appender = new TextAppender("textmerge_append", false);
+        String mergedString = appender.merge(new File(testFileRootPath + "TestBaseNoLineDelimiter.txt"),
+            FileUtils.readFileToString(new File(testFileRootPath + "PatchBaseNoLineDelimiter.txt")), "UTF-8");
+        assertThat(mergedString)
+            .isEqualTo(FileUtils.readFileToString(new File(testFileRootPath + "MergedBaseNoLineDelimiter.txt")));
+    }
+
+    /**
      * Helper method that creates a String matching the usual look of a merge exception
      * @param base
      *            The file that is supposed to be patched

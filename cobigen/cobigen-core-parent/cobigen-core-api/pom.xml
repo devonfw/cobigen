@@ -4,14 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>core-api</artifactId>
   <name>CobiGen Core - API</name>
-  <version>${cobigencore.version}</version>
   <packaging>jar</packaging>
-  <description>Code-based incremental generator -  API</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>core-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
@@ -31,13 +29,28 @@
       <artifactId>guava</artifactId>
       <version>17.0</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

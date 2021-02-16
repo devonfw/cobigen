@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>maven-test</artifactId>
   <packaging>jar</packaging>
-  <version>${cobigen.maven.version}</version>
-  <name>CobiGen Maven - Test Utils</name>
-  <description>CobiGen - Maven Test Utils</description>
+  <name>CobiGen - Maven Plug-in Test Utils</name>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
@@ -26,12 +25,12 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
     </dependency>
   </dependencies>
 

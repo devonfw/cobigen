@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>openapiplugin</artifactId>
-  <name>CobiGen - Open API Plug-in</name>
-  <version>7.1.0</version>
+  <name>CobiGen - OpenAPI Plug-in</name>
   <packaging>jar</packaging>
-  <description>CobiGen - OpenAPI Plug-in</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>openapiplugin-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
@@ -20,14 +19,22 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>openapiplugin-model</artifactId>
-      <version>${project.version}</version>
+      <version>${revision}</version>
     </dependency>
 
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>[7.0.0,)</version>
+      <version>${revision}</version>
     </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${revision}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    
     <dependency>
       <groupId>com.reprezen.kaizen</groupId>
       <artifactId>openapi-parser</artifactId>
@@ -43,19 +50,19 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>tempeng-freemarker</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

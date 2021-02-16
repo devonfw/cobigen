@@ -1,21 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cli</artifactId>
-  <version>7.0.0</version>
-  <name>cobigen-cli</name>
+  <name>CobiGen - CLI</name>
   <description>Command Line Interface for CobiGen</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>cli-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
-    <junit.version>4.11</junit.version>
-    <logback.version>1.1.2</logback.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <slf4j-api.version>1.7.7</slf4j-api.version>
     <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
     <skip.deployment>false</skip.deployment>
   </properties>
@@ -23,18 +19,36 @@
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>class-loader-agent</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${revision}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
+      <version>${revision}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
-      <version>4.0.0-beta-1b</version>
+      <version>4.5.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -46,34 +60,15 @@
       <artifactId>mmm-code-java-impl</artifactId>
       <version>1.0.0-beta5</version>
     </dependency>
-    <!-- SLF4J - API -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.7</version>
-    </dependency>
-    <!-- logback -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.1.2</version>
     </dependency>
-    <!-- JUnit -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
       <version>1.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>class-loader-agent</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <!-- We need an agent loader for the JUnit tests in Eclipse -->
     <dependency>
@@ -110,7 +105,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
             <id>add-resources</id>
@@ -182,7 +176,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.2</version>
         <configuration>
           <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
           <!-- Needed for JDK 9+ -->
@@ -206,7 +199,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.1.1</version>
         <configuration>
           <finalName>cobigen</finalName>
           <appendAssemblyId>false</appendAssemblyId>
@@ -230,22 +222,36 @@
           </execution>
         </executions>
       </plugin>
-
-      <!-- Add sources jar -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
+    
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <versionRange>[1.6.0,)</versionRange>
+                    <goals>
+                      <goal>exec</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>

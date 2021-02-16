@@ -1,14 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>tempeng-velocity</artifactId>
-  <version>7.0.0</version>
   <name>CobiGen - Velocity Template Engine</name>
-  <description>CobiGen - Velocity Template Engine</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>tempeng-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
@@ -19,18 +18,26 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>[7.0.0,)</version>
+      <version>${revision}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${revision}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
 
@@ -42,13 +49,13 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>javaplugin</artifactId>
-      <version>7.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
-    <resources> 
+    <resources>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>false</filtering>
@@ -74,5 +81,4 @@
       </plugin>
     </plugins>
   </build>
-  
 </project>

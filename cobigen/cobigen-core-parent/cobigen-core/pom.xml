@@ -4,14 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>core</artifactId>
   <name>CobiGen Core</name>
-  <version>${cobigencore.version}</version>
   <packaging>jar</packaging>
-  <description>Code-based incremental generator</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>core-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
@@ -22,13 +20,21 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>${project.version}</version>
+      <version>${revision}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+      <version>${revision}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>${project.version}</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
 
@@ -70,7 +76,7 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.10.0</version>
     </dependency>
-    
+
     <!-- collection of functions to test code which uses java.lang.System -->
     <dependency>
       <groupId>com.github.stefanbirkner</groupId>
