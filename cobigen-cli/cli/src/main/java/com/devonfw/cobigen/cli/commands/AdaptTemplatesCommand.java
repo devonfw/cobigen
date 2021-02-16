@@ -2,6 +2,7 @@ package com.devonfw.cobigen.cli.commands;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -15,11 +16,14 @@ import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
-import com.devonfw.cobigen.cli.utils.ConfigurationUtils;
+import com.devonfw.cobigen.impl.util.ConfigurationUtil;
+import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 
 import ch.qos.logback.classic.Level;
 import picocli.CommandLine.Command;
@@ -46,13 +50,6 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
     private boolean verbose;
 
     /**
-     * If this option is provided, we will unpack the templates jar at the given location
-     */
-    @Option(names = { "--custom-location", "-cl" }, arity = "0..1",
-        description = MessagesConstants.CUSTOM_LOCATION_OPTION_DESCRIPTION)
-    private Path customTemplatesLocation = null;
-
-    /**
      * Logger to output useful information to the user
      */
     private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
@@ -67,15 +64,15 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
      *             if no destination path could be set
      */
     public static void processJar(Path destinationPath) throws IOException {
-
-        Path sourcesJarPath = cobigenUtils.getTemplatesJar(true);
-        Path classesJarPath = cobigenUtils.getTemplatesJar(false);
-
         if (destinationPath == null) {
             throw new IOException("Cobigen folder path not found!");
         }
 
-        Path templatesFolderPath = destinationPath.resolve(ConfigurationUtils.COBIGEN_TEMPLATES);
+        File destinationFile = destinationPath.toFile();
+        Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, destinationFile).toPath();
+        Path classesJarPath = TemplatesJarUtil.getJarFile(false, destinationFile).toPath();
+
+        Path templatesFolderPath = destinationPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
         if (templatesFolderPath == null) {
             throw new IOException("Cobigen templates folder path not found!");
@@ -86,7 +83,7 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
         extractArchive(sourcesJarPath, templatesFolderPath);
         deleteDirectoryRecursively(templatesFolderPath.resolve("META-INF"));
 
-        extractArchive(classesJarPath, templatesFolderPath.resolve(ConfigurationUtils.COBIGEN_UTILITY_CLASSES_FOLDER));
+        extractArchive(classesJarPath, templatesFolderPath.resolve("target/classes"));
         Files.deleteIfExists(templatesFolderPath.resolve("pom.xml"));
         // If we are unzipping a sources jar, we need to get the pom.xml from the normal jar
         Files.copy(templatesFolderPath.resolve("target/classes/pom.xml"), templatesFolderPath.resolve("pom.xml"));
@@ -154,33 +151,20 @@ public class AdaptTemplatesCommand implements Callable<Integer> {
             CLILogger.setLevel(Level.DEBUG);
         }
 
-        Path cobigenTemplatesDirectory = null;
-        if (customTemplatesLocation != null) {
+        URI templatesLocationUri = ConfigurationUtil.findTemplatesLocation();
 
+        if (templatesLocationUri == null) {
             LOG.info(
-                "CobiGen is attempting to download the latest CobiGen_Templates.jar and will extract it to a target directory of your choice. please wait...");
-            ConfigurationUtils.createConfigFile(customTemplatesLocation);
-            // sets custom templates directory path from configuration file property
-            cobigenTemplatesDirectory = ConfigurationUtils.getCustomTemplatesLocation();
-            LOG.info("Creating custom templates folder at custom location @ {}", cobigenTemplatesDirectory);
-        } else {
-            LOG.info(
-                "CobiGen is attempting to download the latest CobiGen_Templates.jar and will extract it to a default target directory. please wait...");
-            // sets default templates directory path from CLI location
-            cobigenTemplatesDirectory = ConfigurationUtils.getCobigenCliRootPath();
-            ConfigurationUtils.createConfigFile(cobigenTemplatesDirectory);
-            LOG.info("Creating custom templates folder next to the CLI @ {}", cobigenTemplatesDirectory);
+                "CobiGen is attempting to download the latest CobiGen_Templates.jar and will extract it to cobigen home directory {}. please wait...",
+                ConfigurationConstants.COBIGEN_HOME_FOLDER);
+            File templatesDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
+            TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesDirectory);
+            TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesDirectory);
+            processJar(templatesDirectory.toPath());
+            LOG.info("Successfully downloaded and extracted templates to @ {}",
+                templatesDirectory.toPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES));
         }
 
-        if (Files.exists(cobigenTemplatesDirectory)) {
-            processJar(cobigenTemplatesDirectory);
-        } else {
-            LOG.error("Could not find target directory to extract templates @ {}", cobigenTemplatesDirectory);
-            return 1;
-        }
-
-        LOG.info("Successfully created custom templates folder @ {}",
-            cobigenTemplatesDirectory.resolve(ConfigurationUtils.COBIGEN_TEMPLATES));
         return 0;
     }
 }

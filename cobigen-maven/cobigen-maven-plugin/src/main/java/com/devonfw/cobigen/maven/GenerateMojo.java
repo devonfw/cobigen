@@ -42,7 +42,7 @@ import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
-import com.google.inject.internal.util.Sets;
+import com.google.common.collect.Sets;
 
 /**
  * CobiGen generation Mojo, which handles generation using a configuration folder/archive
@@ -231,7 +231,7 @@ public class GenerateMojo extends AbstractMojo {
                         Object packageFolder;
                         try {
                             packageFolder =
-                                cobigen.read("java", Paths.get(sourcePath.toUri()), Charsets.UTF_8, inputPackage, cl);
+                                cobigen.read(Paths.get(sourcePath.toUri()), Charsets.UTF_8, inputPackage, cl);
                             inputs.add(packageFolder);
                             sourceFound = true;
                         } catch (InputReaderException e) {

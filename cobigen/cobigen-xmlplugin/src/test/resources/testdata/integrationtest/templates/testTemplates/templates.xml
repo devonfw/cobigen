@@ -5,8 +5,12 @@
         <template name="xmlTestTemplate_AttributeList" destinationPath="xmlTestOutput_AttributeList.txt" templateFile="xmlTestTemplate_AttributeList.ftl"/>
         <template name="xmlTestTemplate_TextContent" destinationPath="xmlTestOutput_TextContent.txt" templateFile="xmlTestTemplate_TextContent.ftl"/>
         <template name="xmlTestTemplate_TextNodes" destinationPath="xmlTestOutput_TextNodes.txt" templateFile="xmlTestTemplate_TextNodes.ftl" mergeStrategy="xmlmerge_attachTexts"/>
+        <template name="xmlTestTemplate_TextNodesValidate" destinationPath="xmlTestOutput_TextNodes.txt" templateFile="xmlTestTemplate_TextNodes.ftl" mergeStrategy="xmlmerge_attachTexts_validate"/>
         <template name="xmlTestTemplate_SingleChild" destinationPath="xmlTestOutput_SingleChild.txt" templateFile="xmlTestTemplate_SingleChild.ftl" mergeStrategy="xmlmerge_override_attachTexts"/>
+        <template name="xmlTestTemplate_SingleChildValidate" destinationPath="xmlTestOutput_SingleChild.txt" templateFile="xmlTestTemplate_SingleChild.ftl" mergeStrategy="xmlmerge_override_attachTexts_validate"/>
         <template name="xmlTestTemplate_ChildList" destinationPath="xmlTestOutput_ChildList.txt" templateFile="xmlTestTemplate_ChildList.ftl" mergeStrategy="xmlmerge"/>
+        <template name="xmlTestTemplate_ChildListValidate" destinationPath="xmlTestOutput_ChildList.txt" templateFile="xmlTestTemplate_ChildList.ftl" mergeStrategy="xmlmerge_validate"/>
         <template name="xmlTestTemplate_VariablesConstant" destinationPath="xmlTestOutput_VariablesConstant.txt" templateFile="xmlTestTemplate_VariablesConstant.ftl" mergeStrategy="xmlmerge_override"/>
+        <template name="xmlTestTemplate_VariablesConstantValidate" destinationPath="xmlTestOutput_VariablesConstant.txt" templateFile="xmlTestTemplate_VariablesConstant.ftl" mergeStrategy="xmlmerge_override_validate"/>
     </templates>
 </templatesConfiguration>

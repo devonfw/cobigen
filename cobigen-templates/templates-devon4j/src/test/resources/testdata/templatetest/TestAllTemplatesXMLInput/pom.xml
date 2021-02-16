@@ -15,7 +15,7 @@
       <plugin>
         <groupId>com.devonfw.cobigen</groupId>
         <artifactId>cobigen-maven-plugin</artifactId>
-        <version>5.0.0</version>
+        <version>7.1.0</version>
         <executions>
           <execution>
             <id>generate</id>
@@ -39,32 +39,32 @@
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tempeng-freemarker</artifactId>
-            <version>2.1.0</version>
+            <version>7.0.0</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>javaplugin</artifactId>
-            <version>2.2.0</version>
+            <version>7.1.0</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>xmlplugin</artifactId>
-            <version>4.2.0</version>
+            <version>7.0.0</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>openapiplugin</artifactId>
-            <version>2.4.0</version>
+            <version>7.1.0</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>textmerger</artifactId>
-            <version>2.1.0</version>
+            <version>7.1.0</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tsplugin</artifactId>
-            <version>2.4.2</version>
+            <version>7.1.0</version>
           </dependency>
         </dependencies>
       </plugin>

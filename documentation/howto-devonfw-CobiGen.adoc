@@ -1,14 +1,17 @@
 :toc:
 toc::[]
+
+:toc:
+toc::[]
 [.text-center]
-= End to End POC Code generation using Entity class
+= End to End POC Code generation using OpenAPI and Entity class
 This article helps to create a sample application using cobigen.
 
 == Prerequisites
 
 Download and install devonnfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
 
-== Steps to create a Sample Project using Cobigen
+== Steps to create a sample Project using Cobigen
 
 The HOW_TO is divided in 2 parts:
 [arabic]
@@ -21,18 +24,15 @@ So, ready to go! We’re going to start from the BE part …
 
 === Back End
 
-run \devonfw-ide-scripts-3.2.4\eclipse-main.bat
-
-It will open eclipse
-
-
-[arabic, start=6]
-
 create a project using below command from the command prompt
 
 [source, java]
 devon java create com.example.domain.myapp
 
+
+run
+\devonfw-ide-scripts-<version>\eclipse-main.bat
+to open eclipse
 
 Import the project to eclipse as maven project
 image:images/howtos/e2e_gen/image14.png[eclipse devon]
@@ -43,15 +43,25 @@ Now We have the following 4 projects.
 
 image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 
+Check resources/config/application.properties to see the values as PATH, TCP port etc …
+Also make sure the below property is present.
+
+__security.cors.enabled=true__
+
+
+image:images/howtos/e2e_gen/application_properties.png[configure]
+
 *BEFORE to start to create an Entity class, remember to create the tables !*
 
-[arabic, start=7]
-. Create a new *SQL* *file* (i.e: V0005__CreateTables_ItaPoc.sql) inside __jwtsample-__core and insert the following script:
+* Create new *SQL* *file*  inside myapp-core  resources/db/migration/specific/h2 and insert the following script:
+
+V0005__CreateTables_ItaPoc.sql (*Please note*  2 underscores after V0005)
 
 [source, sql]
 
 CREATE TABLE EMPLOYEE (
-id BIGINT auto_increment, modificationCounter *INTEGER* *NOT* *NULL*,
+id BIGINT auto_increment,
+modificationCounter INT NOT NULL,
 employeeid BIGINT auto_increment,
 name VARCHAR(255),
 surname VARCHAR(255),
@@ -60,31 +70,48 @@ PRIMARY KEY (employeeid)
 );
 
 
-*_WARNING_*: please note that there are 2 underscore in the name !
+
 
 image:images/howtos/e2e_gen/image16.png[sql file]
 
-[arabic, start=8]
-. Now create another SQL file (i.e: V0006__PopulateTables-ItaPoc.sql) and add following script about the INSERT in order to populate the table created before
+* Now create another SQL file (i.e: V0006__PopulateTables-ItaPoc.sql ) and add following script about the INSERT in order to populate the table created before
 
-*_WARNING_*: please note that there are 2 underscore in the name !
 
 [source, sql]
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Stefano','Rossini','stefano.rossini@capgemini.com');
-INSERT INTO  EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Angelo','Muresu', 'angelo.muresu@capgemini.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Angelo','Muresu', 'angelo.muresu@capgemini.com');
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Jaime','Gonzalez', 'jaime.diaz-gonzalez@capgemini.com');
 
 image:images/howtos/e2e_gen/image17.png[sql insert]
 
+== Back end Code Generation
 
-*Let's create the Entity Class for the code generation*
+Back end code can be generated from either of the below 2 methods
+[arabic, start=1]
+. OpenAPI .yml file
+. java Entity class.
 
-[arabic, start=9]
-. Create a package *employeemanagement.dataacess.api* under the folder jwtsample-core. Note: It is important to follow this naming convention for CobiGen to work properly.
+*Prepare OpenAPI  .yml file*
+
+Create a .yml file which satisfies the OpenAPI standards or check the sample file https://github.com/devonfw/tools-cobigen/blob/master/documentation/files/devonfw_employee.yml[devonfw_employee.yml] and prepare.
+
+*Important:* if you want to know how to write an OpenAPI contract compatible with CobiGen, please read https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage[this tutorial].
+
+image:images/howtos/e2e_gen/image18.png[Swagger at OASP4J Project]
+
+Right click _devonfw.yml_. CobiGen -> Generate
+
+It will ask you to download the templates, click on _update_:
+
+*Prepare Entity class*
+
+Create a package *com.example.domain.myapp.employeemanagement.dataaccess.api*
+
+under the folder myapp-core. Note: It is important to follow this naming convention for CobiGen to work properly.
 
 image:images/howtos/e2e_gen/poc-entity-package.png[package]
 
-. Now create a JPA Entity class in this package
+Now create a JPA Entity class in this package
 
 [source, java]
 import javax.persistence.Entity;
@@ -94,23 +121,24 @@ import javax.persistence.Column;
 @Entity
 @javax.persistence.Table(name = "EMPLOYEE")
 public class EmployeeEntity {
-  @Column(name = "EMPLOYEEID")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long employeeId;
-  @Column(name = "NAME")
-  private String name;
-  @Column(name = "SURNAME")
-  private String surname;
-  @Column(name = "EMAIL")
-  private String email;
+ @Column(name = "EMPLOYEEID")
+ @GeneratedValue(strategy = GenerationType.IDENTITY)
+ private Long employeeId;
+ @Column(name = "NAME")
+ private String name;
+ @Column(name = "SURNAME")
+ private String surname;
+ @Column(name = "EMAIL")
+ private String email;
 }
 
-then generate getters and setters  for all attributes …
+then generate getters and setters  for all attributes
 
-[arabic, start=10]
-. Use Cobigen to generate code. Right click on EmployeeEntity. CobiGen -> Generate
+ Use Cobigen to generate code. Right click on EmployeeEntity. CobiGen -> Generate
 
 It will ask you to download the templates, click on _update_:
+
+=== Code Generation
 
 image:images/howtos/e2e_gen/image19.png[cobigen generate]
 
@@ -118,13 +146,11 @@ It will automatically download the latest version of _CobiGen_Templates_.
 
 *Attention:* If you want to adapt the CobiGen_Templates, (normally this is not neccessary), you will find at the end of this document a tutorial on how to import them and adapt them!
 
-[arabic, start=11]
-. Click on all the option selected as below:
+* Click on all the option selected as below:
 
 image:images/howtos/e2e_gen/image20.png[cobigen option selection]
 
-[arabic, start=12]
-. Click on finish. Below Screen would be seen. Click on continue
+* Click on finish. Below Screen would be seen. Click on continue
 
 image:images/howtos/e2e_gen/image21.png[cobigen finish]
 
@@ -134,7 +160,7 @@ Some classes will be generated on the api part (_jwtsample-api)_, normally it wi
 
 image:images/howtos/e2e_gen/image22.png[be layer]
 
-Some other classes will be generated on the core part (_jwtsample-core)_, normally it will be implementations as shown below:
+Some other classes will be generated on the core part (_jwtsample-core)_, those are the implementations as shown below:
 
 image:images/howtos/e2e_gen/image23.png[core folder]
 
@@ -150,9 +176,11 @@ image:images/howtos/e2e_gen/image26.png[Spring boot run]
 
 *BE DONE*
 
-Last but not least: We make a quick REST services test !
+=== Test the Services
 
-See in the application.properties the TCP Port and the PATH
+Download https://www.getpostman.com/apps[Postman] to test the rest services.
+
+Get the port and path from application.properties
 
 image:images/howtos/e2e_gen/image27.png[application properties]
 
@@ -170,22 +198,44 @@ image:images/howtos/e2e_gen/image28.png[url mapping]
 
 URL of getEmployee for this example is:
 
-for all employees
+For all employees
 [source, URL]
+POST
 http://localhost:8081/services/rest/employeemanagement/v1/employee/search
+Content-Type    application/json
+{"name":"Angelo"}
 
-for the specific employee
+For the specific employee
 [source, URL]
+GET
 http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
 
-Now download https://www.getpostman.com/apps[Postman] to test the rest services.
+In postman, create a POST Request for the LOGIN and insert in the body the JSON containing the username and password _admin_
 
-Once done, you have to create a POST Request for the LOGIN and insert in the body the JSON containing the username and password _waiter_
+Login Test using postman
+
+[source, URL]
+----
+    POST
+    http://localhost:8081/services/rest/login
+    Content-Type    application/json
+    {
+    "j_username":"admin",
+    "j_password":"admin"
+     }
+----
+* Set the header
+
+
+
+
+*Send* will return 200 OK as response.
+
 
 image:images/howtos/e2e_gen/image29.png[postman]
 
-Once done with success (*Status: 200 OK*) …
+
 
 image:images/howtos/e2e_gen/image30.png[postman]
 
@@ -213,61 +263,74 @@ Let’s start now with angular Web and then Ionic app.
 
 ==== Angular Web App
 
-[arabic]
-.  To generate angular structure, download or clone *devon4ng-application-template* from
+*  To generate angular structure, download or clone _devon4ng-application-template_ from
 [source, URL]
 https://github.com/devonfw/devon4ng-application-template
 
 image:images/howtos/e2e_gen/image36.png[devon dist folder]
 
-[arabic, start=2]
-. Once done, right click on EmployeeEto.java  file present under the package _com.devonfw.poc.employeemanagement.logic.api.to_
+Place the files inside workspace under the folder devon4ng-application-template.
 
-image:images/howtos/e2e_gen/image37.png[eclipse generate]
+eg: C:\projects\devonfw-ide-scripts-2020.08.002\workspaces\main\devon4ng-application-template
 
-[arabic, start=4]
-. Click on Finish
+In Devon IDE, right click on EmployeeEto.java file present under the package com.example.domain.myapp.employeemanagement.logic.api.to
+
+For OpenAPI, right click on _devonfw.yml_ again.
+
+* CobiGen -> Generate
+
+Click on the selected options as seen in the screenshot:
+
+image:images/howtos/e2e_gen/FEGenOptions.png[eclipse generate]
+
+
+* Click on Finish
 
 image:images/howtos/e2e_gen/image38.png[eclipse]
 
-[arabic, start=5]
-. The entire ANGULAR structure has been auto generated. The generated code will be merged to the existing.
+
+*  The entire ANGULAR structure has been auto generated. The generated code will be merged to the existing.
 
 
 image:images/howtos/e2e_gen/image39.png[angular ee layer]
 
-[arabic, start=6]
-. IMPORTANT now you have to add in the *_app-routing.module.ts_* file the next content, as a child of HomeComponent, in order to enable the route of the new generated component
+*  IMPORTANT now you have to add in the *_app-routing.module.ts_* file the next content, as a child of HomeComponent, in order to enable the route of the new generated component
 
-[source, ts]
-,\{
-path: 'employee',
-component: EmployeeGridComponent,
-canActivate: [AuthGuard],
-},
+[source]
+{
+      path: 'employee',
+      loadChildren: () =>
+          import('./employee/employee.module').then(
+              m => m.EmployeeModule,
+          )
+}
 
-Following picture explain where to place the above content:
+Following picture explain where to place the above content, also remove if any duplicate code is there.
 
-image:images/howtos/e2e_gen/image40.png[routes]
+image:images/howtos/e2e_gen/routing-module.png[routes]
 
-[arabic, start=7]
+* Add newly generated module to the left menu.
+Modify the file  app\layout\nav-bar\nav-bar.component.html, add the below code.
 
-. Open the command prompt and execute _devon yarn install_ from the base folder, which would download all the required libraries..
+[source]
+<a id="employee" mat-list-item [routerLink]="['./employee']" (click)="close()">
+       <mat-icon matListAvatar>
+        grid_on
+       </mat-icon> <h3 matLine> {{ 'employeemanagement.Employee.navData' | transloco }} </h3>
+       <p matLine class="desc"> {{ 'employeemanagement.Employee.navDataSub' | transloco }} </p>
+</a>
 
 
-[arabic, start=8]
-. Check the file *environment.ts* if the server path is correct. (for production you will have to change also the environment.prod.ts file)
+
+image:images/howtos/e2e_gen/nav-bar.png[nav bar]
+
+* Check the file *environment.ts* if the server path is correct. (for production you will have to change also the environment.prod.ts file)
 
 image:images/howtos/e2e_gen/image42.png[environment]
 
-In order to do that it’s important to look at the application.properties to see the values as PATH, TCP port etc …
-
-image:images/howtos/e2e_gen/image43.png[configure]
-
 For example in this case the URL should be since the context path is empty the server URLS should be like:
 
-[source, ts]
-
+[source]
 export const environment = {
 production: false,
 restPathRoot: 'http://localhost:8081/',
@@ -275,53 +338,58 @@ restServiceRoot: 'http://localhost:8081/services/rest/',
 security: 'jwt'
 };
 
-
 *Warning*: REMEMBER to set security filed to *jwt* , if it is not configured already.
-[arabic, start=9]
-. Now run the *ng serve -o* command to run the Angular Application.
+
+*  Open the command prompt and execute below command from the base folder, which would download all the required libraries..
+
+[source]
+devon yarn install
+
+Run the below command for the front end.
+
+[source]
+devon ng serve
 
 image:images/howtos/e2e_gen/image44.png[]
 
-[arabic, start=10]
-. If the command execution is *successful*, the below screen will *appear* and it would be automatically redirected to the url:
+* If the command execution is *successful*, the below screen will *appear* and it would be automatically redirected to the url:
 [source, URL]
 http://localhost:4200/login
 
 image:images/howtos/e2e_gen/image45.png[]
 
-*WebApp DONE*
+*WebApp Done*
 
 ==== Ionic Mobile App
 
-[arabic]
-.   To generate Ionic structure, download or clone *devon4ng-application-template* from
+*   To generate Ionic structure, download or clone _*devon4ng-application-template*_ from
 [source, URL]
 https://github.com/devonfw/devon4ng-ionic-application-template
-. Once done, Right click on the *EmployeeEto* as you already did before in order to use CobiGen.
-. Click on the selected options as seen in the screenshot:
+
+right click on EmployeeEto.java file present under the package com.devonfw.poc.employeemanagement.logic.api.to
+
+For OpenAPI, Right click on the *_devonfw.yml_* as you already did before in order to use CobiGen.
+
+* Click on the selected options as seen in the screenshot:
 
 image:images/howtos/e2e_gen/image46.png[]
 
-[arabic, start=4]
-. Click on Finish
-. The entire ionic structure will be auto generated.
+* Click on Finish
+* The entire ionic structure will be auto generated.
 
 image:images/howtos/e2e_gen/image47.png[]
 
-[arabic, start=6]
-. Change the server url (with correct serve url) in environment.ts, environment.prod.ts and environment.android.ts files (i.e: itapoc\devon4ng-ionic-application-template\src\environments\).
+* Change the server url (with correct serve url) in environment.ts, environment.prod.ts and environment.android.ts files (i.e: itapoc\devon4ng-ionic-application-template\src\environments\).
 
 The angular.json file inside the project has already a build configuration for android.
 
 image:images/howtos/e2e_gen/image48.png[]
 
-[arabic, start=7]
-. Run npm install in the root folder to download the dependecies
-. Run ionic serve
+* Run npm install in the root folder to download the dependecies
+* Run ionic serve
 
 image:images/howtos/e2e_gen/image49.png[]
 
-[arabic, start=11]
 . {blank}
 +
 
@@ -330,13 +398,14 @@ Once the execution is successful
 
 image:images/howtos/e2e_gen/image50.png[]
 
-* Mobile App DONE*
+* Mobile App Done*
 
 So: well done
 
 Starting from an Entity class you’ve successfully generated the Back-End layer (REST, SOAP, DTO, Spring services, Hibernate DAO), the Angular Web App and the Ionic mobile App!
 
 image:images/howtos/e2e_gen/image51.png[]
+
 
 
 ===== Build APK
@@ -391,8 +460,7 @@ Now you just need to change the Java version of the project to JRE 1.8. Right cl
 
 image:images/howtos/e2e_gen/image60.png[]
 
-Now change the version to Java 1.8
-image:images/howtos/e2e_gen/image61.png[]
+Now change the version to Java 11
 
 Now you have successfully imported the CobiGen templates. If you want to edit them, you will find them in the folder _src/main/templates._ For instance, the Java templates are located here:
 

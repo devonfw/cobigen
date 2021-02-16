@@ -89,6 +89,23 @@ public class AbstractMavenTest {
     }
 
     /**
+     * Runs the maven invoker with goal package. Makes sure, that the local repository of the executing maven
+     * process is used.
+     * @param testProject
+     *            the test project to build
+     * @param localRepoPath
+     *            local repository path of the current execution
+     * @param debug
+     *            enable debug logging
+     * @return the temporary copy of the test project, the build was executed in
+     * @throws Exception
+     *             if anything fails
+     */
+    protected File runMavenInvoker(File testProject, String localRepoPath, boolean debug) throws Exception {
+        return runMavenInvoker(testProject, null, localRepoPath, debug);
+    }
+
+    /**
      * Runs the maven invoker with goal package and the default devonfw settings file. Makes sure, that the
      * local repository of the executing maven process is used.
      * @param testProject
@@ -133,6 +150,7 @@ public class AbstractMavenTest {
         setTestProperties(request, templatesProject);
         request.getProperties().put("locRep", localRepoPath);
         request.setShowErrors(true);
+        request.setUpdateSnapshots(true);
         request.setDebug(debug);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);

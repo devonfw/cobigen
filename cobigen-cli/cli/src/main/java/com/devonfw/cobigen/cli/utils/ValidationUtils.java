@@ -188,7 +188,7 @@ public final class ValidationUtils {
             LOG.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
                 + "More info here https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage");
         }
-        System.exit(1);
+        throw new IllegalArgumentException("Your input file is invalid");
     }
 
 }

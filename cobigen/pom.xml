@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>master-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <modules>
@@ -26,82 +26,9 @@
     <module>cobigen-templateengines</module>
   </modules>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <downloadSources>true</downloadSources>
-          <downloadJavadocs>true</downloadJavadocs>
-        </configuration>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings
-          only. It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>
-                      org.codehaus.mojo
-                    </groupId>
-                    <artifactId>
-                      build-helper-maven-plugin
-                    </artifactId>
-                    <versionRange>
-                      [1.4,)
-                    </versionRange>
-                    <goals>
-                      <goal>add-source</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-
   <profiles>
     <profile>
-      <id>p2-bundle</id>      <!-- Bundle and P2 -->
+      <id>p2-bundle</id> <!-- Bundle and P2 -->
       <build>
         <plugins>
           <plugin>
@@ -139,7 +66,7 @@
                 <Embed-Transitive>true</Embed-Transitive>
                 <Bundle-Name>${project.name}</Bundle-Name>
                 <Include-Resource>
-                  {maven-resources}, {maven-dependencies}, {META-INF/LICENSE.html=src/main/resources/META-INF/LICENSEP2BUNDLE.html}
+		    {maven-resources}, {maven-dependencies}, {META-INF/LICENSE.html=src/main/resources/META-INF/LICENSEP2BUNDLE.html}
                 </Include-Resource>
                 <niceManifest>true</niceManifest>
                 <Import-Package></Import-Package>

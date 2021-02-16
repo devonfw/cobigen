@@ -87,7 +87,7 @@ public class FileInputConverter {
         } catch (InputReaderException e) {
             LOG.trace("Could not read file {}", inputFile.getLocationURI(), e);
             throw new GeneratorCreationException(
-                "Could not read file " + inputFile.getLocationURI() + "with any input reader", e);
+                "Could not read file " + inputFile.getLocationURI() + " with any input reader", e);
         } catch (PluginNotAvailableException e) {
             LOG.trace(e.getMessage(), e);
             throw new GeneratorCreationException("Could not read file " + inputFile.getLocationURI()

@@ -136,10 +136,10 @@ class GitHub:
                 return milestone
         return None
 
-    def find_cobigen_core_milestone(self, version: str) -> Milestone:
+    def find_milestone(self, module: str, version: str) -> Milestone:
         milestones: PaginatedList = self.__request_milestone_list()
 
-        search_title = self.__config.expected_core_milestone_name + version
+        search_title = self.__config.expected_raw_milestone_names.get(module) + version
         log_debug("Trying to search milestone: " + search_title)
         for milestone in milestones:
             if milestone.title == search_title:
@@ -172,7 +172,7 @@ class GitHub:
         release_title = self.__config.cobigenwiki_title_name + " v" + self.__config.release_version
         release_text = "[ChangeLog](" + url_milestone + ")"
         if "eclipse" in self.__config.branch_to_be_released and core_version_in_eclipse_pom:
-            cobigen_core_milestone: Milestone = self.find_cobigen_core_milestone(core_version_in_eclipse_pom)
+            cobigen_core_milestone: Milestone = self.find_milestone("dev_core", core_version_in_eclipse_pom)
             if cobigen_core_milestone.state == "closed":
                 core_url_milestone = self.__config.github_closed_milestone_url(cobigen_core_milestone.number)
                 release_text = release_text + "\n also includes \n" + "[ChangeLog CobiGen Core](" + core_url_milestone + ")"
@@ -197,8 +197,8 @@ class GitHub:
                 for fname in files:
                     fpath = os.path.join(root, fname)
                     # To prevent uploading of unnecessary zip/jar files.
-                    if (fname.endswith("jar") or fname.endswith("zip")) and self.__config.release_version in fname:
-                        log_info("Uploading file " + fname + "...")
+                    if (fname.endswith("jar") or fname.endswith("zip")) and self.__config.release_version in fname and 'nexus-staging' in fpath:
+                        log_info("Uploading file " + fname + " from " + fpath + " ...")
                         try:
                             asset: GitReleaseAsset = release.upload_asset(path=fpath, label=fname,
                                                                           content_type=content_type)

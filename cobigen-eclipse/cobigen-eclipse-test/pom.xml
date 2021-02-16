@@ -1,16 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>com.devonfw.cobigen.eclipse.test</artifactId>
-  <name>CobiGen - Eclipse Plug-In Tests</name>
+  <name>CobiGen - Eclipse Plug-In E2E Test</name>
   <packaging>eclipse-test-plugin</packaging>
-  <version>5.2.1</version>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>eclipse-parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
@@ -21,7 +19,7 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.3.1</version>
+      <version>${revision}</version>
     </dependency>
   </dependencies>
 
@@ -43,6 +41,7 @@
               <overWriteIfNewer>true</overWriteIfNewer>
               <outputDirectory>${project.basedir}/lib</outputDirectory>
               <markersDirectory>${project.basedir}/lib</markersDirectory>
+              <stripVersion>true</stripVersion>
             </configuration>
           </execution>
         </executions>
@@ -108,7 +107,7 @@
                 <type>p2-installable-unit</type>
                 <id>com.devonfw.cobigen.propertyplugin</id>
                 <versionRange>0.0.0</versionRange>
-              </requirement>              
+              </requirement>
               <requirement>
                 <type>p2-installable-unit</type>
                 <id>com.devonfw.cobigen.textmerger</id>
@@ -169,11 +168,6 @@
       <id>swtbot</id>
       <url>http://download.eclipse.org/technology/swtbot/releases/latest/</url>
       <layout>p2</layout>
-    </repository>
-    <repository>
-      <id>photon</id>
-      <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/photon</url>
     </repository>
   </repositories>
 

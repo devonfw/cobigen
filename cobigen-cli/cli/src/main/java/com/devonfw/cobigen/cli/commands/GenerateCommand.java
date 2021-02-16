@@ -4,19 +4,24 @@ import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.apache.commons.text.similarity.JaccardDistance;
+import org.apache.maven.shared.utils.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +35,9 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
-import com.devonfw.cobigen.cli.utils.ConfigurationUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
+import com.devonfw.cobigen.impl.util.ConfigurationUtil;
 import com.google.googlejavaformat.java.FormatterException;
 
 import ch.qos.logback.classic.Level;
@@ -122,13 +127,14 @@ public class GenerateCommand implements Callable<Integer> {
             LOG.debug("Input files and output root path confirmed to be valid.");
             CobiGen cg = cobigenUtils.initializeCobiGen();
 
-            Path templateFolder = ConfigurationUtils.getCobigenTemplatesFolderPath();
+            URI templatesLocationUri = ConfigurationUtil.findTemplatesLocation();
+            Path templateFolder = Paths.get(templatesLocationUri);
 
             ClassLoader inputClassLoader;
 
-            if (templateFolder != null) {
-                inputClassLoader = URLClassLoader.newInstance(new URL[] { templateFolder.toUri().toURL() },
-                    getClass().getClassLoader());
+            if (templatesLocationUri != null) {
+                inputClassLoader =
+                    URLClassLoader.newInstance(new URL[] { templatesLocationUri.toURL() }, getClass().getClassLoader());
             } else {
                 inputClassLoader = getClass().getClassLoader();
             }
@@ -249,7 +255,7 @@ public class GenerateCommand implements Callable<Integer> {
 
         int index = 0;
         for (File inputFile : inputFiles) {
-            inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
+            inputFile = preprocessInputFile(inputFile);
             // Input file can be: C:\folder\input.java
             if (inputFile.exists() == false) {
                 LOG.debug(
@@ -270,7 +276,7 @@ public class GenerateCommand implements Callable<Integer> {
         }
 
         if (outputRootPath != null) {
-            outputRootPath = ConfigurationUtils.preprocessInputFile(outputRootPath);
+            outputRootPath = preprocessInputFile(outputRootPath);
         }
         return ValidationUtils.isOutputRootPathValid(outputRootPath);
 
@@ -300,12 +306,12 @@ public class GenerateCommand implements Callable<Integer> {
         ClassLoader classLoader, Class<?> c, Path templateFolder) {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
-        inputFile = ConfigurationUtils.preprocessInputFile(inputFile);
+        inputFile = preprocessInputFile(inputFile);
         try {
             Object input;
-            String extension = inputFile.getName().toLowerCase();
-            Boolean isJavaInput = extension.endsWith(".java");
-            Boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
+            String extension = FileUtils.getExtension(inputFile.getName());
+            Boolean isJavaInput = extension.equals("java");
+            Boolean isOpenApiInput = extension.equals("yaml") || extension.equals("yml");
 
             input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
@@ -345,16 +351,22 @@ public class GenerateCommand implements Callable<Integer> {
                 report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
                     templateFolder);
             }
-            if (ValidationUtils.checkGenerationReport(report) && isJavaInput) {
-                try {
-                    ParsingUtils.formatJavaSources(report.getGeneratedFiles());
-                } catch (FormatterException e) {
-                    LOG.info(
-                        "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
+            if (ValidationUtils.checkGenerationReport(report)) {
+                Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream()
+                    .filter(e -> FileUtils.getExtension(e.toAbsolutePath().toString()).equals("java"))
+                    .collect(Collectors.toSet());
+                if (!generatedJavaFiles.isEmpty()) {
+                    try {
+                        ParsingUtils.formatJavaSources(generatedJavaFiles);
+                    } catch (FormatterException e) {
+                        LOG.info(
+                            "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.",
+                            LOG.isDebugEnabled() ? e : null);
+                    }
                 }
             }
         } catch (InputReaderException e) {
-            LOG.error("Invalid input for CobiGen, please check your input file.");
+            LOG.error("Invalid input for CobiGen, please check your input file.", e);
 
         }
     }
@@ -427,12 +439,12 @@ public class GenerateCommand implements Callable<Integer> {
                     LOG.info("(" + selectedArtifactNumber + ") " + artifactDescription);
                 } catch (IndexOutOfBoundsException e) {
                     LOG.error("The {} number you have specified is out of bounds!", artifactType);
-                    System.exit(1);
+                    throw (e);
                 } catch (NumberFormatException e) {
                     LOG.error(
                         "Error parsing your input. You need to specify {}s using numbers separated by comma (2,5,6).",
                         artifactType);
-                    System.exit(1);
+                    throw (e);
                 }
             }
 
@@ -467,7 +479,7 @@ public class GenerateCommand implements Callable<Integer> {
                     LOG.info(
                         "No increment with that name has been found, Please provide correct increment name and try again ! Thank you");
 
-                    System.exit(1);
+                    throw new InputMismatchException("Wrong increment name");
                 }
 
                 userSelection = artifactStringSelection(userSelection, possibleArtifacts, artifactType);
@@ -532,11 +544,11 @@ public class GenerateCommand implements Callable<Integer> {
             } catch (NumberFormatException e) {
                 LOG.error("Error parsing your input. You need to specify {}s using numbers separated by comma (2,5,6).",
                     artifactType);
-                System.exit(1);
+                throw (e);
 
             } catch (ArrayIndexOutOfBoundsException e) {
                 LOG.error("Error parsing your input. Please give a valid number from the list above.");
-                System.exit(1);
+                throw (e);
             }
         }
         return userSelection;
@@ -561,25 +573,54 @@ public class GenerateCommand implements Callable<Integer> {
         Map<? super GenerableArtifact, Double> scores = new HashMap<>();
 
         for (int i = 0; i < matching.size(); i++) {
-            String description = isIncrements ? ((IncrementTo) matching.get(i)).getDescription()
-                : ((TemplateTo) matching.get(i)).getId();
-            JaccardDistance distance = new JaccardDistance();
-            scores.put(matching.get(i), distance.apply(description.toUpperCase(), userInput.toUpperCase()));
+            if (!isIncrements) {
+                String description = ((TemplateTo) matching.get(i)).getId();
+                JaccardDistance distance = new JaccardDistance();
+                scores.put(matching.get(i), distance.apply(
+                        description.toUpperCase(), userInput.toUpperCase()));
+            } else {
+                String description =
+                        ((IncrementTo) matching.get(i)).getDescription();
+                String id = ((IncrementTo) matching.get(i)).getId();
+                JaccardDistance distance = new JaccardDistance();
+                Double descriptionDistance = distance.apply(
+                        description.toUpperCase(), userInput.toUpperCase());
+                Double idDistance = distance.apply(id.toUpperCase(),
+                        userInput.toUpperCase());
+                scores.put(matching.get(i),
+                        Math.min(idDistance, descriptionDistance));
+            }
         }
 
-        Map<? super GenerableArtifact, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
-            .collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
+        Map<? super GenerableArtifact, Double> sorted =
+                scores.entrySet().stream().sorted(comparingByValue())
+                        .collect(toMap(e -> e.getKey(), e -> e.getValue(),
+                                (e1, e2) -> e2, LinkedHashMap::new));
 
         ArrayList<? super GenerableArtifact> chosen = new ArrayList<>();
 
         for (Object artifact : sorted.keySet()) {
             GenerableArtifact tmp;
             tmp = isIncrements ? (IncrementTo) artifact : (TemplateTo) artifact;
-            String description =
-                isIncrements ? ((IncrementTo) artifact).getDescription() : ((TemplateTo) artifact).getId();
-            if (description.toUpperCase().contains(userInput.toUpperCase())
-                || sorted.get(artifact) <= SELECTION_THRESHOLD) {
-                chosen.add(tmp);
+            if (!isIncrements) {
+                String description = ((TemplateTo) artifact).getId();
+                if (description.toUpperCase().contains(userInput.toUpperCase())
+                        || sorted.get(artifact) <= SELECTION_THRESHOLD) {
+                    chosen.add(tmp);
+                }
+            } else {
+                String description = ((IncrementTo) artifact).getDescription();
+                String id = ((IncrementTo) artifact).getId();
+                if (description.equalsIgnoreCase(userInput)
+                        || id.equalsIgnoreCase(userInput)) {
+                    chosen.add(tmp);
+                    return (ArrayList<? extends GenerableArtifact>) chosen;
+                }
+                if ((description.toUpperCase().contains(userInput.toUpperCase())
+                        || id.toUpperCase().contains(userInput.toUpperCase()))
+                        || sorted.get(artifact) <= SELECTION_THRESHOLD) {
+                    chosen.add(tmp);
+                }
             }
         }
 
@@ -595,6 +636,24 @@ public class GenerateCommand implements Callable<Integer> {
         String userInput = "";
         userInput = inputReader.nextLine();
         return userInput;
+    }
+
+    /**
+     * Processes the input file's path. Strips the quotes from the file path if they are given.
+     * @param inputFile
+     *            the input file
+     * @return input file with processed path
+     */
+    public static File preprocessInputFile(File inputFile) {
+        String path = inputFile.getPath();
+        String pattern = "[\\\"|\\'](.+)[\\\"|\\']";
+        boolean matches = path.matches(pattern);
+        if (matches) {
+            path = path.replace("\"", "");
+            path = path.replace("\'", "");
+            return new File(path);
+        }
+        return inputFile;
     }
 
 }

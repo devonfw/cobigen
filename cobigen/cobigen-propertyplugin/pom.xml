@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>propertyplugin</artifactId>
   <packaging>jar</packaging>
-  <version>2.1.0</version>
   <name>CobiGen - Property File Plug-In</name>
-  <description>CobiGen - Property File Plug-In</description>
 
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>parent</artifactId>
-    <version>dev-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <properties>
@@ -20,14 +19,14 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>5.0.0</version>
+      <version>${revision}</version>
     </dependency>
-    
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>5.0.0</version>
+      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -38,14 +37,14 @@
     </dependency>
   </dependencies>
   <build>
-  <resources> 
-    <resource>
-      <directory>src/main/resources</directory>
-      <filtering>false</filtering>
-      <excludes>
-        <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
-      </excludes>
-    </resource>
-  </resources>
-</build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
 </project>

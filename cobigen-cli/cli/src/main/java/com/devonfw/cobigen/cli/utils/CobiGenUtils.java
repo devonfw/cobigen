@@ -28,16 +28,13 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.InputInterpreter;
-import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.google.common.base.Charsets;
 
 import classloader.Agent;
@@ -54,40 +51,14 @@ public class CobiGenUtils {
     private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
-     * File of the templates jar
-     */
-    private File templatesJar;
-
-    /**
-     * Directory where all our templates jar are located
-     */
-    private File jarsDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
-
-    /**
-     * Whether the template dependency is given.
-     */
-    private boolean templateDependencyIsGiven = false;
-
-    /**
      * Registers CobiGen plug-ins and instantiates CobiGen
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
         CobiGen cg = null;
-        // extra check to make sure that configuration file is not pointing to non existing folder
-        ConfigurationUtils.customTemplatesLocationExists();
         try {
             registerPlugins();
-            templatesJar = TemplatesJarUtil.getJarFile(false, jarsDirectory);
-            Path cobigenTemplatesFolderPath = ConfigurationUtils.getCobigenTemplatesFolderPath();
-
-            if (cobigenTemplatesFolderPath != null) {
-                cg = CobiGenFactory.create(cobigenTemplatesFolderPath.toUri());
-            } else {
-                cg = CobiGenFactory.create(templatesJar.toURI());
-            }
-            return cg;
-
+            cg = CobiGenFactory.create();
         } catch (InvalidConfigurationException e) {
             // if the context configuration is not valid
             LOG.error("Invalid configuration of context", e);
@@ -95,9 +66,7 @@ public class CobiGenUtils {
             // If I/O operation failed then it will throw exception
             LOG.error("I/O operation is failed", e);
         }
-
         return cg;
-
     }
 
     /**
@@ -157,10 +126,10 @@ public class CobiGenUtils {
             t1.start();
 
             try {
-                invoker.setMavenHome(new File(System.getenv("MAVEN_HOME")));
+                invoker.setMavenHome(new File(getMavenHome()));
             } catch (NullPointerException e) {
                 LOG.error(
-                    "MAVEN_HOME environment variable has not been set on your machine. CobiGen CLI needs Maven correctly configured.",
+                    "Could not determine maven home from environment variables MAVEN_HOME or M2_HOME. CobiGen CLI needs Maven correctly configured.",
                     e);
             }
             result = invoker.execute(request);
@@ -209,49 +178,18 @@ public class CobiGenUtils {
             for (String jarToAdd : jarsToAdd) {
                 JarFile jar = new JarFile(jarToAdd);
                 Agent.appendJarFile(jar);
-
-                // Setting the template jar path
-                if (checkTemplateDepencency(jarToAdd)) {
-                    jarsDirectory = new File(jarToAdd).getParentFile();
-                    templateDependencyIsGiven = true;
-                }
             }
         } catch (MalformedURLException e) {
             LOG.error("Not able to form URL of jar file.", e);
         } catch (SecurityException e) {
             LOG.error(
-                "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.");
+                "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.",
+                e);
         } catch (IOException e) {
             LOG.error("CobiGen plug-in jar file that was being loaded was not found. "
-                + "Please try again or file an issue in cobigen GitHub repo.");
+                + "Please try again or file an issue in cobigen GitHub repo.", e);
         }
 
-    }
-
-    /**
-     * Tries to find the templates jar. If it was not found, it will download it and then return it.
-     * @param isSource
-     *            true if we want to get source jar file path
-     * @return Path of the jar file of the templates
-     */
-    public Path getTemplatesJar(boolean isSource) {
-        File jarFileDir = jarsDirectory.getAbsoluteFile();
-        if (TemplatesJarUtil.getJarFile(isSource, jarFileDir) == null) {
-            try {
-                if (!templateDependencyIsGiven) {
-                    TemplatesJarUtil.downloadLatestDevon4jTemplates(isSource, jarFileDir);
-                }
-
-            } catch (MalformedURLException e) {
-                // if a path of one of the class path entries is not a valid URL
-                LOG.error("Problem while downloading the templates, URL not valid. This is a bug", e);
-            } catch (IOException e) {
-                // IOException occurred
-                LOG.error("Problem while downloading the templates, most probably you are facing connection issues.\n\n"
-                    + "Please try again later.", e);
-            }
-        }
-        return TemplatesJarUtil.getJarFile(isSource, jarFileDir).toPath();
     }
 
     /**
@@ -363,7 +301,7 @@ public class CobiGenUtils {
         try {
             input = inputInterpreter.read(Paths.get(file.toURI()), Charsets.UTF_8, cl);
         } catch (InputReaderException e) {
-            // nothing
+            LOG.debug("No input reader was able to read file {}", file.toURI(), e);
         }
         if (input != null) {
             return input;
@@ -372,13 +310,17 @@ public class CobiGenUtils {
     }
 
     /**
-     * Checks whether the current jar is CobiGen templates
-     * @param jarToAdd
-     *            jar that we check
-     * @return true if jar is CobiGen templates
+     * Get the maven home
+     * @return maven home
      */
-    private boolean checkTemplateDepencency(String jarToAdd) {
-        return jarToAdd.contains(TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID);
+    private String getMavenHome() {
+        String m2Home = System.getenv().get("MAVEN_HOME");
+        if (m2Home == null) {
+            m2Home = System.getenv().get("M2_HOME");
+            if (m2Home == null && "true".equals(System.getenv("TRAVIS"))) {
+                m2Home = "/usr/local/maven"; // travis only
+            }
+        }
+        return m2Home;
     }
-
 }

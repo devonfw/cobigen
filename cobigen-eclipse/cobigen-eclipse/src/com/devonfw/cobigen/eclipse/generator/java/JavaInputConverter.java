@@ -46,7 +46,7 @@ public class JavaInputConverter {
             if (elem instanceof IPackageFragment) {
                 try {
                     IPackageFragment frag = (IPackageFragment) elem;
-                    Object packageFolder = inputInterpreter.read("java",
+                    Object packageFolder = inputInterpreter.read(
                         Paths.get(frag.getCorrespondingResource().getLocationURI()), Charsets.UTF_8,
                         frag.getElementName(), ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
                     convertedInputs.add(packageFolder);
@@ -66,7 +66,7 @@ public class JavaInputConverter {
                     try {
                         ClassLoader projectClassLoader =
                             ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject());
-                        Object input = inputInterpreter.read("java",
+                        Object input = inputInterpreter.read(
                             Paths.get(((ICompilationUnit) elem).getCorrespondingResource().getRawLocationURI()),
                             Charsets.UTF_8, projectClassLoader);
                         convertedInputs.add(input);

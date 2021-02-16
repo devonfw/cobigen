@@ -10,12 +10,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class that implements a few very specific methods to help with working on maps and regular
  * expression and reduce code redundancy.
  */
 public class MergeUtil {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(MergeUtil.class);
 
     /**
      * Regular expression matching what correct anchors should look like.
@@ -50,24 +55,29 @@ public class MergeUtil {
      * merge(File,String,String)
      * @param toSplit
      *            The string that is to be split by anchors
+     * @param defaultMergeStrategy
+     *            the default merge strategy to fall back
+     * @param lineDelimiter
+     *            String line delimiter to use
      * @return a LinkedHashMap which contains anchors as keys and the following text as values
      * @throws Exception
      *             when an anchor contains a wrong definition
      */
-    public static LinkedHashMap<Anchor, String> splitByAnchors(String toSplit, MergeStrategy defaultMergeStrategy)
-        throws Exception {
+    public static LinkedHashMap<Anchor, String> splitByAnchors(String toSplit, MergeStrategy defaultMergeStrategy,
+        String lineDelimiter) throws Exception {
         LinkedHashMap<Anchor, String> result = new LinkedHashMap<>();
         toSplit.trim();
-        if (!StringUtils.substring(toSplit, 0, StringUtils.ordinalIndexOf(toSplit, "\n", 1) - lineSepLength).trim()
-            .matches(anchorRegexTrimmed)) {
+        String firstLine =
+            StringUtils.substring(toSplit, 0, StringUtils.ordinalIndexOf(toSplit, "\n", 1) - lineSepLength + 1).trim();
+        if (!firstLine.matches(anchorRegexTrimmed)) {
+            LOG.debug("Line {} does not match {}", firstLine, anchorRegexTrimmed);
             throw new Exception(
                 "Incorrect document structure. Anchors are defined but there is no anchor at the start of the document.\n"
                     + "See https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#general and "
-                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list "
-                    + "for more details");
+                    + "https://github.com/devonfw/cobigen/wiki/cobigen-textmerger#error-list " + "for more details");
         }
 
-        toSplit = toSplit + System.lineSeparator() + "anchor:::anchorend" + System.lineSeparator();
+        toSplit = toSplit + lineDelimiter + "anchor:::anchorend" + lineDelimiter;
         Anchor anchor;
         int anchorCount = 0;
         Pattern regex = Pattern.compile(anchorRegex);
@@ -160,26 +170,27 @@ public class MergeUtil {
      *            Specifies whether the new text should be appended before or after the existing text.
      * @param withKey
      *            Specifies whether the key of the map should be appended too, or just the value.
+     * @param lineDelimiter
+     *            String line delimiter to use
      * @return The original text with new text appended to it. An empty string if there is no key in the map
      *         matching the regular expression.
      */
-    public static String appendText(String text, String docPart, Map<Anchor, String> m, boolean before,
-        boolean withKey) {
+    public static String appendText(String text, String docPart, Map<Anchor, String> m, boolean before, boolean withKey,
+        String lineDelimiter) {
         Anchor key = MergeUtil.getKeyMatchingDocumentPart(docPart, m);
         if (key.getNewlineName().equalsIgnoreCase("newline_appendbefore") && withKey) {
-            return System.lineSeparator() + key.getAnchor() + System.lineSeparator() + System.lineSeparator()
-                + m.get(key) + text;
+            return lineDelimiter + key.getAnchor() + lineDelimiter + lineDelimiter + m.get(key) + text;
         } else if (before) {
             if (withKey) {
-                return System.lineSeparator() + key.getAnchor() + System.lineSeparator() + m.get(key) + text;
+                return lineDelimiter + key.getAnchor() + lineDelimiter + m.get(key) + text;
             } else {
-                return System.lineSeparator() + m.get(key) + text;
+                return lineDelimiter + m.get(key) + text;
             }
         } else {
             if (withKey) {
-                return System.lineSeparator() + key.getAnchor() + text + System.lineSeparator() + m.get(key);
+                return lineDelimiter + key.getAnchor() + text + lineDelimiter + m.get(key);
             } else {
-                return text + System.lineSeparator() + m.get(key);
+                return text + lineDelimiter + m.get(key);
             }
         }
     }
@@ -227,7 +238,6 @@ public class MergeUtil {
         if (checkSame.retainAll(patch.keySet())) {
             int i = 0;
             int x = 0;
-            String tmp = "";
 
             for (Anchor s : base.keySet()) {
                 i++;

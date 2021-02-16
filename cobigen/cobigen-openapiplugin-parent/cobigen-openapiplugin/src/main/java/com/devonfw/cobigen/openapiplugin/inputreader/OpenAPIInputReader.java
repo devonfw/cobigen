@@ -33,7 +33,6 @@ import com.devonfw.cobigen.openapiplugin.model.PropertyDef;
 import com.devonfw.cobigen.openapiplugin.model.ResponseDef;
 import com.devonfw.cobigen.openapiplugin.model.ServerDef;
 import com.devonfw.cobigen.openapiplugin.util.constants.Constants;
-import com.jayway.jsonpath.Configuration;
 import com.reprezen.jsonoverlay.JsonOverlay;
 import com.reprezen.jsonoverlay.Overlay;
 import com.reprezen.jsonoverlay.Reference;
@@ -54,6 +53,12 @@ import com.reprezen.kaizen.oasparser.model3.Server;
  * files into FreeMarker models
  */
 public class OpenAPIInputReader implements InputReader {
+
+    /** Valid extensions for the input reader */
+    public static final String VALID_EXTENSION_YAML = "yaml";
+
+    /** Valid extensions for the input reader */
+    public static final String VALID_EXTENSION_YML = "yml";
 
     /**
      * Components retrieved from an EntityDef. Used for not executing multiple times the retrieval of
@@ -215,7 +220,6 @@ public class OpenAPIInputReader implements InputReader {
      * @return list of entities
      */
     private List<EntityDef> extractComponents(OpenApi3 openApi) {
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(Overlay.toJson(openApi).toString());
         HeaderDef header = new HeaderDef();
         header.setServers(extractServers(openApi));
         header.setInfo(extractInfo(openApi));
@@ -227,7 +231,7 @@ public class OpenAPIInputReader implements InputReader {
             entityDef.setName(key);
             entityDef.setDescription(openApi.getSchema(key).getDescription());
             ComponentDef componentDef = new ComponentDef();
-            entityDef.setProperties(extractProperties(openApi, document, key));
+            entityDef.setProperties(extractProperties(openApi, key));
 
             // If no x-component tag was found on the input file, throw invalid configuration
             if (openApi.getSchema(key).getExtensions().get(Constants.COMPONENT_EXT) == null) {
@@ -348,13 +352,11 @@ public class OpenAPIInputReader implements InputReader {
      *
      * @param openApi
      *            the OpenApi3 model
-     * @param jsonDocument
-     *            parsed JSON document
      * @param componentName
      *            entity name
      * @return List of {@link PropertyDef}'s
      */
-    private List<PropertyDef> extractProperties(OpenApi3 openApi, Object jsonDocument, String componentName) {
+    private List<PropertyDef> extractProperties(OpenApi3 openApi, String componentName) {
         Schema componentSchema = openApi.getSchema(componentName);
         Map<String, ? extends Schema> properties = componentSchema.getProperties();
         List<PropertyDef> objects = new LinkedList<>();
@@ -399,7 +401,11 @@ public class OpenAPIInputReader implements InputReader {
 
                 List<String> enumElements = new ArrayList<>();
                 for (Object element : enums) {
-                    enumElements.add(element.toString());
+                    if (element != null) {
+                        enumElements.add(element.toString());
+                    } else {
+                        enumElements.add("null");
+                    }
                 }
                 propModel.setEnumElements(enumElements);
             }
@@ -698,7 +704,7 @@ public class OpenAPIInputReader implements InputReader {
 
     @Override
     public boolean isMostLikelyReadable(java.nio.file.Path path) {
-        List<String> validExtensions = Arrays.asList("yaml", "yml");
+        List<String> validExtensions = Arrays.asList(VALID_EXTENSION_YAML, VALID_EXTENSION_YML);
         String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
         return validExtensions.contains(fileExtension);
     }
