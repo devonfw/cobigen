@@ -237,7 +237,6 @@
                 <descriptor>src/main/assembly/assembly.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
-              <!--<finalName>cobigen-cli-${project.version}</finalName> -->
             </configuration>
           </execution>
         </executions>
