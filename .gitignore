@@ -9,21 +9,12 @@ eclipse-target
 !.gitignore
 !.mvn
 !.travis.yml
+!**/resources/bin
 
 scripts/src/config
 cobigen-eclipse-test/screenshots
 cobigen-cli/cli/src/test/resources/testdata/generatedcode/root
 cobigen-maven/src/main/resources/META-INF/maven/plugin.xml
-cobigen/cobigen-javaplugin/src/main/resources/lib/*
-cobigen/cobigen-javaplugin-parent/cobigen-javaplugin/src/main/resources/lib/
-cobigen/cobigen-xmlplugin/src/main/resources/lib/
-cobigen/cobigen-tsplugin/src/main/resources/lib/
-cobigen/cobigen-propertyplugin/src/main/resources/lib/
-cobigen/cobigen-textmerger/src/main/resources/lib/
-cobigen/cobigen-htmlplugin/src/main/resources/lib/
-cobigen/cobigen-jsonplugin/src/main/resources/lib/
-cobigen/cobigen-senchaplugin/src/main/resources/lib/
-cobigen/cobigen-openapiplugin/src/main/resources/lib/
 
 #Python
 *.pyc
