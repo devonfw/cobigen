@@ -103,7 +103,7 @@ include::howto_update_CobiGen.asciidoc[leveloffset=2]
 
 include::howto_Release-creation.asciidoc[leveloffset=2]
 
-include::howto-devonfw-CobiGen-OpenAPI.asciidoc[leveloffset=2]
+// include::howto-devonfw-CobiGen.asciidoc[leveloffset=2]
 
 include::howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[leveloffset=2]
 

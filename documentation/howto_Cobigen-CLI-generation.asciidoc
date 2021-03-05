@@ -47,7 +47,7 @@ CobiGen CLI is installed inside your devonfw distribution. In order to execute i
 
 Preview of the man page for `generate` command:
 
-image::images/WithoutParam.PNG[Generation path, link="images/WithoutParam.PNG"]
+image::images/howtos/CLI/WithoutParam.PNG[Generation path, link="images/howtos/CLI/WithoutParam.PNG"]
 
 == Examples
 
@@ -57,7 +57,7 @@ A selection of commands that you can use with the CLI:
 * `cobigen generate foo\bar\*.java --out other\project`: Will retrieve all the Java files on that input folder and generate the code on the path specified by `--out`.
 * `cg g foo\bar\webServices.yml --increment TO`: Performs a string search using `TO` and will print the closest increments like in the following image:
 
-image::images/selectedIncr.PNG[Generation path, link="images/selectedIncr.PNG"]
+image::images/howtos/CLI/selectedIncr.PNG[Generation path, link="images/howtos/CLI/selectedIncr.PNG"]
 
 * `cg g foo\bar\webServices.yml -i 1,4,6`: Directly generates increments with IDs `1`, `4` and `6`. CobiGen will not request you any other input.
 * `cg a`: Downloads the latest CobiGen_Templates and unpacks them next to the CLI. CobiGen will from now on use these unpacked Templates for generation. 
@@ -66,11 +66,11 @@ image::images/selectedIncr.PNG[Generation path, link="images/selectedIncr.PNG"]
 == CLI update command
 Example of Update Command :
 
-image::images/updateCommand.PNG[Generation path, link="images/updateCommand.PNG"]
+image::images/howtos/CLI/updateCommand.PNG[Generation path, link="images/howtos/CLI/updateCommand.PNG"]
 
 Select the plug-ins which you want to update like below :
 
-image::images/updatePlugin.PNG[Generation path, link="images/updatePlugin.PNG"]
+image::images/howtos/CLI/updatePlugin.PNG[Generation path, link="images/howtos/CLI/updatePlugin.PNG"]
 
 == CLI custom templates
 To use custom templates, it's neccessary to set up a configuration file .cobigen. This file should be put in either cobigen home (user-dir/.cobigen/) or the environment parameter **COBIGEN_CONFIG_DIR** should be pointed to the directory where the file is located

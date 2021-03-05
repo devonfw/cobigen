@@ -9,7 +9,7 @@ CobiGen has two different generation modes depending on the input selected for g
 
 Selecting the menu entry _Generate..._ the generation wizard will be opened:
 
-image:images/generate_wizard_page1.png[]
+image:images/howtos/eclipse/generate_wizard_page1.png[]
 
 The left side of the wizard shows all available increments, which can be selected to be generated. Increments are a container like concept encompassing multiple files to be generated, which should result in a semantically closed generation output.
 On the right side of the wizard all files are shown, which might be effected by the generation - dependent on the increment selection of files on the left side. The type of modification of each file will be encoded into following color scheme if the files are selected for generation:
@@ -32,7 +32,7 @@ Using the _Finish_ button, the generation will be performed. Finally, CobiGen ru
 
 If there are multiple input elements selected, e.g., Java files, CobiGen will be started in batch mode. For the generation wizard dialog this means, that the generation preview will be constrained to the first selected input element. It does _not_ preview the generation for each element of the selection or of a complex input. The selection of the files to be generated will be generated for each input element analogously afterwards.
 
-image:images/generate_wizard_page1_batch.png[]
+image:images/howtos/eclipse/generate_wizard_page1_batch.png[]
 
 Thus the color encoding differs also a little bit:
 
@@ -46,19 +46,19 @@ Initially all possible files to be generated will be selected.
 == Health Check
 To check whether CobiGen runs appropriately for the selected element(s) the user can perform a _Health Check_ by activating the respective menu entry as shown below.
 
-image:images/health_check_menu_entry.png[]
+image:images/howtos/eclipse/health_check_menu_entry.png[]
 
 The simple _Health Check_ includes 3 checks. As long as any of these steps fails, the _Generate_ menu entry is grayed out.
 
 The first step is to check whether the generation configuration is available at all. If this check fails you will see the following message:
 
-image:images/health_check_no_templates.png[]
+image:images/howtos/eclipse/health_check_no_templates.png[]
 
 This indicates, that there is no Project named _CobiGen_Templates_ available in the current workspace. To run CobiGen appropriately, it is necessary to have a configuration project named _CobiGen_Templates_ imported into your workspace. For more information see chapter link:cobigen-eclipse_installation#Installation-steps[Eclipse Installation].
 
 The second step is to check whether the template project includes a valid _context.xml_. If this check fails, you will see the following message:
 
-image:images/health_check_invalid_config.png[]
+image:images/howtos/eclipse/health_check_invalid_config.png[]
 
 This means that either your _context.xml_ 
 
@@ -68,7 +68,7 @@ This means that either your _context.xml_
 
 If all this is not the case, such as, there is a _context.xml_, which can be successfully read by CobiGen, you might get the following information:
 
-image:images/health_check_old_context.png[]
+image:images/howtos/eclipse/health_check_old_context.png[]
 
 This means that your _context.xml_ is available with the correct name but it is outdated (belongs to an older CobiGen version). In this case just click on _Upgrade Context Configuration_ to get the latest version. 
 
@@ -79,19 +79,19 @@ ____
 
 The third step checks whether there are templates for the selected element(s). If this check fails, you will see the following message:
 
-image:images/health_check_no_matching_triggers.png[]
+image:images/howtos/eclipse/health_check_no_matching_triggers.png[]
 
 This indicates, that there no trigger has been activated, which matches the current selection. The reason might be that your selection is faulty or that you imported the wrong template project (e.g. you are working on a devon4j project, but imported the Templates for the Register Factory). If you are a template developer, have a look at the  link:cobigen-core_configuration#trigger-node[trigger configuration] and at the corresponding available plug-in implementations of triggers, like e.g., link:cobigen-javaplugin#Trigger-extension[Java Plug-in] or link:cobigen-xmlplugin#Trigger-extension[XML Plug-in].
 
 If all the checks are passed you see the following message:
 
-image:images/health_check_all_OK.png[]
+image:images/howtos/eclipse/health_check_all_OK.png[]
 
 In this case everything is OK and the _Generate_ button is not grayed out anymore so that you are able to trigger it and see the xref:simple-mode[].
 
 In addition to the basic check of the context configuration, you also have the opportunity to perform an  _Advanced Health Check_, which will check all available templates configurations (_templates.xml_) of path-depth=1 from the configuration project root according to their compatibility.
 
-image:images/health_check_advanced_up_to_date.png[]
+image:images/howtos/eclipse/health_check_advanced_up_to_date.png[]
 
 Analogous to the upgrade of the _context configuration_, the _Advanced Health Check_ will also provide upgrade functionality for _templates configurations_ if available.
 
