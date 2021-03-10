@@ -51,7 +51,7 @@ public class GenerateCommandTest {
         args[0] = "update";
         args[1] = "--all";
         commandLine.execute(args);
-        
+
         String args2[] = new String[1];
         args2[0] = "adapt-templates";
         commandLine.execute(args2);
@@ -92,7 +92,7 @@ public class GenerateCommandTest {
         args[0] = "generate";
         args[1] = inputFile.getAbsolutePath();
         args[2] = "--increments";
-        args[3] = "16";
+        args[3] = "15";
 
         execute(args);
 
