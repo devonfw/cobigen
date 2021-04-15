@@ -72,7 +72,7 @@ public class HealthCheckDialog {
             // check configuration project existence
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
-            IPath ws = generatorConfProj.getLocation();
+            IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
             pathForCobigenTemplates = ws.toPortableString();
 
             if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
