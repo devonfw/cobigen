@@ -233,10 +233,9 @@ public class ExternalProcessHandler {
             int retry = 0;
             while (!process.isAlive() && retry <= 10) {
                 if (processHasErrors()) {
+                    LOG.error("Could not start server. Returned: {}", errorHandler.getText());
                     terminateProcessConnection();
-                    // If the process outputs errors, it means that we were able to start it successfully,
-                    // that's why we return true
-                    return true;
+                    return false;
                 }
                 retry++;
                 // This means the executable has already finished
