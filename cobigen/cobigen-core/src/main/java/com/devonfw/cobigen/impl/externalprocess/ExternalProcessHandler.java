@@ -324,7 +324,7 @@ public class ExternalProcessHandler {
         // Downloading tar file
         File tarFile;
         Path tarPath;
-        LOG.info("Downloading server...");
+        LOG.info("Downloading server from {} to {}", downloadURL, filePath);
         try (InputStream inputStream = conn.getInputStream()) {
 
             tarFileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
