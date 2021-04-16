@@ -19,9 +19,9 @@
     <java.version>1.8</java.version>
     <tycho.version>1.6.0</tycho.version>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
-    <bintray.url>https://dl.bintray.com/devonfw</bintray.url>
-    <!-- bintray.repository needs to be set by cmd and needs to be one of https://bintray.com/devonfw repositories -->
-    <bintray.repository.url>${bintray.url}/${bintray.repository}</bintray.repository.url>
+    <artifactory.url>https://coobigen.jfrog.io/artifactory</artifactory.url>
+    <!-- artifactory.repository needs to be set by cmd and needs to be one of https://coobigen.jfrog.io/ repositories -->
+    <artifactory.repository.url>${artifactory.url}/${artifactory.repository}</artifactory.repository.url>
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
     <p2.repository.upload.dir>${project.build.directory}${file.separator}repository-upload</p2.repository.upload.dir>
     <p2.repository.upload.dir.plugin>${p2.repository.upload.dir}/cobigen-${project.artifactId}</p2.repository.upload.dir.plugin>
@@ -346,12 +346,12 @@
         </plugins>
       </build>
     </profile>
-    <!-- Bintray update site -->
+    <!-- artifactory update site -->
     <profile>
-      <id>p2-upload-bintray</id>
+      <id>p2-upload-artifactory</id>
       <activation>
         <property>
-          <name>bintray.repository</name>
+          <name>artifactory.repository</name>
         </property>
         <file>
           <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
@@ -375,7 +375,7 @@
               <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
             </configuration>
           </plugin>
-          <!-- sets ${qualifiedVersion} for bintray upload -->
+          <!-- sets ${qualifiedVersion} for artifactory upload -->
           <plugin>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-packaging-plugin</artifactId>
@@ -425,24 +425,25 @@
                   <goal>download</goal>
                 </goals>
                 <configuration>
-                  <url>${bintray.repository.url}</url>
+                  <url>https://dl.bintray.com/devonfw/${artifactory.repository}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir.plugin}</toDir>
-                  <serverId>bintray-repo</serverId>
+                  <serverId>test-artifactory-repo</serverId>
                 </configuration>
               </execution>
             </executions>
           </plugin>
           <plugin>
-            <groupId>com.carrotgarden.maven</groupId>
-            <artifactId>bintray-maven-plugin</artifactId>
-            <version>1.5.20191113165555</version>
+            <groupId>com.devonfw</groupId>
+			<artifactId>artifactory-maven-plugin</artifactId>
+            <version>1.6.20210416101246</version>
             <configuration>
               <skip>false</skip>
               <subject>devonfw</subject>
-              <repository>${bintray.repository}</repository>
-              <serverId>bintray-repo</serverId>
-              <bintrayVersion>${qualifiedVersion}</bintrayVersion>
+              <repository>${artifactory.repository}</repository>
+              <serverId>test-artifactory-repo</serverId>
+			  <restApiUrl>https://coobigen.jfrog.io/artifactory/</restApiUrl>
+              <artifactoryVersion>${qualifiedVersion}</artifactoryVersion>
               <sourceFolder>${p2.repository.upload.dir.plugin}</sourceFolder>
               <targetFolder>cobigen-${project.artifactId}</targetFolder>
             </configuration>
