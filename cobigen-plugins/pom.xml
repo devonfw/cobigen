@@ -14,7 +14,6 @@
   </parent>
 
   <modules>
-    <module>cobigen-core-parent</module>
     <module>cobigen-javaplugin-parent</module>
     <module>cobigen-xmlplugin</module>
     <module>cobigen-propertyplugin</module>
