@@ -3,7 +3,10 @@ set -e
 # build core without system test
 mvn clean install -f cobigen --projects !cobigen-core-systemtest
 
-# build plugins
+# build & test plugins ones
+mvn clean install -f cobigen-plugins 
+
+# build plugin p2 repositories
 mvn clean install p2:site -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines
 
 # execute core system tests
