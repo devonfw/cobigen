@@ -51,17 +51,6 @@ public interface InputReader {
     public List<Object> getInputObjects(Object input, Charset inputCharset);
 
     /**
-     * This method returns available template methods from the plugins as {@link Map}. If the plugin which
-     * corresponds to the input does not provide any template methods an empty {@link Map} will be returned. *
-     * @param input
-     *            the object the methods should be derived from
-     * @return a key to object {@link Map}. The keys are the method names and the objects are the
-     *         corresponding instances of the class where the method is implemented.
-     */
-    @Deprecated
-    public Map<String, Object> getTemplateMethods(Object input);
-
-    /**
      * Will return the set of combined input objects if the given input combines multiple input objects.
      * @param input
      *            the combined input object

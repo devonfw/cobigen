@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.to;
+package com.devonfw.cobigen.api.externalprocess.to;
 
 /**
  * Used as a container for the source code text. We need it for sending the content to our server, so that the

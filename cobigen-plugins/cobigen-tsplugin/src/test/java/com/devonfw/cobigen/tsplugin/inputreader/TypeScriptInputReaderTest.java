@@ -17,6 +17,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.extension.InputReader;
+import com.devonfw.cobigen.tsplugin.TypeScriptPluginActivator;
+
 /**
  *
  */
@@ -27,6 +30,9 @@ public class TypeScriptInputReaderTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/files/";
+
+    /** Activator initializing the external server */
+    private TypeScriptPluginActivator activator = new TypeScriptPluginActivator();
 
     /**
      * Sends the path of a file to be parsed by the external process. Should return a valid JSON model.
@@ -39,7 +45,8 @@ public class TypeScriptInputReaderTest {
     public String readingInput(Path filePath) {
 
         // arrange
-        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+        InputReader tsInputReader =
+            activator.bindTriggerInterpreter().stream().map(e -> e.getInputReader()).findFirst().get();
 
         // act
         String inputModel = (String) tsInputReader.read(filePath, Charset.defaultCharset());
@@ -59,15 +66,12 @@ public class TypeScriptInputReaderTest {
     public void testCreatingModel() {
 
         // arrange
-        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+        InputReader tsInputReader =
+            activator.bindTriggerInterpreter().stream().map(e -> e.getInputReader()).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
-        String inputModel = (String) tsInputReader.read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
-
-        Map<String, Object> mapModel = tsInputReader.createModel(inputModel);
-        assertThat(mapModel).isNotNull();
-
-        LOG.debug(mapModel.toString());
+        Map<String, Object> mapModel =
+            (Map<String, Object>) tsInputReader.read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
         mapModel = (Map<String, Object>) mapModel.get("model");
         // Checking imports
         ArrayList<Object> importDeclarations = castToList(mapModel, "importDeclarations");
@@ -112,7 +116,8 @@ public class TypeScriptInputReaderTest {
     public void testValidInput() {
 
         // arrange
-        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+        InputReader tsInputReader =
+            activator.bindTriggerInterpreter().stream().map(e -> e.getInputReader()).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         boolean isValidInput = tsInputReader.isValidInput(baseFile);
@@ -132,10 +137,12 @@ public class TypeScriptInputReaderTest {
     public void testValidInputObjectString() {
 
         // arrange
-        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+        InputReader tsInputReader =
+            activator.bindTriggerInterpreter().stream().map(e -> e.getInputReader()).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
-        String inputModel = (String) tsInputReader.read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
+        Map<String, Object> inputModel =
+            (Map<String, Object>) tsInputReader.read(baseFile.getAbsoluteFile().toPath(), Charset.defaultCharset());
 
         boolean isValidInput = tsInputReader.isValidInput(inputModel);
 
@@ -154,7 +161,8 @@ public class TypeScriptInputReaderTest {
     public void testIsMostProbablyReadable() {
 
         // arrange
-        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+        InputReader tsInputReader =
+            activator.bindTriggerInterpreter().stream().map(e -> e.getInputReader()).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         boolean isReadable = tsInputReader.isMostLikelyReadable(baseFile.toPath());
@@ -173,7 +181,8 @@ public class TypeScriptInputReaderTest {
     public void testIsValidInputAfterReading() {
 
         // arrange
-        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+        InputReader tsInputReader =
+            activator.bindTriggerInterpreter().stream().map(e -> e.getInputReader()).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
         // parsing
         tsInputReader.read(baseFile.toPath(), Charset.defaultCharset());
@@ -193,7 +202,8 @@ public class TypeScriptInputReaderTest {
     public void testGetInputObjects() {
 
         // arrange
-        TypeScriptInputReader tsInputReader = new TypeScriptInputReader();
+        InputReader tsInputReader =
+            activator.bindTriggerInterpreter().stream().map(e -> e.getInputReader()).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         List<Object> tsInputObjects = tsInputReader.getInputObjects(baseFile, Charset.defaultCharset());

@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -208,45 +207,6 @@ public class JavaInputReader implements InputReader {
         }
         return files;
 
-    }
-
-    @Override
-    public Map<String, Object> getTemplateMethods(Object input) {
-
-        // prepare result
-        Map<String, Object> methodMap = new HashMap<>();
-        ClassLoader classloader = null;
-
-        // find corresponding ClassLoader dependent on input type
-        if (isValidInput(input)) {
-
-            if (input instanceof JavaClass) {
-                // currently it is not possible to access the classloader of an instance of JavaClass,
-                // therefore we pass the dafault classloader here.
-                classloader = getClass().getClassLoader();
-            } else if (input instanceof PackageFolder) {
-                classloader = ((PackageFolder) input).getClassLoader();
-                if (classloader == null) {
-                    classloader = getClass().getClassLoader();
-                }
-            } else if (input instanceof Object[]) {
-                Object[] inputArr = (Object[]) input;
-                if ((inputArr[0] instanceof JavaClass) && (inputArr[1] instanceof Class<?>)) {
-                    classloader = ((Class<?>) inputArr[1]).getClassLoader();
-                } else if ((inputArr[0] instanceof Class<?>) && (inputArr[1] instanceof JavaClass)) {
-                    classloader = ((Class<?>) inputArr[0]).getClassLoader();
-                }
-            } else if (input instanceof Class<?>) {
-                classloader = ((Class<?>) input).getClassLoader();
-            }
-        }
-
-        // create result
-        if (classloader == null) {
-            throw new IllegalArgumentException(
-                "There is no ClassLoader for the given input. Perhaps you used a bootstrap class (e.g.java.lang.String) as input which is not supported");
-        }
-        return methodMap;
     }
 
     /**

@@ -2,7 +2,6 @@ package com.devonfw.cobigen.api.to;
 
 /**
  * The transfer object for matchers
- * @author mbrunnli (08.04.2014)
  */
 public class MatcherTo {
 

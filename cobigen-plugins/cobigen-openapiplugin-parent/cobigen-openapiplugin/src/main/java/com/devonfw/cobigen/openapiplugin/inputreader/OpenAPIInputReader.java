@@ -141,11 +141,6 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     @Override
-    public Map<String, Object> getTemplateMethods(Object input) {
-        return new HashMap<>();
-    }
-
-    @Override
     public List<Object> getInputObjectsRecursively(Object input, Charset inputCharset) {
         return getInputObjects(input, inputCharset);
     }

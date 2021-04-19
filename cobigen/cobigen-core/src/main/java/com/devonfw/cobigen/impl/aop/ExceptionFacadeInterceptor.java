@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 
 import com.devonfw.cobigen.api.annotation.ExceptionFacade;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.impl.exceptions.PluginProcessingException;
-import com.devonfw.cobigen.impl.util.ExceptionUtil;
 
 /**
  * This is the interceptor processing {@link ExceptionFacade} annotations. It wraps each return value with a

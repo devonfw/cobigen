@@ -12,19 +12,17 @@
   </parent>
 
   <properties>
-    <plugin.name>${project.artifactId}</plugin.name>
-    <server.name>nestserver</server.name>
     <server.version>1.1.7</server.version>
-    <server.url>https\://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</server.url>
-    <server.url.linux>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</server.url.linux>
-    <server.url.macos>https\://registry.npmjs.org/@devonfw/cobigen-nestserver-macos/-/cobigen-nestserver-macos-${server.version}.tgz</server.url.macos>
+    <download.url.win>https://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</download.url.win>
+    <download.url.linux>https://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</download.url.linux>
+    <download.url.macos>https://registry.npmjs.org/@devonfw/cobigen-nestserver-macos/-/cobigen-nestserver-macos-${server.version}.tgz</download.url.macos>
     <skip.deployment>false</skip.deployment>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-api</artifactId>
+      <artifactId>core-externalprocess-api</artifactId>
       <version>${revision}</version>
     </dependency>
     <dependency>
@@ -73,6 +71,22 @@
         </excludes>
       </resource>
     </resources>
+    <plugins>
+      <!-- Inject Maven Properties in java-templates source folder -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-version-class</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
     <pluginManagement>
       <plugins>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build

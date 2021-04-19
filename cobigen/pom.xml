@@ -15,5 +15,6 @@
     <module>cobigen-core-api</module>
     <module>cobigen-core-test</module>
     <module>cobigen-core-systemtest</module>
+    <module>core-externalprocess-api</module>
   </modules>
 </project>

@@ -143,16 +143,6 @@ public class XmlInputReader implements InputReader {
     }
 
     /**
-     * {@inheritDoc} <br>
-     * Since the {@link XmlInputReader} does not provide any template methods it always returns an empty
-     * {@link Map}.
-     */
-    @Override
-    public Map<String, Object> getTemplateMethods(Object input) {
-        return new HashMap<>();
-    }
-
-    /**
      * @param input
      *            the element the model should derived from
      * @return derived sub model

@@ -14,6 +14,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.MergeException;
+import com.devonfw.cobigen.api.extension.Merger;
+import com.devonfw.cobigen.tsplugin.TypeScriptPluginActivator;
 
 /**
  * Test methods for different TS mergers of the plugin
@@ -22,6 +24,9 @@ public class TypeScriptMergerTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/unittest/files/";
+
+    /** Activator initializing the external server */
+    private TypeScriptPluginActivator activator = new TypeScriptPluginActivator();
 
     /**
      * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = false
@@ -32,7 +37,8 @@ public class TypeScriptMergerTest {
     public void testMergingNoOverrides() {
 
         // arrange
-        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", false);
+        Merger tsMerger = activator.bindMerger().stream()
+            .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE)).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         // Should merge comments
@@ -78,7 +84,8 @@ public class TypeScriptMergerTest {
     public void testMergingOverrides() {
 
         // arrange
-        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", true);
+        Merger tsMerger = activator.bindMerger().stream()
+            .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE_OVERRIDE)).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile.ts");
 
         // act
@@ -99,8 +106,8 @@ public class TypeScriptMergerTest {
 
         mergedContents = tsMerger.merge(baseFile, readTSFile("patchFile.ts"), "ISO-8859-1");
 
-        assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("aProperty: number = 3");
+        assertThat(mergedContents).contains("bProperty");
         assertThat(mergedContents).contains("bMethod");
         assertThat(mergedContents).contains("aMethod");
         assertThat(mergedContents).contains("bProperty");
@@ -123,14 +130,14 @@ public class TypeScriptMergerTest {
     public void testMergingMassiveFile() {
 
         // arrange
-        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", false);
+        Merger tsMerger = activator.bindMerger().stream()
+            .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE)).findFirst().get();
         File baseFile = new File(testFileRootPath + "massiveFile.ts");
 
         // act
         String mergedContents = tsMerger.merge(baseFile, readTSFile("patchFile.ts"), "UTF-8");
 
         assertEquals(false, mergedContents.contains("Not able to merge") || mergedContents.isEmpty());
-
     }
 
     /**
@@ -144,7 +151,8 @@ public class TypeScriptMergerTest {
     public void testReadingEncoding() throws IOException {
 
         // Arrange
-        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", false);
+        Merger tsMerger = activator.bindMerger().stream()
+            .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE)).findFirst().get();
         File baseFile = new File(testFileRootPath + "baseFile_encoding_UTF-8.ts");
         File patchFile = new File(testFileRootPath + "patchFile.ts");
 
@@ -193,7 +201,8 @@ public class TypeScriptMergerTest {
      */
     @Test
     public void testNullAndUndefinedTypes() {
-        TypeScriptMerger tsMerger = new TypeScriptMerger("tsmerge", false);
+        Merger tsMerger = activator.bindMerger().stream()
+            .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE)).findFirst().get();
         File baseFile = new File(testFileRootPath + "nullBase.ts");
         String mergedContents = tsMerger.merge(baseFile, readTSFile("nullPatch.ts"), "UTF-8");
         assertEquals(false, mergedContents.contains("Not able to merge") || mergedContents.isEmpty());

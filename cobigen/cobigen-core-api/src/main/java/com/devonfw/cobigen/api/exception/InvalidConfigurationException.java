@@ -64,4 +64,15 @@ public class InvalidConfigurationException extends CobiGenRuntimeException {
     public InvalidConfigurationException(String msg) {
         super(msg);
     }
+
+    /**
+     * Creates a new {@link InvalidConfigurationException} with the given message
+     * @param msg
+     *            error message
+     * @param t
+     *            cause exception
+     */
+    public InvalidConfigurationException(String msg, Throwable t) {
+        super(msg, t);
+    }
 }

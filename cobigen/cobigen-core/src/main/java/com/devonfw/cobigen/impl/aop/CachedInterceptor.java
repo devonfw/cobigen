@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.annotation.Cached;
-import com.devonfw.cobigen.impl.util.ExceptionUtil;
+import com.devonfw.cobigen.api.util.ExceptionUtil;
 
 /**
  * The {@link CachedInterceptor} enables caching of several requests on the same method. Therefore, the cache

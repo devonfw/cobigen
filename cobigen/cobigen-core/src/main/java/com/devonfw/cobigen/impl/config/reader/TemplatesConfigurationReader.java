@@ -33,6 +33,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
+import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
@@ -55,7 +56,6 @@ import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
-import com.devonfw.cobigen.impl.util.ExceptionUtil;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 

@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.impl.util;
+package com.devonfw.cobigen.api.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

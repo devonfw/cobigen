@@ -31,9 +31,9 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
+import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.impl.config.reader.JvmUtil;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
-import com.devonfw.cobigen.impl.util.ExceptionUtil;
 
 /**
  * This class encompasses all logic for upgrading CobiGen configurations including

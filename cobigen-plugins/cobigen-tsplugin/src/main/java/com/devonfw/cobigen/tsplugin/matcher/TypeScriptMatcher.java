@@ -15,9 +15,11 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.VariableAssignmentTo;
-import com.devonfw.cobigen.tsplugin.inputreader.TypeScriptInputReader;
 import com.google.common.collect.Maps;
 
+/**
+ * Matcher of TypeScript context reader
+ */
 public class TypeScriptMatcher implements MatcherInterpreter {
     /** Logger instance */
     private static final Logger LOG = LoggerFactory.getLogger(TypeScriptMatcher.class);
@@ -63,7 +65,7 @@ public class TypeScriptMatcher implements MatcherInterpreter {
 
         try {
             // Input corresponds to the parsed file
-            Map<String, Object> mapModel = new TypeScriptInputReader().createModel(target);
+            Map<String, Object> mapModel = (Map<String, Object>) target;
             mapModel = (Map<String, Object>) mapModel.get("model");
             fqn = Paths.get(mapModel.get("path").toString()).getFileName().toString();
             // We remove the file extension
@@ -158,23 +160,15 @@ public class TypeScriptMatcher implements MatcherInterpreter {
                     // thrown when value == null
                     return value;
                 } catch (NumberFormatException e) {
-                    LOG.error(
-                        "The VariableAssignment '{}' of Matcher of type '{}' should have an integer as value"
-                            + " representing a regular expression group.\nCurrent value: '{}'",
-                        va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
                     throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
                         + "' of Matcher of type '" + matcherType.toString()
                         + "' should have an integer as value representing a regular expression group.\nCurrent value: '"
-                        + va.getValue() + "'");
+                        + va.getValue() + "'", e);
                 } catch (IndexOutOfBoundsException e) {
-                    LOG.error(
-                        "The VariableAssignment '{}' of Matcher of type '{}' declares a regular expression"
-                            + " group not in range.\nCurrent value: '{}'",
-                        va.getType().toUpperCase(), matcherType.toString(), va.getValue(), e);
                     throw new InvalidConfigurationException("The VariableAssignment '" + va.getType().toUpperCase()
                         + "' of Matcher of type '" + matcherType.toString()
-                        + "' declares a regular expression group not in range.\nCurrent value: '" + va.getValue()
-                        + "'");
+                        + "' declares a regular expression group not in range.\nCurrent value: '" + va.getValue() + "'",
+                        e);
                 }
             } // else should not occur as #matches(...) will be called beforehand
         } else {

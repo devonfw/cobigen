@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.to;
+package com.devonfw.cobigen.api.externalprocess.to;
 
 /**
  * Contains all the properties needed for requesting a merge on two files. It gets serialized and sent over

@@ -1,12 +1,8 @@
 package com.devonfw.cobigen.tsplugin.inputreader;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,18 +12,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
-import com.devonfw.cobigen.api.extension.InputReader;
-import com.devonfw.cobigen.api.to.InputFileTo;
-import com.devonfw.cobigen.impl.exceptions.ConnectionExceptionHandler;
-import com.devonfw.cobigen.impl.externalprocess.ExternalProcessHandler;
+import com.devonfw.cobigen.api.externalprocess.ExternalProcess;
+import com.devonfw.cobigen.api.externalprocess.ExternalServerInputReaderProxy;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -36,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * TypeScript input reader that uses a server to read TypeScript code
  */
-public class TypeScriptInputReader implements InputReader {
+public class TypeScriptInputReader extends ExternalServerInputReaderProxy {
 
     /** Valid file extension */
     public static final String VALID_EXTENSION = "ts";
@@ -45,61 +38,12 @@ public class TypeScriptInputReader implements InputReader {
     private static final Logger LOG = LoggerFactory.getLogger(TypeScriptInputReader.class);
 
     /**
-     * Instance that handles all the operations performed to the external server, like initializing the
-     * connection and sending new requests
+     * Creates a new instance of TypeScriptInputReader
+     * @param externalProcess
+     *            the external process instance to communicate with.
      */
-    private ExternalProcessHandler request = ExternalProcessHandler.getExternalProcessHandler(this.getClass(),
-        ExternalProcessConstants.HOST_NAME, ExternalProcessConstants.PORT);
-
-    /**
-     * Exception handler related to connectivity to the server
-     */
-    private ConnectionExceptionHandler connectionExc = new ConnectionExceptionHandler();
-
-    /** Charset that will be used when sending strings to the server */
-    private String charset = "UTF-8";
-
-    /** Used for not checking multiple times whether the server is deployed or not */
-    private Boolean serverIsNotDeployed = true;
-
-    /**
-     * Creates a new {@link TypeScriptInputReader}
-     */
-    public TypeScriptInputReader() {
-
-        try {
-            // We first check if the server is already running
-            request.startConnection();
-            if (request.isNotConnected()) {
-                if (startServerConnection()) {
-                    // Server is deployed
-                    serverIsNotDeployed = false;
-                }
-            } else {
-                // Server is deployed
-                serverIsNotDeployed = false;
-            }
-        } catch (IOException e) {
-            // If it is not currently running, we need to execute it
-            LOG.info("Server is not currently running. Let's initialize it");
-            if (startServerConnection()) {
-                // Server is deployed
-                serverIsNotDeployed = false;
-            }
-        }
-
-    }
-
-    /**
-     * Deploys the server and tries to initialize a new connection between CobiGen and the server
-     * @return true only if the server was executed and deployed successfully
-     */
-    private Boolean startServerConnection() {
-        if (request.startServer()) {
-            return request.initializeConnection();
-        } else {
-            return false;
-        }
+    public TypeScriptInputReader(ExternalProcess externalProcess) {
+        super(externalProcess);
     }
 
     @Override
@@ -109,7 +53,7 @@ public class TypeScriptInputReader implements InputReader {
             return true;
         } else if (input instanceof File) {
             return true;
-        } else {
+        } else if (input instanceof Map) {
             try {
                 // Input corresponds to the parsed file
                 Map<String, Object> mapModel = createModel(input);
@@ -122,36 +66,40 @@ public class TypeScriptInputReader implements InputReader {
                 LOG.error("An exception occured while parsing the input", e);
                 return false;
             }
+        } else {
+            return false;
         }
 
     }
 
     @Override
-    public Map<String, Object> createModel(Object input) {
-        Map<String, Object> pojoModel = new HashMap<>();
+    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+        String json = (String) super.read(path, inputCharset, additionalArguments);
 
+        Map<String, Object> pojoModel = new HashMap<>();
         try {
 
             ObjectMapper mapper = new ObjectMapper();
-            String json = input.toString();
-
             // convert JSON string to Map
             pojoModel.put("model", mapper.readValue(json, new TypeReference<Map<String, Object>>() {
             }));
 
             return pojoModel;
-
         } catch (JsonGenerationException e) {
-            LOG.error("Exception during JSON writing. This is most probably a bug", e);
+            throw new CobiGenRuntimeException("Exception during JSON writing. This is most probably a bug", e);
         } catch (JsonMappingException e) {
-            LOG.error(
+            throw new CobiGenRuntimeException(
                 "Exception during JSON mapping. This error occured while converting the templates model from JSON string to map",
                 e);
         } catch (IOException e) {
-            LOG.error("IO exception while converting the templates model from JSON string to map", e);
+            throw new CobiGenRuntimeException(
+                "IO exception while converting the templates model from JSON string to map", e);
         }
+    }
 
-        return null;
+    @Override
+    public Map<String, Object> createModel(Object input) {
+        return (Map<String, Object>) input; // nothing to do, did all at read
     }
 
     @Override
@@ -176,92 +124,32 @@ public class TypeScriptInputReader implements InputReader {
      */
     public List<Object> getInputObjects(Object input, Charset inputCharset, boolean recursively) {
 
-        LOG.debug("Retrieve input object for input {} {}", input, recursively ? "recursively" : "");
         List<Object> tsInputObjects = new LinkedList<>();
 
-        LOG.debug("DEBUG getInputObjects: " + input.toString());
+        if (isValidInput(input)) {
 
-        try {
-            if (isValidInput(input)) {
+            Map<String, Object> inputModel =
+                (Map<String, Object>) read(new File(input.toString()).toPath(), inputCharset);
+            Map<String, Object> mapModel = (Map<String, Object>) inputModel.get("model");
 
-                String inputModel = (String) read(new File(input.toString()).toPath(), inputCharset);
-                Map<String, Object> mapModel = (Map<String, Object>) createModel(inputModel).get("model");
-
-                if (mapModel.containsKey("classes")) {
-                    List<Object> classes = castToList(mapModel, "classes");
-                    for (Object classModel : classes) {
-                        tsInputObjects.add(castToHashMap(classModel));
-                    }
+            if (mapModel.containsKey("classes")) {
+                List<Object> classes = castToList(mapModel, "classes");
+                for (Object classModel : classes) {
+                    tsInputObjects.add(castToHashMap(classModel));
                 }
-
-                if (mapModel.containsKey("interfaces")) {
-                    List<Object> interfaces = castToList(mapModel, "interfaces");
-                    for (Object interfaceModel : interfaces) {
-                        tsInputObjects.add(castToHashMap(interfaceModel));
-                    }
-                }
-                return tsInputObjects;
             }
 
-        } finally {
-            request.terminateProcessConnection();
+            if (mapModel.containsKey("interfaces")) {
+                List<Object> interfaces = castToList(mapModel, "interfaces");
+                for (Object interfaceModel : interfaces) {
+                    tsInputObjects.add(castToHashMap(interfaceModel));
+                }
+            }
+            return tsInputObjects;
         }
 
         LOG.error("The given input does neither contain classes nor interfaces");
         return tsInputObjects;
-    }
-
-    @Override
-    public Map<String, Object> getTemplateMethods(Object input) {
-        Map<String, Object> methodMap = new HashMap<>();
-        return methodMap;
-    }
-
-    @Override
-    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
-
-        if (serverIsNotDeployed) {
-            LOG.error("We have not been able to send requests to the external server. "
-                + "Most probably there is an error on the executable file. "
-                + "Try to manually remove folder .cobigen/externalservers found at your user root folder");
-            return null;
-        }
-
-        String fileContents;
-        String fileName = path.toString();
-        try {
-
-            fileContents = String.join("", Files.readAllLines(path, inputCharset));
-        } catch (IOException e) {
-            throw new InputReaderException("Could not read input file!" + fileName, e);
-        }
-
-        InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset.name());
-
-        HttpURLConnection conn = request.getConnection("POST", "Content-Type", "application/json", "getInputModel");
-
-        if (request.sendRequest(inputFile, conn, charset)) {
-
-            StringBuffer inputModel = new StringBuffer();
-
-            try (InputStreamReader isr = new InputStreamReader(conn.getInputStream());
-                BufferedReader br = new BufferedReader(isr);) {
-
-                LOG.info("Receiving output from Server....");
-                Stream<String> s = br.lines();
-                s.parallel().forEachOrdered((String line) -> {
-                    inputModel.append(line);
-                });
-
-                return inputModel.toString();
-
-            } catch (Exception e) {
-
-                connectionExc.handle(e);
-            }
-        }
-
-        return null;
     }
 
     @Override
