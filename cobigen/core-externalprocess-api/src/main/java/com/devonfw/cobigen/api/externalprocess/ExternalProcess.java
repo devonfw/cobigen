@@ -434,6 +434,7 @@ public class ExternalProcess {
     @Override
     protected void finalize() throws Throwable {
         if (process != null && process.getProcess() != null && process.getProcess().isAlive()) {
+            LOG.info("Terminating TS Merger External Process {}", process.getProcess());
             process.getProcess().destroyForcibly();
         }
     }

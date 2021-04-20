@@ -122,7 +122,6 @@ public class TypeScriptInputReaderTest {
 
         boolean isValidInput = tsInputReader.isValidInput(baseFile);
 
-        LOG.debug("Valid input ? " + isValidInput);
         assertTrue(isValidInput);
 
     }
@@ -146,7 +145,6 @@ public class TypeScriptInputReaderTest {
 
         boolean isValidInput = tsInputReader.isValidInput(inputModel);
 
-        LOG.debug("Valid input ? " + isValidInput);
         assertTrue(isValidInput);
 
     }
@@ -167,7 +165,6 @@ public class TypeScriptInputReaderTest {
 
         boolean isReadable = tsInputReader.isMostLikelyReadable(baseFile.toPath());
 
-        LOG.debug("is most probably readable ? " + isReadable);
         assertTrue(isReadable);
 
     }
@@ -189,7 +186,6 @@ public class TypeScriptInputReaderTest {
         // Now checking whether the input is valid
         boolean isValid = tsInputReader.isValidInput(baseFile.toPath());
 
-        LOG.debug("is valid ? " + isValid);
         assertTrue(isValid);
 
     }
