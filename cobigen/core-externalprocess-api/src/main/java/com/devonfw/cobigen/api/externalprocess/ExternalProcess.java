@@ -262,6 +262,7 @@ public class ExternalProcess {
             BindException bindException = ExceptionUtil.getCause(e, BindException.class);
             ConnectException connectException = ExceptionUtil.getCause(e, ConnectException.class);
             if (bindException != null || connectException != null) {
+                process.getProcess().destroyForcibly();
                 int newPort = aquireNewPort();
                 LOG.debug("Port {} already in use, trying port {}", port, newPort);
                 port = newPort;
