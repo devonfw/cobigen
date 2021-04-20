@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.BindException;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
@@ -14,7 +15,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
@@ -258,9 +258,10 @@ public class ExternalProcess {
             if (retry > 50) {
                 return false;
             }
-        } catch (IOException | InterruptedException | ExecutionException e) {
+        } catch (Throwable e) {
             BindException bindException = ExceptionUtil.getCause(e, BindException.class);
-            if (bindException != null) {
+            ConnectException connectException = ExceptionUtil.getCause(e, ConnectException.class);
+            if (bindException != null || connectException != null) {
                 int newPort = aquireNewPort();
                 LOG.debug("Port {} already in use, trying port {}", port, newPort);
                 port = newPort;
