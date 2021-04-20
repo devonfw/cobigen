@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.StartedProcess;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
@@ -237,9 +238,10 @@ public class ExternalProcess {
 
             setPermissions(filePath);
 
-            process = new ProcessExecutor().command(filePath, String.valueOf(port)).readOutput(true)
-                // .redirectOutput(Slf4jStream.ofCaller().asInfo()).redirectError(Slf4jStream.ofCaller().asError())
-                .start();
+            process = new ProcessExecutor().command(filePath, String.valueOf(port))
+                .redirectError(
+                    Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
+                .readOutput(true).start();
             Future<ProcessResult> result = process.getFuture();
 
             int retry = 0;
