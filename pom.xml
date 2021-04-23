@@ -19,9 +19,9 @@
     <java.version>1.8</java.version>
     <tycho.version>1.6.0</tycho.version>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
-    <artifactory.url>https://coobigen.jfrog.io/artifactory</artifactory.url>
+    <bintray.url>https://coobigen.jfrog.io/artifactory</bintray.url>
     <!-- artifactory.repository needs to be set by cmd and needs to be one of https://coobigen.jfrog.io/ repositories -->
-    <artifactory.repository.url>${artifactory.url}/${artifactory.repository}</artifactory.repository.url>
+    <bintray.repository.url>${bintray.url}/${artifactory.repository}</bintray.repository.url>
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
     <p2.repository.upload.dir>${project.build.directory}${file.separator}repository-upload</p2.repository.upload.dir>
     <p2.repository.upload.dir.plugin>${p2.repository.upload.dir}/cobigen-${project.artifactId}</p2.repository.upload.dir.plugin>
@@ -447,7 +447,7 @@
                   <url>https://dl.bintray.com/devonfw/${artifactory.repository}</url>
                   <includes>artifacts.jar,content.jar</includes>
                   <toDir>${p2.repository.upload.dir.plugin}</toDir>
-                  <serverId>test-artifactory-repo</serverId>
+                  <serverId>bintray-repo</serverId>
                 </configuration>
               </execution>
             </executions>
@@ -455,7 +455,7 @@
           <plugin>
             <groupId>com.devonfw</groupId>
 			<artifactId>artifactory-maven-plugin</artifactId>
-            <version>1.6.20210416101246</version>
+            <version>1.6.20210423121740</version>
             <configuration>
               <skip>false</skip>
               <subject>devonfw</subject>
@@ -473,7 +473,7 @@
                 </goals>
               </execution>
             </executions>
-          </plugin>-->
+          </plugin>
         </plugins>
       </build>
     </profile>
