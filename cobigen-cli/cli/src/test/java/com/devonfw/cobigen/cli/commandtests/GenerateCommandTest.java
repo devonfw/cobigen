@@ -51,7 +51,7 @@ public class GenerateCommandTest {
         args[0] = "update";
         args[1] = "--all";
         commandLine.execute(args);
-        
+
         String args2[] = new String[1];
         args2[0] = "adapt-templates";
         commandLine.execute(args2);
@@ -69,7 +69,7 @@ public class GenerateCommandTest {
         args[0] = "generate";
         args[1] = entityInputFile.getAbsolutePath();
         args[2] = "--increments";
-        args[3] = "8";
+        args[3] = "CRUD SpringData Repository";
 
         execute(args);
 
@@ -92,7 +92,7 @@ public class GenerateCommandTest {
         args[0] = "generate";
         args[1] = inputFile.getAbsolutePath();
         args[2] = "--increments";
-        args[3] = "16";
+        args[3] = "Angular devon4ng Component";
 
         execute(args);
 
@@ -117,7 +117,7 @@ public class GenerateCommandTest {
         args[2] = "--out";
         args[3] = outputRootPath.getAbsolutePath();
         args[4] = "--increments";
-        args[5] = "0";
+        args[5] = "all";
 
         execute(args);
 
@@ -149,7 +149,7 @@ public class GenerateCommandTest {
         args[2] = "--out";
         args[3] = outputRootFile.getAbsolutePath();
         args[4] = "--increments";
-        args[5] = "1,15,22";
+        args[5] = "Ionic List,Documentation,Services";
 
         execute(args);
 
@@ -196,7 +196,7 @@ public class GenerateCommandTest {
         args[0] = "generate";
         args[1] = entityInputFile.getAbsolutePath();
         args[2] = "-t";
-        args[3] = "1";
+        args[3] = "crud_complex_AbstractBeanMapperSupport";
 
         execute(args);
 
@@ -220,7 +220,7 @@ public class GenerateCommandTest {
         args[2] = "--out";
         args[3] = outputRootFile.getAbsolutePath();
         args[4] = "--increments";
-        args[5] = "1";
+        args[5] = "CRUD REST services";
 
         execute(args);
 
