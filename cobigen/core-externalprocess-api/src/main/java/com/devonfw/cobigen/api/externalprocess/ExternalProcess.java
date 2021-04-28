@@ -274,7 +274,8 @@ public class ExternalProcess {
                 int newPort = aquireNewPort();
                 LOG.debug("Port {} already in use, trying port {}", port, newPort);
                 port = newPort;
-                return startServer(currentTry++);
+                currentTry++;
+                return startServer(currentTry);
             }
             throw new CobiGenRuntimeException("Unable to start the exe/server", e);
         }
@@ -415,14 +416,15 @@ public class ExternalProcess {
 
         String response = get(ExternalProcessConstants.IS_CONNECTION_READY, MediaType.get("text/plain"));
         if (response.equals(serverVersion)) {
+            LOG.debug("Established connection to the {} server with correct version {}", serverFileName, serverVersion);
             return true;
-        }
-
-        if (response.equals("true")) {
+        } else if (response.equals("true")) {
             throw new CobiGenRuntimeException("The old version " + serverVersion + " of " + exeName
                 + " is currently deployed. This should not happen as the nestserver is automatically deployed.");
+        } else {
+            LOG.debug("Established connection to the {} server but got wrong response: {}", serverFileName, response);
+            return false;
         }
-        return false;
     }
 
     /**
