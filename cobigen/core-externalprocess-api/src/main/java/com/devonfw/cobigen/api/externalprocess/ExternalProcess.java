@@ -217,7 +217,7 @@ public class ExternalProcess {
      * Executes the exe file
      * @return true only if the exe has been correctly executed
      */
-    private boolean startServer() {
+    private synchronized boolean startServer() {
         // server ist already running
         if (process != null && process.getProcess() != null && process.getProcess().isAlive()) {
             LOG.debug("Server was already running");
