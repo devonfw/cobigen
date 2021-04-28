@@ -146,7 +146,7 @@ public class ExternalProcess {
      * @return the plain response
      */
     public String request(HttpMethod httpMethod, String path, Object body, MediaType mediaType) {
-        startServer(0);
+        startServer();
         return _request(httpMethod, path, body, mediaType);
     }
 
@@ -193,7 +193,6 @@ public class ExternalProcess {
      */
     @SuppressWarnings("javadoc")
     public String postJsonRequest(String path, Object body) {
-
         return post(path, body, MediaType.get("application/json"));
     }
 
@@ -216,77 +215,76 @@ public class ExternalProcess {
 
     /**
      * Executes the exe file
-     * @param currentTry
-     *            tries to allocate port for starting the server. Should be initialized by 0
      * @return true only if the exe has been correctly executed
      */
-    private boolean startServer(int currentTry) {
+    private boolean startServer() {
         // server ist already running
         if (process != null && process.getProcess() != null && process.getProcess().isAlive()) {
             LOG.debug("Server was already running");
             return true;
         }
 
-        if (currentTry > 10) {
-            LOG.error("Stopped trying to start the server after 10 retries");
-        }
+        int currentTry = 0;
+        while (currentTry < 10) {
+            try {
+                String fileName;
+                if (OS.indexOf("win") >= 0) {
+                    fileName = serverFileName + "-" + serverVersion + ".exe";
+                } else {
+                    fileName = serverFileName + "-" + serverVersion;
+                }
+                String filePath =
+                    ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + fileName;
 
-        try {
-            String fileName;
-            if (OS.indexOf("win") >= 0) {
-                fileName = serverFileName + "-" + serverVersion + ".exe";
-            } else {
-                fileName = serverFileName + "-" + serverVersion;
-            }
-            String filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + fileName;
+                if (exeIsNotValid(filePath)) {
+                    filePath = downloadExecutable(filePath, fileName);
+                }
 
-            if (exeIsNotValid(filePath)) {
-                filePath = downloadExecutable(filePath, fileName);
-            }
+                setPermissions(filePath);
 
-            setPermissions(filePath);
+                process = new ProcessExecutor().command(filePath, String.valueOf(port))
+                    .redirectError(
+                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
+                    .readOutput(true).start();
+                Future<ProcessResult> result = process.getFuture();
 
-            process = new ProcessExecutor().command(filePath, String.valueOf(port))
-                .redirectError(
-                    Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
-                .readOutput(true).start();
-            Future<ProcessResult> result = process.getFuture();
-
-            int retry = 0;
-            while (!isConnectedAndValidService() && retry <= 50) {
-                if (result.isDone()) { // if process terminated already, it was failing
-                    LOG.error("Could not start server in 5s. Closed with output:\n{}", result.get().getOutput());
-                    process.getProcess().destroyForcibly();
+                int retry = 0;
+                while (!isConnectedAndValidService() && retry <= 50) {
+                    if (result.isDone()) { // if process terminated already, it was failing
+                        LOG.error("Could not start server in 5s. Closed with output:\n{}", result.get().getOutput());
+                        process.getProcess().destroyForcibly();
+                        return false;
+                    }
+                    Thread.sleep(100);
+                    retry++;
+                    LOG.info("Waiting process to be alive for {}s", 100 * retry / 1000d);
+                }
+                if (retry > 50) {
+                    LOG.error("Server could not be started at port {}", port);
                     return false;
                 }
-                Thread.sleep(100);
-                retry++;
-                LOG.info("Waiting process to be alive for {}s", 100 * retry / 1000d);
-            }
-            if (retry > 50) {
-                LOG.error("Server could not be started at port {}", port);
-                return false;
-            }
 
-            LOG.info("Server started at port {}", port);
-            return true;
-        } catch (Throwable e) {
-            BindException bindException = ExceptionUtil.getCause(e, BindException.class);
-            ConnectException connectException = ExceptionUtil.getCause(e, ConnectException.class);
-            if (bindException != null || connectException != null) {
-                try {
-                    process.getProcess().destroyForcibly().waitFor();
-                } catch (InterruptedException e1) {
-                    LOG.error("Interrupted wait for process termination to complete", e1);
+                LOG.info("Server started at port {}", port);
+                return true;
+            } catch (Throwable e) {
+                BindException bindException = ExceptionUtil.getCause(e, BindException.class);
+                ConnectException connectException = ExceptionUtil.getCause(e, ConnectException.class);
+                if (bindException != null || connectException != null) {
+                    try {
+                        process.getProcess().destroyForcibly().waitFor();
+                    } catch (InterruptedException e1) {
+                        LOG.error("Interrupted wait for process termination to complete", e1);
+                    }
+                    int newPort = aquireNewPort();
+                    LOG.debug("Port {} already in use, trying port {}", port, newPort, e);
+                    port = newPort;
+                    currentTry++;
                 }
-                int newPort = aquireNewPort();
-                LOG.debug("Port {} already in use, trying port {}", port, newPort);
-                port = newPort;
-                currentTry++;
-                return startServer(currentTry);
+                throw new CobiGenRuntimeException("Unable to start the exe/server", e);
             }
-            throw new CobiGenRuntimeException("Unable to start the exe/server", e);
         }
+        LOG.error("Stopped trying to start the server after 10 retries");
+        return false;
     }
 
     /**
