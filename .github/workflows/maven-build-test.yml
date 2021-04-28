@@ -1,0 +1,24 @@
+# This workflow builds and tests Cobigen run in parallel and stops if one build doesn't work
+
+name: build & test # on Ubuntu with OpenJDK8 and OpenJDK11
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+
+    strategy:
+      matrix:
+        # test against Java version 8 and 11:
+        javaVersion: [ 8, 11 ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up OpenJDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: ${{ matrix.javaVersion }}
+        settings-path: ${{ github.workspace }}
+
+    - name: Build with Maven
+      run: ./build.sh
