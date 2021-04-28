@@ -422,7 +422,8 @@ public class ExternalProcess {
      */
     private boolean isConnectedAndValidService() {
 
-        String response = get(ExternalProcessConstants.IS_CONNECTION_READY, MediaType.get("text/plain"));
+        String response =
+            _request(HttpMethod.GET, ExternalProcessConstants.IS_CONNECTION_READY, null, MediaType.get("text/plain"));
         if (response.equals(serverVersion)) {
             LOG.debug("Established connection to the {} server with correct version {}", serverFileName, serverVersion);
             return true;
