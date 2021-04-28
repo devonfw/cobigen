@@ -34,7 +34,6 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.google.gson.Gson;
 
@@ -172,11 +171,12 @@ public class ExternalProcess {
                 LOG.debug("Responded {}", response.code());
                 return response.body().string();
             } else {
-                throw new InputReaderException("Unable to send or receive the message from the service. Response code: "
-                    + (response != null ? response.code() : null));
+                throw new CobiGenRuntimeException(
+                    "Unable to send or receive the message from the service. Response code: "
+                        + (response != null ? response.code() : null));
             }
         } catch (IOException e) {
-            throw new InputReaderException("Unable to send or receive the message from the service", e);
+            throw new CobiGenRuntimeException("Unable to send or receive the message from the service", e);
         }
     }
 
@@ -425,8 +425,14 @@ public class ExternalProcess {
      */
     private boolean isConnectedAndValidService() {
 
-        String response =
-            _request(HttpMethod.GET, ExternalProcessConstants.IS_CONNECTION_READY, null, MediaType.get("text/plain"));
+        String response;
+        try {
+            response = _request(HttpMethod.GET, ExternalProcessConstants.IS_CONNECTION_READY, null,
+                MediaType.get("text/plain"));
+        } catch (CobiGenRuntimeException e) {
+            return false;
+        }
+
         if (response.equals(serverVersion)) {
             LOG.debug("Established connection to the {} server with correct version {}", serverFileName, serverVersion);
             return true;
