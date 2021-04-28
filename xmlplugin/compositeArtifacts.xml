@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?compositeArtifactRepository version='1.0.0'?>
+<repository name='&quot;CobiGen Plugins&quot;'
+    type='org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository' version='1.0.0'>
+  <properties size='1'>
+    <property name='p2.timestamp' value='1243822502500'/>
+  </properties>
+  <children size='11'>
+  	<child location='cobigen-eclipse'/>
+	<child location='cobigen-javaplugin'/>
+	<child location='cobigen-propertyplugin'/>
+	<child location='cobigen-htmlplugin'/>
+	<child location='cobigen-textmerger'/>
+	<child location='cobigen-jsonplugin'/>
+	<child location='cobigen-xmlplugin'/>
+	<child location='cobigen-tsplugin'/>
+    <child location='cobigen-tempeng-freemarker'/>
+	<child location='cobigen-tempeng-velocity'/>
+	<child location='cobigen-openapiplugin'/>
+  </children>
+</repository>
