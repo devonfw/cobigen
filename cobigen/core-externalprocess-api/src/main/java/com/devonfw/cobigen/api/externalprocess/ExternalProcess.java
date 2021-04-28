@@ -224,28 +224,33 @@ public class ExternalProcess {
             return true;
         }
 
+        String fileName;
+        if (OS.indexOf("win") >= 0) {
+            fileName = serverFileName + "-" + serverVersion + ".exe";
+        } else {
+            fileName = serverFileName + "-" + serverVersion;
+        }
+        String filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + fileName;
+
+        try {
+            if (exeIsNotValid(filePath)) {
+                filePath = downloadExecutable(filePath, fileName);
+            }
+            setPermissions(filePath);
+        } catch (IOException e) {
+            LOG.error("Unable to download {} to {} and set permissions", filePath, serverDownloadUrl, e);
+            return false;
+        }
+
         int currentTry = 0;
         while (currentTry < 10) {
             try {
-                String fileName;
-                if (OS.indexOf("win") >= 0) {
-                    fileName = serverFileName + "-" + serverVersion + ".exe";
-                } else {
-                    fileName = serverFileName + "-" + serverVersion;
-                }
-                String filePath =
-                    ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + fileName;
-
-                if (exeIsNotValid(filePath)) {
-                    filePath = downloadExecutable(filePath, fileName);
-                }
-
-                setPermissions(filePath);
-
                 process = new ProcessExecutor().command(filePath, String.valueOf(port))
                     .redirectError(
                         Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
-                    .readOutput(true).start();
+                    .redirectOutput(
+                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asDebug())
+                    .start();
                 Future<ProcessResult> result = process.getFuture();
 
                 int retry = 0;
