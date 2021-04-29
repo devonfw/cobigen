@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.BindException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -129,7 +130,7 @@ public class ExternalProcess {
         this.serverFileName = serverFileName;
 
         httpClient = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS)
-            .callTimeout(60, TimeUnit.SECONDS).retryOnConnectionFailure(true).build();
+            .readTimeout(20, TimeUnit.SECONDS).callTimeout(20, TimeUnit.SECONDS).retryOnConnectionFailure(true).build();
     }
 
     /**
@@ -176,6 +177,12 @@ public class ExternalProcess {
                         + (response != null ? response.code() : null));
             }
         } catch (IOException e) {
+            SocketException cause = ExceptionUtil.getCause(e, SocketException.class);
+            if (cause != null && cause.getMessage().contains("Broken Pipe")) {
+                throw new CobiGenRuntimeException(
+                    "Most likely the connection was slow or the contents transferred were too big. Reached a connect/send/read tmeout",
+                    e);
+            }
             throw new CobiGenRuntimeException("Unable to send or receive the message from the service", e);
         }
     }
