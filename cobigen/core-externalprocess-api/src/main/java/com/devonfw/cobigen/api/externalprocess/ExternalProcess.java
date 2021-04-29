@@ -154,7 +154,7 @@ public class ExternalProcess {
      * {@link #request(HttpMethod, String, Object, MediaType)} without requesting the server to start
      */
     @SuppressWarnings("javadoc")
-    private String _request(HttpMethod httpMethod, String path, Object body, MediaType mediaType) {
+    private synchronized String _request(HttpMethod httpMethod, String path, Object body, MediaType mediaType) {
         String endpointUrl = getBasePath() + path;
         LOG.debug("Requesting {} {} with media type {}", httpMethod, endpointUrl, mediaType);
         try {
