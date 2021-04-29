@@ -172,7 +172,7 @@ public class ExternalProcess {
                 conn.setRequestProperty("Content-Type", mediaType.type());
                 conn.setConnectTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
                 conn.setReadTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
-                sendRequest(body, conn, mediaType.type());
+                sendRequest(body, conn, "UTF-8");
 
                 try (InputStream isr = conn.getInputStream();
                     ByteArrayOutputStream result = new ByteArrayOutputStream()) {
