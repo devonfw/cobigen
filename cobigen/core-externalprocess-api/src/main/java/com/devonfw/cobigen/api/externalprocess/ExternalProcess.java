@@ -130,7 +130,7 @@ public class ExternalProcess {
         this.serverFileName = serverFileName;
 
         httpClient = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS).callTimeout(20, TimeUnit.SECONDS).retryOnConnectionFailure(true).build();
+            .readTimeout(60, TimeUnit.SECONDS).callTimeout(60, TimeUnit.SECONDS).retryOnConnectionFailure(true).build();
     }
 
     /**
