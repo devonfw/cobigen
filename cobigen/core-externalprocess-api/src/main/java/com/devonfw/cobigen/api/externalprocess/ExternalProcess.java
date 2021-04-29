@@ -6,10 +6,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.BindException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,6 +39,8 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -167,6 +172,7 @@ public class ExternalProcess {
                 conn.setRequestProperty("Content-Type", mediaType.type());
                 conn.setConnectTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
                 conn.setReadTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
+                sendRequest(body, conn, mediaType.type());
 
                 try (InputStream isr = conn.getInputStream();
                     ByteArrayOutputStream result = new ByteArrayOutputStream()) {
@@ -194,6 +200,64 @@ public class ExternalProcess {
         } catch (IOException e) {
             throw new CobiGenRuntimeException("Unable to send or receive the message from the service", e);
         }
+    }
+
+    public boolean sendRequest(Object dataTo, HttpURLConnection conn, String charsetName) {
+        ObjectWriter objWriter;
+        objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String jsonMergerTo;
+        try (OutputStream os = conn.getOutputStream();
+            OutputStreamWriter osw = new OutputStreamWriter(os, Charset.forName(charsetName).newEncoder());) {
+
+            jsonMergerTo = objWriter.writeValueAsString(dataTo);
+            // We need to escape new lines because otherwise our JSON gets corrupted
+            jsonMergerTo = jsonMergerTo.replace("\\n", "\\\\n");
+
+            osw.write(jsonMergerTo);
+            osw.flush();
+
+            for (int i = 0; i < ExternalProcessConstants.NUMBER_OF_RETRIES; i++) {
+                conn.connect();
+                int statusCode = conn.getResponseCode();
+
+                if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED) {
+                    // Successful request
+                    return true;
+                }
+                if (shouldNotRetry(conn.getResponseCode())) {
+                    LOG.error("Sending the request failed. The response message is the following: "
+                        + conn.getResponseMessage());
+                    return false;
+                }
+            }
+            return false;
+        } catch (IOException e) {
+            LOG.error("Not able to send request", e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks whether the HTTP request should NOT be retried
+     * @param statusCode
+     *            code of the HTTP request
+     * @return true when we should not retry because the status code describes a unavoidable case
+     */
+    private boolean shouldNotRetry(int statusCode) {
+
+        switch (statusCode) {
+
+        case HttpURLConnection.HTTP_MOVED_TEMP:
+            return false;
+
+        case HttpURLConnection.HTTP_UNAVAILABLE:
+            return false;
+
+        default:
+            return true;
+        }
+
     }
 
     /**
