@@ -29,9 +29,7 @@ public class TypeScriptMergerTest {
     private TypeScriptPluginActivator activator = new TypeScriptPluginActivator();
 
     /**
-     * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = false
-     *
-     * @test fails
+     * Checks if the ts-merger can be launched and if the output is correct with patchOverrides = false
      */
     @Test
     public void testMergingNoOverrides() {
@@ -77,8 +75,6 @@ public class TypeScriptMergerTest {
 
     /**
      * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = true
-     *
-     * @test fails
      */
     @Test
     public void testMergingOverrides() {
@@ -123,8 +119,6 @@ public class TypeScriptMergerTest {
 
     /**
      * We need to test whether we are able to send large amount of data to the server.
-     *
-     * @test fails
      */
     @Test
     public void testMergingMassiveFile() {
@@ -145,7 +139,6 @@ public class TypeScriptMergerTest {
      *
      * @throws IOException
      *             test fails
-     * @test fails
      */
     @Test
     public void testReadingEncoding() throws IOException {
@@ -196,8 +189,6 @@ public class TypeScriptMergerTest {
 
     /**
      * Tests if TypeScript can handle null- and undefined-aware types
-     *
-     * @test fails
      */
     @Test
     public void testNullAndUndefinedTypes() {

@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.api.externalprocess;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,12 +36,10 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
-import com.google.gson.Gson;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -158,12 +157,28 @@ public class ExternalProcess {
         String endpointUrl = getBasePath() + path;
         LOG.debug("Requesting {} {} with media type {}", httpMethod, endpointUrl, mediaType);
         try {
+            URL endpoint = new URL(endpointUrl);
+            HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
             Response response = null;
             switch (httpMethod) {
             case POST:
-                response = httpClient.newCall(new Request.Builder().url(endpointUrl)
-                    .post(RequestBody.create(new Gson().toJson(body), mediaType)).build()).execute();
-                break;
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+                conn.setRequestProperty("Content-Type", mediaType.toString());
+                conn.setConnectTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
+                conn.setReadTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
+
+                try (InputStream isr = conn.getInputStream();
+                    ByteArrayOutputStream result = new ByteArrayOutputStream()) {
+                    byte[] buffer = new byte[1024];
+                    for (int length; (length = isr.read(buffer)) != -1;) {
+                        result.write(buffer, 0, length);
+                    }
+                    return result.toString("UTF-8");
+                }
+
+                // response = httpClient.newCall(new Request.Builder().url(endpointUrl)
+                // .post(RequestBody.create(new Gson().toJson(body), mediaType)).build()).execute();
             case GET:
                 response = httpClient.newCall(new Request.Builder().url(endpointUrl).get().build()).execute();
             }
