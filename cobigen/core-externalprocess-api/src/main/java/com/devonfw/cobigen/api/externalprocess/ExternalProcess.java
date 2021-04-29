@@ -164,7 +164,7 @@ public class ExternalProcess {
             case POST:
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
-                conn.setRequestProperty("Content-Type", mediaType.toString());
+                conn.setRequestProperty("Content-Type", mediaType.type());
                 conn.setConnectTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
                 conn.setReadTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
 
