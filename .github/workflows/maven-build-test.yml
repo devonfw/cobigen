@@ -8,6 +8,7 @@ jobs:
   build-and-test:
 
     strategy:
+      fail-fast: false
       matrix:
         # test against Java version 8 and 11:
         javaVersion: [ 8, 11 ]
@@ -28,4 +29,4 @@ jobs:
     - name: Build with Maven
       uses: GabrielBB/xvfb-action@v1.5
       with: 
-        run: ./build.sh
+        run: sh build.sh
