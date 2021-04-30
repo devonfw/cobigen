@@ -12,9 +12,9 @@ eclipse-target
 !**/resources/bin
 
 scripts/src/config
-cobigen-eclipse-test/screenshots
 cobigen-cli/cli/src/test/resources/testdata/generatedcode/root
 cobigen-maven/src/main/resources/META-INF/maven/plugin.xml
+cobigen-eclipse/cobigen-eclipse-test/screenshots
 
 #Python
 *.pyc
