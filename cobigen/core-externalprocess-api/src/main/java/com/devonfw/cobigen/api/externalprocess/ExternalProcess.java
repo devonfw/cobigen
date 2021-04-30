@@ -1,18 +1,14 @@
 package com.devonfw.cobigen.api.externalprocess;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.BindException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,12 +35,12 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -158,33 +154,17 @@ public class ExternalProcess {
      * {@link #request(HttpMethod, String, Object, MediaType)} without requesting the server to start
      */
     @SuppressWarnings("javadoc")
-    private synchronized String _request(HttpMethod httpMethod, String path, Object body, MediaType mediaType) {
+    private String _request(HttpMethod httpMethod, String path, Object body, MediaType mediaType) {
         String endpointUrl = getBasePath() + path;
         LOG.debug("Requesting {} {} with media type {}", httpMethod, endpointUrl, mediaType);
         try {
-            URL endpoint = new URL(endpointUrl);
-            HttpURLConnection conn = (HttpURLConnection) endpoint.openConnection();
             Response response = null;
             switch (httpMethod) {
             case POST:
-                conn.setRequestMethod("POST");
-                conn.setDoOutput(true);
-                conn.setRequestProperty("Content-Type", mediaType.type());
-                conn.setConnectTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
-                conn.setReadTimeout(ExternalProcessConstants.CONNECTION_TIMEOUT);
-                sendRequest(body, conn, "UTF-8");
+                response = httpClient.newCall(new Request.Builder().url(endpointUrl)
+                    .post(RequestBody.create(new Gson().toJson(body), mediaType)).build()).execute();
 
-                try (InputStream isr = conn.getInputStream();
-                    ByteArrayOutputStream result = new ByteArrayOutputStream()) {
-                    byte[] buffer = new byte[1024];
-                    for (int length; (length = isr.read(buffer)) != -1;) {
-                        result.write(buffer, 0, length);
-                    }
-                    return result.toString("UTF-8");
-                }
-
-                // response = httpClient.newCall(new Request.Builder().url(endpointUrl)
-                // .post(RequestBody.create(new Gson().toJson(body), mediaType)).build()).execute();
+                break;
             case GET:
                 response = httpClient.newCall(new Request.Builder().url(endpointUrl).get().build()).execute();
             }
@@ -200,42 +180,6 @@ public class ExternalProcess {
         } catch (IOException e) {
             throw new CobiGenRuntimeException("Unable to send or receive the message from the service", e);
         }
-    }
-
-    public boolean sendRequest(Object dataTo, HttpURLConnection conn, String charsetName) {
-        ObjectWriter objWriter;
-        objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonMergerTo;
-        try (OutputStream os = conn.getOutputStream();
-            OutputStreamWriter osw = new OutputStreamWriter(os, Charset.forName(charsetName).newEncoder());) {
-
-            jsonMergerTo = objWriter.writeValueAsString(dataTo);
-            // We need to escape new lines because otherwise our JSON gets corrupted
-            jsonMergerTo = jsonMergerTo.replace("\\n", "\\\\n");
-
-            osw.write(jsonMergerTo);
-            osw.flush();
-
-            for (int i = 0; i < ExternalProcessConstants.NUMBER_OF_RETRIES; i++) {
-                conn.connect();
-                int statusCode = conn.getResponseCode();
-
-                if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED) {
-                    // Successful request
-                    return true;
-                }
-                if (shouldNotRetry(conn.getResponseCode())) {
-                    LOG.error("Sending the request failed. The response message is the following: "
-                        + conn.getResponseMessage());
-                    return false;
-                }
-            }
-            return false;
-        } catch (IOException e) {
-            LOG.error("Not able to send request", e);
-        }
-
-        return false;
     }
 
     /**
@@ -300,8 +244,10 @@ public class ExternalProcess {
     private synchronized boolean startServer() {
         // server ist already running
         if (process != null && process.getProcess() != null && process.getProcess().isAlive()) {
-            LOG.debug("Server was already running");
+            LOG.debug("Server was already running - {}", process.getProcess());
             return true;
+        } else {
+            LOG.debug("Server was not yet running, starting...");
         }
 
         String fileName;
@@ -334,7 +280,7 @@ public class ExternalProcess {
                 Future<ProcessResult> result = process.getFuture();
 
                 int retry = 0;
-                while (!isConnectedAndValidService() && retry <= 50) {
+                do {
                     if (result.isDone()) { // if process terminated already, it was failing
                         LOG.error("Could not start server in 5s. Closed with output:\n{}", result.get().getOutput());
                         process.getProcess().destroyForcibly();
@@ -343,11 +289,22 @@ public class ExternalProcess {
                     Thread.sleep(100);
                     retry++;
                     LOG.info("Waiting process to be alive for {}s", 100 * retry / 1000d);
-                }
+                } while (!isConnectedAndValidService() && retry <= 50);
+
                 if (retry > 50) {
                     LOG.error("Server could not be started at port {}", port);
                     return false;
                 }
+
+                // add JVM shutdown hook
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    try {
+                        LOG.info("Closing {} - {}", serverFileName, process.getProcess());
+                        ExternalProcess.this.finalize();
+                    } catch (Throwable e) {
+                        LOG.warn("Could not close external process", e);
+                    }
+                }));
 
                 LOG.info("Server started at port {}", port);
                 return true;
@@ -510,6 +467,7 @@ public class ExternalProcess {
             response = _request(HttpMethod.GET, ExternalProcessConstants.IS_CONNECTION_READY, null,
                 MediaType.get("text/plain"));
         } catch (CobiGenRuntimeException e) {
+            LOG.debug("Server not yet available", e);
             return false;
         }
 
