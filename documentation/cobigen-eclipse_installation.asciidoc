@@ -10,6 +10,7 @@ ____
 == Preconditions
 * Eclipse 4.x
 * Java 7 Runtime (for starting eclipse with CobiGen). This is independent from the target version of your developed code.
+* Something to clone git repositories with (Git Bash, Sourcetree etc.)
 
 == Installation steps
 
@@ -19,7 +20,7 @@ menu bar -> _Help_ -> _Install new Software..._
 image:images/howtos/installation/01-install-new-software.png[]
 . Open CobiGen's update site +
 Insert the update site of your interest into the filed _Work with_ and press _Add ..._
-    * Stable releases: https://dl.bintray.com/devonfw/cobigen.p2/ +
+    * Stable releases: https://devonfw.com/cobigen/updatesite/stable/ +
 image:images/howtos/installation/02-select-update-site.png[]
 . Follow the installation wizard +
 Select _CobiGen Eclipse Plug-in_ -> _Next_ -> _Next_ -> accept the license -> _Finish_ -> _OK_ -> _Yes_
