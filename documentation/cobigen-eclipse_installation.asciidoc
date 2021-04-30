@@ -10,7 +10,6 @@ ____
 == Preconditions
 * Eclipse 4.x
 * Java 7 Runtime (for starting eclipse with CobiGen). This is independent from the target version of your developed code.
-* Something to clone git repositories with (Git Bash, Sourcetree etc.)
 
 == Installation steps
 
