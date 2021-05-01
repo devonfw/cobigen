@@ -25,7 +25,7 @@ echo "##########################################"
 echo "### Package & Run E2E Tests ##############"
 echo "##########################################"
 mvn test -f cobigen/cobigen-core-systemtest -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-mvn verify -f cobigen-eclipse -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+mvn verify -f cobigen-eclipse -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dtycho.debug.resolver=true
 mvn verify -f cobigen-cli -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 mvn verify -f cobigen-maven -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
