@@ -26,7 +26,7 @@
 
   <build>
     <plugins>
-      <!-- tycho-versions-plugin:set-version does not work properly as it always rewrites the pom.xml files, but we want 
+      <!-- tycho-versions-plugin:set-version does not work properly as it always rewrites the pom.xml files, but we want
         to have pom-first version declaration -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -93,7 +93,7 @@
         <version>${tycho.version}</version>
         <executions>
           <!-- Overwrite the default-validate-version, to disable version check vs maven and OSGi. It's not possible to run
-            the check properly as the OSGi files get cached at maven execution start and thus will not properly take the 
+            the check properly as the OSGi files get cached at maven execution start and thus will not properly take the
             version set
             by the ant-run above. -->
           <execution>
@@ -234,12 +234,11 @@
   </build>
 
   <profiles>
-	<profile>
+    <profile>
       <id>p2-build</id>
-	  <!--Todo!!--> 
-	  <activation>
-		<activeByDefault>true</activeByDefault>
-	  </activation>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <repositories>
         <repository>
           <id>htmlplugin</id>
@@ -281,20 +280,28 @@
           <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-textmerger/target/repository</url>
           <layout>p2</layout>
         </repository>
-		<repository>
+        <repository>
           <id>tsplugin</id>
           <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-tsplugin/target/repository</url>
           <layout>p2</layout>
         </repository>
-		<repository>
+        <repository>
           <id>xmlplugin</id>
           <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-xmlplugin/target/repository</url>
           <layout>p2</layout>
         </repository>
       </repositories>
-	</profile>
+    </profile>
   </profiles>
-  
+
+  <repositories>
+    <repository>
+      <id>eclipse-repository</id>
+      <url>${eclipse-repository}</url>
+      <layout>p2</layout>
+    </repository>
+  </repositories>
+
   <pluginRepositories>
     <pluginRepository>
       <id>tycho</id>
@@ -307,12 +314,4 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
-  <repositories>
-    <repository>
-      <id>eclipse-repository</id>
-      <url>${eclipse-repository}</url>
-      <layout>p2</layout>
-    </repository>
-  </repositories>
 </project>

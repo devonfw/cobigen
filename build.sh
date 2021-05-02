@@ -1,16 +1,31 @@
 set -e
 
-# build core without system test
-mvn clean install -f cobigen --projects !cobigen-core-systemtest -DtrimStackTrace=false
+echo "##########################################"
+echo "### Cleanup Projects #####################"
+echo "##########################################"
+mvn clean -P!p2-build -T1C --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-# build & test plugins ones
-mvn clean install -f cobigen-plugins -DtrimStackTrace=false
+echo "##########################################"
+echo "### Build & Test Core  ###################"
+echo "##########################################"
+mvn install -f cobigen --projects !cobigen-core-systemtest -DtrimStackTrace=false -T1C --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-# build plugin p2 repositories
-mvn clean install p2:site -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -DtrimStackTrace=false
+echo "##########################################"
+echo "### Build & Test Core Plugins ############"
+echo "##########################################"
+mvn install -f cobigen-plugins -DtrimStackTrace=false -T1C --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-# execute core system tests
-mvn clean verify -f cobigen --projects cobigen-core-systemtest -DtrimStackTrace=false
+echo "##########################################"
+echo "### Build Core Plugins - P2 Update Sites #"
+echo "##########################################"
+mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -DtrimStackTrace=false -T1C --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -DtrimStackTrace=false -T1C --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-# package everything. core and plugins will be skipped since they were build already
-mvn package -Pp2-build-photon,p2-build-stable,p2-build-experimental -DtrimStackTrace=false
+echo "##########################################"
+echo "### Package & Run E2E Tests ##############"
+echo "##########################################"
+mvn test -f cobigen/cobigen-core-systemtest -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+mvn verify -f cobigen-eclipse -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dtycho.debug.resolver=true
+mvn verify -f cobigen-cli -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+mvn verify -f cobigen-maven -DtrimStackTrace=false --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+

@@ -34,7 +34,6 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.google.gson.Gson;
 
@@ -66,7 +65,7 @@ public class ExternalProcess {
     private final String serverVersion;
 
     /** Port used for connecting to the server */
-    public int port = 5000;
+    private int port = 5000;
 
     /** Host name of the server, by default is localhost */
     private String hostName = "localhost";
@@ -129,8 +128,9 @@ public class ExternalProcess {
         this.serverVersion = serverVersion;
         this.serverFileName = serverFileName;
 
-        httpClient = new OkHttpClient().newBuilder().connectTimeout(5, TimeUnit.SECONDS)
-            .callTimeout(10, TimeUnit.SECONDS).retryOnConnectionFailure(true).build();
+        httpClient = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS).callTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true).build();
     }
 
     /**
@@ -146,7 +146,15 @@ public class ExternalProcess {
      * @return the plain response
      */
     public String request(HttpMethod httpMethod, String path, Object body, MediaType mediaType) {
-        startServer(0);
+        startServer();
+        return _request(httpMethod, path, body, mediaType);
+    }
+
+    /**
+     * {@link #request(HttpMethod, String, Object, MediaType)} without requesting the server to start
+     */
+    @SuppressWarnings("javadoc")
+    private String _request(HttpMethod httpMethod, String path, Object body, MediaType mediaType) {
         String endpointUrl = getBasePath() + path;
         LOG.debug("Requesting {} {} with media type {}", httpMethod, endpointUrl, mediaType);
         try {
@@ -155,6 +163,7 @@ public class ExternalProcess {
             case POST:
                 response = httpClient.newCall(new Request.Builder().url(endpointUrl)
                     .post(RequestBody.create(new Gson().toJson(body), mediaType)).build()).execute();
+
                 break;
             case GET:
                 response = httpClient.newCall(new Request.Builder().url(endpointUrl).get().build()).execute();
@@ -164,12 +173,35 @@ public class ExternalProcess {
                 LOG.debug("Responded {}", response.code());
                 return response.body().string();
             } else {
-                throw new InputReaderException("Unable to send or receive the message from the service. Response code: "
-                    + (response != null ? response.code() : null));
+                throw new CobiGenRuntimeException(
+                    "Unable to send or receive the message from the service. Response code: "
+                        + (response != null ? response.code() : null));
             }
         } catch (IOException e) {
-            throw new InputReaderException("Unable to send or receive the message from the service", e);
+            throw new CobiGenRuntimeException("Unable to send or receive the message from the service", e);
         }
+    }
+
+    /**
+     * Checks whether the HTTP request should NOT be retried
+     * @param statusCode
+     *            code of the HTTP request
+     * @return true when we should not retry because the status code describes a unavoidable case
+     */
+    private boolean shouldNotRetry(int statusCode) {
+
+        switch (statusCode) {
+
+        case HttpURLConnection.HTTP_MOVED_TEMP:
+            return false;
+
+        case HttpURLConnection.HTTP_UNAVAILABLE:
+            return false;
+
+        default:
+            return true;
+        }
+
     }
 
     /**
@@ -185,7 +217,6 @@ public class ExternalProcess {
      */
     @SuppressWarnings("javadoc")
     public String postJsonRequest(String path, Object body) {
-
         return post(path, body, MediaType.get("application/json"));
     }
 
@@ -208,71 +239,94 @@ public class ExternalProcess {
 
     /**
      * Executes the exe file
-     * @param currentTry
-     *            tries to allocate port for starting the server. Should be initialized by 0
      * @return true only if the exe has been correctly executed
      */
-    private boolean startServer(int currentTry) {
+    private synchronized boolean startServer() {
         // server ist already running
         if (process != null && process.getProcess() != null && process.getProcess().isAlive()) {
-            LOG.debug("Server was already running");
+            LOG.debug("Server was already running - {}", process.getProcess());
             return true;
+        } else {
+            LOG.debug("Server was not yet running, starting...");
         }
 
-        if (currentTry > 10) {
-            LOG.error("Stopped trying to start the server after 10 retries");
+        String fileName;
+        if (OS.indexOf("win") >= 0) {
+            fileName = serverFileName + "-" + serverVersion + ".exe";
+        } else {
+            fileName = serverFileName + "-" + serverVersion;
         }
+        String filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + fileName;
 
         try {
-            String fileName;
-            if (OS.indexOf("win") >= 0) {
-                fileName = serverFileName + "-" + serverVersion + ".exe";
-            } else {
-                fileName = serverFileName + "-" + serverVersion;
-            }
-            String filePath = ExternalProcessConstants.EXTERNAL_PROCESS_FOLDER.toString() + File.separator + fileName;
-
             if (exeIsNotValid(filePath)) {
                 filePath = downloadExecutable(filePath, fileName);
             }
-
             setPermissions(filePath);
-
-            process = new ProcessExecutor().command(filePath, String.valueOf(port))
-                .redirectError(
-                    Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
-                .readOutput(true).start();
-            Future<ProcessResult> result = process.getFuture();
-
-            int retry = 0;
-            while (!isConnectedAndValidService() && retry <= 50) {
-                if (result.isDone()) { // if process terminated already, it was failing
-                    LOG.error("Could not start server in 5s. Closed with output:\n{}", result.get().getOutput());
-                    process.getProcess().destroyForcibly();
-                    return false;
-                }
-                Thread.sleep(100);
-                retry++;
-                LOG.info("Waiting process to be alive for {}s", 100 * retry / 1000d);
-            }
-            if (retry > 50) {
-                return false;
-            }
-        } catch (Throwable e) {
-            BindException bindException = ExceptionUtil.getCause(e, BindException.class);
-            ConnectException connectException = ExceptionUtil.getCause(e, ConnectException.class);
-            if (bindException != null || connectException != null) {
-                process.getProcess().destroyForcibly();
-                int newPort = aquireNewPort();
-                LOG.debug("Port {} already in use, trying port {}", port, newPort);
-                port = newPort;
-                return startServer(currentTry++);
-            }
-            throw new CobiGenRuntimeException("Unable to start the exe/server", e);
+        } catch (IOException e) {
+            LOG.error("Unable to download {} to {} and set permissions", filePath, serverDownloadUrl, e);
+            return false;
         }
 
-        LOG.info("Server started at port {}", port);
-        return true;
+        int currentTry = 0;
+        while (currentTry < 10) {
+            try {
+                process = new ProcessExecutor().command(filePath, String.valueOf(port))
+                    .redirectError(
+                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
+                    .redirectOutput(
+                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asDebug())
+                    .start();
+                Future<ProcessResult> result = process.getFuture();
+
+                int retry = 0;
+                do {
+                    if (result.isDone()) { // if process terminated already, it was failing
+                        LOG.error("Could not start server in 5s. Closed with output:\n{}", result.get().getOutput());
+                        process.getProcess().destroyForcibly();
+                        return false;
+                    }
+                    Thread.sleep(100);
+                    retry++;
+                    LOG.info("Waiting process to be alive for {}s", 100 * retry / 1000d);
+                } while (!isConnectedAndValidService() && retry <= 50);
+
+                if (retry > 50) {
+                    LOG.error("Server could not be started at port {}", port);
+                    return false;
+                }
+
+                // add JVM shutdown hook
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    try {
+                        LOG.info("Closing {} - {}", serverFileName, process.getProcess());
+                        ExternalProcess.this.finalize();
+                    } catch (Throwable e) {
+                        LOG.warn("Could not close external process", e);
+                    }
+                }));
+
+                LOG.info("Server started at port {}", port);
+                return true;
+            } catch (Throwable e) {
+                BindException bindException = ExceptionUtil.getCause(e, BindException.class);
+                ConnectException connectException = ExceptionUtil.getCause(e, ConnectException.class);
+                if (bindException != null || connectException != null) {
+                    try {
+                        process.getProcess().destroyForcibly().waitFor();
+                    } catch (InterruptedException e1) {
+                        LOG.error("Interrupted wait for process termination to complete", e1);
+                    }
+                    int newPort = aquireNewPort();
+                    LOG.debug("Port {} already in use, trying port {}", port, newPort, e);
+                    port = newPort;
+                    currentTry++;
+                }
+                throw new CobiGenRuntimeException("Unable to start the exe/server", e);
+            }
+        }
+        LOG.error("Stopped trying to start the server after 10 retries");
+        return false;
     }
 
     /**
@@ -408,16 +462,25 @@ public class ExternalProcess {
      */
     private boolean isConnectedAndValidService() {
 
-        String response = get(ExternalProcessConstants.IS_CONNECTION_READY, MediaType.get("text/plain"));
-        if (response.equals(serverVersion)) {
-            return true;
+        String response;
+        try {
+            response = _request(HttpMethod.GET, ExternalProcessConstants.IS_CONNECTION_READY, null,
+                MediaType.get("text/plain"));
+        } catch (CobiGenRuntimeException e) {
+            LOG.debug("Server not yet available", e);
+            return false;
         }
 
-        if (response.equals("true")) {
+        if (response.equals(serverVersion)) {
+            LOG.debug("Established connection to the {} server with correct version {}", serverFileName, serverVersion);
+            return true;
+        } else if (response.equals("true")) {
             throw new CobiGenRuntimeException("The old version " + serverVersion + " of " + exeName
                 + " is currently deployed. This should not happen as the nestserver is automatically deployed.");
+        } else {
+            LOG.debug("Established connection to the {} server but got wrong response: {}", serverFileName, response);
+            return false;
         }
-        return false;
     }
 
     /**

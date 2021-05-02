@@ -92,7 +92,11 @@ public class GenerateCommandTest {
         args[0] = "generate";
         args[1] = inputFile.getAbsolutePath();
         args[2] = "--increments";
+
         args[3] = "Angular devon4ng Component";
+
+
+
 
         execute(args);
 

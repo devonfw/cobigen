@@ -99,7 +99,7 @@ public class TypeScriptMerger extends ExternalServerMergerProxy {
         } catch (IOException e) {
             LOG.warn("Unable to read service response for beautification", e);
             // beautification anyhow is not critical, let's keep returning what we have
-            return null;
+            return content;
         }
     }
 

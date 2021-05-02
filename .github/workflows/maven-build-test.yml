@@ -8,11 +8,17 @@ jobs:
   build-and-test:
 
     strategy:
+      fail-fast: false
       matrix:
         # test against Java version 8 and 11:
         javaVersion: [ 8, 11 ]
-    runs-on: ubuntu-latest
+        os: [windows-latest,ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    
     steps:
+    - name: Support longpaths for Windows
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: git config --system core.longpaths true
     - uses: actions/checkout@v2
     - name: Set up OpenJDK
       uses: actions/setup-java@v1
@@ -21,4 +27,6 @@ jobs:
         settings-path: ${{ github.workspace }}
 
     - name: Build with Maven
-      run: ./build.sh
+      uses: GabrielBB/xvfb-action@v1.5
+      with: 
+        run: sh build.sh

@@ -1,7 +1,0 @@
-#!/bin/bash
-MY_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ -z "$1" ]; then
-    java -jar "$MY_SCRIPT_DIR"/cobigen.jar -help
-else
-    java -javaagent:"$MY_SCRIPT_DIR"/class-loader-agent.jar -jar "$MY_SCRIPT_DIR"/cobigen.jar "$@"
-fi
