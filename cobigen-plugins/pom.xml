@@ -70,8 +70,7 @@
                 <niceManifest>true</niceManifest>
                 <Import-Package></Import-Package>
                 <Export-Package></Export-Package>
-                <_noee>true</_noee> 
-                <Require-Capability>osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"</Require-Capability>
+                <_noee>true</_noee><!-- circumvent https://stackoverflow.com/q/25851771 -->
               </instructions>
             </configuration>
           </plugin>
