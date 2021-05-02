@@ -275,6 +275,9 @@
               <version>2.22.2</version>
             </dependency>
           </dependencies>
+          <configuration>
+            <argLine>-Dfile.encoding=UTF-8 -Djansi.force=true -Djansi.passthrough=true</argLine>
+          </configuration>
         </plugin>
 
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven
