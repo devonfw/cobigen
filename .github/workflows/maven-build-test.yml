@@ -51,7 +51,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
           path: |
             ~/.m2/repository
@@ -90,7 +90,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
           path: |
             ~/.m2/repository
@@ -136,7 +136,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
           path: |
             ~/.m2/repository
@@ -175,7 +175,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
           path: |
             ~/.m2/repository
@@ -221,7 +221,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
           path: |
             ~/.m2/repository
@@ -260,7 +260,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
           path: |
             ~/.m2/repository
