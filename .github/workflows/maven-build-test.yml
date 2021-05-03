@@ -18,13 +18,11 @@ jobs:
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
 
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: ${{ runner.os }}-maven-$GITHUB_SHA
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -59,13 +57,11 @@ jobs:
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
 
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: ${{ runner.os }}-maven-$GITHUB_SHA
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -100,18 +96,16 @@ jobs:
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
 
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: ${{ runner.os }}-maven-$GITHUB_SHA
 
       - uses: actions/cache@v1
         with:
           path: ./**/target/repository/
-          key: p2-${{ github.ref }}
+          key: p2-$GITHUB_SHA
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -147,13 +141,11 @@ jobs:
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
 
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: ${{ runner.os }}-maven-$GITHUB_SHA
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -188,18 +180,16 @@ jobs:
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
 
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: ${{ runner.os }}-maven-$GITHUB_SHA
 
       - uses: actions/cache@v1
         with:
           path: ./**/target/repository/
-          key: p2-${{ github.ref }}
+          key: p2-$GITHUB_SHA
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -235,13 +225,11 @@ jobs:
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
 
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: ${{ runner.os }}-maven-$GITHUB_SHA
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -276,13 +264,11 @@ jobs:
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
 
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: ${{ runner.os }}-maven-$GITHUB_SHA
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
