@@ -1,32 +1,290 @@
-# This workflow builds and tests Cobigen run in parallel and stops if one build doesn't work
-
-name: build & test # on Ubuntu with OpenJDK8 and OpenJDK11
+name: CI
 
 on: [push, pull_request]
 
 jobs:
-  build-and-test:
-
+  build-and-test-core:
     strategy:
       fail-fast: false
       matrix:
-        # test against Java version 8 and 11:
-        javaVersion: [ 8, 11 ]
-        os: [windows-latest,ubuntu-latest]
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    
-    steps:
-    - name: Support longpaths for Windows
-      if: ${{ matrix.os == 'windows-latest' }}
-      run: git config --system core.longpaths true
-    - uses: actions/checkout@v2
-    - name: Set up OpenJDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: ${{ matrix.javaVersion }}
-        settings-path: ${{ github.workspace }}
 
-    - name: Build with Maven
-      uses: GabrielBB/xvfb-action@v1.5
-      with: 
-        run: sh build.sh
+    steps:
+      - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test Core
+        run: mvn install -f cobigen --projects !cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-plugins:
+    needs: build-and-test-core
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test Plugins
+        run: mvn install -f cobigen-plugins -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-plugins-p2:
+    needs: build-and-test-plugins
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - uses: actions/cache@v1
+        with:
+          path: ./**/target/repository/
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build Plugins UpdateSite
+        run: |
+          mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+          mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  run-core-systemtest:
+    needs: build-and-test-plugins
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Run Core Systemtest
+        run: mvn test -f cobigen/cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-eclipse-plugin:
+    needs: build-plugins-p2
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - uses: actions/cache@v1
+        with:
+          path: ./**/target/repository/
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build Plugins
+        uses: GabrielBB/xvfb-action@v1.5
+        with:
+          run: mvn verify -f cobigen-eclipse -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-maven-plugin:
+    needs: build-and-test-plugins
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test Maven Plugin
+        run: mvn verify -f cobigen-maven -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-cli:
+    needs: build-and-test-plugins
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/cache@v1
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository/com/devonfw/cobigen
+          key: ${{ runner.os }}-maven-${{ github.ref }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test CLI
+        run: mvn verify -f cobigen-cli -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
