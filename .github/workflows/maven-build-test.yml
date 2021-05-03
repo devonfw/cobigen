@@ -12,14 +12,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ github.sha }}
@@ -51,14 +51,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ github.sha }}
@@ -90,19 +90,19 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ./**/target/repository/
           key: p2-${{ github.sha }}
@@ -135,14 +135,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ github.sha }}
@@ -174,19 +174,19 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ./**/target/repository/
           key: p2-${{ github.sha }}
@@ -219,14 +219,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ github.sha }}
@@ -258,14 +258,14 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
           key: ${{ runner.os }}-maven-${{ github.sha }}
