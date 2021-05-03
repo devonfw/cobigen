@@ -14,14 +14,7 @@ jobs:
     steps:
       - uses: actions/cache@v2.1.5
         with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2/repository/com/devonfw/cobigen
+          path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
@@ -53,14 +46,7 @@ jobs:
     steps:
       - uses: actions/cache@v2.1.5
         with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2/repository/com/devonfw/cobigen
+          path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
@@ -92,14 +78,7 @@ jobs:
     steps:
       - uses: actions/cache@v2.1.5
         with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2/repository/com/devonfw/cobigen
+          path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - uses: actions/cache@v2.1.5
@@ -137,14 +116,7 @@ jobs:
     steps:
       - uses: actions/cache@v2.1.5
         with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2/repository/com/devonfw/cobigen
+          path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
@@ -176,14 +148,7 @@ jobs:
     steps:
       - uses: actions/cache@v2.1.5
         with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2/repository/com/devonfw/cobigen
+          path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - uses: actions/cache@v2.1.5
@@ -221,14 +186,7 @@ jobs:
     steps:
       - uses: actions/cache@v2.1.5
         with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2/repository/com/devonfw/cobigen
+          path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
@@ -260,14 +218,7 @@ jobs:
     steps:
       - uses: actions/cache@v2.1.5
         with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-
-      - uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2/repository/com/devonfw/cobigen
+          path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
