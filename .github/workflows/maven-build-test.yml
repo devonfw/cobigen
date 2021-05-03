@@ -22,7 +22,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-$GITHUB_SHA
+          key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-$GITHUB_SHA
+          key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -100,12 +100,12 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-$GITHUB_SHA
+          key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - uses: actions/cache@v1
         with:
           path: ./**/target/repository/
-          key: p2-$GITHUB_SHA
+          key: p2-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -145,7 +145,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-$GITHUB_SHA
+          key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -184,12 +184,12 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-$GITHUB_SHA
+          key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - uses: actions/cache@v1
         with:
           path: ./**/target/repository/
-          key: p2-$GITHUB_SHA
+          key: p2-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -229,7 +229,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-$GITHUB_SHA
+          key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -268,7 +268,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ~/.m2/repository/com/devonfw/cobigen
-          key: ${{ runner.os }}-maven-$GITHUB_SHA
+          key: ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
