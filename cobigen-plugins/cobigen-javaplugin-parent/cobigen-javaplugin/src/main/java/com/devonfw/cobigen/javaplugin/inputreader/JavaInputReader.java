@@ -83,9 +83,11 @@ public class JavaInputReader implements InputReader {
     public Map<String, Object> createModel(Object o) {
 
         if (o instanceof Class<?>) {
+            LOG.debug("Creating model based on reflection.");
             return new ReflectedJavaModelBuilder().createModel((Class<?>) o);
         }
         if (o instanceof JavaClass) {
+            LOG.debug("Creating model based on parsed content.");
             return new ParsedJavaModelBuilder().createModel((JavaClass) o);
         }
         if (o instanceof Object[] && isValidInput(o)) {
