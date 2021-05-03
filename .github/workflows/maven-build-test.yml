@@ -28,7 +28,7 @@ jobs:
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths
+        run: git config --system core.longpaths true
 
       - uses: actions/checkout@v2
 
@@ -67,7 +67,7 @@ jobs:
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths
+        run: git config --system core.longpaths true
 
       - uses: actions/checkout@v2
 
@@ -111,7 +111,7 @@ jobs:
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths
+        run: git config --system core.longpaths true
 
       - uses: actions/checkout@v2
 
@@ -152,7 +152,7 @@ jobs:
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths
+        run: git config --system core.longpaths true
 
       - uses: actions/checkout@v2
 
@@ -196,7 +196,7 @@ jobs:
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths
+        run: git config --system core.longpaths true
 
       - uses: actions/checkout@v2
 
@@ -237,7 +237,7 @@ jobs:
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths
+        run: git config --system core.longpaths true
 
       - uses: actions/checkout@v2
 
@@ -276,7 +276,7 @@ jobs:
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths
+        run: git config --system core.longpaths true
 
       - uses: actions/checkout@v2
 
