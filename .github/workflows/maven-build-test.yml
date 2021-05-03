@@ -107,7 +107,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ./**/target/repository/
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: p2-${{ github.ref }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -192,7 +192,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ./**/target/repository/
-          key: ${{ runner.os }}-maven-${{ github.ref }}
+          key: p2-${{ github.ref }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
