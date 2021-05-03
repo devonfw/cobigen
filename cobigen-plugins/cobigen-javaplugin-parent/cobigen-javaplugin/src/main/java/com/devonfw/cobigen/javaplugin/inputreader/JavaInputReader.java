@@ -99,6 +99,7 @@ public class JavaInputReader implements InputReader {
                 parsedModel = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[1]);
                 reflectionModel = new ReflectedJavaModelBuilder().createModel((Class<?>) inputArr[0]);
             }
+            LOG.debug("Provided both (reflection + parsed) models - merging both information");
             return (Map<String, Object>) mergeModelsRecursively(parsedModel, reflectionModel);
         }
         return null;
