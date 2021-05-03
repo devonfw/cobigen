@@ -39,6 +39,7 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Build & Test Core
+        shell: bash
         run: |
           mvn install -f cobigen --projects !cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
@@ -79,6 +80,7 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Build & Test Plugins
+        shell: bash
         run: |
           mvn install -f cobigen-plugins -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
@@ -124,6 +126,7 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Build Plugins UpdateSite
+        shell: bash
         run: |
           mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
           mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -165,6 +168,7 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Run Core Systemtest
+        shell: bash
         run: |
           mvn test -f cobigen/cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
@@ -252,6 +256,7 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Build & Test Maven Plugin
+        shell: bash
         run: |
           mvn verify -f cobigen-maven -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
@@ -292,5 +297,6 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Build & Test CLI
+        shell: bash
         run: |
           mvn verify -f cobigen-cli -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
