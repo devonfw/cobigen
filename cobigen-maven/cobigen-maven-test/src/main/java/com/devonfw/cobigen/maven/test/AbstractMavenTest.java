@@ -93,6 +93,7 @@ public class AbstractMavenTest {
                 }
             }
         } else {
+            LOG.debug("Detected to run on OS {}", OS);
             if (OS.contains("win")) {
                 // running in git bash, we need to transform paths of format /c/path to C:\path
                 MVN_EXEC = MVN_EXEC.replaceFirst("/([a-zA-Z])/(.*)", "$1:\\$2");
