@@ -2,6 +2,7 @@ set -e
 
 DEBUG="-DtrimStackTrace=false" # set to false to see hidden exceptions
 PARALLELIZED="-T1C"
+# https://stackoverflow.com/a/66801171
 BATCH_MODE="-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" # the latter will remove maven download logs
 
 echo "##########################################"

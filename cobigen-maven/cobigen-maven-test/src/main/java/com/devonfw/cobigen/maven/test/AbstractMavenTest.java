@@ -42,6 +42,9 @@ public class AbstractMavenTest {
     /** Current Operating System, the code is exectued on */
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
+    /** Current User Home */
+    private static final String HOME = System.getProperty("user.home");
+
     /**
      * Set maven.home system property to enable maven invoker execution
      */
@@ -61,9 +64,9 @@ public class AbstractMavenTest {
                 LOG.warn(
                     "Could not determine maven home from environment variables MAVEN_HOME or M2_HOME, taking maven default");
                 if (OS.contains("win")) {
-                    System.setProperty("maven.home", "%userprofile%\\.m2\\repository");
+                    System.setProperty("maven.home", HOME + "\\.m2\\repository");
                 } else {
-                    System.setProperty("maven.home", "~/.m2/repository");
+                    System.setProperty("maven.home", HOME + "/.m2/repository");
                 }
             }
         }
@@ -164,6 +167,7 @@ public class AbstractMavenTest {
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);
         request.setBatchMode(true);
+        // https://stackoverflow.com/a/66801171
         request.setMavenOpts(
             "-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn");
 
