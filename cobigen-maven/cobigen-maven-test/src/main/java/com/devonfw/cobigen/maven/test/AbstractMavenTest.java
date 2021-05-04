@@ -154,7 +154,7 @@ public class AbstractMavenTest {
         request.setDebug(debug);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);
-        request.setMavenOpts("-Xmx4096m");
+        request.setMavenOpts("-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -B");
 
         Invoker invoker = new DefaultInvoker();
         InvocationResult result = invoker.execute(request);
