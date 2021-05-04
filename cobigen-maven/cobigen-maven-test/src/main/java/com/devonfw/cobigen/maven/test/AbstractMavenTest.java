@@ -2,8 +2,10 @@ package com.devonfw.cobigen.maven.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Properties;
@@ -16,6 +18,7 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
@@ -48,25 +51,45 @@ public class AbstractMavenTest {
     /**
      * Set maven.home system property to enable maven invoker execution
      */
-    @Before
-    public void setMavenHome() {
+    @BeforeClass
+    public static void setMavenHome() {
 
-        String m2Home = System.getenv().get("MAVEN_HOME");
-        if (m2Home != null) {
-            System.setProperty("maven.home", m2Home);
-        } else {
-            m2Home = System.getenv().get("M2_HOME");
+        String MVN_EXEC = null;
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("which", "mvn");
+        try {
+            Process process = processBuilder.start();
+
+            try (InputStreamReader in = new InputStreamReader(process.getInputStream());
+                BufferedReader reader = new BufferedReader(in)) {
+
+                // read first line only (e.g. we have multiple or windows returns with and without extension)
+                String line = reader.readLine();
+
+                int retVal = process.waitFor();
+                if (retVal == 0) {
+                    LOG.info("Determined mvn executable to be located in {}", line);
+                    MVN_EXEC = line;
+                } else {
+                    LOG.warn("Could not determine mvn executable location. 'which mvn' returned {}", retVal);
+                }
+            }
+        } catch (InterruptedException | IOException e) {
+            LOG.warn("Could not determine mvn executable location", e);
+        }
+
+        if (MVN_EXEC == null) {
+            String m2Home = System.getenv().get("MAVEN_HOME");
             if (m2Home != null) {
                 System.setProperty("maven.home", m2Home);
-            } else if ("true".equals(System.getenv("TRAVIS"))) {
-                System.setProperty("maven.home", "/usr/local/maven"); // travis only
             } else {
-                LOG.warn(
-                    "Could not determine maven home from environment variables MAVEN_HOME or M2_HOME, taking maven default");
-                if (OS.contains("win")) {
-                    System.setProperty("maven.home", HOME + "\\.m2\\repository");
+                m2Home = System.getenv().get("M2_HOME");
+                if (m2Home != null) {
+                    System.setProperty("maven.home", m2Home);
+                } else if ("true".equals(System.getenv("TRAVIS"))) {
+                    System.setProperty("maven.home", "/usr/local/maven"); // just travis
                 } else {
-                    System.setProperty("maven.home", HOME + "/.m2/repository");
+                    LOG.error("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME!");
                 }
             }
         }
