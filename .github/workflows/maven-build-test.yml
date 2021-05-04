@@ -124,9 +124,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }} # key hit will not update cache
-          restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}-plugins
+          key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # key hit will not update cache
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
