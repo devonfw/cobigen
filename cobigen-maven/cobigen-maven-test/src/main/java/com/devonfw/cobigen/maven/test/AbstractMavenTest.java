@@ -163,7 +163,9 @@ public class AbstractMavenTest {
         request.setDebug(debug);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);
-        request.setMavenOpts("-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -B");
+        request.setBatchMode(true);
+        request.setMavenOpts(
+            "-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn");
 
         Invoker invoker = new DefaultInvoker();
         InvocationResult result = invoker.execute(request);
