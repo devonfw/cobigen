@@ -12,7 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v2.1.5
+      - name: Cache m2 repository
+        uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
@@ -47,7 +48,9 @@ jobs:
       - uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}
+          key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # new key will cache
+          restoreKeys: |
+            ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -76,15 +79,17 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v2.1.5
+      - name: Restore m2 repository
+        uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}
+          key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # key hit will not update cache
 
-      - uses: actions/cache@v2.1.5
+      - name: Cache p2 plugin repositories
+        uses: actions/cache@v2.1.5
         with:
           path: ./**/target/repository/
-          key: p2-${{ github.sha }}
+          key: p2-plugins-${{ github.sha }} # new key will cache
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -114,10 +119,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v2.1.5
+      - name: Restore m2 repository
+        uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}
+          key: ${{ runner.os }}-maven-${{ github.sha }} # key hit will not update cache
+          restoreKeys: |
+            ${{ runner.os }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -146,15 +154,17 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}
-
-      - uses: actions/cache@v2.1.5
+      - name: Restore P2 plugins repositories
+        uses: actions/cache@v2.1.5
         with:
           path: ./**/target/repository/
-          key: p2-${{ github.sha }}
+          key: p2-plugins-${{ github.sha }} # key hit will not update cache
+
+      - name: Cache Eclipse repository
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./**/eclipse/target/repository/
+          key: p2-eclipse-${{ github.sha }} # new key will cache
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -184,10 +194,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v2.1.5
+      - name: Restore m2 repository
+        uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}
+          key: ${{ runner.os }}-maven-${{ github.sha }}-maven # new key will cache
+          restoreKeys: |
+            ${{ runner.os }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -216,10 +229,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v2.1.5
+      - name: Restore m2 repository
+        uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}
+          key: ${{ runner.os }}-maven-${{ github.sha }}-cli # new key will cache
+          restoreKeys: |
+            ${{ runner.os }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -237,3 +253,48 @@ jobs:
         shell: bash
         run: |
           mvn verify -f cobigen-cli -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-templates:
+    needs: build-and-test-maven-plugin
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Cache m2 repository of templates build
+        uses: actions/cache@v2.1.5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ github.sha }}-templates # new key will cache
+          restoreKeys: |
+            ${{ runner.os }}-maven-${{ github.sha }}-maven
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test Templates
+        shell: bash
+        run: |
+          mvn verify -f cobigen-templates -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+        # -- available caches --
+        # restoreKeys: |
+        #    ${{ runner.os }}-maven-${{ github.sha }}
+        #    ${{ runner.os }}-maven-${{ github.sha }}-plugins (incl. ())
+        #    ${{ runner.os }}-maven-${{ github.sha }}-maven (incl. -plugins)
+        #    ${{ runner.os }}-maven-${{ github.sha }}-cli (incl. -plugins)
+        #    ${{ runner.os }}-maven-${{ github.sha }}-templates (incl. -maven + -plugins)
+        #    p2-plugins-${{ github.sha }}
+        #    p2-eclipse-${{ github.sha }}
