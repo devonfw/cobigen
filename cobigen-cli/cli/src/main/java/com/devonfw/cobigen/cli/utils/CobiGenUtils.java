@@ -116,10 +116,11 @@ public class CobiGenUtils {
 
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(pomFile);
-            request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
-                "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q",
-                // https://stackoverflow.com/a/66801171
-                "-B", "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"));
+            request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH));
+            // https://stackoverflow.com/a/66801171
+            request.setMavenOpts(
+                "-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmdep.outputFile="
+                    + MavenConstants.CLASSPATH_OUTPUT_FILE + " -q");
 
             Invoker invoker = new DefaultInvoker();
             InvocationResult result = null;
@@ -146,7 +147,6 @@ public class CobiGenUtils {
             }
 
         } catch (MavenInvocationException e) {
-
             LOG.error("The maven command for getting needed dependencies was malformed. This is a bug.");
         }
     }
