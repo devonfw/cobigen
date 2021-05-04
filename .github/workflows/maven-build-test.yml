@@ -45,11 +45,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/cache@v2.1.5
+      - name: Restore m2 repository
+        uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # new key will cache
-          restoreKeys: |
+          restore-keys: |
             ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
@@ -124,7 +125,7 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }} # key hit will not update cache
-          restoreKeys: |
+          restore-keys: |
             ${{ runner.os }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
@@ -199,7 +200,7 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-maven # new key will cache
-          restoreKeys: |
+          restore-keys: |
             ${{ runner.os }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
@@ -234,7 +235,7 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-cli # new key will cache
-          restoreKeys: |
+          restore-keys: |
             ${{ runner.os }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
@@ -269,7 +270,7 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-templates # new key will cache
-          restoreKeys: |
+          restore-keys: |
             ${{ runner.os }}-maven-${{ github.sha }}-maven
 
       - name: Enable git support for long paths on Windows
@@ -290,7 +291,7 @@ jobs:
           mvn verify -f cobigen-templates -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
         # -- available caches --
-        # restoreKeys: |
+        # restore-keys: |
         #    ${{ runner.os }}-maven-${{ github.sha }}
         #    ${{ runner.os }}-maven-${{ github.sha }}-plugins (incl. ())
         #    ${{ runner.os }}-maven-${{ github.sha }}-maven (incl. -plugins)
