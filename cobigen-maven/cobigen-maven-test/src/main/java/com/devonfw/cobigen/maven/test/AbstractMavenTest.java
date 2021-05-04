@@ -93,6 +93,12 @@ public class AbstractMavenTest {
                 }
             }
         } else {
+            if (OS.contains("win")) {
+                // running in git bash, we need to transform paths of format /c/path to C:\path
+                MVN_EXEC = MVN_EXEC.replaceFirst("/([a-zA-Z])/(.*)", "$1:\\$2");
+                MVN_EXEC = MVN_EXEC.replaceAll("/", "\\");
+                LOG.debug("Reformatted mvn execution path to '{}' as running on win within a shell or bash", MVN_EXEC);
+            }
             System.setProperty("maven.home", MVN_EXEC);
         }
     }
