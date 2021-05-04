@@ -33,3 +33,11 @@ mvn verify -f cobigen-eclipse $DEBUG $BATCH_MODE -Dtycho.debug.resolver=true
 mvn verify -f cobigen-cli $DEBUG $BATCH_MODE
 mvn verify -f cobigen-maven $DEBUG $BATCH_MODE
 
+        # -- available caches --
+        # restoreKeys: |
+        #    ${{ runner.os }}-maven-${{ github.sha }}
+        #    ${{ runner.os }}-maven-${{ github.sha }}-plugins
+        #    ${{ runner.os }}-maven-${{ github.sha }}-maven
+        #    ${{ runner.os }}-maven-${{ github.sha }}-cli
+        #    p2-plugins-${{ github.sha }}
+        #    p2-eclipse-${{ github.sha }}

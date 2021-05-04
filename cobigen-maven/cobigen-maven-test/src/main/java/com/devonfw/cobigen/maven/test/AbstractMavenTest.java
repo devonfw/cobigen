@@ -39,6 +39,9 @@ public class AbstractMavenTest {
     /** The maven settings file used by maven invoker for test execution */
     protected File mvnSettingsFile;
 
+    /** Current Operating System, the code is exectued on */
+    private static final String OS = System.getProperty("os.name").toLowerCase();
+
     /**
      * Set maven.home system property to enable maven invoker execution
      */
@@ -55,7 +58,13 @@ public class AbstractMavenTest {
             } else if ("true".equals(System.getenv("TRAVIS"))) {
                 System.setProperty("maven.home", "/usr/local/maven"); // travis only
             } else {
-                LOG.warn("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME");
+                LOG.warn(
+                    "Could not determine maven home from environment variables MAVEN_HOME or M2_HOME, taking maven default");
+                if (OS.contains("win")) {
+                    System.setProperty("maven.home", "%userprofile%\\.m2\\repository");
+                } else {
+                    System.setProperty("maven.home", "~/.m2/repository");
+                }
             }
         }
     }
