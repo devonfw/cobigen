@@ -92,6 +92,8 @@ public class AbstractMavenTest {
                     LOG.error("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME!");
                 }
             }
+        } else {
+            System.setProperty("maven.home", MVN_EXEC);
         }
     }
 
