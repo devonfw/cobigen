@@ -171,8 +171,8 @@
           </arguments>
           <commandlineArgs>
             <!-- https://stackoverflow.com/a/66801171 -->
-            <commandlineArg>-Djansi.force=true -Djansi.passthrough=true -B
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</commandlineArg>
+            -Djansi.force=true -Djansi.passthrough=true -B
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
           </commandlineArgs>
         </configuration>
       </plugin>
