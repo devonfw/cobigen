@@ -1,15 +1,24 @@
 package com.devonfw.cobigen.api.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This util class provides system properties
  */
 public class SystemUtil {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(SystemUtil.class);
 
     /**
      * File separator, e.g for windows '\'
@@ -20,6 +29,9 @@ public class SystemUtil {
      * Line separator, e.g. for windows '\r\n'
      */
     public static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+
+    /** Current Operating System, the code is exectued on */
+    private static final String OS = System.getProperty("os.name").toLowerCase();
 
     /**
      * Determines the line delimiter
@@ -78,6 +90,67 @@ public class SystemUtil {
             reader.read();
         }
 
+    }
+
+    /**
+     * @return the absolute path of the mvn executable if available, otherwise null
+     */
+    public static String determineMvnPath() {
+        String MVN_EXEC = null;
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("which", "mvn");
+        try {
+            Process process = processBuilder.start();
+
+            try (InputStreamReader in = new InputStreamReader(process.getInputStream());
+                BufferedReader reader = new BufferedReader(in)) {
+
+                // read first line only (e.g. we have multiple or windows returns with and without extension)
+                String line = reader.readLine();
+
+                int retVal = process.waitFor();
+                if (retVal == 0) {
+                    LOG.info("Determined mvn executable to be located in {}", line);
+                    MVN_EXEC = line;
+                } else {
+                    LOG.warn("Could not determine mvn executable location. 'which mvn' returned {}", retVal);
+                }
+            }
+        } catch (InterruptedException | IOException e) {
+            LOG.warn("Could not determine mvn executable location", e);
+        }
+
+        if (MVN_EXEC == null) {
+            String m2Home = System.getenv().get("MAVEN_HOME");
+            if (m2Home != null) {
+                System.setProperty("maven.home", m2Home);
+            } else {
+                m2Home = System.getenv().get("M2_HOME");
+                if (m2Home != null) {
+                    System.setProperty("maven.home", m2Home);
+                } else if ("true".equals(System.getenv("TRAVIS"))) {
+                    System.setProperty("maven.home", "/usr/local/maven"); // just travis
+                } else {
+                    LOG.error("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME!");
+                }
+            }
+        } else {
+            LOG.debug("Detected to run on OS {}", OS);
+            if (OS.contains("win")) {
+                // running in git bash, we need to transform paths of format /c/path to C:\path
+                Pattern p = Pattern.compile("/([a-zA-Z])/(.+)");
+                Matcher matcher = p.matcher(MVN_EXEC);
+                if (matcher.matches()) {
+                    MVN_EXEC = matcher.group(1) + ":\\" + matcher.group(2).replaceAll("/", "\\");
+                    LOG.debug("Reformatted mvn execution path to '{}' as running on win within a shell or bash",
+                        MVN_EXEC);
+                } else {
+                    LOG.error("Unable to match path '{}' against regex '/([a-zA-Z])/(.+)'", MVN_EXEC);
+                }
+            }
+            System.setProperty("maven.home", MVN_EXEC);
+        }
+        return MVN_EXEC;
     }
 
 }

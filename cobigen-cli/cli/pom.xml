@@ -12,7 +12,6 @@
   </parent>
 
   <properties>
-    <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
     <skip.deployment>false</skip.deployment>
   </properties>
 
@@ -149,29 +148,6 @@
         </executions>
       </plugin>
 
-      <!-- Building a Maven project that is used on the tests -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <executions>
-          <execution>
-            <id>Install test project</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>mvn</executable>
-          <workingDirectory>${maven.test.path}</workingDirectory>
-          <arguments>
-            <argument>install</argument>
-          </arguments>
-        </configuration>
-      </plugin>
-
       <!-- Run tests using the java-agent -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -236,10 +212,11 @@
         </executions>
       </plugin>
     </plugins>
-    
+
     <pluginManagement>
       <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
+          itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>

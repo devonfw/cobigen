@@ -54,18 +54,20 @@ public class ParsingUtils {
      */
     public static JavaContext getJavaContext(File inputFile, File inputProject) {
 
+        String fqn = null;
         try {
             JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject, true);
-            String fqn = ParsingUtils.getFQN(inputFile);
+            fqn = ParsingUtils.getFQN(inputFile);
             context.getClassLoader().loadClass(fqn);
             return context;
         } catch (NoClassDefFoundError | ClassNotFoundException e) {
-            LOG.error("Compiled class " + e.getMessage()
-                + " has not been found. Most probably you need to build project " + inputProject.toString() + " .");
+            LOG.error("Compiled class " + fqn + " has not been found. Most probably you need to build project "
+                + inputProject.toString() + ".", e);
             System.exit(1);
         } catch (Exception e) {
             LOG.error("Transitive dependencies have not been found on your m2 repository (Maven). "
-                + "Please run 'mvn package' in your input project in order to download all the needed dependencies.");
+                + "Please run 'mvn package' in your input project in order to download all the needed dependencies.",
+                e);
             System.exit(1);
         }
         // Will never happen as every exception is catch

@@ -32,6 +32,7 @@ import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
@@ -116,7 +117,9 @@ public class CobiGenUtils {
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(pomFile);
             request.setGoals(Arrays.asList(MavenConstants.DEPENDENCY_BUILD_CLASSPATH,
-                "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q"));
+                "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q",
+                // https://stackoverflow.com/a/66801171
+                "-B", "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"));
 
             Invoker invoker = new DefaultInvoker();
             InvocationResult result = null;
@@ -126,7 +129,7 @@ public class CobiGenUtils {
             t1.start();
 
             try {
-                invoker.setMavenHome(new File(getMavenHome()));
+                invoker.setMavenHome(new File(SystemUtil.determineMvnPath()));
             } catch (NullPointerException e) {
                 LOG.error(
                     "Could not determine maven home from environment variables MAVEN_HOME or M2_HOME. CobiGen CLI needs Maven correctly configured.",
@@ -309,18 +312,4 @@ public class CobiGenUtils {
         throw new InputReaderException("The file " + file.getAbsolutePath() + " is not a valid input for CobiGen.");
     }
 
-    /**
-     * Get the maven home
-     * @return maven home
-     */
-    private String getMavenHome() {
-        String m2Home = System.getenv().get("MAVEN_HOME");
-        if (m2Home == null) {
-            m2Home = System.getenv().get("M2_HOME");
-            if (m2Home == null && "true".equals(System.getenv("TRAVIS"))) {
-                m2Home = "/usr/local/maven"; // travis only
-            }
-        }
-        return m2Home;
-    }
 }
