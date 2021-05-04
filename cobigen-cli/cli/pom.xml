@@ -12,7 +12,6 @@
   </parent>
 
   <properties>
-    <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
     <skip.deployment>false</skip.deployment>
   </properties>
 
@@ -147,34 +146,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <!-- Building a Maven project that is used on the tests -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <executions>
-          <execution>
-            <id>Install test project</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>mvn</executable>
-          <workingDirectory>${maven.test.path}</workingDirectory>
-          <arguments>
-            <argument>install</argument>
-          </arguments>
-          <commandlineArgs>
-            <!-- https://stackoverflow.com/a/66801171 -->
-            -Djansi.force=true -Djansi.passthrough=true -B
-            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-          </commandlineArgs>
-        </configuration>
       </plugin>
 
       <!-- Run tests using the java-agent -->
