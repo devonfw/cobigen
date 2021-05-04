@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,9 +138,15 @@ public class SystemUtil {
             LOG.debug("Detected to run on OS {}", OS);
             if (OS.contains("win")) {
                 // running in git bash, we need to transform paths of format /c/path to C:\path
-                MVN_EXEC = MVN_EXEC.replaceFirst("/([a-zA-Z])/(.*)", "$1:\\$2");
-                MVN_EXEC = MVN_EXEC.replaceAll("/", "\\");
-                LOG.debug("Reformatted mvn execution path to '{}' as running on win within a shell or bash", MVN_EXEC);
+                Pattern p = Pattern.compile("/([a-zA-Z])/(.+)");
+                Matcher matcher = p.matcher(MVN_EXEC);
+                if (matcher.matches()) {
+                    MVN_EXEC = matcher.group(1) + ":\\" + matcher.group(2).replaceAll("/", "\\");
+                    LOG.debug("Reformatted mvn execution path to '{}' as running on win within a shell or bash",
+                        MVN_EXEC);
+                } else {
+                    LOG.error("Unable to match path '{}' against regex '/([a-zA-Z])/(.+)'", MVN_EXEC);
+                }
             }
             System.setProperty("maven.home", MVN_EXEC);
         }
