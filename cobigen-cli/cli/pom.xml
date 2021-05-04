@@ -169,6 +169,11 @@
           <arguments>
             <argument>install</argument>
           </arguments>
+          <commandlineArgs>
+            <!-- https://stackoverflow.com/a/66801171 -->
+            <commandlineArg>-Djansi.force=true -Djansi.passthrough=true -B
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</commandlineArg>
+          </commandlineArgs>
         </configuration>
       </plugin>
 
@@ -236,10 +241,11 @@
         </executions>
       </plugin>
     </plugins>
-    
+
     <pluginManagement>
       <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
+          itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
