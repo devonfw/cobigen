@@ -141,7 +141,7 @@ public class SystemUtil {
                 Pattern p = Pattern.compile("/([a-zA-Z])/(.+)");
                 Matcher matcher = p.matcher(MVN_EXEC);
                 if (matcher.matches()) {
-                    MVN_EXEC = matcher.group(1) + ":\\" + matcher.group(2).replaceAll("/", "\\");
+                    MVN_EXEC = matcher.group(1) + ":\\" + matcher.group(2).replace("/", "\\");
                     LOG.debug("Reformatted mvn execution path to '{}' as running on win within a shell or bash",
                         MVN_EXEC);
                 } else {
