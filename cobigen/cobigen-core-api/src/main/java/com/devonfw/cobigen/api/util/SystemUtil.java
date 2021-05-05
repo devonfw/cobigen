@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,11 +112,24 @@ public class SystemUtil {
             try (InputStreamReader in = new InputStreamReader(process.getInputStream());
                 BufferedReader reader = new BufferedReader(in)) {
 
-                String line = reader.readLine();
-                reader.lines().collect(Collectors.toList());
+                String line = null;
+                List<String> foundEntries = reader.lines().collect(Collectors.toList());
+                if (foundEntries.size() > 0) {
+                    if (foundEntries.size() > 1 && OS.contains("win")) {
+                        Pattern p = Pattern.compile(".+mvn\\.bat");
+                        Optional<String> foundPath =
+                            foundEntries.stream().filter(path -> p.matcher(path).matches()).findFirst();
+                        if (foundPath.isPresent()) {
+                            line = foundPath.get();
+                        }
+                    }
+                    if (line == null) {
+                        line = foundEntries.get(0);
+                    }
+                }
 
                 int retVal = process.waitFor();
-                if (retVal == 0) {
+                if (retVal == 0 && StringUtils.isNotEmpty(line)) {
                     LOG.info("Determined mvn executable to be located in {}", line);
                     MVN_EXEC = line;
                 } else {
