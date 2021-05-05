@@ -186,6 +186,7 @@
           <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
           <!-- Needed for JDK 9+ -->
           <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
+          <forkCount>0</forkCount>
         </configuration>
       </plugin>
 

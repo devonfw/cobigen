@@ -178,7 +178,7 @@ public class CobiGenUtils {
                         Arrays.stream(((URLClassLoader) CobiGenUtils.class.getClassLoader()).getURLs())
                             .forEach(url -> LOG.debug("  - {}", url));
                     }
-                    new CobiGenRuntimeException("Unable to locate pom.xml on classpath");
+                    throw new CobiGenRuntimeException("Unable to locate pom.xml on classpath");
                 }
             } catch (IOException e1) {
                 throw new CobiGenRuntimeException("Failed to extract CobiGen plugins pom.", e1);
