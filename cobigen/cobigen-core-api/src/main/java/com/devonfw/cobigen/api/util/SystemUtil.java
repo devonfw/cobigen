@@ -123,6 +123,7 @@ public class SystemUtil {
                             foundEntries.stream().filter(path -> p.matcher(path).matches()).findFirst();
                         if (foundPath.isPresent()) {
                             line = foundPath.get();
+                            LOG.debug("Taking {} instead of first entry as detected windows OS", line);
                         }
                     }
                     if (line == null) {
