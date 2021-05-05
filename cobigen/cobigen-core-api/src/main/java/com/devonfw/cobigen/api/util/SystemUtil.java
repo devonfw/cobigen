@@ -114,6 +114,8 @@ public class SystemUtil {
 
                 String line = null;
                 List<String> foundEntries = reader.lines().collect(Collectors.toList());
+                LOG.debug("Found following executables: ");
+                foundEntries.forEach(e -> LOG.debug("  - {}", e));
                 if (foundEntries.size() > 0) {
                     if (foundEntries.size() > 1 && OS.contains("win")) {
                         Pattern p = Pattern.compile(".+mvn\\.bat");
