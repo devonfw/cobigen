@@ -147,7 +147,7 @@ public class CobiGenUtils {
             }
 
         } catch (MavenInvocationException e) {
-            LOG.error("The maven command for getting needed dependencies was malformed. This is a bug.");
+            LOG.error("The maven command for getting needed dependencies was malformed. This is a bug.", e);
         }
     }
 
