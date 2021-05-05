@@ -1,44 +1,68 @@
 set -e
 
-DEBUG="-DtrimStackTrace=false" # set to false to see hidden exceptions
-PARALLELIZED="-T1C"
-# https://stackoverflow.com/a/66801171
-BATCH_MODE="-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" # the latter will remove maven download logs
+echo ""
+echo "##########################################"
+echo ""
+echo "Script config: "
+if [[ "$*" == *test* ]]
+then
+    ENABLED_TEST="-Dmaven.test.skip=true"
+    echo "  * With test execution"
+else
+    ENABLED_TEST="-Dmaven.test.skip=false"
+    echo "  * No test execution (pass 'test' as argument to enable)"
+fi
 
+if [[ "$*" == *parallel* ]]
+then
+    PARALLELIZED="-T1C"
+    echo "  * Parallel execution of 1 thread per core"
+else
+    PARALLELIZED=""
+    echo "  * No parallel execution (pass 'parallel' as argument to enable)"
+fi
+
+if [[ "$*" == *debug* ]]
+then
+    # the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
+    DEBUG="-DtrimStackTrace=false -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" # set to false to see hidden exceptions
+    echo "  * Debug On"
+else
+    DEBUG=""
+    echo "  * Debug Off (pass 'debug' as argument to enable)"
+fi
+echo ""
 echo "##########################################"
-echo "### Cleanup Projects #####################"
-echo "##########################################"
+
+log_step() {
+  echo ""
+  echo ""
+  echo "##########################################"
+  echo "### $1"
+  echo "##########################################"
+  echo ""
+  echo ""
+}
+
+# https://stackoverflow.com/a/66801171
+BATCH_MODE="-Djansi.force=true -Djansi.passthrough=true -B"
+
+log_step "Cleanup Projects"
 mvn clean -P!p2-build $PARALLELIZED $BATCH_MODE
 
-echo "##########################################"
-echo "### Build & Test Core  ###################"
-echo "##########################################"
-mvn install -f cobigen --projects !cobigen-core-systemtest $DEBUG $PARALLELIZED $BATCH_MODE
+log_step "Build & Test Core"
+mvn install -f cobigen --projects !cobigen-core-systemtest $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE
 
-echo "##########################################"
-echo "### Build & Test Core Plugins ############"
-echo "##########################################"
-mvn install -f cobigen-plugins $DEBUG $PARALLELIZED $BATCH_MODE
+log_step "Build & Test Core Plugins"
+mvn install -f cobigen-plugins $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE
 
-echo "##########################################"
-echo "### Build Core Plugins - P2 Update Sites #"
-echo "##########################################"
+log_step "Build Core Plugins - P2 Update Sites"
 mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE
 mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE
 
-echo "##########################################"
-echo "### Package & Run E2E Tests ##############"
-echo "##########################################"
-mvn test -f cobigen/cobigen-core-systemtest $DEBUG $BATCH_MODE
-mvn verify -f cobigen-eclipse $DEBUG $BATCH_MODE -Dtycho.debug.resolver=true
-mvn verify -f cobigen-cli $DEBUG $BATCH_MODE
-mvn verify -f cobigen-maven $DEBUG $BATCH_MODE
-
-        # -- available caches --
-        # restoreKeys: |
-        #    ${{ runner.os }}-maven-${{ github.sha }}
-        #    ${{ runner.os }}-maven-${{ github.sha }}-plugins
-        #    ${{ runner.os }}-maven-${{ github.sha }}-maven
-        #    ${{ runner.os }}-maven-${{ github.sha }}-cli
-        #    p2-plugins-${{ github.sha }}
-        #    p2-eclipse-${{ github.sha }}
+log_step "Package & Run E2E Tests"
+mvn test -f cobigen/cobigen-core-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE
+mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE
+mvn install -f cobigen-cli $ENABLED_TEST $DEBUG $BATCH_MODE
+mvn install -f cobigen-maven $ENABLED_TEST $DEBUG $BATCH_MODE
+mvn install -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE -Dtycho.debug.resolver=true

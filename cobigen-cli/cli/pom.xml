@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -12,6 +13,7 @@
   </parent>
 
   <properties>
+    <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
     <skip.deployment>false</skip.deployment>
   </properties>
 
@@ -39,6 +41,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core-externalprocess-api</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
       <version>${revision}</version>
@@ -48,11 +55,6 @@
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
       <version>4.5.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-invoker</artifactId>
-      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
@@ -146,6 +148,34 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- Building a Maven project that is used on the tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>Install test project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>mvn</executable>
+          <workingDirectory>${maven.test.path}</workingDirectory>
+          <arguments>
+            <argument>install</argument>
+            <!-- https://stackoverflow.com/a/66801171 -->
+            <argument>-Djansi.force=true</argument>
+            <argument>-Djansi.passthrough=true</argument>
+            <argument>-B</argument>
+            <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+          </arguments>
+        </configuration>
       </plugin>
 
       <!-- Run tests using the java-agent -->
