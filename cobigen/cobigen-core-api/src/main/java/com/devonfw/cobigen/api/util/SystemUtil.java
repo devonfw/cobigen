@@ -6,11 +6,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
  * This util class provides system properties
@@ -105,8 +109,8 @@ public class SystemUtil {
             try (InputStreamReader in = new InputStreamReader(process.getInputStream());
                 BufferedReader reader = new BufferedReader(in)) {
 
-                // read first line only (e.g. we have multiple or windows returns with and without extension)
                 String line = reader.readLine();
+                reader.lines().collect(Collectors.toList());
 
                 int retVal = process.waitFor();
                 if (retVal == 0) {
@@ -117,7 +121,9 @@ public class SystemUtil {
                 }
             }
         } catch (InterruptedException | IOException e) {
-            LOG.warn("Could not determine mvn executable location", e);
+            LOG.warn(
+                "Could not determine mvn executable location, trying to look for environment variables for maven home.",
+                e);
         }
 
         if (MVN_EXEC == null) {
@@ -126,14 +132,23 @@ public class SystemUtil {
                 System.setProperty("maven.home", m2Home);
             } else {
                 m2Home = System.getenv().get("M2_HOME");
-                if (m2Home != null) {
-                    System.setProperty("maven.home", m2Home);
-                } else if ("true".equals(System.getenv("TRAVIS"))) {
-                    System.setProperty("maven.home", "/usr/local/maven"); // just travis
-                } else {
-                    LOG.error("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME!");
+                if (m2Home == null) {
+                    if ("true".equals(System.getenv("TRAVIS"))) {
+                        m2Home = "/usr/local/maven"; // just travis
+                    } else {
+                        throw new CobiGenRuntimeException(
+                            "Could not determine maven home from environment variables MAVEN_HOME or M2_HOME!");
+                    }
                 }
             }
+            LOG.info("Set maven home to {}", m2Home);
+            System.setProperty("maven.home", m2Home);
+            try {
+                MVN_EXEC = getMvnExecutable(m2Home);
+            } catch (IOException e) {
+                throw new CobiGenRuntimeException("Unable to determine maven executable in maven home " + m2Home, e);
+            }
+            LOG.info("Determined maven executable at {}", MVN_EXEC);
         } else {
             LOG.debug("Detected to run on OS {}", OS);
             if (OS.contains("win")) {
@@ -145,12 +160,25 @@ public class SystemUtil {
                     LOG.debug("Reformatted mvn execution path to '{}' as running on win within a shell or bash",
                         MVN_EXEC);
                 } else {
-                    LOG.error("Unable to match path '{}' against regex '/([a-zA-Z])/(.+)'", MVN_EXEC);
+                    throw new CobiGenRuntimeException(
+                        "Unable to match path '" + MVN_EXEC + "' against regex '/([a-zA-Z])/(.+)'");
                 }
             }
-            System.setProperty("maven.home", MVN_EXEC);
+            String m2Home;
+            try {
+                m2Home = Paths.get(MVN_EXEC).getParent().getParent().toFile().getCanonicalPath();
+            } catch (IOException e) {
+                throw new CobiGenRuntimeException("Unable to determine maven home from maven executable " + MVN_EXEC,
+                    e);
+            }
+            LOG.info("Set maven home to {}", m2Home);
+            System.setProperty("maven.home", m2Home);
         }
         return MVN_EXEC;
+    }
+
+    private static String getMvnExecutable(String mvnHome) throws IOException {
+        return Paths.get(mvnHome).resolve("bin/mvn" + (OS.contains("win") ? ".bat" : "")).toFile().getCanonicalPath();
     }
 
 }
