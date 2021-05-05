@@ -78,7 +78,7 @@ public class CobiGenUtils {
 
         try {
             // Get location of the current CLI jar
-            File locationCLI = new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File locationCLI = getCliLocation();
             Path rootCLIPath = locationCLI.getParentFile().toPath();
 
             File pomFile = extractArtificialPom(rootCLIPath);
@@ -101,6 +101,15 @@ public class CobiGenUtils {
             LOG.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
         }
 
+    }
+
+    /**
+     * @return the CLI file location path
+     * @throws URISyntaxException
+     *             if the code location path is not a valid URI
+     */
+    public static File getCliLocation() throws URISyntaxException {
+        return new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
     }
 
     /**

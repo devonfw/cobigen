@@ -114,6 +114,8 @@ public class SystemUtil {
 
                 String line = null;
                 List<String> foundEntries = reader.lines().collect(Collectors.toList());
+                LOG.debug("Found following executables: ");
+                foundEntries.forEach(e -> LOG.debug("  - {}", e));
                 if (foundEntries.size() > 0) {
                     if (foundEntries.size() > 1 && OS.contains("win")) {
                         Pattern p = Pattern.compile(".+mvn\\.bat");
@@ -121,6 +123,7 @@ public class SystemUtil {
                             foundEntries.stream().filter(path -> p.matcher(path).matches()).findFirst();
                         if (foundPath.isPresent()) {
                             line = foundPath.get();
+                            LOG.debug("Taking {} instead of first entry as detected windows OS", line);
                         }
                     }
                     if (line == null) {

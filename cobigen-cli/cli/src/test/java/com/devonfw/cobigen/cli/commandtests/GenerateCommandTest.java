@@ -9,7 +9,9 @@ import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.cli.commands.CobiGenCommand;
 import com.ea.agentloader.AgentLoader;
@@ -21,7 +23,7 @@ import picocli.CommandLine;
  * Tests the usage of the generate command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
  * present among JVM startup arguments.
  */
-public class GenerateCommandTest {
+public class GenerateCommandTest extends AbstractCliTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";
@@ -39,6 +41,10 @@ public class GenerateCommandTest {
      * Commandline to pass arguments to
      */
     private final CommandLine commandLine = new CommandLine(new CobiGenCommand());
+
+    /** Temporary folder rule to create new temporary folder and files */
+    @Rule
+    public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     /**
      * We need to dynamically load the Java agent before the tests. Note that Java 9 requires
@@ -139,12 +145,14 @@ public class GenerateCommandTest {
     /**
      * Integration test of the generation of templates from an OpenAPI file. It will generate all the
      * templates in the output root path passed.
+     * @throws IOException
+     *             test fails
      */
     @Test
-    public void generateFromOpenApiTest() {
+    public void generateFromOpenApiTest() throws IOException {
 
         // Prepare
-        File outputRootFile = new File(testFileRootPath + "generatedcode/root");
+        File outputRootFile = tmpFolder.newFolder();
         File openApiFile = new File(testFileRootPath + "openAPI.yml");
 
         String args[] = new String[6];
@@ -212,10 +220,12 @@ public class GenerateCommandTest {
 
     /**
      * This method test the unit test of multiple input file (Entity and Open API)
+     * @throws IOException
+     *             test fails
      */
     @Test
-    public void generateFromMultipleTypeInputTest() {
-        File outputRootFile = new File(testFileRootPath + "generatedcode/root");
+    public void generateFromMultipleTypeInputTest() throws IOException {
+        File outputRootFile = tmpFolder.newFolder();
         File openApiFile = new File(testFileRootPath + "openAPI.yml");
         String args[] = new String[6];
         args[0] = "generate";
@@ -245,11 +255,13 @@ public class GenerateCommandTest {
 
     /**
      * This method test the generation from typescript files.
+     * @throws IOException
+     *             test fails
      */
     @Test
-    public void generateFromTsFileTest() {
+    public void generateFromTsFileTest() throws IOException {
 
-        File outputRootFile = new File(testFileRootPath + "generatedcode/root");
+        File outputRootFile = tmpFolder.newFolder();
         File tsFile = new File(testFileRootPath + "some.entity.ts");
         String args[] = new String[6];
         args[0] = "generate";
@@ -278,12 +290,13 @@ public class GenerateCommandTest {
      * Integration test of the generation of templates from an input file whose path contains spaces and
      * quotes.
      * @throws IOException
+     *             test fails
      */
     @Test
     public void generateFromArgsWithQuote() throws IOException {
 
         // Prepare
-        File outputRootFile = new File(testFileRootPath + "generatedcode/root");
+        File outputRootFile = tmpFolder.newFolder();
         File openApiOriginalFile = new File(testFileRootPath + "openAPI.yml");
         File openApiFile = new File(testFileRootPath + "openAPI file.yml");
         // duplicate openapi file while changing the name
