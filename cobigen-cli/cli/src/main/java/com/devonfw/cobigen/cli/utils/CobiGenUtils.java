@@ -158,7 +158,7 @@ public class CobiGenUtils {
     public File extractArtificialPom(Path rootCLIPath) {
         File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
         if (!pomFile.exists()) {
-            try (InputStream resourcesIS = (getClass().getResourceAsStream("/" + MavenConstants.POM));) {
+            try (InputStream resourcesIS = (CobiGenUtils.class.getResourceAsStream("/" + MavenConstants.POM))) {
                 Files.copy(resourcesIS, pomFile.getAbsoluteFile().toPath());
             } catch (IOException e1) {
                 throw new CobiGenRuntimeException("Failed to extract CobiGen plugins pom.", e1);
