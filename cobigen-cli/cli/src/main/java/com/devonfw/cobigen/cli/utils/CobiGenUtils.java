@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -91,7 +93,6 @@ public class CobiGenUtils {
             // Read classPath.txt file and add to the class path all dependencies
             try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
                 String allJars = br.readLine();
-
                 addJarsToClassLoader(allJars);
             } catch (IOException e) {
                 LOG.error("Unable to read classPath.txt file.", e);
@@ -100,7 +101,6 @@ public class CobiGenUtils {
         } catch (URISyntaxException e) {
             LOG.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
         }
-
     }
 
     /**
@@ -158,8 +158,28 @@ public class CobiGenUtils {
     public File extractArtificialPom(Path rootCLIPath) {
         File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
         if (!pomFile.exists()) {
-            try (InputStream resourcesIS = (CobiGenUtils.class.getResourceAsStream("/" + MavenConstants.POM))) {
-                Files.copy(resourcesIS, pomFile.getAbsoluteFile().toPath());
+            try (InputStream resourcesIs1 = CobiGenUtils.class.getResourceAsStream("/" + MavenConstants.POM);
+                InputStream resourcesIs2 =
+                    CobiGenUtils.class.getClass().getResourceAsStream("/" + MavenConstants.POM)) {
+                if (resourcesIs1 != null) {
+                    LOG.debug("Taking pom.xml from classpath");
+                    Files.copy(resourcesIs1, pomFile.getAbsoluteFile().toPath());
+                } else if (resourcesIs2 != null) {
+                    LOG.debug("Taking pom.xml from system classpath");
+                    Files.copy(resourcesIs1, pomFile.getAbsoluteFile().toPath());
+                } else {
+                    if (CobiGenUtils.class.getClassLoader() instanceof URLClassLoader) {
+                        LOG.debug("Classloader URLs:");
+                        Arrays.stream(((URLClassLoader) CobiGenUtils.class.getClassLoader()).getURLs())
+                            .forEach(url -> LOG.debug("  - {}", url));
+                    }
+                    if (CobiGenUtils.class.getClass().getClassLoader() instanceof URLClassLoader) {
+                        LOG.debug("System Classloader URLs:");
+                        Arrays.stream(((URLClassLoader) CobiGenUtils.class.getClassLoader()).getURLs())
+                            .forEach(url -> LOG.debug("  - {}", url));
+                    }
+                    new CobiGenRuntimeException("Unable to locate pom.xml on classpath");
+                }
             } catch (IOException e1) {
                 throw new CobiGenRuntimeException("Failed to extract CobiGen plugins pom.", e1);
             }
