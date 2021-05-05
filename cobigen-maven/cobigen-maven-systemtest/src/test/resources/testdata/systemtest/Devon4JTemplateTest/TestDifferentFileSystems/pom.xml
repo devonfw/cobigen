@@ -42,42 +42,42 @@
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tempeng-freemarker</artifactId>
-            <version>7.0.0</version>
+            <version>${revision}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>openapiplugin</artifactId>
-            <version>7.1.0</version>
+            <version>${revision}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>javaplugin</artifactId>
-            <version>7.1.0</version>
+            <version>${revision}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>xmlplugin</artifactId>
-            <version>7.0.0</version>
+            <version>${revision}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>htmlplugin</artifactId>
-            <version>7.0.0</version>
+            <version>${revision}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tsplugin</artifactId>
-            <version>7.1.0</version>
+            <version>${revision}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>jsonplugin</artifactId>
-            <version>7.0.0</version>
+            <version>${revision}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>textmerger</artifactId>
-            <version>7.1.0</version>
+            <version>${revision}</version>
           </dependency>
         </dependencies>
       </plugin>
