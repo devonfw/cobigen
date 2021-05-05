@@ -37,47 +37,47 @@
           <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>javaplugin</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>xmlplugin</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>openapiplugin</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>tsplugin</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>propertyplugin</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>htmlplugin</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>textmerger</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>tempeng-velocity</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         <dependency>
           <groupId>com.devonfw.cobigen</groupId>
           <artifactId>tempeng-freemarker</artifactId>
-          <version>${revision}</version>
+          <version>${pluginVersion}</version>
         </dependency>
         </dependencies>
       </plugin>

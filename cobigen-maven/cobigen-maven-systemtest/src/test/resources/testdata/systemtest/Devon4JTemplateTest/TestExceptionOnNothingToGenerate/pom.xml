@@ -38,12 +38,12 @@
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tempeng-freemarker</artifactId>
-            <version>${revision}</version>
+            <version>${pluginVersion}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>javaplugin</artifactId>
-            <version>${revision}</version>
+            <version>${pluginVersion}</version>
           </dependency>
         </dependencies>
       </plugin>
