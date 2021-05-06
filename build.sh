@@ -6,10 +6,10 @@ echo ""
 echo "Script config: "
 if [[ "$*" == *test* ]]
 then
-    ENABLED_TEST="-Dmaven.test.skip=true"
+    ENABLED_TEST="-Dmaven.test.skip=true -DskipTests"
     echo "  * With test execution"
 else
-    ENABLED_TEST="-Dmaven.test.skip=false -DskipTests" # need to declare both
+    ENABLED_TEST="-Dmaven.test.skip=false" # need to declare both
     echo "  * No test execution (pass 'test' as argument to enable)"
 fi
 
