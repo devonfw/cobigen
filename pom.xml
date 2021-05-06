@@ -23,7 +23,7 @@
     <!-- updatesite.repository needs to be set by cmd and needs to be one of repositories -->
     <updatesite.repository.url>${updatesite.url}/${updatesite.repository}</updatesite.repository.url>
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
-    <p2.repository.upload.dir>${project.build.directory}${file.separator}repository-upload</p2.repository.upload.dir>
+    <p2.repository.upload.dir>${master.basedir}${file.separator}..${file.separator}gh-pages${file.separator}updatesite${file.separator}${updatesite.repository}</p2.repository.upload.dir>
     <p2.repository.upload.dir.plugin>${p2.repository.upload.dir}/cobigen-${project.artifactId}</p2.repository.upload.dir.plugin>
   </properties>
 
@@ -90,6 +90,27 @@
       </extension>
     </extensions>
     <plugins>
+      <plugin>
+        <groupId>org.commonjava.maven.plugins</groupId>
+        <artifactId>directory-maven-plugin</artifactId>
+        <version>0.1</version>
+        <executions>
+          <execution>
+            <id>set-root-dir</id>
+            <goals>
+              <goal>directory-of</goal>
+            </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <property>master.basedir</property>
+              <project>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>master-parent</artifactId>
+              </project>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -209,6 +230,34 @@
             <version>1.3</version>
           </dependency>
         </dependencies>
+      </plugin>
+
+      <!-- update site -->
+      <!-- copy to gh-pages folder next to this repository checked out gh-pages branch -->
+      <plugin>
+        <groupId>org.eclipse.tycho.extras</groupId>
+        <artifactId>tycho-p2-extras-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <executions>
+          <execution>
+            <id>mirror-files-build-to-upload-dir</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>mirror</goal>
+            </goals>
+            <configuration>
+              <source>
+                <repository>
+                  <url>file:///${p2.repository.build.dir.url}</url>
+                  <layout>p2</layout>
+                </repository>
+              </source>
+              <destination>${p2.repository.upload.dir.plugin}</destination>
+              <xzCompress>false</xzCompress>
+              <append>true</append>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
@@ -392,96 +441,7 @@
         </plugins>
       </build>
     </profile>
-    <!-- Update site -->
-    <profile>
-      <id>p2-upload-updatesite</id>
-      <activation>
-        <property>
-          <name>updatesite.repository</name>
-        </property>
-        <file>
-          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
-          <exists>target/repository/artifacts.jar</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>${nexus.staging.maven.plugin.version}</version>
-            <configuration>
-              <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-            </configuration>
-          </plugin>
-          <!-- sets ${qualifiedVersion} for updatesite upload -->
-          <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-packaging-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>build-qualifier</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>build-qualifier</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>mirror-files</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>mirror</goal>
-                </goals>
-                <configuration>
-                  <source>
-                    <repository>
-                      <url>file:///${p2.repository.build.dir.url}</url>
-                      <layout>p2</layout>
-                    </repository>
-                  </source>
-                  <destination>${p2.repository.upload.dir.plugin}</destination>
-                  <xzCompress>false</xzCompress>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>download-temporary-files</id>
-                <phase>prepare-package</phase>
-                <goals>
-                  <goal>download</goal>
-                </goals>
-                <configuration>
-                  <url>${updatesite.repository.url}</url>
-                  <includes>artifacts.jar,content.jar</includes>
-                  <toDir>${p2.repository.upload.dir.plugin}</toDir>
-                  <serverId>updatesite-repo</serverId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+
     <profile>
       <!-- separate eclipse build from command-line... -->
       <id>eclipse</id>
