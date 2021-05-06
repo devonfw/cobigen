@@ -159,7 +159,7 @@ jobs:
           path: ./**/eclipse/target/repository/
           key: p2-eclipse-${{ github.sha }} # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}-plugins
+            ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
