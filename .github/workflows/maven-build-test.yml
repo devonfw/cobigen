@@ -153,12 +153,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Restore P2 plugins repositories
-        uses: actions/cache@v2.1.5
-        with:
-          path: ./**/target/repository/
-          key: p2-plugins-${{ github.sha }} # key hit will not update cache
-
       - name: Cache Eclipse repository
         uses: actions/cache@v2.1.5
         with:
@@ -170,6 +164,13 @@ jobs:
         run: git config --system core.longpaths true
 
       - uses: actions/checkout@v2
+      
+      # After checkout we need to restore the built repositories
+      - name: Restore P2 plugins repositories
+        uses: actions/cache@v2.1.5
+        with:
+          path: ./**/target/repository/
+          key: p2-plugins-${{ github.sha }} # key hit will not update cache
 
       - name: Set up OpenJDK
         uses: actions/setup-java@v1
