@@ -185,7 +185,7 @@
         <configuration>
           <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
           <!-- Needed for JDK 9+ -->
-          <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
+          <argLine>-Djdk.attach.allowAttachSelf=true -Djansi.force=true -Djansi.passthrough=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argLine>
         </configuration>
       </plugin>
 
