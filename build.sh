@@ -6,10 +6,10 @@ echo ""
 echo "Script config: "
 if [[ "$*" == *test* ]]
 then
-    ENABLED_TEST="-Dmaven.test.skip=true -DskipTests"
+    ENABLED_TEST=""
     echo "  * With test execution"
 else
-    ENABLED_TEST="-Dmaven.test.skip=false" # need to declare both
+	ENABLED_TEST="-Dmaven.test.skip=true -DskipTests" # need to declare both
     echo "  * No test execution (pass 'test' as argument to enable)"
 fi
 
@@ -24,11 +24,11 @@ fi
 
 if [[ "$*" == *debug* ]]
 then
-    # the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
-    DEBUG="-DtrimStackTrace=false -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" # set to false to see hidden exceptions
+    DEBUG="-DtrimStackTrace=false" # set to false to see hidden exceptions
     echo "  * Debug On"
 else
-    DEBUG=""
+	# the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
+    DEBUG="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
     echo "  * Debug Off (pass 'debug' as argument to enable)"
 fi
 echo ""
