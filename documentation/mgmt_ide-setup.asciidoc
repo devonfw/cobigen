@@ -1,0 +1,60 @@
+- install devon IDE
+- open console
+- "devon project setup cobigen"
+- "devon eclipse add-plugin [plugin-name]" for eclipsepde, freemarker, pydev, swtbot
+
+:toc:
+toc::[]
+
+= IDE setup using Devon IDE
+
+
+== General Installation Process
+
+First of all you will have to download the Devon IDE from www.devonfw.com. Click on "download" and follow the steps 4.2.1 to 4.2.3. When prompted for a settings URL, simply press enter as no special settings are used.
+Following that, you will simply have to wait and follow any instructions given.
+
+After you have executed the steps mentioned above, your install location should look like the picture below.
+
+image:images/howtos/ide-setup/File_Structure.png[Install directory after executing setup.bat]
+
+The next step is to open a console and execute the following command: `+devon project setup cobigen+`
+This downloads all the necessary files for Cobigen development.
+
+Now you can open eclipse using the eclipse-main.bat file and import the Cobigen projects you want to work on by clicking File->import...->Maven->Existing Maven Project and entering {Install directory}/workspaces/main/cobigen (Should be the default location when clicking on "Browse...")
+
+== Eclipse Plugin Installation
+
+For some parts of Cobigen, you will have to have additional plugins installed.
+
+=== Plugin development
+
+If you want to develop Cobigen plugins (openapiplugin, javaplugin etc.) you need to install the eclipse PDE plugin. 
+To do this, simply open a console in your IDE Install location and execute the command `+devon eclipse add-plugin eclipsepde+`
+
+You will likely get an error here that stems from parts of the plugin being installed by the Devon IDE by default.
+This is normally not a problem since Eclipse should prompt you to install missing dependencies when you try to build a relevant project.
+
+=== Eclipse Testing
+
+To properly test Cobigen in an Eclipse environment we use the Eclipse SWTbot which can automate eclipse interactions in a new Eclipse instance.
+To install this, open a console in your IDE Install location and  execute the command `+devon eclipse add-plugin eclipsepde+` in a console
+
+You will likely get an error here that stems from parts of the plugin being installed by the Devon IDE by default.
+This is normally not a problem since Eclipse should prompt you to install missing dependencies when you try to build or run a relevant project.
+
+=== Optional
+
+==== Template Development
+
+Since Cobigen is a template-based code generator, we have to develop templates. We do this using the template language Freemarker.
+It is not necessary to install any plugin though for easier usage we recommend you install an IDE into Eclipse if you do not want to use another platform.
+
+To install an IDE for Freemarker, open a console in your IDE Install location and  execute the command `+devon eclipse add-plugin freemarker+` in a console
+
+==== Script Development
+
+There are some scripts used in Cobigen development that are written in Python.
+You may use any platform to write in python you want, but if you want to work in Eclipse, we recommend to install pydev.
+
+You can do this by opening a console in your IDE Install location and executing the command `+devon eclipse add-plugin pydev+` in a console
