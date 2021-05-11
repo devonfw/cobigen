@@ -1,6 +1,8 @@
 package com.devonfw.cobigen.eclipse.healthcheck;
 
 import java.io.File;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -17,6 +19,7 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
+import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheckDialogs;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
@@ -24,9 +27,12 @@ import com.devonfw.cobigen.eclipse.common.tools.MessageUtil;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
+import com.devonfw.cobigen.impl.util.ConfigurationUtil;
+import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 
 /**
  * This class implements the Health Check to provide more information about the current status of CobiGen and
@@ -69,45 +75,41 @@ public class HealthCheckDialog {
             ResourcesPluginUtil.refreshConfigurationProject();
             String pathForCobigenTemplates = "";
 
-            // check configuration project existence
+            // check configuration project existence in workspace
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-
-            IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
-            pathForCobigenTemplates = ws.toPortableString();
-
+            IPath ws = generatorConfProj.getLocation();
+            
+            if (ws == null) {
+            	report = healthCheck.perform();
+            } else {
+            	pathForCobigenTemplates = ws.toPortableString();
+            	Path healthcheckFile = Paths.get(pathForCobigenTemplates);
+            	report = healthCheck.perform(healthcheckFile);
+            }
+         
             if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
                 CobiGenFactory.create(generatorConfProj.getLocationURI());
             } else {
-                String fileName = ResourcesPluginUtil.getJarPath(false);
-
-                File jarPath =
-                    new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
-                CobiGenFactory.create(jarPath.toURI());
+                File templatesDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
+                File jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectory);
                 boolean fileExists = jarPath.exists();
                 if (!fileExists) {
                     MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
                         "Not Downloaded the CobiGen Template Jar");
                 }
-
-                // We try to unzip the jar into our folder structure
-                ResourcesPluginUtil.processJar(jarPath.getName());
-
             }
 
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep;
             boolean healthyCheckWarning = false;
-            File tempFile = new File(pathForCobigenTemplates + "/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-            boolean contextFileExists = tempFile.exists();
-            File newtempFile = new File(pathForCobigenTemplates + "/" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER
-                + "/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-            boolean newcontextFileExists = newtempFile.exists();
-            if (newcontextFileExists || contextFileExists) {
-                healthyCheckMessage += "OK.";
+            
+            if (report.getNumberOfErrors() == 0) {
+            	healthyCheckMessage += "OK.";
             } else {
-                healthyCheckMessage += "INVALID.";
+            	healthyCheckMessage += "INVALID.";
                 healthyCheckWarning = true;
             }
+            
             openSuccessDialog(healthyCheckMessage, healthyCheckWarning);
         } catch (GeneratorProjectNotExistentException e) {
             LOG.warn("Configuration project not found!", e);
@@ -220,11 +222,15 @@ public class HealthCheckDialog {
         int result = dialog.open();
         if (result == 0) {
             try {
+            	// check configuration project existence in workspace
                 IPath ws = ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation();
-                String healthProj = ws.toPortableString();
-                File healthcheckFile = new File(healthProj);
-                if (ResourcesPluginUtil.getGeneratorConfigurationProject() != null) {
-                    report = healthCheck.perform(healthcheckFile.toPath());
+                
+                if (ws == null) {
+                	report = healthCheck.perform();
+                } else {
+                	String healthProj = ws.toPortableString();
+                	Path healthcheckFile = Paths.get(healthProj);
+                	report = healthCheck.perform(healthcheckFile);
                 }
                 AdvancedHealthCheckDialog advancedHealthCheckDialog =
                     new AdvancedHealthCheckDialog(report, healthCheck);
