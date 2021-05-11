@@ -1,6 +1,11 @@
 package com.devonfw.cobigen.impl.healthcheck;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,12 +21,18 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
+import com.devonfw.cobigen.api.util.CobiGenPathUtil;
+import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
+import com.devonfw.cobigen.impl.util.ConfigurationUtil;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
+import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
+import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -132,17 +143,14 @@ public class HealthCheckImpl implements HealthCheck {
         }
         // 2. Determine current state
         TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
-        pathForCobigenTemplates = Paths
-            .get(configurationPath + File.separator + "src" + File.separator + "main" + File.separator + "templates");
-
+        pathForCobigenTemplates = configurationPath.resolve("src" + File.separator + "main" + File.separator + "templates");
         for (String expectedTemplateFolder : expectedTemplatesConfigurations) {
-            if (pathForCobigenTemplates.toFile().exists()) {
+            if (Files.exists(pathForCobigenTemplates)) {
                 String configPath = (configurationPath + File.separator + "src" + File.separator + "main"
                     + File.separator + "templates").toString();
                 hasConfiguration.add(configPath);
                 isAccessible.add(configPath);
-                Path expectedTemplateFolderForResolvedVer = (Paths.get(
-                    pathForCobigenTemplates + File.separator + expectedTemplateFolder.replace("/", File.separator)));
+                Path expectedTemplateFolderForResolvedVer = pathForCobigenTemplates.resolve(expectedTemplateFolder.replace("/", File.separator).toString());
                 TemplatesConfigurationVersion resolvedVersion = templateConfigurationUpgrader
                     .resolveLatestCompatibleSchemaVersion(expectedTemplateFolderForResolvedVer);
                 if (resolvedVersion != null) {
@@ -188,4 +196,30 @@ public class HealthCheckImpl implements HealthCheck {
         return healthCheckReport;
     }
 
+	@Override
+	public HealthCheckReport perform() {
+		File templatesDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
+		URI templatesJarFile = ConfigurationUtil.findTemplatesLocation();
+		HealthCheckReport report = null;
+		
+		if (templatesJarFile == null) {
+			
+            try {
+				TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesDirectory);
+				TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesDirectory);
+			} catch (Throwable e) {
+				LOG.error("An error occured while downloading the latest Templates", e);
+			}
+		}
+		
+		try {
+			Path fileSystemPath = FileSystemUtil.createFileSystemDependentPath(templatesJarFile);
+			report = perform(fileSystemPath); 
+			return report;
+		} catch (IOException e) {
+			LOG.error("An error occured while accessing the latest Templates", e);
+		}
+		return report;
+	}
+    
 }
