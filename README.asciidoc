@@ -49,43 +49,26 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 
 | `cobigen-cli` | Contains the cobigen command line interface implementation.
 
-| `cobigen-eclipse` | Contains the cobigen eclipse bundles. The implementation of the plug-in is driven in `cobigen-eclipse/cobigen-eclipse` folder.  
+| `cobigen-eclipse` | Contains the cobigen eclipse integration. The implementation of the plug-in is driven in `cobigen-eclipse/cobigen-eclipse` folder.  
 
-| `cobigen-maven` | Contains the maven plug-in implementation.     
+| `cobigen-maven` | Contains the maven integration implementation.     
 
 | `cobigen-templates` | Contains template sets for different architectures 
 
-| `cobigen` | Containts the code implementation of CobiGen as well as all plug-in implementations besides the eclipse plug-in and maven plug-in 
+| `cobigen` | Containts the code implementation of CobiGen
+
+| `cobigen-plugins` | core plug-in implementations 
 
 | `ide-settings` | Contains the shared settings processed by the https://github.com/devonfw/ide[devonfw-ide]
 |===
 
 == Build
 
-You can build CobiGen core as well as each plug-in besides the eclipse plug-in separately by stepping into the plug-in folder, e.g. for the Java plug-in you could step into `cobigen/cobigen-javaplugin` and run `mvn clean install` to build the plug-in and deploy it into your local repository.
-
-The CobiGen eclipse plug-in can build build by running `mvn clean package -Pp2-build-photon`. The profile `p2-build-photon` builds the eclipse plug-in by retrieving eclipse photon bundles as dependencies. Without specifying the profile, the build will fail. An exception to this is the cobigen-eclipse-test project, which has to be built using `mvn clean package -Pp2-build-photon,p2-build-stable,p2-build-experimental`.
+`sh build.sh` (on windows use git bash / cmder or similar consoles)
 
 == Deploy
 
-CobiGen deployment has to be distinguished threefold
-
-[cols="2,2,5a"]
-|===
-| Component | Deployment Type | Commands
-
-|  `cobigen/cobigen-core/`,`cobigen-maven/` | MAVEN | `mvn clean deploy`
-
-|  `cobigen/cobigen-*/` (except core). In case of deploying dev_javaplugin or dev_openapiplugin, go to `cobigen/cobigen-*-parent/cobigen-*`| ECLIPSE | ```# Builds the Manifest and bundles the dependencies
-mvn clean package bundle:bundle -Pp2-bundle
-# Uses the created bundle and builds a p2 update site for it. Do NOT use clean
-mvn install bundle:bundle -Pp2-bundle,p2-build-photon,p2-build-experimental p2:site
-# Uploades the p2 update site to the experimental repository. Do NOT use clean
-mvn deploy -Pp2-build-photon,p2-build-experimental -Dbintray.repository=cobigen.p2.experimental
-```
-
-| `cobigen-eclipse/` | ECLIPSE | `mvn clean deploy -Pp2-build-photon,p2-build-experimental -Dbintray.repository=cobigen.p2.experimental`
-|===
+CobiGen deployment will be done by CI/CD only. No manual deployment.
 
 == Debugging with Maven
 

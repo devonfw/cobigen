@@ -1,15 +1,31 @@
 package com.devonfw.cobigen.api.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
  * This util class provides system properties
  */
 public class SystemUtil {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(SystemUtil.class);
 
     /**
      * File separator, e.g for windows '\'
@@ -20,6 +36,9 @@ public class SystemUtil {
      * Line separator, e.g. for windows '\r\n'
      */
     public static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+
+    /** Current Operating System, the code is exectued on */
+    private static final String OS = System.getProperty("os.name").toLowerCase();
 
     /**
      * Determines the line delimiter
@@ -78,6 +97,107 @@ public class SystemUtil {
             reader.read();
         }
 
+    }
+
+    /**
+     * @return the absolute path of the mvn executable if available, otherwise null
+     */
+    public static String determineMvnPath() {
+        String MVN_EXEC = null;
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("which", "mvn");
+        try {
+            Process process = processBuilder.start();
+
+            try (InputStreamReader in = new InputStreamReader(process.getInputStream());
+                BufferedReader reader = new BufferedReader(in)) {
+
+                String line = null;
+                List<String> foundEntries = reader.lines().collect(Collectors.toList());
+                LOG.debug("Found following executables: ");
+                foundEntries.forEach(e -> LOG.debug("  - {}", e));
+                if (foundEntries.size() > 0) {
+                    if (foundEntries.size() > 1 && OS.contains("win")) {
+                        Pattern p = Pattern.compile(".+mvn\\.bat");
+                        Optional<String> foundPath =
+                            foundEntries.stream().filter(path -> p.matcher(path).matches()).findFirst();
+                        if (foundPath.isPresent()) {
+                            line = foundPath.get();
+                            LOG.debug("Taking {} instead of first entry as detected windows OS", line);
+                        }
+                    }
+                    if (line == null) {
+                        line = foundEntries.get(0);
+                    }
+                }
+
+                int retVal = process.waitFor();
+                if (retVal == 0 && StringUtils.isNotEmpty(line)) {
+                    LOG.info("Determined mvn executable to be located in {}", line);
+                    MVN_EXEC = line;
+                } else {
+                    LOG.warn("Could not determine mvn executable location. 'which mvn' returned {}", retVal);
+                }
+            }
+        } catch (InterruptedException | IOException e) {
+            LOG.warn(
+                "Could not determine mvn executable location, trying to look for environment variables for maven home.",
+                e);
+        }
+
+        if (MVN_EXEC == null) {
+            String m2Home = System.getenv().get("MAVEN_HOME");
+            if (m2Home != null) {
+                System.setProperty("maven.home", m2Home);
+            } else {
+                m2Home = System.getenv().get("M2_HOME");
+                if (m2Home == null) {
+                    if ("true".equals(System.getenv("TRAVIS"))) {
+                        m2Home = "/usr/local/maven"; // just travis
+                    } else {
+                        throw new CobiGenRuntimeException(
+                            "Could not determine maven home from environment variables MAVEN_HOME or M2_HOME!");
+                    }
+                }
+            }
+            LOG.info("Set maven home to {}", m2Home);
+            System.setProperty("maven.home", m2Home);
+            try {
+                MVN_EXEC = getMvnExecutable(m2Home);
+            } catch (IOException e) {
+                throw new CobiGenRuntimeException("Unable to determine maven executable in maven home " + m2Home, e);
+            }
+            LOG.info("Determined maven executable at {}", MVN_EXEC);
+        } else {
+            LOG.debug("Detected to run on OS {}", OS);
+            if (OS.contains("win")) {
+                // running in git bash, we need to transform paths of format /c/path to C:\path
+                Pattern p = Pattern.compile("/([a-zA-Z])/(.+)");
+                Matcher matcher = p.matcher(MVN_EXEC);
+                if (matcher.matches()) {
+                    MVN_EXEC = matcher.group(1) + ":\\" + matcher.group(2).replace("/", "\\");
+                    LOG.debug("Reformatted mvn execution path to '{}' as running on win within a shell or bash",
+                        MVN_EXEC);
+                } else {
+                    throw new CobiGenRuntimeException(
+                        "Unable to match path '" + MVN_EXEC + "' against regex '/([a-zA-Z])/(.+)'");
+                }
+            }
+            String m2Home;
+            try {
+                m2Home = Paths.get(MVN_EXEC).getParent().getParent().toFile().getCanonicalPath();
+            } catch (IOException e) {
+                throw new CobiGenRuntimeException("Unable to determine maven home from maven executable " + MVN_EXEC,
+                    e);
+            }
+            LOG.info("Set maven home to {}", m2Home);
+            System.setProperty("maven.home", m2Home);
+        }
+        return MVN_EXEC;
+    }
+
+    private static String getMvnExecutable(String mvnHome) throws IOException {
+        return Paths.get(mvnHome).resolve("bin/mvn" + (OS.contains("win") ? ".bat" : "")).toFile().getCanonicalPath();
     }
 
 }

@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.commands.GenerateCommand;
+import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.ea.agentloader.AgentLoader;
 
@@ -34,13 +35,10 @@ import classloader.Agent;
  * Tests the usage of the update command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
  * present among JVM startup arguments.
  */
-public class UpdateCommandTest {
+public class UpdateCommandTest extends AbstractCliTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";
-
-    /** pom file name */
-    private static String pomFileName = "pom.xml";
 
     /** temporary pom file */
     private static String tmpPomFileName = "tmpPom.xml";
@@ -81,6 +79,7 @@ public class UpdateCommandTest {
     /**
      * Replaces the original pom with and outdated one.
      * @throws IOException
+     *             test fails
      */
     @Before
     public void replacePom() throws IOException {
@@ -172,7 +171,7 @@ public class UpdateCommandTest {
         args[1] = "--all";
         CobiGenCLI.main(args);
 
-        File updatedPom = new File(Paths.get(rootCLIPath.toString(), pomFileName).toString());
+        File updatedPom = new File(Paths.get(rootCLIPath.toString(), MavenConstants.POM).toString());
         String newVersion = getArtifactVersion(updatedPom, pluginId);
 
         assertThat(newVersion).isNotNull();

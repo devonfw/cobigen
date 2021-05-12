@@ -115,6 +115,7 @@ public class UpdateTemplatesDialog extends Dialog {
                 try {
                     ResourcesPluginUtil.setUserWantsToDownloadTemplates(true);
                     ResourcesPluginUtil.downloadJar(false);
+                    ResourcesPluginUtil.downloadJar(true);
                     MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
                         "Downloaded succesfully!", MessageDialog.INFORMATION, new String[] { "Ok" }, 1);
                     dialog.setBlockOnOpen(true);

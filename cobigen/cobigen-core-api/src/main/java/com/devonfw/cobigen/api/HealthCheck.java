@@ -56,5 +56,12 @@ public interface HealthCheck {
      * @return the {@link HealthCheckReport} created by the HealthCheck
      */
     HealthCheckReport perform(Path configurationPath);
+    
+    /**
+     * Performs a health check of the CobiGen plug-in and automatically downwloads the latest CobiGen_Templates jar.
+     *
+     * @return the {@link HealthCheckReport} created by the HealthCheck
+     */
+    HealthCheckReport perform();
 
 }

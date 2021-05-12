@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.util.CobiGenPathUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
@@ -116,8 +117,7 @@ public class ResourcesPluginUtil {
     public static IProject getGeneratorConfigurationProject()
         throws GeneratorProjectNotExistentException, CoreException {
 
-        File templatesDirectory = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toPortableString()
-            + ResourceConstants.DOWNLOADED_JAR_FOLDER);
+        File templatesDirectory = getTemplatesDirectory();
 
         generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
 
@@ -221,11 +221,7 @@ public class ResourcesPluginUtil {
      * @return the templateDirectory
      */
     private static File getTemplatesDirectory() {
-        File templatesDirectory = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toPortableString()
-            + ResourceConstants.DOWNLOADED_JAR_FOLDER);
-        if (!templatesDirectory.exists()) {
-            templatesDirectory.mkdir();
-        }
+        File templatesDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
         return templatesDirectory;
     }
 
@@ -258,7 +254,10 @@ public class ResourcesPluginUtil {
                 "Could not refresh the CobiGen configuration project automatically. " + "Please try it again manually");
             LOG.warn("Configuration project refresh failed", e);
         }
-        String jarPath = ws.toPortableString() + ResourceConstants.DOWNLOADED_JAR_FOLDER + "/" + fileName;
+        
+        File templatesDirectory = getTemplatesDirectory();
+        String jarPath = templatesDirectory.toString() + File.separator + fileName;
+        
         FileSystem fileSystem = FileSystems.getDefault();
         Path cobigenFolderPath = null;
         if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {
@@ -271,7 +270,7 @@ public class ResourcesPluginUtil {
             if (classJarName.equals("")) {
                 classJarName = downloadJar(false);
             }
-            String classJarPath = ws.toPortableString() + ResourceConstants.DOWNLOADED_JAR_FOLDER + "/" + classJarName;
+            String classJarPath = templatesDirectory.toString() + File.separator + classJarName;
 
             try (ZipFile file = new ZipFile(classJarPath)) {
                 Enumeration<? extends ZipEntry> entries = file.entries();
