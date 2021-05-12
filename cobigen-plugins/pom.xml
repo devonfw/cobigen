@@ -70,6 +70,7 @@
                 <niceManifest>true</niceManifest>
                 <Import-Package></Import-Package>
                 <Export-Package></Export-Package>
+                <_noee>true</_noee><!-- circumvent https://stackoverflow.com/q/25851771 -->
               </instructions>
             </configuration>
           </plugin>

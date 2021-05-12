@@ -92,14 +92,14 @@ public class TypeScriptMerger extends ExternalServerMergerProxy {
                 }
             });
 
-            InputFileTo fileTo = new InputFileTo("", content, UTF8);
+            InputFileTo fileTo = new InputFileTo("", body.toString(), UTF8);
             String beautifiedContent = externalProcess.postJsonRequest("beautify", fileTo);
 
             return importsAndExports + LINE_SEP + LINE_SEP + beautifiedContent;
         } catch (IOException e) {
             LOG.warn("Unable to read service response for beautification", e);
             // beautification anyhow is not critical, let's keep returning what we have
-            return null;
+            return content;
         }
     }
 

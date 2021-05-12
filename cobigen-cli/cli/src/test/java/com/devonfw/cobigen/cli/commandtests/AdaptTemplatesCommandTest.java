@@ -21,7 +21,7 @@ import picocli.CommandLine;
  * Tests the usage of the adapt-templates command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true
  * to be present among JVM startup arguments.
  */
-public class AdaptTemplatesCommandTest {
+public class AdaptTemplatesCommandTest extends AbstractCliTest {
 
     /** Test resources root path */
     private static String testFileRootPath = "src/test/resources/testdata/";

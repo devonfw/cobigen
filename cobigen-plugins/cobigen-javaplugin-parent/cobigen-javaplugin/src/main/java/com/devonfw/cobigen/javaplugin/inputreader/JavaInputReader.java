@@ -83,9 +83,11 @@ public class JavaInputReader implements InputReader {
     public Map<String, Object> createModel(Object o) {
 
         if (o instanceof Class<?>) {
+            LOG.debug("Creating model based on reflection.");
             return new ReflectedJavaModelBuilder().createModel((Class<?>) o);
         }
         if (o instanceof JavaClass) {
+            LOG.debug("Creating model based on parsed content.");
             return new ParsedJavaModelBuilder().createModel((JavaClass) o);
         }
         if (o instanceof Object[] && isValidInput(o)) {
@@ -99,6 +101,7 @@ public class JavaInputReader implements InputReader {
                 parsedModel = new ParsedJavaModelBuilder().createModel((JavaClass) inputArr[1]);
                 reflectionModel = new ReflectedJavaModelBuilder().createModel((Class<?>) inputArr[0]);
             }
+            LOG.debug("Provided both (reflection + parsed) models - merging both information");
             return (Map<String, Object>) mergeModelsRecursively(parsedModel, reflectionModel);
         }
         return null;
@@ -314,6 +317,9 @@ public class JavaInputReader implements InputReader {
                 // This is the case for annotation values. QDox will always return the expression,
                 // which is a assigned to the annotation's value, as a string.
                 else if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof String) {
+                    if (((String) ((List<?>) parsedModel).get(0)).contains("/PATH")) {
+                        LOG.info("Taking String from parsed Model: " + ((List<?>) parsedModel).get(0));
+                    }
                     return parsedModel;
                 } else {
                     if (reflectionModel instanceof Object[]) {
@@ -324,10 +330,13 @@ public class JavaInputReader implements InputReader {
                 }
             } else {
                 // any other type might not be merged. As the values are not equal, this might be a conflict,
-                // so take model1 as documented
+                // so take model as documented
                 return parsedModel;
             }
         } else if (parsedModel instanceof String[]) {
+            if (((String[]) ((List<?>) parsedModel).get(0)).toString().contains("/PATH")) {
+                LOG.info("Taking String[] from parsed Model: " + ((List<?>) parsedModel).get(0));
+            }
             return Lists.newLinkedList(Arrays.asList(parsedModel));
         }
         // we will prefer parsed model if parsed value of type String. This is the case for annotation values.

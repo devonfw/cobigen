@@ -13,6 +13,7 @@
 
   <properties>
     <tycho.testArgLine>-Xms512m -Xmx2048m -XX:+DisableExplicitGC</tycho.testArgLine>
+    <enforcer.skip>true</enforcer.skip>
   </properties>
 
   <dependencies>
@@ -88,6 +89,7 @@
             <configuration>
               <useUIHarness>true</useUIHarness>
               <useUIThread>false</useUIThread>
+              <showEclipseLog>true</showEclipseLog>
               <product>org.eclipse.sdk.ide</product>
               <application>org.eclipse.ui.ide.workbench</application>
               <dependencies>
