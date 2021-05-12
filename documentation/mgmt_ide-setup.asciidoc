@@ -6,7 +6,7 @@ toc::[]
 
 == General Installation Process
 
-First of all you will have to download the devonfw ide https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc.
+First of all you will have to https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[download the devonfw ide].
 Follow the steps 4.2.1 to 4.2.3. 
 
 Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL.
