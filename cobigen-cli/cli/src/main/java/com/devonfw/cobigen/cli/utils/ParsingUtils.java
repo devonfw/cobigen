@@ -26,6 +26,7 @@ import net.sf.mmm.util.io.api.RuntimeIoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
@@ -61,17 +62,14 @@ public class ParsingUtils {
             context.getClassLoader().loadClass(fqn);
             return context;
         } catch (NoClassDefFoundError | ClassNotFoundException e) {
-            LOG.error("Compiled class " + fqn + " has not been found. Most probably you need to build project "
-                + inputProject.toString() + ".", e);
-            System.exit(1);
+            throw new CobiGenRuntimeException("Compiled class " + fqn
+                + " has not been found. Most probably you need to build project " + inputProject.toString() + ".", e);
         } catch (Exception e) {
-            LOG.error("Transitive dependencies have not been found on your m2 repository (Maven). "
-                + "Please run 'mvn package' in your input project in order to download all the needed dependencies.",
+            throw new CobiGenRuntimeException(
+                "Transitive dependencies have not been found on your m2 repository (Maven). Please run 'mvn package' "
+                    + "in your input project in order to download all the needed dependencies.",
                 e);
-            System.exit(1);
         }
-        // Will never happen as every exception is catch
-        return null;
     }
 
     /**

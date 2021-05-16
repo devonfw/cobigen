@@ -1,12 +1,11 @@
 package com.devonfw.cobigen.cli.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.jar.JarFile;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 
@@ -31,16 +29,14 @@ import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
-import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.extension.ClassServiceLoader;
 import com.google.common.base.Charsets;
-
-import classloader.Agent;
 
 /**
  * Utilities class for CobiGen related operations. For instance, it creates a new CobiGen instance and
@@ -58,18 +54,8 @@ public class CobiGenUtils {
      * @return object of CobiGen
      */
     public CobiGen initializeCobiGen() {
-        CobiGen cg = null;
-        try {
-            registerPlugins();
-            cg = CobiGenFactory.create();
-        } catch (InvalidConfigurationException e) {
-            // if the context configuration is not valid
-            LOG.error("Invalid configuration of context", e);
-        } catch (IOException e) {
-            // If I/O operation failed then it will throw exception
-            LOG.error("I/O operation is failed", e);
-        }
-        return cg;
+        registerPlugins();
+        return CobiGenFactory.create();
     }
 
     /**
@@ -78,38 +64,45 @@ public class CobiGenUtils {
      */
     public void registerPlugins() {
 
+        // Get location of the current CLI jar
+        File locationCLI = getCliLocation();
+        Path rootCLIPath = locationCLI.getParentFile().toPath();
+
+        File pomFile = extractArtificialPom(rootCLIPath);
+
+        Path cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE);
+        if (!Files.exists(cpFile)) {
+            buildCobiGenDependencies(pomFile);
+        }
+
+        // Read classPath.txt file and add to the class path all dependencies
         try {
-            // Get location of the current CLI jar
-            File locationCLI = getCliLocation();
-            Path rootCLIPath = locationCLI.getParentFile().toPath();
-
-            File pomFile = extractArtificialPom(rootCLIPath);
-
-            File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
-            if (!cpFile.exists()) {
-                buildCobiGenDependencies(pomFile);
-            }
-
-            // Read classPath.txt file and add to the class path all dependencies
-            try (BufferedReader br = new BufferedReader(new FileReader(cpFile))) {
-                String allJars = br.readLine();
-                addJarsToClassLoader(allJars);
-            } catch (IOException e) {
-                LOG.error("Unable to read classPath.txt file.", e);
-            }
-
-        } catch (URISyntaxException e) {
-            LOG.error("Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
+            URL[] classpathEntries = Files.lines(cpFile).flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
+                try {
+                    return new File(path).toURI().toURL();
+                } catch (MalformedURLException e) {
+                    LOG.error("URL of classpath entry {} is malformed", path, e);
+                }
+                return null;
+            }).toArray(size -> new URL[size]);
+            URLClassLoader cobigenClassLoader =
+                new URLClassLoader(classpathEntries, Thread.currentThread().getContextClassLoader());
+            ClassServiceLoader.lookupServices(cobigenClassLoader);
+        } catch (IOException e) {
+            throw new CobiGenRuntimeException("Unable to read " + cpFile, e);
         }
     }
 
     /**
      * @return the CLI file location path
-     * @throws URISyntaxException
-     *             if the code location path is not a valid URI
      */
-    public static File getCliLocation() throws URISyntaxException {
-        return new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+    public static File getCliLocation() {
+        try {
+            return new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            throw new CobiGenRuntimeException(
+                "Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
+        }
     }
 
     /**
@@ -127,8 +120,7 @@ public class CobiGenUtils {
                     // https://stackoverflow.com/a/66801171
                     "-Djansi.force=true", "-Djansi.passthrough=true", "-B",
                     "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
-                    "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q",
-                    "-f " + pomFile.getCanonicalPath())
+                    "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q", "-f", pomFile.getCanonicalPath())
                 .redirectError(
                     Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + "dep-build")).asError())
                 .redirectOutput(
@@ -185,31 +177,6 @@ public class CobiGenUtils {
             }
         }
         return pomFile;
-    }
-
-    /**
-     * Adds a jar file into the current class loader
-     * @param allJars
-     *            file to load
-     */
-    public void addJarsToClassLoader(String allJars) {
-        String[] jarsToAdd = allJars.split(File.pathSeparator);
-        try {
-            for (String jarToAdd : jarsToAdd) {
-                JarFile jar = new JarFile(jarToAdd);
-                Agent.appendJarFile(jar);
-            }
-        } catch (MalformedURLException e) {
-            LOG.error("Not able to form URL of jar file.", e);
-        } catch (SecurityException e) {
-            LOG.error(
-                "Security exception. Most probably you do not have enough permissions. Please execute the CLI using admin rights.",
-                e);
-        } catch (IOException e) {
-            LOG.error("CobiGen plug-in jar file that was being loaded was not found. "
-                + "Please try again or file an issue in cobigen GitHub repo.", e);
-        }
-
     }
 
     /**

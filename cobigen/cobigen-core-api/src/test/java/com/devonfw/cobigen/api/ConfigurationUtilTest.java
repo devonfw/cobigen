@@ -1,10 +1,12 @@
-package com.devonfw.cobigen.unittest.config.utils;
+package com.devonfw.cobigen.api;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.restoreSystemProperties;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -12,41 +14,42 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.impl.util.ConfigurationUtil;
-import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
+import com.devonfw.cobigen.api.util.ConfigurationUtil;
 
 /**
  *
  */
-public class ConfigurationUtilTest extends AbstractUnitTest {
+public class ConfigurationUtilTest {
+
     @Rule
-    public TemporaryFolder userhome = new TemporaryFolder();
+    public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     @Test
     public void testFindTemplatesLocation() throws Exception {
         restoreSystemProperties(() -> {
-            System.setProperty("user.home", userhome.getRoot().getAbsolutePath());
-            File cobigenHome = userhome.newFolder(ConfigurationConstants.COBIGEN_HOME_FOLDER);
-            File templatesFolder =
-                userhome.newFolder(ConfigurationConstants.COBIGEN_HOME_FOLDER, ConfigurationConstants.TEMPLATES_FOLDER);
+            File userHome = tmpFolder.newFolder("user-home");
+            System.setProperty("user.home", userHome.getAbsolutePath());
+            Path defaultCobigenHome = userHome.toPath().resolve(ConfigurationConstants.DEFAULT_HOME_DIR_NAME);
+            Path templatesFolder = defaultCobigenHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+            Files.createDirectories(templatesFolder);
             String templatesArtifact = "templates-devon4j-1.0.jar";
 
             // no configuration file exists
             // no templates found
             assertThat(ConfigurationUtil.findTemplatesLocation()).isNull();
-            File templatesProject = new File(templatesFolder, ConfigurationConstants.COBIGEN_TEMPLATES);
-            File templatesJar = new File(templatesFolder, templatesArtifact);
-            templatesProject.createNewFile();
-            templatesJar.createNewFile();
+            Path templatesProject = templatesFolder.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+            Files.createDirectories(templatesProject);
+            Path templatesJar = templatesFolder.resolve(templatesArtifact);
+            Files.createFile(templatesJar);
             // found CobiGen_Templates project
-            assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templatesProject.toURI());
-            templatesProject.delete();
+            assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templatesProject.toFile().toURI());
+            Files.delete(templatesProject);
             // found templates artifact
-            assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templatesJar.toURI());
+            assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templatesJar.toFile().toURI());
 
             // configuration file exists
-            File randomDirectoryForConfigFile = userhome.newFolder();
-            File randomDirectoryForTemplates = userhome.newFolder();
+            File randomDirectoryForConfigFile = tmpFolder.newFolder();
+            File randomDirectoryForTemplates = tmpFolder.newFolder();
             File configFile = new File(randomDirectoryForConfigFile, ConfigurationConstants.COBIGEN_CONFIG_FILE);
             File templates = new File(randomDirectoryForTemplates, templatesArtifact);
             configFile.createNewFile();
@@ -54,17 +57,17 @@ public class ConfigurationUtilTest extends AbstractUnitTest {
 
             String templatesLocation = templates.getAbsolutePath().replace("\\", "\\\\");
             FileUtils.writeStringToFile(configFile,
-                ConfigurationConstants.COBIGEN_CONFIG_TEMPLATES_LOCATION_KEY + "=" + templatesLocation);
+                ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + templatesLocation);
 
-            withEnvironmentVariable(ConfigurationConstants.COBIGEN_CONFIG_DIR,
+            withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME,
                 randomDirectoryForConfigFile.getAbsolutePath()).execute(
                     () -> {
                         // configuration file found from environment variable
                         assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templates.toURI());
                     });
 
-            File configFileInCobigenHome = new File(cobigenHome, ConfigurationConstants.COBIGEN_CONFIG_FILE);
-            FileUtils.copyFile(configFile, configFileInCobigenHome);
+            Path configFileInCobigenHome = defaultCobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+            FileUtils.copyFile(configFile, configFileInCobigenHome.toFile());
             // configuration file found in cobigen home directory
             assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templates.toURI());
         });

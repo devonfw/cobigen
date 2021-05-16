@@ -105,7 +105,11 @@ public class SystemUtil {
     public static String determineMvnPath() {
         String MVN_EXEC = null;
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("which", "mvn");
+        if (OS.contains("win")) {
+            processBuilder.command("where", "mvn");
+        } else {
+            processBuilder.command("which", "mvn");
+        }
         try {
             Process process = processBuilder.start();
 
@@ -118,7 +122,7 @@ public class SystemUtil {
                 foundEntries.forEach(e -> LOG.debug("  - {}", e));
                 if (foundEntries.size() > 0) {
                     if (foundEntries.size() > 1 && OS.contains("win")) {
-                        Pattern p = Pattern.compile(".+mvn\\.bat");
+                        Pattern p = Pattern.compile(".+mvn\\.(bat|cmd)");
                         Optional<String> foundPath =
                             foundEntries.stream().filter(path -> p.matcher(path).matches()).findFirst();
                         if (foundPath.isPresent()) {
@@ -176,11 +180,8 @@ public class SystemUtil {
                 Matcher matcher = p.matcher(MVN_EXEC);
                 if (matcher.matches()) {
                     MVN_EXEC = matcher.group(1) + ":\\" + matcher.group(2).replace("/", "\\");
-                    LOG.debug("Reformatted mvn execution path to '{}' as running on win within a shell or bash",
+                    LOG.debug("Reformatted mvn execution path to '{}' as running on windows within a shell or bash",
                         MVN_EXEC);
-                } else {
-                    throw new CobiGenRuntimeException(
-                        "Unable to match path '" + MVN_EXEC + "' against regex '/([a-zA-Z])/(.+)'");
                 }
             }
             String m2Home;
@@ -197,7 +198,7 @@ public class SystemUtil {
     }
 
     private static String getMvnExecutable(String mvnHome) throws IOException {
-        return Paths.get(mvnHome).resolve("bin/mvn" + (OS.contains("win") ? ".bat" : "")).toFile().getCanonicalPath();
+        return Paths.get(mvnHome).resolve("bin/mvn" + (OS.contains("win") ? ".cmd" : "")).toFile().getCanonicalPath();
     }
 
 }

@@ -36,10 +36,21 @@ public class ClassServiceLoader {
     private static Set<Class<? extends TextTemplateEngine>> templateEngineClasses = new HashSet<>();
 
     static {
+        lookupServices(Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
+     * Detects CobiGen extensions on the classpath of the given class loader
+     * @param classLoader
+     *            determining the classpath to look at
+     */
+    public static void lookupServices(ClassLoader classLoader) {
+        generatorPluginActivatorClasses.clear();
+        templateEngineClasses.clear();
         LOG.info("Loading plug-in activators...");
-        lookupServices(GeneratorPluginActivator.class, generatorPluginActivatorClasses);
+        lookupServices(GeneratorPluginActivator.class, generatorPluginActivatorClasses, classLoader);
         LOG.info("Loading template engines...");
-        lookupServices(TextTemplateEngine.class, templateEngineClasses);
+        lookupServices(TextTemplateEngine.class, templateEngineClasses, classLoader);
     }
 
     /**
@@ -50,11 +61,13 @@ public class ClassServiceLoader {
      *            the extension type
      * @param clazzSet
      *            the set to add the detected classes
+     * @param contextClassLoader
+     *            the classloader to be used for classpath scanning
      */
     @SuppressWarnings("unchecked")
-    private static <T> void lookupServices(Class<T> extensionType, Set<Class<? extends T>> clazzSet) {
+    private static <T> void lookupServices(Class<T> extensionType, Set<Class<? extends T>> clazzSet,
+        ClassLoader contextClassLoader) {
         try {
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Enumeration<URL> foundGeneratorPluginActivators =
                 contextClassLoader.getResources("META-INF/services/" + extensionType.getName());
 
@@ -80,9 +93,9 @@ public class ClassServiceLoader {
                         }
                     }
                 } catch (IOException e) {
-                    LOG.warn("Could not read plug-in at {}", url, LOG.isDebugEnabled() ? e : null);
+                    LOG.error("Could not read plug-in at {}", url, LOG.isDebugEnabled() ? e : null);
                 } catch (ClassNotFoundException e) {
-                    LOG.warn("Could not load plug-in with class {}", activatorClassName,
+                    LOG.error("Could not load plug-in with class {}", activatorClassName,
                         LOG.isDebugEnabled() ? e : null);
                 }
             }

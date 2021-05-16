@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.impl.util;
+package com.devonfw.cobigen.api.util;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
  * Utilities related to the templates jar. Includes the downloading, retrieval of the jar and the checkup of
@@ -67,13 +68,9 @@ public class TemplatesJarUtil {
      * @param templatesDirectory
      *            directory where the templates jar are located
      * @return fileName Name of the file downloaded
-     * @throws MalformedURLException
-     *             {@link MalformedURLException} occurred
-     * @throws IOException
-     *             {@link IOException} occurred
      */
-    public static String downloadJar(String groupId, String artifactId, String version, boolean isDownloadSource,
-        File templatesDirectory) throws MalformedURLException, IOException {
+    private static String downloadJar(String groupId, String artifactId, String version, boolean isDownloadSource,
+        File templatesDirectory) {
 
         // By default the version should be latest
         if (version.isEmpty() || version == null) {
@@ -97,22 +94,26 @@ public class TemplatesJarUtil {
             jarFiles = templatesDirectory.listFiles(fileNameFilterJar);
         }
 
-        if (jarFiles.length <= 0 || isJarOutdated(jarFiles[0], mavenUrl, isDownloadSource, templatesDirectory)) {
+        try {
+            if (jarFiles.length <= 0 || isJarOutdated(jarFiles[0], mavenUrl, isDownloadSource, templatesDirectory)) {
 
-            HttpURLConnection conn = initializeConnection(mavenUrl);
-            try (InputStream inputStream = conn.getInputStream()) {
+                HttpURLConnection conn = initializeConnection(mavenUrl);
+                try (InputStream inputStream = conn.getInputStream()) {
 
-                fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
-                File file = new File(templatesDirectory.getPath() + File.separator + fileName);
-                Path targetPath = file.toPath();
-                if (!file.exists()) {
-                    Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                    fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+                    File file = new File(templatesDirectory.getPath() + File.separator + fileName);
+                    Path targetPath = file.toPath();
+                    if (!file.exists()) {
+                        Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
                 }
-            }
-            conn.disconnect();
-        } else {
-            fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
+                conn.disconnect();
+            } else {
+                fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
 
+            }
+        } catch (IOException e) {
+            throw new CobiGenRuntimeException("Could not download file from " + mavenUrl, e);
         }
         return fileName;
     }
@@ -123,13 +124,8 @@ public class TemplatesJarUtil {
      * @param templatesDirectory
      *            directory where the templates jar are located
      * @return fileName Name of the file downloaded
-     * @throws MalformedURLException
-     *             {@link MalformedURLException} occurred
-     * @throws IOException
-     *             {@link IOException} occurred
      */
-    public static String downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory)
-        throws MalformedURLException, IOException {
+    public static String downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory) {
 
         return downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
             TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);

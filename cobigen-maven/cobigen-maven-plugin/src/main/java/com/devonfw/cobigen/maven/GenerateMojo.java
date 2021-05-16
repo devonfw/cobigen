@@ -5,7 +5,6 @@ import static java.nio.file.Files.isDirectory;
 import static java.nio.file.Files.isReadable;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -101,12 +100,7 @@ public class GenerateMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        CobiGen cobiGen = null;
-        try {
-            cobiGen = createCobiGenInstance();
-        } catch (MojoExecutionException e) {
-            throw new MojoExecutionException("An error occured while creating the CobiGen instance", e);
-        }
+        CobiGen cobiGen = createCobiGenInstance();
 
         List<Object> inputs = collectInputs(cobiGen);
         if (inputs.isEmpty()) {
@@ -164,20 +158,14 @@ public class GenerateMojo extends AbstractMojo {
     /**
      * Creates an instance of {@link CobiGen} based on a given configuration project or configuration jar.
      * @return the initialized {@link CobiGen} instance
-     * @throws MojoExecutionException
-     *             if the configuration could not be read
      */
-    private CobiGen createCobiGenInstance() throws MojoExecutionException {
+    private CobiGen createCobiGenInstance() {
         CobiGen cobiGen;
 
         if (configurationFolder != null) {
 
             getLog().debug("configurationFolder found in:" + configurationFolder.toURI().toString());
-            try {
-                cobiGen = CobiGenFactory.create(configurationFolder.toURI());
-            } catch (IOException e) {
-                throw new MojoExecutionException("The configured configuration folder could not be read.", e);
-            }
+            cobiGen = CobiGenFactory.create(configurationFolder.toURI());
         } else {
 
             final ClassRealm classRealm = pluginDescriptor.getClassRealm();
@@ -187,12 +175,7 @@ public class GenerateMojo extends AbstractMojo {
 
             getLog().debug("reading configuration from file:" + configFile.toString());
 
-            try {
-                cobiGen = CobiGenFactory.create(configFile);
-            } catch (IOException e) {
-                throw new MojoExecutionException("The templates artifact could not be read in location '"
-                    + contextConfigurationLocation.getFile() + "'.", e);
-            }
+            cobiGen = CobiGenFactory.create(configFile);
         }
         return cobiGen;
     }

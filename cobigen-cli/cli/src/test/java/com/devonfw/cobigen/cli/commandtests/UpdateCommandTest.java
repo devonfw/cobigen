@@ -27,9 +27,6 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.commands.GenerateCommand;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
-import com.ea.agentloader.AgentLoader;
-
-import classloader.Agent;
 
 /**
  * Tests the usage of the update command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
@@ -55,17 +52,9 @@ public class UpdateCommandTest extends AbstractCliTest {
     private File originalPom = null;
 
     /**
-     * We need to dynamically load the Java agent before the tests. Note that Java 9 requires
-     * -Djdk.attach.allowAttachSelf=true to be present among JVM startup arguments.
-     */
-    @Before
-    public void loadJavaAgent() {
-        AgentLoader.loadAgentClass(Agent.class.getName(), "");
-    }
-
-    /**
      * Sets of the correct CLI root path.
      * @throws URISyntaxException
+     *             failing
      */
     @Before
     public void setCliPath() throws URISyntaxException {
@@ -97,6 +86,7 @@ public class UpdateCommandTest extends AbstractCliTest {
     /**
      * Restores the original pom.
      * @throws IOException
+     *             test fails
      */
     @After
     public void restorePom() throws IOException {
@@ -113,8 +103,11 @@ public class UpdateCommandTest extends AbstractCliTest {
      *            input pom file
      * @return a list of dependencies
      * @throws FileNotFoundException
+     *             test fails
      * @throws IOException
+     *             test fails
      * @throws XmlPullParserException
+     *             test fails
      */
     private List<Dependency> readPom(File pomFile) throws FileNotFoundException, IOException, XmlPullParserException {
         if (pomFile.exists()) {
@@ -154,12 +147,9 @@ public class UpdateCommandTest extends AbstractCliTest {
      * Plugin update test. The original pom is replaced with an outdated one that needs to updated. The
      * outdated pom gets updated. The tests checks whether the updating process was successful by comparing
      * the versions of the updated plugins.
-     * @throws URISyntaxException
-     * @throws IOException
-     * @throws XmlPullParserException
      */
     @Test
-    public void pluginUpdateTest() throws IOException, XmlPullParserException {
+    public void pluginUpdateTest() {
         String pluginId = "tsplugin";
 
         String oldVersion = getArtifactVersion(originalPom, pluginId);

@@ -86,7 +86,7 @@ public class VelocityTemplateEngine implements TextTemplateEngine {
             } catch (VelocityException e) {
                 throw new CobiGenRuntimeException(
                     "An error occurred while generating the template." + template.getAbsoluteTemplatePath()
-                        + "(Velocity v" + VelocityMetadata.VERSION + ")" + "\n" + e.getMessage(),
+                        + "(Velocity v" + VelocityMetadata.VERSION + ")",
                     e);
             } catch (Throwable e) {
                 throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template."

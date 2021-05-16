@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 /**

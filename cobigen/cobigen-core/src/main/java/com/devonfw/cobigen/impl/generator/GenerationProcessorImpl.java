@@ -183,12 +183,10 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 } catch (CobiGenRuntimeException e) {
                     generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                     generationReport.addError(e);
-                    LOG.error("An internal error occurred during generation.", e);
                 } catch (Throwable e) {
                     generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                     generationReport.addError(new CobiGenRuntimeException(
                         "Something unexpected happened" + ((e.getMessage() != null) ? ": " + e.getMessage() : "!"), e));
-                    LOG.error("An unknown exception occurred during generation.", e);
                 }
             }
         } catch (CobiGenCancellationException e) {

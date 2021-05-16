@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+
 /**
  * FileSystem utils.
  */
@@ -25,11 +27,9 @@ public class FileSystemUtil {
      * represents the zip-file contents.
      * @param targetUri
      *            {@link URI}, the {@link Path} should be resolved for.
-     * @throws IOException
-     *             if the {@link File} the {@link URI} points to could not be read.
-     * @return the {@link Path} dependent on the {@link FileSystem} used
+     * @return the path representing the configuration root
      */
-    public static Path createFileSystemDependentPath(URI targetUri) throws IOException {
+    public static Path createFileSystemDependentPath(URI targetUri) {
 
         URI workURI = URI.create(targetUri.toString());
         if (FileSystemUtil.isZipFile(workURI)) {
@@ -55,11 +55,8 @@ public class FileSystemUtil {
      * @param fileSystemUri
      *            {@link URI} of the {@link FileSystem} to be retrieved/created
      * @return the {@link FileSystem} of the given {@link URI}
-     * @throws IOException
-     *             if the {@link FileSystem} could not be created.
-     * @author mbrunnli (16.02.2015)
      */
-    public static FileSystem getOrCreateFileSystem(URI fileSystemUri) throws IOException {
+    public static FileSystem getOrCreateFileSystem(URI fileSystemUri) {
         FileSystem configFileSystem;
         try {
             configFileSystem = FileSystems.getFileSystem(fileSystemUri);
@@ -67,7 +64,11 @@ public class FileSystemUtil {
                 throw new FileSystemNotFoundException();
             }
         } catch (FileSystemNotFoundException e) {
-            configFileSystem = FileSystems.newFileSystem(fileSystemUri, Collections.EMPTY_MAP);
+            try {
+                configFileSystem = FileSystems.newFileSystem(fileSystemUri, Collections.EMPTY_MAP);
+            } catch (IOException e1) {
+                throw new CobiGenRuntimeException("Unable to create file system from URI " + fileSystemUri, e);
+            }
         }
         return configFileSystem;
     }
@@ -77,16 +78,14 @@ public class FileSystemUtil {
      * @param uri
      *            {@link URI} to be checked
      * @return <code>true</code> if the file is a zip/jar file
-     * @throws IOException
-     *             if the file could not be read.
      */
-    public static boolean isZipFile(URI uri) throws IOException {
+    public static boolean isZipFile(URI uri) {
         File file = new File(uri);
         if (file.isDirectory()) {
             return false;
         }
         if (!file.canRead()) {
-            throw new IOException("Cannot read file " + file.getAbsolutePath());
+            throw new CobiGenRuntimeException("No permission to read file " + file.getAbsolutePath());
         }
         if (file.length() < 4) {
             return false;
@@ -99,6 +98,8 @@ public class FileSystemUtil {
             int test = in.readInt();
             in.close();
             return test == 0x504b0304;
+        } catch (IOException e) {
+            throw new CobiGenRuntimeException("Unable to read file " + file.getAbsolutePath(), e);
         }
     }
 }

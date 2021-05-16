@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 
@@ -147,23 +148,27 @@ public final class ValidationUtils {
      * Checks the generation report in order to find possible errors and warnings
      * @param report
      *            the generation report returned by the CobiGen.generate method
-     * @return true of the generation was successful, false if any error occurred
      */
-    public static Boolean checkGenerationReport(GenerationReportTo report) {
+    public static void checkGenerationReport(GenerationReportTo report) {
 
         for (String warning : report.getWarnings()) {
             LOG.debug("Warning: {}", warning);
         }
 
         if (report.getErrors() == null || report.getErrors().isEmpty()) {
-            LOG.info("Successful generation.\n");
-            return true;
+            LOG.info("Successful generation.");
         } else {
-            LOG.error("Generation failed due to the following problems:");
-            for (Throwable throwable : report.getErrors()) {
-                LOG.error(throwable.getMessage());
+            if (LOG.isDebugEnabled() && report.getErrors().size() > 1) {
+                for (int i = 1; i < report.getErrors().size(); i++) {
+                    LOG.error("Further reported error:", report.getErrors().get(i));
+                }
             }
-            return false;
+            if (report.getErrors().get(0) instanceof CobiGenRuntimeException) {
+                throw report.getErrors().get(0);
+            } else {
+                throw new CobiGenRuntimeException(
+                    "Generation failed. Enable debug mode to see the exceptions occurred.", report.getErrors().get(0));
+            }
         }
     }
 
@@ -183,7 +188,7 @@ public final class ValidationUtils {
             inputFile.getName());
         if (isJavaInput) {
             LOG.error("Check that your Java input file is following devon4j naming convention. "
-                + "Explained on https://github.com/devonfw/devon4j/wiki/coding-conventions");
+                + "Explained on https://devonfw.com/website/pages/docs/devon4j.asciidoc_coding-conventions.html");
         } else if (isOpenApiInput) {
             LOG.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
                 + "More info here https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage");

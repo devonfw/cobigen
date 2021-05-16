@@ -1,4 +1,3 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -18,11 +17,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>class-loader-agent</artifactId>
-      <version>${revision}</version>
-    </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
@@ -127,29 +121,6 @@
         </executions>
       </plugin>
 
-      <!-- Add Class loader agent jar for correct class loading. In test-compile phase for running tests -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeArtifactIds>class-loader-agent</includeArtifactIds>
-              <outputDirectory>${project.build.directory}/classes</outputDirectory>
-              <stripVersion>true</stripVersion>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Building a Maven project that is used on the tests -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -175,17 +146,6 @@
             <argument>-B</argument>
             <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
           </arguments>
-        </configuration>
-      </plugin>
-
-      <!-- Run tests using the java-agent -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
-          <!-- Needed for JDK 9+ -->
-          <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
         </configuration>
       </plugin>
 

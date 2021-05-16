@@ -41,7 +41,7 @@ public class JvmUtil {
             LOG.info("Detected a JVM < 9");
             LOG.debug(
                 "Interpreted the running JVM as a version less than 9 as we could not find/execute Runtime.version() method.",
-                e1);
+                LOG.isDebugEnabled() ? e1 : null);
             runningJava9OrLater = false;
         }
         return runningJava9OrLater;

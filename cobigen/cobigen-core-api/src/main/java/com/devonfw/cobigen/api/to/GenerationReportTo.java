@@ -15,7 +15,7 @@ import com.google.common.collect.Sets;
 public class GenerationReportTo {
 
     /** Error messages mapping from message to cause to avoid duplicates. */
-    private Map<String, Throwable> errors = Maps.newTreeMap();
+    private Map<String, RuntimeException> errors = Maps.newTreeMap();
 
     /** Warnings in a hash set to remove duplicates */
     private Set<String> warnings = Sets.newTreeSet();
@@ -62,7 +62,7 @@ public class GenerationReportTo {
      * @param cause
      *            cause of the error.
      */
-    public void addError(Throwable cause) {
+    public void addError(RuntimeException cause) {
         errors.put(cause.getMessage(), cause);
     }
 
@@ -89,8 +89,8 @@ public class GenerationReportTo {
      * @param errors
      *            error messages.
      */
-    private void addAllErrors(List<Throwable> errors) {
-        for (Throwable t : errors) {
+    private void addAllErrors(List<RuntimeException> errors) {
+        for (RuntimeException t : errors) {
             this.errors.put(t.getMessage(), t);
         }
     }
@@ -135,7 +135,7 @@ public class GenerationReportTo {
      * Returns the {@link List} of occurred errors.
      * @return the {@link List} of occurred errors.
      */
-    public List<Throwable> getErrors() {
+    public List<RuntimeException> getErrors() {
         return Lists.newArrayList(errors.values());
     }
 

@@ -65,21 +65,16 @@ public class PluginUpdateUtil {
                         for (int k = 0; k < conditionList.getLength(); ++k) {
                             Element condition = (Element) conditionList.item(k);
                             latestVersionString = condition.getFirstChild().getNodeValue();
-
                         }
                     }
-
                 }
-
             }
-
         } catch (IOException e) {
             LOG.error("Error while creating an input stream to read Maven metadata file. Please try again.", e);
         } catch (SAXException | ParserConfigurationException e) {
             LOG.error("Not able to parse the Maven metadata file in order to find the latest plug-in version. "
                 + "Please check your connection and try again", e);
         }
-
         return latestVersionString;
     }
 

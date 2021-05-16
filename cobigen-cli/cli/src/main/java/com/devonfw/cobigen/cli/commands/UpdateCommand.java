@@ -137,7 +137,8 @@ public class UpdateCommand implements Callable<Integer> {
                         updatePluginVersions.put(lclDependencies.getArtifactId(), centralVersionValues[ver]);
                         listOfArtifacts.put(count, requiresUpdate);
                         // Print the dependecy need to update
-                        LOG.info("({}) {}, {}", count, requiresUpdate, lclDependencies.getVersion());
+                        LOG.info("({}) {}, {} -> {}", count, requiresUpdate, lclDependencies.getVersion(),
+                            centralMavenVersion);
                         break;
                     }
                 }
@@ -182,30 +183,25 @@ public class UpdateCommand implements Callable<Integer> {
                     // Updating all plugin
                     for (Dependency lclDependencies : localPomDependencies) {
                         if ((listOfArtifacts).containsValue(lclDependencies.getArtifactId())) {
-                            LOG.info(lclDependencies.getArtifactId());
+                            LOG.info("{} -> {}", lclDependencies.getArtifactId(), centralMavenVersionList.get(all));
                             lclDependencies.setVersion(centralMavenVersionList.get(all));
                             all++;
                         }
-
                     }
                     model.setDependencies(localPomDependencies);
 
                 } else {
                     // Updating selected plugin
                     String plugin = listOfArtifacts.get(selectedArtifactNumber);
-                    LOG.info("({}) {}", selectedArtifactNumber, plugin);
+                    LOG.info("({}) {} -> {}", selectedArtifactNumber, plugin, centralMavenVersionList.get(index));
                     for (Dependency selectedDependencies : localPomDependencies) {
                         if ((plugin).equals(selectedDependencies.getArtifactId())) {
                             selectedDependencies.setVersion(centralMavenVersionList.get(index));
-
                         }
-
                     }
                     model.setDependencies(localPomDependencies);
                 }
-
             }
-
         }
     }
 
@@ -217,7 +213,7 @@ public class UpdateCommand implements Callable<Integer> {
      * @return true if group id is related to CobiGen
      *
      */
-    private Boolean dependencyShouldBeUpdated(String groupId) {
+    private boolean dependencyShouldBeUpdated(String groupId) {
 
         if (MavenConstants.COBIGEN_GROUPID.equals(groupId)) {
             return true;

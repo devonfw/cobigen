@@ -31,13 +31,13 @@ import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.util.ConfigurationUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
-import com.devonfw.cobigen.impl.util.ConfigurationUtil;
 import com.google.googlejavaformat.java.FormatterException;
 
 import ch.qos.logback.classic.Level;
@@ -307,67 +307,58 @@ public class GenerateCommand implements Callable<Integer> {
 
         Boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
         inputFile = preprocessInputFile(inputFile);
-        try {
-            Object input;
-            String extension = FileUtils.getExtension(inputFile.getName());
-            Boolean isJavaInput = extension.equals("java");
-            Boolean isOpenApiInput = extension.equals("yaml") || extension.equals("yml");
+        Object input;
+        String extension = FileUtils.getExtension(inputFile.getName());
+        Boolean isJavaInput = extension.equals("java");
+        Boolean isOpenApiInput = extension.equals("yaml") || extension.equals("yml");
 
-            input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
+        input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
 
-            List<? extends GenerableArtifact> matching =
-                isIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
+        List<? extends GenerableArtifact> matching =
+            isIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input);
 
-            if (matching.isEmpty()) {
-                ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+        if (matching.isEmpty()) {
+            ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+        }
+
+        if (outputRootPath == null) {
+            // If user did not specify the output path of the generated files, we can use
+            // the current
+            // project folder
+            setOutputRootPath(inputProject);
+        }
+
+        if (finalTos != null) {
+            // We need this to allow the use of multiple input files of different types
+            finalTos = isIncrements ? CobiGenUtils.retainAllIncrements(toIncrementTo(matching), toIncrementTo(finalTos))
+                : CobiGenUtils.retainAllTemplates(toTemplateTo(matching), toTemplateTo(finalTos));
+        } else {
+            finalTos = isIncrements ? generableArtifactSelection(increments, toIncrementTo(matching), IncrementTo.class)
+                : generableArtifactSelection(templates, toIncrementTo(matching), TemplateTo.class);
+        }
+
+        GenerationReportTo report = null;
+
+        if (!isIncrements) {
+            LOG.info("Generating templates for input '{}', this can take a while...", inputFile.getName());
+            report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
+                templateFolder);
+        } else {
+            LOG.info("Generating increments for input '{}, this can take a while...", inputFile.getName());
+            report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
+                templateFolder);
+        }
+        ValidationUtils.checkGenerationReport(report);
+        Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream()
+            .filter(e -> FileUtils.getExtension(e.toAbsolutePath().toString()).equals("java"))
+            .collect(Collectors.toSet());
+        if (!generatedJavaFiles.isEmpty()) {
+            try {
+                ParsingUtils.formatJavaSources(generatedJavaFiles);
+            } catch (FormatterException e) {
+                LOG.warn(
+                    "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
             }
-
-            if (outputRootPath == null) {
-                // If user did not specify the output path of the generated files, we can use
-                // the current
-                // project folder
-                setOutputRootPath(inputProject);
-            }
-
-            if (finalTos != null) {
-                // We need this to allow the use of multiple input files of different types
-                finalTos =
-                    isIncrements ? CobiGenUtils.retainAllIncrements(toIncrementTo(matching), toIncrementTo(finalTos))
-                        : CobiGenUtils.retainAllTemplates(toTemplateTo(matching), toTemplateTo(finalTos));
-            } else {
-                finalTos =
-                    isIncrements ? generableArtifactSelection(increments, toIncrementTo(matching), IncrementTo.class)
-                        : generableArtifactSelection(templates, toIncrementTo(matching), TemplateTo.class);
-            }
-
-            GenerationReportTo report = null;
-
-            if (!isIncrements) {
-                LOG.info("Generating templates for input '{}', this can take a while...", inputFile.getName());
-                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
-                    templateFolder);
-            } else {
-                LOG.info("Generating increments for input '{}, this can take a while...", inputFile.getName());
-                report = cg.generate(input, finalTos, Paths.get(outputRootPath.getAbsolutePath()), false, classLoader,
-                    templateFolder);
-            }
-            if (ValidationUtils.checkGenerationReport(report)) {
-                Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream()
-                    .filter(e -> FileUtils.getExtension(e.toAbsolutePath().toString()).equals("java"))
-                    .collect(Collectors.toSet());
-                if (!generatedJavaFiles.isEmpty()) {
-                    try {
-                        ParsingUtils.formatJavaSources(generatedJavaFiles);
-                    } catch (FormatterException e) {
-                        LOG.info(
-                            "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.",
-                            LOG.isDebugEnabled() ? e : null);
-                    }
-                }
-            }
-        } catch (InputReaderException e) {
-            LOG.error("Invalid input for CobiGen, please check your input file.", e);
-
         }
     }
 
@@ -576,26 +567,19 @@ public class GenerateCommand implements Callable<Integer> {
             if (!isIncrements) {
                 String description = ((TemplateTo) matching.get(i)).getId();
                 JaccardDistance distance = new JaccardDistance();
-                scores.put(matching.get(i), distance.apply(
-                        description.toUpperCase(), userInput.toUpperCase()));
+                scores.put(matching.get(i), distance.apply(description.toUpperCase(), userInput.toUpperCase()));
             } else {
-                String description =
-                        ((IncrementTo) matching.get(i)).getDescription();
+                String description = ((IncrementTo) matching.get(i)).getDescription();
                 String id = ((IncrementTo) matching.get(i)).getId();
                 JaccardDistance distance = new JaccardDistance();
-                Double descriptionDistance = distance.apply(
-                        description.toUpperCase(), userInput.toUpperCase());
-                Double idDistance = distance.apply(id.toUpperCase(),
-                        userInput.toUpperCase());
-                scores.put(matching.get(i),
-                        Math.min(idDistance, descriptionDistance));
+                Double descriptionDistance = distance.apply(description.toUpperCase(), userInput.toUpperCase());
+                Double idDistance = distance.apply(id.toUpperCase(), userInput.toUpperCase());
+                scores.put(matching.get(i), Math.min(idDistance, descriptionDistance));
             }
         }
 
-        Map<? super GenerableArtifact, Double> sorted =
-                scores.entrySet().stream().sorted(comparingByValue())
-                        .collect(toMap(e -> e.getKey(), e -> e.getValue(),
-                                (e1, e2) -> e2, LinkedHashMap::new));
+        Map<? super GenerableArtifact, Double> sorted = scores.entrySet().stream().sorted(comparingByValue())
+            .collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
 
         ArrayList<? super GenerableArtifact> chosen = new ArrayList<>();
 
@@ -605,20 +589,19 @@ public class GenerateCommand implements Callable<Integer> {
             if (!isIncrements) {
                 String description = ((TemplateTo) artifact).getId();
                 if (description.toUpperCase().contains(userInput.toUpperCase())
-                        || sorted.get(artifact) <= SELECTION_THRESHOLD) {
+                    || sorted.get(artifact) <= SELECTION_THRESHOLD) {
                     chosen.add(tmp);
                 }
             } else {
                 String description = ((IncrementTo) artifact).getDescription();
                 String id = ((IncrementTo) artifact).getId();
-                if (description.equalsIgnoreCase(userInput)
-                        || id.equalsIgnoreCase(userInput)) {
+                if (description.equalsIgnoreCase(userInput) || id.equalsIgnoreCase(userInput)) {
                     chosen.add(tmp);
                     return (ArrayList<? extends GenerableArtifact>) chosen;
                 }
                 if ((description.toUpperCase().contains(userInput.toUpperCase())
-                        || id.toUpperCase().contains(userInput.toUpperCase()))
-                        || sorted.get(artifact) <= SELECTION_THRESHOLD) {
+                    || id.toUpperCase().contains(userInput.toUpperCase()))
+                    || sorted.get(artifact) <= SELECTION_THRESHOLD) {
                     chosen.add(tmp);
                 }
             }

@@ -2,20 +2,12 @@ package com.devonfw.cobigen.api.constants;
 
 import java.nio.file.Path;
 
-import com.devonfw.cobigen.api.util.CobiGenPathUtil;
+import com.devonfw.cobigen.api.util.ConfigurationUtil;
 
 /**
  * Constants related to the External Process plug-in like port to be used
  */
 public final class ExternalProcessConstants {
-
-    /**
-     * Following SonarLint rules, we need to create a private constructor
-     */
-    private ExternalProcessConstants() {
-
-        throw new IllegalStateException("Utility class, should not be instantiated");
-    }
 
     /**
      * Connection timeout in milliseconds, so that requests don't get frozen
@@ -30,7 +22,7 @@ public final class ExternalProcessConstants {
     /**
      * Folder name where the different external processes are stored
      */
-    public static final Path EXTERNAL_PROCESS_FOLDER = CobiGenPathUtil.getExternalProcessesPath("externalservers");
+    public static final Path EXTERNAL_PROCESS_FOLDER = ConfigurationUtil.getExternalProcessesPath("externalservers");
 
     /**
      * Name of the service the external process should implement for testing that the connection is ready
