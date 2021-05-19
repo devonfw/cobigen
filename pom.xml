@@ -20,7 +20,7 @@
     <tycho.version>1.6.0</tycho.version>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     <updatesite.url>https://devonfw.com/cobigen/updatesite</updatesite.url>
-    <!-- updatesite.repository needs to be set by cmd and needs to be one of repositories -->
+    <!-- updatesite.repository needs to be set by cmd and needs to be one of either 'stable' or 'test' -->
     <updatesite.repository.url>${updatesite.url}/${updatesite.repository}</updatesite.repository.url>
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
     <p2.repository.upload.dir>${master.basedir}${file.separator}..${file.separator}gh-pages${file.separator}updatesite${file.separator}${updatesite.repository}</p2.repository.upload.dir>
