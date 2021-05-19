@@ -15,7 +15,7 @@ Following that, you will simply have to wait and follow any instructions given.
 
 After you have executed the steps mentioned above, your install location should look like the picture below.
 
-image:images/howtos/ide-setup/File_Structure.png[Install directory after executing setup.bat]
+image::images/howtos/ide-setup/File_Structure.png[Install directory after executing setup.bat]
 
 The next step is to open a console and execute the following command: `+devon project setup cobigen+`
 This downloads all the necessary files for Cobigen development.
