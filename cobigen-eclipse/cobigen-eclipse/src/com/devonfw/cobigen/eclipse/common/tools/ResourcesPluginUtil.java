@@ -32,11 +32,11 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.util.CobiGenPathUtil;
+import com.devonfw.cobigen.api.util.ConfigurationUtil;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
-import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 
 /** Util for NPE save access of {@link ResourcesPlugin} utils */
 public class ResourcesPluginUtil {
@@ -221,7 +221,7 @@ public class ResourcesPluginUtil {
      * @return the templateDirectory
      */
     private static File getTemplatesDirectory() {
-        File templatesDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
+        File templatesDirectory = ConfigurationUtil.getTemplatesFolderPath().toFile();
         return templatesDirectory;
     }
 
@@ -243,7 +243,8 @@ public class ResourcesPluginUtil {
             pathForCobigenTemplates =
                 ws.toPortableString() + (((ResourcesPluginUtil.getGeneratorConfigurationProject() != null)
                     && (ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() != null))
-                        ? ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation() : StringUtils.EMPTY);
+                        ? ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation()
+                        : StringUtils.EMPTY);
         } catch (GeneratorProjectNotExistentException e1) {
             LOG.warn("Configuration project not found!", e1);
             String s = "=> Probably there was an error while downloading the templates. "
@@ -254,10 +255,10 @@ public class ResourcesPluginUtil {
                 "Could not refresh the CobiGen configuration project automatically. " + "Please try it again manually");
             LOG.warn("Configuration project refresh failed", e);
         }
-        
+
         File templatesDirectory = getTemplatesDirectory();
         String jarPath = templatesDirectory.toString() + File.separator + fileName;
-        
+
         FileSystem fileSystem = FileSystems.getDefault();
         Path cobigenFolderPath = null;
         if (fileSystem != null && fileSystem.getPath(pathForCobigenTemplates) != null) {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -31,6 +30,7 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.util.ConfigurationUtil;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
@@ -53,23 +53,26 @@ public class CobiGenUtils {
      * Registers CobiGen plug-ins and instantiates CobiGen
      * @return object of CobiGen
      */
-    public CobiGen initializeCobiGen() {
+    public static CobiGen initializeCobiGen() {
         registerPlugins();
         return CobiGenFactory.create();
+    }
+
+    /**
+     * @return the home path of the CLI
+     */
+    public static Path getCliHomePath() {
+        return ConfigurationUtil.getCobiGenHomePath().resolve("cli");
     }
 
     /**
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
      * location and then adding the needed URLs to the class loader.
      */
-    public void registerPlugins() {
+    public static void registerPlugins() {
 
-        // Get location of the current CLI jar
-        File locationCLI = getCliLocation();
-        Path rootCLIPath = locationCLI.getParentFile().toPath();
-
-        File pomFile = extractArtificialPom(rootCLIPath);
-
+        Path rootCLIPath = getCliHomePath();
+        File pomFile = extractArtificialPom();
         Path cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE);
         if (!Files.exists(cpFile)) {
             buildCobiGenDependencies(pomFile);
@@ -94,24 +97,12 @@ public class CobiGenUtils {
     }
 
     /**
-     * @return the CLI file location path
-     */
-    public static File getCliLocation() {
-        try {
-            return new File(CobiGenUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException e) {
-            throw new CobiGenRuntimeException(
-                "Not able to convert current location of the CLI to URI. Most probably this is a bug", e);
-        }
-    }
-
-    /**
      * Executes a Maven class path build command which will download all the transitive dependencies needed
      * for the CLI
      * @param pomFile
      *            POM file that defines the needed CobiGen dependencies to build
      */
-    private void buildCobiGenDependencies(File pomFile) {
+    private static void buildCobiGenDependencies(File pomFile) {
         LOG.info(
             "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
         try {
@@ -122,9 +113,9 @@ public class CobiGenUtils {
                     "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
                     "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q", "-f", pomFile.getCanonicalPath())
                 .redirectError(
-                    Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + "dep-build")).asError())
+                    Slf4jStream.of(LoggerFactory.getLogger(CobiGenUtils.class.getName() + "." + "dep-build")).asError())
                 .redirectOutput(
-                    Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + "dep-build")).asDebug())
+                    Slf4jStream.of(LoggerFactory.getLogger(CobiGenUtils.class.getName() + "." + "dep-build")).asDebug())
                 .start();
 
             Future<ProcessResult> future = process.getFuture();
@@ -143,21 +134,22 @@ public class CobiGenUtils {
 
     /**
      * Extracts an artificial POM which defines all the CobiGen plug-ins that are needed
-     * @param rootCLIPath
-     *            path where the artificial POM will be extracted to
      * @return the extracted POM file
      */
-    public File extractArtificialPom(Path rootCLIPath) {
-        File pomFile = rootCLIPath.resolve(MavenConstants.POM).toFile();
+    public static File extractArtificialPom() {
+        Path cliHome = getCliHomePath();
+        File pomFile = cliHome.resolve(MavenConstants.POM).toFile();
         if (!pomFile.exists()) {
             try (InputStream resourcesIs1 = CobiGenUtils.class.getResourceAsStream("/" + MavenConstants.POM);
                 InputStream resourcesIs2 =
                     CobiGenUtils.class.getClass().getResourceAsStream("/" + MavenConstants.POM)) {
                 if (resourcesIs1 != null) {
                     LOG.debug("Taking pom.xml from classpath");
+                    Files.createDirectories(pomFile.toPath().getParent());
                     Files.copy(resourcesIs1, pomFile.getAbsoluteFile().toPath());
                 } else if (resourcesIs2 != null) {
                     LOG.debug("Taking pom.xml from system classpath");
+                    Files.createDirectories(pomFile.toPath().getParent());
                     Files.copy(resourcesIs1, pomFile.getAbsoluteFile().toPath());
                 } else {
                     if (CobiGenUtils.class.getClassLoader() instanceof URLClassLoader) {

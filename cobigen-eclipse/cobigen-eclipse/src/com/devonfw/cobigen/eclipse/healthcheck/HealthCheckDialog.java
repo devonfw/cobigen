@@ -17,7 +17,8 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
-import com.devonfw.cobigen.api.util.CobiGenPathUtil;
+import com.devonfw.cobigen.api.util.ConfigurationUtil;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheckDialogs;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
@@ -28,7 +29,6 @@ import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
-import com.devonfw.cobigen.impl.util.TemplatesJarUtil;
 
 /**
  * This class implements the Health Check to provide more information about the current status of CobiGen and
@@ -72,13 +72,13 @@ public class HealthCheckDialog {
 
             // check configuration project existence in workspace
             generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            
+
             report = performHealthCheckReport();
-         
+
             if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
                 CobiGenFactory.create(generatorConfProj.getLocationURI());
             } else {
-                File templatesDirectory = CobiGenPathUtil.getTemplatesFolderPath().toFile();
+                File templatesDirectory = ConfigurationUtil.getTemplatesFolderPath().toFile();
                 File jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectory);
                 boolean fileExists = jarPath.exists();
                 if (!fileExists) {
@@ -90,14 +90,14 @@ public class HealthCheckDialog {
             healthyCheckMessage = firstStep + "OK.";
             healthyCheckMessage += secondStep;
             boolean healthyCheckWarning = false;
-            
+
             if (report.getNumberOfErrors() == 0) {
-            	healthyCheckMessage += "OK.";
+                healthyCheckMessage += "OK.";
             } else {
-            	healthyCheckMessage += "INVALID.";
+                healthyCheckMessage += "INVALID.";
                 healthyCheckWarning = true;
             }
-            
+
             openSuccessDialog(healthyCheckMessage, healthyCheckWarning);
         } catch (GeneratorProjectNotExistentException e) {
             LOG.warn("Configuration project not found!", e);
@@ -210,7 +210,7 @@ public class HealthCheckDialog {
         int result = dialog.open();
         if (result == 0) {
             try {
-            	// check configuration project existence in workspace
+                // check configuration project existence in workspace
                 report = performHealthCheckReport();
                 AdvancedHealthCheckDialog advancedHealthCheckDialog =
                     new AdvancedHealthCheckDialog(report, healthCheck);
@@ -230,23 +230,25 @@ public class HealthCheckDialog {
         }
     }
 
-	/**
-	 * Performs a HealthCheckReport on CobiGen_Templates in workspace or on latest templates jar.
-	 * 
-	 * @return HealthCheckReport the {@link HealthCheckReport} created by the HealthCheck
-	 * @throws GeneratorProjectNotExistentException if no generator configuration project called 
-	 * @throws CoreException if an existing generator configuration project could not be opened
-	 */
-	private HealthCheckReport performHealthCheckReport() throws GeneratorProjectNotExistentException, CoreException {
-		// check configuration project existence in workspace
-		IPath ws = ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation();
-		
-		if (ws == null) {
-			return healthCheck.perform();
-		} else {
-			String healthProj = ws.toPortableString();
-			Path healthcheckFile = Paths.get(healthProj);
-			return healthCheck.perform(healthcheckFile);
-		}
-	}
+    /**
+     * Performs a HealthCheckReport on CobiGen_Templates in workspace or on latest templates jar.
+     * 
+     * @return HealthCheckReport the {@link HealthCheckReport} created by the HealthCheck
+     * @throws GeneratorProjectNotExistentException
+     *             if no generator configuration project called
+     * @throws CoreException
+     *             if an existing generator configuration project could not be opened
+     */
+    private HealthCheckReport performHealthCheckReport() throws GeneratorProjectNotExistentException, CoreException {
+        // check configuration project existence in workspace
+        IPath ws = ResourcesPluginUtil.getGeneratorConfigurationProject().getLocation();
+
+        if (ws == null) {
+            return healthCheck.perform();
+        } else {
+            String healthProj = ws.toPortableString();
+            Path healthcheckFile = Paths.get(healthProj);
+            return healthCheck.perform(healthcheckFile);
+        }
+    }
 }

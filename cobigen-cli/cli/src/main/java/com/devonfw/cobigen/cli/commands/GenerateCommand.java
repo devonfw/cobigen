@@ -100,11 +100,6 @@ public class GenerateCommand implements Callable<Integer> {
     private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
-     * Utils class for CobiGen related operations
-     */
-    private CobiGenUtils cobigenUtils = new CobiGenUtils();
-
-    /**
      * Used for getting users input
      */
     private static final Scanner inputReader = new Scanner(System.in);
@@ -125,7 +120,7 @@ public class GenerateCommand implements Callable<Integer> {
 
         if (areArgumentsValid()) {
             LOG.debug("Input files and output root path confirmed to be valid.");
-            CobiGen cg = cobigenUtils.initializeCobiGen();
+            CobiGen cg = CobiGenUtils.initializeCobiGen();
 
             URI templatesLocationUri = ConfigurationUtil.findTemplatesLocation();
             Path templateFolder = Paths.get(templatesLocationUri);

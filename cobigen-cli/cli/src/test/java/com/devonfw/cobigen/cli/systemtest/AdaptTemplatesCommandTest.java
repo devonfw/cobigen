@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.cli.commandtests;
+package com.devonfw.cobigen.cli.systemtest;
 
 import static org.junit.Assert.assertTrue;
 //import static org.assertj.core.api.Assertions.assertThat;

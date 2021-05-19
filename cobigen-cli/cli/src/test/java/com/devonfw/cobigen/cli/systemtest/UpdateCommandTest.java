@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.cli.commandtests;
+package com.devonfw.cobigen.cli.systemtest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.devonfw.cobigen.cli.CobiGenCLI;
-import com.devonfw.cobigen.cli.commands.GenerateCommand;
 import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 
@@ -43,9 +41,6 @@ public class UpdateCommandTest extends AbstractCliTest {
     /** outdated pom file */
     private static String outdatedPomFileName = "outdatedPom.xml";
 
-    /** root CLI path */
-    private static Path rootCLIPath = null;
-
     /**
      * Original CobiGen CLI pom file
      */
@@ -57,12 +52,8 @@ public class UpdateCommandTest extends AbstractCliTest {
      *             failing
      */
     @Before
-    public void setCliPath() throws URISyntaxException {
-        if (rootCLIPath == null) {
-            rootCLIPath = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-                .getParentFile().toPath();
-        }
-        originalPom = new CobiGenUtils().extractArtificialPom(rootCLIPath);
+    public void setCliPath() {
+        originalPom = CobiGenUtils.extractArtificialPom();
     }
 
     /**
@@ -161,7 +152,7 @@ public class UpdateCommandTest extends AbstractCliTest {
         args[1] = "--all";
         CobiGenCLI.main(args);
 
-        File updatedPom = new File(Paths.get(rootCLIPath.toString(), MavenConstants.POM).toString());
+        File updatedPom = CobiGenUtils.getCliHomePath().resolve(MavenConstants.POM).toFile();
         String newVersion = getArtifactVersion(updatedPom, pluginId);
 
         assertThat(newVersion).isNotNull();

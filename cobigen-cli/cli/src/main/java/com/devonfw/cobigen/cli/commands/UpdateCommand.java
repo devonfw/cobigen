@@ -3,7 +3,6 @@ package com.devonfw.cobigen.cli.commands;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,9 +45,7 @@ public class UpdateCommand implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
 
-        File locationCLI = new File(GenerateCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        Path rootCLIPath = locationCLI.getParentFile().toPath();
-        File pomFile = new CobiGenUtils().extractArtificialPom(rootCLIPath);
+        File pomFile = CobiGenUtils.extractArtificialPom();
         HashMap<String, String> updatePluginVersions = new HashMap<>();
         HashMap<Integer, String> listOfArtifacts = new HashMap<>();
         List<String> centralMavenVersionList = new ArrayList<>();
@@ -84,7 +81,7 @@ public class UpdateCommand implements Callable<Integer> {
 
             MavenXpp3Writer writer = new MavenXpp3Writer();
             writer.write(new FileWriter(pomFile), model);
-            File cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
+            File cpFile = CobiGenUtils.getCliHomePath().resolve(MavenConstants.CLASSPATH_OUTPUT_FILE).toFile();
             cpFile.deleteOnExit();
             LOG.info("Updated successfully. Next time you generate, the plug-ins will be downloaded.");
         }

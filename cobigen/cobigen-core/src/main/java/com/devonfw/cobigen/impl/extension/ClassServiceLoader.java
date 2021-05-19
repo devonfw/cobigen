@@ -3,7 +3,9 @@ package com.devonfw.cobigen.impl.extension;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +47,13 @@ public class ClassServiceLoader {
      *            determining the classpath to look at
      */
     public static void lookupServices(ClassLoader classLoader) {
+        LOG.info("Searching for plug-ins at classloader {}", classLoader);
+        if (LOG.isDebugEnabled()) {
+            if (classLoader instanceof URLClassLoader) {
+                LOG.debug("URL Classloader with URLs:");
+                Arrays.stream(((URLClassLoader) classLoader).getURLs()).forEach(url -> LOG.debug("  * {}", url));
+            }
+        }
         generatorPluginActivatorClasses.clear();
         templateEngineClasses.clear();
         LOG.info("Loading plug-in activators...");

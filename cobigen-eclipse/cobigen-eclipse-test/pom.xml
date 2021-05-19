@@ -191,35 +191,5 @@
         </repository>
       </repositories>
     </profile>
-    <profile>
-      <id>p2-build-ci</id>
-      <repositories>
-        <repository>
-          <id>cobigen-plugins-ci</id>
-          <url>https://dl.bintray.com/devonfw/cobigen.p2.ci/</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-    <profile>
-      <id>p2-build-experimental</id>
-      <repositories>
-        <repository>
-          <id>cobigen-plugins-experimental</id>
-          <url>https://dl.bintray.com/devonfw/cobigen.p2.experimental/</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-    <profile>
-      <id>p2-build-stable</id>
-      <repositories>
-        <repository>
-          <id>cobigen-plugins-stable</id>
-          <url>https://dl.bintray.com/devonfw/cobigen.p2/</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
   </profiles>
 </project>

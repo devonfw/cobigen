@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.cli.commandtests;
+package com.devonfw.cobigen.cli.systemtest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -34,7 +33,6 @@ public class GenerateCommandTest extends AbstractCliTest {
      * generate the folders to.
      */
     @Test
-    @Ignore
     public void generateFromEntityTest() {
         File baseProject = new File(testFileRootPath + "localmavenproject/maven.project/core/");
 
@@ -81,7 +79,6 @@ public class GenerateCommandTest extends AbstractCliTest {
      * in the output root path passed.
      */
     @Test
-    @Ignore
     public void generateFromEntityWithOutputRootPathTest() {
         File outputRootPath = new File(testFileRootPath + "generatedcode/root");
 
@@ -113,7 +110,6 @@ public class GenerateCommandTest extends AbstractCliTest {
      *             test fails
      */
     @Test
-    @Ignore
     public void generateFromOpenApiTest() throws IOException {
 
         // Prepare
@@ -188,7 +184,6 @@ public class GenerateCommandTest extends AbstractCliTest {
      *             test fails
      */
     @Test
-    @Ignore
     public void generateFromMultipleTypeInputTest() throws IOException {
         File outputRootFile = tempFolder.newFolder();
         File openApiFile = new File(testFileRootPath + "openAPI.yml");

@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.cli.commandtests;
+package com.devonfw.cobigen.cli.systemtest;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -17,8 +18,6 @@ import org.junit.rules.TemporaryFolder;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.cli.commands.CobiGenCommand;
 import com.devonfw.cobigen.cli.commands.GenerateCommand;
-import com.devonfw.cobigen.cli.constants.MavenConstants;
-import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 
 import picocli.CommandLine;
 
@@ -29,6 +28,7 @@ public class AbstractCliTest {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
+    /** Current home directory */
     protected Path currentHome;
 
     /** Temporary configuration home location */
@@ -48,16 +48,6 @@ public class AbstractCliTest {
         // make sure, that the templates project has been compiled. If not, throw an assertion
         // this is needed to run the latest templates properly from the folder
         assertThat(devTemplatesPath.resolve("target").resolve("classes")).exists();
-    }
-
-    @Before
-    public void cleanupBootstrapFiles() throws URISyntaxException, IOException {
-
-        File cliLocation = CobiGenUtils.getCliLocation();
-        Path classPathFile = cliLocation.toPath().resolve(MavenConstants.CLASSPATH_OUTPUT_FILE);
-        Files.deleteIfExists(classPathFile);
-        Path pomFile = cliLocation.toPath().resolve(MavenConstants.POM);
-        Files.deleteIfExists(pomFile);
     }
 
     @Before
@@ -89,7 +79,9 @@ public class AbstractCliTest {
     protected void execute(String[] args) {
         try {
             withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).execute(() -> {
-                int exitCode = commandLine.execute(args);
+                String[] debugArgs = Arrays.copyOf(args, args.length + 1);
+                debugArgs[args.length] = "-v";
+                int exitCode = commandLine.execute(debugArgs);
                 assertThat(exitCode).isEqualTo(0);
             });
         } catch (Exception e) {

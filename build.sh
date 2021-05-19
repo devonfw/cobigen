@@ -24,7 +24,7 @@ fi
 
 if [[ "$*" == *debug* ]]
 then
-    DEBUG="-DtrimStackTrace=false" # set to false to see hidden exceptions
+    DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true" # set to false to see hidden exceptions
     echo "  * Debug On"
 else
 	# the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
@@ -57,12 +57,14 @@ log_step "Build & Test Core Plugins"
 mvn install -f cobigen-plugins $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE
 
 log_step "Build Core Plugins - P2 Update Sites"
-mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE
-mvn p2:site install -DskipTests -f cobigen-plugins -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE
+mvn package bundle:bundle -Pp2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=test
+mvn install bundle:bundle -Pp2-bundle -DskipTests p2:site -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=test
+#mvn deploy -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=test
 
 log_step "Package & Run E2E Tests"
 mvn test -f cobigen/cobigen-core-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-cli $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-maven $ENABLED_TEST $DEBUG $BATCH_MODE
-mvn install -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE -Dtycho.debug.resolver=true
+mvn install -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE
+#mvn deploy -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE -Dupdatesite.repository=test --projects cobigen-eclipse/cobigen-eclipse-updatesite

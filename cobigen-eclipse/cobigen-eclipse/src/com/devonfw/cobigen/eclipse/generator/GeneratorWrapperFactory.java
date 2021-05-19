@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.eclipse.generator;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -250,7 +249,7 @@ public class GeneratorWrapperFactory {
             }
         } catch (CoreException e) {
             throw new GeneratorCreationException("An eclipse internal exception occurred", e);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             throw new GeneratorCreationException(
                 "Configuration source could not be read.\nIf you were updating templates, it may mean"
                     + " that you have no internet connection.",

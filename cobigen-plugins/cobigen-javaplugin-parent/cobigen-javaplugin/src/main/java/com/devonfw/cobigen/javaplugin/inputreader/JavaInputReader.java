@@ -54,6 +54,11 @@ public class JavaInputReader implements InputReader {
             // check whether the same Java class has been provided as parser as well as reflection object
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
+                LOG.debug("Current classloader {}", Class.class.getClassLoader());
+                LOG.debug("Input 1 classloader {} -> {}", inputArr[0].getClass(),
+                    inputArr[0].getClass().getClassLoader());
+                LOG.debug("Input 2 classloader {} -> {}", inputArr[1].getClass(),
+                    inputArr[1].getClass().getClassLoader());
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
                     if (((JavaClass) inputArr[0]).getFullyQualifiedName()
                         .equals(((Class<?>) inputArr[1]).getCanonicalName())) {
@@ -72,7 +77,11 @@ public class JavaInputReader implements InputReader {
                             ((JavaClass) inputArr[1]).getFullyQualifiedName(),
                             ((Class<?>) inputArr[0]).getCanonicalName());
                     }
+                } else {
+                    LOG.debug("No valid input. 0: {} / 1: {}", inputArr[0].getClass(), inputArr[1].getClass());
                 }
+            } else {
+                LOG.debug("No valid input. Unknown array length {}", inputArr.length);
             }
         }
         return false;

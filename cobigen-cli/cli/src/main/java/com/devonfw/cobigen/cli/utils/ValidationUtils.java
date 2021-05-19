@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.cli.CobiGenCLI;
+import com.devonfw.cobigen.cli.constants.MavenConstants;
 
 /**
  * Utilities class for validating user's input and generation
@@ -66,7 +67,7 @@ public final class ValidationUtils {
             if (lastDot > 0) {
                 basename = filename.substring(0, lastDot);
                 pomFile = new File(source.getParent(), basename + '.' + POM_EXTENSION);
-                if (pomFile.exists() || pomFile.toString().contains("pom.xml")) {
+                if (pomFile.exists() || pomFile.toString().contains(MavenConstants.POM)) {
                     LOG.info("This is a valid maven project project ");
                     return pomFile;
 
@@ -98,8 +99,7 @@ public final class ValidationUtils {
         if (folder == null) {
             return null;
         }
-        String POM_XML = "pom.xml";
-        File pomFile = new File(folder, POM_XML);
+        File pomFile = new File(folder, MavenConstants.POM);
         if (pomFile.exists()) {
             return pomFile;
         }
