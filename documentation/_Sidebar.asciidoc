@@ -34,7 +34,7 @@
 * link:cobigen-openapiplugin[OpenApi Plug-in]
 
 === CobiGen Development
-* link:mgmt_ide-setup-oomph[IDE-Setup with Oomph]
+* link:mgmt_ide-setup[Dev IDE Setup]
 * link:mgmt__release_and_deployment_process[Release and Deployment Process]
 * link:cobigen-documentation[Maintaining Documentation]
 * link:mgmt_dependency-and-license-tracking[License tracking of dependencies]
