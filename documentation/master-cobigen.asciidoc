@@ -71,6 +71,8 @@ include::cobigen-tsplugin.asciidoc[leveloffset=3]
 
 include::cobigen-htmlplugin.asciidoc[leveloffset=3]
 
+include::cobigen-openapiplugin.asciidoc[leveloffset=3]
+
 == CobiGen CLI
 
 include::howto_Cobigen-CLI-generation.asciidoc[leveloffset=2]
@@ -89,6 +91,8 @@ include::cobigen-eclipse_logging.asciidoc[leveloffset=2]
 
 == How to
 
+include::howto_EA-client-generation.asciidoc[leveloffset=2]
+
 include::howto_angular-client-generation.asciidoc[leveloffset=2]
 
 include::howto_ionic-client-generation.asciidoc[leveloffset=2]
@@ -101,11 +105,9 @@ include::howto_devon4net.asciidoc[leveloffset=2]
 
 include::howto_update_CobiGen.asciidoc[leveloffset=2]
 
-include::howto_Release-creation.asciidoc[leveloffset=2]
+include::howto-Cobigen-CLI-generation.asciidoc[leveloffset=2]
 
-// include::howto-devonfw-CobiGen.asciidoc[leveloffset=2]
-
-include::howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[leveloffset=2]
+//include::howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[leveloffset=2]
 
 include::howto_enable_composite_primary_keys_in_entity.asciidoc[leveloffset=2]
 
