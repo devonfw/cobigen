@@ -46,6 +46,10 @@ public class MessagesConstants {
     public static final String VERBOSE_OPTION_DESCRIPTION =
         "If this options is enabled, we will print also debug messages";
 
+    /** Message constant: description of the templates path configuration */
+    public static final String TEMPLATE_PATH_DESCRIPTION = "Location of the templates project. Can be either a project "
+        + "containing the templates and utils like CobiGen_Templates or a jar file with the compiled templates and utils.";
+
     /**
      * Message constant: description of the increments option
      */

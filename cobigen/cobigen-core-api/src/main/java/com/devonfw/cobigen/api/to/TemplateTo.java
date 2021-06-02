@@ -6,9 +6,6 @@ public class TemplateTo extends GenerableArtifact {
     /** Determines the required strategy to merge the template */
     private String mergeStrategy;
 
-    /** Trigger ID, the template has been resolved from. */
-    private String triggerId;
-
     /**
      * Forces conflicting contents (In case of {@code #mergeStrategy == null}) or the whole file to be
      * overwritten.
@@ -26,9 +23,8 @@ public class TemplateTo extends GenerableArtifact {
      *            Trigger ID, the template has been resolved from.
      */
     public TemplateTo(String id, String mergeStrategy, String triggerId) {
-        super(id);
+        super(id, triggerId);
         this.mergeStrategy = mergeStrategy;
-        this.triggerId = triggerId;
     }
 
     /**
@@ -37,14 +33,6 @@ public class TemplateTo extends GenerableArtifact {
      */
     public String getMergeStrategy() {
         return mergeStrategy;
-    }
-
-    /**
-     * Returns the trigger's id this template is assigned to
-     * @return the trigger's id
-     */
-    public String getTriggerId() {
-        return triggerId;
     }
 
     /**

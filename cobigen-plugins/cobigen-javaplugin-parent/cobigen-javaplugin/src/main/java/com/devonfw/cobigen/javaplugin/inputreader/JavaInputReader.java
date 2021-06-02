@@ -54,7 +54,7 @@ public class JavaInputReader implements InputReader {
             // check whether the same Java class has been provided as parser as well as reflection object
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
-                LOG.debug("Current classloader {}", Class.class.getClassLoader());
+                LOG.debug("Current classloader {}", JavaClass.class.getClassLoader());
                 LOG.debug("Input 1 classloader {} -> {}", inputArr[0].getClass(),
                     inputArr[0].getClass().getClassLoader());
                 LOG.debug("Input 2 classloader {} -> {}", inputArr[1].getClass(),
@@ -389,7 +389,8 @@ public class JavaInputReader implements InputReader {
                 if (packageName == null && addArg instanceof String) {
                     packageName = (String) addArg;
                 } else if (classLoader == null && addArg instanceof ClassLoader) {
-                    classLoader = (ClassLoader) addArg;
+                    classLoader =
+                        new CompositeClassLoader(JavaInputReader.class.getClassLoader(), (ClassLoader) addArg);
                 }
             }
             if (packageName == null || classLoader == null) {
@@ -406,7 +407,8 @@ public class JavaInputReader implements InputReader {
                 if (clazz == null && addArg instanceof Class) {
                     clazz = (Class<?>) addArg;
                 } else if (classLoader == null && addArg instanceof ClassLoader) {
-                    classLoader = (ClassLoader) addArg;
+                    classLoader =
+                        new CompositeClassLoader(JavaInputReader.class.getClassLoader(), (ClassLoader) addArg);
                 }
             }
             try (BufferedReader pathReader = new BufferedReader(new FileReader(path.toFile()))) {

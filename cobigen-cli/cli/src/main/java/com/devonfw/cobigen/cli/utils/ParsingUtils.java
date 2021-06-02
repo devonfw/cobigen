@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.mmm.code.api.CodeName;
@@ -190,7 +190,7 @@ public class ParsingUtils {
      * @return true only if the parsed file exists, false otherwise
      *
      */
-    public static Boolean parseRelativePath(ArrayList<File> inputFiles, File inputFile, int index) {
+    public static boolean parseRelativePath(List<File> inputFiles, File inputFile, int index) {
         try {
             Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
 

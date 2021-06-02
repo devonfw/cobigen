@@ -38,6 +38,7 @@ public class ClassServiceLoader {
     private static Set<Class<? extends TextTemplateEngine>> templateEngineClasses = new HashSet<>();
 
     static {
+        LOG.debug("Initiating CobiGen");
         lookupServices(Thread.currentThread().getContextClassLoader());
     }
 

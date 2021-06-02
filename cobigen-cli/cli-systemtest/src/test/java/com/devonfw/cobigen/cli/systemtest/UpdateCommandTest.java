@@ -7,24 +7,25 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.devonfw.cobigen.cli.CobiGenCLI;
-import com.devonfw.cobigen.cli.constants.MavenConstants;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 /**
  * Tests the usage of the update command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
@@ -48,44 +49,15 @@ public class UpdateCommandTest extends AbstractCliTest {
 
     /**
      * Sets of the correct CLI root path.
-     * @throws URISyntaxException
-     *             failing
+     * @throws Exception
+     *             execution failed
      */
     @Before
-    public void setCliPath() {
-        originalPom = CobiGenUtils.extractArtificialPom();
-    }
-
-    /**
-     * Replaces the original pom with and outdated one.
-     * @throws IOException
-     *             test fails
-     */
-    @Before
-    public void replacePom() throws IOException {
-
-        File tmpPom = new File(Paths.get(testFileRootPath, tmpPomFileName).toString());
-
-        // Storing original pom
-        FileUtils.copyFile(originalPom, tmpPom);
-        // Replacing the original pom with an outdated one
-        File outdatedPom = new File(Paths.get(testFileRootPath, outdatedPomFileName).toString());
-        FileUtils.copyFile(outdatedPom, originalPom);
-
-    }
-
-    /**
-     * Restores the original pom.
-     * @throws IOException
-     *             test fails
-     */
-    @After
-    public void restorePom() throws IOException {
-        File tmpPom = new File(Paths.get(testFileRootPath, tmpPomFileName).toString());
-
-        // Restoring original pom
-        FileUtils.copyFile(tmpPom, originalPom);
-        FileUtils.deleteQuietly(tmpPom);
+    public void setCliPath() throws Exception {
+        SystemLambda.withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString())
+            .execute(() -> {
+                originalPom = CobiGenUtils.extractArtificialPom();
+            });
     }
 
     /**
@@ -113,24 +85,24 @@ public class UpdateCommandTest extends AbstractCliTest {
 
     /**
      * Extracts the plugin's version from the given pom file.
+     * @param pomFile
+     *            to be used
      * @param artifactId
      *            plugin id
      * @return the plugin version
+     * @throws Exception
+     *             test fails
      */
-    private String getArtifactVersion(File pomFile, String artifactId) {
+    private String getArtifactVersion(File pomFile, String artifactId) throws Exception {
         String version = null;
 
         List<Dependency> dependencies;
-        try {
-            dependencies = readPom(pomFile);
-            // Get plugin version
-            Optional<Dependency> matchingObject =
-                dependencies.stream().filter(p -> p.getArtifactId().equals(artifactId)).findFirst();
+        dependencies = readPom(pomFile);
+        // Get plugin version
+        Optional<Dependency> matchingObject =
+            dependencies.stream().filter(p -> p.getArtifactId().equals(artifactId)).findFirst();
 
-            version = matchingObject.get().getVersion();
-        } catch (IOException | XmlPullParserException e) {
-            e.printStackTrace();
-        }
+        version = matchingObject.get().getVersion();
         return version;
     }
 
@@ -138,24 +110,48 @@ public class UpdateCommandTest extends AbstractCliTest {
      * Plugin update test. The original pom is replaced with an outdated one that needs to updated. The
      * outdated pom gets updated. The tests checks whether the updating process was successful by comparing
      * the versions of the updated plugins.
+     * @throws Exception
+     *             test fails
      */
     @Test
-    public void pluginUpdateTest() {
+    public void pluginUpdateTest() throws Exception {
         String pluginId = "tsplugin";
-
+        setMavenDependencyVersion(originalPom, pluginId, "1.0.0");
         String oldVersion = getArtifactVersion(originalPom, pluginId);
-
         assertNotNull(oldVersion);
 
         String args[] = new String[2];
         args[0] = "update";
         args[1] = "--all";
-        CobiGenCLI.main(args);
+        execute(args, false);
 
-        File updatedPom = CobiGenUtils.getCliHomePath().resolve(MavenConstants.POM).toFile();
+        File updatedPom = currentHome.resolve(CobiGenUtils.CLI_HOME).resolve(MavenConstants.POM).toFile();
         String newVersion = getArtifactVersion(updatedPom, pluginId);
 
         assertThat(newVersion).isNotNull();
         assertThat(oldVersion).isNotEqualTo(newVersion);
+    }
+
+    /**
+     * Write new version to the specific pluginid in maven to pom
+     * @param pom
+     *            to change
+     * @param pluginId
+     *            plugin id to change the version for
+     * @param versionString
+     *            the new version string to write
+     * @throws IOException
+     *             if it fails
+     */
+    private void setMavenDependencyVersion(File pom, String pluginId, String versionString) throws IOException {
+        Pattern p = Pattern.compile(
+            "<artifactId>" + pluginId + "</artifactId>\\s+<version>([0-9a-zA-Z\\-\\.]+)</version>", Pattern.MULTILINE);
+        String fileContents = FileUtils.readFileToString(pom, Charset.forName("UTF-8"));
+        Matcher m = p.matcher(fileContents);
+        if (m.find()) {
+            String newFileContents =
+                new StringBuilder(fileContents).replace(m.start(1), m.end(1), versionString).toString();
+            FileUtils.writeStringToFile(pom, newFileContents, Charset.forName("UTF-8"));
+        }
     }
 }

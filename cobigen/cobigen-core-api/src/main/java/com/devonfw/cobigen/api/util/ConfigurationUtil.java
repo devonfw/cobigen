@@ -91,23 +91,36 @@ public class ConfigurationUtil {
      */
     private static URI findTemplates(Path home) {
         Path templatesPath = ConfigurationUtil.getTemplatesFolderPath(home);
-        if (templatesPath == null) {
-            return null;
-        }
         Path templatesFolderPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
         if (Files.exists(templatesFolderPath)) {
             // use Cobigen_Templates folder
             return templatesFolderPath.toUri();
         } else {
             // use template jar
-            File templateJar = TemplatesJarUtil.getJarFile(false, templatesPath.toFile());
-            if (templateJar != null && Files.exists(templatesPath)) {
-                return templateJar.toURI();
+            Path jarPath = getTemplateJar(templatesPath);
+            if (jarPath != null) {
+                return jarPath.toUri();
             }
         }
-        LOG.info(
-            "Could not find any templates in cobigen home directory {}. Templates should be placed in the subdirectory /templates/CobiGen_Templates or /templates/<name>.jar",
+        LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
             ConfigurationUtil.getCobiGenHomePath());
+
+        TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesPath.toFile());
+        TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesPath.toFile());
+        return getTemplateJar(templatesPath).toUri();
+    }
+
+    /**
+     * @param templatesPath
+     *            the templates cache directory
+     *
+     * @return the path of the templates jar
+     */
+    private static Path getTemplateJar(Path templatesPath) {
+        File templateJar = TemplatesJarUtil.getJarFile(false, templatesPath.toFile());
+        if (templateJar != null && Files.exists(templatesPath)) {
+            return templateJar.toPath();
+        }
         return null;
     }
 

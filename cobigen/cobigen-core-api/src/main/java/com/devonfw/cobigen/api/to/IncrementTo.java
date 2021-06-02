@@ -10,9 +10,6 @@ public class IncrementTo extends GenerableArtifact {
     /** Textual description of the increment. */
     private String description;
 
-    /** Trigger Id, this {@link IncrementTo} was retrieved from */
-    private String triggerId;
-
     /** Increments, which are part of this increment */
     private List<IncrementTo> dependentIncrements = Lists.newLinkedList();
 
@@ -34,10 +31,9 @@ public class IncrementTo extends GenerableArtifact {
      */
     public IncrementTo(String id, String description, String triggerId, List<TemplateTo> templates,
         List<IncrementTo> dependentIncrements) {
-        super(id);
+        super(id, triggerId);
         this.description = description;
         this.templates = templates;
-        this.triggerId = triggerId;
         this.dependentIncrements = dependentIncrements;
     }
 
@@ -47,14 +43,6 @@ public class IncrementTo extends GenerableArtifact {
      */
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Returns the trigger's id the increment is assigned to
-     * @return the trigger's id the increment is assigned to
-     */
-    public String getTriggerId() {
-        return triggerId;
     }
 
     /**

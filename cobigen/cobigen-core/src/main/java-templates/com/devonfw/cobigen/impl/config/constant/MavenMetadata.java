@@ -10,4 +10,7 @@ public class MavenMetadata {
 
     /** Maven version */
     public static final String VERSION = "${project.version}";
+    
+    /** Maven GroupID */
+    public static final String GROUPID = "${project.groupId}";
 }

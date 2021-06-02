@@ -9,7 +9,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 
-import com.devonfw.cobigen.cli.constants.MavenConstants;
+import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 
 import picocli.CommandLine.IVersionProvider;
 
@@ -60,7 +60,7 @@ public class CobiGenVersionProvider implements IVersionProvider {
      */
     private Boolean dependencyShouldBePrinted(String groupId) {
 
-        if (MavenConstants.COBIGEN_GROUPID.equals(groupId)) {
+        if (MavenMetadata.GROUPID.equals(groupId)) {
             return true;
         }
         return false;

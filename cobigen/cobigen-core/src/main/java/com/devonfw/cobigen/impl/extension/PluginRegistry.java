@@ -157,7 +157,8 @@ public class PluginRegistry {
 
         Merger merger = registeredMerger.get(mergeStrategy);
         if (merger == null) {
-            LOG.debug("Trying to find merger for type '{}'", mergeStrategy);
+            LOG.debug("Trying to find merger for type '{}' in {} registered plugins.", mergeStrategy,
+                ClassServiceLoader.getGeneratorPluginActivatorClasses().size());
             for (Class<? extends GeneratorPluginActivator> activatorClass : ClassServiceLoader
                 .getGeneratorPluginActivatorClasses()) {
                 LOG.debug("Checking found plug-in activator '{}'", activatorClass);

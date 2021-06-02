@@ -12,7 +12,6 @@
   </parent>
 
   <properties>
-    <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
     <skip.deployment>false</skip.deployment>
   </properties>
 
@@ -20,30 +19,14 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>${revision}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-api</artifactId>
-      <version>${revision}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core-externalprocess-api</artifactId>
-      <version>${revision}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-test</artifactId>
-      <version>${revision}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>
@@ -58,28 +41,16 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.1.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
       <version>1.6</version>
     </dependency>
-    <!-- We need an agent loader for the JUnit tests in Eclipse -->
-    <dependency>
-      <groupId>com.ea.agentloader</groupId>
-      <artifactId>ea-agent-loader</artifactId>
-      <version>1.0.3</version>
-    </dependency>
     <dependency>
       <groupId>com.google.googlejavaformat</groupId>
       <artifactId>google-java-format</artifactId>
       <version>1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>23.6-jre</version>
     </dependency>
   </dependencies>
 
@@ -119,34 +90,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <!-- Building a Maven project that is used on the tests -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.0.0</version>
-        <executions>
-          <execution>
-            <id>Install test project</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>mvn</executable>
-          <workingDirectory>${maven.test.path}</workingDirectory>
-          <arguments>
-            <argument>install</argument>
-            <!-- https://stackoverflow.com/a/66801171 -->
-            <argument>-Djansi.force=true</argument>
-            <argument>-Djansi.passthrough=true</argument>
-            <argument>-B</argument>
-            <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
-          </arguments>
-        </configuration>
       </plugin>
 
       <!-- Don't create the default jar -->
@@ -202,36 +145,5 @@
         </executions>
       </plugin>
     </plugins>
-
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
-          itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <versionRange>[1.6.0,)</versionRange>
-                    <goals>
-                      <goal>exec</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 </project>

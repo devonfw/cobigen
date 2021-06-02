@@ -38,7 +38,7 @@ public class CobiGenFactory {
 
         Path configFolder = FileSystemUtil.createFileSystemDependentPath(configFileOrFolder);
 
-        ConfigurationHolder configurationHolder = new ConfigurationHolder(configFolder);
+        ConfigurationHolder configurationHolder = new ConfigurationHolder(configFolder, configFileOrFolder);
         BeanFactory beanFactory = new BeanFactory();
         beanFactory.addManuallyInitializedBean(configurationHolder);
         CobiGen createBean = beanFactory.createBean(CobiGen.class);

@@ -1,15 +1,15 @@
 package com.devonfw.cobigen.cli.utils;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.cli.CobiGenCLI;
-import com.devonfw.cobigen.cli.constants.MavenConstants;
 
 /**
  * Utilities class for validating user's input and generation
@@ -70,7 +70,6 @@ public final class ValidationUtils {
                 if (pomFile.exists() || pomFile.toString().contains(MavenConstants.POM)) {
                     LOG.info("This is a valid maven project project ");
                     return pomFile;
-
                 }
             }
             int lastSlash = filename.indexOf('-');
@@ -107,26 +106,6 @@ public final class ValidationUtils {
     }
 
     /**
-     * Checks whether all the user input files are of the same type
-     * @param inputFiles
-     *            user input files
-     * @return true when all input files are equal
-     */
-    public static Boolean areInputFilesSameType(ArrayList<File> inputFiles) {
-
-        for (int i = 0; i < inputFiles.size() - 1; i++) {
-            String extensionCurrentFile = inputFiles.get(i).getName().toLowerCase();
-            String extensionNextFile = inputFiles.get(i + 1).getName().toLowerCase();
-
-            if (extensionCurrentFile.equals(extensionNextFile) == false) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Checks whether the current output root path is valid. It can be either null because it is an optional
      * parameter or either a folder that exists.
      * @param outputRootPath
@@ -134,7 +113,7 @@ public final class ValidationUtils {
      *
      * @return true if it is a valid output root path
      */
-    public static Boolean isOutputRootPathValid(File outputRootPath) {
+    public static boolean isOutputRootPathValid(File outputRootPath) {
         // As outputRootPath is an optional parameter, it means that it can be null
         if (outputRootPath == null || outputRootPath.exists()) {
             return true;
@@ -182,7 +161,7 @@ public final class ValidationUtils {
      * @param isOpenApiInput
      *            true when input file is OpenAPI
      */
-    public static void printNoTriggersMatched(File inputFile, Boolean isJavaInput, Boolean isOpenApiInput) {
+    public static void printNoTriggersMatched(File inputFile, boolean isJavaInput, boolean isOpenApiInput) {
         LOG.error(
             "Your input file '{}' is not valid as input for any generation purpose. It does not match any trigger.",
             inputFile.getName());
@@ -193,7 +172,7 @@ public final class ValidationUtils {
             LOG.error("Validate your OpenAPI specification, check that is following 3.0 standard. "
                 + "More info here https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage");
         }
-        throw new IllegalArgumentException("Your input file is invalid");
+        throw new InputMismatchException("Your input file is invalid.");
     }
 
 }

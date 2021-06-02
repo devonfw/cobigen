@@ -42,7 +42,11 @@ public class ExtractTemplatesUtil {
     public static void extractTemplates(Path extractTo, boolean forceOverride) throws DirectoryNotEmptyException {
         Objects.requireNonNull(extractTo, "Target path cannot be null");
         if (!Files.isDirectory(extractTo)) {
-            throw new CobiGenRuntimeException(extractTo + " is not a directory");
+            try {
+                Files.createDirectories(extractTo);
+            } catch (IOException e) {
+                throw new CobiGenRuntimeException("Unable to create directory " + extractTo);
+            }
         }
         try {
             if (!isEmpty(extractTo) && !forceOverride) {

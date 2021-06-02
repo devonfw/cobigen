@@ -271,7 +271,7 @@ public class ExternalProcess {
         int currentTry = 0;
         while (currentTry < 10) {
             try {
-                process = new ProcessExecutor().command(filePath, String.valueOf(port))
+                process = new ProcessExecutor().command(filePath, String.valueOf(port)).destroyOnExit()
                     .redirectError(
                         Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
                     .redirectOutput(

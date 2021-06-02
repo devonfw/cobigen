@@ -4,26 +4,35 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.file.FileVisitResult;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.ProcessResult;
+import org.zeroturnaround.exec.StartedProcess;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenCancellationException;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -37,6 +46,8 @@ import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.util.MavenUtil;
+import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.entity.Template;
@@ -53,6 +64,7 @@ import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
 import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
+import com.google.common.hash.Hashing;
 
 /**
  * Generation processor. Caches calculations and thus should be newly created on each request.
@@ -130,16 +142,29 @@ public class GenerationProcessorImpl implements GenerationProcessor {
 
     @Override
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, ClassLoader classLoader, Map<String, Object> rawModel,
-        BiConsumer<String, Integer> progressCallback, Path templateFolderPath) {
+        Path targetRootPath, boolean forceOverride, Map<String, Object> rawModel,
+        BiConsumer<String, Integer> progressCallback) {
         InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
         List<Class<?>> logicClasses = null;
 
-        if (templateFolderPath != null || classLoader != null) {
+        // only implicit dependency to javaplugin to lower classloader complexity
+        ClassLoader inputProjectClassLoader = null;
+        if (input instanceof Class) {
+            inputProjectClassLoader = ((Class<?>) input).getClassLoader();
+        } else if (input instanceof Object[]) {
+            for (Object obj : (Object[]) input) {
+                if (obj instanceof Class) {
+                    inputProjectClassLoader = ((Class<?>) obj).getClassLoader();
+                }
+            }
+        }
 
+        Path templateConfigPath = Paths.get(configurationHolder.getConfigurationLocation());
+        inputProjectClassLoader = prependTemplatesClassloader(templateConfigPath, inputProjectClassLoader);
+        if (inputProjectClassLoader != null) {
             try {
-                logicClasses = TemplatesClassloaderUtil.resolveUtilClasses(templateFolderPath, classLoader);
+                logicClasses = TemplatesClassloaderUtil.resolveUtilClasses(templateConfigPath, inputProjectClassLoader);
             } catch (IOException e) {
                 LOG.error("An IOException occured while resolving utility classes!", e);
             }
@@ -163,7 +188,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         this.targetRootPath = targetRootPath;
         generationReport = new GenerationReportTo();
 
-        progressCallback.accept("load Templates", 50);
+        progressCallback.accept("Load Templates", 50);
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
         // generate
@@ -195,6 +220,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         }
         if (generationReport.isCancelled()) {
             generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
+            tmpTargetRootPath.toFile().deleteOnExit();
             // do nothing if cancelled
         } else if (generationReport.isSuccessful()) {
             try {
@@ -204,7 +230,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                         StandardCopyOption.REPLACE_EXISTING);
                     generationReport.addGeneratedFile(origToTmpFile.getKey().toPath());
                 }
-                deleteTemporaryFiles();
+                tmpTargetRootPath.toFile().deleteOnExit();
             } catch (IOException e) {
                 generationReport.setTemporaryWorkingDirectory(tmpTargetRootPath);
                 throw new CobiGenRuntimeException("Could not copy generated files to target location!", e);
@@ -219,25 +245,115 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     }
 
     /**
-     * Delete the temporary files in {@link #tmpTargetRootPath}.
+     * Prepend the classloader to get from the template folder to the classloader passed or create a new one.
+     * This method will even make sure the code is compiled, if the templateFolder does not point to a jar,
+     * but maven project
+     * @param configLocation
+     *            the template folder path or jar
+     * @param inputProjectClassLoader
+     *            an existing classloader or null
+     * @return the combined classloader for the templates with classLoader argument as parent or null if both
+     *         arguments passed as null
      */
-    private void deleteTemporaryFiles() {
-        try {
-            Files.walkFileTree(tmpTargetRootPath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
-                    return FileVisitResult.CONTINUE;
+    private ClassLoader prependTemplatesClassloader(Path configLocation, ClassLoader inputProjectClassLoader) {
+        ClassLoader combinedClassLoader =
+            inputProjectClassLoader != null ? inputProjectClassLoader : Thread.currentThread().getContextClassLoader();
+        if (configLocation != null) {
+
+            Path pomFile = configurationHolder.getConfigurationPath().resolve("pom.xml");
+            Path cpCacheFile = null;
+            try {
+                if (Files.exists(pomFile)) {
+                    LOG.debug("Found templates to be configured by maven. Building classpath...");
+
+                    String pomFileHash;
+                    try {
+                        pomFileHash = com.google.common.io.Files.asByteSource(pomFile.toFile())
+                            .hash(Hashing.murmur3_128()).toString();
+                    } catch (IOException e) {
+                        LOG.warn("Could not calculate hash of {}", pomFile.toUri());
+                        pomFileHash = "";
+                    }
+
+                    if (configurationHolder.isJarConfig()) {
+                        cpCacheFile = configLocation
+                            .resolveSibling(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+                    } else {
+                        cpCacheFile =
+                            configLocation.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+                    }
+
+                    if (!Files.exists(cpCacheFile)) {
+                        MavenUtil.cacheMavenClassPath(pomFile, cpCacheFile);
+                    }
+
+                    // Read classPath.txt file and add to the class path all dependencies
+                    URL[] classpathEntries =
+                        Files.lines(cpCacheFile).flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
+                            try {
+                                return new File(path).toURI().toURL();
+                            } catch (MalformedURLException e) {
+                                LOG.error("URL of classpath entry {} is malformed", path, e);
+                            }
+                            return null;
+                        }).toArray(size -> new URL[size]);
+                    combinedClassLoader = new URLClassLoader(classpathEntries, combinedClassLoader);
                 }
 
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
+                // prepend jar/compiled resources as well
+                URL[] urls;
+                if (Files.isDirectory(configLocation) && Files.exists(pomFile)) {
+                    compileTemplateUtils(configLocation);
+                    urls = new URL[] { configLocation.resolve("target").resolve("classes").toUri().toURL() };
+                } else {
+                    urls = new URL[] { configLocation.toUri().toURL() };
                 }
-            });
-        } catch (IOException e) {
-            LOG.warn("Temporary files could not be deleted in path " + tmpTargetRootPath, e);
+                combinedClassLoader = new URLClassLoader(urls, combinedClassLoader);
+                return combinedClassLoader;
+            } catch (MalformedURLException e) {
+                throw new CobiGenRuntimeException("Invalid Path", e);
+            } catch (IOException e) {
+                throw new CobiGenRuntimeException("Unable to read " + cpCacheFile, e);
+            }
+        } else {
+            combinedClassLoader = inputProjectClassLoader;
+        }
+        return combinedClassLoader;
+    }
+
+    /**
+     * Compile a template folder by executing MVN
+     * @param templateFolder
+     *            the cobigen template folder
+     */
+    private void compileTemplateUtils(Path templateFolder) {
+        LOG.debug("Build templates folder {}", templateFolder);
+        try {
+            StartedProcess process = new ProcessExecutor().destroyOnExit()
+                .command(SystemUtil.determineMvnPath(), "compile",
+                    // https://stackoverflow.com/a/66801171
+                    "-Djansi.force=true", "-Djansi.passthrough=true", "-B",
+                    "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn", "-q",
+                    "-f", templateFolder.resolve("pom.xml").toString())
+                .redirectError(
+                    Slf4jStream
+                        .of(LoggerFactory
+                            .getLogger(GenerationProcessorImpl.class.getName() + "." + "mvn-compile-templates"))
+                        .asError())
+                .redirectOutput(
+                    Slf4jStream
+                        .of(LoggerFactory
+                            .getLogger(GenerationProcessorImpl.class.getName() + "." + "mvn-compile-templates"))
+                        .asDebug())
+                .start();
+
+            Future<ProcessResult> future = process.getFuture();
+            ProcessResult processResult = future.get();
+            if (processResult.getExitValue() != 0) {
+                throw new CobiGenRuntimeException("Unable to compile template project " + templateFolder);
+            }
+        } catch (IOException | InterruptedException | ExecutionException e) {
+            throw new CobiGenRuntimeException("Unable to compile template project " + templateFolder);
         }
     }
 

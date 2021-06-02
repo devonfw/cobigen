@@ -136,6 +136,15 @@ public class OpenAPIInputReader implements InputReader {
             }
 
             inputs.addAll(extractComponentsFromPaths(paths, astOpenApi));
+            List<EntityDef> entityDefs = new ArrayList<>();
+            for (Object obj : inputs) {
+                if (obj instanceof EntityDef) {
+                    entityDefs.add((EntityDef) obj);
+                }
+            }
+            for (EntityDef entityDef : entityDefs) {
+                entityDef.setAllEntityDefs(entityDefs);
+            }
         }
         return inputs;
     }

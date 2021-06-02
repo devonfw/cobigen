@@ -25,18 +25,13 @@ public interface GenerationProcessor {
      *            if <code>true</code> and the destination path is already existent, the contents will be
      *            overwritten by the generated ones iff there is no merge strategy defined by the templates
      *            configuration. (default: {@code false})
-     * @param classLoader
-     *            a {@link ClassLoader} provided by each plugin, containing the archive to load template
-     *            utility classes from
      * @param rawModel
      *            externally adapted model to be used for generation.
      * @param progressCallback
      *            expects the progress in percent as Integer
-     * @param templateFolderPath
-     *            Path to load template utility classes from (root path of CobiGen templates)
      * @return {@link GenerationReportTo the GenerationReport}
      */
     public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-        Path targetRootPath, boolean forceOverride, ClassLoader classLoader, Map<String, Object> rawModel,
-        BiConsumer<String, Integer> progressCallback, Path templateFolderPath);
+        Path targetRootPath, boolean forceOverride, Map<String, Object> rawModel,
+        BiConsumer<String, Integer> progressCallback);
 }

@@ -12,31 +12,26 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.ProcessResult;
-import org.zeroturnaround.exec.StartedProcess;
-import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.InputInterpreter;
+import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.api.util.ConfigurationUtil;
-import com.devonfw.cobigen.api.util.SystemUtil;
+import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
-import com.devonfw.cobigen.cli.constants.MavenConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.ClassServiceLoader;
 import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 
 /**
  * Utilities class for CobiGen related operations. For instance, it creates a new CobiGen instance and
@@ -45,39 +40,54 @@ import com.google.common.base.Charsets;
 public class CobiGenUtils {
 
     /**
+     * CLI home folder for pom.xml configuration
+     */
+    public static final String CLI_HOME = "cli-config";
+
+    /**
      * Logger instance for the CLI
      */
     private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
      * Registers CobiGen plug-ins and instantiates CobiGen
+     * @param templatesProject
+     *            the templates project or jar
      * @return object of CobiGen
      */
-    public static CobiGen initializeCobiGen() {
+    public static CobiGen initializeCobiGen(Path templatesProject) {
         registerPlugins();
-        return CobiGenFactory.create();
+        return CobiGenFactory.create(templatesProject.toUri());
     }
 
     /**
      * @return the home path of the CLI
      */
     public static Path getCliHomePath() {
-        return ConfigurationUtil.getCobiGenHomePath().resolve("cli");
+        return ConfigurationUtil.getCobiGenHomePath().resolve(CLI_HOME);
     }
 
     /**
      * Registers the given different CobiGen plug-ins by building an artificial POM extracted next to the CLI
      * location and then adding the needed URLs to the class loader.
+     * @return the classloader created for registering plugins
      */
-    public static void registerPlugins() {
+    public static ClassLoader registerPlugins() {
 
         Path rootCLIPath = getCliHomePath();
         File pomFile = extractArtificialPom();
-        Path cpFile = rootCLIPath.resolve(MavenConstants.CLASSPATH_OUTPUT_FILE);
-        if (!Files.exists(cpFile)) {
-            buildCobiGenDependencies(pomFile);
+        String pomFileHash;
+        try {
+            pomFileHash = com.google.common.io.Files.asByteSource(pomFile).hash(Hashing.murmur3_128()).toString();
+        } catch (IOException e) {
+            LOG.warn("Could not calculate hash of {}", pomFile.getAbsolutePath());
+            pomFileHash = "";
         }
+        Path cpFile = rootCLIPath.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
 
+        if (!Files.exists(cpFile)) {
+            MavenUtil.cacheMavenClassPath(pomFile.toPath(), cpFile);
+        }
         // Read classPath.txt file and add to the class path all dependencies
         try {
             URL[] classpathEntries = Files.lines(cpFile).flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
@@ -91,44 +101,9 @@ public class CobiGenUtils {
             URLClassLoader cobigenClassLoader =
                 new URLClassLoader(classpathEntries, Thread.currentThread().getContextClassLoader());
             ClassServiceLoader.lookupServices(cobigenClassLoader);
+            return cobigenClassLoader;
         } catch (IOException e) {
             throw new CobiGenRuntimeException("Unable to read " + cpFile, e);
-        }
-    }
-
-    /**
-     * Executes a Maven class path build command which will download all the transitive dependencies needed
-     * for the CLI
-     * @param pomFile
-     *            POM file that defines the needed CobiGen dependencies to build
-     */
-    private static void buildCobiGenDependencies(File pomFile) {
-        LOG.info(
-            "As this is your first execution of the CLI, we are going to download the needed dependencies. Please be patient...");
-        try {
-            StartedProcess process = new ProcessExecutor()
-                .command(SystemUtil.determineMvnPath(), "dependency:build-classpath",
-                    // https://stackoverflow.com/a/66801171
-                    "-Djansi.force=true", "-Djansi.passthrough=true", "-B",
-                    "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn",
-                    "-Dmdep.outputFile=" + MavenConstants.CLASSPATH_OUTPUT_FILE, "-q", "-f", pomFile.getCanonicalPath())
-                .redirectError(
-                    Slf4jStream.of(LoggerFactory.getLogger(CobiGenUtils.class.getName() + "." + "dep-build")).asError())
-                .redirectOutput(
-                    Slf4jStream.of(LoggerFactory.getLogger(CobiGenUtils.class.getName() + "." + "dep-build")).asDebug())
-                .start();
-
-            Future<ProcessResult> future = process.getFuture();
-            ProcessResult processResult = future.get();
-
-            if (processResult.getExitValue() != 0) {
-                LOG.error(
-                    "Error while getting all the needed transitive dependencies. Please check your internet connection.");
-                throw new CobiGenRuntimeException("Unable to build cobigen dependencies");
-            }
-            LOG.debug('\n' + "Download the needed dependencies successfully.");
-        } catch (InterruptedException | ExecutionException | IOException e) {
-            throw new CobiGenRuntimeException("Unable to build cobigen dependencies", e);
         }
     }
 
@@ -185,21 +160,21 @@ public class CobiGenUtils {
     public static List<IncrementTo> retainAllIncrements(List<IncrementTo> currentList,
         List<IncrementTo> listToIntersect) {
 
-        List<IncrementTo> resultantList = new ArrayList<>();
+        List<IncrementTo> resultingList = new ArrayList<>();
 
         for (IncrementTo currentIncrement : currentList) {
-            String currentIncrementDesc = currentIncrement.getDescription().trim().toLowerCase();
+            String currentIncrementDesc = currentIncrement.getId() + currentIncrement.getTriggerId();
             for (IncrementTo intersectIncrement : listToIntersect) {
 
-                String intersectIncrementDesc = intersectIncrement.getDescription().trim().toLowerCase();
+                String intersectIncrementDesc = intersectIncrement.getId() + intersectIncrement.getTriggerId();
 
                 if (currentIncrementDesc.equals(intersectIncrementDesc)) {
-                    resultantList.add(currentIncrement);
+                    resultingList.add(currentIncrement);
                     break;
                 }
             }
         }
-        return resultantList;
+        return resultingList;
     }
 
     /**
@@ -218,10 +193,10 @@ public class CobiGenUtils {
         List<TemplateTo> resultantList = new ArrayList<>();
 
         for (TemplateTo currentTemplate : currentList) {
-            String currentTemplateDesc = currentTemplate.getId().trim().toLowerCase();
+            String currentTemplateDesc = currentTemplate.getId() + currentTemplate.getTriggerId();
             for (TemplateTo intersectTemplate : listToIntersect) {
 
-                String intersectTemplateDesc = intersectTemplate.getId().trim().toLowerCase();
+                String intersectTemplateDesc = intersectTemplate.getId() + intersectTemplate.getTriggerId();
 
                 if (currentTemplateDesc.equals(intersectTemplateDesc)) {
                     resultantList.add(currentTemplate);
@@ -246,7 +221,7 @@ public class CobiGenUtils {
      *             throws {@link InputReaderException} when the input file could not be converted to a valid
      *             CobiGen input
      */
-    public static Object getValidCobiGenInput(CobiGen cg, File inputFile, Boolean isJavaInput)
+    public static Object getValidCobiGenInput(CobiGen cg, File inputFile, boolean isJavaInput)
         throws InputReaderException {
         Object input;
         // If it is a Java file, we need the class loader

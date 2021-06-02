@@ -34,9 +34,6 @@ public class ConfigurationUtilTest {
             Files.createDirectories(templatesFolder);
             String templatesArtifact = "templates-devon4j-1.0.jar";
 
-            // no configuration file exists
-            // no templates found
-            assertThat(ConfigurationUtil.findTemplatesLocation()).isNull();
             Path templatesProject = templatesFolder.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
             Files.createDirectories(templatesProject);
             Path templatesJar = templatesFolder.resolve(templatesArtifact);

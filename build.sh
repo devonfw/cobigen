@@ -9,7 +9,7 @@ then
     ENABLED_TEST=""
     echo "  * With test execution"
 else
-	ENABLED_TEST="-Dmaven.test.skip=true -DskipTests" # need to declare both
+	ENABLED_TEST="-DskipTests"
     echo "  * No test execution (pass 'test' as argument to enable)"
 fi
 

@@ -3,5 +3,5 @@ LIB_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../lib" && pwd )"
 if [ -z "$1" ]; then
     java -jar "$LIB_DIR"/cobigen.jar -help
 else
-    java -javaagent:"$LIB_DIR"/class-loader-agent.jar -jar "$LIB_DIR"/cobigen.jar "$@"
+    java -jar "$LIB_DIR"/cobigen.jar "$@"
 fi

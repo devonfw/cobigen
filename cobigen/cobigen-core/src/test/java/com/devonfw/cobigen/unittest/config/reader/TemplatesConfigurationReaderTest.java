@@ -1,12 +1,12 @@
 package com.devonfw.cobigen.unittest.config.reader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -371,8 +371,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_templateref", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
 
-        ConfigurationHolder configurationHolder =
-            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+        Path configPath = Paths.get(new File(testFileRootPath).toURI());
+        ConfigurationHolder configurationHolder = new ConfigurationHolder(configPath, configPath.toUri());
 
         TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
         Map<String, Increment> increments = templatesConfiguration.getIncrements();
@@ -405,8 +405,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         Trigger trigger = new Trigger("testingTrigger", "asdf", "valid_external_incrementref", Charset.forName("UTF-8"),
             new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
 
-        ConfigurationHolder configurationHolder =
-            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+        Path config = Paths.get(new File(testFileRootPath).toURI());
+        ConfigurationHolder configurationHolder = new ConfigurationHolder(config, config.toUri());
 
         TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
         Map<String, Increment> increments = templatesConfiguration.getIncrements();
@@ -436,11 +436,11 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     @Test(expected = InvalidConfigurationException.class)
     public void testInvalidIncrementRefOutsideCurrentFile() {
 
-        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+        Path config = Paths.get(new File(testFileRootPath).toURI());
+        new ContextConfigurationReader(config);
 
         // given
-        ConfigurationHolder configurationHolder =
-            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+        ConfigurationHolder configurationHolder = new ConfigurationHolder(config, config.toUri());
 
         TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
             "faulty_invalid_external_incrementref", configurationHolder);
@@ -461,11 +461,11 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     @Test(expected = InvalidConfigurationException.class)
     public void testInvalidTemplateRefOutsideCurrentFile() {
 
-        new ContextConfigurationReader(Paths.get(new File(testFileRootPath).toURI()));
+        Path config = Paths.get(new File(testFileRootPath).toURI());
+        new ContextConfigurationReader(config);
 
         // given
-        ConfigurationHolder configurationHolder =
-            new ConfigurationHolder(Paths.get(new File(testFileRootPath).toURI()));
+        ConfigurationHolder configurationHolder = new ConfigurationHolder(config, config.toUri());
 
         TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
             "faulty_invalid_external_templateref", configurationHolder);
@@ -479,9 +479,9 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     }
 
     /**
-     * Test for <a href="https://github.com/devonfw/cobigen/issues/167">Issue 167</a>. Tests if the
-     * exception message from {@link #testErrorOnDuplicateScannedIds()} contains the name of the file causing
-     * the exception
+     * Test for <a href="https://github.com/devonfw/cobigen/issues/167">Issue 167</a>. Tests if the exception
+     * message from {@link #testErrorOnDuplicateScannedIds()} contains the name of the file causing the
+     * exception
      */
     @Test
     public void testExceptionMessageForDuplicateTemplateNames() {
@@ -579,7 +579,6 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     @Test
     public void testRelocate_propertiesResolution() {
         // arrange
-        String templatesConfigurationRoot = testFileRootPath + "valid_relocate_propertiesresolution/";
         TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
             "valid_relocate_propertiesresolution/");
 
@@ -637,9 +636,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     }
 
     /**
-     * Test the basic valid configuration of
-     * <a href="https://github.com/devonfw/cobigen/issues/157">issue 157</a> for relocation of templates
-     * to support multi-module generation.
+     * Test the basic valid configuration of <a href="https://github.com/devonfw/cobigen/issues/157">issue
+     * 157</a> for relocation of templates to support multi-module generation.
      */
     @Test
     public void testRelocate() {

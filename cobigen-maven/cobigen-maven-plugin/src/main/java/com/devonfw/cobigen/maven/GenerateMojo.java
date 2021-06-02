@@ -120,17 +120,8 @@ public class GenerateMojo extends AbstractMojo {
             for (Object input : inputs) {
                 getLog().debug("Invoke CobiGen for input " + input);
 
-                final ClassRealm classRealm = pluginDescriptor.getClassRealm();
-
-                GenerationReportTo report;
-                if (configurationFolder != null) {
-                    classRealm.addURL(configurationFolder.toURI().toURL());
-                    report = cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()),
-                        forceOverride, classRealm, null, configurationFolder.toPath());
-                } else {
-                    report = cobiGen.generate(input, generableArtifacts, Paths.get(destinationRoot.toURI()),
-                        forceOverride, classRealm, null, null);
-                }
+                GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
+                    Paths.get(destinationRoot.toURI()), forceOverride, null);
 
                 if (!report.isSuccessful()) {
                     for (Throwable e : report.getErrors()) {
@@ -164,7 +155,7 @@ public class GenerateMojo extends AbstractMojo {
 
         if (configurationFolder != null) {
 
-            getLog().debug("configurationFolder found in:" + configurationFolder.toURI().toString());
+            getLog().debug("ConfigurationFolder found in:" + configurationFolder.toURI().toString());
             cobiGen = CobiGenFactory.create(configurationFolder.toURI());
         } else {
 
@@ -173,7 +164,7 @@ public class GenerateMojo extends AbstractMojo {
 
             URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
 
-            getLog().debug("reading configuration from file:" + configFile.toString());
+            getLog().debug("Reading configuration from file:" + configFile.toString());
 
             cobiGen = CobiGenFactory.create(configFile);
         }

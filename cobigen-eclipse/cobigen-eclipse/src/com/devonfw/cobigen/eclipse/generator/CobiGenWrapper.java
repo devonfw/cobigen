@@ -43,7 +43,6 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
@@ -75,9 +74,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
     /** All matching templates for the currently configured {@link #inputs input objects} */
     private List<TemplateTo> matchingTemplates = Lists.newLinkedList();
-
-    /** Cache for destination path resolution for templates */
-    private Map<TemplateTo, Path> resolvedDestPathsCache = Maps.newHashMap();
 
     /** Cache, storing all templates of any increment with the template's workspace related paths */
     private Map<IncrementTo, Map<String, Set<TemplateTo>>> incrementToTemplateWorkspacePathsCache = Maps.newHashMap();
@@ -184,12 +180,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             // as the parent classpath to prevent classpath shading.
             inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
 
-            URI templateFolder = ResourcesPlugin.getWorkspace().getRoot()
-                .getProject(ResourceConstants.CONFIG_PROJECT_NAME).getLocationURI();
-
-            monitor.setTaskName("load Classes...");
-            SubMonitor loadClasses = subMonitor.split(2);
-
             if (monitor.isCanceled()) {
                 throw new CancellationException("generation got Cancelled by the User");
             }
@@ -228,8 +218,8 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                 LOG.debug("Generating with single non container input ...");
                 Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
                 adaptModel(model);
-                report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false,
-                    inputClassLoader, model, (String taskName, Integer progress) -> {
+                report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false, model,
+                    (String taskName, Integer progress) -> {
                         try {
                             p.split(progress);
                         } catch (OperationCanceledException e) {
@@ -237,12 +227,11 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
                         }
                         monitor.setTaskName(taskName);
 
-                    }, Paths.get(templateFolder));
+                    });
             } else {
                 report = new GenerationReportTo();
                 for (Object input : inputs) {
-                    report.aggregate(cobiGen.generate(input, templates, Paths.get(generationTargetUri), false,
-                        inputClassLoader, Paths.get(templateFolder)));
+                    report.aggregate(cobiGen.generate(input, templates, Paths.get(generationTargetUri), false));
                 }
             }
             p.done();
