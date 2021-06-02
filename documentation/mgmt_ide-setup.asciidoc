@@ -23,8 +23,7 @@ This downloads all the necessary files for Cobigen development.
 Build the project by running the build.sh located in the workspaces/main/cobigen folder.
 
 Now you can open eclipse using the eclipse-main.bat file and import the Cobigen projects you want to work on by clicking File->import...->Maven->Existing Maven Project and entering {Install directory}/workspaces/main/cobigen (Should be the default location when clicking on "Browse...")
-You might wanna organize these Projects with working sets. the following picture shows a structure that makes sense.
-image::images/howtos/ide-setup/Working_Sets.png[eclipse working sets to organize cobigen in eclipse]
+We recommend to use the Project Explorer instead of the Package Explorer.
 
 After you have have finished your installation run a maven update. To do so right click on a project select maven and afterwards update project. Select all projects and the checkbox Force Update of Snapshot/Releases.
 You might be asked to install some Tycho-plugins. You need those, if you want to debug eclipse-plugins. 	
@@ -69,5 +68,5 @@ You can do this by opening a console in your IDE Install location and executing 
 
 === Contributing
 
-If you want to contribute to the guide, check out the following tutorial. espcially the sections Branches and Forking could be helpfull. 	
+If you want to contribute to cobigen, check out the following tutorial. espcially the sections Branches and Forking could be helpfull. 	
 https://devonfw.com/website/pages/docs/CONTRIBUTING.asciidoc.html
