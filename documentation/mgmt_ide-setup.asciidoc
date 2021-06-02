@@ -66,3 +66,8 @@ There are some scripts used in Cobigen development that are written in Python.
 You may use any platform to write in python you want, but if you want to work in Eclipse, we recommend to install pydev.
 
 You can do this by opening a console in your IDE Install location and executing the command `+devon eclipse add-plugin pydev+` in a console
+
+=== Contributing
+
+If you want to contribute to the guide, check out the following tutorial. espcially the sections Branches and Forking could be helpfull. 	
+https://devonfw.com/website/pages/docs/CONTRIBUTING.asciidoc.html
