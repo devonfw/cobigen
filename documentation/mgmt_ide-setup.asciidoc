@@ -20,7 +20,14 @@ image::images/howtos/ide-setup/File_Structure.png[Install directory after execut
 The next step is to open a console and execute the following command: `+devon project setup cobigen+`
 This downloads all the necessary files for Cobigen development.
 
+Build the project by running the build.sh located in the workspaces/main/cobigen folder.
+
 Now you can open eclipse using the eclipse-main.bat file and import the Cobigen projects you want to work on by clicking File->import...->Maven->Existing Maven Project and entering {Install directory}/workspaces/main/cobigen (Should be the default location when clicking on "Browse...")
+You might wanna organize these Projects with working sets. the following picture shows a structure that makes sense.
+image::images/howtos/ide-setup/Working_Sets.png[eclipse working sets to organize cobigen in eclipse]
+
+After you have have finished your installation run a maven update. To do so right click on a project select maven and afterwards update project. Select all projects and the checkbox Force Update of Snapshot/Releases.
+You might be asked to install some Tycho-plugins. You need those, if you want to debug eclipse-plugins. 	
 
 == Eclipse Plugin Installation
 
@@ -40,7 +47,7 @@ When using the default devonfw ide, you should get an error here that stems from
 To properly test Cobigen in an Eclipse environment we use the Eclipse SWTbot which can automate eclipse interactions in a new Eclipse instance.
 It is not strictly necessary to install this manually as Eclipse should prompt you for installation once you try to build a relevant project.
 
-To install the plugin manually, open a console in your IDE Install location and  execute the command `+devon eclipse add-plugin eclipsepde+` in a console
+To install the plugin manually, open a console in your IDE Install location and  execute the command `+devon eclipse add-plugin swtbot+` in a console
 
 When using the default devonfw ide, you should get an error here that stems from parts of the plugin being installed with the devonfw ide by default.
 
