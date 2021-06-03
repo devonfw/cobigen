@@ -27,7 +27,8 @@ public class AdaptTemplatesCommandTest extends AbstractCliTest {
 
         execute(args, false);
 
-        Path cobigenTemplatesFolderPath = currentHome.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+        Path cobigenTemplatesFolderPath = currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+            .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
         assertThat(cobigenTemplatesFolderPath).exists();
     }
 }
