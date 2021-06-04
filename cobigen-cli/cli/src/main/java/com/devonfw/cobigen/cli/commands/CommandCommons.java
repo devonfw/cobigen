@@ -1,10 +1,8 @@
 package com.devonfw.cobigen.cli.commands;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-import com.devonfw.cobigen.api.util.ConfigurationUtil;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.logger.CLILogger;
 
@@ -33,10 +31,6 @@ public abstract class CommandCommons implements Callable<Integer> {
 
         if (verbose) {
             CLILogger.setLevel(Level.DEBUG);
-        }
-
-        if (templatesProject == null) {
-            templatesProject = Paths.get(ConfigurationUtil.findTemplatesLocation());
         }
 
         return doAction();

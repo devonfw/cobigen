@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api;
+package com.devonfw.cobigen.unittest.util;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.restoreSystemProperties;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.util.ConfigurationUtil;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
 /**
  *
@@ -39,10 +39,10 @@ public class ConfigurationUtilTest {
             Path templatesJar = templatesFolder.resolve(templatesArtifact);
             Files.createFile(templatesJar);
             // found CobiGen_Templates project
-            assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templatesProject.toFile().toURI());
+            assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesProject.toFile().toURI());
             Files.delete(templatesProject);
             // found templates artifact
-            assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templatesJar.toFile().toURI());
+            assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesJar.toFile().toURI());
 
             // configuration file exists
             File randomDirectoryForConfigFile = tmpFolder.newFolder();
@@ -60,13 +60,13 @@ public class ConfigurationUtilTest {
                 randomDirectoryForConfigFile.getAbsolutePath()).execute(
                     () -> {
                         // configuration file found from environment variable
-                        assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templates.toURI());
+                        assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templates.toURI());
                     });
 
             Path configFileInCobigenHome = defaultCobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
             FileUtils.copyFile(configFile, configFileInCobigenHome.toFile());
             // configuration file found in cobigen home directory
-            assertThat(ConfigurationUtil.findTemplatesLocation()).isEqualTo(templates.toURI());
+            assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templates.toURI());
         });
     }
 }

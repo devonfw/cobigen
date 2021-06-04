@@ -80,7 +80,7 @@ public class TypeScriptMerger extends ExternalServerMergerProxy {
 
         try (StringReader isr = new StringReader(content); BufferedReader br = new BufferedReader(isr)) {
 
-            LOG.info("Receiving output from Server....");
+            LOG.debug("Receiving output from Server....");
             Stream<String> s = br.lines();
             s.parallel().forEachOrdered((String line) -> {
                 if (line.startsWith("import ") || isExportStatement(line)) {

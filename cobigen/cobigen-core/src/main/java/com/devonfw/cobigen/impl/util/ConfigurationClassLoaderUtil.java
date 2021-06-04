@@ -26,21 +26,17 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 /**
  * Utilities related to the retrieval of Templates utility classes
  */
-public class TemplatesClassloaderUtil {
+public class ConfigurationClassLoaderUtil {
 
     /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(TemplatesClassloaderUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationClassLoaderUtil.class);
 
-    /**
-     * Locations to check for context.xml
-     */
+    /** Locations to check for template utility classes */
+    private static final String[] classFolderLocations = new String[] { "target/classes" };
+
+    /** Locations to check for context.xml */
     private static final String[] configFileLocations =
         new String[] { "context.xml", "src/main/templates/context.xml" };
-
-    /**
-     * Locations to check for template utility classes
-     */
-    private static final String[] classFolderLocations = new String[] { "target/classes" };
 
     /**
      * Checks the ClassLoader for any context.xml provided either in configurationFolder or in
@@ -81,7 +77,7 @@ public class TemplatesClassloaderUtil {
         if (classLoader != null) {
             inputClassLoader = URLClassLoader.newInstance(urls, classLoader);
         } else {
-            inputClassLoader = URLClassLoader.newInstance(urls, TemplatesClassloaderUtil.class.getClassLoader());
+            inputClassLoader = URLClassLoader.newInstance(urls, ConfigurationClassLoaderUtil.class.getClassLoader());
         }
 
         return inputClassLoader;
@@ -123,7 +119,7 @@ public class TemplatesClassloaderUtil {
     public static List<Class<?>> resolveUtilClasses(Path configurationFolder, ClassLoader classLoader)
         throws IOException {
         List<Class<?>> result = new LinkedList<>();
-        ArrayList<URL> classLoaderUrls = new ArrayList<>(); // stores ClassLoader URLs
+        List<URL> classLoaderUrls = new ArrayList<>(); // stores ClassLoader URLs
         Path templateRoot = null;
         ClassLoader inputClassLoader = null;
         URL contextConfigurationLocation = null;
@@ -159,7 +155,7 @@ public class TemplatesClassloaderUtil {
      */
     private static List<Class<?>> resolveFromFolder(List<Class<?>> result, Path templateRoot,
         ClassLoader inputClassLoader) {
-        LOG.debug("Processing configuration folder {}", templateRoot.toString());
+        LOG.debug("Processing configuration from {}", templateRoot.toString());
         LOG.info("Searching for classes in configuration folder...");
         List<Path> foundPaths = new LinkedList<>();
 

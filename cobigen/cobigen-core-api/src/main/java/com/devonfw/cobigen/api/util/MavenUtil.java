@@ -37,6 +37,12 @@ public class MavenUtil {
 
         LOG.info("Calculating class path and downloading the needed maven dependencies. Please be patient...");
         try {
+            if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
+                Path cachedPomXml = cpFile.resolveSibling("cached-pom.xml");
+                Files.copy(pomFile, cachedPomXml);
+                pomFile = cachedPomXml;
+                cachedPomXml.toFile().deleteOnExit();
+            }
             StartedProcess process = new ProcessExecutor().destroyOnExit()
                 .command(SystemUtil.determineMvnPath(), "dependency:build-classpath",
                     // https://stackoverflow.com/a/66801171
@@ -57,7 +63,7 @@ public class MavenUtil {
                     "Error while getting all the needed transitive dependencies. Please check your internet connection.");
                 throw new CobiGenRuntimeException("Unable to build cobigen dependencies");
             }
-            LOG.debug('\n' + "Download the needed dependencies successfully.");
+            LOG.debug("Downloaded dependencies successfully.");
         } catch (InterruptedException | ExecutionException | IOException e) {
             throw new CobiGenRuntimeException("Unable to build cobigen dependencies", e);
         }

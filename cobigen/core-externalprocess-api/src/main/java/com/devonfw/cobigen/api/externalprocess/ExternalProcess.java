@@ -32,8 +32,8 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.StartedProcess;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
-import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.externalprocess.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.google.gson.Gson;
 

@@ -2,6 +2,7 @@ package com.devonfw.cobigen.impl.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
@@ -9,6 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
@@ -19,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.util.ConfigurationUtil;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 
 /**
@@ -48,6 +49,16 @@ public class ExtractTemplatesUtil {
                 throw new CobiGenRuntimeException("Unable to create directory " + extractTo);
             }
         }
+
+        // find templates will also download jars if needed as a side effect and will return teh path to the
+        // files.
+        URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
+        if (Files.isDirectory(Paths.get(findTemplatesLocation))) {
+            LOG.info("Templates already found at {}. You can edit them in place to adapt your generation results.",
+                extractTo);
+            return;
+        }
+
         try {
             if (!isEmpty(extractTo) && !forceOverride) {
                 throw new DirectoryNotEmptyException(extractTo.toString());
@@ -56,16 +67,14 @@ public class ExtractTemplatesUtil {
             LOG.info(
                 "CobiGen is attempting to download the latest CobiGen_Templates.jar and will extract it to cobigen home directory {}. please wait...",
                 ConfigurationConstants.DEFAULT_HOME);
-            File templatesDirectory = ConfigurationUtil.getTemplatesFolderPath().toFile();
-            TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesDirectory);
-            TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesDirectory);
+            File templatesDirectory = extractTo.toFile();
             processJar(templatesDirectory.toPath());
             LOG.info("Successfully downloaded and extracted templates to @ {}",
                 templatesDirectory.toPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES));
         } catch (DirectoryNotEmptyException e) {
             throw e;
         } catch (IOException e) {
-            throw new CobiGenRuntimeException("Not able to extract templates to ", e);
+            throw new CobiGenRuntimeException("Not able to extract templates to " + extractTo, e);
         }
     }
 

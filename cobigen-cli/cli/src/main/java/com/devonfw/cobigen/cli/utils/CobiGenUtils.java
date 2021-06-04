@@ -25,7 +25,7 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.ConfigurationUtil;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.impl.CobiGenFactory;
@@ -57,14 +57,18 @@ public class CobiGenUtils {
      */
     public static CobiGen initializeCobiGen(Path templatesProject) {
         registerPlugins();
-        return CobiGenFactory.create(templatesProject.toUri());
+        if (templatesProject != null) {
+            return CobiGenFactory.create(templatesProject.toUri());
+        } else {
+            return CobiGenFactory.create();
+        }
     }
 
     /**
      * @return the home path of the CLI
      */
     public static Path getCliHomePath() {
-        return ConfigurationUtil.getCobiGenHomePath().resolve(CLI_HOME);
+        return CobiGenPaths.getCobiGenHomePath().resolve(CLI_HOME);
     }
 
     /**

@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.impl.config.entity.TemplatePath;
-import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
+import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 /**
@@ -40,7 +40,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         String filename = "folder";
         Path path = Paths.get(TEST_FILES_ROOT_PATH + filename);
 
-        List<Class<?>> classes = TemplatesClassloaderUtil.resolveUtilClasses(path, null);
+        List<Class<?>> classes = ConfigurationClassLoaderUtil.resolveUtilClasses(path, null);
         assertThat(classes.get(0).getName()).contains("IDGenerator");
     }
 
@@ -58,7 +58,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
 
-        List<Class<?>> classes = TemplatesClassloaderUtil.resolveUtilClasses(null, inputClassLoader);
+        List<Class<?>> classes = ConfigurationClassLoaderUtil.resolveUtilClasses(null, inputClassLoader);
         assertThat(classes.get(0).getName()).contains("IDGenerator");
     }
 
@@ -76,7 +76,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         ClassLoader inputClassLoader = URLClassLoader.newInstance(
             new URL[] { pathArchive.toUri().toURL(), pathFolder.toUri().toURL() }, getClass().getClassLoader());
 
-        List<Class<?>> classes = TemplatesClassloaderUtil.resolveUtilClasses(pathFolder, inputClassLoader);
+        List<Class<?>> classes = ConfigurationClassLoaderUtil.resolveUtilClasses(pathFolder, inputClassLoader);
         assertThat(classes.get(0).getName()).contains("IDGenerator");
     }
 
@@ -94,7 +94,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
 
-        URL url = TemplatesClassloaderUtil.getContextConfiguration(inputClassLoader);
+        URL url = ConfigurationClassLoaderUtil.getContextConfiguration(inputClassLoader);
         assertThat(url).isNotNull();
     }
 
@@ -112,7 +112,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         ClassLoader inputClassLoader =
             URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
 
-        URL url = TemplatesClassloaderUtil.getContextConfiguration(inputClassLoader);
+        URL url = ConfigurationClassLoaderUtil.getContextConfiguration(inputClassLoader);
         assertThat(url).isNotNull();
     }
 
