@@ -17,7 +17,7 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
-import com.devonfw.cobigen.api.util.ConfigurationUtil;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.CobiGenDialogConstants.HealthCheckDialogs;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
@@ -78,7 +78,7 @@ public class HealthCheckDialog {
             if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
                 CobiGenFactory.create(generatorConfProj.getLocationURI());
             } else {
-                File templatesDirectory = ConfigurationUtil.getTemplatesFolderPath().toFile();
+                File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
                 File jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectory);
                 boolean fileExists = jarPath.exists();
                 if (!fileExists) {
