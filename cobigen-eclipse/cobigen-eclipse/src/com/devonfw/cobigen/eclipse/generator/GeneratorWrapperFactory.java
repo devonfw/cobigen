@@ -8,12 +8,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
@@ -239,11 +240,14 @@ public class GeneratorWrapperFactory {
 
             // If it is not valid, we should use the jar
             if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
-                String fileName = ResourcesPluginUtil.getJarPath(false);
-                IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
-                File file =
-                    new File(ws.append(ResourceConstants.DOWNLOADED_JAR_FOLDER + File.separator + fileName).toString());
-                return CobiGenFactory.create(file.toURI());
+            	File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
+                File jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectory);
+                boolean fileExists = jarPath.exists();
+                if (!fileExists) {
+                    MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                        "Not Downloaded the CobiGen Template Jar");
+                }
+                return CobiGenFactory.create(jarPath.toURI());
             } else {
                 return CobiGenFactory.create(generatorProj.getLocationURI());
             }
