@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 
 /**
@@ -91,10 +92,11 @@ public class ExtractTemplatesUtil {
         if (destinationPath == null) {
             throw new IOException("Cobigen folder path not found!");
         }
+        
+        File cobigenTemplatesPath = CobiGenPaths.getTemplatesFolderPath().toFile();
 
-        File destinationFile = destinationPath.toFile();
-        Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, destinationFile).toPath();
-        Path classesJarPath = TemplatesJarUtil.getJarFile(false, destinationFile).toPath();
+        Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, cobigenTemplatesPath).toPath();
+        Path classesJarPath = TemplatesJarUtil.getJarFile(false, cobigenTemplatesPath).toPath();
 
         LOG.debug("Processing jar file @ {}", sourcesJarPath);
 
