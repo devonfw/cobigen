@@ -15,6 +15,7 @@ import java.util.List;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 
+import org.codehaus.plexus.interpolation.os.Os;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,14 +95,15 @@ public class CobiGenUtils {
         }
         // Read classPath.txt file and add to the class path all dependencies
         try {
-            URL[] classpathEntries = Files.lines(cpFile).flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
-                try {
-                    return new File(path).toURI().toURL();
-                } catch (MalformedURLException e) {
-                    LOG.error("URL of classpath entry {} is malformed", path, e);
-                }
-                return null;
-            }).toArray(size -> new URL[size]);
+            URL[] classpathEntries = Files.lines(cpFile)
+                .flatMap(e -> Arrays.stream(e.split(Os.isFamily(Os.FAMILY_WINDOWS) ? ";" : ":"))).map(path -> {
+                    try {
+                        return new File(path).toURI().toURL();
+                    } catch (MalformedURLException e) {
+                        LOG.error("URL of classpath entry {} is malformed", path, e);
+                    }
+                    return null;
+                }).toArray(size -> new URL[size]);
             URLClassLoader cobigenClassLoader =
                 new URLClassLoader(classpathEntries, Thread.currentThread().getContextClassLoader());
             ClassServiceLoader.lookupServices(cobigenClassLoader);
