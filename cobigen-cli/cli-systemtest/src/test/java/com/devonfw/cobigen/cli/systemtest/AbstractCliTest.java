@@ -49,10 +49,6 @@ public class AbstractCliTest {
         devTemplatesPath = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
             .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
             .resolve("templates-devon4j");
-
-        // make sure, that the templates project has been compiled. If not, throw an assertion
-        // this is needed to run the latest templates properly from the folder
-        assertThat(devTemplatesPath.resolve("target").resolve("classes")).exists();
     }
 
     /**

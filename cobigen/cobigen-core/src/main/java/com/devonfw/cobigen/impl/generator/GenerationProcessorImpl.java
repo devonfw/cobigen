@@ -165,7 +165,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         inputProjectClassLoader = prependTemplatesClassloader(templateConfigPath, inputProjectClassLoader);
         if (inputProjectClassLoader != null) {
             try {
-                logicClasses = ConfigurationClassLoaderUtil.resolveUtilClasses(templateConfigPath, inputProjectClassLoader);
+                logicClasses =
+                    ConfigurationClassLoaderUtil.resolveUtilClasses(configurationHolder, inputProjectClassLoader);
             } catch (IOException e) {
                 LOG.error("An IOException occured while resolving utility classes!", e);
             }
@@ -333,12 +334,12 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     private void compileTemplateUtils(Path templateFolder) {
         LOG.debug("Build templates folder {}", templateFolder);
         try {
-            StartedProcess process = new ProcessExecutor().destroyOnExit()
+            StartedProcess process = new ProcessExecutor().destroyOnExit().directory(templateFolder.toFile())
                 .command(SystemUtil.determineMvnPath(), "compile",
                     // https://stackoverflow.com/a/66801171
                     "-Djansi.force=true", "-Djansi.passthrough=true", "-B",
-                    "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn", "-q",
-                    "-f", templateFolder.resolve("pom.xml").toString())
+                    "-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"),
+                    "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN", "-q")
                 .redirectError(
                     Slf4jStream
                         .of(LoggerFactory

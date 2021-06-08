@@ -40,6 +40,9 @@ public class SystemUtil {
     /** Current Operating System, the code is exectued on */
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
+    /** Maven exectuable */
+    private static String MVN_EXEC = null;
+
     /**
      * Determines the line delimiter
      *
@@ -103,7 +106,10 @@ public class SystemUtil {
      * @return the absolute path of the mvn executable if available, otherwise null
      */
     public static String determineMvnPath() {
-        String MVN_EXEC = null;
+        if (MVN_EXEC != null) {
+            return MVN_EXEC;
+        }
+
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (OS.contains("win")) {
             processBuilder.command("where", "mvn");
@@ -197,6 +203,14 @@ public class SystemUtil {
         return MVN_EXEC;
     }
 
+    /**
+     * Determine mvn executable depending on the OS
+     * @param mvnHome
+     *            the maven home dir
+     * @return the mvn executable path
+     * @throws IOException
+     *             if path could not be determined
+     */
     private static String getMvnExecutable(String mvnHome) throws IOException {
         return Paths.get(mvnHome).resolve("bin/mvn" + (OS.contains("win") ? ".cmd" : "")).toFile().getCanonicalPath();
     }

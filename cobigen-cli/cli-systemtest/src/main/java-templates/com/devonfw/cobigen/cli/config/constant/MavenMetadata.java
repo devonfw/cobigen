@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.impl.config.constant;
+package com.devonfw.cobigen.cli.config.constant;
 
 /**
  * Constants extracted from the maven pom by templating-maven-plugin.
