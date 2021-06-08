@@ -20,7 +20,7 @@ jobs:
           key: -${{ hashFiles('**/package-lock.json') }}
       
       - name: Resolve non-cobigen dependencies
-        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build
+        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build || true # never fail
     
   build-and-test-core:
     needs: cache-dependencies
