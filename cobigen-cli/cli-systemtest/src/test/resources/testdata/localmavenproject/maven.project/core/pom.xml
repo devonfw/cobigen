@@ -8,7 +8,6 @@
   </parent>
   <artifactId>core</artifactId>
   <packaging>jar</packaging>
-  <name>Test_Local_Maven_Project</name>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>

@@ -5,8 +5,6 @@
   <groupId>testing</groupId>
   <version>dev-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Test_Local_Maven_Project</name>
-
 
   <modules>
     <module>api</module>
