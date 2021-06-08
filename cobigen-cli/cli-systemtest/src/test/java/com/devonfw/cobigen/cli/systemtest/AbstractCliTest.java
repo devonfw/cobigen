@@ -136,11 +136,11 @@ public class AbstractCliTest {
             debugArgs[debugArgs.length - 1] = "-v";
         }
 
-        ProcessExecutor pe = new ProcessExecutor()
-            .environment(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).command(debugArgs)
-            .destroyOnExit()
-            .redirectError(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asError())
-            .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asDebug());
+        ProcessExecutor pe =
+            new ProcessExecutor().environment(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString())
+                .command(debugArgs).destroyOnExit()
+                .redirectError(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asError())
+                .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asInfo());
         new SystemExit().execute(() -> {
             ProcessResult result = pe.execute();
             int exitCode = result.getExitValue();

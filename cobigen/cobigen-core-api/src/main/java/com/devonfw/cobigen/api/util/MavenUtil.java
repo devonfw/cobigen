@@ -78,7 +78,7 @@ public class MavenUtil {
                 .redirectError(
                     Slf4jStream.of(LoggerFactory.getLogger(MavenUtil.class.getName() + "." + "dep-build")).asError())
                 .redirectOutput(
-                    Slf4jStream.of(LoggerFactory.getLogger(MavenUtil.class.getName() + "." + "dep-build")).asDebug())
+                    Slf4jStream.of(LoggerFactory.getLogger(MavenUtil.class.getName() + "." + "dep-build")).asInfo())
                 .start();
 
             Future<ProcessResult> future = process.getFuture();

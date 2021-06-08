@@ -349,7 +349,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                     Slf4jStream
                         .of(LoggerFactory
                             .getLogger(GenerationProcessorImpl.class.getName() + "." + "mvn-compile-templates"))
-                        .asDebug())
+                        .asInfo())
                 .start();
 
             Future<ProcessResult> future = process.getFuture();
