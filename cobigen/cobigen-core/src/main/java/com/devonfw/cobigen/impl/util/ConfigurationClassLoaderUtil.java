@@ -2,10 +2,8 @@ package com.devonfw.cobigen.impl.util;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 
 /**
  * Utilities related to the retrieval of Templates utility classes
@@ -91,8 +90,8 @@ public class ConfigurationClassLoaderUtil {
      * @throws MalformedURLException
      *             if the URL was malformed
      */
-    private static ArrayList<URL> addFoldersToClassLoaderUrls(Path configurationFolder) throws MalformedURLException {
-        ArrayList<URL> classLoaderUrls = new ArrayList<>();
+    private static List<URL> addFoldersToClassLoaderUrls(Path configurationFolder) throws MalformedURLException {
+        List<URL> classLoaderUrls = new ArrayList<>();
         for (String possibleLocation : classFolderLocations) {
             Path folder = configurationFolder;
             folder = folder.resolve(possibleLocation);
@@ -108,35 +107,27 @@ public class ConfigurationClassLoaderUtil {
      * Walks the class path in search of a 'context.xml' resource to identify the enclosing folder or jar
      * file. That location is then searched for class files and a list with those loaded classes is returned.
      * If the sources are not compiled, the templates will not be able to be generated.
-     * @param configurationFolder
-     *            Path to add to ClassLoader
+     * @param configurationHolder
+     *            {@link ConfigurationHolder}
      * @param classLoader
      *            ClassLoader to load jar from
      * @return a List of Classes for template generation.
      * @throws IOException
      *             if either templates jar or templates folder could not be read
      */
-    public static List<Class<?>> resolveUtilClasses(Path configurationFolder, ClassLoader classLoader)
+    public static List<Class<?>> resolveUtilClasses(ConfigurationHolder configurationHolder, ClassLoader classLoader)
         throws IOException {
+
         List<Class<?>> result = new LinkedList<>();
         List<URL> classLoaderUrls = new ArrayList<>(); // stores ClassLoader URLs
-        Path templateRoot = null;
-        ClassLoader inputClassLoader = null;
-        URL contextConfigurationLocation = null;
-        if (configurationFolder != null) {
-            templateRoot = configurationFolder;
-            classLoaderUrls = addFoldersToClassLoaderUrls(configurationFolder);
-            inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
-            contextConfigurationLocation = configurationFolder.toUri().toURL();
-        } else {
-            inputClassLoader = classLoader;
-            contextConfigurationLocation = getContextConfiguration(inputClassLoader);
-        }
 
-        if (contextConfigurationLocation.toString().startsWith("jar")) {
-            result = resolveFromJar(result, inputClassLoader, contextConfigurationLocation);
+        if (configurationHolder.isJarConfig()) {
+            result = resolveFromJar(classLoader, configurationHolder);
         } else {
-            result = resolveFromFolder(result, templateRoot, inputClassLoader);
+            ClassLoader inputClassLoader = null;
+            classLoaderUrls = addFoldersToClassLoaderUrls(configurationHolder.getConfigurationPath());
+            inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
+            result = resolveFromFolder(configurationHolder.getConfigurationPath(), inputClassLoader);
         }
 
         return result;
@@ -145,19 +136,17 @@ public class ConfigurationClassLoaderUtil {
     /**
      * Resolves utility classes from Folder
      *
-     * @param result
-     *            List to store utility classes in
      * @param templateRoot
      *            Path to template folder containing classes
      * @param inputClassLoader
      *            ClassLoader to use for storing of classes
      * @return List of classes to load utilities from
      */
-    private static List<Class<?>> resolveFromFolder(List<Class<?>> result, Path templateRoot,
-        ClassLoader inputClassLoader) {
+    private static List<Class<?>> resolveFromFolder(Path templateRoot, ClassLoader inputClassLoader) {
         LOG.debug("Processing configuration from {}", templateRoot.toString());
         LOG.info("Searching for classes in configuration folder...");
         List<Path> foundPaths = new LinkedList<>();
+        List<Class<?>> result = new ArrayList<>();
 
         try {
             foundPaths = walkTemplateFolder(templateRoot);
@@ -193,28 +182,21 @@ public class ConfigurationClassLoaderUtil {
     /**
      * Resolves utility classes from Jar archive
      *
-     * @param result
-     *            List to store utility classes in
      * @param inputClassLoader
      *            ClassLoader to use for storing of classes
-     * @param contextConfigurationLocation
-     *            URL to check for classes
+     * @param configurationHolder
+     *            configuration holder
      * @return List of classes to load utilities from
      */
-    private static List<Class<?>> resolveFromJar(List<Class<?>> result, ClassLoader inputClassLoader,
-        URL contextConfigurationLocation) {
-        LOG.debug("Processing configuration archive {}", contextConfigurationLocation);
+    private static List<Class<?>> resolveFromJar(ClassLoader inputClassLoader,
+        ConfigurationHolder configurationHolder) {
+        LOG.debug("Processing configuration archive {}", configurationHolder.getConfigurationLocation());
         LOG.info("Searching for classes in configuration archive...");
 
+        List<Class<?>> result = new ArrayList<>();
         List<String> foundClasses = new LinkedList<>();
         try {
-            // Get the URI of the jar from the URL of the contained context.xml
-            URI jarUri = URI.create(contextConfigurationLocation.toString().split("!")[0]);
-
-            // Make sure to create file system for jar file
-            FileSystem jarfs = FileSystemUtil.getOrCreateFileSystem(jarUri);
-
-            foundClasses = walkJarFile(jarUri, jarfs);
+            foundClasses = walkJarFile(configurationHolder);
         } catch (IOException e) {
             LOG.error("Could not read templates jar file", e);
         }
@@ -268,19 +250,17 @@ public class ConfigurationClassLoaderUtil {
     /**
      * Walks the jar file in search of utility classes
      *
-     * @param jarUri
-     *            URI of jar file
-     * @param jarfs
-     *            FileSystem of jar file
+     * @param configurationHolder
+     *            the holder of the parsed configuration
      * @return List<String> of file paths containing class files
      * @throws IOException
      *             if file could not be visited
      */
-    private static List<String> walkJarFile(URI jarUri, FileSystem jarfs) throws IOException {
+    private static List<String> walkJarFile(ConfigurationHolder configurationHolder) throws IOException {
         List<String> foundClasses = new LinkedList<>();
         // walk the jar file
-        LOG.debug("Searching for classes in {}", jarUri);
-        Files.walkFileTree(jarfs.getPath("/"), new SimpleFileVisitor<Path>() {
+        LOG.debug("Searching for classes in {}", configurationHolder.getConfigurationLocation());
+        Files.walkFileTree(configurationHolder.getConfigurationPath(), new SimpleFileVisitor<Path>() {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

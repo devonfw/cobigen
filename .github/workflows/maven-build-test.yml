@@ -3,7 +3,27 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+  cache-dependencies:
+    runs-on: ubuntu-latest
+    steps:    
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - name: Clone CobiGen Repo
+        uses: actions/checkout@v2
+      
+      - name: Restore m2 repository
+        uses: actions/cache@v2.1.5
+        with:
+          path: ~/.m2/repository
+          key: -${{ hashFiles('**/package-lock.json') }}
+      
+      - name: Resolve non-cobigen dependencies
+        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build || true # never fail
+    
   build-and-test-core:
+    needs: cache-dependencies
     strategy:
       fail-fast: false
       matrix:
@@ -16,7 +36,7 @@ jobs:
         uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}
+          key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -51,7 +71,7 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}
+            cobigen-dep-${{ hashFiles('**/pom.xml') }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -222,7 +242,7 @@ jobs:
           mvn install -f cobigen-maven -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
   build-and-test-cli:
-    needs: build-and-test-plugins
+    needs: build-and-test-templates
     strategy:
       fail-fast: false
       matrix:
@@ -237,7 +257,7 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-cli # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}-plugins
+            ${{ runner.os }}-maven-${{ github.sha }}-templates
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}

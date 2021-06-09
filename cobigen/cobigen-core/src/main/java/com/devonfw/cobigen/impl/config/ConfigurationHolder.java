@@ -30,13 +30,11 @@ public class ConfigurationHolder {
 
     /**
      * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
-     * @param configurationPath
-     *            root path of the configuration (can be / for internal nio ZIP fileystems)
      * @param configurationLocation
      *            the OS Filesystem path of the configuration location.
      */
-    public ConfigurationHolder(Path configurationPath, URI configurationLocation) {
-        this.configurationPath = configurationPath;
+    public ConfigurationHolder(URI configurationLocation) {
+        configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
         this.configurationLocation = configurationLocation;
         // updates the root template path and informs all of its observers
         PluginRegistry.notifyPlugins(configurationPath);

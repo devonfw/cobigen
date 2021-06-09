@@ -49,10 +49,6 @@ public class AbstractCliTest {
         devTemplatesPath = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
             .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
             .resolve("templates-devon4j");
-
-        // make sure, that the templates project has been compiled. If not, throw an assertion
-        // this is needed to run the latest templates properly from the folder
-        assertThat(devTemplatesPath.resolve("target").resolve("classes")).exists();
     }
 
     /**
@@ -140,11 +136,11 @@ public class AbstractCliTest {
             debugArgs[debugArgs.length - 1] = "-v";
         }
 
-        ProcessExecutor pe = new ProcessExecutor()
-            .environment(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).command(debugArgs)
-            .destroyOnExit()
-            .redirectError(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asError())
-            .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asDebug());
+        ProcessExecutor pe =
+            new ProcessExecutor().environment(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString())
+                .command(debugArgs).destroyOnExit()
+                .redirectError(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asError())
+                .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asInfo());
         new SystemExit().execute(() -> {
             ProcessResult result = pe.execute();
             int exitCode = result.getExitValue();

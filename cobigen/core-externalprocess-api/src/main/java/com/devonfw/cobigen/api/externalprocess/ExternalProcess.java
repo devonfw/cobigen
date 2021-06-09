@@ -275,7 +275,7 @@ public class ExternalProcess {
                     .redirectError(
                         Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
                     .redirectOutput(
-                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asDebug())
+                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asInfo())
                     .start();
                 Future<ProcessResult> result = process.getFuture();
 

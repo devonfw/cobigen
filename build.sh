@@ -63,8 +63,8 @@ mvn install bundle:bundle -Pp2-bundle -DskipTests p2:site -f cobigen-plugins --p
 
 log_step "Package & Run E2E Tests"
 mvn test -f cobigen/cobigen-core-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE
-mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-cli $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-maven $ENABLED_TEST $DEBUG $BATCH_MODE
+mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE
 #mvn deploy -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE -Dupdatesite.repository=test --projects cobigen-eclipse/cobigen-eclipse-updatesite
