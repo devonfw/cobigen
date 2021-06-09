@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.interpolation.os.Os;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -107,7 +108,7 @@ public class GenerateCommandTest extends AbstractCliTest {
         execute(args, true);
 
         // clean up generated files
-        assertThat(tmpProject.resolve("devon4ng-application-template")).exists();
+        assertThat(tmpProject.resolve("../../devon4ng-application-template")).exists();
     }
 
     /**
@@ -253,7 +254,11 @@ public class GenerateCommandTest extends AbstractCliTest {
         String args[] = new String[6];
         args[0] = "generate";
         // input file with quote
-        args[1] = '"' + openApiFile.toFile().getAbsolutePath() + '"';
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            args[1] = '"' + openApiFile.toFile().getAbsolutePath() + '"';
+        } else {
+            args[1] = openApiFile.toFile().getAbsolutePath().replace(" ", "\\ ");
+        }
         args[2] = "--out";
         args[3] = outputRootPath.toFile().getAbsolutePath();
         args[4] = "--increments";
