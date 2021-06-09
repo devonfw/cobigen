@@ -13,11 +13,11 @@ jobs:
       - name: Clone CobiGen Repo
         uses: actions/checkout@v2
       
-      - name: Restore m2 repository
+      - name: Cache m2 repository
         uses: actions/cache@v2.1.5
         with:
           path: ~/.m2/repository
-          key: -${{ hashFiles('**/package-lock.json') }}
+          key: cobigen-dep-${{ hashFiles('**/package-lock.json') }}
       
       - name: Resolve non-cobigen dependencies
         run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build || true # never fail
