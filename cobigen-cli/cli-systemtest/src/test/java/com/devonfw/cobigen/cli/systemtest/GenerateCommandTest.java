@@ -107,8 +107,10 @@ public class GenerateCommandTest extends AbstractCliTest {
 
         execute(args, true);
 
+        Thread.sleep(1000);
+
         // clean up generated files
-        assertThat(tmpProject.resolve("../../devon4ng-application-template")).exists();
+        assertThat(tmpProject.resolve("devon4ng-application-template")).exists();
     }
 
     /**

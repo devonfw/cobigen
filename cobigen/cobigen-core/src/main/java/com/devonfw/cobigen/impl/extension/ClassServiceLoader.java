@@ -52,8 +52,7 @@ public class ClassServiceLoader {
         if (LOG.isDebugEnabled()) {
             if (classLoader instanceof URLClassLoader) {
                 LOG.debug("URL Classloader with URLs:");
-                Arrays.stream(((URLClassLoader) classLoader).getURLs())
-                    .forEach(url -> LOG.debug("  * {}{}", url, System.lineSeparator()));
+                Arrays.stream(((URLClassLoader) classLoader).getURLs()).forEach(url -> LOG.debug("  * {}", url));
             }
         }
         generatorPluginActivatorClasses.clear();
