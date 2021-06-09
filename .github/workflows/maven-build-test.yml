@@ -32,11 +32,18 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Cache m2 repository
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ github.sha }}
+          restore-keys: |
+            cobigen-dep-${{ hashFiles('**/pom.xml') }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -65,13 +72,18 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # new key will cache
           restore-keys: |
-            cobigen-dep-${{ hashFiles('**/pom.xml') }}
+            ${{ runner.os }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -100,6 +112,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
         uses: actions/cache@v2
         with:
@@ -140,6 +157,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
         uses: actions/cache@v2
         with:
@@ -173,6 +195,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Cache Eclipse repository
         uses: actions/cache@v2
         with:
@@ -216,6 +243,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
         uses: actions/cache@v2
         with:
@@ -251,6 +283,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
         uses: actions/cache@v2
         with:
@@ -286,6 +323,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Cache m2 repository of templates build
         uses: actions/cache@v2
         with:
