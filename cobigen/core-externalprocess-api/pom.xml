@@ -11,6 +11,10 @@
     <version>${revision}</version>
   </parent>
 
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
