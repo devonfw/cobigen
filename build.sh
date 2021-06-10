@@ -67,4 +67,4 @@ mvn install -f cobigen-cli $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-maven $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE
-#mvn deploy -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE -Dupdatesite.repository=test --projects cobigen-eclipse/cobigen-eclipse-updatesite
+#mvn deploy -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE -Dupdatesite.repository=test --projects cobigen-eclipse-updatesite
