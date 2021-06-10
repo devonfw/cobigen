@@ -7,6 +7,7 @@
   <version>${revision}</version>
   <name>CobiGen - Master Parent</name>
   <packaging>pom</packaging>
+  <description>A Code-based incremental Generator</description>
 
   <properties>
     <!-- Need to remove leading zeros as of https://bugs.eclipse.org/bugs/show_bug.cgi?id=513203 in the last version segment -->
@@ -35,6 +36,13 @@
     <module>cobigen-maven</module>
     <module>cobigen-templates</module>
   </modules>
+
+  <developers>
+    <developer>
+      <name>Malte Brunnlieb</name>
+      <organization>Capgemini</organization>
+    </developer>
+  </developers>
 
   <url>https://github.com/${github.project}</url>
   <issueManagement>
