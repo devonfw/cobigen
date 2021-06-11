@@ -7,10 +7,11 @@
   <version>${revision}</version>
   <name>CobiGen - Master Parent</name>
   <packaging>pom</packaging>
+  <description>A Code-based incremental Generator</description>
 
   <properties>
     <!-- Need to remove leading zeros as of https://bugs.eclipse.org/bugs/show_bug.cgi?id=513203 in the last version segment -->
-    <revision>2020.12.001-SNAPSHOT</revision>
+    <revision>2021.04.001-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
@@ -35,6 +36,13 @@
     <module>cobigen-maven</module>
     <module>cobigen-templates</module>
   </modules>
+
+  <developers>
+    <developer>
+      <name>Malte Brunnlieb</name>
+      <organization>Capgemini</organization>
+    </developer>
+  </developers>
 
   <url>https://github.com/${github.project}</url>
   <issueManagement>
@@ -116,6 +124,21 @@
         <version>3.12.0</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.10.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.8.6</version>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.2.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.devonfw.cobigen</groupId>
         <artifactId>core</artifactId>
         <version>${revision}</version>
@@ -168,6 +191,28 @@
       </extension>
     </extensions>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <configuration>
+          <skipAggregateDownloadLicenses>!${skip.deployment}</skipAggregateDownloadLicenses>
+          <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
+          <sortArtifactByName>true</sortArtifactByName>
+          <includeTransitiveDependencies>true</includeTransitiveDependencies>
+          <failOnMissing>false</failOnMissing>
+          <encoding>utf-8</encoding>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-license-report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>aggregate-download-licenses</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
@@ -241,71 +286,6 @@
             <goals>
               <goal>clean</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>fileToUrl</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>regex-property</goal>
-            </goals>
-            <configuration>
-              <value>${p2.repository.build.dir}</value>
-              <regex>\\</regex>
-              <replacement>/</replacement>
-              <name>p2.repository.build.dir.url</name>
-              <failIfNoMatch>false</failIfNoMatch>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- plugins from profile -->
-      <!-- sets ${qualifiedVersion} for upload to update site -->
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-packaging-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <executions>
-          <execution>
-            <id>build-qualifier</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>build-qualifier</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- update site -->
-      <!-- copy to gh-pages folder next to this repository checked out gh-pages branch -->
-      <plugin>
-        <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-p2-extras-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <executions>
-          <execution>
-            <id>mirror-files-build-to-upload-dir</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>mirror</goal>
-            </goals>
-            <configuration>
-              <skip>${skip.deployment}</skip>
-              <source>
-                <repository>
-                  <url>file:///${p2.repository.build.dir.url}</url>
-                  <layout>p2</layout>
-                </repository>
-              </source>
-              <destination>${p2.repository.upload.dir.plugin}</destination>
-              <xzCompress>false</xzCompress>
-              <append>true</append>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -481,6 +461,80 @@
 
   <profiles>
     <profile>
+      <id>p2-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>fileToUrl</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>regex-property</goal>
+                </goals>
+                <configuration>
+                  <value>${p2.repository.build.dir}</value>
+                  <regex>\\</regex>
+                  <replacement>/</replacement>
+                  <name>p2.repository.build.dir.url</name>
+                  <failIfNoMatch>false</failIfNoMatch>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- plugins from profile -->
+          <!-- sets ${qualifiedVersion} for upload to update site -->
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-packaging-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <executions>
+              <execution>
+                <id>build-qualifier</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>build-qualifier</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- update site -->
+          <!-- copy to gh-pages folder next to this repository checked out gh-pages branch -->
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <executions>
+              <execution>
+                <id>mirror-files-build-to-upload-dir</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <skip>${skip.deployment}</skip>
+                  <source>
+                    <repository>
+                      <url>file:///${p2.repository.build.dir.url}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir.plugin}</destination>
+                  <xzCompress>false</xzCompress>
+                  <append>true</append>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>oss</id>
       <build>
         <plugins>
@@ -521,6 +575,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.0.1</version>
             <configuration>
               <keyname>${gpg.keyname}</keyname>
             </configuration>

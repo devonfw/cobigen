@@ -6,6 +6,8 @@ eclipse-target
 **/src/generated/
 classPath-*
 pom-cp-*
+licenses/
+*.log
 .*
 !.github
 !.gitignore
