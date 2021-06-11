@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CobiGen Eclipse Plug-In Tests
 Bundle-SymbolicName: com.devonfw.cobigen.eclipse.test;singleton:=true
-Bundle-Version: 2021.04.001
+Bundle-Version: 2021.04.001.qualifier
 Bundle-Vendor: Capgemini
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

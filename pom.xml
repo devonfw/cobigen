@@ -11,7 +11,7 @@
 
   <properties>
     <!-- Need to remove leading zeros as of https://bugs.eclipse.org/bugs/show_bug.cgi?id=513203 in the last version segment -->
-    <revision>2021.04.001</revision>
+    <revision>2021.04.001-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
@@ -124,6 +124,21 @@
         <version>3.12.0</version>
       </dependency>
       <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.10.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.8.6</version>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.2.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.devonfw.cobigen</groupId>
         <artifactId>core</artifactId>
         <version>${revision}</version>
@@ -176,6 +191,28 @@
       </extension>
     </extensions>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <configuration>
+          <skipAggregateDownloadLicenses>!${skip.deployment}</skipAggregateDownloadLicenses>
+          <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
+          <sortArtifactByName>true</sortArtifactByName>
+          <includeTransitiveDependencies>true</includeTransitiveDependencies>
+          <failOnMissing>false</failOnMissing>
+          <encoding>utf-8</encoding>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-license-report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>aggregate-download-licenses</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
