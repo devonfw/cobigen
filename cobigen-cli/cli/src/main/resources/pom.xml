@@ -64,17 +64,17 @@
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-java-parser</artifactId>
-      <version>1.0.0-beta5</version>
+      <version>1.0.0-beta6</version>
     </dependency>
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-base</artifactId>
-      <version>1.0.0-beta5</version>
+      <version>1.0.0-beta6</version>
     </dependency>
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-java-maven</artifactId>
-      <version>1.0.0-beta5</version>
+      <version>1.0.0-beta6</version>
     </dependency>
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
