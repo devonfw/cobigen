@@ -3,7 +3,27 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+  cache-dependencies:
+    runs-on: ubuntu-latest
+    steps:    
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - name: Clone CobiGen Repo
+        uses: actions/checkout@v2
+      
+      - name: Cache m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: cobigen-dep-${{ hashFiles('**/package-lock.json') }}
+      
+      - name: Resolve non-cobigen dependencies
+        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build || true # never fail
+    
   build-and-test-core:
+    needs: cache-dependencies
     strategy:
       fail-fast: false
       matrix:
@@ -12,11 +32,18 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Cache m2 repository
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}
+          restore-keys: |
+            cobigen-dep-${{ hashFiles('**/pom.xml') }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -45,8 +72,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # new key will cache
@@ -80,14 +112,19 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # key hit will not update cache
 
       - name: Cache p2 plugin repositories
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./**/target/repository/
           key: p2-plugins-${{ github.sha }} # new key will cache
@@ -120,8 +157,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # key hit will not update cache
@@ -153,13 +195,18 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Cache Eclipse repository
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./**/eclipse/target/repository/
           key: p2-eclipse-${{ github.sha }} # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}
+            ${{ runner.os }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -169,7 +216,7 @@ jobs:
       
       # After checkout we need to restore the built repositories
       - name: Restore P2 plugins repositories
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ./**/target/repository/
           key: p2-plugins-${{ github.sha }} # key hit will not update cache
@@ -196,8 +243,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-maven # new key will cache
@@ -222,7 +274,7 @@ jobs:
           mvn install -f cobigen-maven -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
   build-and-test-cli:
-    needs: build-and-test-plugins
+    needs: build-and-test-templates
     strategy:
       fail-fast: false
       matrix:
@@ -231,13 +283,18 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Restore m2 repository
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-cli # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}-plugins
+            ${{ runner.os }}-maven-${{ github.sha }}-templates
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -266,8 +323,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
       - name: Cache m2 repository of templates build
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ github.sha }}-templates # new key will cache

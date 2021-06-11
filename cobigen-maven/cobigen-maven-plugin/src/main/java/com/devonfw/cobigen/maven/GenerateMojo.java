@@ -39,7 +39,7 @@ import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
+import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
 import com.devonfw.cobigen.maven.validation.InputPreProcessor;
 import com.google.common.collect.Sets;
 
@@ -118,7 +118,7 @@ public class GenerateMojo extends AbstractMojo {
 
         try {
             for (Object input : inputs) {
-                getLog().debug("Invoke CobiGen for input " + input);
+                getLog().debug("Invoke CobiGen for input of class " + input.getClass().getCanonicalName());
 
                 GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
                     Paths.get(destinationRoot.toURI()), forceOverride, null);
@@ -154,18 +154,13 @@ public class GenerateMojo extends AbstractMojo {
         CobiGen cobiGen;
 
         if (configurationFolder != null) {
-
-            getLog().debug("ConfigurationFolder found in:" + configurationFolder.toURI().toString());
+            getLog().debug("ConfigurationFolder configured as " + configurationFolder.toURI().toString());
             cobiGen = CobiGenFactory.create(configurationFolder.toURI());
         } else {
-
             final ClassRealm classRealm = pluginDescriptor.getClassRealm();
-            URL contextConfigurationLocation = TemplatesClassloaderUtil.getContextConfiguration(classRealm);
-
+            URL contextConfigurationLocation = ConfigurationClassLoaderUtil.getContextConfiguration(classRealm);
             URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
-
-            getLog().debug("Reading configuration from file:" + configFile.toString());
-
+            getLog().debug("Reading configuration from file " + configFile.toString());
             cobiGen = CobiGenFactory.create(configFile);
         }
         return cobiGen;

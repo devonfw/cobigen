@@ -61,10 +61,11 @@ import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
 import com.devonfw.cobigen.impl.generator.api.GenerationProcessor;
 import com.devonfw.cobigen.impl.generator.api.InputResolver;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
-import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
+import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
 
 /**
  * Generation processor. Caches calculations and thus should be newly created on each request.
@@ -164,7 +165,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         inputProjectClassLoader = prependTemplatesClassloader(templateConfigPath, inputProjectClassLoader);
         if (inputProjectClassLoader != null) {
             try {
-                logicClasses = TemplatesClassloaderUtil.resolveUtilClasses(templateConfigPath, inputProjectClassLoader);
+                logicClasses =
+                    ConfigurationClassLoaderUtil.resolveUtilClasses(configurationHolder, inputProjectClassLoader);
             } catch (IOException e) {
                 LOG.error("An IOException occured while resolving utility classes!", e);
             }
@@ -264,12 +266,12 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             Path cpCacheFile = null;
             try {
                 if (Files.exists(pomFile)) {
-                    LOG.debug("Found templates to be configured by maven. Building classpath...");
+                    LOG.debug("Found templates to be configured by maven.");
 
                     String pomFileHash;
                     try {
-                        pomFileHash = com.google.common.io.Files.asByteSource(pomFile.toFile())
-                            .hash(Hashing.murmur3_128()).toString();
+                        pomFileHash =
+                            ByteSource.wrap(Files.readAllBytes(pomFile)).hash(Hashing.murmur3_128()).toString();
                     } catch (IOException e) {
                         LOG.warn("Could not calculate hash of {}", pomFile.toUri());
                         pomFileHash = "";
@@ -284,7 +286,10 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                     }
 
                     if (!Files.exists(cpCacheFile)) {
+                        LOG.debug("Building classpath for maven templates configuration ...");
                         MavenUtil.cacheMavenClassPath(pomFile, cpCacheFile);
+                    } else {
+                        LOG.debug("Taking cached classpath from {}", cpCacheFile);
                     }
 
                     // Read classPath.txt file and add to the class path all dependencies
@@ -329,12 +334,12 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     private void compileTemplateUtils(Path templateFolder) {
         LOG.debug("Build templates folder {}", templateFolder);
         try {
-            StartedProcess process = new ProcessExecutor().destroyOnExit()
+            StartedProcess process = new ProcessExecutor().destroyOnExit().directory(templateFolder.toFile())
                 .command(SystemUtil.determineMvnPath(), "compile",
                     // https://stackoverflow.com/a/66801171
                     "-Djansi.force=true", "-Djansi.passthrough=true", "-B",
-                    "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn", "-q",
-                    "-f", templateFolder.resolve("pom.xml").toString())
+                    "-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"),
+                    "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN", "-q")
                 .redirectError(
                     Slf4jStream
                         .of(LoggerFactory
@@ -344,7 +349,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                     Slf4jStream
                         .of(LoggerFactory
                             .getLogger(GenerationProcessorImpl.class.getName() + "." + "mvn-compile-templates"))
-                        .asDebug())
+                        .asInfo())
                 .start();
 
             Future<ProcessResult> future = process.getFuture();

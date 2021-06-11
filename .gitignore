@@ -5,6 +5,7 @@ target
 eclipse-target
 **/src/generated/
 classPath-*
+pom-cp-*
 .*
 !.github
 !.gitignore

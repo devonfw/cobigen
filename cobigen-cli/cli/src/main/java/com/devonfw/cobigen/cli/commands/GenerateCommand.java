@@ -4,7 +4,6 @@ import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.File;
-import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.ConfigurationUtil;
 import com.devonfw.cobigen.api.util.Tuple;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
@@ -104,10 +102,6 @@ public class GenerateCommand extends CommandCommons {
 
         LOG.debug("Input files and output root path confirmed to be valid.");
         CobiGen cg = CobiGenUtils.initializeCobiGen(templatesProject);
-
-        URI templatesLocationUri = ConfigurationUtil.findTemplatesLocation();
-        Path templateFolder = Paths.get(templatesLocationUri);
-        LOG.debug("Executing cobigen with templates found at {}", templateFolder);
 
         if (increments == null && templates != null) {
             Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);

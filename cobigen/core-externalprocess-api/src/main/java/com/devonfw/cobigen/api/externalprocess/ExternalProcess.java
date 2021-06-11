@@ -32,8 +32,8 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.StartedProcess;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
-import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.externalprocess.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.google.gson.Gson;
 
@@ -275,7 +275,7 @@ public class ExternalProcess {
                     .redirectError(
                         Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
                     .redirectOutput(
-                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asDebug())
+                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asInfo())
                     .start();
                 Future<ProcessResult> result = process.getFuture();
 

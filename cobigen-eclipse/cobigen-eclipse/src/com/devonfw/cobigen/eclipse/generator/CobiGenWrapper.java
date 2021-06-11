@@ -27,8 +27,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.bindings.Trigger;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
@@ -46,9 +44,7 @@ import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
-import com.devonfw.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.devonfw.cobigen.eclipse.common.tools.MapUtils;
-import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -171,14 +167,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             LOG.debug("Generating files...");
 
             SubMonitor subMonitor = SubMonitor.convert(monitor, 105);
-
-            IProject configProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            IJavaProject configJavaProject = JavaCore.create(configProject);
-
-            ClassLoader inputClassLoader = getInputClassloader();
-            // create classpath for the configuration project while keeping the input's classpath
-            // as the parent classpath to prevent classpath shading.
-            inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
 
             if (monitor.isCanceled()) {
                 throw new CancellationException("generation got Cancelled by the User");

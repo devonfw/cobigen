@@ -10,15 +10,4 @@ public class ResourceConstants {
      */
     public static final String CONFIG_PROJECT_NAME = "CobiGen_Templates";
 
-    /**
-     * Latest Jar folder downloaded from Update Templates
-     */
-    public static final String DOWNLOADED_JAR_FOLDER = "/.metadata/cobigen_jars";
-
-    /**
-     * Jar regular expression name to be used in a file name filter, so that we can check whether the
-     * templates are already downloaded. Checks "templates-anystring-anydigitbetweendots.jar"
-     */
-    public static final String JAR_FILE_REGEX_NAME = "templates-([^-]+)-(\\d+\\.?)+.jar";
-
 }
