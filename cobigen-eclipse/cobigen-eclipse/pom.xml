@@ -11,6 +11,10 @@
     <version>${revision}</version>
   </parent>
 
+  <properties>
+    <license.skipAggregateDownloadLicenses>false</license.skipAggregateDownloadLicenses>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>

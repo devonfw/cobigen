@@ -47,9 +47,6 @@
   </files>
   <dependencySets>
     <dependencySet>
-      <includes>
-        <include>*:class-loader-agent:*</include>
-      </includes>
       <outputDirectory>/lib</outputDirectory>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
     </dependencySet>

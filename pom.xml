@@ -19,6 +19,7 @@
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
     <tycho.version>1.6.0</tycho.version>
+    <license.skipAggregateDownloadLicenses>${skip.deployment}</license.skipAggregateDownloadLicenses>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     <updatesite.url>https://devonfw.com/cobigen/updatesite</updatesite.url>
     <!-- updatesite.repository needs to be set by cmd and needs to be one of either 'stable' or 'test' -->
@@ -195,21 +196,21 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>2.0.0</version>
-        <configuration>
-          <skipAggregateDownloadLicenses>!${skip.deployment}</skipAggregateDownloadLicenses>
-          <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
-          <sortArtifactByName>true</sortArtifactByName>
-          <includeTransitiveDependencies>true</includeTransitiveDependencies>
-          <failOnMissing>false</failOnMissing>
-          <encoding>utf-8</encoding>
-        </configuration>
         <executions>
           <execution>
             <id>generate-license-report</id>
-            <phase>verify</phase>
+            <phase>prepare-package</phase>
             <goals>
               <goal>aggregate-download-licenses</goal>
             </goals>
+            <configuration>
+              <sortArtifactByName>true</sortArtifactByName>
+              <includeTransitiveDependencies>true</includeTransitiveDependencies>
+              <failOnMissing>false</failOnMissing>
+              <encoding>utf-8</encoding>
+              <executeOnlyOnRootModule>false</executeOnlyOnRootModule>
+              <excludedGroups>com.devonfw.cobigen</excludedGroups>
+            </configuration>
           </execution>
         </executions>
       </plugin>
