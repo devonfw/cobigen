@@ -9,6 +9,7 @@ pom-cp-*
 licenses/
 *.log
 .*
+output/
 !.github
 !.gitignore
 !.mvn

@@ -193,28 +193,6 @@
     </extensions>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <version>2.0.0</version>
-        <executions>
-          <execution>
-            <id>generate-license-report</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>aggregate-download-licenses</goal>
-            </goals>
-            <configuration>
-              <sortArtifactByName>true</sortArtifactByName>
-              <includeTransitiveDependencies>true</includeTransitiveDependencies>
-              <failOnMissing>false</failOnMissing>
-              <encoding>utf-8</encoding>
-              <executeOnlyOnRootModule>false</executeOnlyOnRootModule>
-              <excludedGroups>com.devonfw.cobigen</excludedGroups>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.commonjava.maven.plugins</groupId>
         <artifactId>directory-maven-plugin</artifactId>
         <version>0.1</version>
