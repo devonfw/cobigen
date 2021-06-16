@@ -8,8 +8,12 @@ classPath-*
 pom-cp-*
 licenses/
 *.log
+*.log*.gz
 .*
-output/
+solicitor/output/*
+solicitor/input/*
+solicitor/licenses/*
+solicitor/*.jar
 !.github
 !.gitignore
 !.mvn
