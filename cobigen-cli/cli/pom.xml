@@ -36,7 +36,7 @@
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-java-impl</artifactId>
-      <version>1.0.0-beta5</version>
+      <version>1.0.0-beta6</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>

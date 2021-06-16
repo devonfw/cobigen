@@ -1,0 +1,4 @@
+exclude gaPattern com\.devonfw\.cobigen:.*
+exclude gaPattern p2\.eclipse-plugin:.*
+exclude scope test
+exclude scope provided
