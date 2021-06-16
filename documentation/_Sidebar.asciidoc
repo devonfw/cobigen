@@ -12,6 +12,7 @@
 * link:howto_devon4net[.Net generation]
 * link:howto_Release-creation[Release creation]
 * link:howto_create-external-plugin.asciidoc[External plugin creation]
+* link:howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[End to End POC Code generation using Entity class]
 
 === Configuration
 * link:cobigen-core_configuration[CobiGen Configuration]
