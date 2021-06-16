@@ -54,7 +54,7 @@ jobs:
           cd ${REPO_DEST}                
           git status
           git add .
-          git commit -m "${REPO_SOURCE} documentation | GitHub Actions build number $BUILD_NUMBER"
+          git commit -am "${REPO_SOURCE} documentation | GitHub Actions build number $BUILD_NUMBER"
           git remote add origin-wiki "https://${BUILD_USER}:${BUILD_USER_PASSWD}@github.com/${ORG}/${REPO_DEST}.git"
           git push origin-wiki master
       - name: Sync devonfw guide
@@ -69,7 +69,7 @@ jobs:
           git pull
           cd ..
           git add .
-          git commit -m "${REPO_SOURCE} documentation | GitHub Actions build number $BUILD_NUMBER"
+          git commit -am "${REPO_SOURCE} documentation | GitHub Actions build number $BUILD_NUMBER"
           git remote add origin-wiki "https://${BUILD_USER}:${BUILD_USER_PASSWD}@github.com/${ORG}/${REPO_CONSOLIDATE}.git"
           git push origin-wiki master
       - name: Trigger Update devonfw-guide on success
