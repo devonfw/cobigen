@@ -53,7 +53,8 @@ jobs:
         run: |
           cd ${REPO_DEST}                
           git status
-          git add .
+          git add -A --verbose
+          git status
           git commit -am "${REPO_SOURCE} documentation | GitHub Actions build number $BUILD_NUMBER"
           git remote add origin-wiki "https://${BUILD_USER}:${BUILD_USER_PASSWD}@github.com/${ORG}/${REPO_DEST}.git"
           git push origin-wiki master
