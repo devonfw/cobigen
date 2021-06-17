@@ -109,6 +109,8 @@ include::howto-Cobigen-CLI-generation.asciidoc[leveloffset=2]
 
 include::howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[leveloffset=2]
 
+include::howto-devonfw-CobiGen-OpenAPI.asciidoc[leveloffset=2]
+
 include::howto_enable_composite_primary_keys_in_entity.asciidoc[leveloffset=2]
 
 == Template Development
