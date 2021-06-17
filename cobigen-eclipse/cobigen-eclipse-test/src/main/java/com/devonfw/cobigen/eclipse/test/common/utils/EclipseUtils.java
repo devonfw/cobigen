@@ -117,6 +117,7 @@ public class EclipseUtils {
         SWTBotTreeItem configurationProject = view.bot().tree().expandNode(projectName);
         configurationProject.contextMenu().menu("Maven", false, 0).menu("Update Project...", false, 0).click();
         bot.waitUntil(shellIsActive("Update Maven Project"));
+        bot.checkBoxWithLabel("Force Update of Snapshots/Releases").click();
         bot.button(IDialogConstants.OK_LABEL).click();
         Retry.runWithRetry(bot, () -> ResourcesPlugin.getWorkspace().getRoot().getProject(projectName)
             .build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor()), CoreException.class, 2);
