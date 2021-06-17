@@ -108,14 +108,14 @@ public class GenerateCommand extends CommandCommons {
             Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);
             for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
                 generate(inputFiles.get(i).toPath(), inputsAndArtifacts.getA().get(i),
-                    MavenUtil.getProjectRoot(inputFiles.get(i).toPath()), inputsAndArtifacts.getB(), cg,
+                    MavenUtil.getProjectRoot(inputFiles.get(i).toPath(), false), inputsAndArtifacts.getB(), cg,
                     TemplateTo.class);
             }
         } else {
             Tuple<List<Object>, List<IncrementTo>> inputsAndArtifacts = preprocess(cg, IncrementTo.class);
             for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
                 generate(inputFiles.get(i).toPath(), inputsAndArtifacts.getA().get(i),
-                    MavenUtil.getProjectRoot(inputFiles.get(i).toPath()), inputsAndArtifacts.getB(), cg,
+                    MavenUtil.getProjectRoot(inputFiles.get(i).toPath(), false), inputsAndArtifacts.getB(), cg,
                     IncrementTo.class);
             }
         }

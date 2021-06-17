@@ -416,16 +416,16 @@ public class JavaInputReader implements InputReader {
             }
             if (classLoader == null) {
                 LOG.debug("No classloader passed");
-                Path inputProjectRoot = MavenUtil.getProjectRoot(path);
-                if (inputProjectRoot != null) {
-                    classLoader = JavaParserUtil.getJavaContext(path, inputProjectRoot).getClassLoader();
+                Path inputProject = MavenUtil.getProjectRoot(path, false);
+                if (inputProject != null) {
+                    classLoader = JavaParserUtil.getJavaContext(path, inputProject).getClassLoader();
                     LOG.debug("Checking dependencies to exist.");
                     if (classLoader instanceof URLClassLoader) {
                         for (URL url : ((URLClassLoader) classLoader).getURLs()) {
                             try {
                                 if (!Files.exists(Paths.get(url.toURI()))) {
                                     LOG.info("Found at least one maven dependency not to exist ({}).", url);
-                                    MavenUtil.resolveDependencies(inputProjectRoot);
+                                    MavenUtil.resolveDependencies(inputProject);
                                     break;
                                 }
                             } catch (URISyntaxException e) {
@@ -436,7 +436,7 @@ public class JavaInputReader implements InputReader {
                         LOG.debug("m-m-m classloader is instance of {}. Unable to check dependencies",
                             classLoader.getClass());
                     }
-                    classLoader = JavaParserUtil.getJavaContext(path, inputProjectRoot).getClassLoader();
+                    classLoader = JavaParserUtil.getJavaContext(path, inputProject).getClassLoader();
                 } else {
                     LOG.debug(
                         "No maven project detected defining the input path {}, executing without classloader support",
