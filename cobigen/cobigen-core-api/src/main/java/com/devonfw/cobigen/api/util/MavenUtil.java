@@ -138,9 +138,11 @@ public class MavenUtil {
      * Tries to find a pom.xml file in the passed folder
      * @param source
      *            folder where we check if a pom.xml file is found
+     * @param foundPom
+     *            whether a pom has already been detected
      * @return the pom.xml file if it was found, null otherwise
      */
-    private static Path findPom(Path source) {
+    private static Path findPom(Path source, boolean foundPom) {
 
         if (source == null) {
             return null;
@@ -149,19 +151,29 @@ public class MavenUtil {
         if (Files.isRegularFile(source)) {
             if (source.getFileName().toString().equals(MavenConstants.POM)) {
                 if (Files.exists(source)) {
-                    LOG.info("This is a valid maven project.");
+                    LOG.info("{} is already a pom.xml.");
                     return source;
                 }
             }
             LOG.warn("File {} neither exists nor is a {}, trying to search for {} in one of the parent folders.",
                 source, MavenConstants.POM, MavenConstants.POM);
-            return findPom(source.getParent());
+            return findPom(source.getParent(), foundPom);
         } else {
             Path pomFile = source.resolve(MavenConstants.POM);
             if (Files.exists(pomFile) && Files.isRegularFile(pomFile)) {
-                return pomFile;
+                // try searching another parent
+                if (findPom(source.getParent(), false) == null) {
+                    LOG.debug("Stop searching pom as no pom.xml in parent directory. Taking {} as top-level pom.xml",
+                        pomFile);
+                    return pomFile;
+                }
             }
-            return findPom(source.getParent());
+
+            if (foundPom) {
+                return null;
+            } else {
+                return findPom(source.getParent(), foundPom);
+            }
         }
     }
 
@@ -176,8 +188,9 @@ public class MavenUtil {
      */
     public static Path getProjectRoot(Path inputFile) {
 
-        Path pomFile = findPom(inputFile);
+        Path pomFile = findPom(inputFile, false);
         if (pomFile != null) {
+            LOG.info("Found project root in path {}", pomFile.getParent());
             return pomFile.getParent();
         }
         LOG.debug("Project root could not be found.");
