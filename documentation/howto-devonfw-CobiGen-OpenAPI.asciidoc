@@ -75,9 +75,9 @@ image:images/howtos/e2e_gen/image16.png[sql file]
 *_WARNING_*: please note that there are 2 underscore in the name !
 
 [source, sql]
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Stefano','Rossini','stefano.rossini@capgemini.com');
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Angelo','Muresu', 'angelo.muresu@capgemini.com');
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Jaime','Gonzalez', 'jaime.diaz-gonzalez@capgemini.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Albert','Miller','stefano.rossini@example.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Angelo','Gonzalez', 'angelo.Gonzalez@example.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Jaime','King', 'jaime.king@example.com');
 
 image:images/howtos/e2e_gen/image17.png[sql insert]
 
