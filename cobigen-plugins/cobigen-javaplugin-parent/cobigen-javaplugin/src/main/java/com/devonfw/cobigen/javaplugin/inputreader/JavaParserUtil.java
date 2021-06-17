@@ -1,7 +1,12 @@
 package com.devonfw.cobigen.javaplugin.inputreader;
 
 import java.io.Reader;
+import java.nio.file.Path;
 
+import net.sf.mmm.code.impl.java.JavaContext;
+import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
+
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
@@ -81,5 +86,77 @@ public class JavaParserUtil {
     public static String resolveToSimpleType(String canonicalType) {
         String simpleType = new String(canonicalType).replaceAll("(([\\w]+\\.))", "");
         return simpleType;
+    }
+
+    /**
+     * Tries to get the Java context by creating a new class loader of the input project that is able to load
+     * the input file. We need this in order to perform reflection on the templates.
+     *
+     * @param inputFile
+     *            input file the user wants to generate code from
+     * @param inputProject
+     *            input project where the input file is located. We need this in order to build the classpath
+     *            of the input file
+     * @return the Java context created from the input project
+     */
+    public static JavaContext getJavaContext(Path inputFile, Path inputProject) {
+
+        String fqn = null;
+        try {
+            JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject.toFile(), true);
+            fqn = getFQN(inputFile);
+            context.getClassLoader().loadClass(fqn);
+            return context;
+        } catch (NoClassDefFoundError | ClassNotFoundException e) {
+            throw new CobiGenRuntimeException("Compiled class " + fqn
+                + " has not been found. Most probably you need to build project " + inputProject.toString() + ".", e);
+        } catch (Exception e) {
+            throw new CobiGenRuntimeException(
+                "Transitive dependencies have not been found on your m2 repository (Maven). Please run 'mvn package' "
+                    + "in your input project in order to download all the needed dependencies.",
+                e);
+        }
+    }
+
+    /**
+     * This method is traversing parent folders until it reaches java folder in order to get the FQN
+     *
+     * @param inputFile
+     *            Java input file to retrieve FQN (Full Qualified Name)
+     * @return qualified name with full package
+     */
+    private static String getFQN(Path inputFile) {
+        String simpleName = inputFile.getFileName().toString().replaceAll("\\.(?i)java", "");
+        String packageName = getPackageName(inputFile.getParent(), "");
+
+        return packageName + "." + simpleName;
+    }
+
+    /**
+     * This method traverse the folder in reverse order from child to parent
+     *
+     * @param folder
+     *            parent input file
+     * @param packageName
+     *            the package name
+     * @return package name
+     */
+    private static String getPackageName(Path folder, String packageName) {
+
+        if (folder == null) {
+            return null;
+        }
+
+        if (folder.getFileName().toString().toLowerCase().equals("java")) {
+            String[] pkgs = packageName.split("\\.");
+
+            packageName = pkgs[pkgs.length - 1];
+            // Reverse order as we have traversed folders from child to parent
+            for (int i = pkgs.length - 2; i > 0; i--) {
+                packageName = packageName + "." + pkgs[i];
+            }
+            return packageName;
+        }
+        return getPackageName(folder.getParent(), packageName + "." + folder.getFileName().toString());
     }
 }

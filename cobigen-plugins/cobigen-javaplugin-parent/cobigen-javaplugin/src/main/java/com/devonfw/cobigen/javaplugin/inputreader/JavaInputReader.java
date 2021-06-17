@@ -6,9 +6,13 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -22,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.extension.InputReader;
+import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
@@ -409,13 +414,43 @@ public class JavaInputReader implements InputReader {
                         new CompositeClassLoader(JavaInputReader.class.getClassLoader(), (ClassLoader) addArg);
                 }
             }
-            try (BufferedReader pathReader = new BufferedReader(new FileReader(path.toFile()))) {
+            if (classLoader == null) {
+                LOG.debug("No classloader passed");
+                Path inputProjectRoot = MavenUtil.getProjectRoot(path);
+                if (inputProjectRoot != null) {
+                    classLoader = JavaParserUtil.getJavaContext(path, inputProjectRoot).getClassLoader();
+                    LOG.debug("Checking dependencies to exist.");
+                    if (classLoader instanceof URLClassLoader) {
+                        for (URL url : ((URLClassLoader) classLoader).getURLs()) {
+                            try {
+                                if (!Files.exists(Paths.get(url.toURI()))) {
+                                    LOG.info("Found at least one maven dependency not to exist ({}).", url);
+                                    MavenUtil.resolveDependencies(inputProjectRoot);
+                                    break;
+                                }
+                            } catch (URISyntaxException e) {
+                                LOG.warn("Unable to check {} for existence", url, (LOG.isDebugEnabled() ? e : null));
+                            }
+                        }
+                    } else {
+                        LOG.debug("m-m-m classloader is instance of {}. Unable to check dependencies",
+                            classLoader.getClass());
+                    }
+                    classLoader = JavaParserUtil.getJavaContext(path, inputProjectRoot).getClassLoader();
+                } else {
+                    LOG.debug(
+                        "No maven project detected defining the input path {}, executing without classloader support",
+                        path);
+                }
+            }
+            try (FileReader reader = new FileReader(path.toFile());
+                BufferedReader pathReader = new BufferedReader(reader)) {
                 // couldn't think of another way here... Java8 compliance would made this a lot easier due to
                 // lambdas
                 if (clazz == null) {
                     if (classLoader == null) {
                         JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(pathReader);
-                        LOG.debug("Read {}.", firstJavaClass);
+                        LOG.debug("Reading {} without classloader support.", firstJavaClass);
                         return firstJavaClass;
                     } else {
                         JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
@@ -423,7 +458,8 @@ public class JavaInputReader implements InputReader {
                             clazz = classLoader.loadClass(firstJavaClass.getCanonicalName());
                         } catch (ClassNotFoundException e) {
                             // ignore
-                            LOG.debug("Read {}.", firstJavaClass);
+                            LOG.warn("Class {} not found in classloader, ignoring as it might be neglectable.",
+                                firstJavaClass, e);
                             return firstJavaClass;
                         }
                         Object[] result = new Object[] { firstJavaClass, clazz };

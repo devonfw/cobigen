@@ -34,7 +34,7 @@
       <artifactId>core-test</artifactId>
       <scope>test</scope>
     </dependency>
-
+    
     <!-- Enables XPath for FreeMarker templates -->
     <dependency>
       <groupId>jaxen</groupId>

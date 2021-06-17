@@ -54,6 +54,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>net.sf.m-m-m</groupId>
+      <artifactId>mmm-code-java-impl</artifactId>
+      <version>1.0.0-beta6</version>
+    </dependency>
+
     <!-- QDox for Java parsing -->
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>

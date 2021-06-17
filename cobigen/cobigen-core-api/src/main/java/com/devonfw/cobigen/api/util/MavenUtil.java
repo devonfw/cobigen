@@ -40,11 +40,7 @@ public class MavenUtil {
         LOG.info("Calculating class path for {} and downloading the needed maven dependencies. Please be patient...",
             pomFile);
         List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath(), "dependency:build-classpath",
-            // https://stackoverflow.com/a/66801171
-            "-Djansi.force=true", "-Djansi.passthrough=true", "-B",
-            "-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"),
-            "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN",
-            "-Dmdep.outputFile=" + cpFile.toString(), "-q");
+            "-Dmdep.outputFile=" + cpFile.toString());
         if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
             Path cachedPomXml = cpFile.resolveSibling("cached-pom.xml");
             try {
@@ -62,7 +58,20 @@ public class MavenUtil {
         }
         runCommand(pomFile.getParent(), args);
         LOG.debug("Downloaded dependencies successfully.");
+    }
 
+    /**
+     * Resolve all maven dependencies of given project
+     * @param mvnProjectRoot
+     *            the maven project root
+     */
+    public static void resolveDependencies(Path mvnProjectRoot) {
+        LOG.info(
+            "Resolving maven dependencies for maven project {} to be able to make use of reflection in templates. Please be patient...",
+            mvnProjectRoot);
+        List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath(), "dependency:resolve");
+        runCommand(mvnProjectRoot, args);
+        LOG.debug("Downloaded dependencies successfully.");
     }
 
     /**
@@ -73,6 +82,15 @@ public class MavenUtil {
      *            the maven arguments to execute
      */
     private static void runCommand(Path execDir, List<String> args) {
+
+        // https://stackoverflow.com/a/66801171
+        args.add("-Djansi.force=true");
+        args.add("-Djansi.passthrough=true");
+        args.add("-B");
+        args.add("-q");
+        args.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"));
+        args.add("-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN");
+
         try {
             StartedProcess process = new ProcessExecutor().destroyOnExit().directory(execDir.toFile()).command(args)
                 .redirectError(
@@ -114,5 +132,55 @@ public class MavenUtil {
         } catch (IOException e) {
             LOG.warn("Failed cleaning up old classpath cache files in {}", rootPath);
         }
+    }
+
+    /**
+     * Tries to find a pom.xml file in the passed folder
+     * @param source
+     *            folder where we check if a pom.xml file is found
+     * @return the pom.xml file if it was found, null otherwise
+     */
+    private static Path findPom(Path source) {
+
+        if (source == null) {
+            return null;
+        }
+
+        if (Files.isRegularFile(source)) {
+            if (source.getFileName().toString().equals(MavenConstants.POM)) {
+                if (Files.exists(source)) {
+                    LOG.info("This is a valid maven project.");
+                    return source;
+                }
+            }
+            LOG.warn("File {} neither exists nor is a {}, trying to search for {} in one of the parent folders.",
+                source, MavenConstants.POM, MavenConstants.POM);
+            return findPom(source.getParent());
+        } else {
+            Path pomFile = source.resolve(MavenConstants.POM);
+            if (Files.exists(pomFile) && Files.isRegularFile(pomFile)) {
+                return pomFile;
+            }
+            return findPom(source.getParent());
+        }
+    }
+
+    /**
+     * Tries to find the root folder of the project in order to build the classpath. This method is trying to
+     * find the first pom.xml file and then getting the folder where is located
+     *
+     * @param inputFile
+     *            passed by the user
+     * @return the project folder
+     *
+     */
+    public static Path getProjectRoot(Path inputFile) {
+
+        Path pomFile = findPom(inputFile);
+        if (pomFile != null) {
+            return pomFile.getParent();
+        }
+        LOG.debug("Project root could not be found.");
+        return null;
     }
 }

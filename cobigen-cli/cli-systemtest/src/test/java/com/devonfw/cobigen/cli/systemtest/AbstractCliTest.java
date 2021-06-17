@@ -10,8 +10,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
-import org.codehaus.plexus.interpolation.os.Os;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
+import org.codehaus.plexus.util.Os;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -105,7 +105,7 @@ public class AbstractCliTest {
             currentHome.resolve(zipName));
 
         TarGZipUnArchiver unzip = new TarGZipUnArchiver(currentHome.resolve(zipName).toFile());
-        ConsoleLoggerManager manager = new ConsoleLoggerManager();
+        ConsoleLoggerManager manager = new ConsoleLoggerManager("debug");
         unzip.enableLogging(manager.getLoggerForComponent("extract-tgz"));
         unzip.setDestDirectory(currentHome.toFile());
         unzip.extract();

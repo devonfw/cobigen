@@ -358,7 +358,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 throw new CobiGenRuntimeException("Unable to compile template project " + templateFolder);
             }
         } catch (IOException | InterruptedException | ExecutionException e) {
-            throw new CobiGenRuntimeException("Unable to compile template project " + templateFolder);
+            throw new CobiGenRuntimeException("Unable to compile template project " + templateFolder, e);
         }
     }
 
