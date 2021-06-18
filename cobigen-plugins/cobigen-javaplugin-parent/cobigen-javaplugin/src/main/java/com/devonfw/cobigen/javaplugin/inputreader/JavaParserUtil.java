@@ -1,12 +1,22 @@
 package com.devonfw.cobigen.javaplugin.inputreader;
 
 import java.io.Reader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import net.sf.mmm.code.impl.java.JavaContext;
 import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
+import net.sf.mmm.code.impl.java.source.maven.MavenDependencyCollector;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.thoughtworks.qdox.library.ClassLibraryBuilder;
@@ -15,6 +25,9 @@ import com.thoughtworks.qdox.model.JavaSource;
 
 /** The {@link JavaParserUtil} class provides helper functions for generating parsed inputs */
 public class JavaParserUtil {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(JavaParserUtil.class);
 
     /**
      * Returns the first {@link JavaClass} parsed by the given {@link Reader}, all upcoming parsed java files
@@ -103,7 +116,32 @@ public class JavaParserUtil {
 
         String fqn = null;
         try {
-            JavaContext context = JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject.toFile(), true);
+            MavenDependencyCollector dependencyCollector = new MavenDependencyCollector(false, true, null);
+            JavaContext context =
+                JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject.toFile(), dependencyCollector);
+            LOG.debug("Checking dependencies to exist.");
+
+            if (dependencyCollector.asClassLoader() instanceof URLClassLoader) {
+                for (URL url : dependencyCollector.asUrls()) {
+                    try {
+                        if (!Files.exists(Paths.get(url.toURI()))) {
+                            LOG.info("Found at least one maven dependency not to exist ({}).", url);
+                            MavenUtil.resolveDependencies(inputProject);
+
+                            // rerun collection
+                            context =
+                                JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject.toFile(), true);
+                            break;
+                        }
+                    } catch (URISyntaxException e) {
+                        LOG.warn("Unable to check {} for existence", url, (LOG.isDebugEnabled() ? e : null));
+                    }
+                }
+                LOG.info("All dependencies exist on file system.");
+            } else {
+                LOG.debug("m-m-m classloader is instance of {}. Unable to check dependencies",
+                    dependencyCollector.asClassLoader().getClass());
+            }
             fqn = getFQN(inputFile);
             context.getClassLoader().loadClass(fqn);
             return context;

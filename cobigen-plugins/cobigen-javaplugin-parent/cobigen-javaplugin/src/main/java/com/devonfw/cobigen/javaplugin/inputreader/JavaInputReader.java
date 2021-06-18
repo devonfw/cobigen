@@ -3,16 +3,11 @@ package com.devonfw.cobigen.javaplugin.inputreader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -396,6 +391,9 @@ public class JavaInputReader implements InputReader {
                         new CompositeClassLoader(JavaInputReader.class.getClassLoader(), (ClassLoader) addArg);
                 }
             }
+            if (classLoader == null) {
+                classLoader = createParsedClassLoader(path);
+            }
             if (packageName == null || classLoader == null) {
                 throw new IllegalArgumentException(
                     "Expected packageName:String and classLoader:ClassLoader as additional arguments but was "
@@ -415,36 +413,9 @@ public class JavaInputReader implements InputReader {
                 }
             }
             if (classLoader == null) {
-                LOG.debug("No classloader passed");
-                Path inputProject = MavenUtil.getProjectRoot(path, false);
-                if (inputProject != null) {
-                    classLoader = JavaParserUtil.getJavaContext(path, inputProject).getClassLoader();
-                    LOG.debug("Checking dependencies to exist.");
-                    if (classLoader instanceof URLClassLoader) {
-                        for (URL url : ((URLClassLoader) classLoader).getURLs()) {
-                            try {
-                                if (!Files.exists(Paths.get(url.toURI()))) {
-                                    LOG.info("Found at least one maven dependency not to exist ({}).", url);
-                                    MavenUtil.resolveDependencies(inputProject);
-                                    break;
-                                }
-                            } catch (URISyntaxException e) {
-                                LOG.warn("Unable to check {} for existence", url, (LOG.isDebugEnabled() ? e : null));
-                            }
-                        }
-                    } else {
-                        LOG.debug("m-m-m classloader is instance of {}. Unable to check dependencies",
-                            classLoader.getClass());
-                    }
-                    classLoader = JavaParserUtil.getJavaContext(path, inputProject).getClassLoader();
-                } else {
-                    LOG.debug(
-                        "No maven project detected defining the input path {}, executing without classloader support",
-                        path);
-                }
+                classLoader = createParsedClassLoader(path);
             }
-            try (FileReader reader = new FileReader(path.toFile());
-                BufferedReader pathReader = new BufferedReader(reader)) {
+            try (BufferedReader pathReader = Files.newBufferedReader(path, inputCharset)) {
                 // couldn't think of another way here... Java8 compliance would made this a lot easier due to
                 // lambdas
                 if (clazz == null) {
@@ -486,6 +457,25 @@ public class JavaInputReader implements InputReader {
                 throw new InputReaderException("Failed to parse java sources in " + path.toString() + ".", e);
             }
         }
+    }
+
+    /**
+     * Creates a classloader instance on the basis of parsed source code and maven configuration
+     * @param path
+     *            the path of the input
+     * @return a classloader created on the parsed source code
+     */
+    private ClassLoader createParsedClassLoader(Path path) {
+        ClassLoader classLoader = null;
+        LOG.debug("No classloader passed");
+        Path inputProject = MavenUtil.getProjectRoot(path, false);
+        if (inputProject != null) {
+            classLoader = JavaParserUtil.getJavaContext(path, inputProject).getClassLoader();
+        } else {
+            LOG.debug("No maven project detected defining the input path {}, executing without classloader support",
+                path);
+        }
+        return classLoader;
     }
 
     @Override

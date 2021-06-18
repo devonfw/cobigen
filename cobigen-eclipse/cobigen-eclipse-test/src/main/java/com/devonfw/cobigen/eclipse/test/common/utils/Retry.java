@@ -4,11 +4,16 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class implementing a way of retrying callables
  */
 public class Retry {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(Retry.class);
 
     /**
      * Run a given callable retrying on a given exception up to the given numbers of retries
@@ -60,18 +65,24 @@ public class Retry {
      */
     public static <E extends Exception> void runWithRetry(SWTWorkbenchBot bot, ExceptionRunnable runnable,
         Class<E> retryException, int retries) throws Exception {
-        for (int i = 0; i < retries; i++) {
+        Exception lastException = null;
+        for (int i = 0; i <= retries; i++) {
             try {
+                LOG.debug("Trying to execute runnable (" + (i + 1) + "/" + retries + ")");
                 runnable.run();
+                return;
             } catch (Exception e) {
                 if (retryException.isAssignableFrom(e.getClass())) {
+                    LOG.warn("Unable to execute runnable.", e);
                     Thread.sleep(1000);
+                    lastException = e;
                     continue;
                 }
+                LOG.debug("Non-retryable exception occurred", e);
                 throw e;
             }
         }
         EclipseUtils.openErrorsTreeInProblemsView(bot);
-        throw new TimeoutException("Unable to get a result after " + retries + " retries");
+        throw new IllegalStateException("Unable to get a result after " + retries + " retries", lastException);
     }
 }
