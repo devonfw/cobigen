@@ -11,8 +11,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
 /**
@@ -20,6 +24,9 @@ import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
  * and resets the SWTBot accordingly.
  */
 public abstract class SystemTest {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(SystemTest.class);
 
     /** Rule for creating temporary {@link IJavaProject}s per test. */
     @Rule
@@ -41,18 +48,22 @@ public abstract class SystemTest {
     public static void setupTest() throws Exception {
         try {
             bot.viewByTitle("Welcome").close();
+
+            bot.resetWorkbench();
+            bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
+            EclipseUtils.cleanWorkspace(true);
+
+            SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
+            perspective.activate();
+
+            // this flag is set to be true and will suppress ErrorDialogs,
+            // which is completely strange, so we enable them again.
+            ErrorDialog.AUTOMATED_MODE = false;
         } catch (WidgetNotFoundException e) {
             // ignore
+        } catch (Exception e) {
+            LOG.debug("Exception occured during test setup", e);
         }
-        bot.resetWorkbench();
-        EclipseUtils.cleanWorkspace(true);
-
-        SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
-        perspective.activate();
-
-        // this flag is set to be true and will suppress ErrorDialogs,
-        // which is completely strange, so we enable them again.
-        ErrorDialog.AUTOMATED_MODE = false;
     }
 
     /**
@@ -62,10 +73,14 @@ public abstract class SystemTest {
      */
     @Before
     public void beforeTest() throws Exception {
-        bot.resetWorkbench();
-        EclipseUtils.cleanWorkspace(false);
+        try {
+            bot.resetWorkbench();
+            EclipseUtils.cleanWorkspace(false);
 
-        SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
-        perspective.activate();
+            SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
+            perspective.activate();
+        } catch (Exception e) {
+            LOG.debug("Exception occured during test setup", e);
+        }
     }
 }
