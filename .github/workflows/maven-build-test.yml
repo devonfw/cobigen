@@ -17,10 +17,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: cobigen-dep-${{ hashFiles('**/package-lock.json') }}
+          key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       
       - name: Resolve non-cobigen dependencies
-        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build || true # never fail
+        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -T1C -P!p2-build || true # never fail
     
   build-and-test-core:
     needs: cache-dependencies
@@ -41,7 +41,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}
+          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}
           restore-keys: |
             cobigen-dep-${{ hashFiles('**/pom.xml') }}
 
@@ -81,9 +81,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # new key will cache
+          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}
+            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -121,7 +121,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
 
       - name: Cache p2 plugin repositories
         uses: actions/cache@v2
@@ -166,7 +166,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -206,7 +206,7 @@ jobs:
           path: ./**/eclipse/target/repository/
           key: p2-eclipse-${{ github.sha }} # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}-plugins
+            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -252,9 +252,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}-maven # new key will cache
+          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}-plugins
+            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -278,7 +278,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        javaVersion: [8, 11]
+        javaVersion: [11] # CLI does not support jdk 8 anymore
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
@@ -292,9 +292,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}-cli # new key will cache
+          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}-templates
+            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-templates
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -332,9 +332,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ github.sha }}-templates # new key will cache
+          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
           restore-keys: |
-            ${{ runner.os }}-maven-${{ github.sha }}-maven
+            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-maven
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -353,12 +353,3 @@ jobs:
         run: |
           mvn install -f cobigen-templates -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-        # -- available caches --
-        # restore-keys: |
-        #    ${{ runner.os }}-maven-${{ github.sha }}
-        #    ${{ runner.os }}-maven-${{ github.sha }}-plugins (incl. ())
-        #    ${{ runner.os }}-maven-${{ github.sha }}-maven (incl. -plugins)
-        #    ${{ runner.os }}-maven-${{ github.sha }}-cli (incl. -plugins)
-        #    ${{ runner.os }}-maven-${{ github.sha }}-templates (incl. -maven + -plugins)
-        #    p2-plugins-${{ github.sha }}
-        #    p2-eclipse-${{ github.sha }}
