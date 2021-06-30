@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
-import javax.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
 
 public class TestClassWithAnnotations {
 

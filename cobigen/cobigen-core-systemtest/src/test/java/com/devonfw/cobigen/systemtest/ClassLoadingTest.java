@@ -65,7 +65,7 @@ public class ClassLoadingTest extends AbstractApiTest {
 
         // Execution
         GenerationReportTo report =
-            target.generate(containerInput, templates.get(0), Paths.get(generationRootFolder.toURI()), false, null);
+            target.generate(containerInput, templates.get(0), Paths.get(generationRootFolder.toURI()), false);
 
         // Verification
         File expectedResult = new File(testFileRootPath, "expected/Test.java");
@@ -92,7 +92,7 @@ public class ClassLoadingTest extends AbstractApiTest {
 
         // Execution
         GenerationReportTo report =
-            target.generate(containerInput, templates.get(1), Paths.get(generationRootFolder.toURI()), false, null);
+            target.generate(containerInput, templates.get(1), Paths.get(generationRootFolder.toURI()), false);
 
         // Verification
         File expectedResult = new File(testFileRootPath, "expected/Test2.java");

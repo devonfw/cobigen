@@ -276,7 +276,9 @@ public class GenerateCommand extends CommandCommons {
         GenerationReportTo report = null;
         LOG.info("Generating {} for input '{}, this can take a while...", isIncrements ? "increments" : "templates",
             inputFile);
-        report = cg.generate(input, generableArtifacts, Paths.get(outputRootPath.getAbsolutePath()), false);
+        report = cg.generate(input, generableArtifacts, Paths.get(outputRootPath.getAbsolutePath()), false,
+            (task, progress) -> {
+            });
         ValidationUtils.checkGenerationReport(report);
         Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream()
             .filter(e -> e.getFileName().endsWith(".java")).collect(Collectors.toSet());

@@ -164,12 +164,14 @@ public class EclipseUtils {
      *             test fails
      */
     public static void cleanWorkspace(boolean cleanCobiGenConfiguration) throws Exception {
+        LOG.debug("Clean workspace {}", cleanCobiGenConfiguration ? "incl. CobiGen_Templates" : "");
 
         int maxRetries = 10;
 
         for (int i = 1; i <= maxRetries; i++) {
             IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
             try {
+                LOG.debug("Found projects to be cleaned: {}", Arrays.toString(allProjects));
                 for (IProject project : allProjects) {
                     if (cleanCobiGenConfiguration || !ResourceConstants.CONFIG_PROJECT_NAME.equals(project.getName())) {
                         project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());

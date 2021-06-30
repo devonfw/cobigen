@@ -127,7 +127,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         logicClassesModel = Maps.newHashMap();
         for (Class<?> logicClass : logicClasses) {
             try {
-                progressCallback.accept(logicClass.getCanonicalName(), 100 / logicClasses.size());
+                progressCallback.accept("load class " + logicClass.getCanonicalName(), 100 / logicClasses.size());
                 if (logicClass.isEnum()) {
                     logicClassesModel.put(logicClass.getSimpleName(), logicClass.getEnumConstants());
                 } else {
@@ -162,6 +162,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         }
 
         Path templateConfigPath = Paths.get(configurationHolder.getConfigurationLocation());
+        progressCallback.accept("Prepend Templates Classloader", 10);
         inputProjectClassLoader = prependTemplatesClassloader(templateConfigPath, inputProjectClassLoader);
         if (inputProjectClassLoader != null) {
             try {
@@ -176,10 +177,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         this.forceOverride = forceOverride;
         this.input = input;
         if (logicClasses != null) {
+            progressCallback.accept("Load Template logic classes", 20);
             loadLogicClasses(progressCallback, logicClasses);
         }
 
-        progressCallback.accept("createTempDirectory", 50);
+        progressCallback.accept("Create Temporary Target Directory", 40);
         this.rawModel = rawModel;
         try {
             tmpTargetRootPath = Files.createTempDirectory("cobigen-");
@@ -190,21 +192,23 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         this.targetRootPath = targetRootPath;
         generationReport = new GenerationReportTo();
 
-        progressCallback.accept("Load Templates", 50);
+        progressCallback.accept("Load templates", 50);
+        LOG.debug("Collecting templates");
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
         // generate
         Map<File, File> origToTmpFileTrace = Maps.newHashMap();
         try {
+            LOG.debug("Generating {} templates", templatesToBeGenerated.size());
             for (TemplateTo template : templatesToBeGenerated) {
                 try {
                     Trigger trigger =
                         configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
                     TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
                     InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-                    generate(template, triggerInterpreter, origToTmpFileTrace);
-                    progressCallback.accept("generates... ",
+                    progressCallback.accept("Generating " + template.getId(),
                         Math.round(1 / (float) templatesToBeGenerated.size() * 800));
+                    generate(template, triggerInterpreter, origToTmpFileTrace, progressCallback);
                 } catch (CobiGenCancellationException e) {
                     throw (e);
                 } catch (CobiGenRuntimeException e) {
@@ -422,11 +426,13 @@ public class GenerationProcessorImpl implements GenerationProcessor {
      * @param origToTmpFileTrace
      *            the mapping of temporary generated files to their original target destination to eventually
      *            finalizing the generation process
+     * @param progressCallback
+     *            to track progress
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
      */
     private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter,
-        Map<File, File> origToTmpFileTrace) {
+        Map<File, File> origToTmpFileTrace, BiConsumer<String, Integer> progressCallback) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
 
@@ -450,7 +456,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         }
 
         for (Object generatorInput : inputObjects) {
-
+            progressCallback.accept("Building template model for input " + generatorInput, 1);
             Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput, templateEty);
 
             String targetCharset = templateEty.getTargetCharset();
@@ -487,21 +493,20 @@ public class GenerationProcessorImpl implements GenerationProcessor {
 
                 if ((forceOverride || template.isForceOverride()) && templateEty.getMergeStrategy() == null
                     || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateEty.getMergeStrategy())) {
-                    if (LOG.isInfoEnabled()) {
-                        try (Formatter formatter = new Formatter()) {
-                            formatter.format("Overriding %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
-                                templateEty.getName(), resolvedTargetDestinationPath);
-                            LOG.info(formatter.out().toString());
-                        }
+                    try (Formatter formatter = new Formatter()) {
+                        formatter.format("Overriding %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                            templateEty.getName(), resolvedTargetDestinationPath);
+                        LOG.info(formatter.out().toString());
+                        progressCallback.accept(formatter.out().toString(), 1);
                     }
+                    progressCallback.accept("Generating " + template.getId() + " for " + generatorInput, 1);
                     generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
                 } else if (templateEty.getMergeStrategy() != null) {
-                    if (LOG.isInfoEnabled()) {
-                        try (Formatter formatter = new Formatter()) {
-                            formatter.format("Merging    %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
-                                templateEty.getName(), resolvedTargetDestinationPath);
-                            LOG.info(formatter.out().toString());
-                        }
+                    try (Formatter formatter = new Formatter()) {
+                        formatter.format("Merging    %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                            templateEty.getName(), resolvedTargetDestinationPath);
+                        LOG.info(formatter.out().toString());
+                        progressCallback.accept(formatter.out().toString(), 1);
                     }
                     String patch = null;
                     try (Writer out = new StringWriter()) {
@@ -533,12 +538,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                     }
                 }
             } else {
-                if (LOG.isInfoEnabled()) {
-                    try (Formatter formatter = new Formatter()) {
-                        formatter.format("Generating %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
-                            templateEty.getName(), resolvedTargetDestinationPath);
-                        LOG.info(formatter.out().toString());
-                    }
+                try (Formatter formatter = new Formatter()) {
+                    formatter.format("Generating %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                        templateEty.getName(), resolvedTargetDestinationPath);
+                    LOG.info(formatter.out().toString());
+                    progressCallback.accept(formatter.out().toString(), 1);
                 }
                 generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
             }

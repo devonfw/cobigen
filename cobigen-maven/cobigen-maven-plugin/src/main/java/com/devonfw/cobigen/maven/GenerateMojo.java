@@ -8,6 +8,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-import org.apache.commons.io.Charsets;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecution;
@@ -121,7 +121,8 @@ public class GenerateMojo extends AbstractMojo {
                 getLog().debug("Invoke CobiGen for input of class " + input.getClass().getCanonicalName());
 
                 GenerationReportTo report = cobiGen.generate(input, generableArtifacts,
-                    Paths.get(destinationRoot.toURI()), forceOverride, null);
+                    Paths.get(destinationRoot.toURI()), forceOverride, (task, progress) -> {
+                    });
 
                 if (!report.isSuccessful()) {
                     for (Throwable e : report.getErrors()) {
@@ -200,7 +201,7 @@ public class GenerateMojo extends AbstractMojo {
                         Object packageFolder;
                         try {
                             packageFolder =
-                                cobigen.read(Paths.get(sourcePath.toUri()), Charsets.UTF_8, inputPackage, cl);
+                                cobigen.read(Paths.get(sourcePath.toUri()), StandardCharsets.UTF_8, inputPackage, cl);
                             inputs.add(packageFolder);
                             sourceFound = true;
                         } catch (InputReaderException e) {

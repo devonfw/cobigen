@@ -8,6 +8,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.annotation.Cached;
 import com.devonfw.cobigen.api.annotation.ExceptionFacade;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 
@@ -17,6 +18,7 @@ import com.devonfw.cobigen.api.exception.InputReaderException;
  * CobiGen generation process.
  */
 @ExceptionFacade
+@Cached
 public interface InputReader {
 
     /** Logger instance. */

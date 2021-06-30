@@ -8,9 +8,11 @@ import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotPerspective;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,51 +38,50 @@ public abstract class SystemTest {
     @Rule
     public TemporaryFolder tmpFolderRule = new TemporaryFolder();
 
+    /**
+     * Logging test name
+     */
+    @Rule
+    public TestRule watcher = new TestWatcher() {
+        @Override
+        protected void starting(Description description) {
+            LOG.info(">>>>>>>> Starting test '{}'", description.getMethodName());
+        }
+
+        @Override
+        protected void finished(Description description) {
+            LOG.info(">>>>>>>> Finishing test '{}'", description.getMethodName());
+        }
+    };
+
     /** {@link SWTBot} for UI controls */
     protected static SWTWorkbenchBot bot = new SWTWorkbenchBot();
 
     /**
      * Setup workbench appropriately for tests
      * @throws Exception
-     *             test fails
-     */
-    @BeforeClass
-    public static void setupTest() throws Exception {
-        try {
-            bot.viewByTitle("Welcome").close();
-
-            bot.resetWorkbench();
-            bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
-            EclipseUtils.cleanWorkspace(true);
-
-            SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
-            perspective.activate();
-
-            // this flag is set to be true and will suppress ErrorDialogs,
-            // which is completely strange, so we enable them again.
-            ErrorDialog.AUTOMATED_MODE = false;
-        } catch (WidgetNotFoundException e) {
-            // ignore
-        } catch (Exception e) {
-            LOG.debug("Exception occured during test setup", e);
-        }
-    }
-
-    /**
-     * Reset workbench and open java perspective
-     * @throws Exception
-     *             test fails
+     *             setup failed
      */
     @Before
-    public void beforeTest() throws Exception {
-        try {
-            bot.resetWorkbench();
-            EclipseUtils.cleanWorkspace(false);
+    public void setupTest() throws Exception {
 
-            SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
-            perspective.activate();
+        bot.resetWorkbench();
+        bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
+        EclipseUtils.cleanWorkspace(false);
+
+        // this flag is set to be true and will suppress ErrorDialogs,
+        // which is completely strange, so we enable them again.
+        ErrorDialog.AUTOMATED_MODE = false;
+        SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
+        perspective.activate();
+
+        try {
+            bot.viewByTitle("Welcome").close();
+        } catch (WidgetNotFoundException e) {
+            // ignore as Welcome screen will just occur once
         } catch (Exception e) {
             LOG.debug("Exception occured during test setup", e);
+            throw e;
         }
     }
 }

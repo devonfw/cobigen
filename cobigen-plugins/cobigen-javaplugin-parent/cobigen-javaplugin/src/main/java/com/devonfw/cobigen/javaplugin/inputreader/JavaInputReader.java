@@ -381,7 +381,7 @@ public class JavaInputReader implements InputReader {
         ClassLoader classLoader = null;
 
         if (Files.isDirectory(path)) {
-
+            LOG.debug("Path {} to be read is a directory", path);
             String packageName = null;
             for (Object addArg : additionalArguments) {
                 if (packageName == null && addArg instanceof String) {
@@ -467,7 +467,7 @@ public class JavaInputReader implements InputReader {
      */
     private ClassLoader createParsedClassLoader(Path path) {
         ClassLoader classLoader = null;
-        LOG.debug("No classloader passed");
+        LOG.debug("No classloader given, trying to create own...");
         Path inputProject = MavenUtil.getProjectRoot(path, false);
         if (inputProject != null) {
             classLoader = JavaParserUtil.getJavaContext(path, inputProject).getClassLoader();

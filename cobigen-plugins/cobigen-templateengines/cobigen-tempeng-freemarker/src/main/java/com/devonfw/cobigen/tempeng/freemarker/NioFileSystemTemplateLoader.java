@@ -68,7 +68,6 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
      * Sets the field 'templateRoot'.
      * @param templateRoot
      *            new value of templateRoot
-     * @author mbrunnli (13.02.2015)
      */
     public void setTemplateRoot(Path templateRoot) {
         templatesRoot = templateRoot;

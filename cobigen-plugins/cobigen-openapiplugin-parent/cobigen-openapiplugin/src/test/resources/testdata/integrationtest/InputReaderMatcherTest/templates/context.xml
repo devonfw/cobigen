@@ -9,11 +9,5 @@
       <variableAssignment type="extension" key="rootPackage" value="x-rootpackage"/>
       <variableAssignment type="extension" key="globalVariable" value="x-global"/>
     </matcher>
-    <matcher type="EntityNameRegex" value=".*ales">
-      <variableAssignment type="property" key="name" value="name"/>
-      <variableAssignment type="extension" key="testingAttribute" value="x-test"/>
-      <variableAssignment type="extension" key="rootPackage" value="x-rootpackage"/>
-      <variableAssignment type="extension" key="globalVariable" value="x-global"/>
-    </matcher>
   </trigger>
 </contextConfiguration>

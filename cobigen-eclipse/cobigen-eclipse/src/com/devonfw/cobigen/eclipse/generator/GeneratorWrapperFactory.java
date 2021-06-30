@@ -8,13 +8,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -53,6 +53,8 @@ public class GeneratorWrapperFactory {
      * Creates a generator dependent on the input of the selection
      * @param selection
      *            current {@link IStructuredSelection} treated as input for generation
+     * @param monitor
+     *            tracking progress
      * @return a specific {@link CobiGenWrapper} instance
      * @throws GeneratorCreationException
      *             if any exception occurred during converting the inputs or creating the generator
@@ -62,39 +64,28 @@ public class GeneratorWrapperFactory {
      *             if the selection includes non supported input types or is composed in a non supported
      *             combination of inputs.
      */
-    public static CobiGenWrapper createGenerator(ISelection selection)
+    public static CobiGenWrapper createGenerator(ISelection selection, IProgressMonitor monitor)
         throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
 
         List<Object> extractedInputs = extractValidEclipseInputs(selection);
 
         if (extractedInputs.size() > 0) {
+            monitor.subTask("Initialize CobiGen instance");
             CobiGen cobigen = initializeGenerator();
 
-            Display.getDefault().syncExec(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
-
-            ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
-            progressMonitor.open();
-            progressMonitor.getProgressMonitor().beginTask("Reading inputs...", 0);
+            monitor.subTask("Reading inputs...");
+            monitor.worked(10);
             Object firstElement = extractedInputs.get(0);
 
-            try {
-                if (firstElement instanceof IJavaElement) {
-                    LOG.info("Create new CobiGen instance for java inputs...");
-                    return new JavaInputGeneratorWrapper(cobigen,
-                        ((IJavaElement) firstElement).getJavaProject().getProject(),
-                        JavaInputConverter.convertInput(extractedInputs, cobigen));
-                } else if (firstElement instanceof IResource) {
-                    LOG.info("Create new CobiGen instance for file inputs...");
-                    return new FileInputGeneratorWrapper(cobigen, ((IResource) firstElement).getProject(),
-                        FileInputConverter.convertInput(cobigen, extractedInputs));
-                }
-            } finally {
-                progressMonitor.close();
+            if (firstElement instanceof IJavaElement) {
+                LOG.info("Create new CobiGen instance for java inputs...");
+                return new JavaInputGeneratorWrapper(cobigen,
+                    ((IJavaElement) firstElement).getJavaProject().getProject(),
+                    JavaInputConverter.convertInput(extractedInputs, cobigen), monitor);
+            } else if (firstElement instanceof IResource) {
+                LOG.info("Create new CobiGen instance for file inputs...");
+                return new FileInputGeneratorWrapper(cobigen, ((IResource) firstElement).getProject(),
+                    FileInputConverter.convertInput(cobigen, extractedInputs), monitor);
             }
         }
         return null;
@@ -240,7 +231,7 @@ public class GeneratorWrapperFactory {
 
             // If it is not valid, we should use the jar
             if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
-            	File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
+                File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
                 File jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectory);
                 boolean fileExists = jarPath.exists();
                 if (!fileExists) {

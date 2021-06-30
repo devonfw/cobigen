@@ -34,7 +34,7 @@
       <artifactId>core-test</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <!-- Enables XPath for FreeMarker templates -->
     <dependency>
       <groupId>jaxen</groupId>
@@ -66,79 +66,24 @@
 
     <!-- Needed for JDK 9+ -->
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.3.1</version>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
+      <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-core</artifactId>
-      <version>2.3.0.1</version>
     </dependency>
-
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
-      <version>2.3.2</version>
     </dependency>
     <!-- END JDK 9 -->
 
     <dependency>
-      <groupId>net.sf.dozer</groupId>
-      <artifactId>dozer</artifactId>
-      <version>5.5.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.el</groupId>
-          <artifactId>el-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jsr173_api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jsr173_api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.xmlbeans</groupId>
-          <artifactId>xmlbeans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.xmlbeans</groupId>
-          <artifactId>xmlbeans-xpath</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.glassfish.web</groupId>
-          <artifactId>el-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.hibernate</groupId>
-          <artifactId>hibernate-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.javassist</groupId>
-          <artifactId>javassist</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <groupId>ma.glasnost.orika</groupId>
+    <artifactId>orika-core</artifactId>
+    <version>1.5.4</version>
+</dependency>
   </dependencies>
 
   <build>
@@ -196,68 +141,78 @@
 
       <!-- Generation of configuration beans -->
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.14.0</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>2.4</version>
         <executions>
           <execution>
             <id>generate-v1.0-configuration</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>generate</goal>
+              <goal>xjc</goal>
             </goals>
             <configuration>
-              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v1_0</generatePackage>
-              <generateDirectory>${project.build.directory}/generated-sources/config/v1.0</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/schema/v1.0</schemaDirectory>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v1_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v1.0</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v1.0</source>
+              </sources>
             </configuration>
           </execution>
           <execution>
             <id>generate-v1.2-configuration</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>generate</goal>
+              <goal>xjc</goal>
             </goals>
             <configuration>
-              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v1_2</generatePackage>
-              <generateDirectory>${project.build.directory}/generated-sources/config/v1.2</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/schema/v1.2</schemaDirectory>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v1_2</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v1.2</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v1.2</source>
+              </sources>
             </configuration>
           </execution>
           <execution>
             <id>generate-v2.0-configuration</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>generate</goal>
+              <goal>xjc</goal>
             </goals>
             <configuration>
-              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v2_0</generatePackage>
-              <generateDirectory>${project.build.directory}/generated-sources/config/v2.0</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/schema/v2.0</schemaDirectory>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v2_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v2.0</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v2.0</source>
+              </sources>
             </configuration>
           </execution>
           <execution>
             <id>generate-v2.1-configuration</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>generate</goal>
+              <goal>xjc</goal>
             </goals>
             <configuration>
-              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v2_1</generatePackage>
-              <generateDirectory>${project.build.directory}/generated-sources/config/v2.1</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/schema/v2.1</schemaDirectory>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v2_1</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v2.1</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v2.1</source>
+              </sources>
             </configuration>
           </execution>
           <execution>
             <id>generate-v4.0-configuration</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>generate</goal>
+              <goal>xjc</goal>
             </goals>
             <configuration>
-              <generatePackage>com.devonfw.cobigen.impl.config.entity.io.v4_0</generatePackage>
-              <generateDirectory>${project.build.directory}/generated-sources/config/v4.0</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/schema/v4.0</schemaDirectory>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v4_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v4.0</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v4.0</source>
+              </sources>
             </configuration>
           </execution>
           <!-- Redundant generation due to stability reasons of the configuration upgrade mechanism -->
@@ -265,35 +220,49 @@
             <id>generate-current-configuration</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>generate</goal>
+              <goal>xjc</goal>
             </goals>
             <configuration>
-              <generatePackage>com.devonfw.cobigen.impl.config.entity.io</generatePackage>
-              <generateDirectory>${project.build.directory}/generated-sources/config/current</generateDirectory>
-              <schemaDirectory>${basedir}/src/main/resources/schema</schemaDirectory>
-              <schemaIncludes>
-                <schemaInclude>v2.1/contextConfiguration.xsd</schemaInclude>
-                <schemaInclude>v4.0/templatesConfiguration.xsd</schemaInclude>
-              </schemaIncludes>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/current</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v2.1/contextConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v4.0/templatesConfiguration.xsd</source>
+              </sources>
             </configuration>
           </execution>
         </executions>
         <configuration>
-          <removeOldOutput>true</removeOldOutput>
           <extension>true</extension>
           <bindingDirectory>${basedir}/src/main/resources/schema</bindingDirectory>
-          <args>
-            <arg>-Xsimplify</arg>
-            <arg>-npa</arg>
-          </args>
-          <plugins>
-            <plugin>
-              <groupId>org.jvnet.jaxb2_commons</groupId>
-              <artifactId>jaxb2-basics</artifactId>
-              <version>0.9.4</version>
-            </plugin>
-          </plugins>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>${jaxb.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-jxc</artifactId>
+            <version>${jaxb.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${jaxb.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>2.0.1</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

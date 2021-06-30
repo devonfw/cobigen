@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -392,6 +392,7 @@ public class XmlPluginIntegrationTest {
      *            file name of the generated output File
      * @param expectedFileContents
      *            generated contents to be expected (asserted)
+     * @return the resulting report
      * @throws Exception
      *             if anything fails.
      */
@@ -400,8 +401,7 @@ public class XmlPluginIntegrationTest {
         CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
 
         // wenn der temporäre Output Ordner breits existiert, dann wird dieser wiederverwendet.
-        File tmpFolderCobiGen =
-            new File(tmpFolder.getRoot().getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "cobigen_output");
+        File tmpFolderCobiGen = new File(tmpFolder.getRoot().getAbsolutePath() + File.separator + "cobigen_output");
         if (!tmpFolderCobiGen.exists()) {
             tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
         }
@@ -415,18 +415,19 @@ public class XmlPluginIntegrationTest {
         GenerationReportToAssert asserts = null;
         for (TemplateTo template : templates) {
             if (template.getId().equals(templateId)) {
-                GenerationReportTo report =
-                    cobiGen.generate(inputDocument, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
+                GenerationReportTo report = cobiGen.generate(inputDocument, template,
+                    Paths.get(tmpFolderCobiGen.getAbsolutePath()), false, (taskname, progress) -> {
+                    });
 
                 asserts = assertThat(report);
 
-                File expectedFile =
-                    new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + outputFileName);
+                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + File.separator + outputFileName);
 
                 Assert.assertTrue(expectedFile.exists());
                 // validate results if expected file contents are defined
                 if (expectedFileContents != null) {
-                    Assert.assertEquals(expectedFileContents, FileUtils.readFileToString(expectedFile));
+                    Assert.assertEquals(expectedFileContents,
+                        FileUtils.readFileToString(expectedFile, StandardCharsets.UTF_8));
                 }
                 templateFound = true;
                 break;

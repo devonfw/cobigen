@@ -25,43 +25,43 @@ filter_file=file:///`echo "$filter_file" | sed 's/^\///' | sed 's/^./\0:/'`
 #echo $filter_file
 
 cd ../cobigen-eclipse/cobigen-eclipse
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 cd cobigen-cli/cli
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 cd cobigen-maven/cobigen-maven-plugin
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 cd cobigen-plugins/cobigen-htmlplugin
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 cd cobigen-plugins/cobigen-javaplugin-parent/cobigen-javaplugin
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../../..
 cd cobigen-plugins/cobigen-jsonplugin
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 cd cobigen-plugins/cobigen-openapiplugin-parent/cobigen-openapiplugin
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../../..
 cd cobigen-plugins/cobigen-propertyplugin
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 cd cobigen-plugins/cobigen-templateengines/cobigen-tempeng-freemarker
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../../..
 cd cobigen-plugins/cobigen-templateengines/cobigen-tempeng-velocity
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../../..
 cd cobigen-plugins/cobigen-textmerger
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 cd cobigen-plugins/cobigen-tsplugin
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 cd cobigen-plugins/cobigen-xmlplugin
-mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true
+mvn org.codehaus.mojo:license-maven-plugin:2.0.0:aggregate-download-licenses -Dlicense.artifactFiltersUrl=$filter_file -P!p2-build -Dsettings.offline=true -Dlicense.includeOptional=false -Dlicense.excludedScopes=system,test,provided
 cd ../..
 
 cp cobigen-eclipse/cobigen-eclipse/target/generated-resources/licenses.xml solicitor/input/licenses_eclipse.xml

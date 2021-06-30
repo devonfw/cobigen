@@ -2,6 +2,8 @@ package com.devonfw.cobigen.eclipse.wizard.generate;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +27,19 @@ public class GenerateWizard extends AbstractGenerateWizard {
     /** Assigning logger to GenerateWizard */
     private static final Logger LOG = LoggerFactory.getLogger(GenerateWizard.class);
 
+    /** Job to build page 2 */
+    private Job buildPage2Job;
+
     /**
      * The {@link GenerateWizard} guides through the generation process
      * @param generator
      *            {@link CobiGenWrapper} to be used for generation
+     * @param monitor
+     *            to track progress
      */
-    public GenerateWizard(CobiGenWrapper generator) {
+    public GenerateWizard(CobiGenWrapper generator, IProgressMonitor monitor) {
 
-        super(generator);
+        super(generator, monitor);
         setWindowTitle(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE);
         initializeWizard();
     }
@@ -55,7 +62,36 @@ public class GenerateWizard extends AbstractGenerateWizard {
         if (cobigenWrapper instanceof JavaInputGeneratorWrapper) {
             addPage(page2);
         }
+        //
+        // if (cobigenWrapper instanceof JavaInputGeneratorWrapper) {
+        // Job job = new Job("Collect Data for CobiGen Wizard Attribute Selection Page") {
+        // @Override
+        // protected IStatus run(IProgressMonitor monitor) {
+        // Map<String, String> attributesToTypeMapOfFirstInput =
+        // ((JavaInputGeneratorWrapper) cobigenWrapper).getAttributesToTypeMapOfFirstInput();
+        // PlatformUIUtil.getWorkbench().getDisplay().asyncExec(() -> {
+        // page2 = new SelectAttributesPage(attributesToTypeMapOfFirstInput);
+        // addPage(page2);
+        // });
+        // return Status.OK_STATUS;
+        // }
+        // };
+        // job.schedule();
+        // setForcePreviousAndNextButtons(true);
+        // }
     }
+
+    // @Override
+    // public boolean performFinish() {
+    // buildPage2Job.cancel();
+    // return super.performFinish();
+    // }
+    //
+    // @Override
+    // public boolean performCancel() {
+    // buildPage2Job.cancel();
+    // return super.performCancel();
+    // }
 
     /**
      * Generates the contents to be generated and reports the progress to the user
