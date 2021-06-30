@@ -41,7 +41,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
           restore-keys: |
             cobigen-dep-${{ hashFiles('**/pom.xml') }}
 
@@ -81,9 +81,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
           restore-keys: |
-            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -121,7 +121,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
 
       - name: Cache p2 plugin repositories
         uses: actions/cache@v2
@@ -166,7 +166,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -206,7 +206,7 @@ jobs:
           path: ./**/eclipse/target/repository/
           key: p2-eclipse-${{ github.sha }} # new key will cache
           restore-keys: |
-            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -252,9 +252,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
           restore-keys: |
-            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-plugins
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -292,9 +292,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
           restore-keys: |
-            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-templates
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -332,9 +332,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
           restore-keys: |
-            ${{ runner.os }}-${{ runner.javaVersion }}-maven-${{ github.sha }}-maven
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
 
       - name: Enable git support for long paths on Windows
         if: ${{ matrix.os == 'windows-latest' }}

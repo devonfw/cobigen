@@ -45,9 +45,6 @@
       <fileMode>0644</fileMode>
     </file>
   </files>
-  <!-- Assembly is completely broken as it includes test and optional dependencies
-  https://issues.apache.org/jira/browse/MASSEMBLY-919
-   -->
   <dependencySets>
     <dependencySet>
       <outputDirectory>/lib</outputDirectory>
