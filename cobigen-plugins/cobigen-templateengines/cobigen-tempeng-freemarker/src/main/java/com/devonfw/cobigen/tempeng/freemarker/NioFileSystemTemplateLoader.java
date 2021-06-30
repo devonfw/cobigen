@@ -56,6 +56,7 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
 
     @Override
     public Reader getReader(Object templateSource, String encoding) throws IOException {
+        // need to keep this reader open as of method contract
         return new InputStreamReader(Files.newInputStream((Path) templateSource), encoding);
     }
 

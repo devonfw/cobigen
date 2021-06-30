@@ -35,9 +35,10 @@ public class CustomModelWriterTest {
 
         File baseFile = new File(testFileRootPath + "ClassFile_field.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaField field =
-            JavaParserUtil.getFirstJavaClass(new FileReader(baseFile)).getFieldByName("baseFieldUndefined");
-        target.writeField(field);
+        try (FileReader fr = new FileReader(baseFile)) {
+            JavaField field = JavaParserUtil.getFirstJavaClass(fr).getFieldByName("baseFieldUndefined");
+            target.writeField(field);
+        }
         assertThat(target.toString().trim()).isEqualTo("private int baseFieldUndefined;");
     }
 
@@ -53,8 +54,10 @@ public class CustomModelWriterTest {
 
         File file = new File(testFileRootPath + "ClassFile_header.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeSource(parsedClass.getSource());
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeSource(parsedClass.getSource());
+        }
         assertThat(target.toString()).contains("/* HEADER */");
     }
 
@@ -69,8 +72,10 @@ public class CustomModelWriterTest {
 
         File file = new File(testFileRootPath + "ClassFile_generics.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         assertThat(target.toString()).contains("class Clazz<T extends Object, Z extends Clazz>");
         assertThat(target.toString()).contains("Map<String,T>");
@@ -91,8 +96,10 @@ public class CustomModelWriterTest {
 
         File file = new File(testFileRootPath + "ClassFile_modifiers.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         String reprintedClass = target.toString();
         assertThat(reprintedClass).contains("public final class FooBar");
@@ -111,8 +118,10 @@ public class CustomModelWriterTest {
     public void testDoNotWriteDefaultValueIdentifierOfAnnotations() throws Exception {
         File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         String reprintedClass = target.toString();
         assertThat(reprintedClass).contains("@SuppressWarnings(\"unchecked\")");
@@ -127,8 +136,10 @@ public class CustomModelWriterTest {
     public void testCorrectlySetValueAttributOnAnnotationsWithMultipleAttributes() throws Exception {
         File file = new File(testFileRootPath + "ClassFile_annotation_defaultvalue.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         String reprintedClass = target.toString();
         assertThat(reprintedClass).contains("@Multipart(value=\"binaryObjectEto\"");
@@ -146,8 +157,10 @@ public class CustomModelWriterTest {
     public void testCorrectSyntaxOutputForArrays() throws Exception {
         File file = new File(testFileRootPath + "ArraySyntax.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         String reprintedClass = target.toString();
         Pattern p = Pattern.compile("@[A-Za-z]+\\(\\{.+\\{.+\\s*.+\\}.+\\{.+\\}.+\\}\\)\\s*public.+", Pattern.DOTALL);
@@ -166,8 +179,10 @@ public class CustomModelWriterTest {
     public void testCorrectSyntaxOutputForArrayswithOnlyOneAnnotation() throws Exception {
         File file = new File(testFileRootPath + "ArraySyntaxOnlyOneAnnotation.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         String reprintedClass = target.toString();
         Pattern p = Pattern.compile("@[A-Za-z]+\\(.*\\{.*\\}.*\\).*\\s*public.+", Pattern.DOTALL);
@@ -186,8 +201,10 @@ public class CustomModelWriterTest {
     public void testCorrectNameOutputForNestedAnnotations() throws Exception {
         File file = new File(testFileRootPath + "ArraySyntax.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         String reprintedClass = target.toString();
         assertThat(reprintedClass).doesNotContain("javax.persistence.NamedEntityGraphs");
@@ -204,8 +221,10 @@ public class CustomModelWriterTest {
     public void testCorrectNameOutputForOwnAnnotation() throws Exception {
         File file = new File(testFileRootPath + "OwnAnnotation.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         String reprintedClass = target.toString();
         assertThat(reprintedClass).contains("{\"abc\", \"cde\"}");
@@ -223,8 +242,10 @@ public class CustomModelWriterTest {
     public void testCorrectSyntaxOutputForArraysCommaPlacement() throws Exception {
         File file = new File(testFileRootPath + "ArraySyntax.java");
         CustomModelWriter target = new CustomModelWriter();
-        JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(new FileReader(file));
-        target.writeClass(parsedClass);
+        try (FileReader fr = new FileReader(file)) {
+            JavaClass parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+            target.writeClass(parsedClass);
+        }
 
         String reprintedClass = target.toString();
         Pattern p1 = Pattern.compile(

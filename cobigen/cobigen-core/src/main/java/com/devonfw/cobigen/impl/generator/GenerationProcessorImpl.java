@@ -339,7 +339,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         LOG.debug("Build templates folder {}", templateFolder);
         try {
             StartedProcess process = new ProcessExecutor().destroyOnExit().directory(templateFolder.toFile())
-                .command(SystemUtil.determineMvnPath(), "compile",
+                .command(SystemUtil.determineMvnPath().toString(), "compile",
                     // https://stackoverflow.com/a/66801171
                     "-Djansi.force=true", "-Djansi.passthrough=true", "-B",
                     "-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"),

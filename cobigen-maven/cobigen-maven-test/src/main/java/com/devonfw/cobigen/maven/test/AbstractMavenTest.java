@@ -46,7 +46,7 @@ public class AbstractMavenTest {
      */
     @BeforeClass
     public static void setMavenHome() {
-        System.setProperty("maven.home", SystemUtil.determineMvnPath());
+        System.setProperty("maven.home", SystemUtil.determineMvnPath().toString());
     }
 
     /**

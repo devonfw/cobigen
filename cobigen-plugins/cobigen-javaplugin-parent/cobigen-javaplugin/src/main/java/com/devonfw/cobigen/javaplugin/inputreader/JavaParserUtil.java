@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import net.sf.mmm.code.impl.java.JavaContext;
 import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
 import net.sf.mmm.code.impl.java.source.maven.MavenDependencyCollector;
+import net.sf.mmm.code.java.maven.impl.MavenBridgeImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,8 +116,10 @@ public class JavaParserUtil {
     public static JavaContext getJavaContext(Path inputFile, Path inputProject) {
 
         String fqn = null;
+        MavenUtil.resolveDependencies(inputProject);
         try {
-            MavenDependencyCollector dependencyCollector = new MavenDependencyCollector(false, true, null);
+            MavenDependencyCollector dependencyCollector = new MavenDependencyCollector(
+                new MavenBridgeImpl(MavenUtil.determineMavenRepositoryPath().toFile()), false, true, null);
             JavaContext context =
                 JavaSourceProviderUsingMaven.createFromLocalMavenProject(inputProject.toFile(), dependencyCollector);
             LOG.debug("Checking dependencies to exist.");

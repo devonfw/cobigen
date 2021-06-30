@@ -89,12 +89,12 @@ public class ContextConfigurationReader {
             Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
         }
 
-        try {
+        try (InputStream in = Files.newInputStream(contextFile)) {
             Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
-            Object rootNode = unmarschaller.unmarshal(Files.newInputStream(contextFile));
+            Object rootNode = unmarschaller.unmarshal(in);
             if (rootNode instanceof ContextConfiguration) {
                 BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
                 if (configVersion == null) {

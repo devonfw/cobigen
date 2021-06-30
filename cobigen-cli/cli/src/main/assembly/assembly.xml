@@ -45,13 +45,4 @@
       <fileMode>0644</fileMode>
     </file>
   </files>
-  <dependencySets>
-    <dependencySet>
-      <outputDirectory>/lib</outputDirectory>
-      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-      <excludes>
-        <exclude>com.google.errorprone:javac-shaded</exclude>
-      </excludes>
-    </dependencySet>
-  </dependencySets>
 </assembly>

@@ -3,10 +3,12 @@ package com.devonfw.cobigen.api.util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -39,7 +41,7 @@ public class MavenUtil {
 
         LOG.info("Calculating class path for {} and downloading the needed maven dependencies. Please be patient...",
             pomFile);
-        List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath(), "dependency:build-classpath",
+        List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:build-classpath",
             "-Dmdep.outputFile=" + cpFile.toString());
         if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
             Path cachedPomXml = cpFile.resolveSibling("cached-pom.xml");
@@ -69,9 +71,22 @@ public class MavenUtil {
         LOG.info(
             "Resolving maven dependencies for maven project {} to be able to make use of reflection in templates. Please be patient...",
             mvnProjectRoot);
-        List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath(), "dependency:resolve");
+        List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:resolve");
         runCommand(mvnProjectRoot, args);
         LOG.debug("Downloaded dependencies successfully.");
+    }
+
+    /**
+     * @return the maven repository path
+     */
+    public static Path determineMavenRepositoryPath() {
+
+        LOG.info("Determine maven repository path");
+        String m2Repo =
+            runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
+                "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout"));
+        LOG.debug("Determined {} as maven repository path.", m2Repo);
+        return Paths.get(m2Repo);
     }
 
     /**
@@ -80,8 +95,9 @@ public class MavenUtil {
      *            the execution directory the command should run in
      * @param args
      *            the maven arguments to execute
+     * @return the process output
      */
-    private static void runCommand(Path execDir, List<String> args) {
+    private static String runCommand(Path execDir, List<String> args) {
 
         // https://stackoverflow.com/a/66801171
         args.add("-Djansi.force=true");
@@ -92,7 +108,8 @@ public class MavenUtil {
         args.add("-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN");
 
         try {
-            StartedProcess process = new ProcessExecutor().destroyOnExit().directory(execDir.toFile()).command(args)
+            StartedProcess process = new ProcessExecutor().readOutput(true).destroyOnExit().directory(execDir.toFile())
+                .command(args)
                 .redirectError(
                     Slf4jStream.of(LoggerFactory.getLogger(MavenUtil.class.getName() + "." + "dep-build")).asError())
                 .redirectOutput(
@@ -107,6 +124,7 @@ public class MavenUtil {
                     "Error while getting all the needed transitive dependencies. Please check your internet connection.");
                 throw new CobiGenRuntimeException("Unable to build cobigen dependencies");
             }
+            return processResult.getOutput().getString("UTF-8");
         } catch (InterruptedException | ExecutionException | IOException e) {
             throw new CobiGenRuntimeException("Unable to build cobigen dependencies", e);
         }

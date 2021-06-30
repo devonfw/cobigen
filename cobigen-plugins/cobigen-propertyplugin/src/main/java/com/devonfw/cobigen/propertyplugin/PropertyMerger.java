@@ -59,21 +59,22 @@ public class PropertyMerger implements Merger {
     @Override
     public String merge(File base, String patch, String targetCharset) throws MergeException {
         Properties baseProperties = new Properties();
-        try {
-            baseProperties.load(new InputStreamReader(new FileInputStream(base), targetCharset));
+        try (FileInputStream fis = new FileInputStream(base);
+            InputStreamReader isr = new InputStreamReader(fis, targetCharset)) {
+            baseProperties.load(isr);
         } catch (IOException e) {
             throw new MergeException(base, "Could not read base file.", e);
         }
         Properties patchProperties = new Properties();
-        try {
-            patchProperties.load(new ByteArrayInputStream(patch.getBytes()));
+        try (ByteArrayInputStream inStream = new ByteArrayInputStream(patch.getBytes())) {
+            patchProperties.load(inStream);
         } catch (IOException e) {
             throw new MergeException(base, "Could not read generated patch.", e);
         }
         Set<Object> conflicts = getConflictingProperties(baseProperties, patchProperties);
         try (FileInputStream in = new FileInputStream(base);
-            InputStreamReader reader = new InputStreamReader(in, targetCharset)) {
-            BufferedReader br = new BufferedReader(reader);
+            InputStreamReader reader = new InputStreamReader(in, targetCharset);
+            BufferedReader br = new BufferedReader(reader)) {
             String lineDelimiter = SystemUtil.determineLineDelimiter(base.toPath(), targetCharset);
             return concatContents(conflicts, br, patch, lineDelimiter);
         } catch (IOException e) {

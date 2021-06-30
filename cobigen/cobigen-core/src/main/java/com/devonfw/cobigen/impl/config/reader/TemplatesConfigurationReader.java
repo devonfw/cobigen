@@ -166,12 +166,12 @@ public class TemplatesConfigurationReader {
             Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
         }
 
-        try {
+        try (InputStream in = Files.newInputStream(configFilePath)) {
             Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
-            Object rootNode = unmarschaller.unmarshal(Files.newInputStream(configFilePath));
+            Object rootNode = unmarschaller.unmarshal(in);
             if (rootNode instanceof TemplatesConfiguration) {
                 BigDecimal configVersion = ((TemplatesConfiguration) rootNode).getVersion();
                 if (configVersion == null) {

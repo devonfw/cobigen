@@ -416,9 +416,10 @@ public class ExternalProcess {
         // Do we have write access?
         if (Files.isWritable(Paths.get(parentDirectory))) {
             LOG.info("Extracting server to users folder...");
-            try (InputStream is = new GZIPInputStream(new FileInputStream(tarPath.toString()));
+            try (FileInputStream in = new FileInputStream(tarPath.toString());
+                InputStream is = new GZIPInputStream(in);
                 TarArchiveInputStream tarInputStream =
-                    (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);) {
+                    (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is)) {
 
                 TarArchiveEntry entry;
                 while ((entry = tarInputStream.getNextTarEntry()) != null) {

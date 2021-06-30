@@ -145,8 +145,9 @@ public class JavaInputReader implements InputReader {
                 if (containerClassloader != null) {
                     classLibraryBuilder.appendClassLoader(containerClassloader);
                 }
-                try {
-                    classLibraryBuilder.addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
+                try (FileInputStream fis = new FileInputStream(f);
+                    InputStreamReader isr = new InputStreamReader(fis, inputCharset)) {
+                    classLibraryBuilder.addSource(isr);
                     JavaSource source = null;
                     for (JavaSource s : classLibraryBuilder.getClassLibrary().getJavaSources()) {
                         source = s;

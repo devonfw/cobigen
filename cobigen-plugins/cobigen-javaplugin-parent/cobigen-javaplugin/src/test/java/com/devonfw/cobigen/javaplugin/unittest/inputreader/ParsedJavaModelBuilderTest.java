@@ -51,13 +51,14 @@ public class ParsedJavaModelBuilderTest {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
-        Map<String, Object> customList = JavaModelUtil.getField(model, "customList");
+        try (FileReader fr = new FileReader(file)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fr));
+            Map<String, Object> customList = JavaModelUtil.getField(model, "customList");
 
-        // "List<String>" is not possible to retrieve using reflection due to type erasure
-        assertThat(customList.get(ModelConstant.TYPE)).isEqualTo("List<String>");
-        assertThat(customList.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
+            // "List<String>" is not possible to retrieve using reflection due to type erasure
+            assertThat(customList.get(ModelConstant.TYPE)).isEqualTo("List<String>");
+            assertThat(customList.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
+        }
     }
 
     /**
@@ -73,25 +74,26 @@ public class ParsedJavaModelBuilderTest {
         File classFile = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
+        try (FileReader fileReader = new FileReader(classFile)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
 
-        // check whether implemented Types (interfaces) meet expectations
-        List<Map<String, Object>> interfaces = JavaModelUtil.getImplementedTypes(model);
+            // check whether implemented Types (interfaces) meet expectations
+            List<Map<String, Object>> interfaces = JavaModelUtil.getImplementedTypes(model);
 
-        // interface1
-        assertThat(interfaces.get(0).get(ModelConstant.NAME)).isEqualTo("TestInterface1");
-        assertThat(interfaces.get(0).get(ModelConstant.CANONICAL_NAME))
-            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
-        assertThat(interfaces.get(0).get(ModelConstant.PACKAGE))
-            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
+            // interface1
+            assertThat(interfaces.get(0).get(ModelConstant.NAME)).isEqualTo("TestInterface1");
+            assertThat(interfaces.get(0).get(ModelConstant.CANONICAL_NAME))
+                .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface1");
+            assertThat(interfaces.get(0).get(ModelConstant.PACKAGE))
+                .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
 
-        // interface2
-        assertThat(interfaces.get(1).get(ModelConstant.NAME)).isEqualTo("TestInterface2");
-        assertThat(interfaces.get(1).get(ModelConstant.CANONICAL_NAME))
-            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
-        assertThat(interfaces.get(1).get(ModelConstant.PACKAGE))
-            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
+            // interface2
+            assertThat(interfaces.get(1).get(ModelConstant.NAME)).isEqualTo("TestInterface2");
+            assertThat(interfaces.get(1).get(ModelConstant.CANONICAL_NAME))
+                .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterface2");
+            assertThat(interfaces.get(1).get(ModelConstant.PACKAGE))
+                .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
+        }
     }
 
     /**
@@ -108,9 +110,10 @@ public class ParsedJavaModelBuilderTest {
         JavaInputReader javaModelBuilder = new JavaInputReader();
 
         // debug nullPointerException in case of superclass without package
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(noPackageFile)));
-        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE)).isEqualTo("");
+        try (FileReader fileReader = new FileReader(noPackageFile)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
+            assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE)).isEqualTo("");
+        }
     }
 
     /**
@@ -126,7 +129,9 @@ public class ParsedJavaModelBuilderTest {
         File noPackageFile = new File(testFileRootPath + "TestInterface.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(noPackageFile)));
+        try (FileReader fileReader = new FileReader(noPackageFile)) {
+            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
+        }
     }
 
     /**
@@ -139,14 +144,15 @@ public class ParsedJavaModelBuilderTest {
         File classFile = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
+        try (FileReader fileReader = new FileReader(classFile)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
 
-        Assert.assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
-        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME))
-            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
-        assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE))
-            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
+            Assert.assertEquals("AbstractTestClass", JavaModelUtil.getExtendedType(model).get(ModelConstant.NAME));
+            assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.CANONICAL_NAME))
+                .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.AbstractTestClass");
+            assertThat(JavaModelUtil.getExtendedType(model).get(ModelConstant.PACKAGE))
+                .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata");
+        }
     }
 
     /**
@@ -161,14 +167,15 @@ public class ParsedJavaModelBuilderTest {
         File file = new File(testFileRootPath + "Pojo.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
-        Map<String, Object> customTypeField = JavaModelUtil.getField(model, "customTypeField");
+        try (FileReader fileReader = new FileReader(file)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
+            Map<String, Object> customTypeField = JavaModelUtil.getField(model, "customTypeField");
 
-        // "List<String>" is not possible to retrieve using reflection due to type erasure
-        assertThat(customTypeField.get(ModelConstant.TYPE)).isEqualTo("AnyOtherType");
-        assertThat(customTypeField.get(ModelConstant.CANONICAL_TYPE))
-            .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.AnyOtherType");
+            // "List<String>" is not possible to retrieve using reflection due to type erasure
+            assertThat(customTypeField.get(ModelConstant.TYPE)).isEqualTo("AnyOtherType");
+            assertThat(customTypeField.get(ModelConstant.CANONICAL_TYPE))
+                .isEqualTo("com.devonfw.cobigen.javaplugin.unittest.inputreader.AnyOtherType");
+        }
     }
 
     /**
@@ -234,37 +241,38 @@ public class ParsedJavaModelBuilderTest {
         File classFile = new File(testFileRootPath + "DocumentedClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(classFile)));
+        try (FileReader fileReader = new FileReader(classFile)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
 
-        Map<String, Object> javaDocModel = getJavaDocModel(getRoot(model));
-        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Class Doc.");
-        assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
+            Map<String, Object> javaDocModel = getJavaDocModel(getRoot(model));
+            assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Class Doc.");
+            assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
 
-        javaDocModel = getJavaDocModel(getField(model, "field"));
-        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Field Doc.");
+            javaDocModel = getJavaDocModel(getField(model, "field"));
+            assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Field Doc.");
 
-        javaDocModel = getJavaDocModel(getMethod(model, "getField"));
-        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Returns the field 'field'.");
-        assertThat(javaDocModel.get("return")).isEqualTo("value of field");
-        assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
+            javaDocModel = getJavaDocModel(getMethod(model, "getField"));
+            assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Returns the field 'field'.");
+            assertThat(javaDocModel.get("return")).isEqualTo("value of field");
+            assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
 
-        javaDocModel = getJavaDocModel(getMethod(model, "setField"));
-        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Sets the field 'field'.");
-        Map<String, Object> params = (Map<String, Object>) javaDocModel.get("params");
-        assertThat(params.keySet()).hasSize(4);
-        assertThat(params.keySet()).containsExactly("number", "field", "arg1", "arg0");
-        assertThat(params.get("field")).isEqualTo("new value of field");
-        assertThat(params.get("number")).isEqualTo("just some number");
-        assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
+            javaDocModel = getJavaDocModel(getMethod(model, "setField"));
+            assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Sets the field 'field'.");
+            Map<String, Object> params = (Map<String, Object>) javaDocModel.get("params");
+            assertThat(params.keySet()).hasSize(4);
+            assertThat(params.keySet()).containsExactly("number", "field", "arg1", "arg0");
+            assertThat(params.get("field")).isEqualTo("new value of field");
+            assertThat(params.get("number")).isEqualTo("just some number");
+            assertThat(javaDocModel.get("author")).isEqualTo("mbrunnli (30.01.2015)");
 
-        javaDocModel = getJavaDocModel(getMethod(model, "doSomething"));
-        assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Does something");
-        Map<String, Object> thrown = (Map<String, Object>) javaDocModel.get("throws");
-        assertThat(thrown.keySet()).containsExactly("CobigenRuntimeException", "IOException");
-        assertThat(thrown.get("IOException")).isEqualTo("If it would throw one");
-        assertThat(thrown.get("CobigenRuntimeException")).isEqualTo("During generation");
-        assertThat(javaDocModel.get("author")).isEqualTo("mischuma (04.07.2018)");
+            javaDocModel = getJavaDocModel(getMethod(model, "doSomething"));
+            assertThat(javaDocModel.get(ModelConstant.COMMENT)).isEqualTo("Does something");
+            Map<String, Object> thrown = (Map<String, Object>) javaDocModel.get("throws");
+            assertThat(thrown.keySet()).containsExactly("CobigenRuntimeException", "IOException");
+            assertThat(thrown.get("IOException")).isEqualTo("If it would throw one");
+            assertThat(thrown.get("CobigenRuntimeException")).isEqualTo("During generation");
+            assertThat(javaDocModel.get("author")).isEqualTo("mischuma (04.07.2018)");
+        }
     }
 
     /**
@@ -279,32 +287,33 @@ public class ParsedJavaModelBuilderTest {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
+        try (FileReader fileReader = new FileReader(file)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
 
-        Map<String, Object> classField = JavaModelUtil.getField(model, "customList");
+            Map<String, Object> classField = JavaModelUtil.getField(model, "customList");
 
-        assertThat(classField).isNotNull();
-        assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
-        assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
-        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
-        assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
-        assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example JavaDoc");
-        assertThat(classField.get("isId")).isEqualTo("false");
-        // test annotations for attribute, getter, setter, is-method
-        assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
-        // getter
-        assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
-        // Setter
-        assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
-        // is-method
-        assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
-        // attribute
-        assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            assertThat(classField).isNotNull();
+            assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
+            assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
+            assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
+            assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
+            assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example JavaDoc");
+            assertThat(classField.get("isId")).isEqualTo("false");
+            // test annotations for attribute, getter, setter, is-method
+            assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
+            // getter
+            assertThat(JavaModelUtil.getAnnotations(classField))
+                .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+            // Setter
+            assertThat(JavaModelUtil.getAnnotations(classField))
+                .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+            // is-method
+            assertThat(JavaModelUtil.getAnnotations(classField))
+                .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+            // attribute
+            assertThat(JavaModelUtil.getAnnotations(classField))
+                .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+        }
     }
 
     /**
@@ -319,17 +328,18 @@ public class ParsedJavaModelBuilderTest {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
+        try (FileReader fileReader = new FileReader(file)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
 
-        // test inherited field of direct superclass named "id"
-        Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "id");
-        assertThat(inheritedField).isNotNull();
-        assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("id");
+            // test inherited field of direct superclass named "id"
+            Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "id");
+            assertThat(inheritedField).isNotNull();
+            assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("id");
 
-        assertThat(inheritedField.get(ModelConstant.TYPE)).isEqualTo("Long");
+            assertThat(inheritedField.get(ModelConstant.TYPE)).isEqualTo("Long");
 
-        assertThat(inheritedField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.Long");
+            assertThat(inheritedField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.Long");
+        }
 
         // is deprecated, so its not necessary to test here
         // assertThat(inheritedField.get("isId")).isEqualTo("false");
@@ -366,43 +376,45 @@ public class ParsedJavaModelBuilderTest {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
+        try (FileReader fileReader = new FileReader(file)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
 
-        // test inherited field of direct superclass named "id"
-        System.out.println(model);
-        Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
-        assertThat(inheritedField).isNotNull();
-        assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("superSuperString");
+            // test inherited field of direct superclass named "id"
+            System.out.println(model);
+            Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
+            assertThat(inheritedField).isNotNull();
+            assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("superSuperString");
 
-        // TODO qDox library returns full qualified names for the superclass' fields
-        // actually the expected result of ModelConstant.Type is "String" here, but we insert this test case
-        // here with "java.lang.String" so that the test turns into red if there changes anything in qDox
-        assertThat(inheritedField.get(ModelConstant.TYPE)).isEqualTo("java.lang.String");
+            // TODO qDox library returns full qualified names for the superclass' fields
+            // actually the expected result of ModelConstant.Type is "String" here, but we insert this test
+            // case
+            // here with "java.lang.String" so that the test turns into red if there changes anything in qDox
+            assertThat(inheritedField.get(ModelConstant.TYPE)).isEqualTo("java.lang.String");
 
-        assertThat(inheritedField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.String");
+            assertThat(inheritedField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.lang.String");
 
-        // is deprecated, so its not necessary to test here
-        // assertThat(inheritedField.get("isId")).isEqualTo("false");
+            // is deprecated, so its not necessary to test here
+            // assertThat(inheritedField.get("isId")).isEqualTo("false");
 
-        // currently no javadoc provided
-        // assertThat(inheritedField.get(ModelConstant.JAVADOC)).isNotNull();
-        // assertThat(JavaModelUtil.getJavaDocModel(inheritedField).get("comment")).isEqualTo("Example
-        // JavaDoc");
+            // currently no javadoc provided
+            // assertThat(inheritedField.get(ModelConstant.JAVADOC)).isNotNull();
+            // assertThat(JavaModelUtil.getJavaDocModel(inheritedField).get("comment")).isEqualTo("Example
+            // JavaDoc");
 
-        // TODO Currently qDox library does not return the superclass' annotations
-        /*
-         * // test annotations for attribute, getter, setter, is-method
-         * assertThat(inheritedField.get(ModelConstant.ANNOTATIONS)).isNotNull(); // getter
-         * assertTrue(JavaModelUtil.getAnnotations
-         * (inheritedField).containsKey("MySuperSuperTypeGetterAnnotation")); // Setter
-         * assertTrue(JavaModelUtil.getAnnotations
-         * (inheritedField).containsKey("MySuperSuperTypeSetterAnnotation")); // is-method
-         * assertTrue(JavaModelUtil
-         * .getAnnotations(inheritedField).containsKey("MySuperSuperTypeIsAnnotation")); // attribute
-         * assertTrue
-         * (JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperSuperTypeFieldAnnotation"));
-         */
+            // TODO Currently qDox library does not return the superclass' annotations
+            /*
+             * // test annotations for attribute, getter, setter, is-method
+             * assertThat(inheritedField.get(ModelConstant.ANNOTATIONS)).isNotNull(); // getter
+             * assertTrue(JavaModelUtil.getAnnotations
+             * (inheritedField).containsKey("MySuperSuperTypeGetterAnnotation")); // Setter
+             * assertTrue(JavaModelUtil.getAnnotations
+             * (inheritedField).containsKey("MySuperSuperTypeSetterAnnotation")); // is-method
+             * assertTrue(JavaModelUtil
+             * .getAnnotations(inheritedField).containsKey("MySuperSuperTypeIsAnnotation")); // attribute
+             * assertTrue
+             * (JavaModelUtil.getAnnotations(inheritedField).containsKey("MySuperSuperTypeFieldAnnotation"));
+             */
+        }
     }
 
     /**
@@ -417,35 +429,36 @@ public class ParsedJavaModelBuilderTest {
         File file = new File(testFileRootPath + "TestClass.java");
 
         JavaInputReader javaModelBuilder = new JavaInputReader();
-        Map<String, Object> model =
-            javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(new FileReader(file)));
+        try (FileReader fileReader = new FileReader(file)) {
+            Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
 
-        // test local field
-        Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "customList");
-        assertThat(classField).isNotNull();
-        assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
-        assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
-        assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
+            // test local field
+            Map<String, Object> classField = JavaModelUtil.getMethodAccessibleField(model, "customList");
+            assertThat(classField).isNotNull();
+            assertThat(classField.get(ModelConstant.NAME)).isEqualTo("customList");
+            assertThat(classField.get(ModelConstant.TYPE)).isEqualTo("List<String>");
+            assertThat(classField.get(ModelConstant.CANONICAL_TYPE)).isEqualTo("java.util.List<java.lang.String>");
 
-        // currently no javadoc provided
-        // assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
-        // assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example JavaDoc");
+            // currently no javadoc provided
+            // assertThat(classField.get(ModelConstant.JAVADOC)).isNotNull();
+            // assertThat(JavaModelUtil.getJavaDocModel(classField).get("comment")).isEqualTo("Example
+            // JavaDoc");
 
-        assertThat(classField.get("isId")).isEqualTo("false");
-        // test annotations for attribute, getter, setter, is-method
-        assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
-        // getter
-        assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
-        // Setter
-        assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
-        // is-method
-        assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
-        // attribute
-        assertThat(JavaModelUtil.getAnnotations(classField))
-            .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+            assertThat(classField.get("isId")).isEqualTo("false");
+            // test annotations for attribute, getter, setter, is-method
+            assertThat(classField.get(ModelConstant.ANNOTATIONS)).isNotNull();
+            // getter
+            assertThat(JavaModelUtil.getAnnotations(classField))
+                .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyGetterAnnotation");
+            // Setter
+            assertThat(JavaModelUtil.getAnnotations(classField))
+                .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MySetterAnnotation");
+            // is-method
+            assertThat(JavaModelUtil.getAnnotations(classField))
+                .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyIsAnnotation");
+            // attribute
+            assertThat(JavaModelUtil.getAnnotations(classField))
+                .containsKey("com_devonfw_cobigen_javaplugin_unittest_inputreader_testdata_MyFieldAnnotation");
+        }
     }
-
 }
