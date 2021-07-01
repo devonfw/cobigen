@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.codehaus.plexus.util.Os;
 import org.slf4j.Logger;
@@ -92,8 +93,8 @@ public class CobiGenUtils {
             MavenUtil.cacheMavenClassPath(pomFile.toPath(), cpFile);
         }
         // Read classPath.txt file and add to the class path all dependencies
-        try {
-            URL[] classpathEntries = Files.lines(cpFile)
+        try (Stream<String> fileLinesStream = Files.lines(cpFile)) {
+            URL[] classpathEntries = fileLinesStream
                 .flatMap(e -> Arrays.stream(e.split(Os.isFamily(Os.FAMILY_WINDOWS) ? ";" : ":"))).map(path -> {
                     try {
                         return new File(path).toURI().toURL();
