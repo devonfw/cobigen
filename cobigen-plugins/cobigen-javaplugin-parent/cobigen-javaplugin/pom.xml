@@ -58,6 +58,12 @@
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-java-impl</artifactId>
       <version>1.0.0-beta6</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.enterprise</groupId>
+          <artifactId>cdi-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- QDox for Java parsing -->
@@ -68,11 +74,17 @@
     </dependency>
 
     <!-- for advanced introspection -->
-    <dependency>
+    <!-- <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-util-pojo</artifactId>
       <version>7.4.0</version>
-    </dependency>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.enterprise</groupId>
+          <artifactId>cdi-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency> -->
   </dependencies>
 
   <build>
