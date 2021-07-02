@@ -22,7 +22,6 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 
 import uk.org.webcompere.systemstubs.security.SystemExit;
 
@@ -98,7 +97,7 @@ public class AbstractCliTest {
             runWithLatestTemplates();
         }
 
-        String zipName = "cli-" + MavenMetadata.VERSION + ".tar.gz";
+        String zipName = "cli.tar.gz";
         Files.copy(
             new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
                 .getParentFile().getParentFile().toPath().resolve("cli").resolve("target").resolve(zipName),
