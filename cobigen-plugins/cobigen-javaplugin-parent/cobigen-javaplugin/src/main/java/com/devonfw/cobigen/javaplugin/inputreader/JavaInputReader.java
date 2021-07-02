@@ -336,6 +336,9 @@ public class JavaInputReader implements InputReader {
             } else {
                 // any other type might not be merged. As the values are not equal, this might be a conflict,
                 // so take model as documented
+                if (parsedModel.toString().contains("/PATH")) {
+                    LOG.info("Taking Custom {} from parsed Model: ", parsedModel.getClass(), parsedModel);
+                }
                 return parsedModel;
             }
         } else if (parsedModel instanceof String[]) {
