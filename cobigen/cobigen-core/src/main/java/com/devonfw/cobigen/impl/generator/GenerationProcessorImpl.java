@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -297,8 +298,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                     }
 
                     // Read classPath.txt file and add to the class path all dependencies
-                    URL[] classpathEntries =
-                        Files.lines(cpCacheFile).flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
+                    try (Stream<String> fileLines = Files.lines(cpCacheFile)) {
+                        URL[] classpathEntries = fileLines.flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
                             try {
                                 return new File(path).toURI().toURL();
                             } catch (MalformedURLException e) {
@@ -306,7 +307,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                             }
                             return null;
                         }).toArray(size -> new URL[size]);
-                    combinedClassLoader = new URLClassLoader(classpathEntries, combinedClassLoader);
+                        combinedClassLoader = new URLClassLoader(classpathEntries, combinedClassLoader);
+                    }
                 }
 
                 // prepend jar/compiled resources as well
