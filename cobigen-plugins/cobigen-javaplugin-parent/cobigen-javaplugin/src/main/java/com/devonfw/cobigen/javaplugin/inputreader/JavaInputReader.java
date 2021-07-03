@@ -267,8 +267,14 @@ public class JavaInputReader implements InputReader {
                         mergedModel.put(unionKey,
                             mergeModelsRecursively(model1Map.get(unionKey), model2Map.get(unionKey)));
                     } else if (model1Map.containsKey(unionKey)) {
+                        if (model1Map.get(unionKey).toString().contains("PATH")) {
+                            LOG.info("Taking PATH from parsed Model");
+                        }
                         mergedModel.put(unionKey, model1Map.get(unionKey));
                     } else {
+                        if (model2Map.get(unionKey).toString().contains("PATH")) {
+                            LOG.info("Taking PATH from parsed Model");
+                        }
                         mergedModel.put(unionKey, model2Map.get(unionKey));
                     }
                 }
