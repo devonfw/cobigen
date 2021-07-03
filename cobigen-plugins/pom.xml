@@ -60,7 +60,7 @@
               <instructions>
                 <Fragment-Host>com.devonfw.cobigen.eclipse</Fragment-Host>
                 <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                <Embed-Dependency>*;scope=!test</Embed-Dependency>
+                <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                 <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
                 <Embed-Transitive>true</Embed-Transitive>
                 <Bundle-Name>${project.name}</Bundle-Name>
