@@ -58,12 +58,18 @@
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-java-impl</artifactId>
       <version>1.0.0-beta6</version>
-      <!-- <exclusions>
+      <exclusions>
         <exclusion>
-          <groupId>javax.enterprise</groupId>
-          <artifactId>cdi-api</artifactId>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
         </exclusion>
-      </exclusions> -->
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>3.6.1</version>
     </dependency>
 
     <!-- QDox for Java parsing -->

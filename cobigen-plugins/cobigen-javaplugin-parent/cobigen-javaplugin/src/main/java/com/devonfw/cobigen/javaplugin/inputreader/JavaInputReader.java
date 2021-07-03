@@ -267,14 +267,8 @@ public class JavaInputReader implements InputReader {
                         mergedModel.put(unionKey,
                             mergeModelsRecursively(model1Map.get(unionKey), model2Map.get(unionKey)));
                     } else if (model1Map.containsKey(unionKey)) {
-                        if (model1Map.get(unionKey).toString().contains("PATH")) {
-                            LOG.info("Taking PATH from parsed Model");
-                        }
                         mergedModel.put(unionKey, model1Map.get(unionKey));
                     } else {
-                        if (model2Map.get(unionKey).toString().contains("PATH")) {
-                            LOG.info("Taking PATH from parsed Model");
-                        }
                         mergedModel.put(unionKey, model2Map.get(unionKey));
                     }
                 }
@@ -328,7 +322,6 @@ public class JavaInputReader implements InputReader {
                 // This is the case for annotation values. QDox will always return the expression,
                 // which is a assigned to the annotation's value, as a string.
                 else if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof String) {
-                    LOG.info("Taking {} from parsed Model: {}", parsedModel.getClass(), parsedModel);
                     return parsedModel;
                 } else {
                     if (reflectionModel instanceof Object[]) {
@@ -340,17 +333,14 @@ public class JavaInputReader implements InputReader {
             } else {
                 // any other type might not be merged. As the values are not equal, this might be a conflict,
                 // so take model as documented
-                LOG.info("Taking {} from parsed Model: ", parsedModel.getClass(), parsedModel);
                 return parsedModel;
             }
         } else if (parsedModel instanceof String[]) {
-            LOG.info("Taking {} from parsed Model: {}", parsedModel.getClass(), parsedModel);
             return Lists.newLinkedList(Arrays.asList(parsedModel));
         }
         // we will prefer parsed model if parsed value of type String. This is the case for annotation values.
         // QDox will always return the expression, which is a assigned to the annotation's value, as a string.
         else {
-            LOG.info("Taking {} from parsed Model only: {}", parsedModel.getClass(), parsedModel);
             return parsedModel;
         }
     }

@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -79,7 +81,7 @@ public class ModelCreationTest extends AbstractIntegrationTest {
 
         Object input = cobiGen.read(
             new File("src/test/resources/testdata/integrationtest/javaSources/ModelCreationTest.java").toPath(),
-            Charset.forName("UTF-8"), getClass().getClassLoader());
+            StandardCharsets.UTF_8, getClass().getClassLoader());
         List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
         boolean methodTemplateFound = false;
@@ -88,10 +90,9 @@ public class ModelCreationTest extends AbstractIntegrationTest {
                 GenerationReportTo report =
                     cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
                 assertThat(report).isSuccessful();
-                File expectedFile = new File(tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR
-                    + "correctAnnotationValueExtraction.txt");
+                Path expectedFile = tmpFolderCobiGen.toPath().resolve("correctAnnotationValueExtraction.txt");
                 assertThat(expectedFile).exists();
-                assertThat(expectedFile).hasContent("/foo/{id}/");
+                assertThat(expectedFile).hasContent("\"/foo/{id}/\"");
                 methodTemplateFound = true;
                 break;
             }

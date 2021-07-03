@@ -364,9 +364,6 @@ public class ParsedJavaModelBuilder {
                     || value instanceof Boolean || value instanceof Character) {
                     annotationParameters.put(propertyName, value);
                 } else if (value instanceof String) {
-                    if (((String) value).matches("\".*\"")) {
-                        value = ((String) value).replaceFirst("\"(.*)\"", "$1");
-                    }
                     annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not
