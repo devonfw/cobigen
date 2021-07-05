@@ -1,43 +1,37 @@
+:doctype: book
 :toc:
 toc::[]
 
 :toc:
 toc::[]
-[.text-center]
 = End to End POC Code generation using OpenAPI
 This article helps to create a sample application using cobigen.
 
 == Prerequisites
-
 Download and install devonnfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
 
 == Steps to create a Sample Project using Cobigen
-
 The HOW_TO is divided in 2 parts:
 [arabic]
 . BE-Back End generator (DB + DAO + services) – CONTRACT FIRST APPROACH
 . FE-Front End generator (Web App Angular + Ionic App) – CONTRACT FIRST APPROACH
 
-image:images/howtos/e2e_gen/image9.png[cobigen ionic code genartion]
+image:images/howtos/e2e_gen/image9.png[cobigen contract-first generation]
 
-So, ready to go! We’re going to star
-
-t from the BE part …
+So, ready to go! We’re going to start from the BE part …
 
 === Back End
-
-run \devonfw-ide-scripts-3.2.4\eclipse-main.bat
+Under your path installation of DevonFW, you can find the _eclipe-main.bat_ script and you can run it: +
+run _installation_path_\eclipse-main.bat
 
 It will open eclipse
 
-
-[arabic, start=6]
-
-create a project using below command from the command prompt
+[arabic]
+Create a project using below command from the command prompt. +
+To made it, it's necessary to open a CMD and open the folder where it's installed DevonFW and launch this command under the path _workspaces/main_
 
 [source, java]
 devon java create com.example.domain.myapp
-
 
 Import the project to eclipse as maven project
 image:images/howtos/e2e_gen/image14.png[eclipse devon]
@@ -48,15 +42,14 @@ Now We have the following 4 projects.
 
 image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 
-*BEFORE to start to create an Entity class, remember to create the tables !*
+*BEFORE to start to create an Entity class, remember to create the tables, for this POC it's used an H2 Database!*
 
-[arabic, start=7]
-. Create a new *SQL* *file* (i.e: V0005__CreateTables_ItaPoc.sql) inside __jwtsample-__core and insert the following script:
+[arabic]
+Create a new *SQL* *file* (i.e: V0002__CreateTables_myapp.sql) inside _myapp-core_ , under the folder path _/myapp-core/src/main/resources/db/migration/1.0_ and insert the following script:
 
 [source, sql]
-
 CREATE TABLE EMPLOYEE (
-id BIGINT auto_increment, modificationCounter *INTEGER* *NOT* *NULL*,
+id BIGINT auto_increment, modificationCounter INTEGER NOT NULL,
 employeeid BIGINT auto_increment,
 name VARCHAR(255),
 surname VARCHAR(255),
@@ -64,23 +57,24 @@ email VARCHAR(255),
 PRIMARY KEY (employeeid)
 );
 
+*_WARNING 1_*: please note that there in that folder is present only one file, 0001, and you have to add the other files in progressive number order (i.e. 0002)! +
+*_WARNING 2_*: please note that there are 2 underscore in the name!
 
-*_WARNING_*: please note that there are 2 underscore in the name !
+image:images/howtos/e2e_gen/image64.png[sql file]
 
-image:images/howtos/e2e_gen/image16.png[sql file]
+[arabic]
+. Now create another SQL file (i.e: V0003__PopulateTables-myapp.sql) and add following script about the INSERT in order to populate the table created before.
+The script must be inserted at the same path used before: _/myapp-core/src/main/resources/db/migration/1.0_
 
-[arabic, start=8]
-. Now create another SQL file (i.e: V0006__PopulateTables-ItaPoc.sql) and add following script about the INSERT in order to populate the table created before
-
-*_WARNING_*: please note that there are 2 underscore in the name !
+*_WARNING 1_*: please note that there in that folder is present only one file, 0001, and you have to add the other files in progressive number order (i.e. 0003)! +
+*_WARNING_2*: please note that there are 2 underscore in the name !
 
 [source, sql]
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Albert','Miller','albert.miller@example.com');
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Angelo','Gonzalez', 'angelo.gonzalez@example.com');
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Jaime','King', 'jaime.king@example.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'John','Doe','john.doe@example.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Tom','Smith', 'tom.smith@example.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Joe','Schmoe', 'joe.schmoe@example.com');
 
-image:images/howtos/e2e_gen/image17.png[sql insert]
-
+image:images/howtos/e2e_gen/image65.png[sql insert]
 
 *Let's create the yml file for the code generation*
 
