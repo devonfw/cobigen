@@ -23,12 +23,10 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-externalprocess-api</artifactId>
-      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.4</version>
     </dependency>
 
     <!-- Used for converting JSON to Hashmaps -->

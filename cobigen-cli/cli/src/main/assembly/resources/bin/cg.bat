@@ -4,9 +4,7 @@ REM echo %JAVA_HOME%
 setlocal enableDelayedExpansion
 
 IF [%1]==[] (
-    java -jar "%~dp0\..\lib\cobigen.jar" --help
+    java -cp "%~dp0\..\lib\*" com.devonfw.cobigen.cli.CobiGenCLI --help
 ) ELSE (
-    java -javaagent:"%~dp0\..\lib\class-loader-agent.jar" -jar "%~dp0\..\lib\cobigen.jar" %*
+    java -cp "%~dp0\..\lib\*" com.devonfw.cobigen.cli.CobiGenCLI %*
 )
-
-EXIT /B

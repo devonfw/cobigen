@@ -9,13 +9,19 @@ public class GenerableArtifact implements Comparable<GenerableArtifact> {
     /** Id of the template */
     private String id;
 
+    /** Trigger Id, this {@link IncrementTo} was retrieved from */
+    private String triggerId;
+
     /**
      * Initializes the {@link GenerableArtifact} with the given ID
      * @param id
      *            ID
+     * @param triggerId
+     *            the increment is assigned to
      */
-    GenerableArtifact(String id) {
+    GenerableArtifact(String id, String triggerId) {
         this.id = id;
+        this.triggerId = triggerId;
     }
 
     /**
@@ -26,9 +32,16 @@ public class GenerableArtifact implements Comparable<GenerableArtifact> {
         return id;
     }
 
+    /**
+     * Returns the trigger's id the increment is assigned to
+     * @return the trigger's id the increment is assigned to
+     */
+    public String getTriggerId() {
+        return triggerId;
+    }
+
     @Override
     public int compareTo(GenerableArtifact o) {
         return id.compareTo(o.id);
     }
-
 }

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,6 +40,9 @@ public class SystemUtil {
 
     /** Current Operating System, the code is exectued on */
     private static final String OS = System.getProperty("os.name").toLowerCase();
+
+    /** Maven exectuable */
+    private static Path MVN_EXEC = null;
 
     /**
      * Determines the line delimiter
@@ -102,8 +106,11 @@ public class SystemUtil {
     /**
      * @return the absolute path of the mvn executable if available, otherwise null
      */
-    public static String determineMvnPath() {
-        String MVN_EXEC = null;
+    public static Path determineMvnPath() {
+        if (MVN_EXEC != null) {
+            return MVN_EXEC;
+        }
+
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (OS.contains("win")) {
             processBuilder.command("where", "mvn");
@@ -113,8 +120,9 @@ public class SystemUtil {
         try {
             Process process = processBuilder.start();
 
-            try (InputStreamReader in = new InputStreamReader(process.getInputStream());
-                BufferedReader reader = new BufferedReader(in)) {
+            try (InputStream in = process.getInputStream();
+                InputStreamReader inr = new InputStreamReader(in);
+                BufferedReader reader = new BufferedReader(inr)) {
 
                 String line = null;
                 List<String> foundEntries = reader.lines().collect(Collectors.toList());
@@ -138,7 +146,7 @@ public class SystemUtil {
                 int retVal = process.waitFor();
                 if (retVal == 0 && StringUtils.isNotEmpty(line)) {
                     LOG.info("Determined mvn executable to be located in {}", line);
-                    MVN_EXEC = line;
+                    MVN_EXEC = Paths.get(line);
                 } else {
                     LOG.warn("Could not determine mvn executable location. 'which mvn' returned {}", retVal);
                 }
@@ -151,9 +159,7 @@ public class SystemUtil {
 
         if (MVN_EXEC == null) {
             String m2Home = System.getenv().get("MAVEN_HOME");
-            if (m2Home != null) {
-                System.setProperty("maven.home", m2Home);
-            } else {
+            if (m2Home == null) {
                 m2Home = System.getenv().get("M2_HOME");
                 if (m2Home == null) {
                     if ("true".equals(System.getenv("TRAVIS"))) {
@@ -164,41 +170,32 @@ public class SystemUtil {
                     }
                 }
             }
-            LOG.info("Set maven home to {}", m2Home);
-            System.setProperty("maven.home", m2Home);
-            try {
-                MVN_EXEC = getMvnExecutable(m2Home);
-            } catch (IOException e) {
-                throw new CobiGenRuntimeException("Unable to determine maven executable in maven home " + m2Home, e);
-            }
+            MVN_EXEC = getMvnExecutable(m2Home);
             LOG.info("Determined maven executable at {}", MVN_EXEC);
         } else {
             LOG.debug("Detected to run on OS {}", OS);
             if (OS.contains("win")) {
                 // running in git bash, we need to transform paths of format /c/path to C:\path
                 Pattern p = Pattern.compile("/([a-zA-Z])/(.+)");
-                Matcher matcher = p.matcher(MVN_EXEC);
+                Matcher matcher = p.matcher(MVN_EXEC.toString());
                 if (matcher.matches()) {
-                    MVN_EXEC = matcher.group(1) + ":\\" + matcher.group(2).replace("/", "\\");
+                    MVN_EXEC = Paths.get(matcher.group(1) + ":\\" + matcher.group(2).replace("/", "\\"));
                     LOG.debug("Reformatted mvn execution path to '{}' as running on windows within a shell or bash",
                         MVN_EXEC);
                 }
             }
-            String m2Home;
-            try {
-                m2Home = Paths.get(MVN_EXEC).getParent().getParent().toFile().getCanonicalPath();
-            } catch (IOException e) {
-                throw new CobiGenRuntimeException("Unable to determine maven home from maven executable " + MVN_EXEC,
-                    e);
-            }
-            LOG.info("Set maven home to {}", m2Home);
-            System.setProperty("maven.home", m2Home);
         }
         return MVN_EXEC;
     }
 
-    private static String getMvnExecutable(String mvnHome) throws IOException {
-        return Paths.get(mvnHome).resolve("bin/mvn" + (OS.contains("win") ? ".cmd" : "")).toFile().getCanonicalPath();
+    /**
+     * Determine mvn executable depending on the OS
+     * @param mvnHome
+     *            the maven home dir
+     * @return the mvn executable path
+     */
+    private static Path getMvnExecutable(String mvnHome) {
+        return Paths.get(mvnHome).resolve("bin/mvn" + (OS.contains("win") ? ".cmd" : ""));
     }
 
 }

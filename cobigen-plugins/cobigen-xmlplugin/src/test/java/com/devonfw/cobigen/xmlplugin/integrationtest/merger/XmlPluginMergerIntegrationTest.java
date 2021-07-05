@@ -343,7 +343,9 @@ public class XmlPluginMergerIntegrationTest {
         docFactory.setNamespaceAware(true);
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
-        Document mergeDoc = docBuilder.parse(new InputSource(new StringReader(string)));
-        return mergeDoc;
+        try (StringReader reader = new StringReader(string)) {
+            Document mergeDoc = docBuilder.parse(new InputSource(reader));
+            return mergeDoc;
+        }
     }
 }

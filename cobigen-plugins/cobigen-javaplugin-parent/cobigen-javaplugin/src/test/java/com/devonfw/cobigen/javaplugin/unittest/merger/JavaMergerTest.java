@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
 import org.apache.commons.io.FileUtils;
@@ -101,11 +102,11 @@ public class JavaMergerTest {
         assertThat(clsFooBar.getConstructors()).hasSize(2);
         assertThat(clsFooBar.getMethods()).hasSize(2);
 
-        JavaConstructor emptyConstructor = clsFooBar.getConstructor(new LinkedList<JavaType>());
+        JavaConstructor emptyConstructor = clsFooBar.getConstructor(new LinkedList<>());
         assertThat(emptyConstructor).isNotNull();
         assertThat(emptyConstructor.getSourceCode().trim()).isEqualTo("");
 
-        JavaMethod baseMethod = clsFooBar.getMethodBySignature("baseMethod", new LinkedList<JavaType>());
+        JavaMethod baseMethod = clsFooBar.getMethodBySignature("baseMethod", new LinkedList<>());
         assertThat(baseMethod).isNotNull();
         assertThat(baseMethod.getReturnType(true).getCanonicalName()).isEqualTo(void.class.getCanonicalName());
     }
@@ -284,15 +285,21 @@ public class JavaMergerTest {
     public void testReadingEncoding() throws IOException, MergeException {
         File baseFile = new File(testFileRootPath + "BaseFile_encoding_UTF-8.java");
         File patchFile = new File(testFileRootPath + "PatchFile_encoding.java");
-        String mergedContents =
-            new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
-        JavaSource mergedSource = getFirstJavaClass(new StringReader(mergedContents)).getSource();
-        assertThat(mergedSource.toString().contains("enthält")).isTrue();
+        String mergedContents = new JavaMerger("", false).merge(baseFile,
+            FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+        JavaSource mergedSource;
+        try (StringReader stringReader = new StringReader(mergedContents)) {
+            mergedSource = getFirstJavaClass(stringReader).getSource();
+            assertThat(mergedSource.toString().contains("enthält")).isTrue();
+        }
 
         baseFile = new File(testFileRootPath + "BaseFile_encoding_ISO-8859-1.java");
-        mergedContents = new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "ISO-8859-1");
-        mergedSource = getFirstJavaClass(new StringReader(mergedContents)).getSource();
-        assertThat(mergedSource.toString()).contains("enthält");
+        mergedContents = new JavaMerger("", false).merge(baseFile,
+            FileUtils.readFileToString(patchFile, StandardCharsets.ISO_8859_1), "ISO-8859-1");
+        try (StringReader stringReader = new StringReader(mergedContents)) {
+            mergedSource = getFirstJavaClass(stringReader).getSource();
+            assertThat(mergedSource.toString()).contains("enthält");
+        }
     }
 
     /**
@@ -307,8 +314,8 @@ public class JavaMergerTest {
     public void testConsistentLineEndings() throws IOException, MergeException {
         File baseFile = new File(testFileRootPath + "BaseFile_innerClass.java");
         File patchFile = new File(testFileRootPath + "PatchFile_innerClass.java");
-        String mergedContents =
-            new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
+        String mergedContents = new JavaMerger("", false).merge(baseFile,
+            FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
 
         boolean eol1 = mergedContents.contains("\r\n");
         mergedContents = mergedContents.replaceAll("\r\n", "");
@@ -329,9 +336,9 @@ public class JavaMergerTest {
         File baseFile = new File(testFileRootPath + "BaseFile_Eol.java");
         File patchFile = new File(testFileRootPath + "PatchFile_Eol.java");
         File mergedFile = new File(testFileRootPath + "MergedFile_Eol.java");
-        String expectedContent = FileUtils.readFileToString(mergedFile);
-        String mergedContents =
-            new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
+        String expectedContent = FileUtils.readFileToString(mergedFile, StandardCharsets.UTF_8);
+        String mergedContents = new JavaMerger("", false).merge(baseFile,
+            FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
         assertThat(mergedContents).isEqualTo(expectedContent);
     }
 
@@ -348,8 +355,8 @@ public class JavaMergerTest {
         File baseFile = new File(testFileRootPath + "BaseFile_generics.java");
         File patchFile = new File(testFileRootPath + "PatchFile_generics.java");
 
-        String mergedContents =
-            new JavaMerger("", false).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
+        String mergedContents = new JavaMerger("", false).merge(baseFile,
+            FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
 
         assertThat(mergedContents).contains("class Clazz<T extends Object>");
         assertThat(mergedContents).contains("Map<String,T>");
@@ -364,26 +371,30 @@ public class JavaMergerTest {
      *             test fails
      * @throws MergeException
      *             test fails
-     * @author mbrunnli (07.06.2014)
      */
     @Test
     public void testMergeMethodsWithoutExtendingMethodBodyWithWhitespaces() throws IOException, MergeException {
         File file = new File(testFileRootPath + "PatchFile_method.java");
 
         ClassLibraryBuilder classLibraryBuilder = new ModifyableClassLibraryBuilder();
-        JavaSource source = classLibraryBuilder.addSource(new FileInputStream(file));
-        JavaClass origClazz = source.getClasses().get(0);
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            JavaSource source = classLibraryBuilder.addSource(fileInputStream);
+            JavaClass origClazz = source.getClasses().get(0);
 
-        String mergedContents =
-            new JavaMerger("", true).merge(file, FileUtils.readFileToString(file, Charset.forName("UTF-8")), "UTF-8");
+            String mergedContents = new JavaMerger("", true).merge(file,
+                FileUtils.readFileToString(file, Charset.forName("UTF-8")), "UTF-8");
 
-        classLibraryBuilder = new ModifyableClassLibraryBuilder();
-        source = classLibraryBuilder.addSource(new StringReader(mergedContents));
-        JavaClass resultClazz = source.getClasses().get(0);
+            classLibraryBuilder = new ModifyableClassLibraryBuilder();
+            try (StringReader stringReader = new StringReader(mergedContents)) {
+                source = classLibraryBuilder.addSource(stringReader);
+                JavaClass resultClazz = source.getClasses().get(0);
 
-        for (JavaMethod method : resultClazz.getMethods()) {
-            JavaMethod origMethod = origClazz.getMethodBySignature(method.getName(), method.getParameterTypes());
-            assertThat(method.getCodeBlock()).isEqualTo(origMethod.getCodeBlock());
+                for (JavaMethod method : resultClazz.getMethods()) {
+                    JavaMethod origMethod =
+                        origClazz.getMethodBySignature(method.getName(), method.getParameterTypes());
+                    assertThat(method.getCodeBlock()).isEqualTo(origMethod.getCodeBlock());
+                }
+            }
         }
     }
 
@@ -401,19 +412,23 @@ public class JavaMergerTest {
         File baseFile = new File(testFileRootPath + "BaseFile_inheritance.java");
         File patchFile = new File(testFileRootPath + "PatchFile_inheritance.java");
 
-        JavaClass origClazz = getFirstJavaClass(new FileReader(baseFile));
-        assertThat(origClazz.getSuperClass().getCanonicalName()).isEqualTo("java.lang.Object");
+        try (FileReader fileReader = new FileReader(baseFile)) {
+            JavaClass origClazz = getFirstJavaClass(fileReader);
+            assertThat(origClazz.getSuperClass().getCanonicalName()).isEqualTo("java.lang.Object");
+        }
 
         String mergedContents = new JavaMerger("", false).merge(baseFile,
             FileUtils.readFileToString(patchFile, Charset.forName("UTF-8")), "UTF-8");
 
-        JavaClass resultClazz = getFirstJavaClass(new StringReader(mergedContents));
-        assertThat(resultClazz.getSuperClass().getCanonicalName())
-            .as("The merged result does not contain the expected inheritance relation 'extends HashMap<String,Long>'")
-            .isEqualTo("java.util.HashMap");
-        assertThat(resultClazz.getSuperClass().getGenericValue())
-            .as("The merged result does not contain the original inheritance declaration'extends HashMap<String,Long>'")
-            .isEqualTo("HashMap<String,Long>");
+        try (StringReader stringReader = new StringReader(mergedContents)) {
+            JavaClass resultClazz = getFirstJavaClass(stringReader);
+            assertThat(resultClazz.getSuperClass().getCanonicalName()).as(
+                "The merged result does not contain the expected inheritance relation 'extends HashMap<String,Long>'")
+                .isEqualTo("java.util.HashMap");
+            assertThat(resultClazz.getSuperClass().getGenericValue()).as(
+                "The merged result does not contain the original inheritance declaration'extends HashMap<String,Long>'")
+                .isEqualTo("HashMap<String,Long>");
+        }
     }
 
     /**
@@ -477,8 +492,8 @@ public class JavaMergerTest {
      */
     private JavaSource getMergedSource(File baseFile, File patchFile, boolean override)
         throws IOException, MergeException {
-        String mergedContents =
-            new JavaMerger("", override).merge(baseFile, FileUtils.readFileToString(patchFile), "UTF-8");
+        String mergedContents = new JavaMerger("", override).merge(baseFile,
+            FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
         return getFirstJavaClass(new StringReader(mergedContents)).getSource();
     }
 

@@ -1,14 +1,15 @@
 package com.devonfw.cobigen.impl.config.upgrade;
 
-import java.io.InputStream;
 import java.math.BigDecimal;
-
-import org.dozer.DozerBeanMapper;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
+
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
  * This class encompasses all logic for legacy context configuration detection and upgrading these to the
@@ -36,11 +37,20 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         case v2_0:
             // to v2.1
 
-            DozerBeanMapper mapper = new DozerBeanMapper();
-            try (InputStream stream =
-                getClass().getResourceAsStream("/dozer/config/upgrade/contextConfiguration-v2.0-v2.1.xml")) {
-                mapper.addMapping(stream);
-            }
+            MapperFactory mapperFactory =
+                new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
+            mapperFactory
+                .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContextConfiguration.class,
+                    com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class)
+                .field("triggers.trigger", "trigger").byDefault().register();
+            mapperFactory
+                .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContainerMatcher.class,
+                    com.devonfw.cobigen.impl.config.entity.io.v2_1.ContainerMatcher.class)
+                .field(
+                    "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
+                    "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
+                .byDefault().register();
+            MapperFacade mapper = mapperFactory.getMapperFacade();
             com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration upgradedConfig =
                 mapper.map(previousConfigurationRootNode,
                     com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class);

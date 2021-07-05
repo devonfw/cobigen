@@ -2,6 +2,9 @@ package com.devonfw.cobigen.api.assertj;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.assertj.core.api.AbstractAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +37,9 @@ public class GenerationReportToAssert extends AbstractAssert<GenerationReportToA
         try {
             assertThat(actual.isSuccessful()).overridingErrorMessage(
                 "Generation not successfull. Warnings: %s // Errors: %s. Please see the printed stack traces in the LOG.",
-                actual.getWarnings(), actual.getErrors()).isTrue();
+                actual.getWarnings(), actual.getErrors().stream().map(e -> "\n" + ExceptionUtils.getStackTrace(e))
+                    .collect(Collectors.joining()))
+                .isTrue();
         } catch (AssertionError e) {
             for (Throwable entry : actual.getErrors()) {
                 LOG.error(entry.getMessage(), entry);

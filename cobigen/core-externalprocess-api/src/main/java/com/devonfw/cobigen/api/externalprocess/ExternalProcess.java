@@ -32,8 +32,8 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.StartedProcess;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
-import com.devonfw.cobigen.api.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.externalprocess.constants.ExternalProcessConstants;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.google.gson.Gson;
 
@@ -271,11 +271,11 @@ public class ExternalProcess {
         int currentTry = 0;
         while (currentTry < 10) {
             try {
-                process = new ProcessExecutor().command(filePath, String.valueOf(port))
+                process = new ProcessExecutor().command(filePath, String.valueOf(port)).destroyOnExit()
                     .redirectError(
                         Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asError())
                     .redirectOutput(
-                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asDebug())
+                        Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + "." + serverFileName)).asInfo())
                     .start();
                 Future<ProcessResult> result = process.getFuture();
 
@@ -416,9 +416,10 @@ public class ExternalProcess {
         // Do we have write access?
         if (Files.isWritable(Paths.get(parentDirectory))) {
             LOG.info("Extracting server to users folder...");
-            try (InputStream is = new GZIPInputStream(new FileInputStream(tarPath.toString()));
+            try (FileInputStream in = new FileInputStream(tarPath.toString());
+                InputStream is = new GZIPInputStream(in);
                 TarArchiveInputStream tarInputStream =
-                    (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);) {
+                    (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is)) {
 
                 TarArchiveEntry entry;
                 while ((entry = tarInputStream.getNextTarEntry()) != null) {

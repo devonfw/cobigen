@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.annotation.Cached;
 import com.devonfw.cobigen.api.annotation.ExceptionFacade;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
@@ -17,6 +20,9 @@ import com.google.common.collect.Maps;
  * A factory for creating Proxy objects.
  */
 public final class ProxyFactory {
+
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ProxyFactory.class);
 
     /** Map representing the available AOP interceptors utilized by CobiGen */
     private static final Map<String, Class<? extends AbstractInterceptor>> annotationToInterceptorMap;
@@ -57,13 +63,15 @@ public final class ProxyFactory {
             if (Boolean.FALSE.equals(proxyObject)) {
                 return targetObject;
             } else {
+                LOG.debug("Taking proxy for {}", targetObject.getClass());
                 return proxyObject;
             }
         }
 
         // create proxy if not cached
-        proxyObject = targetObject;
+        boolean proxied = false;
         for (String annotationClass : collectAnnotations(targetObject.getClass())) {
+            proxyObject = targetObject;
             Class<? extends AbstractInterceptor> interceptorClass = annotationToInterceptorMap.get(annotationClass);
             if (interceptorClass != null) {
                 AbstractInterceptor interceptor;
@@ -73,20 +81,21 @@ public final class ProxyFactory {
                     throw new CobiGenRuntimeException(
                         "Unable to instantiate class " + interceptorClass.getCanonicalName());
                 }
-                interceptor.setTargetObject(targetObject);
-                proxyObject = (T) Proxy.newProxyInstance(targetObject.getClass().getClassLoader(),
-                    targetObject.getClass().getInterfaces(), interceptor);
+                interceptor.setTargetObject(proxyObject);
+                proxyObject = (T) Proxy.newProxyInstance(proxyObject.getClass().getClassLoader(),
+                    proxyObject.getClass().getInterfaces(), interceptor);
+                proxied = true;
+                LOG.debug("Created proxy for {} with {} interceptor", targetObject.getClass(), interceptorClass);
             }
         }
 
-        // save proxy object
-        if (proxyObject != targetObject) {
-            _cache.put(targetObject, proxyObject);// if any proxy has been generated -> cache
+        if (proxied) {
+            _cache.put(targetObject, proxyObject); // if any proxy has been generated -> cache
         } else {
-            _cache.put(targetObject, false);// if not annotated -> mark
+            _cache.put(targetObject, false); // if not annotated -> mark
         }
 
-        return proxyObject;
+        return proxyObject != null ? proxyObject : targetObject;
     }
 
     /**

@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,6 +56,7 @@ public class ReflectedJavaModelBuilder {
      *         ://freemarker.sourceforge.net/docs/dgui_quickstart.html
      */
     Map<String, Object> createModel(final Class<?> pojo) {
+        long start = Calendar.getInstance().getTimeInMillis();
 
         if (cachedPojo != null && cachedPojo.equals(pojo)) {
             return new HashMap<>(cachedModel);
@@ -96,6 +98,7 @@ public class ReflectedJavaModelBuilder {
         cachedModel.put(ModelConstant.MODEL_ROOT, pojoModel);
         cachedModel.put(ModelConstant.CLASS_OBJECT, pojo);
 
+        LOG.debug("Built reflected model in {}s", (Calendar.getInstance().getTimeInMillis() - start) / 100d);
         return new HashMap<>(cachedModel);
     }
 
@@ -106,6 +109,8 @@ public class ReflectedJavaModelBuilder {
      * @return a list of field properties equivalently to {@link #extractFields(Class)}
      */
     private List<Map<String, Object>> extractMethodAccessibleFields(Class<?> pojo) {
+        long start = Calendar.getInstance().getTimeInMillis();
+
         PojoDescriptorBuilder pojoFieldDescriptorBuilder =
             PojoDescriptorBuilderFactoryImpl.getInstance().createPrivateFieldDescriptorBuilder();
         PojoDescriptor<?> pojoFieldDescriptor = pojoFieldDescriptorBuilder.getDescriptor(pojo);
@@ -139,6 +144,8 @@ public class ReflectedJavaModelBuilder {
                 }
             }
         }
+        LOG.debug("Collected method accessible fields for reflective model in {}s",
+            (Calendar.getInstance().getTimeInMillis() - start) / 100d);
         return fields;
     }
 
@@ -279,6 +286,8 @@ public class ReflectedJavaModelBuilder {
      */
     private void collectAnnotations(Class<?> pojo, List<Map<String, Object>> attributes) {
 
+        long start = Calendar.getInstance().getTimeInMillis();
+
         for (Map<String, Object> attr : attributes) {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
@@ -347,6 +356,8 @@ public class ReflectedJavaModelBuilder {
                 // Do nothing if the method does not exist
             }
         }
+        LOG.debug("Collected annotations for reflective model in {}s",
+            (Calendar.getInstance().getTimeInMillis() - start) / 100d);
     }
 
     /**

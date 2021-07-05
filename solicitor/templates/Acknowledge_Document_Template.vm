@@ -1,0 +1,159 @@
+## SPDX-License-Identifier: Apache-2.0
+
+## template
+
+ <!DOCTYPE html>
+<html>
+<body>
+
+## styling (table)
+
+<style>
+
+table {
+  width:auto;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+tr:nth-child(even) {
+  background-color: #eee;
+}
+tr:nth-child(odd) {
+ background-color: #fff;
+}
+th {
+  background-color: lightblue;
+  color: black;
+}
+.replacable-license-text {
+	color: #CC0000;
+}
+
+.replacable-license-text p var {
+	color: #CC0000;
+}
+
+.optional-license-text {
+	color: #0000cc;
+}
+
+.optional-license-text p var {
+	color: #0000cc;
+}
+ul, ol, li {
+	margin: 10px 0 10px 0;
+}
+</style>
+
+## header of the document, contract parties
+
+<h1>License CobiGen</h1>
+
+<div>
+    <div>
+    <p><b>Binaries</b> of this product have been made available to you by
+    <a href="http://www.devonfw.com/">devonfw</a> under the Apache
+    Public License 2.0.</p>
+    </div>
+  </div>
+  <div>
+    <p>All of the <b>source code</b> to this product is
+       available under licenses which are both
+       <a href="https://www.gnu.org/philosophy/free-sw.html">free</a> and
+       <a href="https://www.opensource.org/docs/definition.php">open source</a>.
+    </p>
+
+    <p>More specifically, most of the source code is available under the
+       <a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache Public License 2.0</a>.
+       The remainder of the software which is not
+       under the Apache license is available under one of a variety of other
+       free and open source licenses. Those that require reproduction
+       of the license text in the distribution are given below.
+       (Note: your copy of this product may not contain code covered by one
+       or more of the licenses listed here, depending on the exact product
+       and version you choose.)
+    </p>
+	</div>
+</div>
+
+
+<table>
+	## head row
+  <tr>
+		<th>Name</th>
+		<th>Group Id</th>
+		<th>Version</th>
+		<th>Application</th>
+		<th>License</th>
+		<th>License Url</th>
+  </tr>
+	## content
+
+	#foreach ($license in $OSSLICENSES)
+			<tr>
+				<td>$license.artifactId</td> ## application component name
+				<td>$license.groupId</td> ## application component group id
+				<td>$license.version</td> ## application component version
+				<td>$license.APPS</td> ## application names
+				<td>$license.effectiveNormalizedLicense</td> ## license name
+				<td>$license.effectiveNormalizedLicenseUrl</td> ## license url
+			</tr>
+	#end
+
+</table>
+
+
+
+<h2>Overview of used licenses</h2>
+
+## overview, which components use a specific license (bullet point list)
+
+#foreach($ul in $UNIQUELICENSES)
+  #set($nl = $ul.effectiveNormalizedLicense)
+  #set($nlu = $ul.effectiveNormalizedLicenseUrl)
+  #set($nlc = $ul.effectiveNormalizedLicenseContent)
+  #set($unlc = $ul.unifiedEffectiveNormalizedLicenseContent)
+<hr/>
+<h3>$nl</h3>
+<p>
+The component(s) (Name/GroupId/Version): 
+		<ul>
+		#foreach($ac in $OSSLICENSES )
+			#set( $aid  = $ac.artifactId )
+			#set( $gid  = $ac.groupId )
+			#set( $ver  = $ac.version )
+			#set( $apps = $ac.APPS )
+			#set( $enl  = $ac.effectiveNormalizedLicense )
+			#set( $enlu = $ac.effectiveNormalizedLicenseUrl )
+			#set( $enlc = $ac.effectiveNormalizedLicenseContent )
+			#set( $uenlc = $ac.unifiedEffectiveNormalizedLicenseContent )
+			#if( $enl == $nl && $uenlc == $unlc )
+			<li>$aid/$gid/$ver ($apps)</li>
+			#end
+		#end
+		</ul>
+are at least partly licensed via the following license of type $nl:
+</p>
+<p>
+		#if ($nlc)
+		<table border="1">
+		<tr><td>
+			<pre>$esc.html($nlc)</pre>
+ 		</td></tr>
+		</table>
+		#else
+			<i>No license text available.</i>
+		#end
+		<br/>
+URL(s) leading to the above given license text: $nlu 
+</p>
+#end
+
+</body>
+</html>

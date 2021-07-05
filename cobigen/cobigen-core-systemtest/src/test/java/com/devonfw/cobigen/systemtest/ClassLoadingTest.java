@@ -12,8 +12,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.List;
@@ -65,12 +63,9 @@ public class ClassLoadingTest extends AbstractApiTest {
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
-        File file = new File(testFileRootPath + "jarredclasses/jarred.jar");
-        ClassLoader cl = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() }, getClass().getClassLoader());
-
         // Execution
         GenerationReportTo report =
-            target.generate(containerInput, templates.get(0), Paths.get(generationRootFolder.toURI()), false, cl, null);
+            target.generate(containerInput, templates.get(0), Paths.get(generationRootFolder.toURI()), false);
 
         // Verification
         File expectedResult = new File(testFileRootPath, "expected/Test.java");
@@ -95,12 +90,9 @@ public class ClassLoadingTest extends AbstractApiTest {
         CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
         List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
-        File file = new File(testFileRootPath + "jarredclasses/jarred.jar");
-        ClassLoader cl = URLClassLoader.newInstance(new URL[] { file.toURI().toURL() }, getClass().getClassLoader());
-
         // Execution
         GenerationReportTo report =
-            target.generate(containerInput, templates.get(1), Paths.get(generationRootFolder.toURI()), false, cl, null);
+            target.generate(containerInput, templates.get(1), Paths.get(generationRootFolder.toURI()), false);
 
         // Verification
         File expectedResult = new File(testFileRootPath, "expected/Test2.java");

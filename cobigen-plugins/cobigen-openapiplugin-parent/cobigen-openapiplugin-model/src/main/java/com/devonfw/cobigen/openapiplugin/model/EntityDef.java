@@ -17,6 +17,19 @@ public class EntityDef {
 
     private HeaderDef header;
 
+    /**
+     * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
+     */
+    private Map<String, Object> extensionProperties = new HashMap<>();
+
+    private String name;
+
+    private String description;
+
+    private List<PropertyDef> properties;
+
+    private List<EntityDef> allEntityDefs;
+
     public HeaderDef getHeader() {
         return header;
     }
@@ -32,17 +45,6 @@ public class EntityDef {
     public void setExtensionProperties(Map<String, Object> extensionProperties) {
         this.extensionProperties = extensionProperties;
     }
-
-    /**
-     * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
-     */
-    private Map<String, Object> extensionProperties = new HashMap<>();
-
-    private String name;
-
-    private String description;
-
-    private List<PropertyDef> properties;
 
     public EntityDef() {
         properties = new LinkedList<>();
@@ -110,6 +112,14 @@ public class EntityDef {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<EntityDef> getAllEntityDefs() {
+        return allEntityDefs;
+    }
+
+    public void setAllEntityDefs(List<EntityDef> allEntityDefs) {
+        this.allEntityDefs = allEntityDefs;
     }
 
 }

@@ -19,12 +19,10 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
 
@@ -38,7 +36,6 @@
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
-      <version>1.1.4</version>
     </dependency>
 
   </dependencies>

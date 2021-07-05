@@ -2,6 +2,7 @@ package com.devonfw.cobigen.api.assertj;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -73,10 +74,12 @@ public class HealthCheckReportAssert extends AbstractAssert<HealthCheckReportAss
         Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = factory.newDocumentBuilder();
-        Document doc = db.parse(Files.newInputStream(contextFile));
+        try (InputStream in = Files.newInputStream(contextFile)) {
+            Document doc = db.parse(in);
 
-        new XMLTestCase() {
-        }.assertXpathEvaluatesTo(version, "/contextConfiguration/@version", doc);
+            new XMLTestCase() {
+            }.assertXpathEvaluatesTo(version, "/contextConfiguration/@version", doc);
+        }
 
         return this;
     }
@@ -96,10 +99,12 @@ public class HealthCheckReportAssert extends AbstractAssert<HealthCheckReportAss
         Path templateFile = configRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = factory.newDocumentBuilder();
-        Document doc = db.parse(Files.newInputStream(templateFile));
+        try (InputStream in = Files.newInputStream(templateFile)) {
+            Document doc = db.parse(in);
 
-        new XMLTestCase() {
-        }.assertXpathEvaluatesTo(version, "/templatesConfiguration/@version", doc);
+            new XMLTestCase() {
+            }.assertXpathEvaluatesTo(version, "/templatesConfiguration/@version", doc);
+        }
 
         return this;
     }

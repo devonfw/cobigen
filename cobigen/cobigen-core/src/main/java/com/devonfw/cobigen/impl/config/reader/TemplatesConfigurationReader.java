@@ -14,12 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -58,6 +55,11 @@ import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshalException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and
@@ -164,12 +166,12 @@ public class TemplatesConfigurationReader {
             Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
         }
 
-        try {
+        try (InputStream in = Files.newInputStream(configFilePath)) {
             Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
-            Object rootNode = unmarschaller.unmarshal(Files.newInputStream(configFilePath));
+            Object rootNode = unmarschaller.unmarshal(in);
             if (rootNode instanceof TemplatesConfiguration) {
                 BigDecimal configVersion = ((TemplatesConfiguration) rootNode).getVersion();
                 if (configVersion == null) {
@@ -369,6 +371,9 @@ public class TemplatesConfigurationReader {
                     trigger, observedTemplateNames);
             } else {
                 String templateFileName = child.getFileName();
+                if (StringUtils.isEmpty(currentPath) && templateFileName.equals("templates.xml")) {
+                    continue;
+                }
                 String templateNameWithoutExtension = stripTemplateFileending(templateFileName);
 
                 TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(getTemplateEngine());
@@ -554,7 +559,8 @@ public class TemplatesConfigurationReader {
     private void addAllTemplatesRecursively(Increment rootIncrement,
         com.devonfw.cobigen.impl.config.entity.io.Increment current, Map<String, Template> templates,
         Map<String, Increment> increments) throws InvalidConfigurationException {
-        for (TemplateRef ref : current.getTemplateRef()) {
+        for (TemplateRef ref : current.getTemplateRefOrIncrementRefOrTemplateScanRef().stream()
+            .filter(e -> e instanceof TemplateRef).map(e -> (TemplateRef) e).collect(Collectors.toList())) {
             Template temp = templates.get(ref.getRef());
             if (temp == null) {
                 if (isExternalRef(ref.getRef())) {
@@ -568,7 +574,8 @@ public class TemplatesConfigurationReader {
             }
         }
 
-        for (IncrementRef ref : current.getIncrementRef()) {
+        for (IncrementRef ref : current.getTemplateRefOrIncrementRefOrTemplateScanRef().stream()
+            .filter(e -> e instanceof IncrementRef).map(e -> (IncrementRef) e).collect(Collectors.toList())) {
             Increment parentPkg = increments.get(current.getName());
             Increment childPkg = increments.get(ref.getRef());
 
@@ -601,7 +608,8 @@ public class TemplatesConfigurationReader {
             }
         }
 
-        for (TemplateScanRef ref : current.getTemplateScanRef()) {
+        for (TemplateScanRef ref : current.getTemplateRefOrIncrementRefOrTemplateScanRef().stream()
+            .filter(e -> e instanceof TemplateScanRef).map(e -> (TemplateScanRef) e).collect(Collectors.toList())) {
             List<String> scannedTemplateNames = templateScanTemplates.get(ref.getRef());
             if (scannedTemplateNames == null) {
                 throw new InvalidConfigurationException(configFilePath.toUri().toString(),

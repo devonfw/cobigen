@@ -58,10 +58,13 @@ public class TemplateConfigurationUpgraderTest extends AbstractUnitTest {
         assertThat(version).as("Target version").isEqualTo(TemplatesConfigurationVersion.v4_0);
 
         XMLUnit.setIgnoreWhitespace(true);
-        new XMLTestCase() {
-        }.assertXMLEqual(
-            new FileReader(testFileRootPath + "valid-v2.1/" + ConfigurationConstants.TEMPLATES_CONFIG_FILENAME),
-            new FileReader(tmpTargetConfig));
+        try (
+            FileReader vgl =
+                new FileReader(testFileRootPath + "valid-v2.1/" + ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+            FileReader tmp = new FileReader(tmpTargetConfig)) {
+            new XMLTestCase() {
+            }.assertXMLEqual(vgl, tmp);
+        }
     }
 
     /**

@@ -16,6 +16,12 @@
   </fileSets>
   <files>
     <file>
+      <source>target/cli.jar</source>
+      <outputDirectory>/lib</outputDirectory>
+      <destName>cli.jar</destName>
+      <fileMode>0644</fileMode>
+    </file>
+    <file>
       <source>src/main/assembly/resources/bin/cg</source>
       <outputDirectory>/bin</outputDirectory>
       <destName>cg</destName>
@@ -39,17 +45,9 @@
       <destName>cobigen.bat</destName>
       <fileMode>0644</fileMode>
     </file>
-    <file>
-      <source>target/cobigen.jar</source>
-      <outputDirectory>/lib</outputDirectory>
-      <fileMode>0644</fileMode>
-    </file>
   </files>
   <dependencySets>
     <dependencySet>
-      <includes>
-        <include>*:class-loader-agent:*</include>
-      </includes>
       <outputDirectory>/lib</outputDirectory>
       <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
     </dependencySet>

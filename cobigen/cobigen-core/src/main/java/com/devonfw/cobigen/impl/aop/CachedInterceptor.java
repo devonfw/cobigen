@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.impl.aop;
 
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.annotation.Cached;
+import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 
 /**
@@ -34,7 +36,11 @@ public class CachedInterceptor extends AbstractInterceptor {
         if (!isActive(method, Cached.class)
             && !isActive(getTargetObject().getClass().getMethod(method.getName(), method.getParameterTypes()),
                 Cached.class)) {
-            return ExceptionUtil.invokeTarget(getTargetObject(), method, args);
+            if (method.getReturnType().getPackage().equals(GeneratorPluginActivator.class.getPackage())) {
+                return ProxyFactory.getProxy(ExceptionUtil.invokeTarget(getTargetObject(), method, args));
+            } else {
+                return ExceptionUtil.invokeTarget(getTargetObject(), method, args);
+            }
         }
 
         // Ask cache
@@ -71,10 +77,11 @@ public class CachedInterceptor extends AbstractInterceptor {
      * @return the cached return value or {@code null} if the cache does not contain this value.
      */
     private Object askCache(int paramHash, Method method) {
+        long start = Calendar.getInstance().getTimeInMillis();
         if (_cache.containsKey(paramHash)) {
             if (_cache.get(paramHash).containsKey(method)) {
-                LOG.debug("Value for method {}#{} retrieved from cache.", method.getClass().getName(),
-                    method.getName());
+                LOG.debug("Value for method {}#{} retrieved from cache in {}s.", method.getDeclaringClass().getName(),
+                    method.getName(), ((Calendar.getInstance().getTimeInMillis() - start) / 100d));
                 return _cache.get(paramHash).get(method);
             }
         }

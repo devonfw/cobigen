@@ -1,10 +1,10 @@
 package com.devonfw.cobigen.eclipse.generator.java;
 
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.io.Charsets;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -47,7 +47,7 @@ public class JavaInputConverter {
                 try {
                     IPackageFragment frag = (IPackageFragment) elem;
                     Object packageFolder = inputInterpreter.read(
-                        Paths.get(frag.getCorrespondingResource().getLocationURI()), Charsets.UTF_8,
+                        Paths.get(frag.getCorrespondingResource().getLocationURI()), StandardCharsets.UTF_8,
                         frag.getElementName(), ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
                     convertedInputs.add(packageFolder);
                 } catch (MalformedURLException e) {
@@ -68,7 +68,7 @@ public class JavaInputConverter {
                             ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject());
                         Object input = inputInterpreter.read(
                             Paths.get(((ICompilationUnit) elem).getCorrespondingResource().getRawLocationURI()),
-                            Charsets.UTF_8, projectClassLoader);
+                            StandardCharsets.UTF_8, projectClassLoader);
                         convertedInputs.add(input);
                     } catch (MalformedURLException e) {
                         throw new GeneratorCreationException("An internal exception occurred while loading Java class "

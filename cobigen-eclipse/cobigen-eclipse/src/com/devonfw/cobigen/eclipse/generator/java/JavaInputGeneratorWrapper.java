@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -18,7 +19,6 @@ import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 
 /**
  * The generator interface for the external generator library
- *
  */
 public class JavaInputGeneratorWrapper extends CobiGenWrapper {
 
@@ -33,14 +33,16 @@ public class JavaInputGeneratorWrapper extends CobiGenWrapper {
      *            list of inputs for generation
      * @param inputSourceProject
      *            project from which the inputs have been selected
+     * @param monitor
+     *            track progress
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration project "RF-Generation" is not existent
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
      */
-    public JavaInputGeneratorWrapper(CobiGen cobiGen, IProject inputSourceProject, List<Object> inputs)
-        throws GeneratorProjectNotExistentException, InvalidConfigurationException {
-        super(cobiGen, inputSourceProject, inputs);
+    public JavaInputGeneratorWrapper(CobiGen cobiGen, IProject inputSourceProject, List<Object> inputs,
+        IProgressMonitor monitor) throws GeneratorProjectNotExistentException, InvalidConfigurationException {
+        super(cobiGen, inputSourceProject, inputs, monitor);
     }
 
     @Override

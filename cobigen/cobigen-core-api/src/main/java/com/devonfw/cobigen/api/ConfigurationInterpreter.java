@@ -21,6 +21,7 @@ public interface ConfigurationInterpreter {
      *            object
      * @return the {@link List} of matching trigger ids
      */
+    @Cached
     public List<String> getMatchingTriggerIds(Object matcherInput);
 
     /**
@@ -32,6 +33,7 @@ public interface ConfigurationInterpreter {
      * @throws InvalidConfigurationException
      *             if the configuration of CobiGen is not valid
      */
+    @Cached
     public List<IncrementTo> getMatchingIncrements(Object matcherInput) throws InvalidConfigurationException;
 
     /**

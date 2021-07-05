@@ -45,6 +45,7 @@ public class ClassPathLoadingTest extends SystemTest {
     @BeforeClass
     public static void setupClass() throws Exception {
 
+        EclipseUtils.cleanWorkspace(true);
         // import the configuration project for this test
         EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath());
         EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
@@ -86,7 +87,8 @@ public class ClassPathLoadingTest extends SystemTest {
         bot.waitUntil(new AllJobsAreFinished(), 10000);
         IFile generationResult = project.getProject().getFile("TestOutput.txt");
         try (InputStream in = generationResult.getContents()) {
-            assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=\"/PATH\")");
+            // parenthesis missing as of https://stackoverflow.com/a/40368694
+            assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=/PATH)");
         }
     }
 

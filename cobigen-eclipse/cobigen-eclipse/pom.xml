@@ -11,27 +11,27 @@
     <version>${revision}</version>
   </parent>
 
+  <properties>
+    <license.skipAggregateDownloadLicenses>false</license.skipAggregateDownloadLicenses>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-externalprocess-api</artifactId>
-      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>javaplugin-model</artifactId>
-      <version>${revision}</version>
     </dependency>
 
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.1.2</version>
     </dependency>
 
     <dependency>
