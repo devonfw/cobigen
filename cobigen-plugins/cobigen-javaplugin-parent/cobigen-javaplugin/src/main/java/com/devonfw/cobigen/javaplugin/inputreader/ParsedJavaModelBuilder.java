@@ -354,7 +354,6 @@ public class ParsedJavaModelBuilder {
                     || value instanceof Boolean || value instanceof Character) {
                     annotationParameters.put(propertyName, value);
                 } else if (value instanceof String) {
-                    // comply to ReflectedJavaModelBuilder
                     annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not

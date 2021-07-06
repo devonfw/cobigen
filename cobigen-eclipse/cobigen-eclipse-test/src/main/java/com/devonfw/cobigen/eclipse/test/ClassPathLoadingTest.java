@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
@@ -88,7 +89,13 @@ public class ClassPathLoadingTest extends SystemTest {
         IFile generationResult = project.getProject().getFile("TestOutput.txt");
         try (InputStream in = generationResult.getContents()) {
             // parenthesis missing as of https://stackoverflow.com/a/40368694 for java 8, fixed in java 11
-            assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=\"/PATH\")");
+            // this is not a problem as this code is basically "wrong" by TestUtil design (part of testdata)
+            // it's a good example and I will keep it to document this special case.
+            if (JvmUtil.isRunningJava9OrLater()) {
+                assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=/PATH)");
+            } else {
+                assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=\"/PATH\")");
+            }
         }
     }
 
