@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
@@ -356,11 +355,7 @@ public class ParsedJavaModelBuilder {
                     annotationParameters.put(propertyName, value);
                 } else if (value instanceof String) {
                     // comply to ReflectedJavaModelBuilder
-                    if (JvmUtil.isRunningJava9OrLater()) {
-                        annotationParameters.put(propertyName, value);
-                    } else {
-                        annotationParameters.put(propertyName, '"' + value.toString() + '"');
-                    }
+                    annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not
                     // resolves it. So value is always of type String and for this ParsedJavaModelBuilder we

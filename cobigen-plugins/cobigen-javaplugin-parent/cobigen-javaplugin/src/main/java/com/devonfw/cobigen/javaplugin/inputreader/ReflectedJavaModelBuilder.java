@@ -419,6 +419,7 @@ public class ReflectedJavaModelBuilder {
                         if (JvmUtil.isRunningJava9OrLater()) {
                             annotationParameters.put(getter.getName(), value.toString());
                         } else {
+                            LOG.debug("Encapsulated String annotation value with double quotes");
                             annotationParameters.put(getter.getName(), '"' + value.toString() + '"');
                         }
                     } else {
