@@ -92,9 +92,9 @@ public class ClassPathLoadingTest extends SystemTest {
             // this is not a problem as this code is basically "wrong" by TestUtil design (part of testdata)
             // it's a good example and I will keep it to document this special case.
             if (JvmUtil.isRunningJava9OrLater()) {
-                assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=/PATH)");
-            } else {
                 assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=\"/PATH\")");
+            } else {
+                assertThat(IOUtils.toString(in)).isEqualTo("@javax.ws.rs.Path(value=/PATH)");
             }
         }
     }
