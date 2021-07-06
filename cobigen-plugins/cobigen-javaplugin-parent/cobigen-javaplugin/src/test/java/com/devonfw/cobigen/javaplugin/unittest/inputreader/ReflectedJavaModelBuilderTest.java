@@ -287,7 +287,7 @@ public class ReflectedJavaModelBuilderTest {
         assertThat(annotation.get("d")).isEqualTo("5.0");
         assertThat(annotation.get("c")).isEqualTo("c");
         assertThat(annotation.get("bool")).isEqualTo("true");
-        assertThat(annotation.get("str")).isEqualTo("TestString");
+        assertThat(annotation.get("str")).isEqualTo("\"TestString\"");
     }
 
     /**
@@ -329,7 +329,7 @@ public class ReflectedJavaModelBuilderTest {
         assertThat(annotation.get("d")).isEqualTo("5.0");
         assertThat(annotation.get("c")).isEqualTo("c");
         assertThat(annotation.get("bool")).isEqualTo("true");
-        assertThat(annotation.get("str")).isEqualTo("TestString");
+        assertThat(annotation.get("str")).isEqualTo("\"TestString\"");
     }
 
 }
