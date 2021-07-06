@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
@@ -107,24 +108,16 @@ public class ParsedJavaModelBuilder {
      * @return a list of field properties equivalently to {@link #extractFields(JavaClass)}
      */
     private List<Map<String, Object>> extractMethodAccessibleFields(JavaClass javaClass) {
-        long start = Calendar.getInstance().getTimeInMillis();
         List<Map<String, Object>> fields = Lists.newLinkedList();
 
         // passing true is horribly slow. We need to check whether we can replace qdox by some more efficient
         // library, possibly m-m-m?
         List<BeanProperty> beanProperties = javaClass.getBeanProperties(false);
-        LOG.debug("Found {} Bean properties in {}s", beanProperties.size(),
-            (Calendar.getInstance().getTimeInMillis() - start) / 100d);
         for (BeanProperty property : beanProperties) {
-            long startP = Calendar.getInstance().getTimeInMillis();
             if (property.getAccessor() != null && property.getMutator() != null) {
                 fields.add(extractField(property.getName(), property.getType(), null));
             }
-            LOG.debug("Checked field '{}' extraction in {}s", property.getName(),
-                (Calendar.getInstance().getTimeInMillis() - startP) / 100d);
         }
-        LOG.debug("Extracted method accessible fields in {}s",
-            (Calendar.getInstance().getTimeInMillis() - start) / 100d);
         return fields;
     }
 
@@ -282,7 +275,6 @@ public class ParsedJavaModelBuilder {
      *            list of attribute meta data for the generation (object model)
      */
     private void collectAnnotations(JavaClass javaClass, List<Map<String, Object>> attributes) {
-        long start = Calendar.getInstance().getTimeInMillis();
         for (Map<String, Object> attr : attributes) {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
@@ -316,7 +308,6 @@ public class ParsedJavaModelBuilder {
                 extractAnnotationsRecursively(annotations, setter.getAnnotations());
             }
         }
-        LOG.debug("Extracted annotations in {}s", (Calendar.getInstance().getTimeInMillis() - start) / 100d);
     }
 
     /**
@@ -364,7 +355,12 @@ public class ParsedJavaModelBuilder {
                     || value instanceof Boolean || value instanceof Character) {
                     annotationParameters.put(propertyName, value);
                 } else if (value instanceof String) {
-                    annotationParameters.put(propertyName, value);
+                    // comply to ReflectedJavaModelBuilder
+                    if (JvmUtil.isRunningJava9OrLater()) {
+                        annotationParameters.put(propertyName, value);
+                    } else {
+                        annotationParameters.put(propertyName, '"' + value.toString() + '"');
+                    }
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not
                     // resolves it. So value is always of type String and for this ParsedJavaModelBuilder we
