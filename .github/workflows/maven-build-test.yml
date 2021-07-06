@@ -1,24 +1,359 @@
-# This workflow builds and tests Cobigen run in parallel and stops if one build doesn't work
-
-name: build & test # on Ubuntu with OpenJDK8 and OpenJDK11
+name: CI
 
 on: [push, pull_request]
 
 jobs:
-  build-and-test:
-
-    strategy:
-      matrix:
-        # test against Java version 8 and 11:
-        javaVersion: [ 8, 11 ]
+  cache-dependencies:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up OpenJDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: ${{ matrix.javaVersion }}
-        settings-path: ${{ github.workspace }}
+    steps:    
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
 
-    - name: Build with Maven
-      run: mvn clean install -e -U -Pp2-build-photon,p2-build-stable -T 1C
+      - name: Clone CobiGen Repo
+        uses: actions/checkout@v2
+      
+      - name: Cache m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+      
+      - name: Resolve non-cobigen dependencies
+        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -T1C -P!p2-build || true # never fail
+    
+  build-and-test-core:
+    needs: cache-dependencies
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+      - name: Cache m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
+          restore-keys: |
+            cobigen-dep-${{ hashFiles('**/pom.xml') }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test Core
+        shell: bash
+        run: |
+          mvn install -f cobigen --projects !cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-plugins:
+    needs: build-and-test-core
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+      - name: Restore m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test Plugins
+        shell: bash
+        run: |
+          mvn install -f cobigen-plugins -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-plugins-p2:
+    needs: build-and-test-plugins
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+      - name: Restore m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+
+      - name: Cache p2 plugin repositories
+        uses: actions/cache@v2
+        with:
+          path: ./**/target/repository/
+          key: p2-plugins-${{ github.sha }} # new key will cache
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build Plugins UpdateSite
+        shell: bash
+        run: |
+          mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+          mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  run-core-systemtest:
+    needs: build-and-test-plugins
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+      - name: Restore m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Run Core Systemtest
+        shell: bash
+        run: |
+          mvn test -f cobigen/cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-eclipse-plugin:
+    needs: build-plugins-p2
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+      - name: Cache Eclipse repository
+        uses: actions/cache@v2
+        with:
+          path: ./**/eclipse/target/repository/
+          key: p2-eclipse-${{ github.sha }} # new key will cache
+
+      - name: Restore m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+      
+      # After checkout we need to restore the built repositories
+      - name: Restore P2 plugins repositories
+        uses: actions/cache@v2
+        with:
+          path: ./**/target/repository/
+          key: p2-plugins-${{ github.sha }} # key hit will not update cache
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build Plugins
+        uses: GabrielBB/xvfb-action@v1.5
+        with:
+          run: |
+            mvn install -f cobigen-eclipse -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-maven-plugin:
+    needs: build-and-test-plugins
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+      - name: Restore m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test Maven Plugin
+        shell: bash
+        run: |
+          mvn install -f cobigen-maven -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-cli:
+    needs: build-and-test-templates
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [11] # CLI does not support jdk 8 anymore
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+      - name: Restore m2 repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test CLI
+        shell: bash
+        run: |
+          mvn install -f cobigen-cli -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+  build-and-test-templates:
+    needs: build-and-test-maven-plugin
+    strategy:
+      fail-fast: false
+      matrix:
+        javaVersion: [8, 11]
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+        
+      - name: Cache m2 repository of templates build
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
+
+      - name: Enable git support for long paths on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+
+      - uses: actions/checkout@v2
+
+      - name: Set up OpenJDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          settings-path: ${{ github.workspace }}
+
+      - name: Build & Test Templates
+        shell: bash
+        run: |
+          mvn install -f cobigen-templates -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+

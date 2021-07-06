@@ -43,6 +43,11 @@
       <artifactId>core-api</artifactId>
       <version>${revision}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core-externalprocess-api</artifactId>
+      <version>${revision}</version>
+    </dependency>
 
     <!-- dependencies to annotations -->
     <dependency>

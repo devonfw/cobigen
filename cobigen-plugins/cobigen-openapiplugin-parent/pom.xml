@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>openapiplugin-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>CobiGen - OpenAPI Plug-in Parent</name>
+
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>plugins-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+
+  <modules>
+    <module>cobigen-openapiplugin</module>
+    <module>cobigen-openapiplugin-model</module>
+  </modules>
+
+  <dependencies>
+    <!-- <dependency>
+      <groupId>com.github.maybeec</groupId>
+      <artifactId>openapi-parser</artifactId>
+      <version>4.0.4</version>
+    </dependency> -->
+    <dependency>
+      <groupId>com.reprezen.kaizen</groupId>
+      <artifactId>openapi-parser</artifactId>
+      <version>4.0.4</version>
+    </dependency>
+  </dependencies>
+
+</project>

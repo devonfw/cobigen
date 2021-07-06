@@ -26,7 +26,7 @@
 
   <build>
     <plugins>
-      <!-- tycho-versions-plugin:set-version does not work properly as it always rewrites the pom.xml files, but we want 
+      <!-- tycho-versions-plugin:set-version does not work properly as it always rewrites the pom.xml files, but we want
         to have pom-first version declaration -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -93,7 +93,7 @@
         <version>${tycho.version}</version>
         <executions>
           <!-- Overwrite the default-validate-version, to disable version check vs maven and OSGi. It's not possible to run
-            the check properly as the OSGi files get cached at maven execution start and thus will not properly take the 
+            the check properly as the OSGi files get cached at maven execution start and thus will not properly take the
             version set
             by the ant-run above. -->
           <execution>
@@ -233,6 +233,75 @@
     </pluginManagement>
   </build>
 
+  <profiles>
+    <profile>
+      <id>p2-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>htmlplugin</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-htmlplugin/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>javaplugin</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-javaplugin-parent/cobigen-javaplugin/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>jsonplugin</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-jsonplugin/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>openapiplugin</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-openapiplugin-parent/cobigen-openapiplugin/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>propertyplugin</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-propertyplugin/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>freemarker</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-templateengines/cobigen-tempeng-freemarker/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>velocity</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-templateengines/cobigen-tempeng-velocity/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>textmerger</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-textmerger/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>tsplugin</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-tsplugin/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+        <repository>
+          <id>xmlplugin</id>
+          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-xmlplugin/target/repository</url>
+          <layout>p2</layout>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <repositories>
+    <repository>
+      <id>eclipse-repository</id>
+      <url>${eclipse-repository}</url>
+      <layout>p2</layout>
+    </repository>
+  </repositories>
+
   <pluginRepositories>
     <pluginRepository>
       <id>tycho</id>
@@ -245,12 +314,4 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
-
-  <repositories>
-    <repository>
-      <id>eclipse-repository</id>
-      <url>${eclipse-repository}</url>
-      <layout>p2</layout>
-    </repository>
-  </repositories>
 </project>

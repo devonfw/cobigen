@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.devonfw.cobigen</groupId>
+  <groupId>com.devonfw.test</groupId>
   <artifactId>Oasp4JTemplateTest-TestPackageInputDataaccessGeneration</artifactId>
   <version>dev-SNAPSHOT</version>
   <properties>
@@ -42,22 +42,22 @@
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tempeng-freemarker</artifactId>
-            <version>7.0.0</version>
+            <version>${pluginVersion}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>javaplugin</artifactId>
-            <version>7.1.0</version>
+            <version>${pluginVersion}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>xmlplugin</artifactId>
-            <version>7.0.0</version>
+            <version>${pluginVersion}</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>openapiplugin</artifactId>
-            <version>7.1.0</version>
+            <version>${pluginVersion}</version>
           </dependency>
         </dependencies>
       </plugin>

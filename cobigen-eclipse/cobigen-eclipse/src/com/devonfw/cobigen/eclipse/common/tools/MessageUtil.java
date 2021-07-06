@@ -16,10 +16,13 @@ public class MessageUtil {
      *         just returns the input String.
      */
     public static String enrichMsgIfMultiError(String s, HealthCheckReport report) {
-        if (report.getNumberOfErrors() > 1) {
-            s += "\n\n"
-                + "There was more than one error while running the Health Check. See the log file for further information.";
-        }
+    	if (report != null) {
+    		if (report.getNumberOfErrors() > 1) {
+                s += "\n\n"
+                    + "There was more than one error while running the Health Check. See the log file for further information.";
+            }
+    	}
+        
         return s;
     }
 

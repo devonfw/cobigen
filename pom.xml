@@ -7,10 +7,11 @@
   <version>${revision}</version>
   <name>CobiGen - Master Parent</name>
   <packaging>pom</packaging>
+  <description>A Code-based incremental Generator</description>
 
   <properties>
     <!-- Need to remove leading zeros as of https://bugs.eclipse.org/bugs/show_bug.cgi?id=513203 in the last version segment -->
-    <revision>2020.12.001-SNAPSHOT</revision>
+    <revision>2021.04.001-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
@@ -18,22 +19,32 @@
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
     <tycho.version>1.6.0</tycho.version>
+    <jaxb.version>3.0.1</jaxb.version>
+    <license.skipAggregateDownloadLicenses>${skip.deployment}</license.skipAggregateDownloadLicenses>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
-    <bintray.url>https://dl.bintray.com/devonfw</bintray.url>
-    <!-- bintray.repository needs to be set by cmd and needs to be one of https://bintray.com/devonfw repositories -->
-    <bintray.repository.url>${bintray.url}/${bintray.repository}</bintray.repository.url>
+    <updatesite.url>https://devonfw.com/cobigen/updatesite</updatesite.url>
+    <!-- updatesite.repository needs to be set by cmd and needs to be one of either 'stable' or 'test' -->
+    <updatesite.repository.url>${updatesite.url}/${updatesite.repository}</updatesite.repository.url>
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
-    <p2.repository.upload.dir>${project.build.directory}${file.separator}repository-upload</p2.repository.upload.dir>
+    <p2.repository.upload.dir>${master.basedir}${file.separator}..${file.separator}gh-pages${file.separator}updatesite${file.separator}${updatesite.repository}</p2.repository.upload.dir>
     <p2.repository.upload.dir.plugin>${p2.repository.upload.dir}/cobigen-${project.artifactId}</p2.repository.upload.dir.plugin>
   </properties>
 
   <modules>
     <module>cobigen</module>
+    <module>cobigen-plugins</module>
     <module>cobigen-cli</module>
     <module>cobigen-eclipse</module>
     <module>cobigen-maven</module>
     <module>cobigen-templates</module>
   </modules>
+
+  <developers>
+    <developer>
+      <name>Malte Brunnlieb</name>
+      <organization>Capgemini</organization>
+    </developer>
+  </developers>
 
   <url>https://github.com/${github.project}</url>
   <issueManagement>
@@ -66,19 +77,127 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.2.3</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.9.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>30.1.1-jre</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.12.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.10.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.8.6</version>
+      </dependency>
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>1.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>${jaxb.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-core</artifactId>
+        <version>${jaxb.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>${jaxb.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>core</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>core-api</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>core-api</artifactId>
+        <version>${revision}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>core-externalprocess-api</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>core-test</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>javaplugin</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>tempeng-freemarker</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>javaplugin-model</artifactId>
+        <version>${revision}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <extensions>
@@ -89,6 +208,27 @@
       </extension>
     </extensions>
     <plugins>
+      <plugin>
+        <groupId>org.commonjava.maven.plugins</groupId>
+        <artifactId>directory-maven-plugin</artifactId>
+        <version>0.1</version>
+        <executions>
+          <execution>
+            <id>set-root-dir</id>
+            <goals>
+              <goal>directory-of</goal>
+            </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <property>master.basedir</property>
+              <project>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>master-parent</artifactId>
+              </project>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -125,6 +265,7 @@
         <artifactId>flatten-maven-plugin</artifactId>
         <configuration>
           <flattenMode>${flatten.mode}</flattenMode>
+          <skip>${skip.deployment}</skip>
         </configuration>
         <executions>
           <execution>
@@ -143,25 +284,35 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version>
         <executions>
           <execution>
-            <id>fileToUrl</id>
-            <phase>validate</phase>
+            <id>enforce-bytecode-version</id>
+            <phase>process-classes</phase>
             <goals>
-              <goal>regex-property</goal>
+              <goal>enforce</goal>
             </goals>
             <configuration>
-              <value>${p2.repository.build.dir}</value>
-              <regex>\\</regex>
-              <replacement>/</replacement>
-              <name>p2.repository.build.dir.url</name>
-              <failIfNoMatch>false</failIfNoMatch>
+              <rules>
+                <enforceBytecodeVersion>
+                  <maxJdkVersion>${java.version}</maxJdkVersion>
+                </enforceBytecodeVersion>
+              </rules>
+              <fail>true</fail>
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.3</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
 
@@ -215,7 +366,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>wagon-maven-plugin</artifactId>
-          <version>1.0-beta-5</version>
+          <version>1.0-beta-6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -228,11 +379,13 @@
               <version>2.17</version>
             </dependency>
           </dependencies>
+          <configuration>
+            <trimStackTrace>false</trimStackTrace>
+          </configuration>
         </plugin>
 
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven
-          build
-          itself. -->
+        <!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven
+          build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
@@ -280,6 +433,19 @@
                     <ignore></ignore>
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.commonjava.maven.plugins</groupId>
+                    <artifactId>directory-maven-plugin</artifactId>
+                    <versionRange>[0.1,)</versionRange>
+                    <goals>
+                      <goal>directory-of</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
@@ -289,6 +455,80 @@
   </build>
 
   <profiles>
+    <profile>
+      <id>p2-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>fileToUrl</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>regex-property</goal>
+                </goals>
+                <configuration>
+                  <value>${p2.repository.build.dir}</value>
+                  <regex>\\</regex>
+                  <replacement>/</replacement>
+                  <name>p2.repository.build.dir.url</name>
+                  <failIfNoMatch>false</failIfNoMatch>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- plugins from profile -->
+          <!-- sets ${qualifiedVersion} for upload to update site -->
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-packaging-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <executions>
+              <execution>
+                <id>build-qualifier</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>build-qualifier</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- update site -->
+          <!-- copy to gh-pages folder next to this repository checked out gh-pages branch -->
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <executions>
+              <execution>
+                <id>mirror-files-build-to-upload-dir</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <skip>${skip.deployment}</skip>
+                  <source>
+                    <repository>
+                      <url>file:///${p2.repository.build.dir.url}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir.plugin}</destination>
+                  <xzCompress>false</xzCompress>
+                  <append>true</append>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>oss</id>
       <build>
@@ -330,6 +570,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.0.1</version>
             <configuration>
               <keyname>${gpg.keyname}</keyname>
             </configuration>
@@ -346,117 +587,7 @@
         </plugins>
       </build>
     </profile>
-    <!-- Bintray update site -->
-    <profile>
-      <id>p2-upload-bintray</id>
-      <activation>
-        <property>
-          <name>bintray.repository</name>
-        </property>
-        <file>
-          <!-- It is not possible to check for directories. Therefore workaround: check for existing file in folder -->
-          <exists>target/repository/artifacts.jar</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-deploy-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>${nexus.staging.maven.plugin.version}</version>
-            <configuration>
-              <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-            </configuration>
-          </plugin>
-          <!-- sets ${qualifiedVersion} for bintray upload -->
-          <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-packaging-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>build-qualifier</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>build-qualifier</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>mirror-files</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>mirror</goal>
-                </goals>
-                <configuration>
-                  <source>
-                    <repository>
-                      <url>file:///${p2.repository.build.dir.url}</url>
-                      <layout>p2</layout>
-                    </repository>
-                  </source>
-                  <destination>${p2.repository.upload.dir.plugin}</destination>
-                  <xzCompress>false</xzCompress>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>download-temporary-files</id>
-                <phase>install</phase>
-                <goals>
-                  <goal>download</goal>
-                </goals>
-                <configuration>
-                  <url>${bintray.repository.url}</url>
-                  <includes>artifacts.jar,content.jar</includes>
-                  <toDir>${p2.repository.upload.dir.plugin}</toDir>
-                  <serverId>bintray-repo</serverId>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>com.carrotgarden.maven</groupId>
-            <artifactId>bintray-maven-plugin</artifactId>
-            <version>1.5.20191113165555</version>
-            <configuration>
-              <skip>false</skip>
-              <subject>devonfw</subject>
-              <repository>${bintray.repository}</repository>
-              <serverId>bintray-repo</serverId>
-              <bintrayVersion>${qualifiedVersion}</bintrayVersion>
-              <sourceFolder>${p2.repository.upload.dir.plugin}</sourceFolder>
-              <targetFolder>cobigen-${project.artifactId}</targetFolder>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+
     <profile>
       <!-- separate eclipse build from command-line... -->
       <id>eclipse</id>

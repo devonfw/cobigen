@@ -68,10 +68,10 @@ public class TmpMavenProjectRule extends ExternalResource {
      * @param name
      *            the project should be named with
      * @return Java
-     * @throws CoreException
+     * @throws Exception
      *             if there occurs an eclipse internal problem while creating the project
      */
-    public IJavaProject createProject(String name) throws CoreException {
+    public IJavaProject createProject(String name) throws Exception {
         IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
 
         if (!project.exists()) {
@@ -104,8 +104,12 @@ public class TmpMavenProjectRule extends ExternalResource {
 
     /**
      * Performs a maven project update for the underlying project
+     * @throws CoreException
+     *             refresh did not work
      */
-    public void updateProject() {
+    public void updateProject() throws CoreException {
+        // make sure the contents are synchronized
+        javaProject.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
         // update maven project to implicitly set classpath and so on.
         new UpdateMavenProjectJob(new IProject[] { javaProject.getProject() })
             .runInWorkspace(new NullProgressMonitor());
@@ -116,10 +120,10 @@ public class TmpMavenProjectRule extends ExternalResource {
      * Creates a default pom file.
      * @param dependencies
      *            you can pass the <dependencies></dependencies> section as a parameter if you like
-     * @throws CoreException
+     * @throws Exception
      *             if writing the file failed
      */
-    public void createPom(String dependencies) throws CoreException {
+    public void createPom(String dependencies) throws Exception {
         IFile pom = javaProject.getProject().getFile("pom.xml");
 
         mvnProjectSpecification = "<groupId>generated</groupId>" + "<artifactId>generated." + new Random().nextInt()
@@ -133,11 +137,17 @@ public class TmpMavenProjectRule extends ExternalResource {
             + ((dependencies != null) ? dependencies : "") + "</project>").getBytes();
         // @formatter:on
 
-        if (pom.exists()) {
-            pom.setContents(new ByteArrayInputStream(pomBytes), IResource.FORCE, new NullProgressMonitor());
-        } else {
-            pom.create(new ByteArrayInputStream(pomBytes), true, new NullProgressMonitor());
+        try (ByteArrayInputStream source = new ByteArrayInputStream(pomBytes)) {
+            if (pom.exists()) {
+                pom.setContents(source, IResource.FORCE, new NullProgressMonitor());
+            } else {
+                pom.create(source, true, new NullProgressMonitor());
+            }
+            pom.touch(new NullProgressMonitor());
         }
+
+        // make sure the contents are synchronized
+        javaProject.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     }
 
     /**

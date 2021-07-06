@@ -12,6 +12,10 @@
     <version>${revision}</version>
   </parent>
 
+  <properties>
+    <enforcer.skip>true</enforcer.skip>
+  </properties>
+
   <build>
     <plugins>
       <plugin>

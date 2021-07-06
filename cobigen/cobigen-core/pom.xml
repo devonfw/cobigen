@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>core</artifactId>
+  <name>CobiGen Core</name>
+  <packaging>jar</packaging>
+
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>core-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-api</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Enables XPath for FreeMarker templates -->
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+    </dependency>
+    <!-- Apache helper libraries -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <!-- enables XPath queries over object structures -->
+    <dependency>
+      <groupId>commons-jxpath</groupId>
+      <artifactId>commons-jxpath</artifactId>
+      <version>1.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.m-m-m</groupId>
+      <artifactId>mmm-util-core</artifactId>
+      <version>7.4.0</version>
+    </dependency>
+
+    <!-- Needed for JDK 9+ -->
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+    </dependency>
+    <!-- END JDK 9 -->
+
+    <dependency>
+    <groupId>ma.glasnost.orika</groupId>
+    <artifactId>orika-core</artifactId>
+    <version>1.5.4</version>
+</dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Inject Maven Properties in java-templates source folder -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-version-class</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <!-- /com/capgemini/cobigen/impl/config/entity/io/**/*.java -->
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v1_0</excludePackageNames>
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v1_2</excludePackageNames>
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_0</excludePackageNames>
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_1</excludePackageNames>
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v4_0</excludePackageNames>
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io</excludePackageNames>
+        </configuration>
+      </plugin>
+
+      <!-- Used for JUnit tests, we need to copy a test resources file to the jar -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-test-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/test/resources/testdata/unittest/ExternalProcess</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Generation of configuration beans -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <id>generate-v1.0-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v1_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v1.0</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v1.0</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v1.2-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v1_2</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v1.2</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v1.2</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v2.0-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v2_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v2.0</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v2.0</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v2.1-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v2_1</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v2.1</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v2.1</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v4.0-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v4_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v4.0</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v4.0</source>
+              </sources>
+            </configuration>
+          </execution>
+          <!-- Redundant generation due to stability reasons of the configuration upgrade mechanism -->
+          <execution>
+            <id>generate-current-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/current</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v2.1/contextConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v4.0/templatesConfiguration.xsd</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <extension>true</extension>
+          <bindingDirectory>${basedir}/src/main/resources/schema</bindingDirectory>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>${jaxb.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-jxc</artifactId>
+            <version>${jaxb.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${jaxb.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>2.0.1</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+</project>

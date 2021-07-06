@@ -16,11 +16,11 @@ ____
 . Open the eclipse installation dialog +
 menu bar -> _Help_ -> _Install new Software..._
 +
-image:images/installation/01-install-new-software.png[]
+image:images/howtos/installation/01-install-new-software.png[]
 . Open CobiGen's update site +
 Insert the update site of your interest into the filed _Work with_ and press _Add ..._
-    * Stable releases: https://dl.bintray.com/devonfw/cobigen.p2/ +
-image:images/installation/02-select-update-site.png[]
+    * Stable releases: https://devonfw.com/cobigen/updatesite/stable/ +
+image:images/howtos/installation/02-select-update-site.png[]
 . Follow the installation wizard +
 Select _CobiGen Eclipse Plug-in_ -> _Next_ -> _Next_ -> accept the license -> _Finish_ -> _OK_ -> _Yes_
 . Once installed, a new menu entry named "CobiGen" will show up in the _Package Explorer's_ context menu. In the sub menu there will the _Generate..._ command, which may ask you to update the templates, and then you can start the generation wizard of CobiGen. You can adapt the templates by clicking on _Adapt Templates_ which will give you the possibility to import the _CobiGen_Templates_ automatically so that you can modified them.
@@ -33,6 +33,6 @@ Dependent on your context configuration menu entry _Generate..._ may be greyed o
 
 In general updating CobiGen for eclipse is done via the update mechanism of eclipse directly, as shown on image below:
 
-image:images/installation/03-update-software.png[]
+image:images/howtos/installation/03-update-software.png[]
 
 Upgrading eclipse CobiGen plug-in to v3.0.0 needs some more attention of the user due to a changed plug-in architecture of CobiGen's link:cobigen-core_configuration#plugin-mechanism[core module] and the eclipse integration. Eventually, we were able to provide any plug-in of CobiGen separately as its own eclipse bundle (fragment), which is automatically discovered by the main CobiGen Eclipse plug-in after installation.

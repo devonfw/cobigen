@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://capgemini.com"
+  xmlns:tns="http://capgemini.com" elementFormDefault="qualified" version="1.2">
+
+  <xs:element name="templatesConfiguration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="templates" minOccurs="0" type="tns:templates"/>
+        <xs:element name="template-scans" minOccurs="0" type="tns:template-scans"/>
+        <xs:element name="increments" minOccurs="0" type="tns:increments"/>
+      </xs:sequence>
+      <xs:attribute name="version" use="required" type="xs:decimal"/>
+    </xs:complexType>
+
+    <xs:key name="templateId">
+      <xs:selector xpath="./templates/template"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:keyref name="templateIdRef" refer="tns:templateId">
+      <xs:selector xpath="./increments/increment/templateRef"/>
+      <xs:field xpath="@idref"/>
+    </xs:keyref>
+    <xs:key name="incrementId">
+      <xs:selector xpath="./increments/increment"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:keyref name="incrementIdRef" refer="tns:incrementId">
+      <xs:selector xpath="./increments/increment/incrementRef"/>
+      <xs:field xpath="@idref"/>
+    </xs:keyref>
+  </xs:element>
+
+  <xs:complexType name="templates">
+    <xs:sequence>
+      <xs:element name="template" minOccurs="0" maxOccurs="unbounded" type="tns:template"/>
+      <xs:element name="templateExtension" minOccurs="0" maxOccurs="unbounded" type="tns:templateExtension"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="template-scans">
+    <xs:sequence maxOccurs="unbounded" minOccurs="0">
+      <xs:element name="template-scan" type="tns:template-scan"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="template">
+    <xs:attribute name="id" use="required" type="xs:NCName"/>
+    <xs:attribute name="destinationPath" use="required" type="xs:string"/>
+    <xs:attribute name="templateFile" use="required" type="xs:string"/>
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string"/>
+    <xs:attribute name="targetCharset" use="optional" type="xs:string" default="UTF-8"/>
+  </xs:complexType>
+
+  <xs:complexType name="templateExtension">
+    <xs:attribute name="idref" use="required" type="xs:NCName"/>
+    <xs:attribute name="destinationPath" use="optional" type="xs:string"/>
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string"/>
+    <xs:attribute name="targetCharset" use="optional" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="template-scan">
+    <xs:attribute name="templateIdPrefix" use="optional" type="xs:string"/>
+    <xs:attribute name="templatePath" use="required" type="xs:string"/>
+    <xs:attribute name="destinationPath" use="required" type="xs:string"/>
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string"/>
+    <xs:attribute name="targetCharset" use="optional" type="xs:string" default="UTF-8"/>
+  </xs:complexType>
+
+  <xs:complexType name="increments">
+    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+      <xs:element name="increment" type="tns:increment"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="increment">
+    <xs:choice maxOccurs="unbounded" minOccurs="1">
+      <xs:element name="templateRef" type="tns:templateRef"/>
+      <xs:element name="incrementRef" type="tns:incrementRef"/>
+    </xs:choice>
+    <xs:attribute name="id" use="required" type="xs:NCName"/>
+    <xs:attribute name="description" use="required" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="templateRef">
+    <xs:attribute name="idref" use="required" type="xs:NCName"/>
+  </xs:complexType>
+
+  <xs:complexType name="incrementRef">
+    <xs:attribute name="idref" use="required" type="xs:NCName"/>
+  </xs:complexType>
+
+</xs:schema>

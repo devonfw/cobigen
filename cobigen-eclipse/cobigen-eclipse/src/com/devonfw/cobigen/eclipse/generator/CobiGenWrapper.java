@@ -25,10 +25,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.bindings.Trigger;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
@@ -37,19 +34,16 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.exception.CobiGenCancellationException;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.CobiGenEclipseRuntimeException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
-import com.devonfw.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.devonfw.cobigen.eclipse.common.tools.MapUtils;
-import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
+import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.generator.entity.ComparableIncrement;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -76,9 +70,6 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     /** All matching templates for the currently configured {@link #inputs input objects} */
     private List<TemplateTo> matchingTemplates = Lists.newLinkedList();
 
-    /** Cache for destination path resolution for templates */
-    private Map<TemplateTo, Path> resolvedDestPathsCache = Maps.newHashMap();
-
     /** Cache, storing all templates of any increment with the template's workspace related paths */
     private Map<IncrementTo, Map<String, Set<TemplateTo>>> incrementToTemplateWorkspacePathsCache = Maps.newHashMap();
 
@@ -91,6 +82,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      */
     private Set<String> workspaceExternalPath = Sets.newHashSet();
 
+    /** Progress monitor to track progress */
+    protected IProgressMonitor monitor;
+
     /**
      * Creates a new {@link CobiGenWrapper}
      * @param cobiGen
@@ -99,15 +93,18 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      *            list of inputs for generation
      * @param inputSourceProject
      *            project from which the inputs have been selected
+     * @param monitor
+     *            to track the progress
      * @throws GeneratorProjectNotExistentException
      *             if the generator configuration folder does not exist
      * @throws InvalidConfigurationException
      *             if the context configuration is not valid
      */
-    public CobiGenWrapper(CobiGen cobiGen, IProject inputSourceProject, List<Object> inputs)
+    public CobiGenWrapper(CobiGen cobiGen, IProject inputSourceProject, List<Object> inputs, IProgressMonitor monitor)
         throws GeneratorProjectNotExistentException, InvalidConfigurationException {
         super(cobiGen, inputSourceProject);
         setInputs(inputs);
+        this.monitor = monitor;
 
         for (IProject proj : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
             projectsInWorkspace.put(proj.getLocation().toFile().toPath(), proj);
@@ -126,29 +123,32 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         matchingTemplates = Lists.newLinkedList();
 
         LOG.debug("Calculating matching templates...");
-        ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
-        AnalyzeInputJob job = new AnalyzeInputJob(cobiGen, inputs);
-        try {
-            dialog.run(true, false, job);
-        } catch (InvocationTargetException e) {
-            LOG.error("An internal error occured while invoking input analyzer job.", e);
-            throw new CobiGenEclipseRuntimeException("An internal error occured while invoking input analyzer job", e);
-        } catch (InterruptedException e) {
-            LOG.warn("The working thread doing the input analyzer job has been interrupted.", e);
-            throw new CobiGenEclipseRuntimeException(
-                "The working thread doing the input analyzer job has been interrupted", e);
-        }
+        PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
+            ProgressMonitorDialog dialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+            AnalyzeInputJob job = new AnalyzeInputJob(cobiGen, inputs);
+            try {
+                dialog.run(true, false, job);
+            } catch (InvocationTargetException e) {
+                LOG.error("An internal error occured while invoking input analyzer job.", e);
+                throw new CobiGenEclipseRuntimeException("An internal error occured while invoking input analyzer job",
+                    e);
+            } catch (InterruptedException e) {
+                LOG.warn("The working thread doing the input analyzer job has been interrupted.", e);
+                throw new CobiGenEclipseRuntimeException(
+                    "The working thread doing the input analyzer job has been interrupted", e);
+            }
 
-        // forward exception thrown in the processing thread if an exception occurred
-        if (job.isExceptionOccurred()) {
-            throw job.getOccurredException();
-        }
+            // forward exception thrown in the processing thread if an exception occurred
+            if (job.isExceptionOccurred()) {
+                throw job.getOccurredException();
+            }
 
-        matchingTemplates = job.getResultMatchingTemplates();
-        LOG.debug("Matching templates: {}", matchingTemplates);
-        singleNonContainerInput = job.isResultSingleNonContainerInput();
-        LOG.debug("SingleNonContainerInput: {}", singleNonContainerInput);
-        LOG.debug("Finished analyzing generation input.");
+            matchingTemplates = job.getResultMatchingTemplates();
+            LOG.debug("Matching templates: {}", matchingTemplates);
+            singleNonContainerInput = job.isResultSingleNonContainerInput();
+            LOG.debug("SingleNonContainerInput: {}", singleNonContainerInput);
+            LOG.debug("Finished analyzing generation input.");
+        });
     }
 
     /**
@@ -176,24 +176,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
 
             SubMonitor subMonitor = SubMonitor.convert(monitor, 105);
 
-            IProject configProject = ResourcesPluginUtil.getGeneratorConfigurationProject();
-            IJavaProject configJavaProject = JavaCore.create(configProject);
-
-            ClassLoader inputClassLoader = getInputClassloader();
-            // create classpath for the configuration project while keeping the input's classpath
-            // as the parent classpath to prevent classpath shading.
-            inputClassLoader = ClassLoaderUtil.getProjectClassLoader(configJavaProject, inputClassLoader);
-
-            URI templateFolder = ResourcesPlugin.getWorkspace().getRoot()
-                .getProject(ResourceConstants.CONFIG_PROJECT_NAME).getLocationURI();
-
-            monitor.setTaskName("load Classes...");
-            SubMonitor loadClasses = subMonitor.split(2);
-
             if (monitor.isCanceled()) {
                 throw new CancellationException("generation got Cancelled by the User");
             }
-            monitor.setTaskName("load Templates...");
+            monitor.setTaskName("Load templates...");
             SubMonitor loadTemplates = subMonitor.split(2);
             // set override flags individually for every template
             for (TemplateTo template : templates) {
@@ -206,10 +192,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             loadTemplates.done();
 
             if (monitor.isCanceled()) {
-                throw new CancellationException("generation got Cancelled by the User");
+                throw new CancellationException("Generation got cancelled by the user");
             }
 
-            monitor.setTaskName("generate Destination Pathes...");
+            monitor.setTaskName("Determine destination paths...");
             SubMonitor generateTargetUri = subMonitor.split(1);
             URI generationTargetUri = getGenerationTargetProject().getLocationURI();
             if (generationTargetUri == null) {
@@ -219,34 +205,27 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
             }
             generateTargetUri.done();
 
-            monitor.setTaskName("generate Files...");
-            SubMonitor p = subMonitor.split(100);
-            p.setWorkRemaining(1000);
+            monitor.setTaskName("Generate files...");
             GenerationReportTo report;
             if (singleNonContainerInput) {
                 // if we only consider one input, we want to allow some customizations of the generation
                 LOG.debug("Generating with single non container input ...");
-                Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0)).createModel();
-                adaptModel(model);
                 report = cobiGen.generate(inputs.get(0), templates, Paths.get(generationTargetUri), false,
-                    inputClassLoader, model, (String taskName, Integer progress) -> {
-                        try {
-                            p.split(progress);
-                        } catch (OperationCanceledException e) {
-                            throw new CobiGenCancellationException();
-                        }
+                    (String taskName, Integer progress) -> {
                         monitor.setTaskName(taskName);
-
-                    }, Paths.get(templateFolder));
+                        monitor.worked(progress);
+                    });
             } else {
                 report = new GenerationReportTo();
                 for (Object input : inputs) {
                     report.aggregate(cobiGen.generate(input, templates, Paths.get(generationTargetUri), false,
-                        inputClassLoader, Paths.get(templateFolder)));
+                        (taskname, progress) -> {
+                            monitor.setTaskName(taskname);
+                            monitor.worked(progress);
+                        }));
                 }
             }
-            p.done();
-            monitor.setTaskName("refresh Workspace...");
+            monitor.setTaskName("Refresh workspace...");
 
             proj.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
             monitor.done();
@@ -292,6 +271,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @return a list of matching trigger ids
      */
     public List<String> getMatchingTriggerIds() {
+        LOG.debug("Get matching trigger Ids for first selected input");
         return cobiGen.getMatchingTriggerIds(inputs.get(0));
     }
 
@@ -687,6 +667,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * @return the list of matching trigger id's
      */
     public List<String> getMatchingTriggerIds(Object loadClass) {
+        LOG.debug("Get matching trigger Ids for {}", loadClass);
         return cobiGen.getMatchingTriggerIds(loadClass);
     }
 
@@ -697,13 +678,14 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
      * in composed of valid objects in an not yet supported way, an {@link InvalidInputException} will be
      * thrown. Thus, getting a boolean value can be interpreted as "selection supported, but currently not
      * matching trigger".
-     *
+     * @param monitor
+     *            to track progress
      * @return true, if all items are supported by the same trigger(s)<br>
      *         false, if they are not supported by any trigger at all
      * @throws InvalidInputException
      *             if the input could not be read as expected
      */
-    public boolean isValidInput() throws InvalidInputException {
+    public boolean isValidInput(IProgressMonitor monitor) throws InvalidInputException {
         LOG.debug("Start checking selection validity for the use as Java input.");
 
         Iterator<?> it = inputs.iterator();
@@ -712,6 +694,9 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
         try {
             while (it.hasNext()) {
                 Object tmp = it.next();
+                monitor.subTask("Checking available triggers for " + tmp);
+                monitor.worked(1);
+                LOG.debug("Checking available triggers for {}", tmp);
                 List<String> matchingTriggerIds = cobiGen.getMatchingTriggerIds(tmp);
 
                 if (firstTriggers == null) {

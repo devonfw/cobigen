@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -40,13 +41,19 @@ public abstract class AbstractGenerateWizard extends Wizard {
     /** Assigning logger to AbstractGenerateWizard */
     private static final Logger LOG = LoggerFactory.getLogger(AbstractGenerateWizard.class);
 
+    /** Monitor to track any progress */
+    protected IProgressMonitor monitor;
+
     /**
      * Initializes the {@link CobiGenWrapper generator} instance
      * @param generator
      *            {@link CobiGenWrapper generator} to be used for generation
+     * @param monitor
+     *            to track any progress
      */
-    public AbstractGenerateWizard(CobiGenWrapper generator) {
+    public AbstractGenerateWizard(CobiGenWrapper generator, IProgressMonitor monitor) {
         cobigenWrapper = generator;
+        this.monitor = monitor;
     }
 
     @Override

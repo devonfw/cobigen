@@ -16,11 +16,13 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.maven.config.constant.MavenMetadata;
 
 /**
@@ -42,22 +44,9 @@ public class AbstractMavenTest {
     /**
      * Set maven.home system property to enable maven invoker execution
      */
-    @Before
-    public void setMavenHome() {
-
-        String m2Home = System.getenv().get("MAVEN_HOME");
-        if (m2Home != null) {
-            System.setProperty("maven.home", m2Home);
-        } else {
-            m2Home = System.getenv().get("M2_HOME");
-            if (m2Home != null) {
-                System.setProperty("maven.home", m2Home);
-            } else if ("true".equals(System.getenv("TRAVIS"))) {
-                System.setProperty("maven.home", "/usr/local/maven"); // travis only
-            } else {
-                LOG.warn("Could not determine maven home from environment variables MAVEN_HOME or M2_HOME");
-            }
-        }
+    @BeforeClass
+    public static void setMavenHome() {
+        System.setProperty("maven.home", SystemUtil.determineMvnPath().toString());
     }
 
     /**
@@ -154,7 +143,10 @@ public class AbstractMavenTest {
         request.setDebug(debug);
         request.setGlobalSettingsFile(mvnSettingsFile);
         request.setUserSettingsFile(mvnSettingsFile);
-        request.setMavenOpts("-Xmx4096m");
+        request.setBatchMode(true);
+        // https://stackoverflow.com/a/66801171
+        request.setMavenOpts(
+            "-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn");
 
         Invoker invoker = new DefaultInvoker();
         InvocationResult result = invoker.execute(request);

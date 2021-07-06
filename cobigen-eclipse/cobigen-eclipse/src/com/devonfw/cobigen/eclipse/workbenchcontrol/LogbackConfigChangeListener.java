@@ -66,25 +66,27 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
     public void resourceChanged(IResourceChangeEvent event) {
         MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-        IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren();
-        for (IResourceDelta projDelta : affectedProjects) {
-            if (projDelta.getResource().equals(generatorConfProj)) {
-                IResourceDelta[] affectedChildren = projDelta.getAffectedChildren();
-                for (IResourceDelta fileDelta : affectedChildren) {
-                    if (fileDelta.getResource().equals(logbackXmlFile)) {
-                        try {
-                            loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
-                            LOG.info("The Logback logback.xml has been changed and reloaded.");
-                        } catch (IOException e) {
-                            LOG.error("Unable to read config file", e);
-                        } catch (JoranException e) {
-                            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                                "The " + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
-                                    + " of the generator configuration was changed into an invalid state.\n"
-                                    + "The generator might not behave as intended:\n" + e.getMessage());
-                            LOG.error(
-                                "The {} of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
-                                ConfigurationConstants.CONTEXT_CONFIG_FILENAME, e);
+        if (event.getDelta() != null) {
+            IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren();
+            for (IResourceDelta projDelta : affectedProjects) {
+                if (projDelta.getResource().equals(generatorConfProj)) {
+                    IResourceDelta[] affectedChildren = projDelta.getAffectedChildren();
+                    for (IResourceDelta fileDelta : affectedChildren) {
+                        if (fileDelta.getResource().equals(logbackXmlFile)) {
+                            try {
+                                loadLogbackConfiguration(logbackXmlFile.getRawLocation().toString());
+                                LOG.info("The Logback logback.xml has been changed and reloaded.");
+                            } catch (IOException e) {
+                                LOG.error("Unable to read config file", e);
+                            } catch (JoranException e) {
+                                MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                                    "The " + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
+                                        + " of the generator configuration was changed into an invalid state.\n"
+                                        + "The generator might not behave as intended:\n" + e.getMessage());
+                                LOG.error(
+                                    "The {} of the generator configuration was changed into an invalid state.\nThe generator might not behave as intended.",
+                                    ConfigurationConstants.CONTEXT_CONFIG_FILENAME, e);
+                            }
                         }
                     }
                 }

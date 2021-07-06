@@ -12,38 +12,21 @@
   </parent>
 
   <properties>
-    <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
     <skip.deployment>false</skip.deployment>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>class-loader-agent</artifactId>
-      <version>${revision}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
-      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>${revision}</version>
     </dependency>
     <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-api</artifactId>
-      <version>${revision}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-test</artifactId>
-      <version>${revision}</version>
-      <scope>test</scope>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core-externalprocess-api</artifactId>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>
@@ -51,44 +34,28 @@
       <version>4.5.1</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-invoker</artifactId>
-      <version>3.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-java-impl</artifactId>
-      <version>1.0.0-beta5</version>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>3.8.1</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.1.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
       <version>1.6</version>
     </dependency>
-    <!-- We need an agent loader for the JUnit tests in Eclipse -->
-    <dependency>
-      <groupId>com.ea.agentloader</groupId>
-      <artifactId>ea-agent-loader</artifactId>
-      <version>1.0.3</version>
-    </dependency>
     <dependency>
       <groupId>com.google.googlejavaformat</groupId>
       <artifactId>google-java-format</artifactId>
-      <version>1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>23.6-jre</version>
+      <version>1.10.0</version>
     </dependency>
   </dependencies>
 
   <build>
+    <finalName>${project.artifactId}</finalName>
     <!-- Add correct version to artificial pom -->
     <resources>
       <resource>
@@ -126,132 +93,27 @@
         </executions>
       </plugin>
 
-      <!-- Add Class loader agent jar for correct class loading. In test-compile phase for running tests -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeArtifactIds>class-loader-agent</includeArtifactIds>
-              <outputDirectory>${project.build.directory}/classes</outputDirectory>
-              <stripVersion>true</stripVersion>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Building a Maven project that is used on the tests -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <executions>
-          <execution>
-            <id>Install test project</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <executable>mvn</executable>
-          <workingDirectory>${maven.test.path}</workingDirectory>
-          <arguments>
-            <argument>install</argument>
-          </arguments>
-        </configuration>
-      </plugin>
-
-      <!-- Run tests using the java-agent -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <argLine>-javaagent:${project.build.directory}/classes/class-loader-agent.jar</argLine>
-          <!-- Needed for JDK 9+ -->
-          <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
-        </configuration>
-      </plugin>
-
-      <!-- Don't create the default jar -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>default-jar</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Create a fat jar with all the dependencies -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <finalName>cobigen</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <mainClass>com.devonfw.cobigen.cli.CobiGenCLI</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
+        <version>3.3.0</version>
         <executions>
           <execution>
-            <id>assemble-all</id>
+            <id>assemble-tgz</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/assembly/assembly.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
-    
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <versionRange>[1.6.0,)</versionRange>
-                    <goals>
-                      <goal>exec</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 </project>
