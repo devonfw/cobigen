@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
@@ -410,6 +411,16 @@ public class ReflectedJavaModelBuilder {
                         || value instanceof Long || value instanceof Float || value instanceof Double
                         || value instanceof Boolean || value instanceof Character) {
                         annotationParameters.put(getter.getName(), value.toString());
+                    } else if (value instanceof String) {
+                        // before java9 string values are returned without quotes
+                        // https://stackoverflow.com/a/40368694
+                        // since java9 it seems to be different, therefore fixing the before java8 to behave
+                        // as java9+
+                        if (JvmUtil.isRunningJava9OrLater()) {
+                            annotationParameters.put(getter.getName(), value.toString());
+                        } else {
+                            annotationParameters.put(getter.getName(), '"' + value.toString() + '"');
+                        }
                     } else {
                         annotationParameters.put(getter.getName(), value != null ? value.toString() : null);
                     }
