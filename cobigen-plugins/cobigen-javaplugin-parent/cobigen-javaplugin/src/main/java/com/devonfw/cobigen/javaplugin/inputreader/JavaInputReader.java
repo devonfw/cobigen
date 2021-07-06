@@ -322,9 +322,6 @@ public class JavaInputReader implements InputReader {
                 // This is the case for annotation values. QDox will always return the expression,
                 // which is a assigned to the annotation's value, as a string.
                 else if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof String) {
-                    if (((String) ((List<?>) parsedModel).get(0)).contains("/PATH")) {
-                        LOG.info("Taking String from parsed Model: " + ((List<?>) parsedModel).get(0));
-                    }
                     return parsedModel;
                 } else {
                     if (reflectionModel instanceof Object[]) {
@@ -339,17 +336,11 @@ public class JavaInputReader implements InputReader {
                 return parsedModel;
             }
         } else if (parsedModel instanceof String[]) {
-            if (((String[]) ((List<?>) parsedModel).get(0)).toString().contains("/PATH")) {
-                LOG.info("Taking String[] from parsed Model: " + ((List<?>) parsedModel).get(0));
-            }
             return Lists.newLinkedList(Arrays.asList(parsedModel));
         }
         // we will prefer parsed model if parsed value of type String. This is the case for annotation values.
         // QDox will always return the expression, which is a assigned to the annotation's value, as a string.
         else {
-            if (((String) ((List<?>) parsedModel).get(0)).contains("/PATH")) {
-                LOG.info("Taking String from parsed Model only: " + ((List<?>) parsedModel).get(0));
-            }
             return parsedModel;
         }
     }

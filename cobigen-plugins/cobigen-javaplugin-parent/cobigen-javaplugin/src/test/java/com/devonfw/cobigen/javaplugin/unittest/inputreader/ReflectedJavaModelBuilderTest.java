@@ -9,11 +9,11 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.devonfw.cobigen.javaplugin.inputreader.ReflectedJavaModelBuilder;
+import com.devonfw.cobigen.javaplugin.model.JavaModelUtil;
+import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestClass;
 import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.TestInterfaceInheritance;
-import com.devonfw.cobigen.javaplugin.model.JavaModelUtil;
-import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 
 /**
  * Tests for Class {@link ReflectedJavaModelBuilder}

@@ -14,12 +14,9 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FilenameUtils;
-
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.openapiplugin.model.ComponentDef;
 import com.devonfw.cobigen.openapiplugin.model.EntityDef;
@@ -35,12 +32,11 @@ import com.devonfw.cobigen.openapiplugin.model.ServerDef;
 import com.devonfw.cobigen.openapiplugin.util.constants.Constants;
 import com.reprezen.jsonoverlay.JsonOverlay;
 import com.reprezen.jsonoverlay.Overlay;
-import com.reprezen.jsonoverlay.Reference;
 import com.reprezen.kaizen.oasparser.OpenApiParser;
-import com.reprezen.kaizen.oasparser.OpenApiParser.SwaggerParserException;
 import com.reprezen.kaizen.oasparser.model3.Info;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
 import com.reprezen.kaizen.oasparser.model3.OpenApi3;
+import com.reprezen.kaizen.oasparser.model3.Operation;
 import com.reprezen.kaizen.oasparser.model3.Parameter;
 import com.reprezen.kaizen.oasparser.model3.Path;
 import com.reprezen.kaizen.oasparser.model3.RequestBody;
@@ -310,8 +306,6 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
-     * @param openApi
-     *            document root
      * @param componentSchema
      *            component schema respectively object or entity
      * @param property
@@ -320,35 +314,30 @@ public class OpenAPIInputReader implements InputReader {
      *            name of the target component
      * @return model of a property
      */
-    private PropertyDef extractReferenceProperty(OpenApi3 openApi, Schema componentSchema,
-        Entry<String, ? extends Schema> property, String targetComponent) {
+    private PropertyDef extractReferenceProperty(Schema componentSchema, Entry<String, ? extends Schema> property,
+        String targetComponent) {
         Schema propertySchema = property.getValue();
-        if (Overlay.getJsonReference(propertySchema).sameFile(Overlay.getJsonReference(openApi))) {
-            String refTypeName = componentSchema.getName();
-            if (propertySchema.getType().equals(Constants.ARRAY)) {
-                refTypeName = propertySchema.getItemsSchema().getName();
-            } else {
-                refTypeName = propertySchema.getName();
-            }
-            String thisComponent = componentSchema.getExtension(Constants.COMPONENT_EXT).toString();
-
-            boolean sameComponent;
-            if (thisComponent.equals(targetComponent)) {
-                sameComponent = true;
-            } else {
-                sameComponent = false;
-            }
-            PropertyDef propertyDef = new PropertyDef();
-            propertyDef.setIsEntity(true);
-            propertyDef.setRequired(componentSchema.getRequiredFields().contains(property.getKey()));
-            propertyDef.setSameComponent(sameComponent);
-            propertyDef.setType(refTypeName);
-            // TODO unidirectional?
-            return propertyDef;
+        String refTypeName = componentSchema.getName();
+        if (propertySchema.getType().equals(Constants.ARRAY)) {
+            refTypeName = propertySchema.getItemsSchema().getName();
         } else {
-            throw new NotYetSupportedException(
-                "References across files are not yet supported. Please create an issue on GitHub if you are interested in this feature.");
+            refTypeName = propertySchema.getName();
         }
+        String thisComponent = componentSchema.getExtension(Constants.COMPONENT_EXT).toString();
+
+        boolean sameComponent;
+        if (thisComponent.equals(targetComponent)) {
+            sameComponent = true;
+        } else {
+            sameComponent = false;
+        }
+        PropertyDef propertyDef = new PropertyDef();
+        propertyDef.setIsEntity(true);
+        propertyDef.setRequired(componentSchema.getRequiredFields().contains(property.getKey()));
+        propertyDef.setSameComponent(sameComponent);
+        propertyDef.setType(refTypeName);
+        // TODO unidirectional?
+        return propertyDef;
     }
 
     /**
@@ -375,7 +364,7 @@ public class OpenAPIInputReader implements InputReader {
                     && propertySchema.getItemsSchema().getExtension(Constants.COMPONENT_EXT) != null) {
                     String targetComponent =
                         propertySchema.getItemsSchema().getExtension(Constants.COMPONENT_EXT).toString();
-                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent);
+                    propModel = extractReferenceProperty(componentSchema, prop, targetComponent);
                 } else {
                     propModel = new PropertyDef();
                     propModel.setType(propertySchema.getItemsSchema().getType());
@@ -389,7 +378,7 @@ public class OpenAPIInputReader implements InputReader {
                 if (propertySchema.getType().equals(Constants.OBJECT)
                     && propertySchema.getExtension(Constants.COMPONENT_EXT) != null) {
                     String targetComponent = propertySchema.getExtension(Constants.COMPONENT_EXT).toString();
-                    propModel = extractReferenceProperty(openApi, componentSchema, prop, targetComponent);
+                    propModel = extractReferenceProperty(componentSchema, prop, targetComponent);
                 } else {
                     propModel = new PropertyDef();
                     propModel.setType(propertySchema.getType());
@@ -474,21 +463,18 @@ public class OpenAPIInputReader implements InputReader {
                 PathDef path = new PathDef(rootComponent, pathUri, version);
 
                 for (String opKey : paths.get(pathKey).getOperations().keySet()) {
-                    OperationDef operation = new OperationDef(opKey);
-                    operation.setDescription(paths.get(pathKey).getOperation(opKey).getDescription());
-                    operation.setSummary(paths.get(pathKey).getOperation(opKey).getSummary());
-                    operation.setOperationId((paths.get(pathKey).getOperation(opKey).getOperationId()));
-                    operation.setResponses(extractResponses(paths.get(pathKey).getOperation(opKey).getResponses(),
-                        paths.get(pathKey).getOperation(opKey).getTags()));
-                    operation.setTags(paths.get(pathKey).getOperation(opKey).getTags());
+                    OperationDef operationDef = new OperationDef(opKey);
+                    Operation operation = paths.get(pathKey).getOperation(opKey);
+                    operationDef.setDescription(operation.getDescription());
+                    operationDef.setSummary(operation.getSummary());
+                    operationDef.setOperationId((operation.getOperationId()));
+                    operationDef.setResponses(extractResponses(operation.getResponses(), operation.getTags()));
+                    operationDef.setTags(operation.getTags());
                     if (path.getOperations() == null) {
                         path.setOperations(new ArrayList<OperationDef>());
                     }
-                    operation.getParameters()
-                        .addAll(extractParameters(paths.get(pathKey).getOperation(opKey).getParameters(),
-                            paths.get(pathKey).getOperation(opKey).getTags(),
-                            paths.get(pathKey).getOperation(opKey).getRequestBody()));
-                    path.getOperations().add(operation);
+                    operationDef.getParameters().addAll(extractParameters(Overlay.of(operation)));
+                    path.getOperations().add(operationDef);
                 }
 
                 pathDefs.add(path);
@@ -499,18 +485,16 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
-     * Return a list of {@link ParameterDef} from a collection of parameters of an operation
-     *
-     * @param parameters
-     *            list of OpenApi parameter definition
-     * @param tags
-     *            list of tags
-     * @param requestBody
-     *            in case of body parameter
-     * @return List of {@link ParameterDef}'s
+     * @param operationOverlay
+     *            overlay of the operation to get all parameters from
+     * @return a list of {@link ParameterDef} from a collection of parameters of an operation
      */
-    private List<ParameterDef> extractParameters(Collection<? extends Parameter> parameters, Collection<String> tags,
-        RequestBody requestBody) {
+    private List<ParameterDef> extractParameters(Overlay<Operation> operationOverlay) {
+
+        Collection<? extends Parameter> parameters = operationOverlay.get().getParameters();
+        Collection<String> tags = operationOverlay.get().getTags();
+        RequestBody requestBody = operationOverlay.get().getRequestBody();
+
         List<ParameterDef> parametersList = new LinkedList<>();
         ParameterDef parameter;
         for (Parameter param : parameters) {
@@ -545,7 +529,7 @@ public class OpenAPIInputReader implements InputReader {
                 }
             }
             try {
-                if (Overlay.isReference(param, Constants.SCHEMA)) {
+                if (Overlay.isReference(operationOverlay.getOverlay(), param.getKey())) {
                     parameter.setIsEntity(true);
                     parameter.setType(schema.getName());
                 } else {
@@ -571,10 +555,9 @@ public class OpenAPIInputReader implements InputReader {
                     parameter.setName("criteria");
                 }
                 if (requestBody.getContentMediaTypes().get(media).getSchema() != null) {
-                    String requestBodyRefType = getRequestBodyRefType(requestBody, media);
                     mediaSchema = requestBody.getContentMediaTypes().get(media).getSchema();
                     parameter.setIsEntity(true);
-                    parameter.setType(requestBodyRefType);
+                    parameter.setType(requestBody.getContentMediaType(media).getSchema().getName());
                     if (!parameter.getIsSearchCriteria()) {
                         char c[] = mediaSchema.getName().toCharArray();
                         c[0] = Character.toLowerCase(c[0]);
@@ -593,24 +576,9 @@ public class OpenAPIInputReader implements InputReader {
     }
 
     /**
-     * Tries to get from a request body its reference to a component
-     *
-     * @param requestBody
-     *            the defined request body on the OpenAPI file which contains the reference of the entity
-     * @param media
-     *            content media type of the request body
-     * @return the referenced component name
-     */
-    private String getRequestBodyRefType(RequestBody requestBody, String media) {
-        String ref =
-            Overlay.getReference(requestBody.getContentMediaTypes().get(media), Constants.SCHEMA).getRefString();
-        String[] splittedRef = ref.split("/");
-        return splittedRef[splittedRef.length - 1];
-    }
-
-    /**
      * Returns a {@link ResponseDef} from a operation '200' response definition depending on the tags
-     *
+     * @param overlay
+     *            overlay of the operator
      * @param responses
      *            list of OpenApu responses definition
      * @param tags
@@ -633,11 +601,10 @@ public class OpenAPIInputReader implements InputReader {
                 }
                 for (String media : contentMediaTypes.keySet()) {
                     mediaTypes.add(media);
-                    Reference schemaReference = Overlay.getReference(contentMediaTypes.get(media), Constants.SCHEMA);
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
                         schemaType = schema.getType();
-                        if (schemaReference != null) {
+                        if (Constants.OBJECT.equals(schemaType)) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);
                             EntityDef eDef = new EntityDef();
@@ -671,11 +638,6 @@ public class OpenAPIInputReader implements InputReader {
                         } else {
                             response.setIsVoid(true);
                         }
-                    } else if (schemaReference != null) {
-                        String refString = schemaReference.getRefString();
-                        throw new InvalidConfigurationException(
-                            "Referenced entity " + refString.substring(refString.lastIndexOf('/'))
-                                + " not found. The reference " + refString + " schould be fixed before generation.");
                     }
                 }
             } else {
@@ -700,7 +662,7 @@ public class OpenAPIInputReader implements InputReader {
                 throw new InputReaderException(path + " is not a valid OpenAPI file");
             }
             return new OpenAPIFile(path, openApi);
-        } catch (SwaggerParserException e) {
+        } catch (Exception e) {
             // SwaggerParserException indicates a wrong input file.
             throw new InputReaderException("Reader does not support input type or input is faulty", e);
         }
@@ -709,7 +671,7 @@ public class OpenAPIInputReader implements InputReader {
     @Override
     public boolean isMostLikelyReadable(java.nio.file.Path path) {
         List<String> validExtensions = Arrays.asList(VALID_EXTENSION_YAML, VALID_EXTENSION_YML);
-        String fileExtension = FilenameUtils.getExtension(path.toString()).toLowerCase();
+        String fileExtension = com.google.common.io.Files.getFileExtension(path.getFileName().toString());
         return validExtensions.contains(fileExtension);
     }
 }
