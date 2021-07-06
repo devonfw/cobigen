@@ -32,7 +32,6 @@ import com.devonfw.cobigen.openapiplugin.model.ServerDef;
 import com.devonfw.cobigen.openapiplugin.util.constants.Constants;
 import com.reprezen.jsonoverlay.JsonOverlay;
 import com.reprezen.jsonoverlay.Overlay;
-import com.reprezen.jsonoverlay.Reference;
 import com.reprezen.kaizen.oasparser.OpenApiParser;
 import com.reprezen.kaizen.oasparser.model3.Info;
 import com.reprezen.kaizen.oasparser.model3.MediaType;
@@ -469,8 +468,7 @@ public class OpenAPIInputReader implements InputReader {
                     operationDef.setDescription(operation.getDescription());
                     operationDef.setSummary(operation.getSummary());
                     operationDef.setOperationId((operation.getOperationId()));
-                    operationDef.setResponses(
-                        extractResponses(Overlay.of(operation), operation.getResponses(), operation.getTags()));
+                    operationDef.setResponses(extractResponses(operation.getResponses(), operation.getTags()));
                     operationDef.setTags(operation.getTags());
                     if (path.getOperations() == null) {
                         path.setOperations(new ArrayList<OperationDef>());
@@ -587,8 +585,7 @@ public class OpenAPIInputReader implements InputReader {
      *            list of oasp4j relative tags
      * @return List of {@link ResponseDef}'s
      */
-    private List<ResponseDef> extractResponses(Overlay<Operation> overlay, Map<String, ? extends Response> responses,
-        Collection<String> tags) {
+    private List<ResponseDef> extractResponses(Map<String, ? extends Response> responses, Collection<String> tags) {
         ResponseDef response;
         List<String> mediaTypes = new LinkedList<>();
         List<ResponseDef> resps = new LinkedList<>();
@@ -604,12 +601,10 @@ public class OpenAPIInputReader implements InputReader {
                 }
                 for (String media : contentMediaTypes.keySet()) {
                     mediaTypes.add(media);
-                    Reference schemaReference =
-                        Overlay.getReference(overlay.getOverlay(), contentMediaTypes.get(media).getSchema().getName());
                     Schema schema = contentMediaTypes.get(media).getSchema();
                     if (schema != null) {
                         schemaType = schema.getType();
-                        if (schemaReference != null) {
+                        if (Constants.OBJECT.equals(schemaType)) {
                             response.setType(schema.getName());
                             response.setIsEntity(true);
                             EntityDef eDef = new EntityDef();
@@ -643,11 +638,6 @@ public class OpenAPIInputReader implements InputReader {
                         } else {
                             response.setIsVoid(true);
                         }
-                    } else if (schemaReference != null) {
-                        String refString = schemaReference.getRefString();
-                        throw new InvalidConfigurationException(
-                            "Referenced entity " + refString.substring(refString.lastIndexOf('/'))
-                                + " not found. The reference " + refString + " schould be fixed before generation.");
                     }
                 }
             } else {
