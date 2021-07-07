@@ -54,18 +54,29 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>net.sf.m-m-m</groupId>
+      <artifactId>mmm-code-java-impl</artifactId>
+      <version>1.0.0-beta6</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.maven</groupId>
+          <artifactId>maven-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model-builder</artifactId>
+      <version>3.6.1</version>
+    </dependency>
+
     <!-- QDox for Java parsing -->
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>
       <artifactId>qdox</artifactId>
       <version>2.0.0</version>
-    </dependency>
-
-    <!-- for advanced introspection -->
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-util-pojo</artifactId>
-      <version>7.4.0</version>
     </dependency>
   </dependencies>
 

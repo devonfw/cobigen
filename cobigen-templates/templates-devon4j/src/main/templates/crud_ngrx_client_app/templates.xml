@@ -39,20 +39,20 @@
   </templateScans>
 
   <increments>
-    <increment name="devon4ng-app" description="CRUD devon4ng ngrx App">
-      <incrementRef ref="app_angular_env"/>
-      <incrementRef ref="app_angular_i18n"/>
-      <incrementRef ref="app_angular_devon4ng_component"/>
+    <increment name="devon4ng-rx-app" description="Angular CRUD rxjs App">
+      <incrementRef ref="devon4ng-rx-env"/>
+      <incrementRef ref="devon4ng-rx-i18n"/>
+      <incrementRef ref="devon4ng-rx-component"/>
     </increment>
-    <increment name="app_angular_env" description="Angular devon4ng URL">
+    <increment name="devon4ng-rx-env" description="Angular rxjs URL">
         <templateRef ref="environment.ts"/>
         <templateRef ref="environment.prod.ts"/>
     </increment>
-    <increment name="app_angular_i18n" description="Angular i18n">
+    <increment name="devon4ng-rx-i18n" description="Angular rxjs i18n">
       <templateRef ref="es.json"/>
       <templateRef ref="en.json"/>
     </increment>
-    <increment name="app_angular_devon4ng_component" description="Angular devon4ng Component">
+    <increment name="devon4ng-rx-component" description="Angular rxjs component">
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.html"/>
       <templateRef ref="${variables.etoName#lower_case}-dialog.component.ts"/>
       <templateRef ref="${variables.etoName#lower_case}-grid.component.html"/>

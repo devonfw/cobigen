@@ -3,7 +3,6 @@ package com.devonfw.cobigen.javaplugin.inputreader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -22,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.extension.InputReader;
+import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.to.PackageFolder;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableClassLibraryBuilder;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
@@ -54,11 +54,6 @@ public class JavaInputReader implements InputReader {
             // check whether the same Java class has been provided as parser as well as reflection object
             Object[] inputArr = (Object[]) input;
             if (inputArr.length == 2) {
-                LOG.debug("Current classloader {}", JavaClass.class.getClassLoader());
-                LOG.debug("Input 1 classloader {} -> {}", inputArr[0].getClass(),
-                    inputArr[0].getClass().getClassLoader());
-                LOG.debug("Input 2 classloader {} -> {}", inputArr[1].getClass(),
-                    inputArr[1].getClass().getClassLoader());
                 if (inputArr[0] instanceof JavaClass && inputArr[1] instanceof Class<?>) {
                     if (((JavaClass) inputArr[0]).getFullyQualifiedName()
                         .equals(((Class<?>) inputArr[1]).getCanonicalName())) {
@@ -150,8 +145,9 @@ public class JavaInputReader implements InputReader {
                 if (containerClassloader != null) {
                     classLibraryBuilder.appendClassLoader(containerClassloader);
                 }
-                try {
-                    classLibraryBuilder.addSource(new InputStreamReader(new FileInputStream(f), inputCharset));
+                try (FileInputStream fis = new FileInputStream(f);
+                    InputStreamReader isr = new InputStreamReader(fis, inputCharset)) {
+                    classLibraryBuilder.addSource(isr);
                     JavaSource source = null;
                     for (JavaSource s : classLibraryBuilder.getClassLibrary().getJavaSources()) {
                         source = s;
@@ -326,9 +322,6 @@ public class JavaInputReader implements InputReader {
                 // This is the case for annotation values. QDox will always return the expression,
                 // which is a assigned to the annotation's value, as a string.
                 else if (!((List<?>) parsedModel).isEmpty() && ((List<?>) parsedModel).get(0) instanceof String) {
-                    if (((String) ((List<?>) parsedModel).get(0)).contains("/PATH")) {
-                        LOG.info("Taking String from parsed Model: " + ((List<?>) parsedModel).get(0));
-                    }
                     return parsedModel;
                 } else {
                     if (reflectionModel instanceof Object[]) {
@@ -343,9 +336,6 @@ public class JavaInputReader implements InputReader {
                 return parsedModel;
             }
         } else if (parsedModel instanceof String[]) {
-            if (((String[]) ((List<?>) parsedModel).get(0)).toString().contains("/PATH")) {
-                LOG.info("Taking String[] from parsed Model: " + ((List<?>) parsedModel).get(0));
-            }
             return Lists.newLinkedList(Arrays.asList(parsedModel));
         }
         // we will prefer parsed model if parsed value of type String. This is the case for annotation values.
@@ -383,7 +373,7 @@ public class JavaInputReader implements InputReader {
         ClassLoader classLoader = null;
 
         if (Files.isDirectory(path)) {
-
+            LOG.debug("Path {} to be read is a directory", path);
             String packageName = null;
             for (Object addArg : additionalArguments) {
                 if (packageName == null && addArg instanceof String) {
@@ -392,6 +382,9 @@ public class JavaInputReader implements InputReader {
                     classLoader =
                         new CompositeClassLoader(JavaInputReader.class.getClassLoader(), (ClassLoader) addArg);
                 }
+            }
+            if (classLoader == null) {
+                classLoader = createParsedClassLoader(path);
             }
             if (packageName == null || classLoader == null) {
                 throw new IllegalArgumentException(
@@ -411,13 +404,16 @@ public class JavaInputReader implements InputReader {
                         new CompositeClassLoader(JavaInputReader.class.getClassLoader(), (ClassLoader) addArg);
                 }
             }
-            try (BufferedReader pathReader = new BufferedReader(new FileReader(path.toFile()))) {
+            if (classLoader == null) {
+                classLoader = createParsedClassLoader(path);
+            }
+            try (BufferedReader pathReader = Files.newBufferedReader(path, inputCharset)) {
                 // couldn't think of another way here... Java8 compliance would made this a lot easier due to
                 // lambdas
                 if (clazz == null) {
                     if (classLoader == null) {
                         JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(pathReader);
-                        LOG.debug("Read {}.", firstJavaClass);
+                        LOG.debug("Reading {} without classloader support.", firstJavaClass);
                         return firstJavaClass;
                     } else {
                         JavaClass firstJavaClass = JavaParserUtil.getFirstJavaClass(classLoader, pathReader);
@@ -425,7 +421,8 @@ public class JavaInputReader implements InputReader {
                             clazz = classLoader.loadClass(firstJavaClass.getCanonicalName());
                         } catch (ClassNotFoundException e) {
                             // ignore
-                            LOG.debug("Read {}.", firstJavaClass);
+                            LOG.warn("Class {} not found in classloader, ignoring as it might be neglectable.",
+                                firstJavaClass, e);
                             return firstJavaClass;
                         }
                         Object[] result = new Object[] { firstJavaClass, clazz };
@@ -452,6 +449,25 @@ public class JavaInputReader implements InputReader {
                 throw new InputReaderException("Failed to parse java sources in " + path.toString() + ".", e);
             }
         }
+    }
+
+    /**
+     * Creates a classloader instance on the basis of parsed source code and maven configuration
+     * @param path
+     *            the path of the input
+     * @return a classloader created on the parsed source code
+     */
+    private ClassLoader createParsedClassLoader(Path path) {
+        ClassLoader classLoader = null;
+        LOG.debug("No classloader given, trying to create own...");
+        Path inputProject = MavenUtil.getProjectRoot(path, false);
+        if (inputProject != null) {
+            classLoader = JavaParserUtil.getJavaContext(path, inputProject).getClassLoader();
+        } else {
+            LOG.debug("No maven project detected defining the input path {}, executing without classloader support",
+                path);
+        }
+        return classLoader;
     }
 
     @Override

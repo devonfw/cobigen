@@ -12,11 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -32,8 +27,14 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
-import com.devonfw.cobigen.impl.config.reader.JvmUtil;
+import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
+
+import jakarta.xml.bind.JAXB;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshalException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * This class encompasses all logic for upgrading CobiGen configurations including
@@ -154,10 +155,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
             } catch (Throwable e) {
                 Throwable cause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
                 if (cause != null && cause.getMessage() != null) {
-                    LOG.info("Not able to read template configuration with schema '{}': {}", lv.toString(),
+                    LOG.info("Not able to read {} configuration with schema '{}': {}", configurationName, lv.toString(),
                         cause.getMessage());
                 } else {
-                    LOG.warn("Not able to read template configuration with schema '{}' .", lv.toString(), e);
+                    LOG.warn("Not able to read {} configuration with schema '{}' .", configurationName, lv.toString(),
+                        e);
                 }
             }
 

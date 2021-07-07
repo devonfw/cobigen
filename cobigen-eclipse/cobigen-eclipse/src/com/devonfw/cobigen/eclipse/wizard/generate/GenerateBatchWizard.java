@@ -2,6 +2,7 @@ package com.devonfw.cobigen.eclipse.wizard.generate;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.slf4j.Logger;
@@ -26,9 +27,11 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      *
      * @param generator
      *            to be used for generation
+     * @param monitor
+     *            to track progress
      */
-    public GenerateBatchWizard(CobiGenWrapper generator) {
-        super(generator);
+    public GenerateBatchWizard(CobiGenWrapper generator, IProgressMonitor monitor) {
+        super(generator, monitor);
         initializeWizard();
         setWindowTitle(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH);
     }
@@ -38,10 +41,9 @@ public class GenerateBatchWizard extends AbstractGenerateWizard {
      */
     private void initializeWizard() {
         page1 = new SelectFilesPage(cobigenWrapper, true);
-        page1.setMessage(
-            "You are running a generation in batch mode!\n"
-                + "The shown target files are based on the first input of your selection. "
-                + "All target files selected will be created/merged/overwritten analogue for every input of your selection.",
+        page1.setMessage("You are running a generation in batch mode!\n"
+            + "The shown target files are based on the first input of your selection. "
+            + "All target files selected will be created/merged/overwritten analogue for every input of your selection.",
             IMessageProvider.WARNING);
     }
 

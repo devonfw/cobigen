@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  version="2.1">
+
+  <trigger id="sales_only" type="openapi" templateFolder="salesTemplates">
+    <containerMatcher type="element" value="OpenAPIFile"/>
+    <matcher type="EntityNameRegex" value=".*ales">
+    </matcher>
+  </trigger>
+  <trigger id="table_only" type="openapi" templateFolder="tableTemplates">
+    <containerMatcher type="element" value="OpenAPIFile"/>
+    <matcher type="EntityNameRegex" value="Ta.*">
+    </matcher>
+  </trigger>
+</contextConfiguration>

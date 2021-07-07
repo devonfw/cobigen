@@ -12,6 +12,10 @@
     <version>${revision}</version>
   </parent>
 
+  <properties>
+    <java.version>11</java.version>
+  </properties>
+
   <modules>
     <module>cli</module>
     <module>cli-systemtest</module>

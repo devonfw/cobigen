@@ -16,4 +16,17 @@
     <module>cobigen-openapiplugin-model</module>
   </modules>
 
+  <dependencies>
+    <!-- <dependency>
+      <groupId>com.github.maybeec</groupId>
+      <artifactId>openapi-parser</artifactId>
+      <version>4.0.4</version>
+    </dependency> -->
+    <dependency>
+      <groupId>com.reprezen.kaizen</groupId>
+      <artifactId>openapi-parser</artifactId>
+      <version>4.0.4</version>
+    </dependency>
+  </dependencies>
+
 </project>

@@ -56,6 +56,7 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
 
     @Override
     public Reader getReader(Object templateSource, String encoding) throws IOException {
+        // need to keep this reader open as of method contract
         return new InputStreamReader(Files.newInputStream((Path) templateSource), encoding);
     }
 
@@ -68,7 +69,6 @@ public class NioFileSystemTemplateLoader implements TemplateLoader {
      * Sets the field 'templateRoot'.
      * @param templateRoot
      *            new value of templateRoot
-     * @author mbrunnli (13.02.2015)
      */
     public void setTemplateRoot(Path templateRoot) {
         templatesRoot = templateRoot;

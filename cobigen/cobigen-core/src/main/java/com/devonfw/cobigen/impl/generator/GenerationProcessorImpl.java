@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -61,10 +62,11 @@ import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
 import com.devonfw.cobigen.impl.generator.api.GenerationProcessor;
 import com.devonfw.cobigen.impl.generator.api.InputResolver;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
-import com.devonfw.cobigen.impl.util.TemplatesClassloaderUtil;
+import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
 
 /**
  * Generation processor. Caches calculations and thus should be newly created on each request.
@@ -126,7 +128,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         logicClassesModel = Maps.newHashMap();
         for (Class<?> logicClass : logicClasses) {
             try {
-                progressCallback.accept(logicClass.getCanonicalName(), 100 / logicClasses.size());
+                progressCallback.accept("load class " + logicClass.getCanonicalName(), 100 / logicClasses.size());
                 if (logicClass.isEnum()) {
                     logicClassesModel.put(logicClass.getSimpleName(), logicClass.getEnumConstants());
                 } else {
@@ -161,10 +163,12 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         }
 
         Path templateConfigPath = Paths.get(configurationHolder.getConfigurationLocation());
+        progressCallback.accept("Prepend Templates Classloader", 10);
         inputProjectClassLoader = prependTemplatesClassloader(templateConfigPath, inputProjectClassLoader);
         if (inputProjectClassLoader != null) {
             try {
-                logicClasses = TemplatesClassloaderUtil.resolveUtilClasses(templateConfigPath, inputProjectClassLoader);
+                logicClasses =
+                    ConfigurationClassLoaderUtil.resolveUtilClasses(configurationHolder, inputProjectClassLoader);
             } catch (IOException e) {
                 LOG.error("An IOException occured while resolving utility classes!", e);
             }
@@ -174,10 +178,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         this.forceOverride = forceOverride;
         this.input = input;
         if (logicClasses != null) {
+            progressCallback.accept("Load Template logic classes", 20);
             loadLogicClasses(progressCallback, logicClasses);
         }
 
-        progressCallback.accept("createTempDirectory", 50);
+        progressCallback.accept("Create Temporary Target Directory", 40);
         this.rawModel = rawModel;
         try {
             tmpTargetRootPath = Files.createTempDirectory("cobigen-");
@@ -188,21 +193,23 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         this.targetRootPath = targetRootPath;
         generationReport = new GenerationReportTo();
 
-        progressCallback.accept("Load Templates", 50);
+        progressCallback.accept("Load templates", 50);
+        LOG.debug("Collecting templates");
         Collection<TemplateTo> templatesToBeGenerated = flatten(generableArtifacts);
 
         // generate
         Map<File, File> origToTmpFileTrace = Maps.newHashMap();
         try {
+            LOG.debug("Generating {} templates", templatesToBeGenerated.size());
             for (TemplateTo template : templatesToBeGenerated) {
                 try {
                     Trigger trigger =
                         configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
                     TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
                     InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
-                    generate(template, triggerInterpreter, origToTmpFileTrace);
-                    progressCallback.accept("generates... ",
+                    progressCallback.accept("Generating " + template.getId(),
                         Math.round(1 / (float) templatesToBeGenerated.size() * 800));
+                    generate(template, triggerInterpreter, origToTmpFileTrace, progressCallback);
                 } catch (CobiGenCancellationException e) {
                     throw (e);
                 } catch (CobiGenRuntimeException e) {
@@ -264,12 +271,12 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             Path cpCacheFile = null;
             try {
                 if (Files.exists(pomFile)) {
-                    LOG.debug("Found templates to be configured by maven. Building classpath...");
+                    LOG.debug("Found templates to be configured by maven.");
 
                     String pomFileHash;
                     try {
-                        pomFileHash = com.google.common.io.Files.asByteSource(pomFile.toFile())
-                            .hash(Hashing.murmur3_128()).toString();
+                        pomFileHash =
+                            ByteSource.wrap(Files.readAllBytes(pomFile)).hash(Hashing.murmur3_128()).toString();
                     } catch (IOException e) {
                         LOG.warn("Could not calculate hash of {}", pomFile.toUri());
                         pomFileHash = "";
@@ -284,12 +291,15 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                     }
 
                     if (!Files.exists(cpCacheFile)) {
+                        LOG.debug("Building classpath for maven templates configuration ...");
                         MavenUtil.cacheMavenClassPath(pomFile, cpCacheFile);
+                    } else {
+                        LOG.debug("Taking cached classpath from {}", cpCacheFile);
                     }
 
                     // Read classPath.txt file and add to the class path all dependencies
-                    URL[] classpathEntries =
-                        Files.lines(cpCacheFile).flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
+                    try (Stream<String> fileLines = Files.lines(cpCacheFile)) {
+                        URL[] classpathEntries = fileLines.flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
                             try {
                                 return new File(path).toURI().toURL();
                             } catch (MalformedURLException e) {
@@ -297,7 +307,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                             }
                             return null;
                         }).toArray(size -> new URL[size]);
-                    combinedClassLoader = new URLClassLoader(classpathEntries, combinedClassLoader);
+                        combinedClassLoader = new URLClassLoader(classpathEntries, combinedClassLoader);
+                    }
                 }
 
                 // prepend jar/compiled resources as well
@@ -329,12 +340,12 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     private void compileTemplateUtils(Path templateFolder) {
         LOG.debug("Build templates folder {}", templateFolder);
         try {
-            StartedProcess process = new ProcessExecutor().destroyOnExit()
-                .command(SystemUtil.determineMvnPath(), "compile",
+            StartedProcess process = new ProcessExecutor().destroyOnExit().directory(templateFolder.toFile())
+                .command(SystemUtil.determineMvnPath().toString(), "compile",
                     // https://stackoverflow.com/a/66801171
                     "-Djansi.force=true", "-Djansi.passthrough=true", "-B",
-                    "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn", "-q",
-                    "-f", templateFolder.resolve("pom.xml").toString())
+                    "-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"),
+                    "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN", "-q")
                 .redirectError(
                     Slf4jStream
                         .of(LoggerFactory
@@ -344,7 +355,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                     Slf4jStream
                         .of(LoggerFactory
                             .getLogger(GenerationProcessorImpl.class.getName() + "." + "mvn-compile-templates"))
-                        .asDebug())
+                        .asInfo())
                 .start();
 
             Future<ProcessResult> future = process.getFuture();
@@ -353,7 +364,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                 throw new CobiGenRuntimeException("Unable to compile template project " + templateFolder);
             }
         } catch (IOException | InterruptedException | ExecutionException e) {
-            throw new CobiGenRuntimeException("Unable to compile template project " + templateFolder);
+            throw new CobiGenRuntimeException("Unable to compile template project " + templateFolder, e);
         }
     }
 
@@ -417,11 +428,13 @@ public class GenerationProcessorImpl implements GenerationProcessor {
      * @param origToTmpFileTrace
      *            the mapping of temporary generated files to their original target destination to eventually
      *            finalizing the generation process
+     * @param progressCallback
+     *            to track progress
      * @throws InvalidConfigurationException
      *             if the inputs do not fit to the configuration or there are some configuration failures
      */
     private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter,
-        Map<File, File> origToTmpFileTrace) {
+        Map<File, File> origToTmpFileTrace, BiConsumer<String, Integer> progressCallback) {
 
         Trigger trigger = configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
 
@@ -445,7 +458,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         }
 
         for (Object generatorInput : inputObjects) {
-
+            progressCallback.accept("Building template model for input " + generatorInput, 1);
             Map<String, Object> model = buildModel(triggerInterpreter, trigger, generatorInput, templateEty);
 
             String targetCharset = templateEty.getTargetCharset();
@@ -482,21 +495,20 @@ public class GenerationProcessorImpl implements GenerationProcessor {
 
                 if ((forceOverride || template.isForceOverride()) && templateEty.getMergeStrategy() == null
                     || ConfigurationConstants.MERGE_STRATEGY_OVERRIDE.equals(templateEty.getMergeStrategy())) {
-                    if (LOG.isInfoEnabled()) {
-                        try (Formatter formatter = new Formatter()) {
-                            formatter.format("Overriding %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
-                                templateEty.getName(), resolvedTargetDestinationPath);
-                            LOG.info(formatter.out().toString());
-                        }
+                    try (Formatter formatter = new Formatter()) {
+                        formatter.format("Overriding %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                            templateEty.getName(), resolvedTargetDestinationPath);
+                        LOG.info(formatter.out().toString());
+                        progressCallback.accept(formatter.out().toString(), 1);
                     }
+                    progressCallback.accept("Generating " + template.getId() + " for " + generatorInput, 1);
                     generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
                 } else if (templateEty.getMergeStrategy() != null) {
-                    if (LOG.isInfoEnabled()) {
-                        try (Formatter formatter = new Formatter()) {
-                            formatter.format("Merging    %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
-                                templateEty.getName(), resolvedTargetDestinationPath);
-                            LOG.info(formatter.out().toString());
-                        }
+                    try (Formatter formatter = new Formatter()) {
+                        formatter.format("Merging    %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                            templateEty.getName(), resolvedTargetDestinationPath);
+                        LOG.info(formatter.out().toString());
+                        progressCallback.accept(formatter.out().toString(), 1);
                     }
                     String patch = null;
                     try (Writer out = new StringWriter()) {
@@ -528,12 +540,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
                     }
                 }
             } else {
-                if (LOG.isInfoEnabled()) {
-                    try (Formatter formatter = new Formatter()) {
-                        formatter.format("Generating %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
-                            templateEty.getName(), resolvedTargetDestinationPath);
-                        LOG.info(formatter.out().toString());
-                    }
+                try (Formatter formatter = new Formatter()) {
+                    formatter.format("Generating %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
+                        templateEty.getName(), resolvedTargetDestinationPath);
+                    LOG.info(formatter.out().toString());
+                    progressCallback.accept(formatter.out().toString(), 1);
                 }
                 generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
             }

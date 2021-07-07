@@ -59,12 +59,11 @@ mvn install -f cobigen-plugins $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE
 log_step "Build Core Plugins - P2 Update Sites"
 mvn package bundle:bundle -Pp2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=test
 mvn install bundle:bundle -Pp2-bundle -DskipTests p2:site -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=test
-#mvn deploy -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=test
 
 log_step "Package & Run E2E Tests"
 mvn test -f cobigen/cobigen-core-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE
-mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-cli $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-maven $ENABLED_TEST $DEBUG $BATCH_MODE
+mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE
 mvn install -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE
-#mvn deploy -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE -Dupdatesite.repository=test --projects cobigen-eclipse/cobigen-eclipse-updatesite
+

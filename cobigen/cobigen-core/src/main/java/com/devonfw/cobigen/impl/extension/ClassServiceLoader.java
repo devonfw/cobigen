@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +88,7 @@ public class ClassServiceLoader {
                 try {
                     URLConnection con = url.openConnection();
                     try (InputStream in = con.getInputStream()) {
-                        List<String> lines = IOUtils.readLines(in, Charsets.UTF_8);
+                        List<String> lines = IOUtils.readLines(in, StandardCharsets.UTF_8);
                         LOG.debug("Lines of service loader file: {}", lines);
                         if (!lines.isEmpty()) {
                             activatorClassName = lines.get(0);

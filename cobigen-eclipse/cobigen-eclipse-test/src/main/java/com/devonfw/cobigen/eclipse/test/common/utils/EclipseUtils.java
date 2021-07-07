@@ -108,18 +108,19 @@ public class EclipseUtils {
      *            the {@link SWTWorkbenchBot} of the test
      * @param projectName
      *            name of the project
-     * @throws CoreException
+     * @throws Exception
      *             if anything happens during build
      */
-    public static void updateMavenProject(SWTWorkbenchBot bot, String projectName) throws CoreException {
+    public static void updateMavenProject(SWTWorkbenchBot bot, String projectName) throws Exception {
         bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
         SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
         SWTBotTreeItem configurationProject = view.bot().tree().expandNode(projectName);
         configurationProject.contextMenu().menu("Maven", false, 0).menu("Update Project...", false, 0).click();
         bot.waitUntil(shellIsActive("Update Maven Project"));
+        bot.checkBox("Force Update of Snapshots/Releases").click();
         bot.button(IDialogConstants.OK_LABEL).click();
-        ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).build(IncrementalProjectBuilder.CLEAN_BUILD,
-            new NullProgressMonitor());
+        Retry.runWithRetry(bot, () -> ResourcesPlugin.getWorkspace().getRoot().getProject(projectName)
+            .build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor()), CoreException.class, 2);
         bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
     }
 
@@ -163,12 +164,14 @@ public class EclipseUtils {
      *             test fails
      */
     public static void cleanWorkspace(boolean cleanCobiGenConfiguration) throws Exception {
+        LOG.debug("Clean workspace {}", cleanCobiGenConfiguration ? "incl. CobiGen_Templates" : "");
 
         int maxRetries = 10;
 
         for (int i = 1; i <= maxRetries; i++) {
             IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
             try {
+                LOG.debug("Found projects to be cleaned: {}", Arrays.toString(allProjects));
                 for (IProject project : allProjects) {
                     if (cleanCobiGenConfiguration || !ResourceConstants.CONFIG_PROJECT_NAME.equals(project.getName())) {
                         project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
@@ -188,6 +191,7 @@ public class EclipseUtils {
             } catch (Exception e) {
                 Thread.sleep(500);
                 if (i == maxRetries) {
+                    LOG.debug("Not able to cleanup the workspace after " + maxRetries + " retries");
                     throw e;
                 }
             }

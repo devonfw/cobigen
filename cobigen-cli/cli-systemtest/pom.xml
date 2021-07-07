@@ -23,14 +23,12 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
-      <version>${revision}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
-      <version>${revision}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -43,6 +41,12 @@
       <groupId>uk.org.webcompere</groupId>
       <artifactId>system-stubs-junit4</artifactId>
       <version>1.2.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+      <version>2.1.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

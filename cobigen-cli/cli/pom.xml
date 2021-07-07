@@ -34,9 +34,9 @@
       <version>4.5.1</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-java-impl</artifactId>
-      <version>1.0.0-beta5</version>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>3.8.1</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -50,11 +50,12 @@
     <dependency>
       <groupId>com.google.googlejavaformat</groupId>
       <artifactId>google-java-format</artifactId>
-      <version>1.7</version>
+      <version>1.10.0</version>
     </dependency>
   </dependencies>
 
   <build>
+    <finalName>${project.artifactId}</finalName>
     <!-- Add correct version to artificial pom -->
     <resources>
       <resource>
@@ -92,43 +93,12 @@
         </executions>
       </plugin>
 
-      <!-- Don't create the default jar -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>default-jar</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Create a fat jar with all the dependencies -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
         <executions>
-          <execution>
-            <id>assemble-jar</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <finalName>cobigen</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-              <archive>
-                <manifest>
-                  <addClasspath>true</addClasspath>
-                  <mainClass>com.devonfw.cobigen.cli.CobiGenCLI</mainClass>
-                </manifest>
-              </archive>
-            </configuration>
-          </execution>
           <execution>
             <id>assemble-tgz</id>
             <phase>package</phase>

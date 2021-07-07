@@ -10,8 +10,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
-import org.codehaus.plexus.interpolation.os.Os;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
+import org.codehaus.plexus.util.Os;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -22,7 +22,6 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 
 import uk.org.webcompere.systemstubs.security.SystemExit;
 
@@ -49,10 +48,6 @@ public class AbstractCliTest {
         devTemplatesPath = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
             .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
             .resolve("templates-devon4j");
-
-        // make sure, that the templates project has been compiled. If not, throw an assertion
-        // this is needed to run the latest templates properly from the folder
-        assertThat(devTemplatesPath.resolve("target").resolve("classes")).exists();
     }
 
     /**
@@ -102,14 +97,14 @@ public class AbstractCliTest {
             runWithLatestTemplates();
         }
 
-        String zipName = "cli-" + MavenMetadata.VERSION + ".tar.gz";
+        String zipName = "cli.tar.gz";
         Files.copy(
             new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
                 .getParentFile().getParentFile().toPath().resolve("cli").resolve("target").resolve(zipName),
             currentHome.resolve(zipName));
 
         TarGZipUnArchiver unzip = new TarGZipUnArchiver(currentHome.resolve(zipName).toFile());
-        ConsoleLoggerManager manager = new ConsoleLoggerManager();
+        ConsoleLoggerManager manager = new ConsoleLoggerManager("debug");
         unzip.enableLogging(manager.getLoggerForComponent("extract-tgz"));
         unzip.setDestDirectory(currentHome.toFile());
         unzip.extract();
@@ -140,11 +135,11 @@ public class AbstractCliTest {
             debugArgs[debugArgs.length - 1] = "-v";
         }
 
-        ProcessExecutor pe = new ProcessExecutor()
-            .environment(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).command(debugArgs)
-            .destroyOnExit()
-            .redirectError(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asError())
-            .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asDebug());
+        ProcessExecutor pe =
+            new ProcessExecutor().environment(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString())
+                .command(debugArgs).destroyOnExit()
+                .redirectError(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asError())
+                .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asInfo());
         new SystemExit().execute(() -> {
             ProcessResult result = pe.execute();
             int exitCode = result.getExitValue();

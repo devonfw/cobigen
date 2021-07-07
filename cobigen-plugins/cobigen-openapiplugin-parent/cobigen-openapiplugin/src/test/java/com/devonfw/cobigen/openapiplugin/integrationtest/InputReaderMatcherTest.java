@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.openapiplugin.model.EntityDef;
 import com.devonfw.cobigen.openapiplugin.util.TestConstants;
 
 import junit.framework.AssertionFailedError;
@@ -62,6 +64,45 @@ public class InputReaderMatcherTest {
 
         List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
         assertThat(inputObjects).isNotNull().hasSize(2);
+    }
+
+    /**
+     * Tests the correct basic retrieval of ComponentDef inputs
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testBasicElementMatcher_twoComponents_matchRegex() throws Exception {
+        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates-regex").toUri());
+
+        Object openApiFile = cobigen.read(Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
+        assertThat(openApiFile).isNotNull();
+
+        List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(openApiFile);
+        assertThat(matchingTemplates).extracting(TemplateTo::getId).containsExactly("sales_template.txt",
+            "table_template.txt");
+    }
+
+    /**
+     * Tests the correct basic retrieval of ComponentDef inputs
+     * @throws Exception
+     *             test fails
+     */
+    @Test
+    public void testBasicElementMatcher_oneComponent_matchRegex() throws Exception {
+        CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates-regex").toUri());
+
+        Object openApiFile = cobigen.read(Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
+        assertThat(openApiFile).isNotNull();
+
+        List<Object> resolveContainers = cobigen.resolveContainers(openApiFile);
+        assertThat(resolveContainers).hasSize(1).first().isInstanceOf(EntityDef.class)
+            .extracting(e -> ((EntityDef) e).getName()).containsExactly("Table");
+
+        List<TemplateTo> matchingTemplates = resolveContainers.stream()
+            .flatMap(e -> cobigen.getMatchingTemplates(e).stream()).collect(Collectors.toList());
+
+        assertThat(matchingTemplates).extracting(TemplateTo::getId).containsExactly("table_template.txt");
     }
 
     /**

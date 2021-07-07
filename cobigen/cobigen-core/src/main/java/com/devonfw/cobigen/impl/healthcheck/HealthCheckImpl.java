@@ -17,14 +17,13 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
-import com.devonfw.cobigen.api.util.ConfigurationUtil;
-import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -193,19 +192,8 @@ public class HealthCheckImpl implements HealthCheck {
 
     @Override
     public HealthCheckReport perform() {
-        File templatesDirectory = ConfigurationUtil.getTemplatesFolderPath().toFile();
-        URI templatesJarFile = ConfigurationUtil.findTemplatesLocation();
+        URI templatesJarFile = ConfigurationFinder.findTemplatesLocation();
         HealthCheckReport report = null;
-
-        if (templatesJarFile == null) {
-
-            try {
-                TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesDirectory);
-                TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesDirectory);
-            } catch (Throwable e) {
-                LOG.error("An error occured while downloading the latest Templates", e);
-            }
-        }
 
         Path fileSystemPath = FileSystemUtil.createFileSystemDependentPath(templatesJarFile);
         report = perform(fileSystemPath);

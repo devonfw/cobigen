@@ -3,6 +3,7 @@ package com.devonfw.cobigen.eclipse.test;
 import java.io.File;
 
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -19,6 +20,16 @@ public class HealthCheckTest extends SystemTest {
 
     /** Root path of the Test Resources */
     private static final String resourcesRootPath = "src/main/resources/OpenAPITest/";
+
+    /**
+     * Clean workspace before test suite
+     * @throws Exception
+     *             if anything fails
+     */
+    @BeforeClass
+    public static void setupClass() throws Exception {
+        EclipseUtils.cleanWorkspace(true);
+    }
 
     /**
      * Testing HealthCheck

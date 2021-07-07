@@ -4,7 +4,7 @@ import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.File;
-import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.text.similarity.JaccardDistance;
-import org.apache.maven.shared.utils.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,7 @@ import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.ConfigurationUtil;
+import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.Tuple;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
@@ -105,21 +104,19 @@ public class GenerateCommand extends CommandCommons {
         LOG.debug("Input files and output root path confirmed to be valid.");
         CobiGen cg = CobiGenUtils.initializeCobiGen(templatesProject);
 
-        URI templatesLocationUri = ConfigurationUtil.findTemplatesLocation();
-        Path templateFolder = Paths.get(templatesLocationUri);
-        LOG.debug("Executing cobigen with templates found at {}", templateFolder);
-
         if (increments == null && templates != null) {
             Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);
             for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
-                generate(inputFiles.get(i), inputsAndArtifacts.getA().get(i),
-                    ParsingUtils.getProjectRoot(inputFiles.get(i)), inputsAndArtifacts.getB(), cg, TemplateTo.class);
+                generate(inputFiles.get(i).toPath(), inputsAndArtifacts.getA().get(i),
+                    MavenUtil.getProjectRoot(inputFiles.get(i).toPath(), false), inputsAndArtifacts.getB(), cg,
+                    TemplateTo.class);
             }
         } else {
             Tuple<List<Object>, List<IncrementTo>> inputsAndArtifacts = preprocess(cg, IncrementTo.class);
             for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
-                generate(inputFiles.get(i), inputsAndArtifacts.getA().get(i),
-                    ParsingUtils.getProjectRoot(inputFiles.get(i)), inputsAndArtifacts.getB(), cg, IncrementTo.class);
+                generate(inputFiles.get(i).toPath(), inputsAndArtifacts.getA().get(i),
+                    MavenUtil.getProjectRoot(inputFiles.get(i).toPath(), false), inputsAndArtifacts.getB(), cg,
+                    IncrementTo.class);
             }
         }
         return 0;
@@ -146,13 +143,12 @@ public class GenerateCommand extends CommandCommons {
         List<Object> generationInputs = new ArrayList<>();
         for (File inputFile : inputFiles) {
 
-            Object input;
             String extension = inputFile.getName().toLowerCase();
             boolean isJavaInput = extension.endsWith(".java");
             boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
 
             try {
-                input = CobiGenUtils.getValidCobiGenInput(cg, inputFile, isJavaInput);
+                Object input = cg.read(inputFile.toPath(), StandardCharsets.UTF_8);
                 List<T> matching =
                     (List<T>) (isIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input));
 
@@ -267,7 +263,7 @@ public class GenerateCommand extends CommandCommons {
      *            class type, specifies whether Templates or Increments should be preprocessed
      *
      */
-    public <T extends GenerableArtifact> void generate(File inputFile, Object input, File inputProject,
+    public <T extends GenerableArtifact> void generate(Path inputFile, Object input, Path inputProject,
         List<T> generableArtifacts, CobiGen cg, Class<T> c) {
 
         boolean isIncrements = c.getSimpleName().equals(IncrementTo.class.getSimpleName());
@@ -280,11 +276,12 @@ public class GenerateCommand extends CommandCommons {
         GenerationReportTo report = null;
         LOG.info("Generating {} for input '{}, this can take a while...", isIncrements ? "increments" : "templates",
             inputFile);
-        report = cg.generate(input, generableArtifacts, Paths.get(outputRootPath.getAbsolutePath()), false);
+        report = cg.generate(input, generableArtifacts, Paths.get(outputRootPath.getAbsolutePath()), false,
+            (task, progress) -> {
+            });
         ValidationUtils.checkGenerationReport(report);
         Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream()
-            .filter(e -> FileUtils.getExtension(e.toAbsolutePath().toString()).equals("java"))
-            .collect(Collectors.toSet());
+            .filter(e -> e.getFileName().endsWith(".java")).collect(Collectors.toSet());
         if (!generatedJavaFiles.isEmpty()) {
             try {
                 ParsingUtils.formatJavaSources(generatedJavaFiles);
@@ -301,12 +298,12 @@ public class GenerateCommand extends CommandCommons {
      * @param inputProject
      *            project where the code will be generated to
      */
-    private void setOutputRootPath(File inputProject) {
+    private void setOutputRootPath(Path inputProject) {
         LOG.info(
             "As you did not specify where the code will be generated, we will use the project of your current Input file.");
-        LOG.debug("Generating to: {}", inputProject.getAbsolutePath());
+        LOG.debug("Generating to: {}", inputProject);
 
-        outputRootPath = inputProject;
+        outputRootPath = inputProject.toFile();
     }
 
     /**

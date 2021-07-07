@@ -106,6 +106,8 @@ public class GenerateCommandTest extends AbstractCliTest {
 
         execute(args, true);
 
+        Thread.sleep(1000);
+
         // clean up generated files
         assertThat(tmpProject.resolve("devon4ng-application-template")).exists();
     }
@@ -252,8 +254,7 @@ public class GenerateCommandTest extends AbstractCliTest {
 
         String args[] = new String[6];
         args[0] = "generate";
-        // input file with quote
-        args[1] = '"' + openApiFile.toFile().getAbsolutePath() + '"';
+        args[1] = openApiFile.toFile().getAbsolutePath();
         args[2] = "--out";
         args[3] = outputRootPath.toFile().getAbsolutePath();
         args[4] = "--increments";

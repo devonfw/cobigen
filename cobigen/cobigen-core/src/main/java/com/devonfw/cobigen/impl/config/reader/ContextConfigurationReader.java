@@ -11,22 +11,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
+import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
@@ -39,11 +34,13 @@ import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshalException;
+import jakarta.xml.bind.Unmarshaller;
+
 /** The {@link ContextConfigurationReader} reads the context xml */
 public class ContextConfigurationReader {
-
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
     /** XML Node 'context' of the context.xml */
     private ContextConfiguration contextNode;
@@ -93,12 +90,12 @@ public class ContextConfigurationReader {
             Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
         }
 
-        try {
+        try (InputStream in = Files.newInputStream(contextFile)) {
             Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
             // Unmarshal without schema checks for getting the version attribute of the root node.
             // This is necessary to provide an automatic upgrade client later on
-            Object rootNode = unmarschaller.unmarshal(Files.newInputStream(contextFile));
+            Object rootNode = unmarschaller.unmarshal(in);
             if (rootNode instanceof ContextConfiguration) {
                 BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
                 if (configVersion == null) {

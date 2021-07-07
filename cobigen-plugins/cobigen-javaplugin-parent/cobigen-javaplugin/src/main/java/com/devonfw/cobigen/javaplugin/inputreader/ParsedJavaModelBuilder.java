@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.javaplugin.inputreader;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
@@ -27,6 +30,9 @@ import com.thoughtworks.qdox.model.JavaType;
 /** The {@link ParsedJavaModelBuilder} builds a model using QDox as a Java parser */
 public class ParsedJavaModelBuilder {
 
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(ParsedJavaModelBuilder.class);
+
     /** Cached input pojo class in order to avoid unnecessary efforts */
     private JavaClass cachedPojo;
 
@@ -43,6 +49,8 @@ public class ParsedJavaModelBuilder {
      *         ://freemarker.sourceforge.net/docs/dgui_quickstart.html
      */
     Map<String, Object> createModel(final JavaClass javaClass) {
+
+        long start = Calendar.getInstance().getTimeInMillis();
 
         if (cachedPojo != null && cachedPojo.equals(javaClass)) {
             return new HashMap<>(cachedModel);
@@ -88,6 +96,7 @@ public class ParsedJavaModelBuilder {
         pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
         cachedModel.put(ModelConstant.MODEL_ROOT, pojoModel);
 
+        LOG.debug("Built parsed model in {}s", (Calendar.getInstance().getTimeInMillis() - start) / 100d);
         return new HashMap<>(cachedModel);
     }
 
@@ -100,7 +109,9 @@ public class ParsedJavaModelBuilder {
     private List<Map<String, Object>> extractMethodAccessibleFields(JavaClass javaClass) {
         List<Map<String, Object>> fields = Lists.newLinkedList();
 
-        List<BeanProperty> beanProperties = javaClass.getBeanProperties(true);
+        // passing true is horribly slow. We need to check whether we can replace qdox by some more efficient
+        // library, possibly m-m-m?
+        List<BeanProperty> beanProperties = javaClass.getBeanProperties(false);
         for (BeanProperty property : beanProperties) {
             if (property.getAccessor() != null && property.getMutator() != null) {
                 fields.add(extractField(property.getName(), property.getType(), null));
@@ -118,6 +129,8 @@ public class ParsedJavaModelBuilder {
      */
     private List<Map<String, Object>> extractMethods(JavaClass javaClass) {
 
+        long start = Calendar.getInstance().getTimeInMillis();
+
         List<Map<String, Object>> methods = new LinkedList<>();
         for (JavaMethod method : javaClass.getMethods()) {
             Map<String, Object> methodAttributes = new HashMap<>();
@@ -133,6 +146,9 @@ public class ParsedJavaModelBuilder {
             methodAttributes.put(ModelConstant.ANNOTATIONS, annotations);
             methods.add(methodAttributes);
         }
+
+        LOG.debug("Extracted methods in {}s", (Calendar.getInstance().getTimeInMillis() - start) / 100d);
+
         return methods;
     }
 
@@ -258,7 +274,6 @@ public class ParsedJavaModelBuilder {
      *            list of attribute meta data for the generation (object model)
      */
     private void collectAnnotations(JavaClass javaClass, List<Map<String, Object>> attributes) {
-
         for (Map<String, Object> attr : attributes) {
             Map<String, Object> annotations = new HashMap<>();
             attr.put(ModelConstant.ANNOTATIONS, annotations);
@@ -339,9 +354,6 @@ public class ParsedJavaModelBuilder {
                     || value instanceof Boolean || value instanceof Character) {
                     annotationParameters.put(propertyName, value);
                 } else if (value instanceof String) {
-                    if (((String) value).matches("\".*\"")) {
-                        value = ((String) value).replaceFirst("\"(.*)\"", "$1");
-                    }
                     annotationParameters.put(propertyName, value);
                 } else {
                     // currently QDox only returns the expression stated in the code as value, but not

@@ -33,15 +33,6 @@ import com.github.stefanbirkner.systemlambda.SystemLambda;
  */
 public class UpdateCommandTest extends AbstractCliTest {
 
-    /** Test resources root path */
-    private static String testFileRootPath = "src/test/resources/testdata/";
-
-    /** temporary pom file */
-    private static String tmpPomFileName = "tmpPom.xml";
-
-    /** outdated pom file */
-    private static String outdatedPomFileName = "outdatedPom.xml";
-
     /**
      * Original CobiGen CLI pom file
      */
