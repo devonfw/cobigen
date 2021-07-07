@@ -110,7 +110,7 @@ image:images/howtos/e2e_gen/image68.png[getter & setter]
 [arabic]
 Use Cobigen to generate code. Right click on EmployeeEntity. CobiGen -> Generate
 
-It will ask you to download the templates, click on _update_:
+If it will ask you to download the templates, click on _update_:
 
 image:images/howtos/e2e_gen/image19.png[cobigen generate]
 
@@ -195,7 +195,7 @@ Now compose the Rest service URL:
 *service class <path>/<service method path>*
 
 * <server> refers to server with port no. (ie: localhost:8081)
-* <app> is in the application.properties (empty in our case, see above)
+* <app> is in the _application.properties_ (empty in our case, see above)
 * <rest service class path> refers to EmployeemanagementRestService: (i.e: /employeemanagement/v1)
 * <service method path>/employee/\{id}  (i.e: for  getEmployee method)
 
@@ -203,11 +203,11 @@ image:images/howtos/e2e_gen/image28.png[url mapping]
 
 URL of getEmployee for this example is:
 
-for all employees
+For all employees
 [source, URL]
 http://localhost:8081/services/rest/employeemanagement/v1/employee/search
 
-for the specific employee
+For the specific employee
 [source, URL]
 http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
@@ -223,7 +223,7 @@ Once done with success (*Status: 200 OK*), we can create a NEW GET Request in or
 
 Now you can click image:images/howtos/e2e_gen/image34.png[postman]
 
-Now you‘ve to check that response has got Status: 200 OK and to see the below Employee
+Now you‘ve to check that response has got *Status: 200 OK* and to see the below Employee
 
 image:images/howtos/e2e_gen/image73.png[postman]
 
@@ -390,13 +390,12 @@ export const environment = {
     security: 'csrf'
 };
 
-
 *Warning*: REMEMBER to set security filed to *csrf* , if it is not configured already.
 
 [arabic]
 Now run the *devon ng serve -o* command to run the Angular Application, from your application folder, as done before.
 
-image:images/howtos/e2e_gen/image75.png[]
+image:images/howtos/e2e_gen/image75.png[ng serve command]
 
 [arabic]
 If the command execution is *successful*, the below screen will *appear* and it would be automatically redirected to the url:
@@ -404,38 +403,40 @@ If the command execution is *successful*, the below screen will *appear* and it 
 [source, URL]
 http://localhost:4200/login
 
-image:images/howtos/e2e_gen/image45.png[]
+image:images/howtos/e2e_gen/image45.png[angular web app]
 
 You can login in the Web Application, with *_admin_* user and password. +
 Obviosuly, the BackEnd part must be online during this test!
 
-*WebApp DONE*
+*ANGULAR WebApp DONE*
+
 
 ==== Ionic Mobile App
 
 [arabic]
-.   To generate Ionic structure, download or clone *devon4ng-application-template* from
+To generate Ionic structure, download or clone *devon4ng-application-template* from
 [source, URL]
 https://github.com/devonfw/devon4ng-ionic-application-template
-. Once done, Right click on the *EmployeeEto* as you already did before in order to use CobiGen.
-. Click on the selected options as seen in the screenshot:
 
-image:images/howtos/e2e_gen/image46.png[]
+Once done, Right click on the *EmployeeEto* as you already did before in order to use CobiGen.
+Click on the selected options as seen in the screenshot:
 
-[arabic, start=4]
-. Click on Finish
-. The entire ionic structure will be auto generated.
+image:images/howtos/e2e_gen/image46.png[cobigen ionic]
+
+[arabic]
+Click on Finish +
+The entire ionic structure will be auto generated.
 
 image:images/howtos/e2e_gen/image47.png[]
 
-[arabic, start=6]
-. Change the server url (with correct serve url) in environment.ts, environment.prod.ts and environment.android.ts files (i.e: itapoc\devon4ng-ionic-application-template\src\environments\).
+[arabic]
+Change the server url (with correct serve url) in _environment.ts_, _environment.prod.ts_ and _environment.android.ts_ files (i.e: itapoc\devon4ng-ionic-application-template\src\environments\).
 
-The angular.json file inside the project has already a build configuration for android.
+The _angular.json_ file inside the project has already a build configuration for android.
 
 image:images/howtos/e2e_gen/image48.png[]
 
-[arabic, start=7]
+[arabic]
 . Run npm install in the root folder to download the dependecies
 . Run ionic serve
 
@@ -450,7 +451,7 @@ Once the execution is successful
 
 image:images/howtos/e2e_gen/image50.png[]
 
-* Mobile App DONE*
+*IONIC Mobile App DONE*
 
 So: well done
 
