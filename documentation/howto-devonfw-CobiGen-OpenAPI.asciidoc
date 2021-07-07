@@ -390,7 +390,7 @@ If the command execution is *successful*, the below screen will *appear* and it 
 [source, URL]
 http://localhost:4200/login
 
-image:images/howtos/e2e_gen/image45.png[angular web app]
+image:images/howtos/e2e_gen/image77.png[angular web app]
 
 You can login in the Web Application, with *_admin_* user and password. +
 Obviosuly, the BackEnd part must be online during this test!
