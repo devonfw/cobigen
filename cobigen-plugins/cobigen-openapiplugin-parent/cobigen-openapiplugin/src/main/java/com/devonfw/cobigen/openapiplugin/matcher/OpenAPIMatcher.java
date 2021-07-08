@@ -56,7 +56,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
           return matcher.getTarget().getClass().getSimpleName().toLowerCase().equals(matcher.getValue().toLowerCase());
         case ENTITYNAMEREGEX:
           Object target = matcher.getTarget();
-          if (target instanceof EntityDef) {
+          if (target.getClass().getSimpleName().toLowerCase().equals(EntityDef.class.getSimpleName().toLowerCase())) {
             Pattern p = Pattern.compile(matcher.getValue());
             Matcher m = p.matcher(((EntityDef) target).getName());
             if (m.matches()) {
