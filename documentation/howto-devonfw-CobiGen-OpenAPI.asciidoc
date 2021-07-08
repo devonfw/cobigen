@@ -190,11 +190,11 @@ image:images/howtos/e2e_gen/image28.png[url mapping]
 
 URL of getEmployee for this example is:
 
-For all employees
+For all employees (POST)
 [source, URL]
 http://localhost:8081/services/rest/employeemanagement/v1/employee/search
 
-For the specific employee
+For the specific employee (GET)
 [source, URL]
 http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
@@ -206,11 +206,15 @@ image:images/howtos/e2e_gen/image72.png[postman]
 
 *_WARNING_*: please note that the body of the request must be JSON type!
 
-Once done with success (*Status: 200 OK*), we can create a NEW GET Request in order to get one employee
+Once done with success (*Status: 200 OK*) - _you can see the status of the response in the top right corner of Postman_ - we can create a NEW GET Request in order to get one employee.
 
-Now you can click image:images/howtos/e2e_gen/image34.png[postman]
+To do this you have to create a new request in Postman, GET type, and insert the URL specified before:
+[source, URL]
+http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
-Now you‘ve to check that response has got *Status: 200 OK* and to see the below Employee
+Thenk click on *"SEND"* button...
+
+You can check that response has got *Status: 200 OK* and to see the below Employee
 
 image:images/howtos/e2e_gen/image73.png[postman]
 
@@ -237,7 +241,8 @@ IMPORTANT when you download the zip of the source code of your FE application, t
 Once downloaded the APP, you can open the application with your favourite IDE (Intellij or Visual Studio Code)
 
 [arabic]
-Once done, right click on EmployeeEto.java  file present under the package _com.devonfw.poc.employeemanagement.logic.api.to_, in the Back End part.
+Once done, Right click on the *_devonfw.yml_* in order to use CobiGen.
+Click on the selected options as seen in the screenshot:
 
 image:images/howtos/e2e_gen/image37.png[eclipse generate]
 
@@ -401,11 +406,12 @@ Obviosuly, the BackEnd part must be online during this test!
 ==== Ionic Mobile App
 
 [arabic]
-.   To generate Ionic structure, download or clone _*devon4ng-application-template*_ from
+To generate Ionic structure, download or clone _*devon4ng-application-template*_ from
 [source, URL]
 https://github.com/devonfw/devon4ng-ionic-application-template
-. Once done, Right click on the *_devonfw.yml_* as you already did before in order to use CobiGen.
-. Click on the selected options as seen in the screenshot:
+
+Once done, Right click on the *_devonfw.yml_* as you already did before in order to use CobiGen.
+Click on the selected options as seen in the screenshot:
 
 image:images/howtos/e2e_gen/image46.png[]
 
@@ -428,12 +434,7 @@ image:images/howtos/e2e_gen/image48.png[]
 
 image:images/howtos/e2e_gen/image49.png[]
 
-[arabic, start=11]
-. {blank}
-+
-
 Once the execution is successful
-
 
 image:images/howtos/e2e_gen/image50.png[]
 
@@ -441,7 +442,7 @@ image:images/howtos/e2e_gen/image50.png[]
 
 So: well done
 
-Starting from an Entity class you’ve successfully generated the Back-End layer (REST, SOAP, DTO, Spring services, Hibernate DAO), the Angular Web App and the Ionic mobile App!
+`*Starting from an Entity class you’ve successfully generated the Back-End layer (REST, SOAP, DTO, Spring services, Hibernate DAO), the Angular Web App and the Ionic mobile App!*`
 
 image:images/howtos/e2e_gen/image51.png[]
 

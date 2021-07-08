@@ -437,17 +437,14 @@ The _angular.json_ file inside the project has already a build configuration for
 image:images/howtos/e2e_gen/image48.png[]
 
 [arabic]
-. Run npm install in the root folder to download the dependecies
-. Run ionic serve
+Once checked if all the files are correct, open a CMD devon CLI on the folder of the ionic template application, under your devonFW workspace. +
+In this folder: +
+Run the command _*devon npm install*_ in the root folder to download the dependecies. +
+Once finished, run the command _*devon ionic serve*_
 
 image:images/howtos/e2e_gen/image49.png[]
 
-[arabic, start=11]
-. {blank}
-+
-
 Once the execution is successful
-
 
 image:images/howtos/e2e_gen/image50.png[]
 
@@ -455,7 +452,7 @@ image:images/howtos/e2e_gen/image50.png[]
 
 So: well done
 
-Starting from an Entity class you’ve successfully generated the Back-End layer (REST, SOAP, DTO, Spring services, Hibernate DAO), the Angular Web App and the Ionic mobile App!
+`*Starting from an Entity class you’ve successfully generated the Back-End layer (REST, SOAP, DTO, Spring services, Hibernate DAO), the Angular Web App and the Ionic mobile App!*`
 
 image:images/howtos/e2e_gen/image51.png[]
 
