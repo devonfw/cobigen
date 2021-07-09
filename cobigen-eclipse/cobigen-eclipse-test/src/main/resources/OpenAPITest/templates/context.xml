@@ -16,4 +16,13 @@
       <variableAssignment type="property" key="etoName" value="name"/>
     </matcher>
   </trigger>
+  <trigger id="testTemplatesRegex" type="openapi" templateFolder="templates_regexMatcher">
+    <containerMatcher type="element" value="openAPIFile"/>
+      <matcher type="ENTITYNAMEREGEX" value="Table">
+        <variableAssignment type="property" key="entityName" value="name"/>
+        <variableAssignment type="extension" key="testingAttribute" value="x-test"/>
+        <variableAssignment type="extension" key="rootPackage" value="x-rootpackage"/>
+        <variableAssignment type="extension" key="globalVariable" value="x-global"/>
+      </matcher>
+    </trigger>
 </contextConfiguration>

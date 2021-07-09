@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  version="4.0">
+
+  <templateScans>
+    <templateScan templateNamePrefix="" templatePath="." destinationPath=""/>
+  </templateScans>
+
+  <increments>
+    <increment name="testTemplatesRegex" description="testVariableAssignment">
+      <templateRef ref="testVariableAssignment_propertyName"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
