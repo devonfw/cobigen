@@ -9,7 +9,7 @@ then
     ENABLED_TEST=""
     echo "  * With test execution"
 else
-	ENABLED_TEST="-DskipTests"
+	  ENABLED_TEST="-DskipTests"
     echo "  * No test execution (pass 'test' as argument to enable)"
 fi
 
