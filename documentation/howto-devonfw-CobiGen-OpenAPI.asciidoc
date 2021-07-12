@@ -459,24 +459,25 @@ Since We’re going to create apk remember the following pre-conditions:
 
 
 [arabic]
-. Now, open cmd and type the path where your _devon4ng-ionic-application-template_ project is present.
-. Run the following commands:
-[loweralpha]
-.. npx cap init
-.. ionic build --configuration=android
-.. npx cap add android
-.. npx cap copy
-.. npx cap open android
-. Build the APK using Android studio.
+Now, open cmd and type the path where your _devon4ng-ionic-application-template_ project is present. +
+Run the following commands:
+
+. npx cap init
+. ionic build --configuration=android
+. npx cap add android
+. npx cap copy
+. npx cap open android
+
+Build the APK using Android studio.
 
 image:images/howtos/e2e_gen/image52.png[]
 image:images/howtos/e2e_gen/image53.png[]
 image:images/howtos/e2e_gen/image54.png[]
 image:images/howtos/e2e_gen/image55.png[]
 
-You can find your apk file in
+You can find your apk file in:
+_/devon4ng-ionic-application-template/android/app/build/outputs/apk/debug_
 
-/devon4ng-ionic-application-template/android/app/build/outputs/apk/debug
 
 == Adapt CobiGen_Templates
 
