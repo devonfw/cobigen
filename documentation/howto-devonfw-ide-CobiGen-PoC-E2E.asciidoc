@@ -418,6 +418,8 @@ To generate Ionic structure, download or clone *devon4ng-application-template* f
 [source, URL]
 https://github.com/devonfw/devon4ng-ionic-application-template
 
+Once downloaded the zip (or cloned) the name of the folder used, must be: _devon4ng-ionic-application-template_
+
 Once done, Right click on the *EmployeeEto* as you already did before in order to use CobiGen.
 Click on the selected options as seen in the screenshot:
 
@@ -430,11 +432,32 @@ The entire ionic structure will be auto generated.
 image:images/howtos/e2e_gen/image47.png[]
 
 [arabic]
-Change the server url (with correct serve url) in _environment.ts_, _environment.prod.ts_ and _environment.android.ts_ files (i.e: itapoc\devon4ng-ionic-application-template\src\environments\).
+Change (if necessary) the server url (with correct serve url) in _environment.ts_, _environment.prod.ts_ and _environment.android.ts_ files (i.e: itapoc\devon4ng-ionic-application-template\src\environments\).
 
 The _angular.json_ file inside the project has already a build configuration for android.
 
 image:images/howtos/e2e_gen/image48.png[]
+
+The only *TWO* thing that you have to modify, in this IONIC app is in _employee-list.page.html_ and _business-operator.service.ts_.y +
+
+*1:* +
+You have to change this line:
+[source,html]
+<layoutheader Title="Employee"></layoutheader>
+
+with this line:
+[source,html]
+<app-layout-header title="Employee"></app-layout-header>
+
+
+*2:* +
+You have to change this line:
+[source,ts]
+return this.restPath + '/security/v1/csrftoken';
+
+with this line:
+[source,ts]
+return this.restPath + 'csrf/v1/token/';
 
 [arabic]
 Once checked if all the files are correct, open a CMD devon CLI on the folder of the ionic template application, under your devonFW workspace. +
@@ -444,13 +467,13 @@ Once finished, run the command _*devon ionic serve*_
 
 image:images/howtos/e2e_gen/image49.png[]
 
-Once the execution is successful
+Once the execution is successful, you can make the LOGIN with admin/admin and...
 
 image:images/howtos/e2e_gen/image50.png[]
 
 *IONIC Mobile App DONE*
 
-So: well done
+So: *Well Done!!!*
 
 `*Starting from an Entity class you’ve successfully generated the Back-End layer (REST, SOAP, DTO, Spring services, Hibernate DAO), the Angular Web App and the Ionic mobile App!*`
 
