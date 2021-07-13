@@ -103,7 +103,7 @@ image:images/howtos/e2e_gen/image19.png[cobigen generate]
 
 It will automatically download the latest version of _CobiGen_Templates_.
 
-*Attention:* If you want to adapt the CobiGen_Templates, (normally this is not neccessary), you will find at the end of this document a tutorial on how to import them and adapt them!
+*Attention:* If you want to adapt the CobiGen_Templates, (normally this is not neccessary), you will find at the end of this document (in a separate chapter) a tutorial on how to import them and adapt them!
 
 [arabic]
 Click on all the option selected as below:
