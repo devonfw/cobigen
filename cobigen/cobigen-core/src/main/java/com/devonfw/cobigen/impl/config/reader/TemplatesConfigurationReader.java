@@ -31,6 +31,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
+import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
