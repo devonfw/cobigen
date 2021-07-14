@@ -249,18 +249,6 @@
           <skip>${skip.deployment}</skip>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>${nexus.staging.maven.plugin.version}</version>
-        <extensions>true</extensions>
-        <configuration>
-          <skipNexusStagingDeployMojo>${skip.deployment}</skipNexusStagingDeployMojo>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>false</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
 
       <!-- Flatten POM -->
       <plugin>
@@ -458,6 +446,30 @@
   </build>
 
   <profiles>
+    <profile>
+      <id>non-p2-deploy</id>
+      <activation>
+        <property>
+          <name>!updatesite.repository</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>${nexus.staging.maven.plugin.version}</version>
+            <extensions>true</extensions>
+            <configuration>
+              <skipNexusStagingDeployMojo>${skip.deployment}</skipNexusStagingDeployMojo>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>p2-build</id>
       <activation>

@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+pushd "$(dirname ${BASH_SOURCE:0})"
+trap popd EXIT
+
 echo ""
 echo "##########################################"
 echo ""
@@ -32,6 +35,26 @@ else
     DEBUG="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
     echo "  * Debug Off (pass 'debug' as argument to enable)"
 fi
+
+if [[ "$*" == *gpgkey=* ]]
+then
+    GPG_KEYNAME=$(echo "$*" | sed -r -E -n 's|gpgkey=([^\s]+)|\1|p')
+    echo "  * GPG Key set to $GPG_KEYNAME"
+fi
+
+if [[ $(sed -r -E -n 's@<revision>([^<]+)-SNAPSHOT</revision>@\1@p' pom.xml) ]]
+then
+    DEPLOY_UPDATESITE="test"
+    echo "  * Detected snapshot release number. Releasing to test p2 repository"
+else
+	if [ -z $GPG_KEYNAME ]
+	then 
+		echo "Please set GPG keyname by passing gpgkey=<your-email>"
+		exit 1
+	fi
+	DEPLOY_UPDATESITE="stable"
+    echo "  * Detected final release number. Releasing to stable p2 repository"
+fi
 echo ""
 echo "##########################################"
 
@@ -45,13 +68,9 @@ log_step() {
   echo ""
 }
 
-pushd "$(dirname ${BASH_SOURCE:0})"
-trap popd EXIT
-
 # https://stackoverflow.com/a/66801171
 BATCH_MODE="-Djansi.force=true -Djansi.passthrough=true -B"
-DEPLOY_SIGN="-Poss -Dgpg.keyname=maybeec@users.noreply.github.com -Dgpg.executable=gpg"
-DEPLOY_UPDATESITE="test"
+DEPLOY_SIGN="-Poss -Dgpg.keyname=$GPG_KEYNAME -Dgpg.executable=gpg"
 
 log_step "Cleanup Projects"
 mvn clean -P!p2-build $PARALLELIZED $BATCH_MODE
@@ -65,7 +84,7 @@ mvn deploy -f cobigen-plugins -P!p2-build $ENABLED_TEST $DEBUG $PARALLELIZED $BA
 log_step "Build Core Plugins - P2 Update Sites"
 mvn package bundle:bundle -Pp2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE 
 mvn install bundle:bundle -Pp2-bundle -DskipTests p2:site -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE 
-mvn deploy -Pp2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE 
+mvn deploy -Pp2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE -Dskip.deployment=true # we need to skip general maven deployment as the bundles come with a different license
 
 log_step "Package & Run E2E Tests"
 mvn test -f cobigen/cobigen-core-systemtest -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE
