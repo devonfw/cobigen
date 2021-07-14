@@ -11,7 +11,7 @@
 
   <properties>
     <!-- Need to remove leading zeros as of https://bugs.eclipse.org/bugs/show_bug.cgi?id=513203 in the last version segment -->
-    <revision>2021.04.001-SNAPSHOT</revision>
+    <revision>2021.08.001-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
