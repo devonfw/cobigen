@@ -9,7 +9,7 @@ echo "Running Solicitor of version $solicitor_version"
 if [ -n "$1" ]; then
     echo "Considering extension $exec_path/$1"
 else
-    echo "No extension passed as first argument"
+    echo "No extension passed as first argument - PASS EXTENSION FOR PRODUCTION!"
 fi
 echo "**********************************************"
 
