@@ -175,7 +175,7 @@ public class HtmlProcessor {
                 process(td, builder, htmlEscape);
                 String trimmedCell = builder.toString().trim();
                 if (htmlEscape) {
-                    trimmedCell = trimmedCell.replace("<", "&lt;").replace(">", "&gt;");
+                    trimmedCell = escapeHtml(trimmedCell);
                 }
                 cells[row][column] = trimmedCell.split("\r\n|\r|\n");
                 rowHeight[row] = Math.max(rowHeight[row], cells[row][column].length);
@@ -186,5 +186,13 @@ public class HtmlProcessor {
             row++;
         }
         return new TableModel(columnWidth, cells, hasHeadline);
+    }
+
+    /**
+     * @param trimmedCell
+     * @return
+     */
+    private String escapeHtml(String trimmedCell) {
+        return trimmedCell.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;");
     }
 }
