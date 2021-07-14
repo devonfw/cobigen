@@ -24,7 +24,7 @@ fi
 
 if [[ "$*" == *debug* ]]
 then
-    DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true" # set to false to see hidden exceptions
+    DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true -X" # set to false to see hidden exceptions
     echo "  * Debug On"
 else
 	# the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
@@ -48,7 +48,7 @@ log_step() {
 BATCH_MODE="-Djansi.force=true -Djansi.passthrough=true -B"
 
 log_step "Cleanup Projects"
-mvn clean -P!p2-build $PARALLELIZED $BATCH_MODE
+mvn clean -P!p2-build $PARALLELIZED $BATCH_MODE $DEBUG
 
 log_step "Build & Test Core"
 mvn install -f cobigen --projects !cobigen-core-systemtest $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE
