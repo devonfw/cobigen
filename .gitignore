@@ -30,3 +30,7 @@ cobigen-eclipse/cobigen-eclipse-test/screenshots
 .pydevproject
 objectdb
 .mypy_cache
+
+#Intellij
+.idea
+*.iml
