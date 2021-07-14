@@ -13,6 +13,9 @@ trap popd EXIT
 mvn -f license-to-txt-converter/ clean package
 java -jar license-to-txt-converter/target/html2formattedtext-converter-jar-with-dependencies.jar output/Acknowledge-Document_cobigen.html output/Acknowledge-Document_cobigen.txt
 
+cp output/Acknowledge-Document_cobigen.txt ../LICENSE-BUNDLE.txt
+echo "updated ../LICENSE-BUNDLE.txt"
+
 shopt -s nullglob globstar dotglob
 for f in ../**/src/main/resources/META-INF/LICENSEP2BUNDLE.txt; do
   cp output/Acknowledge-Document_cobigen.txt $f

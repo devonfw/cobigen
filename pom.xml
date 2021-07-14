@@ -10,8 +10,7 @@
   <description>A Code-based incremental Generator</description>
 
   <properties>
-    <!-- Need to remove leading zeros as of https://bugs.eclipse.org/bugs/show_bug.cgi?id=513203 in the last version segment -->
-    <revision>2021.08.001-SNAPSHOT</revision>
+    <revision>2021.08.001</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
@@ -66,7 +65,7 @@
   <licenses>
     <license>
       <name>Apache Software License 2.0</name>
-      <url>https://github.com/devonfw/.github/blob/master/LICENSE</url>
+      <url>https://raw.githubusercontent.com/devonfw/.github/master/LICENSE</url>
       <distribution>repo</distribution>
       <comments/>
     </license>
