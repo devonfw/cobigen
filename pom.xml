@@ -254,8 +254,12 @@
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
         <version>${nexus.staging.maven.plugin.version}</version>
+        <extensions>true</extensions>
         <configuration>
           <skipNexusStagingDeployMojo>${skip.deployment}</skipNexusStagingDeployMojo>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
         </configuration>
       </plugin>
 
