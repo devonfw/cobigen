@@ -7,6 +7,9 @@ if [ ! -f "output/Acknowledge-Document_cobigen.html" ]; then
 	exit 1
 fi
 
+pushd "$(dirname ${BASH_SOURCE:0})"
+trap popd EXIT
+
 mvn -f license-to-txt-converter/ clean package
 java -jar license-to-txt-converter/target/html2formattedtext-converter-jar-with-dependencies.jar output/Acknowledge-Document_cobigen.html output/Acknowledge-Document_cobigen.txt
 

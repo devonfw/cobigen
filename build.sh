@@ -1,3 +1,4 @@
+#!/bin/sh
 set -e
 
 echo ""
@@ -43,6 +44,9 @@ log_step() {
   echo ""
   echo ""
 }
+
+pushd "$(dirname ${BASH_SOURCE:0})"
+trap popd EXIT
 
 # https://stackoverflow.com/a/66801171
 BATCH_MODE="-Djansi.force=true -Djansi.passthrough=true -B"
