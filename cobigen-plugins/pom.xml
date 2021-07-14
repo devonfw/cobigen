@@ -64,7 +64,7 @@
                 <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
                 <Embed-Transitive>true</Embed-Transitive>
                 <Bundle-Name>${project.name}</Bundle-Name>
-                <Bundle-License>https://github.com/devonfw/cobigen/blob/master/LICENSE-BUNDLE.txt</Bundle-License>
+                <Bundle-License>https://github.com/devonfw/cobigen/blob/v${project.version}/LICENSE-BUNDLE.txt</Bundle-License>
                 <Include-Resource>
 		    {maven-resources}, {maven-dependencies}, {META-INF/LICENSE.txt=src/main/resources/META-INF/LICENSEP2BUNDLE.txt}
                 </Include-Resource>

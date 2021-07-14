@@ -461,10 +461,17 @@
             <version>${nexus.staging.maven.plugin.version}</version>
             <extensions>true</extensions>
             <configuration>
-              <skipNexusStagingDeployMojo>${skip.deployment}</skipNexusStagingDeployMojo>
+              <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
               <serverId>ossrh</serverId>
               <nexusUrl>https://oss.sonatype.org/</nexusUrl>
               <autoReleaseAfterClose>false</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
             </configuration>
           </plugin>
         </plugins>
