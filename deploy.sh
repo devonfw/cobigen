@@ -171,5 +171,4 @@ doRunCommand "mvn deploy -f cobigen-cli --projects !cli-systemtest -P!p2-build $
 # need to exclude cobigen-maven-systemtest as of https://issues.sonatype.org/browse/NEXUS-19853 for deployment only!
 doRunCommand "mvn deploy -f cobigen-maven --projects !cobigen-maven-systemtest -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
 doRunCommand "mvn deploy -f cobigen-templates -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
-doRunCommand "mvn install -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE"
-doRunCommand "mvn deploy -f cobigen-eclipse -DskipTests $DEBUG $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE --projects cobigen-eclipse-updatesite"
+doRunCommand "mvn deploy -f cobigen-eclipse -DskipTests $ENABLED_TEST $DEBUG $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE --projects cobigen-eclipse-updatesite"
