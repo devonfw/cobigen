@@ -236,13 +236,6 @@
   <profiles>
     <profile>
       <id>p2-build</id>
-      <activation>
-        <!-- activation by default not usable https://issues.apache.org/jira/browse/MNG-4917 -->
-        <!-- <activeByDefault>true</activeByDefault> -->
-        <file>
-          <exists>pom.xml</exists>
-        </file>
-      </activation>
       <repositories>
         <repository>
           <id>htmlplugin</id>
