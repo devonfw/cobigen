@@ -342,6 +342,7 @@
             <!-- needed to fix javadoc on java 11+ -->
             <source>8</source>
             <quiet>true</quiet>
+            <detectJavaApiLink>false</detectJavaApiLink>
           </configuration>
         </plugin>
         <plugin>
@@ -461,12 +462,26 @@
             <version>${nexus.staging.maven.plugin.version}</version>
             <extensions>true</extensions>
             <configuration>
-              <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
               <serverId>ossrh</serverId>
               <nexusUrl>https://oss.sonatype.org/</nexusUrl>
               <autoReleaseAfterClose>false</autoReleaseAfterClose>
+              <autoDropAfterRelease>false</autoDropAfterRelease>
+              <description>Release ${project.groupId}:${project.artifactId}.${project.version}</description>
+              <skipNexusStagingDeployMojo>${skip.deployment}</skipNexusStagingDeployMojo>
             </configuration>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>p2-deploy</id>
+      <activation>
+        <property>
+          <name>updatesite.repository</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-deploy-plugin</artifactId>
@@ -566,11 +581,15 @@
                 </goals>
               </execution>
             </executions>
+            <configuration>
+              <skip>${skip.deployment}</skip>
+            </configuration>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
+              <skip>${skip.deployment}</skip>
               <additionalDependencies>
                 <additionalDependency>
                   <groupId>javax.interceptor</groupId>

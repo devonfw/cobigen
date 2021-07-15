@@ -19,5 +19,6 @@
   <modules>
     <module>cli</module>
     <module>cli-systemtest</module>
+    <module>cli-deploy</module>
   </modules>
 </project>

@@ -36,16 +36,4 @@
       <artifactId>gson</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <excludes>
-          <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
-        </excludes>
-      </resource>
-    </resources>
-  </build>
 </project>

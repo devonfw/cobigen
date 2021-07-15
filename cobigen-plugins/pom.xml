@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" 
-  xmlns="http://maven.apache.org/POM/4.0.0" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>plugins-parent</artifactId>
   <name>CobiGen - Plug-ins Parent</name>
@@ -24,6 +23,18 @@
     <module>cobigen-openapiplugin-parent</module>
     <module>cobigen-templateengines</module>
   </modules>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/META-INF/LICENSEP2BUNDLE.txt</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
 
   <profiles>
     <profile>
@@ -66,7 +77,7 @@
                 <Bundle-Name>${project.name}</Bundle-Name>
                 <Bundle-License>https://github.com/devonfw/cobigen/blob/v${project.version}/LICENSE-BUNDLE.txt</Bundle-License>
                 <Include-Resource>
-		    {maven-resources}, {maven-dependencies}, {META-INF/LICENSE.txt=src/main/resources/META-INF/LICENSEP2BUNDLE.txt}
+                  {maven-resources}, {maven-dependencies}, {META-INF/LICENSE.txt=src/main/resources/META-INF/LICENSEP2BUNDLE.txt}
                 </Include-Resource>
                 <niceManifest>true</niceManifest>
                 <Import-Package></Import-Package>
