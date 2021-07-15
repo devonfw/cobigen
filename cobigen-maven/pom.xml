@@ -18,7 +18,6 @@
     <module>cobigen-maven-plugin</module>
     <module>cobigen-maven-systemtest</module>
     <module>cobigen-maven-test</module>
-    <module>cobigen-maven-deploy</module>
   </modules>
 
   <build>

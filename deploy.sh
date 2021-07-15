@@ -123,15 +123,14 @@ if [ "$DEPLOY_UPDATESITE" = "stable" ] && [ -d "../gh-pages" ]
 then
     cd ../gh-pages
 	CHANGE_LIST=$(git diff --shortstat && git status --porcelain)
-	echo "ChangeList >$CHANGE_LIST<"
 	if [ ! -z "$CHANGE_LIST" ]
 	then
 		echo "../gh-pages is not clean"
 		doAskQuestion "Should I cleanup?" # will exit if no
 		doRunCommand "git reset --hard HEAD"
 		doRunCommand "git clean -xf"
-		cd "$SCRIPT_PATH"
 	fi
+	cd "$SCRIPT_PATH"
 else
 	echo "Not detected cloned gh-pages branch in ../gh-pages folder."
 fi
@@ -154,6 +153,7 @@ log_step "Cleanup Projects"
 doRunCommand "mvn clean -P!p2-build $PARALLELIZED $BATCH_MODE"
 
 log_step "Build & Test Core"
+# need to exclude cobigen-core-systemtest as of https://issues.sonatype.org/browse/NEXUS-19853 for deployment only!
 doRunCommand "mvn deploy -f cobigen --projects !cobigen-core-systemtest -P!p2-build $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE $DEPLOY_SIGN"
 
 log_step "Build & Test Core Plugins"
@@ -166,8 +166,10 @@ doRunCommand "mvn deploy -Pp2-bundle -DskipTests -f cobigen-plugins --projects !
 
 log_step "Package & Run E2E Tests"
 doRunCommand "mvn test -f cobigen/cobigen-core-systemtest -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE"
-doRunCommand "mvn deploy -f cobigen-cli -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
-doRunCommand "mvn deploy -f cobigen-maven -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
+# need to exclude cli-systemtest as of https://issues.sonatype.org/browse/NEXUS-19853 for deployment only!
+doRunCommand "mvn deploy -f cobigen-cli --projects !cli-systemtest -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
+# need to exclude cobigen-maven-systemtest as of https://issues.sonatype.org/browse/NEXUS-19853 for deployment only!
+doRunCommand "mvn deploy -f cobigen-maven --projects !cobigen-maven-systemtest -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
 doRunCommand "mvn deploy -f cobigen-templates -P!p2-build $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
 doRunCommand "mvn install -f cobigen-eclipse $ENABLED_TEST $DEBUG $BATCH_MODE"
 doRunCommand "mvn deploy -f cobigen-eclipse -DskipTests $DEBUG $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE --projects cobigen-eclipse-updatesite"
