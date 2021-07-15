@@ -3,7 +3,8 @@ set -e
 
 solicitor_version=v1.2.0
 
-pushd "$(dirname ${BASH_SOURCE:0})"
+SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+pushd "$SCRIPT_PATH"
 trap popd EXIT
 
 exec_path=`pwd`

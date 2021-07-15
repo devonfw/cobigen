@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+pushd "$SCRIPT_PATH"
+trap popd EXIT
+
 echo ""
 echo "##########################################"
 echo ""
@@ -44,9 +48,6 @@ log_step() {
   echo ""
   echo ""
 }
-
-pushd "$(dirname ${BASH_SOURCE:0})"
-trap popd EXIT
 
 # https://stackoverflow.com/a/66801171
 BATCH_MODE="-Djansi.force=true -Djansi.passthrough=true -B"
