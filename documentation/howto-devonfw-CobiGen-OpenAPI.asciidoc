@@ -238,10 +238,20 @@ image:images/howtos/e2e_gen/image74.png[devon dist folder]
 [arabic]
 IMPORTANT when you download the zip of the source code of your FE application, the name of the app MUST BE *devon4ng-application-template* and you can extract it in youe DevonFW folder, under _workspaces/main_
 
-Once downloaded the APP, you can open the application with your favourite IDE (Intellij or Visual Studio Code)
+Once downloaded the APP, you can open the application with your favourite IDE (Intellij or Visual Studio Code) +
+Instead, if you want to open this project with Eclipse, you have to follow these steps: +
+[arabic]
+. Right click on the left part of Eclipse, anch click on "Import":
+image:images/howtos/e2e_gen/image83.png[import]
+. Click on "Projects from Folder or Archive"
+image:images/howtos/e2e_gen/image82.png[import]
+. Select your folder where you have saved the Angular FE Application, under _workspaces/main_. Wait that all the dependecies are charged and then click on "Finish"
+image:images/howtos/e2e_gen/image84.png[import]
+. At the end, you will have a structure like this:
+image:images/howtos/e2e_gen/image86.png[import]
 
 [arabic]
-Once done, Right click on the *_devonfw.yml_* in order to use CobiGen.
+Once done, Right click on the *_devonfw.yml_* (present in the _myapp-core_ module) in order to use CobiGen.
 Click on the selected options as seen in the screenshot:
 
 image:images/howtos/e2e_gen/image37.png[eclipse generate]
