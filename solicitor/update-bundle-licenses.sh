@@ -1,6 +1,10 @@
 #!/bin/sh
 set -e
 
+SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+pushd "$SCRIPT_PATH"
+trap popd EXIT
+
 if [ ! -f "output/Acknowledge-Document_cobigen.html" ]; then
 	echo "File output/Acknowledge-Document_cobigen.html does not exist because solicitor.sh was not executed."
 	echo "!!! Please MAKE SURE that the generated output/Acknowledge-Document_cobigen.html is legaly compliant before updating all license resources !!!"
@@ -9,6 +13,9 @@ fi
 
 mvn -f license-to-txt-converter/ clean package
 java -jar license-to-txt-converter/target/html2formattedtext-converter-jar-with-dependencies.jar output/Acknowledge-Document_cobigen.html output/Acknowledge-Document_cobigen.txt
+
+cp output/Acknowledge-Document_cobigen.txt ../LICENSE-BUNDLE.txt
+echo "updated ../LICENSE-BUNDLE.txt"
 
 shopt -s nullglob globstar dotglob
 for f in ../**/src/main/resources/META-INF/LICENSEP2BUNDLE.txt; do

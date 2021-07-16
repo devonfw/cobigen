@@ -16,5 +16,4 @@
     <module>cobigen-javaplugin</module>
     <module>cobigen-javaplugin-model</module>
   </modules>
-
 </project>

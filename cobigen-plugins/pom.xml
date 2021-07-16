@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" 
-  xmlns="http://maven.apache.org/POM/4.0.0" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>plugins-parent</artifactId>
   <name>CobiGen - Plug-ins Parent</name>
@@ -25,22 +24,23 @@
     <module>cobigen-templateengines</module>
   </modules>
 
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/META-INF/LICENSEP2BUNDLE.txt</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
+
   <profiles>
     <profile>
-      <id>p2-bundle</id> <!-- Bundle and P2 -->
+      <id>p2-bundle</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.0.2</version>
-            <configuration>
-              <skip>${skip.deployment}</skip>
-              <archive>
-                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-              </archive>
-            </configuration>
-          </plugin>
           <plugin>
             <groupId>org.apache.felix</groupId>
             <artifactId>maven-bundle-plugin</artifactId>
@@ -64,8 +64,10 @@
                 <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
                 <Embed-Transitive>true</Embed-Transitive>
                 <Bundle-Name>${project.name}</Bundle-Name>
+                <Bundle-License>https://github.com/devonfw/cobigen/blob/v${project.version}/LICENSE-BUNDLE.txt</Bundle-License>
                 <Include-Resource>
-		    {maven-resources}, {maven-dependencies}, {META-INF/LICENSE.txt=src/main/resources/META-INF/LICENSEP2BUNDLE.txt}
+                  {maven-resources}, {maven-dependencies},
+                  {META-INF/LICENSE.txt=src/main/resources/META-INF/LICENSEP2BUNDLE.txt}
                 </Include-Resource>
                 <niceManifest>true</niceManifest>
                 <Import-Package></Import-Package>
@@ -90,6 +92,46 @@
                       <transitive>false</transitive>
                     </artifact>
                   </artifacts>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>p2-deploy</id>
+      <activation>
+        <property>
+          <name>updatesite.repository</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <!-- update site -->
+          <!-- copy to gh-pages folder next to this repository checked out gh-pages branch -->
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <executions>
+              <execution>
+                <id>mirror-files-build-to-upload-dir</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <skip>${skip.deployment}</skip>
+                  <source>
+                    <repository>
+                      <url>file:///${p2.repository.build.dir.url}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir.plugin}</destination>
+                  <xzCompress>false</xzCompress>
+                  <append>true</append>
                 </configuration>
               </execution>
             </executions>

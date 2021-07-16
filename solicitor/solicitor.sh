@@ -1,8 +1,12 @@
+#!/bin/sh
 set -e
 
 solicitor_version=v1.2.0
 
-bash_source_dir=`dirname $BASH_SOURCE`
+SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+pushd "$SCRIPT_PATH"
+trap popd EXIT
+
 exec_path=`pwd`
 echo "**********************************************"
 echo "Running Solicitor of version $solicitor_version"
@@ -12,8 +16,6 @@ else
     echo "No extension passed as first argument - PASS EXTENSION FOR PRODUCTION!"
 fi
 echo "**********************************************"
-
-cd $bash_source_dir
 
 #clean
 rm -Rf output/

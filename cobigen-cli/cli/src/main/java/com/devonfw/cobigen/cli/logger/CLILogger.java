@@ -10,43 +10,48 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
+
 /**
- * This class declare layout logger and logger level  
+ * This class declare layout logger and logger level
  */
 public class CLILogger {
-	
-	/**
-	 * Getting logger instance from LoggerFactory for reset logger layout
-	 */
+
+    /**
+     * Getting logger instance from LoggerFactory for reset logger layout
+     */
     private static Logger rootLogger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
 
     /**
-     * This method is setting the custom layout of logger 
+     * This method is setting the custom layout of logger
+     * @param verbose
+     *            whether verbose logging should be enabled
      */
     public static void layoutLogger(boolean verbose) {
         LoggerContext loggerContext = rootLogger.getLoggerContext();
-        if(!verbose) {
-        	loggerContext.reset();
+        if (!verbose) {
+            loggerContext.reset();
         }
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(loggerContext);
         encoder.setPattern("[%-5level] %message%n");
         encoder.start();
 
-        ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
+        ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
         appender.setContext(loggerContext);
         appender.setEncoder(encoder);
         appender.start();
 
-        if(rootLogger.getLevel() == null) {
-        	rootLogger.setLevel(Level.INFO);
+        if (rootLogger.getLevel() == null) {
+            rootLogger.setLevel(Level.INFO);
         }
         rootLogger.addAppender(appender);
     }
-/**
- *  This method declare level of logger
- * @param level 
- */
+
+    /**
+     * This method declare level of logger
+     * @param level
+     *            of logging
+     */
     public static void setLevel(Level level) {
         rootLogger.setLevel(level);
     }

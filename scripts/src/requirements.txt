@@ -1,5 +1,0 @@
-GitPython
-lxml
-PyGithub
-PyYAML
-

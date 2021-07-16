@@ -31,6 +31,10 @@
         <directory>src/main/templates</directory>
         <targetPath>src/main/templates</targetPath>
       </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <targetPath>./</targetPath>
+      </resource>
     </resources>
     <plugins>
       <plugin>

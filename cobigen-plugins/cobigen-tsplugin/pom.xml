@@ -45,24 +45,6 @@
   </dependencies>
 
   <build>
-    <resources>
-      <!-- Needed for specifying the external server properties to a file -->
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/META-INF/externalservers/server.properties</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <excludes>
-          <exclude>**/META-INF/externalservers/server.properties</exclude>
-          <exclude>**/META-INF/LICENSEP2BUNDLE.html</exclude>
-        </excludes>
-      </resource>
-    </resources>
     <plugins>
       <!-- Inject Maven Properties in java-templates source folder -->
       <plugin>
