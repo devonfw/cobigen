@@ -24,9 +24,10 @@ run _installation_path_\eclipse-main.bat
 It will open eclipse
 
 [arabic]
-Create a project using below command from the command prompt. +
+Create a project using a command from the command prompt. +
 To made it, it's necessary to open a CMD and open the folder where it's installed DevonFW and launch this command under the path _workspaces/main_. +
-To facilitate this step, you can go from your "_File Explorer_" under *workspaces/main* folder and with the right button of the mouse, choose "_Open devonfw CMD shell here_"
+
+NOTE: To facilitate this step, you can go from your "_File Explorer_" under *workspaces/main* folder and with the right button of the mouse, choose "_Open devonfw CMD shell here_"
 image:images/howtos/e2e_gen/image85.png[eclipse devon]
 
 Then launch this command from CMD:
