@@ -25,8 +25,11 @@ It will open eclipse
 
 [arabic]
 Create a project using below command from the command prompt. +
-To made it, it's necessary to open a CMD and open the folder where it's installed DevonFW and launch this command under the path _workspaces/main_
+To made it, it's necessary to open a CMD and open the folder where it's installed DevonFW and launch this command under the path _workspaces/main_. +
+To facilitate this step, you can go from your "_File Explorer_" under *workspaces/main* folder and with the right button of the mouse, choose "_Open devonfw CMD shell here_"
+image:images/howtos/e2e_gen/image85.png[eclipse devon]
 
+Then launch this command from CMD:
 [source, java]
 devon java create com.example.domain.myapp
 
@@ -249,12 +252,22 @@ https://github.com/devonfw/devon4ng-application-template
 image:images/howtos/e2e_gen/image74.png[devon dist folder]
 
 [arabic]
-IMPORTANT when you download the zip of the source code of your FE application, the name of the app MUST BE *devon4ng-application-template* and you can extract it in youe DevonFW folder, under _workspaces/main_
+IMPORTANT when you download the zip of the source code of your FE application, the name of the app MUST BE *devon4ng-application-template* and you can extract it in your DevonFW folder, under _workspaces/main_
 
-Once downloaded the APP, you can open the application with your favourite IDE (Intellij or Visual Studio Code)
+Once downloaded the APP, you can open the application with your favourite IDE (Intellij, Visual Studio Code, ...) +
+Instead, if you want to open this project with Eclipse, you have to follow these steps: +
+[arabic]
+. Right click on the left part of Eclipse, anch click on "Import":
+image:images/howtos/e2e_gen/image83.png[import]
+. Click on "Projects from Folder or Archive"
+image:images/howtos/e2e_gen/image82.png[import]
+. Select your folder where you have saved the Angular FE Application, under _workspaces/main_. Wait that all the dependecies are charged and then click on "Finish"
+image:images/howtos/e2e_gen/image84.png[import]
+. At the end, you will have a structure like this:
+image:images/howtos/e2e_gen/image86.png[import]
 
 [arabic]
-Once done, right click on EmployeeEto.java file present under the package _com.devonfw.poc.employeemanagement.logic.api.to_, in the Back End part.
+Once done, right click on EmployeeEto.java file present under the package _com.devonfw.poc.employeemanagement.logic.api.to_, in the Back End part (_mayapp-core_ module).
 Click on the selected options as seen in the screenshot:
 
 image:images/howtos/e2e_gen/image37.png[eclipse generate]
@@ -371,17 +384,15 @@ After that, if you want to make visible the Employee Grid in you FE application,
   </div>
 </div>
 
-
 [arabic]
-Open the command prompt and execute _devon npm install_ from your application folder, which would download all the required libraries.
-
+Open the command prompt and execute _devon npm install_ from your application folder (_workspaces/main/devon4ng-application-template_), which would download all the required libraries.
 
 [arabic]
 Check the file *environment.ts* if the server path is correct. (for production you will have to change also the environment.prod.ts file)
 
 image:images/howtos/e2e_gen/image42.png[environment]
 
-In order to do that it’s important to look at the application.properties to see the values as PATH, TCP port etc …
+In order to do that, it’s important to look at the application.properties to see the values as PATH, TCP port etc...
 
 image:images/howtos/e2e_gen/image43.png[configure]
 
@@ -398,7 +409,7 @@ export const environment = {
 *Warning*: REMEMBER to set security filed to *csrf* , if it is not configured already.
 
 [arabic]
-Now run the *devon ng serve -o* command to run the Angular Application, from your application folder, as done before.
+Now run the *devon ng serve -o* command to run the Angular Application, from your application folder (_workspaces/main/devon4ng-application-template_), as done before.
 
 image:images/howtos/e2e_gen/image75.png[ng serve command]
 
@@ -411,7 +422,7 @@ http://localhost:4200/login
 image:images/howtos/e2e_gen/image77.png[angular web app]
 
 You can login in the Web Application, with *_admin_* user and password. +
-Obviosuly, the BackEnd part must be online during this test!
+Obviosuly, the BackEnd part must be up & running during this test!
 
 *ANGULAR WebApp DONE*
 
@@ -423,7 +434,20 @@ To generate Ionic structure, download or clone _*devon4ng-application-template*_
 [source, URL]
 https://github.com/devonfw/devon4ng-ionic-application-template
 
-Once downloaded the zip (or cloned) the name of the folder used, must be: _devon4ng-ionic-application-template_
+[arabic]
+IMPORTANT when you download the zip of the source code of your FE application, the name of the app MUST BE *devon4ng-ionic-application-template* and you can extract it in your DevonFW folder, under _workspaces/main_
+
+Once downloaded the APP, you can open the application with your favourite IDE (Intellij, Visual Studio Code, ...) +
+Instead, if you want to open this project with Eclipse, you have to follow these steps: +
+[arabic]
+. Right click on the left part of Eclipse, anch click on "Import":
+image:images/howtos/e2e_gen/image83.png[import]
+. Click on "Projects from Folder or Archive"
+image:images/howtos/e2e_gen/image82.png[import]
+. Select your folder where you have saved the Angular FE Application, under _workspaces/main_. Wait that all the dependecies are charged and then click on "Finish"
+image:images/howtos/e2e_gen/image84.png[import]
+. At the end, you will have a structure like this:
+image:images/howtos/e2e_gen/image86.png[import]
 
 Once done, Right click on the *EmployeeEto* as you already did before in order to use CobiGen.
 Click on the selected options as seen in the screenshot:
@@ -465,14 +489,14 @@ with this line:
 return this.restPath + 'csrf/v1/token/';
 
 [arabic]
-Once checked if all the files are correct, open a CMD devon CLI on the folder of the ionic template application, under your devonFW workspace. +
+Once checked if all the files are correct, open a CMD devon CLI on the folder of the ionic template application (_workspaces/main/devon4ng-ionic-application-template_), under your devonFW workspace. +
 In this folder: +
 Run the command _*devon npm install*_ in the root folder to download the dependecies. +
 Once finished, run the command _*devon ionic serve*_
 
 image:images/howtos/e2e_gen/image49.png[]
 
-Once the execution is successful, you can make the LOGIN with admin/admin and...
+Once the execution is successful, you can make the LOGIN with *admin/admin* and...
 
 image:images/howtos/e2e_gen/image50.png[]
 
