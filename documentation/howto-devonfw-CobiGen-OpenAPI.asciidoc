@@ -369,14 +369,14 @@ After that, if you want to make visible the Employee Grid in you FE application,
 </div>
 
 [arabic]
-Open the command prompt and execute _devon npm install_ from your application folder, which would download all the required libraries.
+Open the command prompt and execute _devon npm install_ from your application folder (_workspaces/main/devon4ng-application-template_), which would download all the required libraries.
 
 [arabic]
 Check the file *environment.ts* if the server path is correct. (for production you will have to change also the environment.prod.ts file)
 
 image:images/howtos/e2e_gen/image42.png[environment]
 
-In order to do that it’s important to look at the application.properties to see the values as PATH, TCP port etc …
+In order to do that, it’s important to look at the application.properties to see the values as PATH, TCP port etc...
 
 image:images/howtos/e2e_gen/image43.png[configure]
 
@@ -393,7 +393,7 @@ export const environment = {
 *Warning*: REMEMBER to set security filed to *csrf* , if it is not configured already.
 
 [arabic]
-Now run the *devon ng serve -o* command to run the Angular Application, from your application folder, as done before.
+Now run the *devon ng serve -o* command to run the Angular Application, from your application folder (_workspaces/main/devon4ng-application-template_), as done before.
 
 image:images/howtos/e2e_gen/image75.png[ng serve command]
 
@@ -406,7 +406,7 @@ http://localhost:4200/login
 image:images/howtos/e2e_gen/image77.png[angular web app]
 
 You can login in the Web Application, with *_admin_* user and password. +
-Obviosuly, the BackEnd part must be online during this test!
+Obviosuly, the BackEnd part must be up & running during this test!
 
 *ANGULAR WebApp DONE*
 
@@ -473,14 +473,14 @@ with this line:
 return this.restPath + 'csrf/v1/token/';
 
 [arabic]
-Once checked if all the files are correct, open a CMD devon CLI on the folder of the ionic template application, under your devonFW workspace. +
+Once checked if all the files are correct, open a CMD devon CLI on the folder of the ionic template application (_workspaces/main/devon4ng-ionic-application-template_), under your devonFW workspace. +
 In this folder: +
 Run the command _*devon npm install*_ in the root folder to download the dependecies. +
 Once finished, run the command _*devon ionic serve*_
 
 image:images/howtos/e2e_gen/image49.png[]
 
-Once the execution is successful, you can make the LOGIN with admin/admin and...
+Once the execution is successful, you can make the LOGIN with *admin/admin* and...
 
 image:images/howtos/e2e_gen/image50.png[]
 
