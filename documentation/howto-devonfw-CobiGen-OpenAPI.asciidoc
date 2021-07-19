@@ -255,7 +255,7 @@ image:images/howtos/e2e_gen/image84.png[import]
 image:images/howtos/e2e_gen/image86.png[import]
 
 [arabic]
-Once done, Right click on the *_devonfw.yml_* (present in the _myapp-core_ module) in order to use CobiGen.
+Once done, right click on the *_devonfw.yml_* (present in the _myapp-core_ module) in order to use CobiGen.
 Click on the selected options as seen in the screenshot:
 
 image:images/howtos/e2e_gen/image37.png[eclipse generate]
