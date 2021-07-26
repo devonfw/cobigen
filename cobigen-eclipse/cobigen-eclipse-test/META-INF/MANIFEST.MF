@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: CobiGen Eclipse Plug-In Tests
 Bundle-SymbolicName: com.devonfw.cobigen.eclipse.test;singleton:=true
 Bundle-Version: 2021.08.002.qualifier
-Bundle-Vendor: Capgemini
+Bundle-Vendor: devonfw
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
