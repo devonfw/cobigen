@@ -1,7 +1,7 @@
 #!/bin/bash
 LIB_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../lib" && pwd )"
 if [ -z "$1" ]; then
-    java -cp "$LIB_DIR/*" com.devonfw.cobigen.cli.CobiGenCLI -help
+    java -cp "$(printf %s: $LIB_DIR/*.jar)" -help
 else
-    java -cp "$LIB_DIR/*" com.devonfw.cobigen.cli.CobiGenCLI "$@"
+    java -cp "$(printf %s: $LIB_DIR/*.jar)" com.devonfw.cobigen.cli.CobiGenCLI "$@"
 fi
