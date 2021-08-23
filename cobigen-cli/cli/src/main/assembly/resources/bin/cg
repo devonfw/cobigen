@@ -1,7 +1,10 @@
 #!/bin/bash
+# -cp "$LIB_DIR/*" is not working, please don't change this back!
+# Check: https://github.com/devonfw/cobigen/issues/1387
+# and https://stackoverflow.com/a/219801
 LIB_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../lib" && pwd )"
 if [ -z "$1" ]; then
-    java -cp "$LIB_DIR/*" com.devonfw.cobigen.cli.CobiGenCLI -help
+    java -cp "$(printf %s: $LIB_DIR/*.jar)" com.devonfw.cobigen.cli.CobiGenCLI -help
 else
-    java -cp "$LIB_DIR/*" com.devonfw.cobigen.cli.CobiGenCLI "$@"
+    java -cp "$(printf %s: $LIB_DIR/*.jar)" com.devonfw.cobigen.cli.CobiGenCLI "$@"
 fi
