@@ -183,7 +183,7 @@ jobs:
       - name: Run Core Systemtest
         shell: bash
         run: |
-          mvn test -f cobigen/cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+          mvn test -f cobigen/cobigen-core-systemtest -Pp2-build -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
   build-and-test-eclipse-plugin:
     needs: build-plugins-p2
