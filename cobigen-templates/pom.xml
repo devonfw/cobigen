@@ -33,7 +33,6 @@
       </resource>
       <resource>
         <directory>src/main/resources</directory>
-        <targetPath>./</targetPath>
       </resource>
     </resources>
     <plugins>
