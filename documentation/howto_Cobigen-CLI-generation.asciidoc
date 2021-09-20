@@ -1,6 +1,8 @@
 :toc:
 toc::[]
 
+= CobiGen CLI
+
 The command line interface (CLI) for CobiGen enables the generation of code using few commands. This feature allows us to decouple CobiGen from Eclipse.
 
 You can check out our interactive katacoda tutorial where you can setup and use the cobigen cli step by step.
