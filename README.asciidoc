@@ -91,4 +91,4 @@ https://github.com/devonfw/cobigen/blob/master/.github/CONTRIBUTING.md[See the c
 
 The source code and maven bundles are released under https://github.com/devonfw/cobigen/blob/master/LICENSE.txt[APL 2.0]
 
-Eclipse bundles are released with respect to https://github.com/devonfw/cobigen/blob/master/cobigen/cobigen-htmlplugin/src/main/resources/META-INF/LICENSEP2BUNDLE.html[it's bundled OSS software licenses]
+Eclipse bundles are released with respect to https://github.com/devonfw/cobigen/blob/master/LICENSE-BUNDLE.txt[it's bundled OSS software licenses]

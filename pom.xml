@@ -10,8 +10,7 @@
   <description>A Code-based incremental Generator</description>
 
   <properties>
-    <!-- Need to remove leading zeros as of https://bugs.eclipse.org/bugs/show_bug.cgi?id=513203 in the last version segment -->
-    <revision>2021.04.001-SNAPSHOT</revision>
+    <revision>2021.08.002-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
@@ -66,7 +65,7 @@
   <licenses>
     <license>
       <name>Apache Software License 2.0</name>
-      <url>https://github.com/devonfw/.github/blob/master/LICENSE</url>
+      <url>https://raw.githubusercontent.com/devonfw/.github/master/LICENSE</url>
       <distribution>repo</distribution>
       <comments/>
     </license>
@@ -250,14 +249,6 @@
           <skip>${skip.deployment}</skip>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>${nexus.staging.maven.plugin.version}</version>
-        <configuration>
-          <skipNexusStagingDeployMojo>${skip.deployment}</skipNexusStagingDeployMojo>
-        </configuration>
-      </plugin>
 
       <!-- Flatten POM -->
       <plugin>
@@ -351,6 +342,7 @@
             <!-- needed to fix javadoc on java 11+ -->
             <source>8</source>
             <quiet>true</quiet>
+            <detectJavaApiLink>false</detectJavaApiLink>
           </configuration>
         </plugin>
         <plugin>
@@ -456,10 +448,52 @@
 
   <profiles>
     <profile>
-      <id>p2-build</id>
+      <id>non-p2-deploy</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>!updatesite.repository</name>
+        </property>
       </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>${nexus.staging.maven.plugin.version}</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+              <autoDropAfterRelease>false</autoDropAfterRelease>
+              <description>Release ${project.groupId}:${project.artifactId}.${project.version}</description>
+              <skipNexusStagingDeployMojo>${skip.deployment}</skipNexusStagingDeployMojo>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>p2-deploy</id>
+      <activation>
+        <property>
+          <name>updatesite.repository</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>p2-build</id>
       <build>
         <plugins>
           <plugin>
@@ -498,34 +532,6 @@
               </execution>
             </executions>
           </plugin>
-          <!-- update site -->
-          <!-- copy to gh-pages folder next to this repository checked out gh-pages branch -->
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-p2-extras-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>mirror-files-build-to-upload-dir</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>mirror</goal>
-                </goals>
-                <configuration>
-                  <skip>${skip.deployment}</skip>
-                  <source>
-                    <repository>
-                      <url>file:///${p2.repository.build.dir.url}</url>
-                      <layout>p2</layout>
-                    </repository>
-                  </source>
-                  <destination>${p2.repository.upload.dir.plugin}</destination>
-                  <xzCompress>false</xzCompress>
-                  <append>true</append>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
@@ -544,11 +550,15 @@
                 </goals>
               </execution>
             </executions>
+            <configuration>
+              <skip>${skip.deployment}</skip>
+            </configuration>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
+              <skip>${skip.deployment}</skip>
               <additionalDependencies>
                 <additionalDependency>
                   <groupId>javax.interceptor</groupId>

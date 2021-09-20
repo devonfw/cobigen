@@ -39,4 +39,47 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>p2-deploy</id>
+      <activation>
+        <property>
+          <name>updatesite.repository</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <!-- update site -->
+          <!-- copy to gh-pages folder next to this repository checked out gh-pages branch -->
+          <plugin>
+            <groupId>org.eclipse.tycho.extras</groupId>
+            <artifactId>tycho-p2-extras-plugin</artifactId>
+            <version>${tycho.version}</version>
+            <executions>
+              <execution>
+                <id>mirror-files-build-to-upload-dir</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>mirror</goal>
+                </goals>
+                <configuration>
+                  <skip>${skip.deployment}</skip>
+                  <source>
+                    <repository>
+                      <url>file:///${p2.repository.build.dir.url}</url>
+                      <layout>p2</layout>
+                    </repository>
+                  </source>
+                  <destination>${p2.repository.upload.dir.plugin}</destination>
+                  <xzCompress>false</xzCompress>
+                  <append>true</append>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

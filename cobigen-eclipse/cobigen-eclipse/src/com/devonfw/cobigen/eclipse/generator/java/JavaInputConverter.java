@@ -62,7 +62,11 @@ public class JavaInputConverter {
                 // Take first input type as precondition for the input is that all input types are part of the
                 // same project
                 try {
-                    IType rootType = ((ICompilationUnit) elem).getTypes()[0];
+                    IType[] types = ((ICompilationUnit) elem).getTypes();
+                    if (types.length < 1) {
+                        throw new GeneratorCreationException("The input does not declare a class");
+                    }
+                    IType rootType = types[0];
                     try {
                         ClassLoader projectClassLoader =
                             ClassLoaderUtil.getProjectClassLoader(rootType.getJavaProject());

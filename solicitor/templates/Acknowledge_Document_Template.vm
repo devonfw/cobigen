@@ -138,6 +138,9 @@ The component(s) (Name/GroupId/Version):
 			#end
 		#end
 		</ul>
+#if ( $nl == "PublicDomain" )
+are at least partly licensed under Public Domain ($nlu)
+#else
 are at least partly licensed via the following license of type $nl:
 </p>
 <p>
@@ -153,6 +156,7 @@ are at least partly licensed via the following license of type $nl:
 		<br/>
 URL(s) leading to the above given license text: $nlu 
 </p>
+#end
 #end
 
 </body>

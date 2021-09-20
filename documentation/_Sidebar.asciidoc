@@ -14,6 +14,7 @@
 * link:howto_create-external-plugin.asciidoc[External plugin creation]
 * link:howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[End to End POC Code generation using Entity class]
 * link:howto-devonfw-CobiGen-OpenAPI.asciidoc[End to End POC Code generation using OpenAPI]
+* link:howto-devonfw-adapt_template.asciidoc[Adapt Template from Cobigen]
 
 === Configuration
 * link:cobigen-core_configuration[CobiGen Configuration]
