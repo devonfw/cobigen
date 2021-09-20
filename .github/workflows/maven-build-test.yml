@@ -231,11 +231,11 @@ jobs:
           java-version: ${{ matrix.javaVersion }}
           settings-path: ${{ github.workspace }}
 
+      # There is no retry for jobs, just for steps, so doing the retry by hand
       - name: Build Plugins
         uses: GabrielBB/xvfb-action@v1.5
         with:
-          run: |
-            mvn install -f cobigen-eclipse -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+          run: mvn install -f cobigen-eclipse -Pp2-build -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsurefire.rerunFailingTestsCount=2 
 
   build-and-test-maven-plugin:
     needs: build-and-test-plugins
