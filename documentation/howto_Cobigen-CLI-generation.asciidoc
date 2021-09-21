@@ -73,7 +73,7 @@ Select the plug-ins which you want to update like below :
 image::images/howtos/CLI/updatePlugin.PNG[Generation path, link="images/howtos/CLI/updatePlugin.PNG"]
 
 == CLI custom templates
-To use custom templates, it's neccessary to set up a custom configuration path as described link:cobigen-core_configuration[here].
+To use custom templates, it's neccessary to set up a custom configuration path as described link:cobigen-core_configuration.asciidoc[here].
 
 == Troubleshooting
 
