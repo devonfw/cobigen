@@ -11,7 +11,7 @@ CobiGen is maintaining a home directory further referenced in this documentation
 The actual configuration of CobiGen is maintained by a single folder or jar. The location can be configured with respect to the implemented configuration fall-back mechanism. CobiGen will search for the location of the configuration in the following order:
 
 1. A configuration jar or directory, which is passed to CobiGen by the Maven or Eclipse integration or any other program using the CobiGen programming interface:
-1.1. the Maven integration allows to configure a jar dependency to be included in the currently running classpath _(of interest for xref:cobigen-maven_configuration#plugin-injection-since-v3[maven configuration]_
+1.1. the Maven integration allows to configure a jar dependency to be included in the currently running classpath _(of interest for link:cobigen-maven_configuration#plugin-injection-since-v3[maven configuration]_
 1.2. the Eclipse integration allows to specify a `CobiGen_Templates` project in the eclipse workspace 
 2. The file `$cghome/.cobigen` exists and the property `templates` is set to a valid configuration (e.g. `templates=C:\project\ide\conf\templates` or `templates=C:\project\ide\conf\templates.jar`) _Hint: Check for log entry like `Value of property templates in $cghome/.cobigen is invalid` to identify an invalid configuration which is not taken up as expected_
 3. The folder `$cghome/templates/CobiGen_Templates` exists
