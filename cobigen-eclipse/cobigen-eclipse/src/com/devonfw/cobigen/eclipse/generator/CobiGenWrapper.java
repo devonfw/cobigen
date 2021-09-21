@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -278,11 +277,13 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
    */
   public ComparableIncrement[] getAllIncrements() {
 
-    LinkedList<ComparableIncrement> result = Lists.newLinkedList();
+    Set<ComparableIncrement> result = Sets.newHashSet();
     List<IncrementTo> matchingIncrements = Lists.newLinkedList();
 
-    for (Object input : getCurrentDistinctInputs()) {
-      matchingIncrements.addAll(this.cobiGen.getMatchingIncrements(input));
+    if (this.inputs != null && this.inputs.size() != 0) {
+      for (Object input : this.cobiGen.resolveContainers(this.inputs.get(0))) {
+        matchingIncrements.addAll(this.cobiGen.getMatchingIncrements(input));
+      }
     }
 
     // convert to comparable increments
@@ -297,7 +298,7 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
     for (TemplateTo t : this.matchingTemplates) {
       all.addTemplate(t);
     }
-    result.push(all);
+    result.add(all);
     ComparableIncrement[] array = result.toArray(new ComparableIncrement[0]);
     Arrays.sort(array);
     LOG.debug("Available Increments: {}", result);
@@ -464,9 +465,10 @@ public abstract class CobiGenWrapper extends AbstractCobiGenWrapper {
   public <T extends IncrementTo> Map<String, Set<TemplateTo>> getTemplateDestinationPaths(Collection<T> increments) {
 
     Map<String, Set<TemplateTo>> result = Maps.newHashMap();
-
-    for (Object input : getCurrentDistinctInputs()) {
-      MapUtils.deepMapAddAll(result, getTemplateDestinationPaths(increments, input));
+    if (this.inputs != null && this.inputs.size() != 0) {
+      for (Object input : this.cobiGen.resolveContainers(this.inputs.get(0))) {
+        MapUtils.deepMapAddAll(result, getTemplateDestinationPaths(increments, input));
+      }
     }
     return result;
   }
