@@ -1,9 +1,9 @@
 :toc:
 toc::[]
 
-= Cobigen Command line Interface generation
+= CobiGen CLI
 
-Our new command line interface (CLI) for CobiGen enables the generation of code using few commands. This feature allows us to decouple CobiGen from Eclipse.
+The command line interface (CLI) for CobiGen enables the generation of code using few commands. This feature allows us to decouple CobiGen from Eclipse.
 
 You can check out our interactive katacoda tutorial where you can setup and use the cobigen cli step by step.
 
@@ -73,13 +73,7 @@ Select the plug-ins which you want to update like below :
 image::images/howtos/CLI/updatePlugin.PNG[Generation path, link="images/howtos/CLI/updatePlugin.PNG"]
 
 == CLI custom templates
-To use custom templates, it's neccessary to set up a configuration file .cobigen. This file should be put in either cobigen home (user-dir/.cobigen/) or the environment parameter **COBIGEN_CONFIG_DIR** should be pointed to the directory where the file is located
-
-Example
-.cobigen
-----
-cobigen.templates.templates_location=path\\to\\custom\\CobiGen_Templates
-----
+To use custom templates, it's neccessary to set up a custom configuration path as described link:cobigen-core_configuration.asciidoc[here].
 
 == Troubleshooting
 
