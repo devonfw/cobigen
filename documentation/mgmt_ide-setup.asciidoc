@@ -6,26 +6,19 @@ toc::[]
 
 == General Installation Process
 
-First of all you will have to https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[download the devonfw ide].
-Follow the steps 4.2.1 to 4.2.3. 
-
-Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL.
-You can just press enter as no special settings are used.
-Following that, you will simply have to wait and follow any instructions given.
-
+1. First of all you will have to https://devonfw.com/website/pages/docs/setup.asciidoc.html[setup the devonfw ide]. Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL. You can just press enter as no special settings are used. Following that, you will simply have to wait and follow any instructions given.
++
 After you have executed the steps mentioned above, your install location should look like the picture below.
-
++
 image::images/howtos/ide-setup/File_Structure.png[Install directory after executing setup.bat]
-
-The next step is to open a console and execute the following command: `+devon project setup cobigen+`
-This downloads all the necessary files for Cobigen development.
-
-Build the project by running the build.sh located in the workspaces/main/cobigen folder.
-
-Now you can open eclipse using the eclipse-main.bat file and import the Cobigen projects you want to work on by clicking File->import...->Maven->Existing Maven Project and entering {Install directory}/workspaces/main/cobigen (Should be the default location when clicking on "Browse...")
++
+2. As devonfw ide by default does not install eclipse anymore, we need to setup eclipse first by executing `devon eclipse`
+3. The next step is to open a console and execute the following command: `+devon project setup cobigen+`
+This downloads all the necessary files for Cobigen development. Build the project by running the build.sh located in the workspaces/main/cobigen folder within git bash.
+4. Optional: If you are making use of SSH private key authentication working with Git on GitHub, you can change the https default setup git remote url by executing `git remote set-url origin git@github.com:devonfw/cobigen.git` (possibly with `git@github.com:<your user>/cobigen.git` in case you want to work on your fork)
+5. Now you can open eclipse using the eclipse-main.bat file or by executing `devon eclipse` on the console and import the CobiGen projects you want to work on by clicking File->import...->Maven->Existing Maven Project and entering {Install directory}/workspaces/main/cobigen (Should be the default location when clicking on "Browse...")
 We recommend to use the Project Explorer instead of the Package Explorer.
-
-After you have have finished your installation run a maven update. To do so right click on a project select maven and afterwards update project. Select all projects and the checkbox Force Update of Snapshot/Releases.
+6. After you have have finished your installation run a maven update. To do so right click on a project select maven and afterwards update project. Select all projects and the checkbox Force Update of Snapshot/Releases.
 You might be asked to install some Tycho-plugins. You need those, if you want to debug eclipse-plugins. 	
 
 == Eclipse Plugin Installation
