@@ -1,5 +1,12 @@
 package com.devonfw.cobigen.eclipse.test.common.swtbot;
 
+import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
+import org.eclipse.swtbot.swt.finder.finders.UIThreadRunnable;
+import org.eclipse.swtbot.swt.finder.results.BoolResult;
+import org.eclipse.swtbot.swt.finder.utils.internal.Assert;
+import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
+
 /**
  * Checks whether any shell with one of the given dialog titles is displayed and having focus.
  */
@@ -31,7 +38,7 @@ public class AnyShellIsActive extends DefaultCondition {
 
     for (String title : this.titles) {
       try {
-        final SWTBotShell shell = bot.shell(title);
+        final SWTBotShell shell = this.bot.shell(title);
         return UIThreadRunnable.syncExec(new BoolResult() {
           @Override
           public Boolean run() {

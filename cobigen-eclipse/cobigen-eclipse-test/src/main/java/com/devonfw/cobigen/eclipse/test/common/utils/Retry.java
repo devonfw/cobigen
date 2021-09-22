@@ -3,6 +3,7 @@ package com.devonfw.cobigen.eclipse.test.common.utils;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

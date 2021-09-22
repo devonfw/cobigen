@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src/main/java/">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/assertj-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/checker-qual.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang3.jar"/>
@@ -23,12 +30,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/system-lambda.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlunit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/zt-exec.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" path="src/main/java/">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="eclipse-target/classes"/>
 </classpath>

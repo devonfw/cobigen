@@ -1,6 +1,9 @@
 package com.devonfw.cobigen.eclipse.test.common.swtbot;
 
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
+import org.eclipse.swtbot.swt.finder.waits.ICondition;
 
 /**
  * Condition for {@link SWTBot#waitUntil(ICondition)} to wait until a Java project has been built.

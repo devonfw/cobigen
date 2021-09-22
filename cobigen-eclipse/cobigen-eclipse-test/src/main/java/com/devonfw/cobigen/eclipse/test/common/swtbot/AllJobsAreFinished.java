@@ -1,6 +1,10 @@
 package com.devonfw.cobigen.eclipse.test.common.swtbot;
 
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
+import org.eclipse.swtbot.swt.finder.waits.ICondition;
+
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 
 /**
