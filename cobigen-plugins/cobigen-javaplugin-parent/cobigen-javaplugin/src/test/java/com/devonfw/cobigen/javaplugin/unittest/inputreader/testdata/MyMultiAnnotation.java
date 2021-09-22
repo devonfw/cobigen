@@ -9,11 +9,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MyMultiAnnotation {
 
-    public Type[] value();
+  public Type[] value();
 
-    public @interface Type {
-        public Class<?> value();
+  public @interface Type {
+    public Class<?> value();
 
-        public String name();
-    }
+    public String name();
+  }
 }

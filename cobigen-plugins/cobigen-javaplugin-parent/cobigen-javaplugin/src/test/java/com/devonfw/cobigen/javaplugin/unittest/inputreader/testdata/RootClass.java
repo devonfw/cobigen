@@ -6,27 +6,30 @@ package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
  */
 public class RootClass extends SuperClass1 {
 
-    private int integer;
+  private int integer;
 
-    private String value;
+  private String value;
 
-    /**
-     * Returns the field 'value'
-     * @return value of value
-     * @author mbrunnli (14.11.2014)
-     */
-    public String getValue() {
-        return value;
-    }
+  /**
+   * Returns the field 'value'
+   *
+   * @return value of value
+   * @author mbrunnli (14.11.2014)
+   */
+  public String getValue() {
 
-    /**
-     * Sets the field 'value'.
-     * @param value
-     *            new value of value
-     * @author mbrunnli (14.11.2014)
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+    return this.value;
+  }
+
+  /**
+   * Sets the field 'value'.
+   *
+   * @param value new value of value
+   * @author mbrunnli (14.11.2014)
+   */
+  public void setValue(String value) {
+
+    this.value = value;
+  }
 
 }

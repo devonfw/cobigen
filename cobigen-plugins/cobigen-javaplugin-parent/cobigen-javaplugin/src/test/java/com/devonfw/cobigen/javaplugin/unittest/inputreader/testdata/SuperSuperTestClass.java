@@ -5,29 +5,29 @@ import java.lang.annotation.RetentionPolicy;
 
 public class SuperSuperTestClass {
 
-    /**
-     * Example JavaDoc
-     */
-    @MySuperSuperTypeFieldAnnotation(b = (byte) 0, s = (short) 1, i = 2, l = 3, f = 4, d = 5, c = 'c', bool = true,
-        str = "TestString")
-    private String superSuperString;
+  /**
+   * Example JavaDoc
+   */
+  @MySuperSuperTypeFieldAnnotation(b = (byte) 0, s = (short) 1, i = 2, l = 3, f = 4, d = 5, c = 'c', bool = true, str = "TestString")
+  private String superSuperString;
 
-    @MySuperSuperTypeGetterAnnotation
-    public String getSuperSuperString() {
+  @MySuperSuperTypeGetterAnnotation
+  public String getSuperSuperString() {
 
-        return superSuperString;
-    }
+    return this.superSuperString;
+  }
 
-    @MySuperSuperTypeIsAnnotation
-    public String isSuperSuperString() {
-        return superSuperString;
-    }
+  @MySuperSuperTypeIsAnnotation
+  public String isSuperSuperString() {
 
-    @MySuperSuperTypeSetterAnnotation
-    public void setSuperSuperString(String superSuperString) {
+    return this.superSuperString;
+  }
 
-        this.superSuperString = superSuperString;
-    }
+  @MySuperSuperTypeSetterAnnotation
+  public void setSuperSuperString(String superSuperString) {
+
+    this.superSuperString = superSuperString;
+  }
 
 }
 

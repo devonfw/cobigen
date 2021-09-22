@@ -12,30 +12,34 @@ import com.devonfw.cobigen.javaplugin.matcher.JavaMatcher;
 @ReaderPriority(Priority.LOW)
 public class JavaTriggerInterpreter implements TriggerInterpreter {
 
-    /** {@link TriggerInterpreter} type to be registered */
-    public String type;
+  /** {@link TriggerInterpreter} type to be registered */
+  public String type;
 
-    /**
-     * Creates a new Java Interpreter
-     * @param type
-     *            to be registered
-     */
-    public JavaTriggerInterpreter(String type) {
-        this.type = type;
-    }
+  /**
+   * Creates a new Java Interpreter
+   *
+   * @param type to be registered
+   */
+  public JavaTriggerInterpreter(String type) {
 
-    @Override
-    public String getType() {
-        return type;
-    }
+    this.type = type;
+  }
 
-    @Override
-    public InputReader getInputReader() {
-        return new JavaInputReader();
-    }
+  @Override
+  public String getType() {
 
-    @Override
-    public MatcherInterpreter getMatcher() {
-        return new JavaMatcher();
-    }
+    return this.type;
+  }
+
+  @Override
+  public InputReader getInputReader() {
+
+    return new JavaInputReader();
+  }
+
+  @Override
+  public MatcherInterpreter getMatcher() {
+
+    return new JavaMatcher();
+  }
 }

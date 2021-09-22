@@ -28,86 +28,85 @@ import com.devonfw.cobigen.eclipse.wizard.generate.GenerateWizard;
  */
 public class GenerateJob implements IRunnableWithProgress {
 
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateJob.class);
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(GenerateJob.class);
 
-    /** Execution Event */
-    private ExecutionEvent event;
+  /** Execution Event */
+  private ExecutionEvent event;
 
-    /** Selection with which the generation has been triggered */
-    private ISelection selection;
+  /** Selection with which the generation has been triggered */
+  private ISelection selection;
 
-    /** Correlation ID */
-    private String correlationId;
+  /** Correlation ID */
+  private String correlationId;
 
-    /**
-     * Create new Job to start generation
-     * @param event
-     *            the handler event executing this job
-     * @param selection
-     *            Selection with which the generation has been triggered
-     * @param correlationId
-     *            the correlation ID starting this event
-     */
-    public GenerateJob(ExecutionEvent event, ISelection selection, String correlationId) {
-        this.event = event;
-        this.selection = selection;
-        this.correlationId = correlationId;
-    }
+  /**
+   * Create new Job to start generation
+   *
+   * @param event the handler event executing this job
+   * @param selection Selection with which the generation has been triggered
+   * @param correlationId the correlation ID starting this event
+   */
+  public GenerateJob(ExecutionEvent event, ISelection selection, String correlationId) {
 
-    @Override
-    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, correlationId);
+    this.event = event;
+    this.selection = selection;
+    this.correlationId = correlationId;
+  }
 
-        // when this handler is executed, we should we should be sure, that the selection is currently
-        // supported by the following implementation
+  @Override
+  public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 
-        try {
-            LOG.info("Initiating CobiGen...");
-            monitor.beginTask("Initiating CobiGen...", 1);
-            CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(selection, monitor);
-            monitor.worked(1);
-            if (generator == null) {
-                LOG.error("Invalid selection. No CobiGen instance created. Exiting generate command.");
-                PlatformUIUtil.openErrorDialog("The current selection is currently not supported as valid input.",
-                    null);
-                return;
-            }
+    MDC.put(InfrastructureConstants.CORRELATION_ID, this.correlationId);
 
-            monitor.beginTask("Searching valid triggers...", 1);
-            if (!generator.isValidInput(monitor)) {
-                LOG.info("No matching Trigger. Exiting generate command.");
-                PlatformUIUtil.getWorkbench().getDisplay().syncExec(
-                    () -> MessageDialog.openInformation(HandlerUtil.getActiveShell(event), "No matching Trigger!",
-                        "Your current selection is not valid as input for any generation purpose. "
-                            + "Please find the specification of valid inputs in the context configuration ('"
-                            + ResourceConstants.CONFIG_PROJECT_NAME + "/context.xml')."));
-                return;
-            }
-            monitor.worked(1);
+    // when this handler is executed, we should we should be sure, that the selection is currently
+    // supported by the following implementation
 
-            PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
-                if (!generator.isSingleNonContainerInput()) {
-                    LOG.info("Open Generate Wizard (Batchmode) ...");
-                    WizardDialog wiz = new WizardDialog(HandlerUtil.getActiveShell(event),
-                        new GenerateBatchWizard(generator, monitor));
-                    wiz.setPageSize(new Point(800, 500));
-                    wiz.open();
-                    LOG.debug("Generate Wizard (Batchmode) opened.");
-                } else {
-                    LOG.info("Open Generate Wizard ...");
-                    WizardDialog wiz =
-                        new WizardDialog(HandlerUtil.getActiveShell(event), new GenerateWizard(generator, monitor));
-                    wiz.setPageSize(new Point(800, 500));
-                    wiz.open();
-                    LOG.debug("Generate Wizard opened.");
-                }
-            });
-        } catch (Throwable e) {
-            ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
+    try {
+      LOG.info("Initiating CobiGen...");
+      monitor.beginTask("Initiating CobiGen...", 1);
+      CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(this.selection, monitor);
+      monitor.worked(1);
+      if (generator == null) {
+        LOG.error("Invalid selection. No CobiGen instance created. Exiting generate command.");
+        PlatformUIUtil.openErrorDialog("The current selection is currently not supported as valid input.", null);
+        return;
+      }
+
+      monitor.beginTask("Searching valid triggers...", 1);
+      if (!generator.isValidInput(monitor)) {
+        LOG.info("No matching Trigger. Exiting generate command.");
+        PlatformUIUtil.getWorkbench().getDisplay()
+            .syncExec(() -> MessageDialog.openInformation(HandlerUtil.getActiveShell(this.event), "No matching Trigger!",
+                "Your current selection is not valid as input for any generation purpose. "
+                    + "Please find the specification of valid inputs in the context configuration ('"
+                    + ResourceConstants.CONFIG_PROJECT_NAME + "/context.xml')."));
+        return;
+      }
+      monitor.worked(1);
+
+      PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
+        if (!generator.isSingleNonContainerInput()) {
+          LOG.info("Open Generate Wizard (Batchmode) ...");
+          WizardDialog wiz = new WizardDialog(HandlerUtil.getActiveShell(this.event),
+              new GenerateBatchWizard(generator, monitor));
+          wiz.setPageSize(new Point(800, 500));
+          wiz.open();
+          LOG.debug("Generate Wizard (Batchmode) opened.");
+        } else {
+          LOG.info("Open Generate Wizard ...");
+          WizardDialog wiz = new WizardDialog(HandlerUtil.getActiveShell(this.event),
+              new GenerateWizard(generator, monitor));
+          wiz.setPageSize(new Point(800, 500));
+          wiz.open();
+          LOG.debug("Generate Wizard opened.");
         }
-
-        MDC.remove(InfrastructureConstants.CORRELATION_ID);
+      });
+    } catch (Throwable e) {
+      ExceptionHandler.handle(e, HandlerUtil.getActiveShell(this.event));
     }
+
+    MDC.remove(InfrastructureConstants.CORRELATION_ID);
+  }
 
 }

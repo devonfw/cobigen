@@ -8,32 +8,38 @@ import java.util.List;
  */
 @SuppressWarnings("javadoc")
 public class HeaderDef {
-    List<ServerDef> servers;
+  List<ServerDef> servers;
 
-    InfoDef info;
+  InfoDef info;
 
-    public List<ServerDef> getServers() {
-        return servers;
-    }
+  public List<ServerDef> getServers() {
 
-    public void setServers(List<ServerDef> servers) {
-        this.servers = servers;
-    }
+    return this.servers;
+  }
 
-    public InfoDef getInfo() {
-        return info;
-    }
+  public void setServers(List<ServerDef> servers) {
 
-    public void setInfo(InfoDef info) {
-        this.info = info;
-    }
+    this.servers = servers;
+  }
 
-    public HeaderDef() {
-        servers = new LinkedList<>();
-    }
+  public InfoDef getInfo() {
 
-    @Override
-    public String toString() {
-        return info.getTitle() + "  " + info.getDescription();
-    }
+    return this.info;
+  }
+
+  public void setInfo(InfoDef info) {
+
+    this.info = info;
+  }
+
+  public HeaderDef() {
+
+    this.servers = new LinkedList<>();
+  }
+
+  @Override
+  public String toString() {
+
+    return this.info.getTitle() + "  " + this.info.getDescription();
+  }
 }

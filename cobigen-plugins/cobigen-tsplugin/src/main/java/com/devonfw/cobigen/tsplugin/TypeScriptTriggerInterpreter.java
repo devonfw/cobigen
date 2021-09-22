@@ -15,39 +15,42 @@ import com.devonfw.cobigen.tsplugin.matcher.TypeScriptMatcher;
 @ReaderPriority(Priority.LOW)
 public class TypeScriptTriggerInterpreter implements TriggerInterpreter {
 
-    /**
-     * {@link TriggerInterpreter} type to be registered
-     */
-    private String type;
+  /**
+   * {@link TriggerInterpreter} type to be registered
+   */
+  private String type;
 
-    /** The external process for the plugin */
-    private ExternalProcess externalProcess;
+  /** The external process for the plugin */
+  private ExternalProcess externalProcess;
 
-    /**
-     * Creates a new Swagger Interpreter
-     * @param externalProcess
-     *            the external process instance for this plugin
-     * @param type
-     *            to be registered
-     */
-    public TypeScriptTriggerInterpreter(ExternalProcess externalProcess, String type) {
-        this.externalProcess = externalProcess;
-        this.type = type;
-    }
+  /**
+   * Creates a new Swagger Interpreter
+   *
+   * @param externalProcess the external process instance for this plugin
+   * @param type to be registered
+   */
+  public TypeScriptTriggerInterpreter(ExternalProcess externalProcess, String type) {
 
-    @Override
-    public String getType() {
-        return type;
-    }
+    this.externalProcess = externalProcess;
+    this.type = type;
+  }
 
-    @Override
-    public InputReader getInputReader() {
-        return new TypeScriptInputReader(externalProcess);
-    }
+  @Override
+  public String getType() {
 
-    @Override
-    public MatcherInterpreter getMatcher() {
-        return new TypeScriptMatcher();
-    }
+    return this.type;
+  }
+
+  @Override
+  public InputReader getInputReader() {
+
+    return new TypeScriptInputReader(this.externalProcess);
+  }
+
+  @Override
+  public MatcherInterpreter getMatcher() {
+
+    return new TypeScriptMatcher();
+  }
 
 }

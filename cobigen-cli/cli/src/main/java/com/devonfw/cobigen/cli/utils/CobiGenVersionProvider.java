@@ -18,51 +18,52 @@ import picocli.CommandLine.IVersionProvider;
  */
 public class CobiGenVersionProvider implements IVersionProvider {
 
-    @Override
-    public String[] getVersion() throws Exception {
-        Model model = null;
-        List<String> versionProvider = new ArrayList<>();
-        MavenXpp3Reader reader = new MavenXpp3Reader();
+  @Override
+  public String[] getVersion() throws Exception {
 
-        File pomFile = CobiGenUtils.extractArtificialPom();
+    Model model = null;
+    List<String> versionProvider = new ArrayList<>();
+    MavenXpp3Reader reader = new MavenXpp3Reader();
 
-        if (pomFile.exists()) {
-            try (FileReader pomReader = new FileReader(pomFile)) {
-                model = reader.read(pomReader);
-                versionProvider.add("CobiGen CLI " + model.getVersion());
-                versionProvider.add("");
-            }
-        } else {
-            versionProvider.add("Error while retrieving CLI version. Pom.xml was not found on your PC. This is a bug");
-            return versionProvider.toArray(new String[versionProvider.size()]);
-        }
+    File pomFile = CobiGenUtils.extractArtificialPom();
 
-        List<Dependency> modelDependencies = model.getDependencies();
-
-        for (int i = 0; i < modelDependencies.size(); i++) {
-            String artifactId = modelDependencies.get(i).getArtifactId();
-            String version = modelDependencies.get(i).getVersion();
-
-            if (dependencyShouldBePrinted(modelDependencies.get(i).getGroupId())) {
-                versionProvider.add("Plugin: " + artifactId + " " + version);
-            }
-        }
-        return versionProvider.toArray(new String[versionProvider.size()]);
+    if (pomFile.exists()) {
+      try (FileReader pomReader = new FileReader(pomFile)) {
+        model = reader.read(pomReader);
+        versionProvider.add("CobiGen CLI " + model.getVersion());
+        versionProvider.add("");
+      }
+    } else {
+      versionProvider.add("Error while retrieving CLI version. Pom.xml was not found on your PC. This is a bug");
+      return versionProvider.toArray(new String[versionProvider.size()]);
     }
 
-    /**
-     * This method checks which artifacts are related to CobiGen. If so, returns true. This is useful for just
-     * printing CobiGen related plug-ins to user
-     * @param groupId
-     *            group id to check whether it is CobiGen related
-     * @return true if group id is related to CobiGen
-     *
-     */
-    private Boolean dependencyShouldBePrinted(String groupId) {
+    List<Dependency> modelDependencies = model.getDependencies();
 
-        if (MavenMetadata.GROUPID.equals(groupId)) {
-            return true;
-        }
-        return false;
+    for (int i = 0; i < modelDependencies.size(); i++) {
+      String artifactId = modelDependencies.get(i).getArtifactId();
+      String version = modelDependencies.get(i).getVersion();
+
+      if (dependencyShouldBePrinted(modelDependencies.get(i).getGroupId())) {
+        versionProvider.add("Plugin: " + artifactId + " " + version);
+      }
     }
+    return versionProvider.toArray(new String[versionProvider.size()]);
+  }
+
+  /**
+   * This method checks which artifacts are related to CobiGen. If so, returns true. This is useful for just printing
+   * CobiGen related plug-ins to user
+   *
+   * @param groupId group id to check whether it is CobiGen related
+   * @return true if group id is related to CobiGen
+   *
+   */
+  private Boolean dependencyShouldBePrinted(String groupId) {
+
+    if (MavenMetadata.GROUPID.equals(groupId)) {
+      return true;
+    }
+    return false;
+  }
 }

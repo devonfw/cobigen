@@ -10,11 +10,11 @@ import org.junit.rules.TemporaryFolder;
  */
 public abstract class AbstractIntegrationTest {
 
-    /** Test configuration to CobiGen */
-    protected File cobigenConfigFolder = new File("src/test/resources/testdata/integrationtest/templates");
+  /** Test configuration to CobiGen */
+  protected File cobigenConfigFolder = new File("src/test/resources/testdata/integrationtest/templates");
 
-    /** Temporary folder interface */
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
+  /** Temporary folder interface */
+  @Rule
+  public TemporaryFolder tmpFolder = new TemporaryFolder();
 
 }

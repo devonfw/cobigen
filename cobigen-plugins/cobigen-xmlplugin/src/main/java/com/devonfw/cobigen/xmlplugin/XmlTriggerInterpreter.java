@@ -14,36 +14,39 @@ import com.devonfw.cobigen.xmlplugin.matcher.XmlMatcher;
 @ReaderPriority(Priority.LOW)
 public class XmlTriggerInterpreter implements TriggerInterpreter {
 
-    /**
-     * {@link TriggerInterpreter} type to be registered
-     */
-    public String type;
+  /**
+   * {@link TriggerInterpreter} type to be registered
+   */
+  public String type;
 
-    /**
-     * creates a new {@link XmlTriggerInterpreter}
-     *
-     * @param type
-     *            to be registered
-     * @author fkreis (18.11.2014)
-     */
-    public XmlTriggerInterpreter(String type) {
-        super();
-        this.type = type;
-    }
+  /**
+   * creates a new {@link XmlTriggerInterpreter}
+   *
+   * @param type to be registered
+   * @author fkreis (18.11.2014)
+   */
+  public XmlTriggerInterpreter(String type) {
 
-    @Override
-    public String getType() {
-        return type;
-    }
+    super();
+    this.type = type;
+  }
 
-    @Override
-    public InputReader getInputReader() {
-        return new XmlInputReader();
-    }
+  @Override
+  public String getType() {
 
-    @Override
-    public MatcherInterpreter getMatcher() {
-        return new XmlMatcher();
-    }
+    return this.type;
+  }
+
+  @Override
+  public InputReader getInputReader() {
+
+    return new XmlInputReader();
+  }
+
+  @Override
+  public MatcherInterpreter getMatcher() {
+
+    return new XmlMatcher();
+  }
 
 }

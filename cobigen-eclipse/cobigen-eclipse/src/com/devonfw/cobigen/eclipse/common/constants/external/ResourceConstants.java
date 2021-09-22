@@ -5,9 +5,9 @@ package com.devonfw.cobigen.eclipse.common.constants.external;
  */
 public class ResourceConstants {
 
-    /**
-     * Generator Configuration Project Name
-     */
-    public static final String CONFIG_PROJECT_NAME = "CobiGen_Templates";
+  /**
+   * Generator Configuration Project Name
+   */
+  public static final String CONFIG_PROJECT_NAME = "CobiGen_Templates";
 
 }

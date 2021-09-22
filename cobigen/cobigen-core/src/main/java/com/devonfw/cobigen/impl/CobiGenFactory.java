@@ -28,83 +28,83 @@ import com.devonfw.cobigen.impl.util.ExtractTemplatesUtil;
  */
 public class CobiGenFactory {
 
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(CobiGenFactory.class);
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(CobiGenFactory.class);
 
-    /**
-     * Creates a new {@link CobiGen} while searching a valid configuration at the given classpath
-     *
-     * @param classloader
-     *            a classloader which should contain
-     * @return a new instance of {@link CobiGen}
-     * @throws InvalidConfigurationException
-     *             if the context configuration could not be found and read properly.
-     */
-    public static CobiGen create(ClassLoader classloader) throws InvalidConfigurationException {
-        Objects.requireNonNull(classloader, "The classloader cannot not be null.");
+  /**
+   * Creates a new {@link CobiGen} while searching a valid configuration at the given classpath
+   *
+   * @param classloader a classloader which should contain
+   * @return a new instance of {@link CobiGen}
+   * @throws InvalidConfigurationException if the context configuration could not be found and read properly.
+   */
+  public static CobiGen create(ClassLoader classloader) throws InvalidConfigurationException {
 
-        URL contextConfigurationLocation = ConfigurationClassLoaderUtil.getContextConfiguration(classloader);
-        URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
-        LOG.debug("Reading configuration from file " + configFile.toString());
-        return create(configFile);
+    Objects.requireNonNull(classloader, "The classloader cannot not be null.");
+
+    URL contextConfigurationLocation = ConfigurationClassLoaderUtil.getContextConfiguration(classloader);
+    URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
+    LOG.debug("Reading configuration from file " + configFile.toString());
+    return create(configFile);
+  }
+
+  /**
+   * Creates a new {@link CobiGen} while searching a valid configuration at the given path
+   *
+   * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
+   * @return a new instance of {@link CobiGen}
+   * @throws InvalidConfigurationException if the context configuration could not be read properly.
+   */
+  public static CobiGen create(URI configFileOrFolder) throws InvalidConfigurationException {
+
+    Objects.requireNonNull(configFileOrFolder, "The URI pointing to the configuration could not be null.");
+
+    ConfigurationHolder configurationHolder = new ConfigurationHolder(configFileOrFolder);
+    BeanFactory beanFactory = new BeanFactory();
+    beanFactory.addManuallyInitializedBean(configurationHolder);
+    CobiGen createBean = beanFactory.createBean(CobiGen.class);
+    // Notifies all plugins of new template root path
+    PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
+    return createBean;
+  }
+
+  /**
+   * Creates a new {@link CobiGen}
+   *
+   * @return a new instance of {@link CobiGen}
+   * @throws InvalidConfigurationException if the context configuration could not be read properly.
+   */
+  public static CobiGen create() throws InvalidConfigurationException {
+
+    URI configFileOrFolder = ConfigurationFinder.findTemplatesLocation();
+    if (configFileOrFolder == null) {
+      throw new InvalidConfigurationException(
+          "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
     }
+    return create(configFileOrFolder);
+  }
 
-    /**
-     * Creates a new {@link CobiGen} while searching a valid configuration at the given path
-     *
-     * @param configFileOrFolder
-     *            the root folder containing the context.xml and all templates, configurations etc.
-     * @return a new instance of {@link CobiGen}
-     * @throws InvalidConfigurationException
-     *             if the context configuration could not be read properly.
-     */
-    public static CobiGen create(URI configFileOrFolder) throws InvalidConfigurationException {
-        Objects.requireNonNull(configFileOrFolder, "The URI pointing to the configuration could not be null.");
+  /**
+   * Extracts templates project to the given path
+   *
+   * @return path to have the templates extracted
+   * @throws DirectoryNotEmptyException if the directory is not empty
+   */
+  public static Path extractTemplates() throws DirectoryNotEmptyException {
 
-        ConfigurationHolder configurationHolder = new ConfigurationHolder(configFileOrFolder);
-        BeanFactory beanFactory = new BeanFactory();
-        beanFactory.addManuallyInitializedBean(configurationHolder);
-        CobiGen createBean = beanFactory.createBean(CobiGen.class);
-        // Notifies all plugins of new template root path
-        PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
-        return createBean;
-    }
+    Path templatesLocation = CobiGenPaths.getTemplatesFolderPath();
+    ExtractTemplatesUtil.extractTemplates(templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES), false);
+    return templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+  }
 
-    /**
-     * Creates a new {@link CobiGen}
-     *
-     * @return a new instance of {@link CobiGen}
-     * @throws InvalidConfigurationException
-     *             if the context configuration could not be read properly.
-     */
-    public static CobiGen create() throws InvalidConfigurationException {
-        URI configFileOrFolder = ConfigurationFinder.findTemplatesLocation();
-        if (configFileOrFolder == null) {
-            throw new InvalidConfigurationException(
-                "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
-        }
-        return create(configFileOrFolder);
-    }
+  /**
+   * Creates a new {@link HealthCheck}.
+   *
+   * @return a new {@link HealthCheck} instance
+   */
+  public static HealthCheck createHealthCheck() {
 
-    /**
-     * Extracts templates project to the given path
-     * @return path to have the templates extracted
-     * @throws DirectoryNotEmptyException
-     *             if the directory is not empty
-     */
-    public static Path extractTemplates() throws DirectoryNotEmptyException {
-        Path templatesLocation = CobiGenPaths.getTemplatesFolderPath();
-        ExtractTemplatesUtil.extractTemplates(templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES),
-            false);
-        return templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-    }
-
-    /**
-     * Creates a new {@link HealthCheck}.
-     * @return a new {@link HealthCheck} instance
-     */
-    public static HealthCheck createHealthCheck() {
-        return ProxyFactory.getProxy(new HealthCheckImpl());
-    }
+    return ProxyFactory.getProxy(new HealthCheckImpl());
+  }
 
 }

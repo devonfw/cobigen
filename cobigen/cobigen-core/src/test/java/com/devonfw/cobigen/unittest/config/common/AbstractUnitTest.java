@@ -8,7 +8,7 @@ import com.devonfw.cobigen.stubs.TemplateEngineStub;
  */
 public abstract class AbstractUnitTest {
 
-    static {
-        TemplateEngineRegistry.register(TemplateEngineStub.class, "FreeMarker");
-    }
+  static {
+    TemplateEngineRegistry.register(TemplateEngineStub.class, "FreeMarker");
+  }
 }

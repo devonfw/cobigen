@@ -6,38 +6,40 @@ import java.util.List;
 
 public class TestClass extends AbstractTestClass implements TestInterface1, TestInterface2 {
 
-    /**
-     * Example JavaDoc
-     */
-    @MyFieldAnnotation(b = (byte) 0, s = (short) 1, i = 2, l = 3, f = 4, d = 5, c = 'c', bool = true,
-        str = "TestString")
-    private List<String> customList;
+  /**
+   * Example JavaDoc
+   */
+  @MyFieldAnnotation(b = (byte) 0, s = (short) 1, i = 2, l = 3, f = 4, d = 5, c = 'c', bool = true, str = "TestString")
+  private List<String> customList;
 
-    @MyGetterAnnotation
-    public List<String> getCustomList() {
+  @MyGetterAnnotation
+  public List<String> getCustomList() {
 
-        return customList;
-    }
+    return this.customList;
+  }
 
-    @MyIsAnnotation
-    public boolean isCustomList() {
-        return false;
-    }
+  @MyIsAnnotation
+  public boolean isCustomList() {
 
-    @MySetterAnnotation
-    public void setCustomList(List<String> customList) {
+    return false;
+  }
 
-        this.customList = customList;
-    }
+  @MySetterAnnotation
+  public void setCustomList(List<String> customList) {
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (25.09.2014)
-     */
-    @Override
-    public void interface1Method() {
-        return;
-    }
+    this.customList = customList;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @author fkreis (25.09.2014)
+   */
+  @Override
+  public void interface1Method() {
+
+    return;
+  }
 
 }
 

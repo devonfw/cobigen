@@ -8,110 +8,131 @@ import java.util.List;
 @SuppressWarnings("javadoc")
 public class ResponseDef {
 
-    private boolean isArray;
+  private boolean isArray;
 
-    private boolean isPaginated;
+  private boolean isPaginated;
 
-    private boolean isEntity;
+  private boolean isEntity;
 
-    private boolean isVoid;
+  private boolean isVoid;
 
-    private String type;
+  private String type;
 
-    private String format;
+  private String format;
 
-    private String code;
+  private String code;
 
-    private List<String> mediaTypes;
+  private List<String> mediaTypes;
 
-    private String description;
+  private String description;
 
-    private EntityDef entityRef;
+  private EntityDef entityRef;
 
-    public EntityDef getEntityRef() {
-        return entityRef;
-    }
+  public EntityDef getEntityRef() {
 
-    public void setEntityRef(EntityDef entityRef) {
-        this.entityRef = entityRef;
-    }
+    return this.entityRef;
+  }
 
-    public ResponseDef() {
-        isArray = false;
-        isPaginated = false;
-        isVoid = false;
-        isEntity = false;
-    }
+  public void setEntityRef(EntityDef entityRef) {
 
-    public boolean getIsArray() {
-        return isArray;
-    }
+    this.entityRef = entityRef;
+  }
 
-    public void setIsArray(boolean isArray) {
-        this.isArray = isArray;
-    }
+  public ResponseDef() {
 
-    public boolean getIsPaginated() {
-        return isPaginated;
-    }
+    this.isArray = false;
+    this.isPaginated = false;
+    this.isVoid = false;
+    this.isEntity = false;
+  }
 
-    public void setIsPaginated(boolean isPaginated) {
-        this.isPaginated = isPaginated;
-    }
+  public boolean getIsArray() {
 
-    public boolean getIsEntity() {
-        return isEntity;
-    }
+    return this.isArray;
+  }
 
-    public void setIsEntity(boolean isEntity) {
-        this.isEntity = isEntity;
-    }
+  public void setIsArray(boolean isArray) {
 
-    public boolean getIsVoid() {
-        return isVoid;
-    }
+    this.isArray = isArray;
+  }
 
-    public void setIsVoid(boolean isVoid) {
-        this.isVoid = isVoid;
-    }
+  public boolean getIsPaginated() {
 
-    public String getType() {
-        return type;
-    }
+    return this.isPaginated;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setIsPaginated(boolean isPaginated) {
 
-    public String getFormat() {
-        return format;
-    }
+    this.isPaginated = isPaginated;
+  }
 
-    public void setFormat(String format) {
-        this.format = format;
-    }
+  public boolean getIsEntity() {
 
-    public String getCode() {
-        return code;
-    }
+    return this.isEntity;
+  }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+  public void setIsEntity(boolean isEntity) {
 
-    public String getDescription() {
-        return description;
-    }
+    this.isEntity = isEntity;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public boolean getIsVoid() {
 
-    public List<String> getMediaTypes() {
-        return mediaTypes;
-    }
+    return this.isVoid;
+  }
 
-    public void setMediaTypes(List<String> mediaTypes) {
-        this.mediaTypes = mediaTypes;
-    }
+  public void setIsVoid(boolean isVoid) {
+
+    this.isVoid = isVoid;
+  }
+
+  public String getType() {
+
+    return this.type;
+  }
+
+  public void setType(String type) {
+
+    this.type = type;
+  }
+
+  public String getFormat() {
+
+    return this.format;
+  }
+
+  public void setFormat(String format) {
+
+    this.format = format;
+  }
+
+  public String getCode() {
+
+    return this.code;
+  }
+
+  public void setCode(String code) {
+
+    this.code = code;
+  }
+
+  public String getDescription() {
+
+    return this.description;
+  }
+
+  public void setDescription(String description) {
+
+    this.description = description;
+  }
+
+  public List<String> getMediaTypes() {
+
+    return this.mediaTypes;
+  }
+
+  public void setMediaTypes(List<String> mediaTypes) {
+
+    this.mediaTypes = mediaTypes;
+  }
 }

@@ -5,9 +5,9 @@ package com.devonfw.cobigen.eclipse.common.exceptions;
  */
 public class GeneratorProjectNotExistentException extends RuntimeException {
 
-    /**
-     * Generated UID
-     */
-    private static final long serialVersionUID = -6213854441871146756L;
+  /**
+   * Generated UID
+   */
+  private static final long serialVersionUID = -6213854441871146756L;
 
 }

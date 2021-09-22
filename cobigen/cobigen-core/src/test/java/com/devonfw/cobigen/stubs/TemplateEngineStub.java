@@ -14,19 +14,20 @@ import com.devonfw.cobigen.api.extension.TextTemplateEngine;
 @Name("FreeMarker")
 public class TemplateEngineStub implements TextTemplateEngine {
 
-    @Override
-    public String getTemplateFileEnding() {
-        return ".ftl";
-    }
+  @Override
+  public String getTemplateFileEnding() {
 
-    @Override
-    public void process(TextTemplate template, Map<String, Object> model, Writer out, String outputEncoding) {
+    return ".ftl";
+  }
 
-    }
+  @Override
+  public void process(TextTemplate template, Map<String, Object> model, Writer out, String outputEncoding) {
 
-    @Override
-    public void setTemplateFolder(Path templateFolderPath) {
+  }
 
-    }
+  @Override
+  public void setTemplateFolder(Path templateFolderPath) {
+
+  }
 
 }

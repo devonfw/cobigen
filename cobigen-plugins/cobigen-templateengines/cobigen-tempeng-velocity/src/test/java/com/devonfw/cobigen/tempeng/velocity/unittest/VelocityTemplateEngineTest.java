@@ -21,61 +21,64 @@ import com.devonfw.cobigen.tempeng.velocity.VelocityTemplateEngine;
  */
 public class VelocityTemplateEngineTest {
 
-    /**
-     * @throws java.lang.Exception
-     *             if something unexpected happens
-     */
-    @Before
-    public void setUpBefore() throws Exception {
-        engine = new VelocityTemplateEngine();
-        engine.setTemplateFolder(Paths.get("src/test/resources"));
-    }
+  /**
+   * @throws java.lang.Exception if something unexpected happens
+   */
+  @Before
+  public void setUpBefore() throws Exception {
 
-    /**
-     * Test subject
-     */
-    private VelocityTemplateEngine engine;
+    this.engine = new VelocityTemplateEngine();
+    this.engine.setTemplateFolder(Paths.get("src/test/resources"));
+  }
 
-    /**
-     * Tests a basic velocity generation. Test design used from freemarker plugin
-     */
-    @Test
-    public void testProcess() {
-        // arrange
-        final File templateFolder = new File("src/test/resources/unit/").getAbsoluteFile();
-        TextTemplate template = new TextTemplate() {
-            @Override
-            public String getRelativeTemplatePath() {
-                return "temp1.vm";
-            }
+  /**
+   * Test subject
+   */
+  private VelocityTemplateEngine engine;
 
-            @Override
-            public Path getAbsoluteTemplatePath() {
-                return templateFolder.toPath().resolve("temp1.vm");
-            }
-        };
-        HashMap<String, Object> model = new HashMap<>();
-        List<Object> fields = new ArrayList<>();
-        HashMap<Object, Object> fieldAttr = new HashMap<>();
-        fieldAttr.put("type", "A");
-        fields.add(fieldAttr);
-        fieldAttr = new HashMap<>();
-        fieldAttr.put("type", "B");
-        fields.add(fieldAttr);
-        fieldAttr = new HashMap<>();
-        fieldAttr.put("type", "C");
-        fields.add(fieldAttr);
-        HashMap<String, Object> fieldsAccessor = new HashMap<>();
-        fieldsAccessor.put("fields", fields);
-        model.put("pojo", fieldsAccessor);
+  /**
+   * Tests a basic velocity generation. Test design used from freemarker plugin
+   */
+  @Test
+  public void testProcess() {
 
-        // act
-        StringWriter out = new StringWriter();
-        engine.setTemplateFolder(templateFolder.toPath());
-        engine.process(template, model, out, "UTF-8");
+    // arrange
+    final File templateFolder = new File("src/test/resources/unit/").getAbsoluteFile();
+    TextTemplate template = new TextTemplate() {
+      @Override
+      public String getRelativeTemplatePath() {
 
-        // assert
-        assertThat(out).hasToString("A,B,C,");
-    }
+        return "temp1.vm";
+      }
+
+      @Override
+      public Path getAbsoluteTemplatePath() {
+
+        return templateFolder.toPath().resolve("temp1.vm");
+      }
+    };
+    HashMap<String, Object> model = new HashMap<>();
+    List<Object> fields = new ArrayList<>();
+    HashMap<Object, Object> fieldAttr = new HashMap<>();
+    fieldAttr.put("type", "A");
+    fields.add(fieldAttr);
+    fieldAttr = new HashMap<>();
+    fieldAttr.put("type", "B");
+    fields.add(fieldAttr);
+    fieldAttr = new HashMap<>();
+    fieldAttr.put("type", "C");
+    fields.add(fieldAttr);
+    HashMap<String, Object> fieldsAccessor = new HashMap<>();
+    fieldsAccessor.put("fields", fields);
+    model.put("pojo", fieldsAccessor);
+
+    // act
+    StringWriter out = new StringWriter();
+    this.engine.setTemplateFolder(templateFolder.toPath());
+    this.engine.process(template, model, out, "UTF-8");
+
+    // assert
+    assertThat(out).hasToString("A,B,C,");
+  }
 
 }

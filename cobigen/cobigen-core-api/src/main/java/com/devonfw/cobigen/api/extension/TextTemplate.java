@@ -7,16 +7,18 @@ import java.nio.file.Path;
  */
 public interface TextTemplate {
 
-    /**
-     * Returns the relative path of a template within the configuration folder
-     * @return the relative path to the template file
-     */
-    public String getRelativeTemplatePath();
+  /**
+   * Returns the relative path of a template within the configuration folder
+   *
+   * @return the relative path to the template file
+   */
+  public String getRelativeTemplatePath();
 
-    /**
-     * Returns the absolute file path to the template file
-     * @return the absolute file path to the template file
-     */
-    public Path getAbsoluteTemplatePath();
+  /**
+   * Returns the absolute file path to the template file
+   *
+   * @return the absolute file path to the template file
+   */
+  public Path getAbsoluteTemplatePath();
 
 }

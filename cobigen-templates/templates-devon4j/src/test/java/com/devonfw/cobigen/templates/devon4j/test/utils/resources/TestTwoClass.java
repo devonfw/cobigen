@@ -5,14 +5,14 @@ package com.devonfw.cobigen.templates.devon4j.test.utils.resources;
  */
 public class TestTwoClass {
 
-    int someInt;
+  int someInt;
 
-    String someString;
+  String someString;
 
-    TestEntity someClass;
+  TestEntity someClass;
 
-    public TestTwoClass bodyFormatTest(TestTwoClass test) {
+  public TestTwoClass bodyFormatTest(TestTwoClass test) {
 
-        return this;
-    }
+    return this;
+  }
 }

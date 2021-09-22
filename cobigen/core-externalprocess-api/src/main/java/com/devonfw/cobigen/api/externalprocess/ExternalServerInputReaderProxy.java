@@ -15,42 +15,45 @@ import com.devonfw.cobigen.api.externalprocess.to.InputFileTo;
  */
 public abstract class ExternalServerInputReaderProxy implements InputReader {
 
-    /** The external process for the plugin */
-    protected ExternalProcess externalProcess;
+  /** The external process for the plugin */
+  protected ExternalProcess externalProcess;
 
-    /**
-     * Create new proxy which automatically communicates with the external process by JSON communication
-     * @param externalProcess
-     *            of the plugin
-     */
-    public ExternalServerInputReaderProxy(ExternalProcess externalProcess) {
-        this.externalProcess = externalProcess;
+  /**
+   * Create new proxy which automatically communicates with the external process by JSON communication
+   *
+   * @param externalProcess of the plugin
+   */
+  public ExternalServerInputReaderProxy(ExternalProcess externalProcess) {
+
+    this.externalProcess = externalProcess;
+  }
+
+  @Override
+  public boolean isValidInput(Object input) {
+
+    throw new CobiGenRuntimeException("This method should be implemented in Java for performance reasons!");
+  }
+
+  @Override
+  public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+
+    String fileContents;
+    String fileName = path.toString();
+    try {
+      fileContents = String.join("", Files.readAllLines(path, inputCharset));
+    } catch (IOException e) {
+      throw new InputReaderException("Could not read input file!" + fileName, e);
     }
 
-    @Override
-    public boolean isValidInput(Object input) {
-        throw new CobiGenRuntimeException("This method should be implemented in Java for performance reasons!");
-    }
+    InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset.name());
 
-    @Override
-    public Object read(Path path, Charset inputCharset, Object... additionalArguments) throws InputReaderException {
+    return this.externalProcess.postJsonRequest("getInputModel", inputFile);
+  }
 
-        String fileContents;
-        String fileName = path.toString();
-        try {
-            fileContents = String.join("", Files.readAllLines(path, inputCharset));
-        } catch (IOException e) {
-            throw new InputReaderException("Could not read input file!" + fileName, e);
-        }
+  @Override
+  public boolean isMostLikelyReadable(Path path) {
 
-        InputFileTo inputFile = new InputFileTo(fileName, fileContents, inputCharset.name());
-
-        return externalProcess.postJsonRequest("getInputModel", inputFile);
-    }
-
-    @Override
-    public boolean isMostLikelyReadable(Path path) {
-        throw new CobiGenRuntimeException("This method should be implemented in Java for performance reasons!");
-    }
+    throw new CobiGenRuntimeException("This method should be implemented in Java for performance reasons!");
+  }
 
 }

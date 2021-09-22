@@ -10,25 +10,28 @@ import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
  */
 public class SuperClass2 {
 
-    private List<RootClass> genericAccessible;
+  private List<RootClass> genericAccessible;
 
-    /**
-     * Returns the field 'genericAccessible'
-     * @return value of genericAccessible
-     * @author mbrunnli (25.01.2015)
-     */
-    public List<RootClass> getGenericAccessible() {
-        return genericAccessible;
-    }
+  /**
+   * Returns the field 'genericAccessible'
+   *
+   * @return value of genericAccessible
+   * @author mbrunnli (25.01.2015)
+   */
+  public List<RootClass> getGenericAccessible() {
 
-    /**
-     * Sets the field 'genericAccessible'.
-     * @param genericAccessible
-     *            new value of genericAccessible
-     * @author mbrunnli (25.01.2015)
-     */
-    public void setGenericAccessible(List<RootClass> genericAccessible) {
-        this.genericAccessible = genericAccessible;
-    }
+    return this.genericAccessible;
+  }
+
+  /**
+   * Sets the field 'genericAccessible'.
+   *
+   * @param genericAccessible new value of genericAccessible
+   * @author mbrunnli (25.01.2015)
+   */
+  public void setGenericAccessible(List<RootClass> genericAccessible) {
+
+    this.genericAccessible = genericAccessible;
+  }
 
 }

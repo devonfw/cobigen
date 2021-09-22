@@ -18,6 +18,6 @@ import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 @Inherited
 public @interface ReaderPriority {
 
-    /** The input readers priority */
-    Priority value() default Priority.LOW;
+  /** The input readers priority */
+  Priority value() default Priority.LOW;
 }

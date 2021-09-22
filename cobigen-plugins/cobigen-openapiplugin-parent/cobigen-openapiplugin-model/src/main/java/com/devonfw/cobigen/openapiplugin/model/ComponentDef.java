@@ -11,57 +11,67 @@ import java.util.Map;
 @SuppressWarnings("javadoc")
 public class ComponentDef {
 
-    private String name;
+  private String name;
 
-    private List<PathDef> paths;
+  private List<PathDef> paths;
 
-    /**
-     * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
-     */
-    private Map<String, Object> extensionProperties = new HashMap<>();
+  /**
+   * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
+   */
+  private Map<String, Object> extensionProperties = new HashMap<>();
 
-    public ComponentDef() {
-        paths = new LinkedList<>();
-    }
+  public ComponentDef() {
 
-    public String getName() {
-        return name;
-    }
+    this.paths = new LinkedList<>();
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
 
-    public List<PathDef> getPaths() {
-        return paths;
-    }
+    return this.name;
+  }
 
-    public void setPaths(List<PathDef> paths) {
-        this.paths = paths;
-    }
+  public void setName(String name) {
 
-    /**
-     * @return the Map of all the extension tags
-     */
-    public Map<String, Object> getUserPropertiesMap() {
-        return extensionProperties;
-    }
+    this.name = name;
+  }
 
-    /**
-     * Sets the Map of all the extensions tags
-     * @param extensions
-     */
-    public void setUserPropertiesMap(Map<String, Object> extensions) {
-        extensionProperties.putAll(extensions);
+  public List<PathDef> getPaths() {
 
-    }
+    return this.paths;
+  }
 
-    public Object getUserProperty(String key) {
-        return extensionProperties.get(key);
-    }
+  public void setPaths(List<PathDef> paths) {
 
-    public void setUserProperty(String key, String value) {
-        extensionProperties.put(key, value);
-    }
+    this.paths = paths;
+  }
+
+  /**
+   * @return the Map of all the extension tags
+   */
+  public Map<String, Object> getUserPropertiesMap() {
+
+    return this.extensionProperties;
+  }
+
+  /**
+   * Sets the Map of all the extensions tags
+   *
+   * @param extensions
+   */
+  public void setUserPropertiesMap(Map<String, Object> extensions) {
+
+    this.extensionProperties.putAll(extensions);
+
+  }
+
+  public Object getUserProperty(String key) {
+
+    return this.extensionProperties.get(key);
+  }
+
+  public void setUserProperty(String key, String value) {
+
+    this.extensionProperties.put(key, value);
+  }
 
 }

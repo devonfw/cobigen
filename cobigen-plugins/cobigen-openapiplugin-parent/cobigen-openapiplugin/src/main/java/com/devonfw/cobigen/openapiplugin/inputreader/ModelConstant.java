@@ -8,34 +8,34 @@ package com.devonfw.cobigen.openapiplugin.inputreader;
  */
 public class ModelConstant {
 
-    /**
-     * Tag that stores the MAXIMUM constraint
-     */
-    public static final String MAXIMUM = "maximum";
+  /**
+   * Tag that stores the MAXIMUM constraint
+   */
+  public static final String MAXIMUM = "maximum";
 
-    /**
-     * Tag that stores the MINIMUM constraint
-     */
-    public static final String MINIMUM = "minimum";
+  /**
+   * Tag that stores the MINIMUM constraint
+   */
+  public static final String MINIMUM = "minimum";
 
-    /**
-     * Tag that stores the MAX_LENGTH constraint
-     */
-    public static final String MAX_LENGTH = "maxLength";
+  /**
+   * Tag that stores the MAX_LENGTH constraint
+   */
+  public static final String MAX_LENGTH = "maxLength";
 
-    /**
-     * Tag that stores the MIN_LENGTH constraint
-     */
-    public static final String MIN_LENGTH = "minLength";
+  /**
+   * Tag that stores the MIN_LENGTH constraint
+   */
+  public static final String MIN_LENGTH = "minLength";
 
-    /**
-     * Tag that stores the NOTNULL constraint
-     */
-    public static final String NOTNULL = "notNull";
+  /**
+   * Tag that stores the NOTNULL constraint
+   */
+  public static final String NOTNULL = "notNull";
 
-    /**
-     * Tag for check the constraint UNIQUE
-     */
-    public static final String UNIQUE = "unique";
+  /**
+   * Tag for check the constraint UNIQUE
+   */
+  public static final String UNIQUE = "unique";
 
 }

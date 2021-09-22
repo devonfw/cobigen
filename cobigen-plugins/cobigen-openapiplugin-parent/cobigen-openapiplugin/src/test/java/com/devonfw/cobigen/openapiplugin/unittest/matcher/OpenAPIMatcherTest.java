@@ -14,63 +14,63 @@ import com.devonfw.cobigen.openapiplugin.model.EntityDef;
  */
 public class OpenAPIMatcherTest {
 
-    /**
-     * Test valid {@link EntityDef} matching
-     */
-    @Test
-    public void testValidEntityDefMatching() {
+  /**
+   * Test valid {@link EntityDef} matching
+   */
+  @Test
+  public void testValidEntityDefMatching() {
 
-        EntityDef entityDef = new EntityDef();
-        entityDef.setComponentName("Tablemanagement");
+    EntityDef entityDef = new EntityDef();
+    entityDef.setComponentName("Tablemanagement");
 
-        OpenAPIMatcher matcher = new OpenAPIMatcher();
-        boolean matches = matcher.matches(new MatcherTo("element", "EntityDef", entityDef));
+    OpenAPIMatcher matcher = new OpenAPIMatcher();
+    boolean matches = matcher.matches(new MatcherTo("element", "EntityDef", entityDef));
 
-        assertThat(matches).isTrue();
-    }
+    assertThat(matches).isTrue();
+  }
 
-    /**
-     * Test valid {@link ComponentDef} matching
-     */
-    @Test
-    public void testValidComponentDefMatching() {
+  /**
+   * Test valid {@link ComponentDef} matching
+   */
+  @Test
+  public void testValidComponentDefMatching() {
 
-        ComponentDef componentDef = new ComponentDef();
-        componentDef.setName("Tablemanagement");
+    ComponentDef componentDef = new ComponentDef();
+    componentDef.setName("Tablemanagement");
 
-        OpenAPIMatcher matcher = new OpenAPIMatcher();
-        boolean matches = matcher.matches(new MatcherTo("element", "ComponentDef", componentDef));
+    OpenAPIMatcher matcher = new OpenAPIMatcher();
+    boolean matches = matcher.matches(new MatcherTo("element", "ComponentDef", componentDef));
 
-        assertThat(matches).isTrue();
-    }
+    assertThat(matches).isTrue();
+  }
 
-    /**
-     * Test non valid {@link EntityDef} matching
-     */
-    @Test
-    public void testInvalidEntityDefMatching() {
+  /**
+   * Test non valid {@link EntityDef} matching
+   */
+  @Test
+  public void testInvalidEntityDefMatching() {
 
-        EntityDef entityDef = new EntityDef();
-        entityDef.setComponentName("Tablemanagement");
+    EntityDef entityDef = new EntityDef();
+    entityDef.setComponentName("Tablemanagement");
 
-        OpenAPIMatcher matcher = new OpenAPIMatcher();
-        boolean matches = matcher.matches(new MatcherTo("element", "EntityDefs", entityDef));
+    OpenAPIMatcher matcher = new OpenAPIMatcher();
+    boolean matches = matcher.matches(new MatcherTo("element", "EntityDefs", entityDef));
 
-        assertThat(matches).isFalse();
-    }
+    assertThat(matches).isFalse();
+  }
 
-    /**
-     * Test non valid {@link ComponentDef} matching
-     */
-    @Test
-    public void testInvalidComponentDefMatching() {
+  /**
+   * Test non valid {@link ComponentDef} matching
+   */
+  @Test
+  public void testInvalidComponentDefMatching() {
 
-        ComponentDef componentDef = new ComponentDef();
-        componentDef.setName("Tablemanagement");
+    ComponentDef componentDef = new ComponentDef();
+    componentDef.setName("Tablemanagement");
 
-        OpenAPIMatcher matcher = new OpenAPIMatcher();
-        boolean matches = matcher.matches(new MatcherTo("element", "ComponentDefs", componentDef));
+    OpenAPIMatcher matcher = new OpenAPIMatcher();
+    boolean matches = matcher.matches(new MatcherTo("element", "ComponentDefs", componentDef));
 
-        assertThat(matches).isFalse();
-    }
+    assertThat(matches).isFalse();
+  }
 }

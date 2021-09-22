@@ -43,313 +43,319 @@ import com.google.common.collect.Lists;
  */
 public class ContainerMatcherTest extends AbstractApiTest {
 
-    /**
-     * Root path to all resources used in this test case
-     */
-    private static String testFileRootPath = apiTestsRootPath + "ContainerMatcherTest/";
+  /**
+   * Root path to all resources used in this test case
+   */
+  private static String testFileRootPath = apiTestsRootPath + "ContainerMatcherTest/";
 
-    /**
-     * Tests whether a container matcher will not match iff there are no other matchers
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testContainerMatcherDoesNotMatchWithoutMatcher() throws Exception {
+  /**
+   * Tests whether a container matcher will not match iff there are no other matchers
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testContainerMatcherDoesNotMatchWithoutMatcher() throws Exception {
 
-        // Mocking
-        Object containerInput = createTestDataAndConfigureMock(false);
+    // Mocking
+    Object containerInput = createTestDataAndConfigureMock(false);
 
-        // Execution
-        File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
+    // Execution
+    File templatesFolder = new File(testFileRootPath + "templates");
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
-        // Verification
-        Assert.assertNotNull(matchingTriggerIds);
-        Assert.assertEquals(0, matchingTriggerIds.size());
+    // Verification
+    Assert.assertNotNull(matchingTriggerIds);
+    Assert.assertEquals(0, matchingTriggerIds.size());
 
-    }
+  }
 
-    /**
-     * Tests whether a container matcher will match iff there are matchers matching the child resources
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testContainerMatcherMatches() throws Exception {
+  /**
+   * Tests whether a container matcher will match iff there are matchers matching the child resources
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testContainerMatcherMatches() throws Exception {
 
-        // Mocking
-        Object containerInput = createTestDataAndConfigureMock(true);
+    // Mocking
+    Object containerInput = createTestDataAndConfigureMock(true);
 
-        // Execution
-        File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
+    // Execution
+    File templatesFolder = new File(testFileRootPath + "templates");
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
-        // Verification
-        Assert.assertNotNull(matchingTriggerIds);
-        Assert.assertTrue(matchingTriggerIds.size() > 0);
+    // Verification
+    Assert.assertNotNull(matchingTriggerIds);
+    Assert.assertTrue(matchingTriggerIds.size() > 0);
 
-    }
+  }
 
-    /**
-     * Tests whether variable resolving works for a container's children as the container itself does not
-     * include any variable resolving
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testContextVariableResolving() throws Exception {
+  /**
+   * Tests whether variable resolving works for a container's children as the container itself does not include any
+   * variable resolving
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testContextVariableResolving() throws Exception {
 
-        // Mocking
-        Object containerInput = createTestDataAndConfigureMock(true);
+    // Mocking
+    Object containerInput = createTestDataAndConfigureMock(true);
 
-        // Execution
-        File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        List<TemplateTo> matchingTemplates = target.getMatchingTemplates(containerInput);
+    // Execution
+    File templatesFolder = new File(testFileRootPath + "templates");
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    List<TemplateTo> matchingTemplates = target.getMatchingTemplates(containerInput);
 
-        // Verification
-        Assert.assertNotNull(matchingTemplates);
-    }
+    // Verification
+    Assert.assertNotNull(matchingTemplates);
+  }
 
-    /**
-     * Tests whether variable resolving works for a contains's children during generation
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testContextVariableResolvingOnGeneration() throws Exception {
-        // Mocking
-        Object containerInput = createTestDataAndConfigureMock(true);
-        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
+  /**
+   * Tests whether variable resolving works for a contains's children during generation
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testContextVariableResolvingOnGeneration() throws Exception {
 
-        // pre-processing
-        File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
+    // Mocking
+    Object containerInput = createTestDataAndConfigureMock(true);
+    File generationRootFolder = this.tmpFolder.newFolder("generationRootFolder");
 
-        // Execution
-        GenerationReportTo report =
-            target.generate(containerInput, templates.get(0), Paths.get(generationRootFolder.toURI()), false);
+    // pre-processing
+    File templatesFolder = new File(testFileRootPath + "templates");
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
-        // assertion
-        assertThat(report).isSuccessful();
-    }
+    // Execution
+    GenerationReportTo report = target.generate(containerInput, templates.get(0),
+        Paths.get(generationRootFolder.toURI()), false);
 
-    /**
-     * Tests whether the increments can be correctly retrieved for container matchers
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testGetAllIncrements() throws Exception {
-        // Mocking
-        Object containerInput = createTestDataAndConfigureMock(true, true);
+    // assertion
+    assertThat(report).isSuccessful();
+  }
 
-        // pre-processing
-        File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+  /**
+   * Tests whether the increments can be correctly retrieved for container matchers
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testGetAllIncrements() throws Exception {
 
-        // Execution
-        List<IncrementTo> increments = target.getMatchingIncrements(containerInput);
+    // Mocking
+    Object containerInput = createTestDataAndConfigureMock(true, true);
 
-        // Verification
-        Assert.assertNotNull(increments);
-        Assert.assertTrue(increments.size() > 0);
-    }
+    // pre-processing
+    File templatesFolder = new File(testFileRootPath + "templates");
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
 
-    /**
-     * Tests whether multiple triggers will be activated if their container matcher matches a given input.
-     * <br/>
-     * <a href="https://github.com/oasp/cobigen/issues/57">(Bug #57)</a>
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testMultipleTriggerWithContainerMatchers() throws Exception {
-        // Mocking
-        Object containerInput = createTestDataAndConfigureMock(true, false);
+    // Execution
+    List<IncrementTo> increments = target.getMatchingIncrements(containerInput);
 
-        // pre-processing
-        File templatesFolder = new File(testFileRootPath + "templates");
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    // Verification
+    Assert.assertNotNull(increments);
+    Assert.assertTrue(increments.size() > 0);
+  }
 
-        // Execution
-        List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
+  /**
+   * Tests whether multiple triggers will be activated if their container matcher matches a given input. <br/>
+   * <a href="https://github.com/oasp/cobigen/issues/57">(Bug #57)</a>
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testMultipleTriggerWithContainerMatchers() throws Exception {
 
-        // Verification
-        Assert.assertNotNull(triggerIds);
-        Assert.assertEquals(2, triggerIds.size());
-    }
+    // Mocking
+    Object containerInput = createTestDataAndConfigureMock(true, false);
 
-    /**
-     * Create a new {@link ContainerMatcher}, which contains two children which do not match the same trigger.
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testContainerChildrenWillIndividuallyBeMatched() throws Exception {
+    // pre-processing
+    File templatesFolder = new File(testFileRootPath + "templates");
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
 
-        Object container = new Object() {
-            @Override
-            public String toString() {
-                return "container";
-            }
-        };
-        Object child1 = new Object() {
-            @Override
-            public String toString() {
-                return "child1";
-            }
-        };
-        Object child2 = new Object() {
-            @Override
-            public String toString() {
-                return "child2";
-            }
-        };
+    // Execution
+    List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
 
-        // Pre-processing: Mocking
-        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
-        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
-        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
-        InputReader inputReader = mock(InputReader.class);
+    // Verification
+    Assert.assertNotNull(triggerIds);
+    Assert.assertEquals(2, triggerIds.size());
+  }
 
-        when(triggerInterpreter.getType()).thenReturn("test");
-        when(triggerInterpreter.getMatcher()).thenReturn(matcher);
-        when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
+  /**
+   * Create a new {@link ContainerMatcher}, which contains two children which do not match the same trigger.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testContainerChildrenWillIndividuallyBeMatched() throws Exception {
 
-        when(inputReader.isValidInput(any())).thenReturn(true);
+    Object container = new Object() {
+      @Override
+      public String toString() {
 
-        // Simulate container children resolution of any plug-in
-        when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))),
-            anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
-        when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))),
-            anyList())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
-        when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(child1, child2));
+        return "container";
+      }
+    };
+    Object child1 = new Object() {
+      @Override
+      public String toString() {
 
-        // match container
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("container"), ANY, sameInstance(container)))))
-            .thenReturn(true);
+        return "child1";
+      }
+    };
+    Object child2 = new Object() {
+      @Override
+      public String toString() {
 
-        // do not match first child
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))))).thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child1)))))
-            .thenReturn(true);
+        return "child2";
+      }
+    };
 
-        // match second child
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))))).thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2)))))
-            .thenReturn(false);
+    // Pre-processing: Mocking
+    GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
+    TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+    MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+    InputReader inputReader = mock(InputReader.class);
 
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
+    when(triggerInterpreter.getType()).thenReturn("test");
+    when(triggerInterpreter.getMatcher()).thenReturn(matcher);
+    when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-        // create CobiGen instance
-        File templatesFolder = new File(testFileRootPath + "selectiveContainerGeneration");
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        File folder = tmpFolder.newFolder();
+    when(inputReader.isValidInput(any())).thenReturn(true);
 
-        // Execution
-        GenerationReportTo report =
-            target.generate(container, target.getMatchingTemplates(container), Paths.get(folder.toURI()), false);
-        assertThat(report).isSuccessful();
+    // Simulate container children resolution of any plug-in
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))), anyList()))
+        .thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))), anyList()))
+        .thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
+    when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(child1, child2));
 
-        // Verification
-        assertNotNull(folder.list());
-        assertEquals(1, folder.list().length);
-        assertEquals("child2.txt", folder.list()[0]);
+    // match container
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("container"), ANY, sameInstance(container)))))
+        .thenReturn(true);
 
-    }
+    // do not match first child
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))))).thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child1))))).thenReturn(true);
 
-    // ######################### PRIVATE ##############################
+    // match second child
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))))).thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2))))).thenReturn(false);
 
-    /**
-     * calls {@link #createTestDataAndConfigureMock(boolean, boolean)
-     * createTestDataAndConfigureMock(containerChildMatchesTrigger, false)}
-     */
-    @SuppressWarnings("javadoc")
-    private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger) {
-        return createTestDataAndConfigureMock(containerChildMatchesTrigger, false);
-    }
+    PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
-    /**
-     * Creates simple to debug test data, which includes on container object and one child of the container
-     * object. A {@link TriggerInterpreter TriggerInterpreter} will be mocked with all necessary supplier
-     * classes to mock a simple java trigger interpreter. Furthermore, the mocked trigger interpreter will be
-     * directly registered in the {@link PluginRegistry}.
-     * @param containerChildMatchesTrigger
-     *            defines whether the child of the container input should match any non-container matcher
-     * @param multipleContainerChildren
-     *            defines whether the container should contain multiple children
-     * @return the container as input for generation interpreter for
-     * @author mbrunnli (16.10.2014)
-     */
-    @SuppressWarnings("unchecked")
-    private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger,
-        boolean multipleContainerChildren) {
-        // we only need any objects for inputs to have a unique object reference to affect the mocked method
-        // calls as intended
-        Object container = new Object() {
-            @Override
-            public String toString() {
-                return "container";
-            }
-        };
-        Object firstChildResource = new Object() {
-            @Override
-            public String toString() {
-                return "child";
-            }
-        };
+    // create CobiGen instance
+    File templatesFolder = new File(testFileRootPath + "selectiveContainerGeneration");
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    File folder = this.tmpFolder.newFolder();
 
-        // Pre-processing: Mocking
-        GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
-        TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
-        MatcherInterpreter matcher = mock(MatcherInterpreter.class);
-        InputReader inputReader = mock(InputReader.class);
+    // Execution
+    GenerationReportTo report = target.generate(container, target.getMatchingTemplates(container),
+        Paths.get(folder.toURI()), false);
+    assertThat(report).isSuccessful();
 
-        when(triggerInterpreter.getType()).thenReturn("mockplugin");
-        when(triggerInterpreter.getMatcher()).thenReturn(matcher);
-        when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
+    // Verification
+    assertNotNull(folder.list());
+    assertEquals(1, folder.list().length);
+    assertEquals("child2.txt", folder.list()[0]);
 
-        when(inputReader.isValidInput(any())).thenReturn(true);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(container)))))
-            .thenReturn(false);
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(container)))))
-            .thenReturn(true);
+  }
 
-        // Simulate container children resolution of any plug-in
-        if (multipleContainerChildren) {
-            Object secondChildResource = new Object() {
-                @Override
-                public String toString() {
-                    return "child2";
-                }
-            };
-            when(inputReader.getInputObjects(any(), any(Charset.class)))
-                .thenReturn(Lists.newArrayList(firstChildResource, secondChildResource));
-        } else {
-            when(inputReader.getInputObjects(any(), any(Charset.class)))
-                .thenReturn(Lists.newArrayList(firstChildResource));
+  // ######################### PRIVATE ##############################
+
+  /**
+   * calls {@link #createTestDataAndConfigureMock(boolean, boolean)
+   * createTestDataAndConfigureMock(containerChildMatchesTrigger, false)}
+   */
+  @SuppressWarnings("javadoc")
+  private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger) {
+
+    return createTestDataAndConfigureMock(containerChildMatchesTrigger, false);
+  }
+
+  /**
+   * Creates simple to debug test data, which includes on container object and one child of the container object. A
+   * {@link TriggerInterpreter TriggerInterpreter} will be mocked with all necessary supplier classes to mock a simple
+   * java trigger interpreter. Furthermore, the mocked trigger interpreter will be directly registered in the
+   * {@link PluginRegistry}.
+   *
+   * @param containerChildMatchesTrigger defines whether the child of the container input should match any non-container
+   *        matcher
+   * @param multipleContainerChildren defines whether the container should contain multiple children
+   * @return the container as input for generation interpreter for
+   * @author mbrunnli (16.10.2014)
+   */
+  @SuppressWarnings("unchecked")
+  private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger,
+      boolean multipleContainerChildren) {
+
+    // we only need any objects for inputs to have a unique object reference to affect the mocked method
+    // calls as intended
+    Object container = new Object() {
+      @Override
+      public String toString() {
+
+        return "container";
+      }
+    };
+    Object firstChildResource = new Object() {
+      @Override
+      public String toString() {
+
+        return "child";
+      }
+    };
+
+    // Pre-processing: Mocking
+    GeneratorPluginActivator activator = mock(GeneratorPluginActivator.class);
+    TriggerInterpreter triggerInterpreter = mock(TriggerInterpreter.class);
+    MatcherInterpreter matcher = mock(MatcherInterpreter.class);
+    InputReader inputReader = mock(InputReader.class);
+
+    when(triggerInterpreter.getType()).thenReturn("mockplugin");
+    when(triggerInterpreter.getMatcher()).thenReturn(matcher);
+    when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
+
+    when(inputReader.isValidInput(any())).thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(container)))))
+        .thenReturn(false);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(container)))))
+        .thenReturn(true);
+
+    // Simulate container children resolution of any plug-in
+    if (multipleContainerChildren) {
+      Object secondChildResource = new Object() {
+        @Override
+        public String toString() {
+
+          return "child2";
         }
-
-        when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-            .thenReturn(containerChildMatchesTrigger);
-
-        // Simulate variable resolving of any plug-in
-        when(matcher.resolveVariables(
-            argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
-            argThat(hasItemsInList(
-                //
-                new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
-                new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-                    .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
-                        .put("entityName", "Test").build());
-
-        PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
-
-        return container;
+      };
+      when(inputReader.getInputObjects(any(), any(Charset.class)))
+          .thenReturn(Lists.newArrayList(firstChildResource, secondChildResource));
+    } else {
+      when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(firstChildResource));
     }
+
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
+        .thenReturn(containerChildMatchesTrigger);
+
+    // Simulate variable resolving of any plug-in
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
+        argThat(hasItemsInList(
+            //
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
+                .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
+                    .put("entityName", "Test").build());
+
+    PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
+
+    return container;
+  }
 }

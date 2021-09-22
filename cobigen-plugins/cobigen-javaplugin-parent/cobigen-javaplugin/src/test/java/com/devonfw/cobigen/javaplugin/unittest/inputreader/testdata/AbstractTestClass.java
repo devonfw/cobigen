@@ -5,28 +5,29 @@ import java.lang.annotation.RetentionPolicy;
 
 public class AbstractTestClass extends SuperSuperTestClass {
 
-    /**
-     * Example JavaDoc
-     */
-    @MySuperTypeFieldAnnotation
-    private Long id;
+  /**
+   * Example JavaDoc
+   */
+  @MySuperTypeFieldAnnotation
+  private Long id;
 
-    @MySuperTypeGetterAnnotation
-    public Long getId() {
+  @MySuperTypeGetterAnnotation
+  public Long getId() {
 
-        return id;
-    }
+    return this.id;
+  }
 
-    @MySuperTypeIsAnnotation
-    public Long isId() {
-        return id;
-    }
+  @MySuperTypeIsAnnotation
+  public Long isId() {
 
-    @MySuperTypeSetterAnnotation
-    public void setId(Long id) {
+    return this.id;
+  }
 
-        this.id = id;
-    }
+  @MySuperTypeSetterAnnotation
+  public void setId(Long id) {
+
+    this.id = id;
+  }
 
 }
 

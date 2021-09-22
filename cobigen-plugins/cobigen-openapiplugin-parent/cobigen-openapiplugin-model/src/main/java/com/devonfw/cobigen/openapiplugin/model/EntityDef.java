@@ -11,115 +11,137 @@ import java.util.Map;
 @SuppressWarnings("javadoc")
 public class EntityDef {
 
-    private ComponentDef component;
+  private ComponentDef component;
 
-    private String componentName;
+  private String componentName;
 
-    private HeaderDef header;
+  private HeaderDef header;
 
-    /**
-     * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
-     */
-    private Map<String, Object> extensionProperties = new HashMap<>();
+  /**
+   * This Map stores all the "extension" properties defined by the user on the OpenAPI file for this entity
+   */
+  private Map<String, Object> extensionProperties = new HashMap<>();
 
-    private String name;
+  private String name;
 
-    private String description;
+  private String description;
 
-    private List<PropertyDef> properties;
+  private List<PropertyDef> properties;
 
-    private List<EntityDef> allEntityDefs;
+  private List<EntityDef> allEntityDefs;
 
-    public HeaderDef getHeader() {
-        return header;
-    }
+  public HeaderDef getHeader() {
 
-    public void setHeader(HeaderDef header) {
-        this.header = header;
-    }
+    return this.header;
+  }
 
-    public Map<String, Object> getExtensionProperties() {
-        return extensionProperties;
-    }
+  public void setHeader(HeaderDef header) {
 
-    public void setExtensionProperties(Map<String, Object> extensionProperties) {
-        this.extensionProperties = extensionProperties;
-    }
+    this.header = header;
+  }
 
-    public EntityDef() {
-        properties = new LinkedList<>();
-    }
+  public Map<String, Object> getExtensionProperties() {
 
-    public ComponentDef getComponent() {
-        return component;
-    }
+    return this.extensionProperties;
+  }
 
-    public void setComponent(ComponentDef component) {
-        this.component = component;
-    }
+  public void setExtensionProperties(Map<String, Object> extensionProperties) {
 
-    /**
-     * @return the Map of all the extension tags
-     */
-    public Map<String, Object> getUserPropertiesMap() {
-        return extensionProperties;
-    }
+    this.extensionProperties = extensionProperties;
+  }
 
-    /**
-     * Sets the Map of all the extensions tags
-     * @param extensions
-     */
-    public void setUserPropertiesMap(Map<String, Object> extensions) {
-        extensionProperties.putAll(extensions);
+  public EntityDef() {
 
-    }
+    this.properties = new LinkedList<>();
+  }
 
-    public Object getUserProperty(String key) {
-        return extensionProperties.get(key);
-    }
+  public ComponentDef getComponent() {
 
-    public void setUserProperty(String key, String value) {
-        extensionProperties.put(key, value);
-    }
+    return this.component;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setComponent(ComponentDef component) {
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    this.component = component;
+  }
 
-    public String getComponentName() {
-        return componentName;
-    }
+  /**
+   * @return the Map of all the extension tags
+   */
+  public Map<String, Object> getUserPropertiesMap() {
 
-    public void setComponentName(String componentName) {
-        this.componentName = componentName;
-    }
+    return this.extensionProperties;
+  }
 
-    public List<PropertyDef> getProperties() {
-        return properties;
-    }
+  /**
+   * Sets the Map of all the extensions tags
+   *
+   * @param extensions
+   */
+  public void setUserPropertiesMap(Map<String, Object> extensions) {
 
-    public void setProperties(List<PropertyDef> properties) {
-        this.properties = properties;
-    }
+    this.extensionProperties.putAll(extensions);
 
-    public String getDescription() {
-        return description;
-    }
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public Object getUserProperty(String key) {
 
-    public List<EntityDef> getAllEntityDefs() {
-        return allEntityDefs;
-    }
+    return this.extensionProperties.get(key);
+  }
 
-    public void setAllEntityDefs(List<EntityDef> allEntityDefs) {
-        this.allEntityDefs = allEntityDefs;
-    }
+  public void setUserProperty(String key, String value) {
+
+    this.extensionProperties.put(key, value);
+  }
+
+  public String getName() {
+
+    return this.name;
+  }
+
+  public void setName(String name) {
+
+    this.name = name;
+  }
+
+  public String getComponentName() {
+
+    return this.componentName;
+  }
+
+  public void setComponentName(String componentName) {
+
+    this.componentName = componentName;
+  }
+
+  public List<PropertyDef> getProperties() {
+
+    return this.properties;
+  }
+
+  public void setProperties(List<PropertyDef> properties) {
+
+    this.properties = properties;
+  }
+
+  public String getDescription() {
+
+    return this.description;
+  }
+
+  public void setDescription(String description) {
+
+    this.description = description;
+  }
+
+  public List<EntityDef> getAllEntityDefs() {
+
+    return this.allEntityDefs;
+  }
+
+  public void setAllEntityDefs(List<EntityDef> allEntityDefs) {
+
+    this.allEntityDefs = allEntityDefs;
+  }
 
 }

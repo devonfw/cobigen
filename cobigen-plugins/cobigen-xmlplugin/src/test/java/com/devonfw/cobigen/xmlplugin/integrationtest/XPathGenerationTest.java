@@ -22,30 +22,31 @@ import com.devonfw.cobigen.impl.CobiGenFactory;
  */
 public class XPathGenerationTest {
 
-    /** JUnit rule to savely create and cleanup temporary test folders */
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
+  /** JUnit rule to savely create and cleanup temporary test folders */
+  @Rule
+  public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    /**
-     * Testing basic Xpath Access
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testXpathAccess() throws Exception {
-        Path cobigenConfigFolder = new File("src/test/resources/testdata/integrationtest/uml-basic-test").toPath();
-        Path input = cobigenConfigFolder.resolve("uml.xml");
+  /**
+   * Testing basic Xpath Access
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testXpathAccess() throws Exception {
 
-        CobiGen cobigen = CobiGenFactory.create(cobigenConfigFolder.toUri());
-        Object compliantInput = cobigen.read(input, Charset.forName("UTF-8"));
-        List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(compliantInput);
-        assertThat(matchingTemplates).isNotNull().hasSize(1);
+    Path cobigenConfigFolder = new File("src/test/resources/testdata/integrationtest/uml-basic-test").toPath();
+    Path input = cobigenConfigFolder.resolve("uml.xml");
 
-        File targetFolder = tmpFolder.newFolder("testXpathAccess");
-        GenerationReportTo report = cobigen.generate(compliantInput, matchingTemplates.get(0), targetFolder.toPath());
+    CobiGen cobigen = CobiGenFactory.create(cobigenConfigFolder.toUri());
+    Object compliantInput = cobigen.read(input, Charset.forName("UTF-8"));
+    List<TemplateTo> matchingTemplates = cobigen.getMatchingTemplates(compliantInput);
+    assertThat(matchingTemplates).isNotNull().hasSize(1);
 
-        assertThat(report).isSuccessful();
-        assertThat(targetFolder.toPath().resolve("DocXPath.txt")).hasContent("Bill");
-    }
+    File targetFolder = this.tmpFolder.newFolder("testXpathAccess");
+    GenerationReportTo report = cobigen.generate(compliantInput, matchingTemplates.get(0), targetFolder.toPath());
+
+    assertThat(report).isSuccessful();
+    assertThat(targetFolder.toPath().resolve("DocXPath.txt")).hasContent("Bill");
+  }
 
 }

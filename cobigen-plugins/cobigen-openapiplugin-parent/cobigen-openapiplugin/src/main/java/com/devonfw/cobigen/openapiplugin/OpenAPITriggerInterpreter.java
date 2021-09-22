@@ -14,33 +14,37 @@ import com.devonfw.cobigen.openapiplugin.matcher.OpenAPIMatcher;
 @ReaderPriority(Priority.LOW)
 public class OpenAPITriggerInterpreter implements TriggerInterpreter {
 
-    /**
-     * {@link TriggerInterpreter} type to be registered
-     */
-    public String type;
+  /**
+   * {@link TriggerInterpreter} type to be registered
+   */
+  public String type;
 
-    /**
-     * Creates a new Swagger Interpreter
-     * @param type
-     *            to be registered
-     */
-    public OpenAPITriggerInterpreter(String type) {
-        this.type = type;
-    }
+  /**
+   * Creates a new Swagger Interpreter
+   *
+   * @param type to be registered
+   */
+  public OpenAPITriggerInterpreter(String type) {
 
-    @Override
-    public String getType() {
-        return type;
-    }
+    this.type = type;
+  }
 
-    @Override
-    public InputReader getInputReader() {
-        return new OpenAPIInputReader();
-    }
+  @Override
+  public String getType() {
 
-    @Override
-    public MatcherInterpreter getMatcher() {
-        return new OpenAPIMatcher();
-    }
+    return this.type;
+  }
+
+  @Override
+  public InputReader getInputReader() {
+
+    return new OpenAPIInputReader();
+  }
+
+  @Override
+  public MatcherInterpreter getMatcher() {
+
+    return new OpenAPIMatcher();
+  }
 
 }

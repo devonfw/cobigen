@@ -17,40 +17,40 @@ import com.devonfw.cobigen.impl.generator.api.MatcherEvaluator;
  */
 public class MatcherEvaluatorImpl implements MatcherEvaluator {
 
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(MatcherEvaluatorImpl.class);
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(MatcherEvaluatorImpl.class);
 
-    @Cached
-    @Override
-    public boolean matches(Object matcherInput, List<Matcher> matcherList, TriggerInterpreter triggerInterpreter) {
-        boolean matcherSetMatches = false;
-        LOG.debug("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
-        MATCHER_LOOP:
-        for (Matcher matcher : matcherList) {
-            MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
-            LOG.trace("Check {} ...", matcherTo);
-            if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                switch (matcher.getAccumulationType()) {
-                case NOT:
-                    LOG.trace("NOT Matcher matches -> trigger match fails.");
-                    matcherSetMatches = false;
-                    break MATCHER_LOOP;
-                case OR:
-                case AND:
-                    LOG.trace("Matcher matches.");
-                    matcherSetMatches = true;
-                    break;
-                default:
-                }
-            } else {
-                if (matcher.getAccumulationType() == AccumulationType.AND) {
-                    LOG.trace("AND Matcher does not match -> trigger match fails.");
-                    matcherSetMatches = false;
-                    break MATCHER_LOOP;
-                }
-            }
+  @Cached
+  @Override
+  public boolean matches(Object matcherInput, List<Matcher> matcherList, TriggerInterpreter triggerInterpreter) {
+
+    boolean matcherSetMatches = false;
+    LOG.debug("Check matchers for TriggerInterpreter[type='{}'] ...", triggerInterpreter.getType());
+    MATCHER_LOOP: for (Matcher matcher : matcherList) {
+      MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
+      LOG.trace("Check {} ...", matcherTo);
+      if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+        switch (matcher.getAccumulationType()) {
+          case NOT:
+            LOG.trace("NOT Matcher matches -> trigger match fails.");
+            matcherSetMatches = false;
+            break MATCHER_LOOP;
+          case OR:
+          case AND:
+            LOG.trace("Matcher matches.");
+            matcherSetMatches = true;
+            break;
+          default:
         }
-        LOG.debug("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
-        return matcherSetMatches;
+      } else {
+        if (matcher.getAccumulationType() == AccumulationType.AND) {
+          LOG.trace("AND Matcher does not match -> trigger match fails.");
+          matcherSetMatches = false;
+          break MATCHER_LOOP;
+        }
+      }
     }
+    LOG.debug("Matcher declarations " + (matcherSetMatches ? "match the input." : "do not match the input."));
+    return matcherSetMatches;
+  }
 }

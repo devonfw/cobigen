@@ -15,23 +15,25 @@ import com.google.common.collect.Lists;
 @Activation(byMergeStrategy = { HTMLPluginActivator.NG_MERGE, HTMLPluginActivator.NG_MERGE_OVERRIDE })
 public class HTMLPluginActivator implements GeneratorPluginActivator {
 
-    /** Merge Strategy for NG Templates (patch first) */
-    static final String NG_MERGE_OVERRIDE = "html-ng*_override";
+  /** Merge Strategy for NG Templates (patch first) */
+  static final String NG_MERGE_OVERRIDE = "html-ng*_override";
 
-    /** Merge Strategy for NG Templates (base first) */
-    static final String NG_MERGE = "html-ng*";
+  /** Merge Strategy for NG Templates (base first) */
+  static final String NG_MERGE = "html-ng*";
 
-    @Override
-    public List<Merger> bindMerger() {
-        List<Merger> merger = Lists.newLinkedList();
-        merger.add(new AngularMerger(NG_MERGE, false));
-        merger.add(new AngularMerger(NG_MERGE_OVERRIDE, true));
-        return merger;
-    }
+  @Override
+  public List<Merger> bindMerger() {
 
-    @Override
-    public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return null;
-    }
+    List<Merger> merger = Lists.newLinkedList();
+    merger.add(new AngularMerger(NG_MERGE, false));
+    merger.add(new AngularMerger(NG_MERGE_OVERRIDE, true));
+    return merger;
+  }
+
+  @Override
+  public List<TriggerInterpreter> bindTriggerInterpreter() {
+
+    return null;
+  }
 
 }

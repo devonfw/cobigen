@@ -19,23 +19,23 @@ import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
  */
 public class UpdateTemplatesHandler extends AbstractHandler {
 
-    /**
-     * Assigning logger to UpdateTemplatesHandler
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(UpdateTemplatesHandler.class);
+  /**
+   * Assigning logger to UpdateTemplatesHandler
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(UpdateTemplatesHandler.class);
 
-    @Override
-    public Object execute(ExecutionEvent event) throws ExecutionException {
+  @Override
+  public Object execute(ExecutionEvent event) throws ExecutionException {
 
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
-        try {
-            UpdateTemplatesDialog updateTemplatesDialog = new UpdateTemplatesDialog();
-            updateTemplatesDialog.open();
-        } catch (Throwable e) {
-            ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
-        }
-
-        MDC.remove(InfrastructureConstants.CORRELATION_ID);
-        return null;
+    MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+    try {
+      UpdateTemplatesDialog updateTemplatesDialog = new UpdateTemplatesDialog();
+      updateTemplatesDialog.open();
+    } catch (Throwable e) {
+      ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
     }
+
+    MDC.remove(InfrastructureConstants.CORRELATION_ID);
+    return null;
+  }
 }

@@ -21,57 +21,62 @@ import freemarker.cache.TemplateLoader;
  */
 public class NioFileSystemTemplateLoader implements TemplateLoader {
 
-    /**
-     * SLF4J Logger instance.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(NioFileSystemTemplateLoader.class);
+  /**
+   * SLF4J Logger instance.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(NioFileSystemTemplateLoader.class);
 
-    /**
-     * Root path to resolve templates from
-     */
-    private Path templatesRoot;
+  /**
+   * Root path to resolve templates from
+   */
+  private Path templatesRoot;
 
-    @Override
-    public Object findTemplateSource(String name) throws IOException {
-        if (templatesRoot == null) {
-            throw new CobiGenRuntimeException(
-                "No template root has been defined. This is a bug. (FreeMarker v" + FreemarkerMetadata.VERSION + ")");
-        }
-        return templatesRoot.resolve(name);
+  @Override
+  public Object findTemplateSource(String name) throws IOException {
+
+    if (this.templatesRoot == null) {
+      throw new CobiGenRuntimeException(
+          "No template root has been defined. This is a bug. (FreeMarker v" + FreemarkerMetadata.VERSION + ")");
     }
+    return this.templatesRoot.resolve(name);
+  }
 
-    @Override
-    public long getLastModified(Object templateSource) {
-        BasicFileAttributes attrs;
-        Path templatePath = (Path) templateSource;
-        try {
-            attrs = Files.readAttributes(templatePath, BasicFileAttributes.class);
-            return attrs.lastModifiedTime().toMillis();
-        } catch (IOException e) {
-            LOG.warn("An error occured while resolving the last modified file attribute of path '{}'. (FreeMarker v{})",
-                templatePath.toAbsolutePath().toString(), FreemarkerMetadata.VERSION, e);
-        }
-        return 0;
-    }
+  @Override
+  public long getLastModified(Object templateSource) {
 
-    @Override
-    public Reader getReader(Object templateSource, String encoding) throws IOException {
-        // need to keep this reader open as of method contract
-        return new InputStreamReader(Files.newInputStream((Path) templateSource), encoding);
+    BasicFileAttributes attrs;
+    Path templatePath = (Path) templateSource;
+    try {
+      attrs = Files.readAttributes(templatePath, BasicFileAttributes.class);
+      return attrs.lastModifiedTime().toMillis();
+    } catch (IOException e) {
+      LOG.warn("An error occured while resolving the last modified file attribute of path '{}'. (FreeMarker v{})",
+          templatePath.toAbsolutePath().toString(), FreemarkerMetadata.VERSION, e);
     }
+    return 0;
+  }
 
-    @Override
-    public void closeTemplateSource(Object templateSource) throws IOException {
-        // do nothing (referring to FreeMarkers FileTemlpateLoader.class implementation)
-    }
+  @Override
+  public Reader getReader(Object templateSource, String encoding) throws IOException {
 
-    /**
-     * Sets the field 'templateRoot'.
-     * @param templateRoot
-     *            new value of templateRoot
-     */
-    public void setTemplateRoot(Path templateRoot) {
-        templatesRoot = templateRoot;
-    }
+    // need to keep this reader open as of method contract
+    return new InputStreamReader(Files.newInputStream((Path) templateSource), encoding);
+  }
+
+  @Override
+  public void closeTemplateSource(Object templateSource) throws IOException {
+
+    // do nothing (referring to FreeMarkers FileTemlpateLoader.class implementation)
+  }
+
+  /**
+   * Sets the field 'templateRoot'.
+   *
+   * @param templateRoot new value of templateRoot
+   */
+  public void setTemplateRoot(Path templateRoot) {
+
+    this.templatesRoot = templateRoot;
+  }
 
 }
