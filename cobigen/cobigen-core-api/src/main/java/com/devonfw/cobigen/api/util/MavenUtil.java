@@ -7,7 +7,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +110,8 @@ public class MavenUtil {
 
     try {
       StartedProcess process = new ProcessExecutor().readOutput(true).destroyOnExit().directory(execDir.toFile())
-          .command(args)
+          .environment("MAVEN_OPTS", replaceAllUnixPathsOnWin(System.getenv("MAVEN_OPTS")))
+          .environment("M2_REPO", replaceAllUnixPathsOnWin(System.getenv("M2_REPO"))).command(args)
           .redirectError(
               Slf4jStream.of(LoggerFactory.getLogger(MavenUtil.class.getName() + "." + "dep-build")).asError())
           .redirectOutput(
@@ -125,6 +129,27 @@ public class MavenUtil {
     } catch (InterruptedException | ExecutionException | IOException e) {
       throw new CobiGenRuntimeException("Unable to build cobigen dependencies", e);
     }
+  }
+
+  /**
+   * @return the string while all absolute unix paths in the string are converted to windows absolute paths if running
+   *         on windows OS
+   */
+  private static String replaceAllUnixPathsOnWin(String string) {
+
+    if (StringUtils.isNotEmpty(string)) {
+      Pattern p = Pattern.compile("=((/[^/]+)+/?)");
+      Matcher matcher = p.matcher(string);
+      StringBuilder sb = new StringBuilder();
+
+      while (matcher.find()) {
+        matcher.appendReplacement(sb,
+            "=" + SystemUtil.convertUnixPathToWinOnWin(matcher.group(1)).toString().replace("\\", "\\\\"));
+      }
+      matcher.appendTail(sb);
+      string = sb.toString();
+    }
+    return string;
   }
 
   /**

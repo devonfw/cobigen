@@ -114,6 +114,7 @@ public class SystemUtil {
     } else {
       processBuilder.command("which", "mvn");
     }
+    String mvnExecPath = null;
     try {
       Process process = processBuilder.start();
 
@@ -121,7 +122,6 @@ public class SystemUtil {
           InputStreamReader inr = new InputStreamReader(in);
           BufferedReader reader = new BufferedReader(inr)) {
 
-        String line = null;
         List<String> foundEntries = reader.lines().collect(Collectors.toList());
         LOG.debug("Found following executables: ");
         foundEntries.forEach(e -> LOG.debug("  - {}", e));
@@ -130,19 +130,19 @@ public class SystemUtil {
             Pattern p = Pattern.compile(".+mvn\\.(bat|cmd)");
             Optional<String> foundPath = foundEntries.stream().filter(path -> p.matcher(path).matches()).findFirst();
             if (foundPath.isPresent()) {
-              line = foundPath.get();
-              LOG.debug("Taking {} instead of first entry as detected windows OS", line);
+              mvnExecPath = foundPath.get();
+              LOG.debug("Taking {} instead of first entry as detected windows OS", mvnExecPath);
             }
           }
-          if (line == null) {
-            line = foundEntries.get(0);
+          if (mvnExecPath == null) {
+            mvnExecPath = foundEntries.get(0);
           }
         }
 
         int retVal = process.waitFor();
-        if (retVal == 0 && StringUtils.isNotEmpty(line)) {
-          LOG.info("Determined mvn executable to be located in {}", line);
-          MVN_EXEC = Paths.get(line);
+        if (retVal == 0 && StringUtils.isNotEmpty(mvnExecPath)) {
+          LOG.info("Determined mvn executable to be located in {}", mvnExecPath);
+          MVN_EXEC = Paths.get(mvnExecPath);
         } else {
           LOG.warn("Could not determine mvn executable location. 'which mvn' returned {}", retVal);
         }
@@ -169,17 +169,32 @@ public class SystemUtil {
       LOG.info("Determined maven executable at {}", MVN_EXEC);
     } else {
       LOG.debug("Detected to run on OS {}", OS);
-      if (OS.contains("win")) {
-        // running in git bash, we need to transform paths of format /c/path to C:\path
-        Pattern p = Pattern.compile("/([a-zA-Z])/(.+)");
-        Matcher matcher = p.matcher(MVN_EXEC.toString());
-        if (matcher.matches()) {
-          MVN_EXEC = Paths.get(matcher.group(1) + ":\\" + matcher.group(2).replace("/", "\\"));
-          LOG.debug("Reformatted mvn execution path to '{}' as running on windows within a shell or bash", MVN_EXEC);
-        }
-      }
+      MVN_EXEC = convertUnixPathToWinOnWin(mvnExecPath);
     }
     return MVN_EXEC;
+  }
+
+  /**
+   * Convert /c/path to C:\path if running on OS windows and the given path is a unix path (e.g. produced by git bash)
+   *
+   * @param path the path to be converted
+   * @return the converted path or the input if not on windows
+   */
+  public static Path convertUnixPathToWinOnWin(String path) {
+
+    Path returnVal = Paths.get(path);
+    if (OS.contains("win")) {
+      Pattern p = Pattern.compile("/([a-zA-Z])/(.+)");
+      Matcher matcher = p.matcher(path);
+      if (matcher.matches()) {
+        LOG.debug("unix path {} matches with group1='{}' and group2='{}'", path, matcher.group(1), matcher.group(2));
+        returnVal = Paths.get(matcher.group(1) + ":\\" + matcher.group(2).replace("/", "\\"));
+        LOG.debug("Reformatted unix path to '{}' as running on windows within a shell or bash", returnVal);
+      } else {
+        LOG.debug("unix path {} does not match", path);
+      }
+    }
+    return returnVal;
   }
 
   /**
