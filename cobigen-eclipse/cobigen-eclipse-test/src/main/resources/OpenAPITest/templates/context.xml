@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+
   <trigger id="crud_openapi_java_server_app" type="openapi" templateFolder="templates">
     <containerMatcher type="element" value="openAPIFile"/>
     <matcher type="element" value="EntityDef">
@@ -14,6 +15,18 @@
       <variableAssignment type="constant" key="domain" value="demo"/>
       <variableAssignment type="property" key="component" value="name"/>
       <variableAssignment type="property" key="etoName" value="name"/>
+    </matcher>
+  </trigger>
+  <trigger id="a_second_regex" type="openapi" templateFolder="templates_regex_a">
+    <containerMatcher type="element" value="openAPIFile"/>
+    <matcher type="EntityNameRegex" value=".*le">
+      <variableAssignment type="property" key="entityName" value="name"/>
+    </matcher>
+  </trigger>
+  <trigger id="b_second_regex" type="openapi" templateFolder="templates_regex_b">
+    <containerMatcher type="element" value="openAPIFile"/>
+    <matcher type="EntityNameRegex" value=".*le.">
+      <variableAssignment type="property" key="entityName" value="name"/>
     </matcher>
   </trigger>
 </contextConfiguration>

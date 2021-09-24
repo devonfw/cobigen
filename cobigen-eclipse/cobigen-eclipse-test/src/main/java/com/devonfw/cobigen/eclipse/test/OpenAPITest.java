@@ -201,4 +201,42 @@ public class OpenAPITest extends SystemTest {
               "}");
     }
   }
+
+  /**
+   * Testing generation for EntityDefs that match regex
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testRegexBasedOpenAPIGeneration() throws Exception {
+
+    // copy sample project to external location and import it into the workspace
+    String testProjName = "ExtTestProj";
+    IJavaProject project = this.tmpMavenProjectRule.createProject(testProjName);
+    FileUtils.copyFile(new File(resourcesRootPath + "input/two-components.yml"),
+        project.getUnderlyingResource().getLocation().append("two-components.yml").toFile());
+    project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+    this.tmpMavenProjectRule.updateProject();
+
+    EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+    EclipseUtils.openErrorsTreeInProblemsView(bot);
+    // expand the new file in the package explorer
+    SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+    SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "two-components.yml");
+    javaClassItem.select();
+
+    // execute CobiGen
+    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "generate a file for every Entity");
+    // increase timeout as the openAPI parser is slow on initialization
+    EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
+
+    // check assertions
+    bot.waitUntil(new AllJobsAreFinished(), 10000);
+    IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
+    IFile generationResult = proj.getFile("Sales/Sales-name");
+
+    try (InputStream in = generationResult.getContents()) {
+      assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace("Sales");
+    }
+  }
 }

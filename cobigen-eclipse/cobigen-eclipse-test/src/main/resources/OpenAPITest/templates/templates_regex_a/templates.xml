@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="4.0">
+
+  <templateScans>
+    <templateScan templateNamePrefix="" templatePath="templates" destinationPath=""/>
+  </templateScans>
+
+  <increments>
+    <increment name="regex" description="just to have a trigger with an id that appears first">
+      <templateRef ref="lowercase"/>
+    </increment>
+  </increments>
+</templatesConfiguration>

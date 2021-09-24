@@ -1,0 +1,37 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/server/services/rest'
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+  x-global: itIsGlobal
+paths:
+  /tablemanagement/v1/sampledata/:
+    get:
+      responses:
+        '200':
+          description: Any
+  /salesmanagement/v1/sampledata/:
+    post:
+      responses:
+        '200':
+          description: Any
+components:
+    schemas:
+        Table:
+          x-component: tablemanagement
+          x-test: testingAttributeTable
+          x-global: iChangeGlobalVariable
+          type: object
+          properties:
+            example:
+              type: string
+        Sales:
+          x-component: salesmanagement
+          x-test: testingAttributeSales
+          type: object
+          properties:
+            example:
+              type: string
+ 
