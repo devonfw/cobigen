@@ -129,6 +129,7 @@ then
 		doAskQuestion "Should I cleanup?" # will exit if no
 		doRunCommand "git reset --hard HEAD"
 		doRunCommand "git clean -xf"
+		doRunCommand "git pull"
 	fi
 	cd "$SCRIPT_PATH"
 else
