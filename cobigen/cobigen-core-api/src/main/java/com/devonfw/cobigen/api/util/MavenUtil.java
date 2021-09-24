@@ -140,7 +140,7 @@ public class MavenUtil {
     if (StringUtils.isNotEmpty(string)) {
       Pattern p = Pattern.compile("=((/[^/]+)+/?)");
       Matcher matcher = p.matcher(string);
-      StringBuilder sb = new StringBuilder();
+      StringBuffer sb = new StringBuffer();
 
       while (matcher.find()) {
         matcher.appendReplacement(sb,
