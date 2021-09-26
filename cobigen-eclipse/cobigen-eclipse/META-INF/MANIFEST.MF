@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CobiGen Eclipse Plug-in
 Bundle-SymbolicName: com.devonfw.cobigen.eclipse;singleton:=true
-Bundle-Version: 2021.08.002
+Bundle-Version: 2021.08.003.qualifier
 Bundle-Activator: com.devonfw.cobigen.eclipse.Activator
 Bundle-Vendor: devonfw Team
 Require-Bundle: org.eclipse.ui;bundle-version="3.104.0",
