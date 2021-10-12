@@ -45,76 +45,76 @@ DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonf
 * Marco Rose
 * Mohamed Ghanmi
 
-include::Guide-to-the-Reader.asciidoc[leveloffset=2]
+include::Guide-to-the-Reader.asciidoc[leveloffset=3]
 
-include::Home.asciidoc[leveloffset=2]
+include::Home.asciidoc[leveloffset=3]
 
-include::cobigen-usecases.asciidoc[leveloffset=2]
+include::cobigen-usecases.asciidoc[leveloffset=3]
 
 == CobiGen
 
-include::cobigen-core_configuration.asciidoc[leveloffset=2]
+include::cobigen-core_configuration.asciidoc[leveloffset=3]
 
 === Plug-ins
 
-include::cobigen-javaplugin.asciidoc[leveloffset=3]
+include::cobigen-javaplugin.asciidoc[leveloffset=4]
 
-include::cobigen-propertyplugin.asciidoc[leveloffset=3]
+include::cobigen-propertyplugin.asciidoc[leveloffset=4]
 
-include::cobigen-xmlplugin.asciidoc[leveloffset=3]
+include::cobigen-xmlplugin.asciidoc[leveloffset=4]
 
-include::cobigen-textmerger.asciidoc[leveloffset=3]
+include::cobigen-textmerger.asciidoc[leveloffset=4]
 
-include::cobigen-jsonplugin.asciidoc[leveloffset=3]
+include::cobigen-jsonplugin.asciidoc[leveloffset=4]
 
-include::cobigen-tsplugin.asciidoc[leveloffset=3]
+include::cobigen-tsplugin.asciidoc[leveloffset=4]
 
-include::cobigen-htmlplugin.asciidoc[leveloffset=3]
+include::cobigen-htmlplugin.asciidoc[leveloffset=4]
 
-include::cobigen-openapiplugin.asciidoc[leveloffset=3]
+include::cobigen-openapiplugin.asciidoc[leveloffset=4]
 
 == CobiGen CLI
 
-include::howto_Cobigen-CLI-generation.asciidoc[leveloffset=2]
+include::howto_Cobigen-CLI-generation.asciidoc[leveloffset=3]
 
 == Maven Build Integration
 
-include::cobigen-maven_configuration.asciidoc[leveloffset=2]
+include::cobigen-maven_configuration.asciidoc[leveloffset=3]
 
 == Eclipse Integration
 
-include::cobigen-eclipse_installation.asciidoc[leveloffset=2]
+include::cobigen-eclipse_installation.asciidoc[leveloffset=3]
 
-include::cobigen-eclipse_usage.asciidoc[leveloffset=2]
+include::cobigen-eclipse_usage.asciidoc[leveloffset=3]
 
-include::cobigen-eclipse_logging.asciidoc[leveloffset=2]
+include::cobigen-eclipse_logging.asciidoc[leveloffset=3]
 
 == How to
 
-include::howto_EA-client-generation.asciidoc[leveloffset=2]
+include::howto_EA-client-generation.asciidoc[leveloffset=3]
 
-include::howto_angular-client-generation.asciidoc[leveloffset=2]
+include::howto_angular-client-generation.asciidoc[leveloffset=3]
 
-include::howto_ionic-client-generation.asciidoc[leveloffset=2]
+include::howto_ionic-client-generation.asciidoc[leveloffset=3]
 
-include::howto_create-a-new-plugin.asciidoc[leveloffset=2]
+include::howto_create-a-new-plugin.asciidoc[leveloffset=3]
 
-include::howto_create-external-plugin.asciidoc[leveloffset=2]
+include::howto_create-external-plugin.asciidoc[leveloffset=3]
 
-include::howto_devon4net.asciidoc[leveloffset=2]
+include::howto_devon4net.asciidoc[leveloffset=3]
 
-include::howto_update_CobiGen.asciidoc[leveloffset=2]
+include::howto_update_CobiGen.asciidoc[leveloffset=3]
 
-include::howto-Cobigen-CLI-generation.asciidoc[leveloffset=2]
+include::howto-Cobigen-CLI-generation.asciidoc[leveloffset=3]
 
-include::howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[leveloffset=2]
+include::howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[leveloffset=3]
 
-include::howto-devonfw-CobiGen-OpenAPI.asciidoc[leveloffset=2]
+include::howto-devonfw-CobiGen-OpenAPI.asciidoc[leveloffset=3]
 
-include::howto-devonfw-adapt_template.asciidoc[leveloffset=2]
+include::howto-devonfw-adapt_template.asciidoc[leveloffset=3]
 
-include::howto_enable_composite_primary_keys_in_entity.asciidoc[leveloffset=2]
+include::howto_enable_composite_primary_keys_in_entity.asciidoc[leveloffset=3]
 
 == Template Development
 
-include::cobigen-templates_helpful-links.asciidoc[leveloffset=2]
+include::cobigen-templates_helpful-links.asciidoc[leveloffset=3]
