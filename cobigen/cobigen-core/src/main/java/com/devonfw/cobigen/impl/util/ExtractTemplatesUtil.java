@@ -119,14 +119,13 @@ public class ExtractTemplatesUtil {
     // delete MANIFEST.MF
     Files.deleteIfExists(destinationPath.resolve("src/main/resources/META-INF/MANIFEST.MF"));
 
-    // temporary extract classes jar to target/classes directory
-    extractArchive(classesJarPath, destinationPath.resolve("target/classes"));
+    URI zipFile = URI.create("jar:file:" + classesJarPath.toUri().getPath());
 
-    // If we are unzipping a sources jar, we need to get the pom.xml from the normal jar
-    Files.copy(destinationPath.resolve("target/classes/pom.xml"), destinationPath.resolve("pom.xml"));
+    // extract classes jar pom.xml
+    try (FileSystem fs = FileSystemUtil.getOrCreateFileSystem(zipFile)) {
+      Files.copy(fs.getPath("pom.xml"), destinationPath.resolve("pom.xml"), StandardCopyOption.REPLACE_EXISTING);
+    }
 
-    // delete temporary target/classes directory
-    deleteDirectoryRecursively(destinationPath.resolve("target/classes"));
   }
 
   /**
