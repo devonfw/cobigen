@@ -40,5 +40,19 @@ public class CobiGenDialogConstants {
     /** Dialog title of the Update Templates */
     public static final String DIALOG_TITLE = "Update CobiGen Templates";
 
+    /** Dialog title of the Update Templates */
+    public static final String INFORMATION_DIALOG_TITLE = "Information";
+
+  }
+
+  /** Dialog constants of the Adapt Templates */
+  public class AdaptTemplatesDialogs {
+
+    /** Dialog title of the Adapt Templates */
+    public static final String DIALOG_TITLE = "Warning!";
+
+    /** Dialog title of the Adapt Templates */
+    public static final String INFORMATION_DIALOG_TITLE = "Information";
+
   }
 }
