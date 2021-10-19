@@ -15,7 +15,7 @@ There are currently two merge strategies:
 * merge strategy `html-ng*` (add the new code respecting the existing is case of conflict)
 * merge strategy `html-ng*_override` (add the new code overwriting the existent in case of conflict)
 
-The merging of two Angular2 files will be processed as follows:
+The merging of two Angular2 files will be processed in the following way:
 
 The merge algorithm handles the following AST nodes:
 
