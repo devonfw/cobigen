@@ -63,8 +63,8 @@ public class AdaptTemplatesTest extends SystemTest {
     // copy sample project to external location and import it into the workspace
     String testProjName = "ExtTestProj";
     IJavaProject project = this.tmpMavenProjectRule.createProject(testProjName);
-    FileUtils.copyFile(new File(resourcesRootPath + "input/devonfw.yml"),
-        project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
+    FileUtils.copyFile(new File(resourcesRootPath + "input/adapt-templates.yml"),
+        project.getUnderlyingResource().getLocation().append("adapt-templates.yml").toFile());
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
@@ -76,7 +76,7 @@ public class AdaptTemplatesTest extends SystemTest {
 
     // expand the new file in the package explorer
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
-    SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "devonfw.yml");
+    SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "adapt-templates.yml");
     javaClassItem.select();
 
     // execute CobiGen
@@ -88,7 +88,7 @@ public class AdaptTemplatesTest extends SystemTest {
     bot.waitUntil(new AllJobsAreFinished(), 10000);
     IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
     IFile generationResult = proj.getFile(
-        "src/main/java/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
+        "src/main/java/com/devonfw/test/sampledatamanagement/service/impl/rest/SampledatamanagementRestServiceImpl.java");
 
     assertThat(generationResult.exists()).isTrue();
   }
