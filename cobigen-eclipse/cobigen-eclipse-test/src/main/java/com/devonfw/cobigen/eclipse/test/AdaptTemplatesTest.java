@@ -4,8 +4,6 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironment
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
@@ -104,8 +102,7 @@ public class AdaptTemplatesTest extends SystemTest {
   public void testAdaptTemplatesAndGenerate() throws Exception {
 
     File tmpProject = this.tempFolder.newFolder("playground", "project");
-    Path home = Paths.get(tmpProject.toString());
-    withEnvironmentVariable("COBIGEN_HOME", home.toAbsolutePath().toString())
+    withEnvironmentVariable("COBIGEN_HOME", tmpProject.toPath().toString())
         .execute(() -> testBasicOpenAPIGenerationWithAdaptTemplates());
   }
 }
