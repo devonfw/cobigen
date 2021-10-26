@@ -18,48 +18,51 @@ import com.devonfw.cobigen.templates.devon4j.utils.documentation.JavaDocumentati
  */
 public class JavaDocumentationUtilTest {
 
-    /**
-     * tests if {\@link} tags are properly stripped
-     */
-    @Test
-    public void testGetJavaDocWithoutLink() {
-        assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("{@link id}")).isEqualTo("id");
-        assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("{@sink id}")).isEqualTo("{@sink id}");
-        assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("id")).isEqualTo("id");
-    }
+  /**
+   * tests if {\@link} tags are properly stripped
+   */
+  @Test
+  public void testGetJavaDocWithoutLink() {
 
-    /**
-     * Tests that port is read from application.properties and if not set defaults to localhost
-     * @throws IOException
-     *             test fails
-     */
-    @Test
-    public void getPathTest() throws IOException {
+    assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("{@link id}")).isEqualTo("id");
+    assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("{@sink id}")).isEqualTo("{@sink id}");
+    assertThat(new JavaDocumentationUtil().getJavaDocWithoutLink("id")).isEqualTo("id");
+  }
 
-        Map<String, Object> pojo = new HashMap<>();
-        assertThat(new JavaDocumentationUtil().getPath(pojo)).isEqualTo("http://localhost:8080/");
-    }
+  /**
+   * Tests that port is read from application.properties and if not set defaults to localhost
+   *
+   * @throws IOException test fails
+   */
+  @Test
+  public void getPathTest() throws IOException {
 
-    /**
-     *
-     */
-    @Test
-    public void testGetRequestType() {
-        Map<String, Object> annotationsJavax = new HashMap<>();
-        GET get = new GET() {
+    Map<String, Object> pojo = new HashMap<>();
+    assertThat(new JavaDocumentationUtil().getPath(pojo)).isEqualTo("http://localhost:8080/");
+  }
 
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return null;
-            }
-        };
-        annotationsJavax.put("javax_ws_rs_GET", get);
-        assertThat(new JavaDocumentationUtil().getRequestType(annotationsJavax)).isEqualTo("GET");
+  /**
+   *
+   */
+  @Test
+  public void testGetRequestType() {
 
-        Map<String, Object> annotationsSpring = new HashMap<>();
-        Map<String, Object> annotationValues = new HashMap<>();
-        annotationValues.put("method", "requestmethod.get");
-        annotationsSpring.put("org_springframework_web_bind_annotation_RequestMapping", annotationValues);
-        assertThat(new JavaDocumentationUtil().getRequestType(annotationsSpring)).isEqualTo("GET");
-    }
+    Map<String, Object> annotationsJavax = new HashMap<>();
+    GET get = new GET() {
+
+      @Override
+      public Class<? extends Annotation> annotationType() {
+
+        return null;
+      }
+    };
+    annotationsJavax.put("javax_ws_rs_GET", get);
+    assertThat(new JavaDocumentationUtil().getRequestType(annotationsJavax)).isEqualTo("GET");
+
+    Map<String, Object> annotationsSpring = new HashMap<>();
+    Map<String, Object> annotationValues = new HashMap<>();
+    annotationValues.put("method", "requestmethod.get");
+    annotationsSpring.put("org_springframework_web_bind_annotation_RequestMapping", annotationValues);
+    assertThat(new JavaDocumentationUtil().getRequestType(annotationsSpring)).isEqualTo("GET");
+  }
 }

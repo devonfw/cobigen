@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Name {
 
-    /** Name of the plug-in */
-    String value();
+  /** Name of the plug-in */
+  String value();
 }

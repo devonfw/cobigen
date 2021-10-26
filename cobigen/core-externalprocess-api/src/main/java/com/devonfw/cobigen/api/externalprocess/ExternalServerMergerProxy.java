@@ -15,41 +15,42 @@ import com.devonfw.cobigen.api.externalprocess.to.MergeTo;
  */
 public class ExternalServerMergerProxy implements Merger {
 
-    /** The external process for the plugin */
-    protected ExternalProcess externalProcess;
+  /** The external process for the plugin */
+  protected ExternalProcess externalProcess;
 
-    /** Whether the patch overrides base code fragments */
-    protected boolean patchOverrides;
+  /** Whether the patch overrides base code fragments */
+  protected boolean patchOverrides;
 
-    /**
-     * Create new proxy which automatically communicates with the external process by JSON communication
-     * @param externalProcess
-     *            of the plugin
-     * @param patchOverrides
-     *            whether the patch overrides base code fragments
-     */
-    public ExternalServerMergerProxy(ExternalProcess externalProcess, boolean patchOverrides) {
-        this.externalProcess = externalProcess;
-        this.patchOverrides = patchOverrides;
+  /**
+   * Create new proxy which automatically communicates with the external process by JSON communication
+   *
+   * @param externalProcess of the plugin
+   * @param patchOverrides whether the patch overrides base code fragments
+   */
+  public ExternalServerMergerProxy(ExternalProcess externalProcess, boolean patchOverrides) {
+
+    this.externalProcess = externalProcess;
+    this.patchOverrides = patchOverrides;
+  }
+
+  @Override
+  public String getType() {
+
+    throw new CobiGenRuntimeException("This method should be implemented in Java for performance reasons!");
+  }
+
+  @Override
+  public String merge(File base, String patch, String targetCharset) throws MergeException {
+
+    String baseFileContents;
+    try {
+      baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
+    } catch (IOException e) {
+      throw new MergeException(base, "Could not read base file!", e);
     }
 
-    @Override
-    public String getType() {
-        throw new CobiGenRuntimeException("This method should be implemented in Java for performance reasons!");
-    }
+    MergeTo mergeTo = new MergeTo(baseFileContents, patch, this.patchOverrides);
 
-    @Override
-    public String merge(File base, String patch, String targetCharset) throws MergeException {
-
-        String baseFileContents;
-        try {
-            baseFileContents = new String(Files.readAllBytes(base.toPath()), Charset.forName(targetCharset));
-        } catch (IOException e) {
-            throw new MergeException(base, "Could not read base file!", e);
-        }
-
-        MergeTo mergeTo = new MergeTo(baseFileContents, patch, patchOverrides);
-
-        return externalProcess.postJsonRequest("merge", mergeTo);
-    }
+    return this.externalProcess.postJsonRequest("merge", mergeTo);
+  }
 }

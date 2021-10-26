@@ -15,19 +15,21 @@ import com.google.common.collect.Lists;
 @Activation(byFileExtension = { OpenAPIInputReader.VALID_EXTENSION_YAML, OpenAPIInputReader.VALID_EXTENSION_YML })
 public class OpenAPIPluginActivator implements GeneratorPluginActivator {
 
-    /**
-     * Defines the trigger type
-     */
-    private static final String TRIGGER_TYPE = "openapi";
+  /**
+   * Defines the trigger type
+   */
+  private static final String TRIGGER_TYPE = "openapi";
 
-    @Override
-    public List<Merger> bindMerger() {
-        return null;
-    }
+  @Override
+  public List<Merger> bindMerger() {
 
-    @Override
-    public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return Lists.<TriggerInterpreter> newArrayList(new OpenAPITriggerInterpreter(TRIGGER_TYPE));
-    }
+    return null;
+  }
+
+  @Override
+  public List<TriggerInterpreter> bindTriggerInterpreter() {
+
+    return Lists.<TriggerInterpreter> newArrayList(new OpenAPITriggerInterpreter(TRIGGER_TYPE));
+  }
 
 }

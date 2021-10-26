@@ -22,98 +22,101 @@ import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
  */
 public class TemplateClassTest extends AbstractUnitTest {
 
-    /** Root path of the test resources */
-    private static final String TEST_FILES_ROOT_PATH =
-        "src/test/resources/testdata/unittest/config/entity/TemplateClassTest/";
+  /** Root path of the test resources */
+  private static final String TEST_FILES_ROOT_PATH = "src/test/resources/testdata/unittest/config/entity/TemplateClassTest/";
 
-    /**
-     * Tests if the template utility classes can be loaded from a configuration folder
-     * @throws IOException
-     *             test fails
-     */
-    @Test
-    public void testResolveUtilClassesFromTemplatesFolder() throws IOException {
-        String filename = "folder";
-        Path path = Paths.get(TEST_FILES_ROOT_PATH + filename);
+  /**
+   * Tests if the template utility classes can be loaded from a configuration folder
+   *
+   * @throws IOException test fails
+   */
+  @Test
+  public void testResolveUtilClassesFromTemplatesFolder() throws IOException {
 
-        List<Class<?>> classes =
-            ConfigurationClassLoaderUtil.resolveUtilClasses(new ConfigurationHolder(path.toUri()), null);
-        assertThat(classes.get(0).getName()).contains("IDGenerator");
-    }
+    String filename = "folder";
+    Path path = Paths.get(TEST_FILES_ROOT_PATH + filename);
 
-    /**
-     * Tests if the template utility classes can be loaded from a jar archive
-     * @throws IOException
-     *             test fails
-     */
-    @Test
-    public void testResolveUtilClassesFromJarArchive() throws IOException {
-        String filename = "archive";
+    List<Class<?>> classes = ConfigurationClassLoaderUtil.resolveUtilClasses(new ConfigurationHolder(path.toUri()),
+        null);
+    assertThat(classes.get(0).getName()).contains("IDGenerator");
+  }
 
-        Path path = Paths.get(TEST_FILES_ROOT_PATH + filename + File.separator + "templates.jar");
+  /**
+   * Tests if the template utility classes can be loaded from a jar archive
+   *
+   * @throws IOException test fails
+   */
+  @Test
+  public void testResolveUtilClassesFromJarArchive() throws IOException {
 
-        ClassLoader inputClassLoader =
-            URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
+    String filename = "archive";
 
-        List<Class<?>> classes =
-            ConfigurationClassLoaderUtil.resolveUtilClasses(new ConfigurationHolder(path.toUri()), inputClassLoader);
-        assertThat(classes).isNotEmpty();
-        assertThat(classes.get(0).getName()).contains("IDGenerator");
-    }
+    Path path = Paths.get(TEST_FILES_ROOT_PATH + filename + File.separator + "templates.jar");
 
-    /**
-     * Tests if the template utility classes get loaded from a folder when both sources are available
-     * @throws IOException
-     *             test fails
-     */
-    @Test
-    public void testResolveUtilClassesFromFolderFirst() throws IOException {
+    ClassLoader inputClassLoader = URLClassLoader.newInstance(new URL[] { path.toUri().toURL() },
+        getClass().getClassLoader());
 
-        Path pathArchive = Paths.get(TEST_FILES_ROOT_PATH + "archive" + File.separator + "templates.jar");
-        Path pathFolder = Paths.get(TEST_FILES_ROOT_PATH + "folder");
+    List<Class<?>> classes = ConfigurationClassLoaderUtil.resolveUtilClasses(new ConfigurationHolder(path.toUri()),
+        inputClassLoader);
+    assertThat(classes).isNotEmpty();
+    assertThat(classes.get(0).getName()).contains("IDGenerator");
+  }
 
-        ClassLoader inputClassLoader = URLClassLoader.newInstance(
-            new URL[] { pathArchive.toUri().toURL(), pathFolder.toUri().toURL() }, getClass().getClassLoader());
+  /**
+   * Tests if the template utility classes get loaded from a folder when both sources are available
+   *
+   * @throws IOException test fails
+   */
+  @Test
+  public void testResolveUtilClassesFromFolderFirst() throws IOException {
 
-        List<Class<?>> classes = ConfigurationClassLoaderUtil
-            .resolveUtilClasses(new ConfigurationHolder(pathFolder.toUri()), inputClassLoader);
-        assertThat(classes.get(0).getName()).contains("IDGenerator");
-    }
+    Path pathArchive = Paths.get(TEST_FILES_ROOT_PATH + "archive" + File.separator + "templates.jar");
+    Path pathFolder = Paths.get(TEST_FILES_ROOT_PATH + "folder");
 
-    /**
-     * Tests if the context.xml can be detected from templates folder
-     * @throws IOException
-     *             test fails
-     */
-    @Test
-    public void testGetContextConfigurationFromFolder() throws IOException {
-        String filename = "folder";
+    ClassLoader inputClassLoader = URLClassLoader.newInstance(
+        new URL[] { pathArchive.toUri().toURL(), pathFolder.toUri().toURL() }, getClass().getClassLoader());
 
-        Path path = Paths.get(TEST_FILES_ROOT_PATH + filename);
+    List<Class<?>> classes = ConfigurationClassLoaderUtil
+        .resolveUtilClasses(new ConfigurationHolder(pathFolder.toUri()), inputClassLoader);
+    assertThat(classes.get(0).getName()).contains("IDGenerator");
+  }
 
-        ClassLoader inputClassLoader =
-            URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
+  /**
+   * Tests if the context.xml can be detected from templates folder
+   *
+   * @throws IOException test fails
+   */
+  @Test
+  public void testGetContextConfigurationFromFolder() throws IOException {
 
-        URL url = ConfigurationClassLoaderUtil.getContextConfiguration(inputClassLoader);
-        assertThat(url).isNotNull();
-    }
+    String filename = "folder";
 
-    /**
-     * Tests if the context.xml can be detected from templates archive jar file
-     * @throws IOException
-     *             test fails
-     */
-    @Test
-    public void testGetContextConfigurationFromArchive() throws IOException {
-        String filename = "archive";
+    Path path = Paths.get(TEST_FILES_ROOT_PATH + filename);
 
-        Path path = Paths.get(TEST_FILES_ROOT_PATH + filename + File.separator + "templates.jar");
+    ClassLoader inputClassLoader = URLClassLoader.newInstance(new URL[] { path.toUri().toURL() },
+        getClass().getClassLoader());
 
-        ClassLoader inputClassLoader =
-            URLClassLoader.newInstance(new URL[] { path.toUri().toURL() }, getClass().getClassLoader());
+    URL url = ConfigurationClassLoaderUtil.getContextConfiguration(inputClassLoader);
+    assertThat(url).isNotNull();
+  }
 
-        URL url = ConfigurationClassLoaderUtil.getContextConfiguration(inputClassLoader);
-        assertThat(url).isNotNull();
-    }
+  /**
+   * Tests if the context.xml can be detected from templates archive jar file
+   *
+   * @throws IOException test fails
+   */
+  @Test
+  public void testGetContextConfigurationFromArchive() throws IOException {
+
+    String filename = "archive";
+
+    Path path = Paths.get(TEST_FILES_ROOT_PATH + filename + File.separator + "templates.jar");
+
+    ClassLoader inputClassLoader = URLClassLoader.newInstance(new URL[] { path.toUri().toURL() },
+        getClass().getClassLoader());
+
+    URL url = ConfigurationClassLoaderUtil.getContextConfiguration(inputClassLoader);
+    assertThat(url).isNotNull();
+  }
 
 }

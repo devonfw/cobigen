@@ -12,37 +12,41 @@ import org.eclipse.swt.widgets.Widget;
  */
 public class CustomizedCheckboxTreeViewer extends CheckboxTreeViewer {
 
-    /**
-     * Creates a new {@link CustomizedCheckboxTreeViewer} with {@link SWT#BORDER} style
-     * @param parent
-     *            of this viewer
-     */
-    public CustomizedCheckboxTreeViewer(Composite parent) {
-        super(parent, SWT.BORDER);
-    }
+  /**
+   * Creates a new {@link CustomizedCheckboxTreeViewer} with {@link SWT#BORDER} style
+   *
+   * @param parent of this viewer
+   */
+  public CustomizedCheckboxTreeViewer(Composite parent) {
 
-    @Override
-    public boolean getChecked(Object element) {
-        Widget widget = internalExpand(element, false);
-        if (widget instanceof TreeItem) {
-            return ((TreeItem) widget).getChecked();
-        }
-        return false;
-    }
+    super(parent, SWT.BORDER);
+  }
 
-    @Override
-    public void setCheckedElements(Object[] elements) {
-        super.setCheckedElements(elements);
-        fireCheckStateChanged(new CheckStateChangedEvent(this, elements, true));
-    }
+  @Override
+  public boolean getChecked(Object element) {
 
-    @Override
-    public boolean setChecked(Object element, boolean value) {
-        boolean returnValue = super.setChecked(element, value);
-        if (returnValue) {
-            fireCheckStateChanged(new CheckStateChangedEvent(this, element, value));
-        }
-        return returnValue;
+    Widget widget = internalExpand(element, false);
+    if (widget instanceof TreeItem) {
+      return ((TreeItem) widget).getChecked();
     }
+    return false;
+  }
+
+  @Override
+  public void setCheckedElements(Object[] elements) {
+
+    super.setCheckedElements(elements);
+    fireCheckStateChanged(new CheckStateChangedEvent(this, elements, true));
+  }
+
+  @Override
+  public boolean setChecked(Object element, boolean value) {
+
+    boolean returnValue = super.setChecked(element, value);
+    if (returnValue) {
+      fireCheckStateChanged(new CheckStateChangedEvent(this, element, value));
+    }
+    return returnValue;
+  }
 
 }

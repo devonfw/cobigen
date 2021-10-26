@@ -24,40 +24,41 @@ import junit.framework.AssertionFailedError;
  */
 public class AnnotationQueryingTest extends AbstractIntegrationTest {
 
-    /**
-     * Tests whether annotations with object array values are correctly accessible within the templates
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testAnnotationWithObjectArraysAsValues() throws Exception {
-        CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+  /**
+   * Tests whether annotations with object array values are correctly accessible within the templates
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testAnnotationWithObjectArraysAsValues() throws Exception {
 
-        Object input = cobiGen.read(new File(
-            "src/test/resources/testdata/unittest/inputreader/TestClassWithAnnotationsContainingObjectArrays.java")
-                .toPath(),
-            Charset.forName("UTF-8"), getClass().getClassLoader());
-        List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
+    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
+    File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
 
-        boolean methodTemplateFound = false;
-        for (TemplateTo template : templates) {
-            if (template.getId().equals("annotationQuerying.txt")) {
-                GenerationReportTo report =
-                    cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
-                File expectedFile = new File(
-                    tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "annotationQuerying.txt");
-                assertThat(report).isSuccessful();
-                assertThat(expectedFile).exists();
-                assertThat(expectedFile)
-                    .hasContent("TestClassWithAnnotationsContainingObjectArrays.class,TestClassWithAnnotations.class,");
-                methodTemplateFound = true;
-                break;
-            }
-        }
+    Object input = cobiGen.read(
+        new File("src/test/resources/testdata/unittest/inputreader/TestClassWithAnnotationsContainingObjectArrays.java")
+            .toPath(),
+        Charset.forName("UTF-8"), getClass().getClassLoader());
+    List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
-        if (!methodTemplateFound) {
-            throw new AssertionFailedError("Test template not found");
-        }
+    boolean methodTemplateFound = false;
+    for (TemplateTo template : templates) {
+      if (template.getId().equals("annotationQuerying.txt")) {
+        GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
+            false);
+        File expectedFile = new File(
+            tmpFolderCobiGen.getAbsoluteFile() + SystemUtils.FILE_SEPARATOR + "annotationQuerying.txt");
+        assertThat(report).isSuccessful();
+        assertThat(expectedFile).exists();
+        assertThat(expectedFile)
+            .hasContent("TestClassWithAnnotationsContainingObjectArrays.class,TestClassWithAnnotations.class,");
+        methodTemplateFound = true;
+        break;
+      }
     }
+
+    if (!methodTemplateFound) {
+      throw new AssertionFailedError("Test template not found");
+    }
+  }
 }

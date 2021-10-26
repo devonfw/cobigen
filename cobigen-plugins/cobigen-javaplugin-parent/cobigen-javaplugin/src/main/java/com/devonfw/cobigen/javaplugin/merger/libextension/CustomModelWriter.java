@@ -44,576 +44,599 @@ import com.thoughtworks.qdox.writer.impl.DefaultModelWriter;
 import com.thoughtworks.qdox.writer.impl.IndentBuffer;
 
 /**
- * Custom implementation derived from {@link DefaultModelWriter} to fix some issues with annotation and
- * javaDoc printing.
+ * Custom implementation derived from {@link DefaultModelWriter} to fix some issues with annotation and javaDoc
+ * printing.
  */
 @SuppressWarnings("javadoc")
 public class CustomModelWriter implements ModelWriter {
 
-    private IndentBuffer buffer = new IndentBuffer();
+  private IndentBuffer buffer = new IndentBuffer();
 
-    /**
-     * All information is written to this buffer. When extending this class you should write to this buffer
-     *
-     * @return the buffer
-     */
-    protected final IndentBuffer getBuffer() {
-        return buffer;
+  /**
+   * All information is written to this buffer. When extending this class you should write to this buffer
+   *
+   * @return the buffer
+   */
+  protected final IndentBuffer getBuffer() {
+
+    return this.buffer;
+  }
+
+  @Override
+  public ModelWriter writeSource(JavaSource source) {
+
+    // package statement
+    writePackage(source.getPackage());
+
+    // import statement
+    for (String imprt : source.getImports()) {
+      this.buffer.write("import ");
+      this.buffer.write(imprt);
+      this.buffer.write(';');
+      this.buffer.newline();
+    }
+    if (source.getImports().size() > 0) {
+      this.buffer.newline();
     }
 
-    @Override
-    public ModelWriter writeSource(JavaSource source) {
-        // package statement
-        writePackage(source.getPackage());
+    // classes
+    for (ListIterator<JavaClass> iter = source.getClasses().listIterator(); iter.hasNext();) {
+      JavaClass cls = iter.next();
+      writeClass(cls);
+      if (iter.hasNext()) {
+        this.buffer.newline();
+      }
+    }
+    return this;
+  }
 
-        // import statement
-        for (String imprt : source.getImports()) {
-            buffer.write("import ");
-            buffer.write(imprt);
-            buffer.write(';');
-            buffer.newline();
-        }
-        if (source.getImports().size() > 0) {
-            buffer.newline();
-        }
+  @Override
+  public ModelWriter writePackage(JavaPackage pckg) {
 
-        // classes
-        for (ListIterator<JavaClass> iter = source.getClasses().listIterator(); iter.hasNext();) {
-            JavaClass cls = iter.next();
-            writeClass(cls);
-            if (iter.hasNext()) {
-                buffer.newline();
-            }
-        }
-        return this;
+    if (pckg != null) {
+      commentHeader(pckg);
+      this.buffer.write("package ");
+      this.buffer.write(pckg.getName());
+      this.buffer.write(';');
+      this.buffer.newline();
+      this.buffer.newline();
+    }
+    return this;
+  }
+
+  @Override
+  public ModelWriter writeClass(JavaClass cls) {
+
+    commentHeader(cls);
+
+    writeAccessibilityModifier(cls.getModifiers());
+    writeNonAccessibilityModifiers(cls.getModifiers());
+
+    this.buffer.write(
+        cls.isEnum() ? "enum " : cls.isInterface() ? "interface " : cls.isAnnotation() ? "@interface " : "class ");
+    this.buffer.write(cls.getName());
+
+    writeTypeParameters(cls);
+
+    // subclass
+    if (cls.getSuperClass() != null) {
+      String className = cls.getSuperClass().getFullyQualifiedName();
+      if (!"java.lang.Object".equals(className) && !"java.lang.Enum".equals(className)) {
+        this.buffer.write(" extends ");
+        this.buffer.write(cls.getSuperClass().getGenericValue());
+      }
     }
 
-    @Override
-    public ModelWriter writePackage(JavaPackage pckg) {
-        if (pckg != null) {
-            commentHeader(pckg);
-            buffer.write("package ");
-            buffer.write(pckg.getName());
-            buffer.write(';');
-            buffer.newline();
-            buffer.newline();
+    // implements
+    if (cls.getImplements().size() > 0) {
+      this.buffer.write(cls.isInterface() ? " extends " : " implements ");
+
+      for (ListIterator<JavaType> iter = cls.getImplements().listIterator(); iter.hasNext();) {
+        this.buffer.write(iter.next().getGenericValue());
+        if (iter.hasNext()) {
+          this.buffer.write(", ");
         }
-        return this;
+      }
     }
 
-    @Override
-    public ModelWriter writeClass(JavaClass cls) {
-        commentHeader(cls);
+    return writeClassBody(cls);
+  }
 
-        writeAccessibilityModifier(cls.getModifiers());
-        writeNonAccessibilityModifiers(cls.getModifiers());
+  private ModelWriter writeClassBody(JavaClass cls) {
 
-        buffer.write(
-            cls.isEnum() ? "enum " : cls.isInterface() ? "interface " : cls.isAnnotation() ? "@interface " : "class ");
-        buffer.write(cls.getName());
+    this.buffer.write(" {");
+    this.buffer.newline();
+    this.buffer.indent();
 
-        writeTypeParameters(cls);
-
-        // subclass
-        if (cls.getSuperClass() != null) {
-            String className = cls.getSuperClass().getFullyQualifiedName();
-            if (!"java.lang.Object".equals(className) && !"java.lang.Enum".equals(className)) {
-                buffer.write(" extends ");
-                buffer.write(cls.getSuperClass().getGenericValue());
-            }
+    // fields
+    if (cls.getSuperClass() != null && "java.lang.Enum".equals(cls.getSuperClass().getFullyQualifiedName())) {
+      Iterator<JavaField> it = cls.getFields().iterator();
+      while (it.hasNext()) {
+        JavaField curr = it.next();
+        commentHeader(curr);
+        this.buffer.newline();
+        this.buffer.write(curr.getName());
+        if (it.hasNext()) {
+          this.buffer.write(", ");
         }
-
-        // implements
-        if (cls.getImplements().size() > 0) {
-            buffer.write(cls.isInterface() ? " extends " : " implements ");
-
-            for (ListIterator<JavaType> iter = cls.getImplements().listIterator(); iter.hasNext();) {
-                buffer.write(iter.next().getGenericValue());
-                if (iter.hasNext()) {
-                    buffer.write(", ");
-                }
-            }
-        }
-
-        return writeClassBody(cls);
+      }
+    } else {
+      for (JavaField javaField : cls.getFields()) {
+        this.buffer.newline();
+        writeField(javaField);
+      }
     }
 
-    private ModelWriter writeClassBody(JavaClass cls) {
-        buffer.write(" {");
-        buffer.newline();
-        buffer.indent();
-
-        // fields
-        if (cls.getSuperClass() != null && "java.lang.Enum".equals(cls.getSuperClass().getFullyQualifiedName())) {
-            Iterator<JavaField> it = cls.getFields().iterator();
-            while (it.hasNext()) {
-                JavaField curr = it.next();
-                commentHeader(curr);
-                buffer.newline();
-                buffer.write(curr.getName());
-                if (it.hasNext()) {
-                    buffer.write(", ");
-                }
-            }
-        } else {
-            for (JavaField javaField : cls.getFields()) {
-                buffer.newline();
-                writeField(javaField);
-            }
-        }
-
-        // constructors
-        for (JavaConstructor javaConstructor : cls.getConstructors()) {
-            buffer.newline();
-            writeConstructor(javaConstructor);
-        }
-
-        // initializer
-        for (JavaInitializer innerInitializer : cls.getInitializers()) {
-            buffer.newline();
-            writeInitializer(innerInitializer);
-        }
-
-        // methods
-        for (JavaMethod javaMethod : cls.getMethods()) {
-            buffer.newline();
-            writeMethod(javaMethod);
-        }
-
-        // inner-classes
-        for (JavaClass innerCls : cls.getNestedClasses()) {
-            buffer.newline();
-            writeClass(innerCls);
-        }
-
-        buffer.deindent();
-        buffer.newline();
-        buffer.write('}');
-        buffer.newline();
-        return this;
+    // constructors
+    for (JavaConstructor javaConstructor : cls.getConstructors()) {
+      this.buffer.newline();
+      writeConstructor(javaConstructor);
     }
 
-    @Override
-    public ModelWriter writeInitializer(JavaInitializer init) {
-        if (init.isStatic()) {
-            buffer.write("static ");
-        }
-        buffer.write('{');
-        buffer.newline();
-        buffer.indent();
-
-        buffer.write(init.getBlockContent());
-
-        buffer.deindent();
-        buffer.newline();
-        buffer.write('}');
-        buffer.newline();
-        return this;
+    // initializer
+    for (JavaInitializer innerInitializer : cls.getInitializers()) {
+      this.buffer.newline();
+      writeInitializer(innerInitializer);
     }
 
-    @Override
-    public ModelWriter writeField(JavaField field) {
-        commentHeader(field);
-
-        writeAllModifiers(field.getModifiers());
-        if (!field.isEnumConstant()) {
-            buffer.write(field.getType().getGenericValue());
-            buffer.write(' ');
-        }
-        buffer.write(field.getName());
-
-        if (field.isEnumConstant()) {
-            if (field.getEnumConstantArguments() != null && !field.getEnumConstantArguments().isEmpty()) {
-                buffer.write("( ");
-                for (Iterator<Expression> iter = field.getEnumConstantArguments().listIterator(); iter.hasNext();) {
-                    buffer.write(iter.next().getParameterValue().toString());
-                    if (iter.hasNext()) {
-                        buffer.write(", ");
-                    }
-                }
-                buffer.write(" )");
-            }
-            if (field.getEnumConstantClass() != null) {
-                writeClassBody(field.getEnumConstantClass());
-            }
-        } else {
-            if (field.getInitializationExpression() != null) {
-                String fieldExpression = field.getInitializationExpression();
-                fieldExpression = StringUtils.strip(fieldExpression, "\n\r");
-                fieldExpression = fieldExpression.trim();
-                if (!fieldExpression.isEmpty()) {
-                    {
-                        buffer.write(" = ");
-                    }
-                    buffer.write(field.getInitializationExpression());
-
-                }
-            }
-        }
-        buffer.write(';');
-        buffer.newline();
-        return this;
+    // methods
+    for (JavaMethod javaMethod : cls.getMethods()) {
+      this.buffer.newline();
+      writeMethod(javaMethod);
     }
 
-    @Override
-    public ModelWriter writeConstructor(JavaConstructor constructor) {
-        commentHeader(constructor);
-        writeAllModifiers(constructor.getModifiers());
-
-        buffer.write(constructor.getName());
-        buffer.write('(');
-        for (ListIterator<JavaParameter> iter = constructor.getParameters().listIterator(); iter.hasNext();) {
-            writeParameter(iter.next());
-            if (iter.hasNext()) {
-                buffer.write(", ");
-            }
-        }
-        buffer.write(')');
-
-        if (constructor.getExceptions().size() > 0) {
-            buffer.write(" throws ");
-            for (Iterator<JavaClass> excIter = constructor.getExceptions().iterator(); excIter.hasNext();) {
-                buffer.write(excIter.next().getGenericValue());
-                if (excIter.hasNext()) {
-                    buffer.write(", ");
-                }
-            }
-        }
-
-        buffer.write(" {");
-        if (constructor.getSourceCode() != null) {
-            buffer.write(constructor.getSourceCode());
-        }
-        buffer.write('}');
-        buffer.newline();
-
-        return this;
+    // inner-classes
+    for (JavaClass innerCls : cls.getNestedClasses()) {
+      this.buffer.newline();
+      writeClass(innerCls);
     }
 
-    @Override
-    public ModelWriter writeMethod(JavaMethod method) {
-        commentHeader(method);
-        writeAccessibilityModifier(method.getModifiers());
-        writeNonAccessibilityModifiers(method.getModifiers());
+    this.buffer.deindent();
+    this.buffer.newline();
+    this.buffer.write('}');
+    this.buffer.newline();
+    return this;
+  }
 
-        if (writeTypeParameters(method)) {
-            buffer.write(' ');
-        }
+  @Override
+  public ModelWriter writeInitializer(JavaInitializer init) {
 
-        buffer.write(method.getReturnType().getGenericValue());
-        buffer.write(' ');
-        buffer.write(method.getName());
-        buffer.write('(');
-        for (ListIterator<JavaParameter> iter = method.getParameters().listIterator(); iter.hasNext();) {
-            writeParameter(iter.next());
-            if (iter.hasNext()) {
-                buffer.write(", ");
-            }
+    if (init.isStatic()) {
+      this.buffer.write("static ");
+    }
+    this.buffer.write('{');
+    this.buffer.newline();
+    this.buffer.indent();
+
+    this.buffer.write(init.getBlockContent());
+
+    this.buffer.deindent();
+    this.buffer.newline();
+    this.buffer.write('}');
+    this.buffer.newline();
+    return this;
+  }
+
+  @Override
+  public ModelWriter writeField(JavaField field) {
+
+    commentHeader(field);
+
+    writeAllModifiers(field.getModifiers());
+    if (!field.isEnumConstant()) {
+      this.buffer.write(field.getType().getGenericValue());
+      this.buffer.write(' ');
+    }
+    this.buffer.write(field.getName());
+
+    if (field.isEnumConstant()) {
+      if (field.getEnumConstantArguments() != null && !field.getEnumConstantArguments().isEmpty()) {
+        this.buffer.write("( ");
+        for (Iterator<Expression> iter = field.getEnumConstantArguments().listIterator(); iter.hasNext();) {
+          this.buffer.write(iter.next().getParameterValue().toString());
+          if (iter.hasNext()) {
+            this.buffer.write(", ");
+          }
+        }
+        this.buffer.write(" )");
+      }
+      if (field.getEnumConstantClass() != null) {
+        writeClassBody(field.getEnumConstantClass());
+      }
+    } else {
+      if (field.getInitializationExpression() != null) {
+        String fieldExpression = field.getInitializationExpression();
+        fieldExpression = StringUtils.strip(fieldExpression, "\n\r");
+        fieldExpression = fieldExpression.trim();
+        if (!fieldExpression.isEmpty()) {
+          {
+            this.buffer.write(" = ");
+          }
+          this.buffer.write(field.getInitializationExpression());
 
         }
-        buffer.write(')');
-        if (method.getExceptions().size() > 0) {
-            buffer.write(" throws ");
-            for (Iterator<JavaClass> excIter = method.getExceptions().iterator(); excIter.hasNext();) {
-                buffer.write(excIter.next().getGenericValue());
-                if (excIter.hasNext()) {
-                    buffer.write(", ");
-                }
-            }
+      }
+    }
+    this.buffer.write(';');
+    this.buffer.newline();
+    return this;
+  }
+
+  @Override
+  public ModelWriter writeConstructor(JavaConstructor constructor) {
+
+    commentHeader(constructor);
+    writeAllModifiers(constructor.getModifiers());
+
+    this.buffer.write(constructor.getName());
+    this.buffer.write('(');
+    for (ListIterator<JavaParameter> iter = constructor.getParameters().listIterator(); iter.hasNext();) {
+      writeParameter(iter.next());
+      if (iter.hasNext()) {
+        this.buffer.write(", ");
+      }
+    }
+    this.buffer.write(')');
+
+    if (constructor.getExceptions().size() > 0) {
+      this.buffer.write(" throws ");
+      for (Iterator<JavaClass> excIter = constructor.getExceptions().iterator(); excIter.hasNext();) {
+        this.buffer.write(excIter.next().getGenericValue());
+        if (excIter.hasNext()) {
+          this.buffer.write(", ");
         }
-        if (method.getSourceCode() != null && method.getSourceCode().length() > 0) {
-            buffer.write(" {");
-            buffer.write(method.getSourceCode());
-            buffer.write('}');
-            buffer.newline();
-        } else {
-            buffer.write(';');
-            buffer.newline();
-        }
-        return this;
+      }
     }
 
-    private boolean writeTypeParameters(JavaGenericDeclaration decl) {
-        List<JavaTypeVariable<JavaGenericDeclaration>> typeParameters = decl.getTypeParameters();
-        if (typeParameters.size() == 0) {
-            return false;
+    this.buffer.write(" {");
+    if (constructor.getSourceCode() != null) {
+      this.buffer.write(constructor.getSourceCode());
+    }
+    this.buffer.write('}');
+    this.buffer.newline();
+
+    return this;
+  }
+
+  @Override
+  public ModelWriter writeMethod(JavaMethod method) {
+
+    commentHeader(method);
+    writeAccessibilityModifier(method.getModifiers());
+    writeNonAccessibilityModifiers(method.getModifiers());
+
+    if (writeTypeParameters(method)) {
+      this.buffer.write(' ');
+    }
+
+    this.buffer.write(method.getReturnType().getGenericValue());
+    this.buffer.write(' ');
+    this.buffer.write(method.getName());
+    this.buffer.write('(');
+    for (ListIterator<JavaParameter> iter = method.getParameters().listIterator(); iter.hasNext();) {
+      writeParameter(iter.next());
+      if (iter.hasNext()) {
+        this.buffer.write(", ");
+      }
+
+    }
+    this.buffer.write(')');
+    if (method.getExceptions().size() > 0) {
+      this.buffer.write(" throws ");
+      for (Iterator<JavaClass> excIter = method.getExceptions().iterator(); excIter.hasNext();) {
+        this.buffer.write(excIter.next().getGenericValue());
+        if (excIter.hasNext()) {
+          this.buffer.write(", ");
+        }
+      }
+    }
+    if (method.getSourceCode() != null && method.getSourceCode().length() > 0) {
+      this.buffer.write(" {");
+      this.buffer.write(method.getSourceCode());
+      this.buffer.write('}');
+      this.buffer.newline();
+    } else {
+      this.buffer.write(';');
+      this.buffer.newline();
+    }
+    return this;
+  }
+
+  private boolean writeTypeParameters(JavaGenericDeclaration decl) {
+
+    List<JavaTypeVariable<JavaGenericDeclaration>> typeParameters = decl.getTypeParameters();
+    if (typeParameters.size() == 0) {
+      return false;
+    }
+
+    this.buffer.write("<");
+    boolean first = true;
+    for (JavaTypeVariable<?> v : typeParameters) {
+      if (!first) {
+        this.buffer.write(",");
+        this.buffer.write(' ');
+      } else {
+        first = false;
+      }
+      this.buffer.write(v.getGenericValue());
+    }
+    this.buffer.write(">");
+    return true;
+  }
+
+  private void writeNonAccessibilityModifiers(Collection<String> modifiers) {
+
+    for (String modifier : modifiers) {
+      if (!modifier.startsWith("p")) {
+        this.buffer.write(modifier);
+        this.buffer.write(' ');
+      }
+    }
+  }
+
+  private void writeAccessibilityModifier(Collection<String> modifiers) {
+
+    for (String modifier : modifiers) {
+      if (modifier.startsWith("p")) {
+        this.buffer.write(modifier);
+        this.buffer.write(' ');
+      }
+    }
+  }
+
+  private void writeAllModifiers(List<String> modifiers) {
+
+    for (String modifier : modifiers) {
+      this.buffer.write(modifier);
+      this.buffer.write(' ');
+    }
+  }
+
+  @Override
+  public ModelWriter writeAnnotation(JavaAnnotation annotation) {
+
+    this.buffer.write('@');
+    this.buffer.write(annotation.getType().getGenericValue());
+    if (!annotation.getPropertyMap().isEmpty()) {
+      this.buffer.indent();
+      this.buffer.write('(');
+      Set<Entry<String, AnnotationValue>> annotationEntrySet = annotation.getPropertyMap().entrySet();
+      Iterator<Map.Entry<String, AnnotationValue>> iterator = annotationEntrySet.iterator();
+      while (iterator.hasNext()) {
+        Map.Entry<String, AnnotationValue> entry = iterator.next();
+        if (annotationEntrySet.size() != 1 || !"value".equals(entry.getKey())) {
+          this.buffer.write(entry.getKey());
+          this.buffer.write('=');
         }
 
-        buffer.write("<");
-        boolean first = true;
-        for (JavaTypeVariable<?> v : typeParameters) {
-            if (!first) {
-                buffer.write(",");
-                buffer.write(' ');
+        if (entry.getValue().getParameterValue() instanceof JavaAnnotation) {
+          writeAnnotation((JavaAnnotation) entry.getValue().getParameterValue());
+        } else if (entry.getValue().getParameterValue() instanceof Collection<?>) {
+          Collection<?> annotations = (Collection<?>) entry.getValue().getParameterValue();
+          Object[] a = annotations.toArray();
+          this.buffer.write("{");
+          for (int i = 0; i < annotations.toArray().length; i++) {
+            if (a[i] instanceof JavaAnnotation) {
+              if (i > 0) {
+                this.buffer.write(", ");
+              }
+              writeAnnotation((JavaAnnotation) a[i]);
             } else {
-                first = false;
+              if (i > 0) {
+                this.buffer.write(", " + a[i].toString());
+              } else {
+                this.buffer.write(a[i].toString());
+              }
             }
-            buffer.write(v.getGenericValue());
+          }
+          this.buffer.write("}");
+        } else {
+          this.buffer.write(entry.getValue().toString());
         }
-        buffer.write(">");
-        return true;
+
+        if (iterator.hasNext()) {
+          this.buffer.write(',');
+          this.buffer.newline();
+        }
+      }
+      this.buffer.write(')');
+      this.buffer.deindent();
+    }
+    this.buffer.newline();
+    return this;
+  }
+
+  @Override
+  public ModelWriter writeParameter(JavaParameter parameter) {
+
+    commentHeader(parameter);
+    writeAllModifiers(((ExtendedJavaParameter) parameter).getModifiers());
+    this.buffer.write(parameter.getGenericValue());
+    if (parameter.isVarArgs()) {
+      this.buffer.write("...");
+    }
+    this.buffer.write(' ');
+    this.buffer.write(parameter.getName());
+    return this;
+  }
+
+  protected void commentHeader(JavaAnnotatedElement entity) {
+
+    if (entity.getComment() != null || (entity.getTags().size() > 0)) {
+      this.buffer.write("/**");
+      this.buffer.newline();
+
+      if (entity.getComment() != null && entity.getComment().length() > 0) {
+        this.buffer.write(" * ");
+
+        this.buffer.write(entity.getComment().replaceAll("\n", "\n * "));
+
+        this.buffer.newline();
+      }
+
+      if (entity.getTags().size() > 0) {
+        if (entity.getComment() != null && entity.getComment().length() > 0) {
+          this.buffer.write(" *");
+          this.buffer.newline();
+        }
+        for (DocletTag docletTag : entity.getTags()) {
+          this.buffer.write(" * @");
+          this.buffer.write(docletTag.getName());
+          if (docletTag.getValue().length() > 0) {
+            this.buffer.write(' ');
+            this.buffer.write(docletTag.getValue());
+          }
+          this.buffer.newline();
+        }
+      }
+
+      this.buffer.write(" */");
+      this.buffer.newline();
+    }
+    if (entity.getAnnotations() != null) {
+      for (JavaAnnotation annotation : entity.getAnnotations()) {
+        if (entity.getAnnotations().get(entity.getAnnotations().size() - 1) != null) {
+          writeAnnotation(annotation);
+        }
+      }
+    }
+  }
+
+  @Override
+  public String toString() {
+
+    return this.buffer.toString();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public ModelWriter writeModuleDescriptor(JavaModuleDescriptor descriptor) {
+
+    if (descriptor.isOpen()) {
+      this.buffer.write("open ");
+    }
+    this.buffer.write("module " + descriptor.getName() + " {");
+    this.buffer.newline();
+    this.buffer.indent();
+
+    for (JavaRequires requires : descriptor.getRequires()) {
+      this.buffer.newline();
+      writeModuleRequires(requires);
     }
 
-    private void writeNonAccessibilityModifiers(Collection<String> modifiers) {
-        for (String modifier : modifiers) {
-            if (!modifier.startsWith("p")) {
-                buffer.write(modifier);
-                buffer.write(' ');
-            }
-        }
+    for (JavaExports exports : descriptor.getExports()) {
+      this.buffer.newline();
+      writeModuleExports(exports);
     }
 
-    private void writeAccessibilityModifier(Collection<String> modifiers) {
-        for (String modifier : modifiers) {
-            if (modifier.startsWith("p")) {
-                buffer.write(modifier);
-                buffer.write(' ');
-            }
-        }
+    for (JavaOpens opens : descriptor.getOpens()) {
+      this.buffer.newline();
+      writeModuleOpens(opens);
     }
 
-    private void writeAllModifiers(List<String> modifiers) {
-        for (String modifier : modifiers) {
-            buffer.write(modifier);
-            buffer.write(' ');
-        }
+    for (JavaProvides provides : descriptor.getProvides()) {
+      this.buffer.newline();
+      writeModuleProvides(provides);
     }
 
-    @Override
-    public ModelWriter writeAnnotation(JavaAnnotation annotation) {
-        buffer.write('@');
-        buffer.write(annotation.getType().getGenericValue());
-        if (!annotation.getPropertyMap().isEmpty()) {
-            buffer.indent();
-            buffer.write('(');
-            Set<Entry<String, AnnotationValue>> annotationEntrySet = annotation.getPropertyMap().entrySet();
-            Iterator<Map.Entry<String, AnnotationValue>> iterator = annotationEntrySet.iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, AnnotationValue> entry = iterator.next();
-                if (annotationEntrySet.size() != 1 || !"value".equals(entry.getKey())) {
-                    buffer.write(entry.getKey());
-                    buffer.write('=');
-                }
-
-                if (entry.getValue().getParameterValue() instanceof JavaAnnotation) {
-                    writeAnnotation((JavaAnnotation) entry.getValue().getParameterValue());
-                } else if (entry.getValue().getParameterValue() instanceof Collection<?>) {
-                    Collection<?> annotations = (Collection<?>) entry.getValue().getParameterValue();
-                    Object[] a = annotations.toArray();
-                    buffer.write("{");
-                    for (int i = 0; i < annotations.toArray().length; i++) {
-                        if (a[i] instanceof JavaAnnotation) {
-                            if (i > 0) {
-                                buffer.write(", ");
-                            }
-                            writeAnnotation((JavaAnnotation) a[i]);
-                        } else {
-                            if (i > 0) {
-                                buffer.write(", " + a[i].toString());
-                            } else {
-                                buffer.write(a[i].toString());
-                            }
-                        }
-                    }
-                    buffer.write("}");
-                } else {
-                    buffer.write(entry.getValue().toString());
-                }
-
-                if (iterator.hasNext()) {
-                    buffer.write(',');
-                    buffer.newline();
-                }
-            }
-            buffer.write(')');
-            buffer.deindent();
-        }
-        buffer.newline();
-        return this;
+    for (JavaUses uses : descriptor.getUses()) {
+      this.buffer.newline();
+      writeModuleUses(uses);
     }
 
-    @Override
-    public ModelWriter writeParameter(JavaParameter parameter) {
-        commentHeader(parameter);
-        writeAllModifiers(((ExtendedJavaParameter) parameter).getModifiers());
-        buffer.write(parameter.getGenericValue());
-        if (parameter.isVarArgs()) {
-            buffer.write("...");
+    this.buffer.newline();
+    this.buffer.deindent();
+    this.buffer.write('}');
+    this.buffer.newline();
+    return this;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public ModelWriter writeModuleExports(JavaExports exports) {
+
+    this.buffer.write("exports ");
+    this.buffer.write(exports.getSource().getName());
+    if (!exports.getTargets().isEmpty()) {
+      this.buffer.write(" to ");
+      Iterator<JavaModule> targets = exports.getTargets().iterator();
+      while (targets.hasNext()) {
+        JavaModule target = targets.next();
+        this.buffer.write(target.getName());
+        if (targets.hasNext()) {
+          this.buffer.write(", ");
         }
-        buffer.write(' ');
-        buffer.write(parameter.getName());
-        return this;
+      }
     }
+    this.buffer.write(';');
+    this.buffer.newline();
+    return this;
+  }
 
-    protected void commentHeader(JavaAnnotatedElement entity) {
-        if (entity.getComment() != null || (entity.getTags().size() > 0)) {
-            buffer.write("/**");
-            buffer.newline();
+  /** {@inheritDoc} */
+  @Override
+  public ModelWriter writeModuleOpens(JavaOpens opens) {
 
-            if (entity.getComment() != null && entity.getComment().length() > 0) {
-                buffer.write(" * ");
-
-                buffer.write(entity.getComment().replaceAll("\n", "\n * "));
-
-                buffer.newline();
-            }
-
-            if (entity.getTags().size() > 0) {
-                if (entity.getComment() != null && entity.getComment().length() > 0) {
-                    buffer.write(" *");
-                    buffer.newline();
-                }
-                for (DocletTag docletTag : entity.getTags()) {
-                    buffer.write(" * @");
-                    buffer.write(docletTag.getName());
-                    if (docletTag.getValue().length() > 0) {
-                        buffer.write(' ');
-                        buffer.write(docletTag.getValue());
-                    }
-                    buffer.newline();
-                }
-            }
-
-            buffer.write(" */");
-            buffer.newline();
+    this.buffer.write("opens ");
+    this.buffer.write(opens.getSource().getName());
+    if (!opens.getTargets().isEmpty()) {
+      this.buffer.write(" to ");
+      Iterator<JavaModule> targets = opens.getTargets().iterator();
+      while (targets.hasNext()) {
+        JavaModule target = targets.next();
+        this.buffer.write(target.getName());
+        if (targets.hasNext()) {
+          this.buffer.write(", ");
         }
-        if (entity.getAnnotations() != null) {
-            for (JavaAnnotation annotation : entity.getAnnotations()) {
-                if (entity.getAnnotations().get(entity.getAnnotations().size() - 1) != null) {
-                    writeAnnotation(annotation);
-                }
-            }
-        }
+      }
     }
+    this.buffer.write(';');
+    this.buffer.newline();
+    return this;
+  }
 
-    @Override
-    public String toString() {
-        return buffer.toString();
+  /** {@inheritDoc} */
+  @Override
+  public ModelWriter writeModuleProvides(JavaProvides provides) {
+
+    this.buffer.write("provides ");
+    this.buffer.write(provides.getService().getName());
+    this.buffer.write(" with ");
+    Iterator<JavaClass> providers = provides.getProviders().iterator();
+    while (providers.hasNext()) {
+      JavaClass provider = providers.next();
+      this.buffer.write(provider.getName());
+      if (providers.hasNext()) {
+        this.buffer.write(", ");
+      }
     }
+    this.buffer.write(';');
+    this.buffer.newline();
+    return null;
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public ModelWriter writeModuleDescriptor(JavaModuleDescriptor descriptor) {
-        if (descriptor.isOpen()) {
-            buffer.write("open ");
-        }
-        buffer.write("module " + descriptor.getName() + " {");
-        buffer.newline();
-        buffer.indent();
+  /** {@inheritDoc} */
+  @Override
+  public ModelWriter writeModuleRequires(JavaRequires requires) {
 
-        for (JavaRequires requires : descriptor.getRequires()) {
-            buffer.newline();
-            writeModuleRequires(requires);
-        }
+    this.buffer.write("requires ");
+    writeAccessibilityModifier(requires.getModifiers());
+    writeNonAccessibilityModifiers(requires.getModifiers());
+    this.buffer.write(requires.getModule().getName());
+    this.buffer.write(';');
+    this.buffer.newline();
+    return this;
+  }
 
-        for (JavaExports exports : descriptor.getExports()) {
-            buffer.newline();
-            writeModuleExports(exports);
-        }
+  /** {@inheritDoc} */
+  @Override
+  public ModelWriter writeModuleUses(JavaUses uses) {
 
-        for (JavaOpens opens : descriptor.getOpens()) {
-            buffer.newline();
-            writeModuleOpens(opens);
-        }
-
-        for (JavaProvides provides : descriptor.getProvides()) {
-            buffer.newline();
-            writeModuleProvides(provides);
-        }
-
-        for (JavaUses uses : descriptor.getUses()) {
-            buffer.newline();
-            writeModuleUses(uses);
-        }
-
-        buffer.newline();
-        buffer.deindent();
-        buffer.write('}');
-        buffer.newline();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ModelWriter writeModuleExports(JavaExports exports) {
-        buffer.write("exports ");
-        buffer.write(exports.getSource().getName());
-        if (!exports.getTargets().isEmpty()) {
-            buffer.write(" to ");
-            Iterator<JavaModule> targets = exports.getTargets().iterator();
-            while (targets.hasNext()) {
-                JavaModule target = targets.next();
-                buffer.write(target.getName());
-                if (targets.hasNext()) {
-                    buffer.write(", ");
-                }
-            }
-        }
-        buffer.write(';');
-        buffer.newline();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ModelWriter writeModuleOpens(JavaOpens opens) {
-        buffer.write("opens ");
-        buffer.write(opens.getSource().getName());
-        if (!opens.getTargets().isEmpty()) {
-            buffer.write(" to ");
-            Iterator<JavaModule> targets = opens.getTargets().iterator();
-            while (targets.hasNext()) {
-                JavaModule target = targets.next();
-                buffer.write(target.getName());
-                if (targets.hasNext()) {
-                    buffer.write(", ");
-                }
-            }
-        }
-        buffer.write(';');
-        buffer.newline();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ModelWriter writeModuleProvides(JavaProvides provides) {
-        buffer.write("provides ");
-        buffer.write(provides.getService().getName());
-        buffer.write(" with ");
-        Iterator<JavaClass> providers = provides.getProviders().iterator();
-        while (providers.hasNext()) {
-            JavaClass provider = providers.next();
-            buffer.write(provider.getName());
-            if (providers.hasNext()) {
-                buffer.write(", ");
-            }
-        }
-        buffer.write(';');
-        buffer.newline();
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ModelWriter writeModuleRequires(JavaRequires requires) {
-        buffer.write("requires ");
-        writeAccessibilityModifier(requires.getModifiers());
-        writeNonAccessibilityModifiers(requires.getModifiers());
-        buffer.write(requires.getModule().getName());
-        buffer.write(';');
-        buffer.newline();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ModelWriter writeModuleUses(JavaUses uses) {
-        buffer.write("uses ");
-        buffer.write(uses.getService().getName());
-        buffer.write(';');
-        buffer.newline();
-        return this;
-    }
+    this.buffer.write("uses ");
+    this.buffer.write(uses.getService().getName());
+    this.buffer.write(';');
+    this.buffer.newline();
+    return this;
+  }
 
 }

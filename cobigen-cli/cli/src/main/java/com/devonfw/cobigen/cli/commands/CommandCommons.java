@@ -14,28 +14,28 @@ import picocli.CommandLine.Option;
  */
 public abstract class CommandCommons implements Callable<Integer> {
 
-    /**
-     * If this options is enabled, we will print also debug messages
-     */
-    @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
-    boolean verbose;
+  /**
+   * If this options is enabled, we will print also debug messages
+   */
+  @Option(names = { "--verbose", "-v" }, negatable = true, description = MessagesConstants.VERBOSE_OPTION_DESCRIPTION)
+  boolean verbose;
 
-    /**
-     * Set location of templates project
-     */
-    @Option(names = { "--templates-project", "-tp" }, description = MessagesConstants.TEMPLATE_PATH_DESCRIPTION)
-    Path templatesProject;
+  /**
+   * Set location of templates project
+   */
+  @Option(names = { "--templates-project", "-tp" }, description = MessagesConstants.TEMPLATE_PATH_DESCRIPTION)
+  Path templatesProject;
 
-    @Override
-    public Integer call() throws Exception {
+  @Override
+  public Integer call() throws Exception {
 
-        if (verbose) {
-            CLILogger.setLevel(Level.DEBUG);
-        }
-
-        return doAction();
+    if (this.verbose) {
+      CLILogger.setLevel(Level.DEBUG);
     }
 
-    public abstract Integer doAction() throws Exception;
+    return doAction();
+  }
+
+  public abstract Integer doAction() throws Exception;
 
 }

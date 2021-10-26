@@ -9,23 +9,25 @@ import java.util.stream.Collectors;
  */
 public class CompositeClassLoader extends ClassLoader {
 
-    private List<ClassLoader> classLoaders = new ArrayList<>(2);
+  private List<ClassLoader> classLoaders = new ArrayList<>(2);
 
-    public CompositeClassLoader(ClassLoader main, ClassLoader parent) {
-        classLoaders.add(main);
-        classLoaders.add(parent);
-    }
+  public CompositeClassLoader(ClassLoader main, ClassLoader parent) {
 
-    @Override
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
-        for (ClassLoader cl : classLoaders) {
-            try {
-                return cl.loadClass(name);
-            } catch (ClassNotFoundException e) {
-                continue;
-            }
-        }
-        throw new ClassNotFoundException("No Class definition found in one of the classloaders "
-            + classLoaders.stream().map(cl -> cl.toString()).collect(Collectors.toList()));
+    this.classLoaders.add(main);
+    this.classLoaders.add(parent);
+  }
+
+  @Override
+  public Class<?> loadClass(String name) throws ClassNotFoundException {
+
+    for (ClassLoader cl : this.classLoaders) {
+      try {
+        return cl.loadClass(name);
+      } catch (ClassNotFoundException e) {
+        continue;
+      }
     }
+    throw new ClassNotFoundException("No Class definition found in one of the classloaders "
+        + this.classLoaders.stream().map(cl -> cl.toString()).collect(Collectors.toList()));
+  }
 }

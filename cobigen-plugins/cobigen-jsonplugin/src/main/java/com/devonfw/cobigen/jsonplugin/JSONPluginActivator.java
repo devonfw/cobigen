@@ -15,23 +15,25 @@ import com.google.common.collect.Lists;
 @Activation(byMergeStrategy = { JSONPluginActivator.JSONMERGE, JSONPluginActivator.JSONMERGE_OVERRIDE })
 public class JSONPluginActivator implements GeneratorPluginActivator {
 
-    /** JSON merge (prefer patch) */
-    static final String JSONMERGE_OVERRIDE = "jsonmerge_override";
+  /** JSON merge (prefer patch) */
+  static final String JSONMERGE_OVERRIDE = "jsonmerge_override";
 
-    /** JSON merge (prefer base) */
-    static final String JSONMERGE = "jsonmerge";
+  /** JSON merge (prefer base) */
+  static final String JSONMERGE = "jsonmerge";
 
-    @Override
-    public List<Merger> bindMerger() {
-        List<Merger> merger = Lists.newLinkedList();
-        merger.add(new JSONMerger(JSONMERGE, false));
-        merger.add(new JSONMerger(JSONMERGE_OVERRIDE, true));
-        return merger;
-    }
+  @Override
+  public List<Merger> bindMerger() {
 
-    @Override
-    public List<TriggerInterpreter> bindTriggerInterpreter() {
-        return null;
-    }
+    List<Merger> merger = Lists.newLinkedList();
+    merger.add(new JSONMerger(JSONMERGE, false));
+    merger.add(new JSONMerger(JSONMERGE_OVERRIDE, true));
+    return merger;
+  }
+
+  @Override
+  public List<TriggerInterpreter> bindTriggerInterpreter() {
+
+    return null;
+  }
 
 }

@@ -10,111 +10,132 @@ import java.util.Map;
 @SuppressWarnings("javadoc")
 public class PropertyDef {
 
-    private String name;
+  private String name;
 
-    private String type;
+  private String type;
 
-    private String format;
+  private String format;
 
-    private boolean isCollection;
+  private boolean isCollection;
 
-    private boolean isEntity;
+  private boolean isEntity;
 
-    private boolean sameComponent;
+  private boolean sameComponent;
 
-    private String description;
+  private String description;
 
-    private boolean required;
+  private boolean required;
 
-    private Map<String, Object> constraints;
+  private Map<String, Object> constraints;
 
-    private List<String> enumElements;
+  private List<String> enumElements;
 
-    public PropertyDef() {
-        constraints = new HashMap<>();
-        setIsCollection(false);
-        setIsEntity(false);
-        constraints = new HashMap<>();
-        setSameComponent(false);
-    }
+  public PropertyDef() {
 
-    public void setEnumElements(List<String> enumElements) {
-        this.enumElements = enumElements;
-    }
+    this.constraints = new HashMap<>();
+    setIsCollection(false);
+    setIsEntity(false);
+    this.constraints = new HashMap<>();
+    setSameComponent(false);
+  }
 
-    public List<String> getEnumElements() {
-        return enumElements;
-    }
+  public void setEnumElements(List<String> enumElements) {
 
-    public String getName() {
-        return name;
-    }
+    this.enumElements = enumElements;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public List<String> getEnumElements() {
 
-    public String getType() {
-        return type;
-    }
+    return this.enumElements;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public String getName() {
 
-    public boolean getRequired() {
-        return required;
-    }
+    return this.name;
+  }
 
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
+  public void setName(String name) {
 
-    public Map<String, Object> getConstraints() {
-        return constraints;
-    }
+    this.name = name;
+  }
 
-    public void setConstraints(Map<String, Object> constraints) {
-        this.constraints = constraints;
-    }
+  public String getType() {
 
-    public String getDescription() {
-        return description;
-    }
+    return this.type;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setType(String type) {
 
-    public String getFormat() {
-        return format;
-    }
+    this.type = type;
+  }
 
-    public void setFormat(String format) {
-        this.format = format;
-    }
+  public boolean getRequired() {
 
-    public boolean getIsCollection() {
-        return isCollection;
-    }
+    return this.required;
+  }
 
-    public void setIsCollection(boolean isCollection) {
-        this.isCollection = isCollection;
-    }
+  public void setRequired(boolean required) {
 
-    public boolean getIsEntity() {
-        return isEntity;
-    }
+    this.required = required;
+  }
 
-    public void setIsEntity(boolean isEntity) {
-        this.isEntity = isEntity;
-    }
+  public Map<String, Object> getConstraints() {
 
-    public boolean getSameComponent() {
-        return sameComponent;
-    }
+    return this.constraints;
+  }
 
-    public void setSameComponent(boolean sameComponent) {
-        this.sameComponent = sameComponent;
-    }
+  public void setConstraints(Map<String, Object> constraints) {
+
+    this.constraints = constraints;
+  }
+
+  public String getDescription() {
+
+    return this.description;
+  }
+
+  public void setDescription(String description) {
+
+    this.description = description;
+  }
+
+  public String getFormat() {
+
+    return this.format;
+  }
+
+  public void setFormat(String format) {
+
+    this.format = format;
+  }
+
+  public boolean getIsCollection() {
+
+    return this.isCollection;
+  }
+
+  public void setIsCollection(boolean isCollection) {
+
+    this.isCollection = isCollection;
+  }
+
+  public boolean getIsEntity() {
+
+    return this.isEntity;
+  }
+
+  public void setIsEntity(boolean isEntity) {
+
+    this.isEntity = isEntity;
+  }
+
+  public boolean getSameComponent() {
+
+    return this.sameComponent;
+  }
+
+  public void setSameComponent(boolean sameComponent) {
+
+    this.sameComponent = sameComponent;
+  }
 }

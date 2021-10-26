@@ -15,36 +15,36 @@ import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 
 /**
- * This test suit focuses on the transactional behavior of generation. In specific, that temporary files will
- * be generated first and just be applied to the final target sources if generation has been successfully.
+ * This test suit focuses on the transactional behavior of generation. In specific, that temporary files will be
+ * generated first and just be applied to the final target sources if generation has been successfully.
  */
 public class TransactionalGenerationTest extends AbstractApiTest {
 
-    /** Root path to all resources used in this test case */
-    private static String testFileRootPath = apiTestsRootPath + "TransactionalGenerationTest/";
+  /** Root path to all resources used in this test case */
+  private static String testFileRootPath = apiTestsRootPath + "TransactionalGenerationTest/";
 
-    /**
-     * Tests, whether no partial generation will be applied to the target if generation fails in between.
-     * @throws Throwable
-     *             test fails
-     */
-    @Test
-    public void testNoPartialApplicationOfGeneration() throws Throwable {
+  /**
+   * Tests, whether no partial generation will be applied to the target if generation fails in between.
+   *
+   * @throws Throwable test fails
+   */
+  @Test
+  public void testNoPartialApplicationOfGeneration() throws Throwable {
 
-        // arrange
-        Object generationInput = PluginMockFactory.createSimpleJavaConfigurationMock();
-        File targetRoot = tmpFolder.newFolder();
+    // arrange
+    Object generationInput = PluginMockFactory.createSimpleJavaConfigurationMock();
+    File targetRoot = this.tmpFolder.newFolder();
 
-        CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
-        List<IncrementTo> matchingIncrements = cobigen.getMatchingIncrements(generationInput);
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    List<IncrementTo> matchingIncrements = cobigen.getMatchingIncrements(generationInput);
 
-        // act
-        GenerationReportTo report = cobigen.generate(generationInput, matchingIncrements, targetRoot.toPath());
+    // act
+    GenerationReportTo report = cobigen.generate(generationInput, matchingIncrements, targetRoot.toPath());
 
-        // assert
-        assertThat(report.isSuccessful()).isFalse();
-        assertThat(new File(targetRoot, "valid.txt")).doesNotExist();
-        assertThat(new File(targetRoot, "invalid.txt")).doesNotExist();
-    }
+    // assert
+    assertThat(report.isSuccessful()).isFalse();
+    assertThat(new File(targetRoot, "valid.txt")).doesNotExist();
+    assertThat(new File(targetRoot, "invalid.txt")).doesNotExist();
+  }
 
 }

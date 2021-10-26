@@ -121,18 +121,25 @@ function doRunCommand() {
 # check preconditions
 if [ "$DEPLOY_UPDATESITE" = "stable" ] && [ -d "../gh-pages" ]
 then
-    cd ../gh-pages
-	CHANGE_LIST=$(git diff --shortstat && git status --porcelain)
-	if [ ! -z "$CHANGE_LIST" ]
-	then
-		echo "../gh-pages is not clean"
-		doAskQuestion "Should I cleanup?" # will exit if no
-		doRunCommand "git reset --hard HEAD"
-		doRunCommand "git clean -xf"
-	fi
-	cd "$SCRIPT_PATH"
+  cd ../gh-pages
+  if [[ $(git diff --shortstat && git status --porcelain) ]]
+  then
+    echo "../gh-pages is prepared"
+  else
+    echo "../gh-pages is not clean"
+    doAskQuestion "Should I cleanup?" # will exit if no
+    doRunCommand "git reset --hard HEAD"
+    doRunCommand "git clean -xf"
+    doRunCommand "git pull"
+  fi
+  cd "$SCRIPT_PATH"
 else
-	echo "Not detected cloned gh-pages branch in ../gh-pages folder."
+  echo "Not detected cloned gh-pages branch in ../gh-pages folder."
+  ORIGIN="$(git config --get remote.origin.url)"
+  case "$ORIGIN" in
+    *devonfw/cobigen*) doAskQuestion "Should I clone gh-pages from $ORIGIN" && echo "Cloning from $ORIGIN into ../gh-pages ..." && git clone --branch gh-pages $ORIGIN ../gh-pages ;;
+    *) echo "You are working on a fork, please make sure, you are releasing from devonfw/cobigen#master" && exit 1 ;;
+  esac
 fi
 
 log_step() {

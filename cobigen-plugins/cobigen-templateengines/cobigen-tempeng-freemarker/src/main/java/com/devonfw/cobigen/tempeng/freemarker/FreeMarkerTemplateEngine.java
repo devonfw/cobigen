@@ -24,64 +24,68 @@ import freemarker.template.TemplateException;
 @Name("FreeMarker")
 public class FreeMarkerTemplateEngine implements TextTemplateEngine {
 
-    /** The file extension of the template files. */
-    private static final String TEMPLATE_EXTENSION = ".ftl";
+  /** The file extension of the template files. */
+  private static final String TEMPLATE_EXTENSION = ".ftl";
 
-    /** The commonly used FreeMarker engine configuration */
-    private Configuration freeMarkerConfig;
+  /** The commonly used FreeMarker engine configuration */
+  private Configuration freeMarkerConfig;
 
-    /**
-     * Constructor, which initializes the commonly used FreeMarker configuration.
-     */
-    public FreeMarkerTemplateEngine() {
-        freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
-        freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
-        freeMarkerConfig.clearEncodingMap();
-        freeMarkerConfig.setDefaultEncoding("UTF-8");
-        freeMarkerConfig.setLocalizedLookup(false);
-        freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader());
-        freeMarkerConfig.setCacheStorage(new NullCacheStorage());
+  /**
+   * Constructor, which initializes the commonly used FreeMarker configuration.
+   */
+  public FreeMarkerTemplateEngine() {
+
+    this.freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
+    this.freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
+    this.freeMarkerConfig.clearEncodingMap();
+    this.freeMarkerConfig.setDefaultEncoding("UTF-8");
+    this.freeMarkerConfig.setLocalizedLookup(false);
+    this.freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader());
+    this.freeMarkerConfig.setCacheStorage(new NullCacheStorage());
+  }
+
+  @Override
+  public String getTemplateFileEnding() {
+
+    return TEMPLATE_EXTENSION;
+  }
+
+  @Override
+  public void process(TextTemplate template, Map<String, Object> model, Writer out, String outputEncoding) {
+
+    Template fmTemplate = null;
+    try {
+      fmTemplate = this.freeMarkerConfig.getTemplate(template.getRelativeTemplatePath());
+    } catch (ParseException e) {
+      throw new CobiGenRuntimeException("Could not parse FreeMarker template: " + template.getAbsoluteTemplatePath()
+          + ". (FreeMarker v" + FreemarkerMetadata.VERSION + " )", e);
+    } catch (Throwable e) {
+      throw new CobiGenRuntimeException(
+          "An error occured while retrieving the FreeMarker template: " + template.getAbsoluteTemplatePath()
+              + " from the FreeMarker configuration. (FreeMarker v" + FreemarkerMetadata.VERSION + " )",
+          e);
     }
 
-    @Override
-    public String getTemplateFileEnding() {
-        return TEMPLATE_EXTENSION;
+    if (fmTemplate != null) {
+      try {
+        Environment env = fmTemplate.createProcessingEnvironment(model, out);
+        env.setOutputEncoding(outputEncoding);
+        env.setLogTemplateExceptions(false); // no duplicate logging
+        env.process();
+      } catch (TemplateException e) {
+        throw new CobiGenRuntimeException("An error occurred while generating the template: "
+            + template.getAbsoluteTemplatePath() + " (FreeMarker v" + FreemarkerMetadata.VERSION + ")", e);
+      } catch (Throwable e) {
+        throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template: "
+            + template.getAbsoluteTemplatePath() + " (FreeMarker v" + FreemarkerMetadata.VERSION + ")", e);
+      }
     }
+  }
 
-    @Override
-    public void process(TextTemplate template, Map<String, Object> model, Writer out, String outputEncoding) {
-        Template fmTemplate = null;
-        try {
-            fmTemplate = freeMarkerConfig.getTemplate(template.getRelativeTemplatePath());
-        } catch (ParseException e) {
-            throw new CobiGenRuntimeException("Could not parse FreeMarker template: "
-                + template.getAbsoluteTemplatePath() + ". (FreeMarker v" + FreemarkerMetadata.VERSION + " )", e);
-        } catch (Throwable e) {
-            throw new CobiGenRuntimeException(
-                "An error occured while retrieving the FreeMarker template: " + template.getAbsoluteTemplatePath()
-                    + " from the FreeMarker configuration. (FreeMarker v" + FreemarkerMetadata.VERSION + " )",
-                e);
-        }
+  @Override
+  public void setTemplateFolder(Path templateFolderPath) {
 
-        if (fmTemplate != null) {
-            try {
-                Environment env = fmTemplate.createProcessingEnvironment(model, out);
-                env.setOutputEncoding(outputEncoding);
-                env.setLogTemplateExceptions(false); // no duplicate logging
-                env.process();
-            } catch (TemplateException e) {
-                throw new CobiGenRuntimeException("An error occurred while generating the template: "
-                    + template.getAbsoluteTemplatePath() + " (FreeMarker v" + FreemarkerMetadata.VERSION + ")", e);
-            } catch (Throwable e) {
-                throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template: "
-                    + template.getAbsoluteTemplatePath() + " (FreeMarker v" + FreemarkerMetadata.VERSION + ")", e);
-            }
-        }
-    }
-
-    @Override
-    public void setTemplateFolder(Path templateFolderPath) {
-        ((NioFileSystemTemplateLoader) freeMarkerConfig.getTemplateLoader()).setTemplateRoot(templateFolderPath);
-    }
+    ((NioFileSystemTemplateLoader) this.freeMarkerConfig.getTemplateLoader()).setTemplateRoot(templateFolderPath);
+  }
 
 }

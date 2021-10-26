@@ -17,238 +17,276 @@ import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Stub for {@link IPackageFragmentRoot} in order to simulate resources in the generate wizard
+ *
  * @author mbrunnli (05.04.2014)
  */
 public class IPackageFragmentRootStub implements IPackageFragmentRoot {
 
-    @Override
-    public IJavaElement[] getChildren() throws JavaModelException {
-        return null;
-    }
+  @Override
+  public IJavaElement[] getChildren() throws JavaModelException {
 
-    @Override
-    public boolean hasChildren() throws JavaModelException {
-        return false;
-    }
+    return null;
+  }
 
-    @Override
-    public boolean exists() {
-        return false;
-    }
+  @Override
+  public boolean hasChildren() throws JavaModelException {
 
-    @Override
-    public IJavaElement getAncestor(int ancestorType) {
-        return null;
-    }
+    return false;
+  }
 
-    @Override
-    public String getAttachedJavadoc(IProgressMonitor monitor) throws JavaModelException {
-        return null;
-    }
+  @Override
+  public boolean exists() {
 
-    @Override
-    public IResource getCorrespondingResource() throws JavaModelException {
-        return null;
-    }
+    return false;
+  }
 
-    @Override
-    public String getElementName() {
-        return null;
-    }
+  @Override
+  public IJavaElement getAncestor(int ancestorType) {
 
-    @Override
-    public int getElementType() {
-        return 0;
-    }
+    return null;
+  }
 
-    @Override
-    public String getHandleIdentifier() {
-        return null;
-    }
+  @Override
+  public String getAttachedJavadoc(IProgressMonitor monitor) throws JavaModelException {
 
-    @Override
-    public IJavaModel getJavaModel() {
-        return null;
-    }
+    return null;
+  }
 
-    @Override
-    public IJavaProject getJavaProject() {
-        return null;
-    }
+  @Override
+  public IResource getCorrespondingResource() throws JavaModelException {
 
-    @Override
-    public IOpenable getOpenable() {
-        return null;
-    }
+    return null;
+  }
 
-    @Override
-    public IJavaElement getParent() {
-        return null;
-    }
+  @Override
+  public String getElementName() {
 
-    @Override
-    public IPath getPath() {
-        return null;
-    }
+    return null;
+  }
 
-    @Override
-    public IJavaElement getPrimaryElement() {
-        return null;
-    }
+  @Override
+  public int getElementType() {
 
-    @Override
-    public IResource getResource() {
-        return null;
-    }
+    return 0;
+  }
 
-    @Override
-    public ISchedulingRule getSchedulingRule() {
-        return null;
-    }
+  @Override
+  public String getHandleIdentifier() {
 
-    @Override
-    public IResource getUnderlyingResource() throws JavaModelException {
-        return null;
-    }
+    return null;
+  }
 
-    @Override
-    public boolean isReadOnly() {
-        return false;
-    }
+  @Override
+  public IJavaModel getJavaModel() {
 
-    @Override
-    public boolean isStructureKnown() throws JavaModelException {
-        return false;
-    }
+    return null;
+  }
 
-    @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Object getAdapter(Class adapter) {
-        return null;
-    }
+  @Override
+  public IJavaProject getJavaProject() {
 
-    @Override
-    public void close() throws JavaModelException {
+    return null;
+  }
 
-    }
+  @Override
+  public IOpenable getOpenable() {
 
-    @Override
-    public String findRecommendedLineSeparator() throws JavaModelException {
-        return null;
-    }
+    return null;
+  }
 
-    @Override
-    public IBuffer getBuffer() throws JavaModelException {
-        return null;
-    }
+  @Override
+  public IJavaElement getParent() {
 
-    @Override
-    public boolean hasUnsavedChanges() throws JavaModelException {
-        return false;
-    }
+    return null;
+  }
 
-    @Override
-    public boolean isConsistent() throws JavaModelException {
-        return false;
-    }
+  @Override
+  public IPath getPath() {
 
-    @Override
-    public boolean isOpen() {
-        return false;
-    }
+    return null;
+  }
 
-    @Override
-    public void makeConsistent(IProgressMonitor progress) throws JavaModelException {
+  @Override
+  public IJavaElement getPrimaryElement() {
 
-    }
+    return null;
+  }
 
-    @Override
-    public void open(IProgressMonitor progress) throws JavaModelException {
+  @Override
+  public IResource getResource() {
 
-    }
+    return null;
+  }
 
-    @Override
-    public void save(IProgressMonitor progress, boolean force) throws JavaModelException {
+  @Override
+  public ISchedulingRule getSchedulingRule() {
 
-    }
+    return null;
+  }
 
-    @Override
-    public void attachSource(IPath sourcePath, IPath rootPath, IProgressMonitor monitor) throws JavaModelException {
+  @Override
+  public IResource getUnderlyingResource() throws JavaModelException {
 
-    }
+    return null;
+  }
 
-    @Override
-    public void copy(IPath destination, int updateResourceFlags, int updateModelFlags, IClasspathEntry sibling,
-        IProgressMonitor monitor) throws JavaModelException {
+  @Override
+  public boolean isReadOnly() {
 
-    }
+    return false;
+  }
 
-    @Override
-    public IPackageFragment createPackageFragment(String name, boolean force, IProgressMonitor monitor)
-        throws JavaModelException {
-        return null;
-    }
+  @Override
+  public boolean isStructureKnown() throws JavaModelException {
 
-    @Override
-    public void delete(int updateResourceFlags, int updateModelFlags, IProgressMonitor monitor)
-        throws JavaModelException {
+    return false;
+  }
 
-    }
+  @Override
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public Object getAdapter(Class adapter) {
 
-    @Override
-    public int getKind() throws JavaModelException {
-        return 0;
-    }
+    return null;
+  }
 
-    @Override
-    public Object[] getNonJavaResources() throws JavaModelException {
-        return null;
-    }
+  @Override
+  public void close() throws JavaModelException {
 
-    @Override
-    public IPackageFragment getPackageFragment(String packageName) {
-        return null;
-    }
+  }
 
-    @Override
-    public IClasspathEntry getRawClasspathEntry() throws JavaModelException {
-        return null;
-    }
+  @Override
+  public String findRecommendedLineSeparator() throws JavaModelException {
 
-    @Override
-    public IClasspathEntry getResolvedClasspathEntry() throws JavaModelException {
-        return null;
-    }
+    return null;
+  }
 
-    @Override
-    public IPath getSourceAttachmentPath() throws JavaModelException {
-        return null;
-    }
+  @Override
+  public IBuffer getBuffer() throws JavaModelException {
 
-    @Override
-    public IPath getSourceAttachmentRootPath() throws JavaModelException {
-        return null;
-    }
+    return null;
+  }
 
-    @Override
-    public boolean isArchive() {
-        return false;
-    }
+  @Override
+  public boolean hasUnsavedChanges() throws JavaModelException {
 
-    @Override
-    public boolean isExternal() {
-        return false;
-    }
+    return false;
+  }
 
-    @Override
-    public void move(IPath destination, int updateResourceFlags, int updateModelFlags, IClasspathEntry sibling,
-        IProgressMonitor monitor) throws JavaModelException {
+  @Override
+  public boolean isConsistent() throws JavaModelException {
 
-    }
+    return false;
+  }
 
-    @Override
-    public IModuleDescription getModuleDescription() {
-        return null;
-    }
+  @Override
+  public boolean isOpen() {
+
+    return false;
+  }
+
+  @Override
+  public void makeConsistent(IProgressMonitor progress) throws JavaModelException {
+
+  }
+
+  @Override
+  public void open(IProgressMonitor progress) throws JavaModelException {
+
+  }
+
+  @Override
+  public void save(IProgressMonitor progress, boolean force) throws JavaModelException {
+
+  }
+
+  @Override
+  public void attachSource(IPath sourcePath, IPath rootPath, IProgressMonitor monitor) throws JavaModelException {
+
+  }
+
+  @Override
+  public void copy(IPath destination, int updateResourceFlags, int updateModelFlags, IClasspathEntry sibling,
+      IProgressMonitor monitor) throws JavaModelException {
+
+  }
+
+  @Override
+  public IPackageFragment createPackageFragment(String name, boolean force, IProgressMonitor monitor)
+      throws JavaModelException {
+
+    return null;
+  }
+
+  @Override
+  public void delete(int updateResourceFlags, int updateModelFlags, IProgressMonitor monitor)
+      throws JavaModelException {
+
+  }
+
+  @Override
+  public int getKind() throws JavaModelException {
+
+    return 0;
+  }
+
+  @Override
+  public Object[] getNonJavaResources() throws JavaModelException {
+
+    return null;
+  }
+
+  @Override
+  public IPackageFragment getPackageFragment(String packageName) {
+
+    return null;
+  }
+
+  @Override
+  public IClasspathEntry getRawClasspathEntry() throws JavaModelException {
+
+    return null;
+  }
+
+  @Override
+  public IClasspathEntry getResolvedClasspathEntry() throws JavaModelException {
+
+    return null;
+  }
+
+  @Override
+  public IPath getSourceAttachmentPath() throws JavaModelException {
+
+    return null;
+  }
+
+  @Override
+  public IPath getSourceAttachmentRootPath() throws JavaModelException {
+
+    return null;
+  }
+
+  @Override
+  public boolean isArchive() {
+
+    return false;
+  }
+
+  @Override
+  public boolean isExternal() {
+
+    return false;
+  }
+
+  @Override
+  public void move(IPath destination, int updateResourceFlags, int updateModelFlags, IClasspathEntry sibling,
+      IProgressMonitor monitor) throws JavaModelException {
+
+  }
+
+  @Override
+  public IModuleDescription getModuleDescription() {
+
+    return null;
+  }
 
 }

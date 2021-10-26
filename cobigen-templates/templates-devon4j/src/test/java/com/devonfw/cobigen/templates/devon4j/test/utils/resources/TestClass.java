@@ -10,35 +10,36 @@ import com.devonfw.cobigen.templates.devon4j.test.utils.resources.dataaccess.api
 
 @SuppressWarnings("javadoc")
 public class TestClass {
-    private int primitive;
+  private int primitive;
 
-    private int[] primitiveArray;
+  private int[] primitiveArray;
 
-    private Integer boxed;
+  private Integer boxed;
 
-    private String object;
+  private String object;
 
-    private String[] objectArray;
+  private String[] objectArray;
 
-    private TestEntity entity;
+  private TestEntity entity;
 
-    private List<TestEntity> entitys;
+  private List<TestEntity> entitys;
 
-    private Set<TestEntity> setEntitys;
+  private Set<TestEntity> setEntitys;
 
-    private DeepEntity deepEntity;
+  private DeepEntity deepEntity;
 
-    @GET
-    public String methodWithReturnType(String one, @PathParam("id") int two) {
-        return null;
-    }
+  @GET
+  public String methodWithReturnType(String one, @PathParam("id") int two) {
 
-    public void methodWithVoidReturnType(boolean one) {
+    return null;
+  }
 
-    }
+  public void methodWithVoidReturnType(boolean one) {
 
-    public void noParameters() {
+  }
 
-    }
+  public void noParameters() {
+
+  }
 
 }

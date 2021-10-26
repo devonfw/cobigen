@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  version="4.0">
+
+  <templates>
+    <templateExtension ref="${variables.entityName}-name" mergeStrategy="override"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath="" />
+  </templateScans>
+
+
+  <increments>
+    <increment name="testTemplatesRegex" description="generate a file for every Entity">
+      <templateRef ref="${variables.entityName}-name"/>
+    </increment>
+  </increments>
+</templatesConfiguration>

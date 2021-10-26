@@ -21,90 +21,97 @@ import com.google.common.collect.Lists;
 
 /**
  * This class provides some helper functions in order to minimize code overhead
+ *
  * @author Malte Brunnlieb (06.12.2012)
  */
 public class PlatformUIUtil {
 
-    /**
-     * Waits for the {@link IWorkbench} to appear and returns it
-     * @return {@link IWorkbench} of the IDE
-     */
-    public static IWorkbench getWorkbench() {
-        IWorkbench workbench;
-        while ((workbench = PlatformUI.getWorkbench()) == null) {
+  /**
+   * Waits for the {@link IWorkbench} to appear and returns it
+   *
+   * @return {@link IWorkbench} of the IDE
+   */
+  public static IWorkbench getWorkbench() {
+
+    IWorkbench workbench;
+    while ((workbench = PlatformUI.getWorkbench()) == null) {
+    }
+    return workbench;
+  }
+
+  /**
+   * Waits for the active {@link IWorkbenchWindow} and returns it
+   *
+   * @return the active {@link IWorkbenchWindow} of the UI
+   */
+  public static IWorkbenchWindow getActiveWorkbenchWindow() {
+
+    IWorkbench workbench = getWorkbench();
+    IWorkbenchWindow workbenchWindow;
+    while ((workbenchWindow = workbench.getActiveWorkbenchWindow()) == null) {
+    }
+    return workbenchWindow;
+  }
+
+  /**
+   * Waits for the active {@link IWorkbenchPage} and returns it
+   *
+   * @return the active {@link IWorkbenchPage} of the UI
+   */
+  public static IWorkbenchPage getActiveWorkbenchPage() {
+
+    IWorkbenchWindow workbenchWindow = getActiveWorkbenchWindow();
+    IWorkbenchPage page;
+    while ((page = workbenchWindow.getActivePage()) == null) {
+    }
+    return page;
+  }
+
+  /**
+   * Open up an error dialog, which shows the stack trace of the cause if not null.
+   *
+   * @param message message to be shown to the user
+   * @param cause of the error or <code>null</code> if the error was not caused by any {@link Throwable}
+   */
+  public static void openErrorDialog(final String message, final Throwable cause) {
+
+    getWorkbench().getDisplay().syncExec(new Runnable() {
+      @Override
+      public void run() {
+
+        if (cause == null) {
+          MessageDialog.openError(Display.getDefault().getActiveShell(), CobiGenDialogConstants.DIALOG_TITLE_ERROR,
+              message);
+        } else {
+          LinkErrorDialog.openError(Display.getDefault().getActiveShell(), CobiGenDialogConstants.DIALOG_TITLE_ERROR,
+              message, createMultiStatus(cause));
         }
-        return workbench;
+      }
+    });
+
+  }
+
+  /**
+   * Creates a {@link MultiStatus} for the stack trace of the given exception.
+   *
+   * @param t exception to format
+   * @return the {@link MultiStatus} containing an error {@link Status} for each stack trace entry.
+   */
+  public static MultiStatus createMultiStatus(Throwable t) {
+
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    t.printStackTrace(pw);
+
+    final String trace = sw.toString();
+
+    List<Status> childStatus = Lists.newArrayList();
+    for (String line : trace.split(System.getProperty("line.separator"))) {
+      childStatus.add(new Status(IStatus.ERROR, Activator.PLUGIN_ID, line));
     }
 
-    /**
-     * Waits for the active {@link IWorkbenchWindow} and returns it
-     * @return the active {@link IWorkbenchWindow} of the UI
-     */
-    public static IWorkbenchWindow getActiveWorkbenchWindow() {
-        IWorkbench workbench = getWorkbench();
-        IWorkbenchWindow workbenchWindow;
-        while ((workbenchWindow = workbench.getActiveWorkbenchWindow()) == null) {
-        }
-        return workbenchWindow;
-    }
-
-    /**
-     * Waits for the active {@link IWorkbenchPage} and returns it
-     * @return the active {@link IWorkbenchPage} of the UI
-     */
-    public static IWorkbenchPage getActiveWorkbenchPage() {
-        IWorkbenchWindow workbenchWindow = getActiveWorkbenchWindow();
-        IWorkbenchPage page;
-        while ((page = workbenchWindow.getActivePage()) == null) {
-        }
-        return page;
-    }
-
-    /**
-     * Open up an error dialog, which shows the stack trace of the cause if not null.
-     * @param message
-     *            message to be shown to the user
-     * @param cause
-     *            of the error or <code>null</code> if the error was not caused by any {@link Throwable}
-     */
-    public static void openErrorDialog(final String message, final Throwable cause) {
-
-        getWorkbench().getDisplay().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                if (cause == null) {
-                    MessageDialog.openError(Display.getDefault().getActiveShell(),
-                        CobiGenDialogConstants.DIALOG_TITLE_ERROR, message);
-                } else {
-                    LinkErrorDialog.openError(Display.getDefault().getActiveShell(),
-                        CobiGenDialogConstants.DIALOG_TITLE_ERROR, message, createMultiStatus(cause));
-                }
-            }
-        });
-
-    }
-
-    /**
-     * Creates a {@link MultiStatus} for the stack trace of the given exception.
-     * @param t
-     *            exception to format
-     * @return the {@link MultiStatus} containing an error {@link Status} for each stack trace entry.
-     */
-    public static MultiStatus createMultiStatus(Throwable t) {
-
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
-
-        final String trace = sw.toString();
-
-        List<Status> childStatus = Lists.newArrayList();
-        for (String line : trace.split(System.getProperty("line.separator"))) {
-            childStatus.add(new Status(IStatus.ERROR, Activator.PLUGIN_ID, line));
-        }
-
-        MultiStatus ms =
-            new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatus.toArray(new Status[0]), t.getMessage(), t);
-        return ms;
-    }
+    MultiStatus ms = new MultiStatus(Activator.PLUGIN_ID, IStatus.ERROR, childStatus.toArray(new Status[0]),
+        t.getMessage(), t);
+    return ms;
+  }
 }

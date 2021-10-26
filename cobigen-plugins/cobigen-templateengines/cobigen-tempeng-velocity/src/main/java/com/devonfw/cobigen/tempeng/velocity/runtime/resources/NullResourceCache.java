@@ -11,46 +11,52 @@ import org.apache.velocity.runtime.resource.ResourceCache;
  */
 public class NullResourceCache implements ResourceCache {
 
-    @Override
-    public Iterator enumerateKeys() {
-        return new Iterator<Object>() {
+  @Override
+  public Iterator enumerateKeys() {
 
-            @Override
-            public boolean hasNext() {
-                return false;
-            }
+    return new Iterator<Object>() {
 
-            @Override
-            public Object next() {
-                return null;
-            }
+      @Override
+      public boolean hasNext() {
 
-            @Override
-            public void remove() {
+        return false;
+      }
 
-            }
+      @Override
+      public Object next() {
 
-        };
-    }
-
-    @Override
-    public Resource get(Object arg0) {
         return null;
-    }
+      }
 
-    @Override
-    public void initialize(RuntimeServices arg0) {
+      @Override
+      public void remove() {
 
-    }
+      }
 
-    @Override
-    public Resource put(Object arg0, Resource arg1) {
-        return null;
-    }
+    };
+  }
 
-    @Override
-    public Resource remove(Object arg0) {
-        return null;
-    }
+  @Override
+  public Resource get(Object arg0) {
+
+    return null;
+  }
+
+  @Override
+  public void initialize(RuntimeServices arg0) {
+
+  }
+
+  @Override
+  public Resource put(Object arg0, Resource arg1) {
+
+    return null;
+  }
+
+  @Override
+  public Resource remove(Object arg0) {
+
+    return null;
+  }
 
 }

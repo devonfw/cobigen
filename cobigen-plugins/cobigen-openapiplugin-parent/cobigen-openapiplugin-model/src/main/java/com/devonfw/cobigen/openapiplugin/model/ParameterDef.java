@@ -6,72 +6,85 @@ package com.devonfw.cobigen.openapiplugin.model;
 @SuppressWarnings("javadoc")
 public class ParameterDef extends PropertyDef {
 
-    private boolean isSearchCriteria;
+  private boolean isSearchCriteria;
 
-    private boolean inPath;
+  private boolean inPath;
 
-    private boolean inQuery;
+  private boolean inQuery;
 
-    private boolean inHeader;
+  private boolean inHeader;
 
-    private boolean isBody;
+  private boolean isBody;
 
-    private String mediaType;
+  private String mediaType;
 
-    public ParameterDef() {
-        super();
-        isSearchCriteria = false;
-        inPath = false;
-        inQuery = false;
-        inHeader = false;
+  public ParameterDef() {
 
-    }
+    super();
+    this.isSearchCriteria = false;
+    this.inPath = false;
+    this.inQuery = false;
+    this.inHeader = false;
 
-    public boolean getIsSearchCriteria() {
-        return isSearchCriteria;
-    }
+  }
 
-    public void setIsSearchCriteria(boolean isSearchCriteria) {
-        this.isSearchCriteria = isSearchCriteria;
-    }
+  public boolean getIsSearchCriteria() {
 
-    public boolean getInPath() {
-        return inPath;
-    }
+    return this.isSearchCriteria;
+  }
 
-    public void setInPath(boolean inPath) {
-        this.inPath = inPath;
-    }
+  public void setIsSearchCriteria(boolean isSearchCriteria) {
 
-    public boolean getInQuery() {
-        return inQuery;
-    }
+    this.isSearchCriteria = isSearchCriteria;
+  }
 
-    public void setInQuery(boolean inQuery) {
-        this.inQuery = inQuery;
-    }
+  public boolean getInPath() {
 
-    public boolean getInHeader() {
-        return inHeader;
-    }
+    return this.inPath;
+  }
 
-    public void setInHeader(boolean inHeader) {
-        this.inHeader = inHeader;
-    }
+  public void setInPath(boolean inPath) {
 
-    public String getMediaType() {
-        return mediaType;
-    }
+    this.inPath = inPath;
+  }
 
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
-    }
+  public boolean getInQuery() {
 
-    public boolean getIsBody() {
-        return isBody;
-    }
+    return this.inQuery;
+  }
 
-    public void setIsBody(boolean isBody) {
-        this.isBody = isBody;
-    }
+  public void setInQuery(boolean inQuery) {
+
+    this.inQuery = inQuery;
+  }
+
+  public boolean getInHeader() {
+
+    return this.inHeader;
+  }
+
+  public void setInHeader(boolean inHeader) {
+
+    this.inHeader = inHeader;
+  }
+
+  public String getMediaType() {
+
+    return this.mediaType;
+  }
+
+  public void setMediaType(String mediaType) {
+
+    this.mediaType = mediaType;
+  }
+
+  public boolean getIsBody() {
+
+    return this.isBody;
+  }
+
+  public void setIsBody(boolean isBody) {
+
+    this.isBody = isBody;
+  }
 }

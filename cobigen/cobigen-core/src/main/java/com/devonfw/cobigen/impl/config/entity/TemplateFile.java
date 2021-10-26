@@ -7,21 +7,21 @@ import java.nio.file.Path;
  */
 public class TemplateFile extends TemplatePath {
 
-    /**
-     * Constructor for root folder.
-     *
-     * @param templatePath
-     *            the {@link #getPath() template path}.
-     * @param parent
-     *            the {@link #getParent() parent folder}.
-     */
-    TemplateFile(Path templatePath, TemplateFolder parent) {
-        super(templatePath, parent);
-    }
+  /**
+   * Constructor for root folder.
+   *
+   * @param templatePath the {@link #getPath() template path}.
+   * @param parent the {@link #getParent() parent folder}.
+   */
+  TemplateFile(Path templatePath, TemplateFolder parent) {
 
-    @Override
-    public boolean isFolder() {
-        return false;
-    }
+    super(templatePath, parent);
+  }
+
+  @Override
+  public boolean isFolder() {
+
+    return false;
+  }
 
 }

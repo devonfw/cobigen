@@ -10,7 +10,7 @@
   <description>A Code-based incremental Generator</description>
 
   <properties>
-    <revision>2021.08.002-SNAPSHOT</revision>
+    <revision>2021.08.003-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
@@ -363,12 +363,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.17</version>
+          <version>3.0.0-M5</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.surefire</groupId>
               <artifactId>surefire-junit47</artifactId>
-              <version>2.17</version>
+              <version>3.0.0-M5</version>
             </dependency>
           </dependencies>
           <configuration>
@@ -580,7 +580,9 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.0.1</version>
+            <!-- version errors on win with "no pinentry" -->
+            <!-- <version>3.0.1</version> -->
+            <version>1.6</version>
             <configuration>
               <keyname>${gpg.keyname}</keyname>
             </configuration>
@@ -614,12 +616,12 @@
 
   <distributionManagement>
     <repository>
-      <id>sonartype.releases</id>
+      <id>ossrh</id>
       <name>Sonartype Releases</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
-      <id>sonartype.snapshots</id>
+      <id>ossrh</id>
       <name>Sonartype Snapshots</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
@@ -627,7 +629,7 @@
 
   <repositories>
     <repository>
-      <id>sonartype.snapshots</id>
+      <id>ossrh</id>
       <name>OSSRH Snapshots</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
       <snapshots>

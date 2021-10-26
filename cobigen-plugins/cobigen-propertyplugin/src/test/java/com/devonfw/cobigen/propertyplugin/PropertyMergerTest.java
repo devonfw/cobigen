@@ -15,43 +15,45 @@ import junit.framework.TestCase;
  */
 public class PropertyMergerTest extends TestCase {
 
-    /**
-     * Root path to all resources used in this test case
-     */
-    private static String testFileRootPath = "src/test/resources/";
+  /**
+   * Root path to all resources used in this test case
+   */
+  private static String testFileRootPath = "src/test/resources/";
 
-    /**
-     * This test checks if the overridden has occurred successfully or not
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testPropertyMergeOverride() throws Exception {
-        File base = new File(testFileRootPath + "test.properties");
-        PropertyMerger pMerger = new PropertyMerger("", true);
-        String mergedPropFile =
-            pMerger.merge(base, IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
-        assertThat(mergedPropFile).contains("NachNameOverride");
-        assertThat(mergedPropFile).doesNotContain("nachNameOriginal");
-        assertThat(mergedPropFile).contains("firstName");
-        assertThat(mergedPropFile).contains("lastName");
-    }
+  /**
+   * This test checks if the overridden has occurred successfully or not
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testPropertyMergeOverride() throws Exception {
 
-    /**
-     * This test checks if the overridden has occurred successfully or not
-     * @throws Exception
-     *             test fails.
-     */
-    @Test
-    public void testPropertyMergeWithoutOverride() throws Exception {
-        File base = new File(testFileRootPath + "test.properties");
-        PropertyMerger pMerger = new PropertyMerger("", false);
-        String mergedPropFile =
-            pMerger.merge(base, IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
-        assertThat(mergedPropFile).doesNotContain("NachNameOverride");
-        assertThat(mergedPropFile).contains("nachNameOriginal");
-        assertThat(mergedPropFile).contains("firstName");
-        assertThat(mergedPropFile).contains("lastName");
-    }
+    File base = new File(testFileRootPath + "test.properties");
+    PropertyMerger pMerger = new PropertyMerger("", true);
+    String mergedPropFile = pMerger.merge(base,
+        IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
+    assertThat(mergedPropFile).contains("NachNameOverride");
+    assertThat(mergedPropFile).doesNotContain("nachNameOriginal");
+    assertThat(mergedPropFile).contains("firstName");
+    assertThat(mergedPropFile).contains("lastName");
+  }
+
+  /**
+   * This test checks if the overridden has occurred successfully or not
+   *
+   * @throws Exception test fails.
+   */
+  @Test
+  public void testPropertyMergeWithoutOverride() throws Exception {
+
+    File base = new File(testFileRootPath + "test.properties");
+    PropertyMerger pMerger = new PropertyMerger("", false);
+    String mergedPropFile = pMerger.merge(base,
+        IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
+    assertThat(mergedPropFile).doesNotContain("NachNameOverride");
+    assertThat(mergedPropFile).contains("nachNameOriginal");
+    assertThat(mergedPropFile).contains("firstName");
+    assertThat(mergedPropFile).contains("lastName");
+  }
 
 }

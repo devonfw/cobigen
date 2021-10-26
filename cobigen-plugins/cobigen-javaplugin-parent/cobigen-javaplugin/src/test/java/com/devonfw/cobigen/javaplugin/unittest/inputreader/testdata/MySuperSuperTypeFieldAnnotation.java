@@ -6,21 +6,21 @@ import java.lang.annotation.RetentionPolicy;
 //simple annotation types which are still available at runtime
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MySuperSuperTypeFieldAnnotation {
-    byte b();
+  byte b();
 
-    short s();
+  short s();
 
-    int i();
+  int i();
 
-    long l();
+  long l();
 
-    float f();
+  float f();
 
-    double d();
+  double d();
 
-    char c();
+  char c();
 
-    String str();
+  String str();
 
-    boolean bool();
+  boolean bool();
 }

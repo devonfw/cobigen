@@ -10,26 +10,29 @@ import org.eclipse.swtbot.swt.finder.waits.ICondition;
  */
 public class HasBeenBuilt extends DefaultCondition {
 
-    /** Java project to wait for finished building. */
-    private IJavaProject project;
+  /** Java project to wait for finished building. */
+  private IJavaProject project;
 
-    /**
-     * Creates a new condition waiting until a job is started containing the given string it is job name.
-     * @param project
-     *            {@link #project}
-     */
-    public HasBeenBuilt(IJavaProject project) {
-        this.project = project;
-    }
+  /**
+   * Creates a new condition waiting until a job is started containing the given string it is job name.
+   *
+   * @param project {@link #project}
+   */
+  public HasBeenBuilt(IJavaProject project) {
 
-    @Override
-    public boolean test() throws Exception {
-        return project.hasBuildState();
-    }
+    this.project = project;
+  }
 
-    @Override
-    public String getFailureMessage() {
-        return "Java project '" + project + "' has not been built in the given amount of time.";
-    }
+  @Override
+  public boolean test() throws Exception {
+
+    return this.project.hasBuildState();
+  }
+
+  @Override
+  public String getFailureMessage() {
+
+    return "Java project '" + this.project + "' has not been built in the given amount of time.";
+  }
 
 }

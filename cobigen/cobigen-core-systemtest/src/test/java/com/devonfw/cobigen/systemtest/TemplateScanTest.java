@@ -25,127 +25,129 @@ import com.devonfw.cobigen.impl.CobiGenFactory;
  */
 public class TemplateScanTest extends AbstractApiTest {
 
-    /**
-     * Root path to all resources used in this test case
-     */
-    private static String testFileRootPath = apiTestsRootPath + "TemplateScanTest/";
+  /**
+   * Root path to all resources used in this test case
+   */
+  private static String testFileRootPath = apiTestsRootPath + "TemplateScanTest/";
 
-    /**
-     * Tests the correct destination resolution for resources obtained by template-scans
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testCorrectDestinationResoution() throws Exception {
-        Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
+  /**
+   * Tests the correct destination resolution for resources obtained by template-scans
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testCorrectDestinationResoution() throws Exception {
 
-        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
-        // Useful to see generates if necessary, comment the generationRootFolder above then
-        // File generationRootFolder = new File(testFileRootPath + "generates");
+    Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
-        // pre-processing
-        File templatesFolder = new File(testFileRootPath);
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        List<TemplateTo> templates = target.getMatchingTemplates(input);
-        assertThat(templates).isNotNull();
+    File generationRootFolder = this.tmpFolder.newFolder("generationRootFolder");
+    // Useful to see generates if necessary, comment the generationRootFolder above then
+    // File generationRootFolder = new File(testFileRootPath + "generates");
 
-        TemplateTo targetTemplate =
-            getTemplateById(templates, "prefix_${variables.component#cap_first#replace('1','ONE')}.java");
-        assertThat(targetTemplate).isNotNull();
+    // pre-processing
+    File templatesFolder = new File(testFileRootPath);
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    List<TemplateTo> templates = target.getMatchingTemplates(input);
+    assertThat(templates).isNotNull();
 
-        // Execution
-        target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
+    TemplateTo targetTemplate = getTemplateById(templates,
+        "prefix_${variables.component#cap_first#replace('1','ONE')}.java");
+    assertThat(targetTemplate).isNotNull();
 
-        // Validation
-        assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-            + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java")).exists();
-    }
+    // Execution
+    target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
-    /**
-     * Test template scan within an archive file.
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testScanTemplatesFromArchivFile() throws Exception {
+    // Validation
+    assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+        + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+        + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java")).exists();
+  }
 
-        // pre-processing: mocking
-        Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
+  /**
+   * Test template scan within an archive file.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testScanTemplatesFromArchivFile() throws Exception {
 
-        // test processing
-        CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
-        List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+    // pre-processing: mocking
+    Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
-        // checking
-        assertThat(templates, notNullValue());
-        assertThat(templates.size(), equalTo(6));
-    }
+    // test processing
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
+    List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
-    /**
-     * Tests the correct destination resolution for resources obtained by template-scans in the case of an
-     * empty path element
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testCorrectDestinationResoution_emptyPathElement() throws Exception {
-        Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
+    // checking
+    assertThat(templates, notNullValue());
+    assertThat(templates.size(), equalTo(6));
+  }
 
-        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
-        // Useful to see generates if necessary, comment the generationRootFolder above then
-        // File generationRootFolder = new File(testFileRootPath + "generates");
+  /**
+   * Tests the correct destination resolution for resources obtained by template-scans in the case of an empty path
+   * element
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testCorrectDestinationResoution_emptyPathElement() throws Exception {
 
-        // pre-processing
-        File templatesFolder = new File(testFileRootPath);
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        List<TemplateTo> templates = target.getMatchingTemplates(input);
-        assertThat(templates).isNotNull();
+    Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
-        TemplateTo targetTemplate = getTemplateById(templates, "prefix_Test.java");
-        assertThat(targetTemplate).isNotNull();
+    File generationRootFolder = this.tmpFolder.newFolder("generationRootFolder");
+    // Useful to see generates if necessary, comment the generationRootFolder above then
+    // File generationRootFolder = new File(testFileRootPath + "generates");
 
-        // Execution
-        target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
+    // pre-processing
+    File templatesFolder = new File(testFileRootPath);
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    List<TemplateTo> templates = target.getMatchingTemplates(input);
+    assertThat(templates).isNotNull();
 
-        // Validation
-        assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-            + "base" + SystemUtils.FILE_SEPARATOR + "Test.java")).exists();
-    }
+    TemplateTo targetTemplate = getTemplateById(templates, "prefix_Test.java");
+    assertThat(targetTemplate).isNotNull();
 
-    /**
-     * Tests the correct destination resolution for resources obtained by template-scans in the case of
-     * multiple empty path elements
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testCorrectDestinationResoution_emptyPathElements() throws Exception {
-        Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
+    // Execution
+    target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
-        File generationRootFolder = tmpFolder.newFolder("generationRootFolder");
-        // Useful to see generates if necessary, comment the generationRootFolder above then
-        // File generationRootFolder = new File(testFileRootPath + "generates");
+    // Validation
+    assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+        + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+        + "base" + SystemUtils.FILE_SEPARATOR + "Test.java")).exists();
+  }
 
-        // pre-processing
-        File templatesFolder = new File(testFileRootPath);
-        CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
-        List<TemplateTo> templates = target.getMatchingTemplates(input);
-        assertThat(templates).isNotNull();
+  /**
+   * Tests the correct destination resolution for resources obtained by template-scans in the case of multiple empty
+   * path elements
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testCorrectDestinationResoution_emptyPathElements() throws Exception {
 
-        TemplateTo targetTemplate = getTemplateById(templates, "prefix_MultiEmpty.java");
-        assertThat(targetTemplate).isNotNull();
+    Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
-        // Execution
-        GenerationReportTo report =
-            target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
-        assertThat(report).isSuccessful();
+    File generationRootFolder = this.tmpFolder.newFolder("generationRootFolder");
+    // Useful to see generates if necessary, comment the generationRootFolder above then
+    // File generationRootFolder = new File(testFileRootPath + "generates");
 
-        // Validation
-        assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-            + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-            + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java")).exists();
-    }
+    // pre-processing
+    File templatesFolder = new File(testFileRootPath);
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    List<TemplateTo> templates = target.getMatchingTemplates(input);
+    assertThat(templates).isNotNull();
+
+    TemplateTo targetTemplate = getTemplateById(templates, "prefix_MultiEmpty.java");
+    assertThat(targetTemplate).isNotNull();
+
+    // Execution
+    GenerationReportTo report = target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
+    assertThat(report).isSuccessful();
+
+    // Validation
+    assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
+        + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
+        + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java")).exists();
+  }
 
 }

@@ -22,39 +22,39 @@ import junit.framework.AssertionFailedError;
  */
 public class VariablesResolutionTest extends AbstractIntegrationTest {
 
-    /**
-     * Tests that the path resolution is performed successfully in case of including path variables derived
-     * from variable assignments retrieved by regex groups, which have been resolved to null. This bug has
-     * been introduced by changing the model building from DOM to Bean model. The latter required to
-     * explicitly not to set <code>null</code> as a value for variable resolution. Basically, this is odd, but
-     * we have to comply with backward compatibility and the issue that we cannot encode unary-operators like
-     * ?? in a file path sufficiently.
-     * @throws Exception
-     *             test fails
-     */
-    @Test
-    public void testSuccessfulPathResolution_variableEqNull() throws Exception {
-        CobiGen cobiGen = CobiGenFactory.create(cobigenConfigFolder.toURI());
-        File tmpFolderCobiGen = tmpFolder.newFolder("cobigen_output");
+  /**
+   * Tests that the path resolution is performed successfully in case of including path variables derived from variable
+   * assignments retrieved by regex groups, which have been resolved to null. This bug has been introduced by changing
+   * the model building from DOM to Bean model. The latter required to explicitly not to set <code>null</code> as a
+   * value for variable resolution. Basically, this is odd, but we have to comply with backward compatibility and the
+   * issue that we cannot encode unary-operators like ?? in a file path sufficiently.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testSuccessfulPathResolution_variableEqNull() throws Exception {
 
-        Object input =
-            cobiGen.read(new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java").toPath(),
-                Charset.forName("UTF-8"));
-        List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
+    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
+    File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
 
-        boolean methodTemplateFound = false;
-        for (TemplateTo template : templates) {
-            if (template.getId().equals("${variables.entityName}.java")) {
-                GenerationReportTo report =
-                    cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()), false);
-                assertThat(report).isSuccessful();
-                methodTemplateFound = true;
-                break;
-            }
-        }
+    Object input = cobiGen.read(
+        new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java").toPath(),
+        Charset.forName("UTF-8"));
+    List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
-        if (!methodTemplateFound) {
-            throw new AssertionFailedError("Test template not found");
-        }
+    boolean methodTemplateFound = false;
+    for (TemplateTo template : templates) {
+      if (template.getId().equals("${variables.entityName}.java")) {
+        GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
+            false);
+        assertThat(report).isSuccessful();
+        methodTemplateFound = true;
+        break;
+      }
     }
+
+    if (!methodTemplateFound) {
+      throw new AssertionFailedError("Test template not found");
+    }
+  }
 }

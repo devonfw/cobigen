@@ -16,43 +16,45 @@ import ch.qos.logback.core.ConsoleAppender;
  */
 public class CLILogger {
 
-    /**
-     * Getting logger instance from LoggerFactory for reset logger layout
-     */
-    private static Logger rootLogger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
+  /**
+   * Getting logger instance from LoggerFactory for reset logger layout
+   */
+  private static Logger rootLogger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
 
-    /**
-     * This method is setting the custom layout of logger
-     * @param verbose
-     *            whether verbose logging should be enabled
-     */
-    public static void layoutLogger(boolean verbose) {
-        LoggerContext loggerContext = rootLogger.getLoggerContext();
-        if (!verbose) {
-            loggerContext.reset();
-        }
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(loggerContext);
-        encoder.setPattern("[%-5level] %message%n");
-        encoder.start();
+  /**
+   * This method is setting the custom layout of logger
+   *
+   * @param verbose whether verbose logging should be enabled
+   */
+  public static void layoutLogger(boolean verbose) {
 
-        ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
-        appender.setContext(loggerContext);
-        appender.setEncoder(encoder);
-        appender.start();
-
-        if (rootLogger.getLevel() == null) {
-            rootLogger.setLevel(Level.INFO);
-        }
-        rootLogger.addAppender(appender);
+    LoggerContext loggerContext = rootLogger.getLoggerContext();
+    if (!verbose) {
+      loggerContext.reset();
     }
+    PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+    encoder.setContext(loggerContext);
+    encoder.setPattern("[%-5level] %message%n");
+    encoder.start();
 
-    /**
-     * This method declare level of logger
-     * @param level
-     *            of logging
-     */
-    public static void setLevel(Level level) {
-        rootLogger.setLevel(level);
+    ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
+    appender.setContext(loggerContext);
+    appender.setEncoder(encoder);
+    appender.start();
+
+    if (rootLogger.getLevel() == null) {
+      rootLogger.setLevel(Level.INFO);
     }
+    rootLogger.addAppender(appender);
+  }
+
+  /**
+   * This method declare level of logger
+   *
+   * @param level of logging
+   */
+  public static void setLevel(Level level) {
+
+    rootLogger.setLevel(level);
+  }
 }

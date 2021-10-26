@@ -10,79 +10,94 @@ import java.util.List;
 @SuppressWarnings("javadoc")
 public class OperationDef {
 
-    private String type;
+  private String type;
 
-    private List<ParameterDef> parameters;
+  private List<ParameterDef> parameters;
 
-    private List<ResponseDef> responses;
+  private List<ResponseDef> responses;
 
-    private String operationId;
+  private String operationId;
 
-    private String description;
+  private String description;
 
-    private String summary;
+  private String summary;
 
-    private Collection<String> tags;
+  private Collection<String> tags;
 
-    public OperationDef(String type) {
-        this.type = type;
-        parameters = new LinkedList<>();
-    }
+  public OperationDef(String type) {
 
-    public String getType() {
-        return type;
-    }
+    this.type = type;
+    this.parameters = new LinkedList<>();
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public String getType() {
 
-    public List<ParameterDef> getParameters() {
-        return parameters;
-    }
+    return this.type;
+  }
 
-    public void setParameters(List<ParameterDef> parameters) {
-        this.parameters = parameters;
-    }
+  public void setType(String type) {
 
-    public List<ResponseDef> getResponses() {
-        return responses;
-    }
+    this.type = type;
+  }
 
-    public void setResponses(List<ResponseDef> responses) {
-        this.responses = responses;
-    }
+  public List<ParameterDef> getParameters() {
 
-    public String getOperationId() {
-        return operationId;
-    }
+    return this.parameters;
+  }
 
-    public void setOperationId(String operationId) {
-        this.operationId = operationId;
-    }
+  public void setParameters(List<ParameterDef> parameters) {
 
-    public String getDescription() {
-        return description;
-    }
+    this.parameters = parameters;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public List<ResponseDef> getResponses() {
 
-    public String getSummary() {
-        return summary;
-    }
+    return this.responses;
+  }
 
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
+  public void setResponses(List<ResponseDef> responses) {
 
-    public Collection<String> getTags() {
-        return tags;
-    }
+    this.responses = responses;
+  }
 
-    public void setTags(Collection<String> tags) {
-        this.tags = tags;
-    }
+  public String getOperationId() {
+
+    return this.operationId;
+  }
+
+  public void setOperationId(String operationId) {
+
+    this.operationId = operationId;
+  }
+
+  public String getDescription() {
+
+    return this.description;
+  }
+
+  public void setDescription(String description) {
+
+    this.description = description;
+  }
+
+  public String getSummary() {
+
+    return this.summary;
+  }
+
+  public void setSummary(String summary) {
+
+    this.summary = summary;
+  }
+
+  public Collection<String> getTags() {
+
+    return this.tags;
+  }
+
+  public void setTags(Collection<String> tags) {
+
+    this.tags = tags;
+  }
 
 }

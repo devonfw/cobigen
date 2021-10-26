@@ -20,52 +20,53 @@ import com.devonfw.cobigen.impl.generator.api.MatcherEvaluator;
 /** */
 public class InputResolverImpl implements InputResolver {
 
-    /** {@link MatcherEvaluator} instance */
-    @Inject
-    private MatcherEvaluator matcherEvaluator;
+  /** {@link MatcherEvaluator} instance */
+  @Inject
+  private MatcherEvaluator matcherEvaluator;
 
-    /** {@link InputInterpreter} instance */
-    @Inject
-    private InputInterpreter inputInterpreter;
+  /** {@link InputInterpreter} instance */
+  @Inject
+  private InputInterpreter inputInterpreter;
 
-    @Cached
-    @Override
-    public List<Object> resolveContainerElements(Object input, Trigger trigger) {
-        List<Object> inputObjects = new ArrayList<>();
-        if (inputInterpreter.combinesMultipleInputs(input)) {
-            TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-            InputReader inputReader = triggerInterpreter.getInputReader();
+  @Cached
+  @Override
+  public List<Object> resolveContainerElements(Object input, Trigger trigger) {
 
-            // check whether the inputs should be retrieved recursively
-            boolean retrieveInputsRecursively = false;
-            for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
-                MatcherTo matcherTo = new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
-                if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-                    if (!retrieveInputsRecursively) {
-                        retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
-                    } else {
-                        break;
-                    }
-                }
-            }
+    List<Object> inputObjects = new ArrayList<>();
+    if (this.inputInterpreter.combinesMultipleInputs(input)) {
+      TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
+      InputReader inputReader = triggerInterpreter.getInputReader();
 
-            if (retrieveInputsRecursively) {
-                inputObjects = inputReader.getInputObjectsRecursively(input, trigger.getInputCharset());
-            } else {
-                inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
-            }
-
-            // Remove non matching inputs
-            Iterator<Object> it = inputObjects.iterator();
-            while (it.hasNext()) {
-                Object next = it.next();
-                if (!matcherEvaluator.matches(next, trigger.getMatcher(), triggerInterpreter)) {
-                    it.remove();
-                }
-            }
-        } else {
-            inputObjects.add(input);
+      // check whether the inputs should be retrieved recursively
+      boolean retrieveInputsRecursively = false;
+      for (ContainerMatcher containerMatcher : trigger.getContainerMatchers()) {
+        MatcherTo matcherTo = new MatcherTo(containerMatcher.getType(), containerMatcher.getValue(), input);
+        if (triggerInterpreter.getMatcher().matches(matcherTo)) {
+          if (!retrieveInputsRecursively) {
+            retrieveInputsRecursively = containerMatcher.isRetrieveObjectsRecursively();
+          } else {
+            break;
+          }
         }
-        return inputObjects;
+      }
+
+      if (retrieveInputsRecursively) {
+        inputObjects = inputReader.getInputObjectsRecursively(input, trigger.getInputCharset());
+      } else {
+        inputObjects = inputReader.getInputObjects(input, trigger.getInputCharset());
+      }
+
+      // Remove non matching inputs
+      Iterator<Object> it = inputObjects.iterator();
+      while (it.hasNext()) {
+        Object next = it.next();
+        if (!this.matcherEvaluator.matches(next, trigger.getMatcher(), triggerInterpreter)) {
+          it.remove();
+        }
+      }
+    } else {
+      inputObjects.add(input);
     }
+    return inputObjects;
+  }
 }

@@ -15,25 +15,26 @@ import com.devonfw.cobigen.eclipse.common.tools.ExceptionHandler;
 import com.devonfw.cobigen.eclipse.healthcheck.HealthCheckDialog;
 
 /**
- * This handler triggers the {@link HealthCheckDialog} to provide more information about the current status of
- * CobiGen and potentially why it cannot be used with the current selection.
+ * This handler triggers the {@link HealthCheckDialog} to provide more information about the current status of CobiGen
+ * and potentially why it cannot be used with the current selection.
  */
 public class HealthCheckHandler extends AbstractHandler {
 
-    /** Logger instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(HealthCheckHandler.class);
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(HealthCheckHandler.class);
 
-    @Override
-    public Object execute(final ExecutionEvent event) throws ExecutionException {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+  @Override
+  public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-        try {
-            new HealthCheckDialog().execute();
-        } catch (Throwable e) {
-            ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
-        }
+    MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-        MDC.remove(InfrastructureConstants.CORRELATION_ID);
-        return null;
+    try {
+      new HealthCheckDialog().execute();
+    } catch (Throwable e) {
+      ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
     }
+
+    MDC.remove(InfrastructureConstants.CORRELATION_ID);
+    return null;
+  }
 }

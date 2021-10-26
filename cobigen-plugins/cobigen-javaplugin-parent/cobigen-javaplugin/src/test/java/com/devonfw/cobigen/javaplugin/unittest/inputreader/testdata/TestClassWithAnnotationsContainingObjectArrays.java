@@ -4,26 +4,29 @@ import org.junit.experimental.categories.Category;
 
 public class TestClassWithAnnotationsContainingObjectArrays {
 
-    private boolean boolvalue;
+  private boolean boolvalue;
 
-    /**
-     * Returns the field 'boolvalue'
-     * @return value of boolvalue
-     * @author mbrunnli (05.12.2014)
-     */
-    @Category({ TestClassWithAnnotationsContainingObjectArrays.class, TestClassWithAnnotations.class })
-    public boolean isBoolvalue() {
-        return boolvalue;
-    }
+  /**
+   * Returns the field 'boolvalue'
+   *
+   * @return value of boolvalue
+   * @author mbrunnli (05.12.2014)
+   */
+  @Category({ TestClassWithAnnotationsContainingObjectArrays.class, TestClassWithAnnotations.class })
+  public boolean isBoolvalue() {
 
-    /**
-     * Sets the field 'boolvalue'.
-     * @param boolvalue
-     *            new value of boolvalue
-     * @author mbrunnli (05.12.2014)
-     */
-    public void setBoolvalue(boolean boolvalue) {
-        this.boolvalue = boolvalue;
-    }
+    return this.boolvalue;
+  }
+
+  /**
+   * Sets the field 'boolvalue'.
+   *
+   * @param boolvalue new value of boolvalue
+   * @author mbrunnli (05.12.2014)
+   */
+  public void setBoolvalue(boolean boolvalue) {
+
+    this.boolvalue = boolvalue;
+  }
 
 }

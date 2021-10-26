@@ -12,15 +12,17 @@ import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
  */
 public class AllJobsAreFinished extends DefaultCondition {
 
-    @Override
-    public boolean test() throws Exception {
-        return Job.getJobManager().isIdle();
-    }
+  @Override
+  public boolean test() throws Exception {
 
-    @Override
-    public String getFailureMessage() {
-        EclipseCobiGenUtils.takeScreenshot(bot, "jobs_not_finished");
-        return "Could not finish all Jobs in the given amount of time.";
-    }
+    return Job.getJobManager().isIdle();
+  }
+
+  @Override
+  public String getFailureMessage() {
+
+    EclipseCobiGenUtils.takeScreenshot(bot, "jobs_not_finished");
+    return "Could not finish all Jobs in the given amount of time.";
+  }
 
 }

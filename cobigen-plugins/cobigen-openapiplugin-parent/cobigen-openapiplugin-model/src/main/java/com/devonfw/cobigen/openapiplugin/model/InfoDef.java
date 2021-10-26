@@ -5,23 +5,27 @@ package com.devonfw.cobigen.openapiplugin.model;
  */
 @SuppressWarnings("javadoc")
 public class InfoDef {
-    private String title;
+  private String title;
 
-    private String description;
+  private String description;
 
-    public String getTitle() {
-        return title;
-    }
+  public String getTitle() {
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    return this.title;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setTitle(String title) {
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    this.title = title;
+  }
+
+  public String getDescription() {
+
+    return this.description;
+  }
+
+  public void setDescription(String description) {
+
+    this.description = description;
+  }
 }

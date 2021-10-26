@@ -32,291 +32,276 @@ import com.thoughtworks.qdox.parser.ParseException;
  */
 public class JavaMerger implements Merger {
 
-    /**
-     * Merger Type to be registered
-     */
-    private String type;
+  /**
+   * Merger Type to be registered
+   */
+  private String type;
 
-    /**
-     * The conflict resolving mode
-     */
-    private boolean patchOverrides;
+  /**
+   * The conflict resolving mode
+   */
+  private boolean patchOverrides;
 
-    /**
-     * Creates a new {@link JavaMerger}
-     *
-     * @param type
-     *            merger type
-     * @param patchOverrides
-     *            if <code>true</code>, conflicts will be resolved by using the patch contents<br>
-     *            if <code>false</code>, conflicts will be resolved by using the base contents
-     * @author mbrunnli (19.03.2013)
-     */
-    public JavaMerger(String type, boolean patchOverrides) {
+  /**
+   * Creates a new {@link JavaMerger}
+   *
+   * @param type merger type
+   * @param patchOverrides if <code>true</code>, conflicts will be resolved by using the patch contents<br>
+   *        if <code>false</code>, conflicts will be resolved by using the base contents
+   * @author mbrunnli (19.03.2013)
+   */
+  public JavaMerger(String type, boolean patchOverrides) {
 
-        this.type = type;
-        this.patchOverrides = patchOverrides;
+    this.type = type;
+    this.patchOverrides = patchOverrides;
+  }
+
+  @Override
+  public String getType() {
+
+    return this.type;
+  }
+
+  @Override
+  public String merge(File base, String patch, String targetCharset) throws MergeException {
+
+    ModifyableJavaClass baseClass;
+    String lineDelimiter;
+    Path path = Paths.get(base.getAbsolutePath());
+
+    try (FileInputStream stream = new FileInputStream(path.toString());
+        BufferedInputStream bis = new BufferedInputStream(stream);
+        InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
+
+      baseClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
+      lineDelimiter = SystemUtil.determineLineDelimiter(path, targetCharset);
+
+    } catch (IOException e) {
+      throw new MergeException(base, "Cannot read base file.", e);
+    } catch (ParseException e) {
+      throw new MergeException(base, "The syntax of the base file is invalid. Error in line: " + e.getLine()
+          + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
     }
 
-    @Override
-    public String getType() {
+    ModifyableJavaClass patchClass;
+    try (StringReader reader = new StringReader(patch)) {
 
-        return type;
+      patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
+    } catch (ParseException e) {
+      throw new MergeException(base, "The syntax of the generated patch is invalid. Error in line: " + e.getLine()
+          + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
     }
 
-    @Override
-    public String merge(File base, String patch, String targetCharset) throws MergeException {
+    if (baseClass == null) {
+      throw new MergeException(base, "The base file does not declare a valid JavaClass.");
+    } else if (patchClass == null) {
+      throw new MergeException(base, "The patch does not declare a valid JavaClass.");
+    }
 
-        ModifyableJavaClass baseClass;
-        String lineDelimiter;
-        Path path = Paths.get(base.getAbsolutePath());
+    ModifyableJavaClass mergedClass = merge(baseClass, patchClass);
+    return StringUtil.consolidateLineEndings(mergedClass.getSource().getCodeBlock(), lineDelimiter);
+  }
 
-        try (FileInputStream stream = new FileInputStream(path.toString());
-            BufferedInputStream bis = new BufferedInputStream(stream);
-            InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
+  /**
+   * Merges the two classes
+   *
+   * @return the merged {@link JavaClass}
+   * @param baseClass {@link JavaClass}
+   * @param patchClass {@link JavaClass}
+   * @author mbrunnli (19.03.2013)
+   */
+  private ModifyableJavaClass merge(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
-            baseClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
-            lineDelimiter = SystemUtil.determineLineDelimiter(path, targetCharset);
+    mergeImports(baseClass, patchClass);
+    mergeFields(baseClass, patchClass);
+    mergeInnerClasses(baseClass, patchClass);
+    mergeMethods(baseClass, patchClass);
+    mergeSupertypes(baseClass, patchClass);
+    return baseClass;
+  }
 
-        } catch (IOException e) {
-            throw new MergeException(base, "Cannot read base file.", e);
-        } catch (ParseException e) {
-            throw new MergeException(base, "The syntax of the base file is invalid. Error in line: " + e.getLine()
-                + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
+  /**
+   * Merges all super types of the two class sources
+   *
+   * @param baseClass {@link JavaClass}
+   * @param patchClass {@link JavaClass}
+   * @author mbrunnli (03.06.2013)
+   */
+  private void mergeSupertypes(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
+
+    if (this.patchOverrides) {
+      baseClass.setImplementz(patchClass.getInterfaces());
+      if (!patchClass.getSuperClass().getCanonicalName().equals("java.lang.Enum")) {
+        baseClass.setSuperClass(patchClass.getSuperClass());
+      }
+    } else {
+      List<JavaClass> baseClassInterfaces = baseClass.getInterfaces();
+      for (JavaClass pClass : patchClass.getInterfaces()) {
+        // TODO funktioniert noch nicht, da super klassen nicht im QDox Modell sind
+        if (!baseClassInterfaces.contains(pClass) && !baseClass.isA(pClass)) {
+          baseClassInterfaces.add(pClass);
         }
+      }
+      baseClass.setImplementz(baseClassInterfaces);
+      if (baseClass.getSuperClass() == null
+          || baseClass.getSuperClass().getCanonicalName().equals("java.lang.Object")) {
+        baseClass.setSuperClass(patchClass.getSuperClass());
+      }
+    }
+  }
 
-        ModifyableJavaClass patchClass;
-        try (StringReader reader = new StringReader(patch)) {
+  /**
+   * Merges all imports of the two class sources
+   *
+   * @param baseClass {@link JavaClass}
+   * @param patchClass {@link JavaClass}
+   * @author mbrunnli (05.04.2013)
+   */
+  private void mergeImports(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
-            patchClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
-        } catch (ParseException e) {
-            throw new MergeException(base, "The syntax of the generated patch is invalid. Error in line: " + e.getLine()
-                + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
+    for (String patchImport : patchClass.getSource().getImports()) {
+      List<String> baseImports = baseClass.getSource().getImports();
+      String conflictingBaseImport = null;
+      for (String baseImport : baseImports) {
+        if (getShortTypeName(patchImport).equals(getShortTypeName(baseImport))) {
+          conflictingBaseImport = baseImport;
+          break;
         }
+      }
+      if (conflictingBaseImport != null) {
+        if (this.patchOverrides) {
+          int i = baseImports.indexOf(conflictingBaseImport);
+          baseImports.set(i, patchImport);
+        } // else do not override
+      } else {
+        baseClass.getSource().getImports().add(patchImport);
+      }
+    }
+  }
 
-        if (baseClass == null) {
-            throw new MergeException(base, "The base file does not declare a valid JavaClass.");
-        } else if (patchClass == null) {
-            throw new MergeException(base, "The patch does not declare a valid JavaClass.");
-        }
+  /**
+   * Shortens a canonical type name to the type name itself
+   *
+   * @param canonicalName to be shortend
+   * @return the Type name
+   * @author mbrunnli
+   */
+  private String getShortTypeName(String canonicalName) {
 
-        ModifyableJavaClass mergedClass = merge(baseClass, patchClass);
-        return StringUtil.consolidateLineEndings(mergedClass.getSource().getCodeBlock(), lineDelimiter);
+    if (canonicalName.lastIndexOf(".") != -1) {
+      return canonicalName.substring(canonicalName.lastIndexOf(".") + 1);
+    } else {
+      return canonicalName;
+    }
+  }
+
+  /**
+   * Merges all inner {@link JavaClass}es of the given {@link JavaClass}es
+   *
+   * @param baseClass {@link JavaClass}
+   * @param patchClass {@link JavaClass}
+   * @author mbrunnli (19.03.2013)
+   */
+  private void mergeInnerClasses(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
+
+    for (JavaClass rawInnerPatchClass : patchClass.getNestedClasses()) {
+      ModifyableJavaClass innerPatchClass = (ModifyableJavaClass) rawInnerPatchClass;
+      ModifyableJavaClass nestedBaseClass = (ModifyableJavaClass) baseClass
+          .getNestedClassByName(innerPatchClass.getName());
+      if (nestedBaseClass == null) {
+        baseClass.addClass(innerPatchClass);
+      } else {
+        merge(nestedBaseClass, innerPatchClass);
+      }
+    }
+  }
+
+  /**
+   * Merges all fields of the given {@link JavaClass}es
+   *
+   * @param baseClass {@link JavaClass}
+   * @param patchClass {@link JavaClass}
+   * @author mbrunnli (19.03.2013)
+   */
+  private void mergeFields(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
+
+    for (JavaField patchField : patchClass.getFields()) {
+      JavaField baseField = baseClass.getFieldByName(patchField.getName());
+      if (baseField == null) {
+        baseClass.addField(patchField);
+      } else {
+        if (this.patchOverrides) {
+          baseClass.replace(baseField, patchField);
+        } // else do not override
+      }
+    }
+  }
+
+  /**
+   * Merges all methods of the given {@link JavaClass}es
+   *
+   * @param baseClass {@link JavaClass}
+   * @param patchClass {@link JavaClass}
+   * @author mbrunnli (19.03.2013)
+   */
+  private void mergeMethods(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
+
+    // merge all non-conflicting imports from (final) base class to patch, to check for conflicting
+    // method signatures
+    mergeImports(patchClass, baseClass);
+
+    for (JavaConstructor patchConstructor : patchClass.getConstructors()) {
+      JavaConstructor baseConstructor = baseClass.getConstructor(patchConstructor.getParameterTypes());
+      if (baseConstructor == null) {
+        baseClass.addConstructor(patchConstructor);
+      } else {
+        if (this.patchOverrides) {
+          baseClass.replace(baseConstructor, patchConstructor);
+        } // else do not override
+      }
     }
 
-    /**
-     * Merges the two classes
-     *
-     * @return the merged {@link JavaClass}
-     * @param baseClass
-     *            {@link JavaClass}
-     * @param patchClass
-     *            {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
-     */
-    private ModifyableJavaClass merge(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
+    List<JavaInitializer> InitializersToAdd = new ArrayList<>();
 
-        mergeImports(baseClass, patchClass);
-        mergeFields(baseClass, patchClass);
-        mergeInnerClasses(baseClass, patchClass);
-        mergeMethods(baseClass, patchClass);
-        mergeSupertypes(baseClass, patchClass);
-        return baseClass;
-    }
+    for (JavaInitializer patchInitializerBlock : patchClass.getInitializers()) {
 
-    /**
-     * Merges all super types of the two class sources
-     *
-     * @param baseClass
-     *            {@link JavaClass}
-     * @param patchClass
-     *            {@link JavaClass}
-     * @author mbrunnli (03.06.2013)
-     */
-    private void mergeSupertypes(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
+      for (JavaInitializer baseInitializerBlock : baseClass.getInitializers()) {
+        if (getBlock(baseInitializerBlock).equals(getBlock(patchInitializerBlock))) {
+          if (this.patchOverrides) {
+            baseClass.replace(baseInitializerBlock, patchInitializerBlock);
+          }
 
-        if (patchOverrides) {
-            baseClass.setImplementz(patchClass.getInterfaces());
-            if (!patchClass.getSuperClass().getCanonicalName().equals("java.lang.Enum")) {
-                baseClass.setSuperClass(patchClass.getSuperClass());
-            }
         } else {
-            List<JavaClass> baseClassInterfaces = baseClass.getInterfaces();
-            for (JavaClass pClass : patchClass.getInterfaces()) {
-                // TODO funktioniert noch nicht, da super klassen nicht im QDox Modell sind
-                if (!baseClassInterfaces.contains(pClass) && !baseClass.isA(pClass)) {
-                    baseClassInterfaces.add(pClass);
-                }
-            }
-            baseClass.setImplementz(baseClassInterfaces);
-            if (baseClass.getSuperClass() == null
-                || baseClass.getSuperClass().getCanonicalName().equals("java.lang.Object")) {
-                baseClass.setSuperClass(patchClass.getSuperClass());
-            }
+          InitializersToAdd.add(patchInitializerBlock);
         }
+
+      }
+
     }
 
-    /**
-     * Merges all imports of the two class sources
-     *
-     * @param baseClass
-     *            {@link JavaClass}
-     * @param patchClass
-     *            {@link JavaClass}
-     * @author mbrunnli (05.04.2013)
-     */
-    private void mergeImports(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
+    baseClass.addAllInitializer(InitializersToAdd);
 
-        for (String patchImport : patchClass.getSource().getImports()) {
-            List<String> baseImports = baseClass.getSource().getImports();
-            String conflictingBaseImport = null;
-            for (String baseImport : baseImports) {
-                if (getShortTypeName(patchImport).equals(getShortTypeName(baseImport))) {
-                    conflictingBaseImport = baseImport;
-                    break;
-                }
-            }
-            if (conflictingBaseImport != null) {
-                if (patchOverrides) {
-                    int i = baseImports.indexOf(conflictingBaseImport);
-                    baseImports.set(i, patchImport);
-                } // else do not override
-            } else {
-                baseClass.getSource().getImports().add(patchImport);
-            }
-        }
+    for (JavaMethod patchMethod : patchClass.getMethods()) {
+      JavaMethod baseMethod = baseClass.getMethodBySignature(patchMethod.getName(),
+          patchMethod.getParameterTypes(true));
+      if (baseMethod == null) {
+        baseClass.addMethod(patchMethod);
+      } else {
+        if (this.patchOverrides) {
+          baseClass.replace(baseMethod, patchMethod);
+        } // else do not override
+      }
     }
+  }
 
-    /**
-     * Shortens a canonical type name to the type name itself
-     *
-     * @param canonicalName
-     *            to be shortend
-     * @return the Type name
-     * @author mbrunnli
-     */
-    private String getShortTypeName(String canonicalName) {
+  /**
+   * @param initializer JavaInitializer
+   * @return Contents of the Initializer block removing white space and new line
+   */
+  private String getBlock(JavaInitializer initializer) {
 
-        if (canonicalName.lastIndexOf(".") != -1) {
-            return canonicalName.substring(canonicalName.lastIndexOf(".") + 1);
-        } else {
-            return canonicalName;
-        }
-    }
+    return initializer.getBlockContent().replaceAll("\\s", "");
 
-    /**
-     * Merges all inner {@link JavaClass}es of the given {@link JavaClass}es
-     *
-     * @param baseClass
-     *            {@link JavaClass}
-     * @param patchClass
-     *            {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
-     */
-    private void mergeInnerClasses(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
-
-        for (JavaClass rawInnerPatchClass : patchClass.getNestedClasses()) {
-            ModifyableJavaClass innerPatchClass = (ModifyableJavaClass) rawInnerPatchClass;
-            ModifyableJavaClass nestedBaseClass =
-                (ModifyableJavaClass) baseClass.getNestedClassByName(innerPatchClass.getName());
-            if (nestedBaseClass == null) {
-                baseClass.addClass(innerPatchClass);
-            } else {
-                merge(nestedBaseClass, innerPatchClass);
-            }
-        }
-    }
-
-    /**
-     * Merges all fields of the given {@link JavaClass}es
-     *
-     * @param baseClass
-     *            {@link JavaClass}
-     * @param patchClass
-     *            {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
-     */
-    private void mergeFields(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
-
-        for (JavaField patchField : patchClass.getFields()) {
-            JavaField baseField = baseClass.getFieldByName(patchField.getName());
-            if (baseField == null) {
-                baseClass.addField(patchField);
-            } else {
-                if (patchOverrides) {
-                    baseClass.replace(baseField, patchField);
-                } // else do not override
-            }
-        }
-    }
-
-    /**
-     * Merges all methods of the given {@link JavaClass}es
-     *
-     * @param baseClass
-     *            {@link JavaClass}
-     * @param patchClass
-     *            {@link JavaClass}
-     * @author mbrunnli (19.03.2013)
-     */
-    private void mergeMethods(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
-
-        // merge all non-conflicting imports from (final) base class to patch, to check for conflicting
-        // method signatures
-        mergeImports(patchClass, baseClass);
-
-        for (JavaConstructor patchConstructor : patchClass.getConstructors()) {
-            JavaConstructor baseConstructor = baseClass.getConstructor(patchConstructor.getParameterTypes());
-            if (baseConstructor == null) {
-                baseClass.addConstructor(patchConstructor);
-            } else {
-                if (patchOverrides) {
-                    baseClass.replace(baseConstructor, patchConstructor);
-                } // else do not override
-            }
-        }
-
-        List<JavaInitializer> InitializersToAdd = new ArrayList<>();
-
-        for (JavaInitializer patchInitializerBlock : patchClass.getInitializers()) {
-
-            for (JavaInitializer baseInitializerBlock : baseClass.getInitializers()) {
-                if (getBlock(baseInitializerBlock).equals(getBlock(patchInitializerBlock))) {
-                    if (patchOverrides) {
-                        baseClass.replace(baseInitializerBlock, patchInitializerBlock);
-                    }
-
-                } else {
-                    InitializersToAdd.add(patchInitializerBlock);
-                }
-
-            }
-
-        }
-
-        baseClass.addAllInitializer(InitializersToAdd);
-
-        for (JavaMethod patchMethod : patchClass.getMethods()) {
-            JavaMethod baseMethod =
-                baseClass.getMethodBySignature(patchMethod.getName(), patchMethod.getParameterTypes(true));
-            if (baseMethod == null) {
-                baseClass.addMethod(patchMethod);
-            } else {
-                if (patchOverrides) {
-                    baseClass.replace(baseMethod, patchMethod);
-                } // else do not override
-            }
-        }
-    }
-
-    /**
-     * @param initializer
-     *            JavaInitializer
-     * @return Contents of the Initializer block removing white space and new line
-     */
-    private String getBlock(JavaInitializer initializer) {
-        return initializer.getBlockContent().replaceAll("\\s", "");
-
-    }
+  }
 
 }

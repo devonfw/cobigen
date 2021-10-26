@@ -8,41 +8,45 @@ import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.subpackage.S
  */
 public abstract class SuperClass1 extends SuperClass2 {
 
-    private String superClass1Field;
+  private String superClass1Field;
 
-    protected int packageVisibleInteger;
+  protected int packageVisibleInteger;
 
-    private byte setterVisibleByte;
+  private byte setterVisibleByte;
 
-    /**
-     * Returns the field 'setterVisibleByte'
-     * @return value of setterVisibleByte
-     * @author mbrunnli (14.11.2014)
-     */
-    public byte getSetterVisibleByte() {
-        return setterVisibleByte;
-    }
+  /**
+   * Returns the field 'setterVisibleByte'
+   *
+   * @return value of setterVisibleByte
+   * @author mbrunnli (14.11.2014)
+   */
+  public byte getSetterVisibleByte() {
 
-    /**
-     * Sets the field 'setterVisibleByte'.
-     * @param setterVisibleByte
-     *            new value of setterVisibleByte
-     * @author mbrunnli (14.11.2014)
-     */
-    public void setSetterVisibleByte(byte setterVisibleByte) {
-        this.setterVisibleByte = setterVisibleByte;
-    }
+    return this.setterVisibleByte;
+  }
 
-    public void setNoProperty(String noProperty) {
+  /**
+   * Sets the field 'setterVisibleByte'.
+   *
+   * @param setterVisibleByte new value of setterVisibleByte
+   * @author mbrunnli (14.11.2014)
+   */
+  public void setSetterVisibleByte(byte setterVisibleByte) {
 
-    }
+    this.setterVisibleByte = setterVisibleByte;
+  }
 
-    /**
-     *
-     * @author mbrunnli (17.11.2014)
-     */
-    private String getNoProperty() {
-        return null;
-    }
+  public void setNoProperty(String noProperty) {
+
+  }
+
+  /**
+   *
+   * @author mbrunnli (17.11.2014)
+   */
+  private String getNoProperty() {
+
+    return null;
+  }
 
 }

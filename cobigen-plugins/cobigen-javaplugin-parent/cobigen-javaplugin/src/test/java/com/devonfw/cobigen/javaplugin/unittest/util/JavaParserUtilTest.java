@@ -11,34 +11,34 @@ import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
  */
 public class JavaParserUtilTest {
 
-    /**
-     * Test method for
-     * {@link com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil#resolveToSimpleType(java.lang.String)}.
-     */
-    @Test
-    public void testResolveToSimpleType() {
-        String testString1 = "java.lang.String";
-        String expectedString1 = "String";
+  /**
+   * Test method for
+   * {@link com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil#resolveToSimpleType(java.lang.String)}.
+   */
+  @Test
+  public void testResolveToSimpleType() {
 
-        String testString2 = "java.util.List<java.lang.String>";
-        String expectedString2 = "List<String>";
+    String testString1 = "java.lang.String";
+    String expectedString1 = "String";
 
-        String testString3 = "java.util.HashMap<java.lang.String, java.util.List<java.lang.Integer>>";
-        String expectedString3 = "HashMap<String, List<Integer>>";
+    String testString2 = "java.util.List<java.lang.String>";
+    String expectedString2 = "List<String>";
 
-        String testString4 = "List<Map<Map<String, String>,List<String>>>";
-        String expectedString4 = "List<Map<Map<String, String>,List<String>>>";
+    String testString3 = "java.util.HashMap<java.lang.String, java.util.List<java.lang.Integer>>";
+    String expectedString3 = "HashMap<String, List<Integer>>";
 
-        String testString5 =
-            "java.util.List<java.util.Map<java.util.Map<java.lang.String, java.lang.String>,java.util.List<java.lang.String>>>";
-        String expectedString5 = "List<Map<Map<String, String>,List<String>>>";
+    String testString4 = "List<Map<Map<String, String>,List<String>>>";
+    String expectedString4 = "List<Map<Map<String, String>,List<String>>>";
 
-        assertThat(JavaParserUtil.resolveToSimpleType(testString1)).isEqualTo(expectedString1);
-        assertThat(JavaParserUtil.resolveToSimpleType(testString2)).isEqualTo(expectedString2);
-        assertThat(JavaParserUtil.resolveToSimpleType(testString3)).isEqualTo(expectedString3);
-        assertThat(JavaParserUtil.resolveToSimpleType(testString4)).isEqualTo(expectedString4);
-        assertThat(JavaParserUtil.resolveToSimpleType(testString5)).isEqualTo(expectedString5);
+    String testString5 = "java.util.List<java.util.Map<java.util.Map<java.lang.String, java.lang.String>,java.util.List<java.lang.String>>>";
+    String expectedString5 = "List<Map<Map<String, String>,List<String>>>";
 
-    }
+    assertThat(JavaParserUtil.resolveToSimpleType(testString1)).isEqualTo(expectedString1);
+    assertThat(JavaParserUtil.resolveToSimpleType(testString2)).isEqualTo(expectedString2);
+    assertThat(JavaParserUtil.resolveToSimpleType(testString3)).isEqualTo(expectedString3);
+    assertThat(JavaParserUtil.resolveToSimpleType(testString4)).isEqualTo(expectedString4);
+    assertThat(JavaParserUtil.resolveToSimpleType(testString5)).isEqualTo(expectedString5);
+
+  }
 
 }

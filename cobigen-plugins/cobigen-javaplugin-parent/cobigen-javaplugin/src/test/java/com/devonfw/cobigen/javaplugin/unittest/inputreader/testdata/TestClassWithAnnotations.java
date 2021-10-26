@@ -2,25 +2,28 @@ package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
 public class TestClassWithAnnotations {
 
-    private boolean boolvalue;
+  private boolean boolvalue;
 
-    /**
-     * Returns the field 'boolvalue'
-     * @return value of boolvalue
-     */
-    @MyFieldAnnotation(bool = true)
-    public boolean isBoolvalue() {
-        return boolvalue;
-    }
+  /**
+   * Returns the field 'boolvalue'
+   *
+   * @return value of boolvalue
+   */
+  @MyFieldAnnotation(bool = true)
+  public boolean isBoolvalue() {
 
-    /**
-     * Sets the field 'boolvalue'.
-     * @param boolvalue
-     *            new value of boolvalue
-     * @author mbrunnli (05.12.2014)
-     */
-    public void setBoolvalue(boolean boolvalue) {
-        this.boolvalue = boolvalue;
-    }
+    return this.boolvalue;
+  }
+
+  /**
+   * Sets the field 'boolvalue'.
+   *
+   * @param boolvalue new value of boolvalue
+   * @author mbrunnli (05.12.2014)
+   */
+  public void setBoolvalue(boolean boolvalue) {
+
+    this.boolvalue = boolvalue;
+  }
 
 }

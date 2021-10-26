@@ -49,282 +49,280 @@ import com.devonfw.cobigen.eclipse.wizard.common.model.stubs.OffWorkspaceResourc
 @SuppressWarnings("restriction")
 public class SelectFileLabelProvider extends LabelProvider implements IColorProvider, ICheckStateListener {
 
-    /** Item label suffix */
-    private static final String LABEL_SUFFIX_NEW = " (new)";
+  /** Item label suffix */
+  private static final String LABEL_SUFFIX_NEW = " (new)";
 
-    /** Item label suffix */
-    private static final String LABEL_SUFFIX_OVERRIDE = " (override)";
+  /** Item label suffix */
+  private static final String LABEL_SUFFIX_OVERRIDE = " (override)";
 
-    /** Item label suffix */
-    private static final String LABEL_SUFFIX_CREATE_OVERRIDE = " (create/override)";
+  /** Item label suffix */
+  private static final String LABEL_SUFFIX_CREATE_OVERRIDE = " (create/override)";
 
-    /** Item label suffix */
-    private static final String LABEL_SUFFIX_MERGE = " (merge)";
+  /** Item label suffix */
+  private static final String LABEL_SUFFIX_MERGE = " (merge)";
 
-    /** Item label suffix */
-    private static final String LABEL_SUFFIX_CREATE_MERGE = " (create/merge)";
+  /** Item label suffix */
+  private static final String LABEL_SUFFIX_CREATE_MERGE = " (create/merge)";
 
-    /** Item label for an unknown item */
-    private static final String LABEL_UNDEFINED = "UNDEFINED";
+  /** Item label for an unknown item */
+  private static final String LABEL_UNDEFINED = "UNDEFINED";
 
-    /** Item label if an error occurred */
-    private static final String LABEL_ERROR = "ERROR";
+  /** Item label if an error occurred */
+  private static final String LABEL_ERROR = "ERROR";
 
-    /** Item label for the default package */
-    private static final String LABEL_DEFAULT_PACKAGE = "(default package)";
+  /** Item label for the default package */
+  private static final String LABEL_DEFAULT_PACKAGE = "(default package)";
 
-    /** Red color for override marking */
-    private static final Color OVERRIDE_COLOR = new Color(Display.getDefault(), 255, 69, 0);
+  /** Red color for override marking */
+  private static final Color OVERRIDE_COLOR = new Color(Display.getDefault(), 255, 69, 0);
 
-    /** Logger instance */
-    private static final Logger LOG = LoggerFactory.getLogger(SelectFileContentProvider.class);
+  /** Logger instance */
+  private static final Logger LOG = LoggerFactory.getLogger(SelectFileContentProvider.class);
 
-    /** The currently selected resources */
-    private Set<Object> selectedResources = new HashSet<>();
+  /** The currently selected resources */
+  private Set<Object> selectedResources = new HashSet<>();
 
-    /** Currently selected increments */
-    private Set<IncrementTo> selectedIncrements = new HashSet<>();
+  /** Currently selected increments */
+  private Set<IncrementTo> selectedIncrements = new HashSet<>();
 
-    /** The current {@link CobiGenWrapper} instance */
-    private CobiGenWrapper cobigenWrapper;
+  /** The current {@link CobiGenWrapper} instance */
+  private CobiGenWrapper cobigenWrapper;
 
-    /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
-    private boolean batch;
+  /** Defines whether the {@link CobiGenWrapper} is in batch mode. */
+  private boolean batch;
 
-    /**
-     * Creates a new {@link SelectFileContentProvider} which displays the texts and decorations according to
-     * the simulated resources
-     *
-     * @param cobigenWrapper
-     *            the currently used {@link CobiGenWrapper} instance
-     * @param batch
-     *            states whether the generation process is running in batch mode
-     */
-    public SelectFileLabelProvider(CobiGenWrapper cobigenWrapper, boolean batch) {
+  /**
+   * Creates a new {@link SelectFileContentProvider} which displays the texts and decorations according to the simulated
+   * resources
+   *
+   * @param cobigenWrapper the currently used {@link CobiGenWrapper} instance
+   * @param batch states whether the generation process is running in batch mode
+   */
+  public SelectFileLabelProvider(CobiGenWrapper cobigenWrapper, boolean batch) {
 
-        this.cobigenWrapper = cobigenWrapper;
-        this.batch = batch;
+    this.cobigenWrapper = cobigenWrapper;
+    this.batch = batch;
 
+  }
+
+  @Override
+  public String getText(Object element) {
+
+    MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+    String result = getTextInternal(element, true);
+    MDC.remove(InfrastructureConstants.CORRELATION_ID);
+    return result;
+  }
+
+  /**
+   * Implementation of {@link LabelProvider#getText(Object)}
+   */
+  @SuppressWarnings("javadoc")
+  private String getTextInternal(Object element, boolean addMetadata) {
+
+    String result = "";
+    if (element instanceof IResource) {
+      result = ((IResource) element).getName();
+    } else if (element instanceof IPackageFragmentRoot) {
+      result = getFullName((IPackageFragmentRoot) element);
+    } else if (element instanceof IPackageFragment) {
+      try {
+        result = HierarchicalTreeOperator.getChildName((IPackageFragment) element);
+      } catch (JavaModelException e) {
+        LOG.error(
+            "Could not retrieve package name of package with element name '{}'. An internal eclipse exception occured.",
+            ((IPackageFragment) element).getElementName(), e);
+        result = LABEL_ERROR;
+      }
+      if (result.isEmpty()) {
+        result = LABEL_DEFAULT_PACKAGE;
+      }
+    } else if (element instanceof IJavaElement) {
+      result = ((IJavaElement) element).getElementName();
+    } else if (element instanceof OffWorkspaceResourceTreeNode) {
+      result = ((OffWorkspaceResourceTreeNode) element).getPathStr();
     }
 
-    @Override
-    public String getText(Object element) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
-        String result = getTextInternal(element, true);
-        MDC.remove(InfrastructureConstants.CORRELATION_ID);
-        return result;
+    if (addMetadata) {
+      result = addMetaInformation(element, result);
     }
+    result = result.isEmpty() ? LABEL_UNDEFINED : result;
+    return result;
+  }
 
-    /**
-     * Implementation of {@link LabelProvider#getText(Object)}
-     */
-    @SuppressWarnings("javadoc")
-    private String getTextInternal(Object element, boolean addMetadata) {
-        String result = "";
-        if (element instanceof IResource) {
-            result = ((IResource) element).getName();
-        } else if (element instanceof IPackageFragmentRoot) {
-            result = getFullName((IPackageFragmentRoot) element);
-        } else if (element instanceof IPackageFragment) {
-            try {
-                result = HierarchicalTreeOperator.getChildName((IPackageFragment) element);
-            } catch (JavaModelException e) {
-                LOG.error(
-                    "Could not retrieve package name of package with element name '{}'. An internal eclipse exception occured.",
-                    ((IPackageFragment) element).getElementName(), e);
-                result = LABEL_ERROR;
-            }
-            if (result.isEmpty()) {
-                result = LABEL_DEFAULT_PACKAGE;
-            }
-        } else if (element instanceof IJavaElement) {
-            result = ((IJavaElement) element).getElementName();
-        } else if (element instanceof OffWorkspaceResourceTreeNode) {
-            result = ((OffWorkspaceResourceTreeNode) element).getPathStr();
+  @Override
+  public Image getImage(Object element) {
+
+    String labelTextWithoutSuffix = getTextInternal(element, false);
+    ImageDescriptor defaultImageDescriptor = PlatformUI.getWorkbench().getEditorRegistry()
+        .getImageDescriptor(labelTextWithoutSuffix);
+    Image result = defaultImageDescriptor.createImage();
+    if (element instanceof IProject) {
+      result = PlatformUI.getWorkbench().getSharedImages().getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
+    } else if (element instanceof IFolder) {
+      result = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+    } else if (element instanceof IJavaElement) {
+      JavaElementImageProvider p = new JavaElementImageProvider();
+      result = p.getImageLabel(element, JavaElementImageProvider.SMALL_ICONS);
+    } else if (element instanceof OffWorkspaceResourceTreeNode
+        && ((OffWorkspaceResourceTreeNode) element).hasChildren()) {
+      result = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+    }
+    return result;
+  }
+
+  @Override
+  public Color getForeground(Object element) {
+
+    return null;
+  }
+
+  @Override
+  public Color getBackground(Object element) {
+
+    MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
+
+    if (this.selectedResources.contains(element)) {
+      if ((element instanceof IJavaElementStub || element instanceof IResourceStub
+          || (element instanceof OffWorkspaceResourceTreeNode
+              && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath())))
+          && !this.batch) {
+        return Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+      } else if (element instanceof IFile || element instanceof ICompilationUnit
+          || element instanceof OffWorkspaceResourceTreeNode) {
+        if (isMergableFile(element) && !isOverridableFile(element)) {
+          return Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
+        } else {
+          return OVERRIDE_COLOR;
         }
+      }
+    }
+    MDC.remove(InfrastructureConstants.CORRELATION_ID);
+    return null;
+  }
 
-        if (addMetadata) {
-            result = addMetaInformation(element, result);
+  /**
+   * Checks whether the given object is marked as mergable
+   *
+   * @param element to be checked
+   * @return <code>true</code> if the given object can be merged<br>
+   *         <code>false</code> otherwise
+   */
+  private boolean isMergableFile(Object element) {
+
+    String path = "";
+    if (element instanceof IResource) {
+      path = ((IResource) element).getFullPath().toString();
+    } else if (element instanceof IJavaElement) {
+      path = ((IJavaElement) element).getPath().toString();
+    } else if (element instanceof OffWorkspaceResourceTreeNode) {
+      path = (((OffWorkspaceResourceTreeNode) element).getAbsolutePathStr());
+    }
+    return this.cobigenWrapper.isMergableFile(path, this.selectedIncrements);
+  }
+
+  /**
+   * Checks whether the given object is marked as mergable
+   *
+   * @param element to be checked
+   * @return <code>true</code> if the given object can be merged<br>
+   *         <code>false</code> otherwise
+   */
+  private boolean isOverridableFile(Object element) {
+
+    String path = "";
+    if (element instanceof IResource) {
+      path = ((IResource) element).getFullPath().toString();
+    } else if (element instanceof IJavaElement) {
+      path = ((IJavaElement) element).getPath().toString();
+    } else if (element instanceof OffWorkspaceResourceTreeNode) {
+      path = (((OffWorkspaceResourceTreeNode) element).getAbsolutePathStr());
+    }
+    return this.cobigenWrapper.isOverridableFile(path, this.selectedIncrements);
+  }
+
+  /**
+   * Sets the currently selected resources
+   *
+   * @param selectedResources the currently selected resources
+   */
+  public void setSelectedResources(Object[] selectedResources) {
+
+    this.selectedResources = new HashSet<>(Arrays.asList(selectedResources));
+  }
+
+  /**
+   * Adds meta information to the elements name, such as new or merge or override
+   *
+   * @param element to be enriched with information
+   * @param source string to be enriched
+   * @return the enriched result string
+   */
+  private String addMetaInformation(Object element, String source) {
+
+    String result = new String(source);
+    if (this.selectedResources.contains(element)) {
+      if (!this.batch && (element instanceof IJavaElementStub || element instanceof IResourceStub
+          || (element instanceof OffWorkspaceResourceTreeNode && !((OffWorkspaceResourceTreeNode) element).hasChildren()
+              && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath())))) {
+        result += LABEL_SUFFIX_NEW;
+      } else if (element instanceof IFile || element instanceof ICompilationUnit
+          || (element instanceof OffWorkspaceResourceTreeNode
+              && !((OffWorkspaceResourceTreeNode) element).hasChildren())) {
+        if (isOverridableFile(element)) {
+          result += LABEL_SUFFIX_OVERRIDE;
+        } else if (isMergableFile(element)) {
+          result += this.batch ? LABEL_SUFFIX_CREATE_MERGE : LABEL_SUFFIX_MERGE;
+        } else {
+          result += this.batch ? LABEL_SUFFIX_CREATE_OVERRIDE : LABEL_SUFFIX_OVERRIDE;
         }
-        result = result.isEmpty() ? LABEL_UNDEFINED : result;
-        return result;
+      }
     }
+    return result;
+  }
 
-    @Override
-    public Image getImage(Object element) {
+  /**
+   * Returns the full name of an {@link IPackageFragmentRoot} as by default only the last segment is returned by
+   * {@link IJavaElement#getElementName()}
+   *
+   * @param root {@link IPackageFragmentRoot} for which the whole name should be determined
+   * @return the full name of an {@link IPackageFragmentRoot}
+   */
+  private String getFullName(IPackageFragmentRoot root) {
 
-        String labelTextWithoutSuffix = getTextInternal(element, false);
-        ImageDescriptor defaultImageDescriptor =
-            PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(labelTextWithoutSuffix);
-        Image result = defaultImageDescriptor.createImage();
-        if (element instanceof IProject) {
-            result = PlatformUI.getWorkbench().getSharedImages().getImage(IDE.SharedImages.IMG_OBJ_PROJECT);
-        } else if (element instanceof IFolder) {
-            result = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
-        } else if (element instanceof IJavaElement) {
-            JavaElementImageProvider p = new JavaElementImageProvider();
-            result = p.getImageLabel(element, JavaElementImageProvider.SMALL_ICONS);
-        } else if (element instanceof OffWorkspaceResourceTreeNode
-            && ((OffWorkspaceResourceTreeNode) element).hasChildren()) {
-            result = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+    String path = root.getPath().toString();
+    IJavaProject proj = root.getJavaProject();
+    if (proj != null) {
+      path = path.replaceFirst("/" + proj.getElementName() + "/", "");
+    }
+    return path;
+  }
+
+  @Override
+  public void checkStateChanged(CheckStateChangedEvent event) {
+
+    synchronized (this.selectedIncrements) {
+      // Increments selection has been changed
+      if (event.getSource() instanceof CheckboxTreeViewer) {
+
+        CheckboxTreeViewer incrementSelector = (CheckboxTreeViewer) event.getSource();
+
+        CheckStateListener listener = new CheckStateListener(this.cobigenWrapper, null, this.batch);
+        listener.performCheckLogic(event, incrementSelector);
+
+        Set<Object> selectedElements = new HashSet<>(
+            Arrays.asList(((CheckboxTreeViewer) event.getSource()).getCheckedElements()));
+
+        this.selectedIncrements.clear();
+        for (Object o : selectedElements) {
+          if (o instanceof IncrementTo) {
+            this.selectedIncrements.add((IncrementTo) o);
+          } else {
+            throw new CobiGenEclipseRuntimeException(
+                "Unexpected increment type '" + o.getClass().getCanonicalName() + "' !");
+          }
         }
-        return result;
+      }
     }
-
-    @Override
-    public Color getForeground(Object element) {
-
-        return null;
-    }
-
-    @Override
-    public Color getBackground(Object element) {
-        MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
-
-        if (selectedResources.contains(element)) {
-            if ((element instanceof IJavaElementStub || element instanceof IResourceStub
-                || (element instanceof OffWorkspaceResourceTreeNode
-                    && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath())))
-                && !batch) {
-                return Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
-            } else if (element instanceof IFile || element instanceof ICompilationUnit
-                || element instanceof OffWorkspaceResourceTreeNode) {
-                if (isMergableFile(element) && !isOverridableFile(element)) {
-                    return Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
-                } else {
-                    return OVERRIDE_COLOR;
-                }
-            }
-        }
-        MDC.remove(InfrastructureConstants.CORRELATION_ID);
-        return null;
-    }
-
-    /**
-     * Checks whether the given object is marked as mergable
-     *
-     * @param element
-     *            to be checked
-     * @return <code>true</code> if the given object can be merged<br>
-     *         <code>false</code> otherwise
-     */
-    private boolean isMergableFile(Object element) {
-
-        String path = "";
-        if (element instanceof IResource) {
-            path = ((IResource) element).getFullPath().toString();
-        } else if (element instanceof IJavaElement) {
-            path = ((IJavaElement) element).getPath().toString();
-        } else if (element instanceof OffWorkspaceResourceTreeNode) {
-            path = (((OffWorkspaceResourceTreeNode) element).getAbsolutePathStr());
-        }
-        return cobigenWrapper.isMergableFile(path, selectedIncrements);
-    }
-
-    /**
-     * Checks whether the given object is marked as mergable
-     *
-     * @param element
-     *            to be checked
-     * @return <code>true</code> if the given object can be merged<br>
-     *         <code>false</code> otherwise
-     */
-    private boolean isOverridableFile(Object element) {
-
-        String path = "";
-        if (element instanceof IResource) {
-            path = ((IResource) element).getFullPath().toString();
-        } else if (element instanceof IJavaElement) {
-            path = ((IJavaElement) element).getPath().toString();
-        } else if (element instanceof OffWorkspaceResourceTreeNode) {
-            path = (((OffWorkspaceResourceTreeNode) element).getAbsolutePathStr());
-        }
-        return cobigenWrapper.isOverridableFile(path, selectedIncrements);
-    }
-
-    /**
-     * Sets the currently selected resources
-     * @param selectedResources
-     *            the currently selected resources
-     */
-    public void setSelectedResources(Object[] selectedResources) {
-        this.selectedResources = new HashSet<>(Arrays.asList(selectedResources));
-    }
-
-    /**
-     * Adds meta information to the elements name, such as new or merge or override
-     * @param element
-     *            to be enriched with information
-     * @param source
-     *            string to be enriched
-     * @return the enriched result string
-     */
-    private String addMetaInformation(Object element, String source) {
-
-        String result = new String(source);
-        if (selectedResources.contains(element)) {
-            if (!batch && (element instanceof IJavaElementStub || element instanceof IResourceStub
-                || (element instanceof OffWorkspaceResourceTreeNode
-                    && !((OffWorkspaceResourceTreeNode) element).hasChildren()
-                    && !Files.exists(((OffWorkspaceResourceTreeNode) element).getAbsolutePath())))) {
-                result += LABEL_SUFFIX_NEW;
-            } else if (element instanceof IFile || element instanceof ICompilationUnit
-                || (element instanceof OffWorkspaceResourceTreeNode
-                    && !((OffWorkspaceResourceTreeNode) element).hasChildren())) {
-                if (isOverridableFile(element)) {
-                    result += LABEL_SUFFIX_OVERRIDE;
-                } else if (isMergableFile(element)) {
-                    result += batch ? LABEL_SUFFIX_CREATE_MERGE : LABEL_SUFFIX_MERGE;
-                } else {
-                    result += batch ? LABEL_SUFFIX_CREATE_OVERRIDE : LABEL_SUFFIX_OVERRIDE;
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Returns the full name of an {@link IPackageFragmentRoot} as by default only the last segment is
-     * returned by {@link IJavaElement#getElementName()}
-     *
-     * @param root
-     *            {@link IPackageFragmentRoot} for which the whole name should be determined
-     * @return the full name of an {@link IPackageFragmentRoot}
-     */
-    private String getFullName(IPackageFragmentRoot root) {
-
-        String path = root.getPath().toString();
-        IJavaProject proj = root.getJavaProject();
-        if (proj != null) {
-            path = path.replaceFirst("/" + proj.getElementName() + "/", "");
-        }
-        return path;
-    }
-
-    @Override
-    public void checkStateChanged(CheckStateChangedEvent event) {
-        synchronized (selectedIncrements) {
-            // Increments selection has been changed
-            if (event.getSource() instanceof CheckboxTreeViewer) {
-
-                CheckboxTreeViewer incrementSelector = (CheckboxTreeViewer) event.getSource();
-
-                CheckStateListener listener = new CheckStateListener(cobigenWrapper, null, batch);
-                listener.performCheckLogic(event, incrementSelector);
-
-                Set<Object> selectedElements =
-                    new HashSet<>(Arrays.asList(((CheckboxTreeViewer) event.getSource()).getCheckedElements()));
-
-                selectedIncrements.clear();
-                for (Object o : selectedElements) {
-                    if (o instanceof IncrementTo) {
-                        selectedIncrements.add((IncrementTo) o);
-                    } else {
-                        throw new CobiGenEclipseRuntimeException(
-                            "Unexpected increment type '" + o.getClass().getCanonicalName() + "' !");
-                    }
-                }
-            }
-        }
-    }
+  }
 }

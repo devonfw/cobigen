@@ -5,23 +5,27 @@ package com.devonfw.cobigen.openapiplugin.model;
  */
 @SuppressWarnings("javadoc")
 public class ServerDef {
-    private String URI;
+  private String URI;
 
-    private String description;
+  private String description;
 
-    public String getURI() {
-        return URI;
-    }
+  public String getURI() {
 
-    public void setURI(String uRI) {
-        URI = uRI;
-    }
+    return this.URI;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setURI(String uRI) {
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    this.URI = uRI;
+  }
+
+  public String getDescription() {
+
+    return this.description;
+  }
+
+  public void setDescription(String description) {
+
+    this.description = description;
+  }
 }
