@@ -101,7 +101,7 @@ This variable assignment assigns the value of the given regular expression group
 This variable assignment assigns the `value` to the `key` as a constant.
 
 === Java input reader
-The Cobigen Java Plug-in implements an input reader for parsed java sources as well as for java `Class<?>` objects (loaded by reflection). So API user can pass `Class<?>` objects as well as `JavaClass` objects for generation. The latter depends on http://qdox.codehaus.org/[QDox], which will be used for parsing and merging java sources. For getting the right parsed java inputs you can easily use the `JavaParserUtil`, which provides static functionality to parse java files and get the appropriate `JavaClass` object.
+The Cobigen Java Plug-in implements an input reader for parsed java sources as well as for java `Class<?>` objects (loaded by reflection). So API user can pass `Class<?>` objects as well as `JavaClass` objects for generation. The latter depends on https://github.com/paul-hammant/qdox[QDox], which will be used for parsing and merging java sources. For getting the right parsed java inputs you can easily use the `JavaParserUtil`, which provides static functionality to parse java files and get the appropriate `JavaClass` object.
 
 Furthermore, due to restrictions on both inputs according to model building (see below), it is also possible to provide an array of length two as an input, which contains the `Class<?>` as well as the `JavaClass` object of the same class.
 
@@ -155,7 +155,7 @@ As stated before both inputs (`Class<?>` objects and `JavaClass` objects ) have 
 It is important to understand, that these restrictions are only present if you work with either Parsed Model *OR* the Reflected Model. If you use the _Maven Build Plug-in_ or _Eclipse Plug-in_ these two models are merged together so that they can mutually compensate their weaknesses. 
 
 ===== Parsed Model
-* annotations of the input's supertype are not accessible due to restrictions in the http://qdox.codehaus.org/[QDox] library. So `pojo.methodAccessibleFields[i].annotations` will always be empty for super type fields.
+* annotations of the input's supertype are not accessible due to restrictions in the https://github.com/paul-hammant/qdox[QDox] library. So `pojo.methodAccessibleFields[i].annotations` will always be empty for super type fields.
 * annotations' parameter values are available as Strings only (e.g. the Boolean value `true` is transformed into `"true"`). This also holds for the Reflected Model.
 * fields of "supersupertypes" of the input JavaClass are not available at all. So `pojo.methodAccessibleFields` will only contain the input type's and the direct superclass's fields.
 * [resolved, since cobigen-javaplugin 1.3.1] field types of supertypes are always canonical. So `pojo.methodAccessibleFields[i].type` will always provide the same value as `pojo.methodAccessibleFields[i].canonicalType` (e.g. `java.lang.String` instead of the expected `String`) for super type fields.
