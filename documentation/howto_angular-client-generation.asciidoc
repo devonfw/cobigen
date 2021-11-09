@@ -5,11 +5,6 @@ toc::[]
 
 The generation can create a full Angular 8 client using the devon4ng-application-template package located at workspaces/examples folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
 
-You can also try out the katacoda tutorial for angular client generation.
-
-[.katacoda-links]
-https://katacoda.com/devonfw/scenarios/cobigen-angular-client-generation[CobiGen Angular Katacoda Scenario]
-
 Take into account that the TypeScript merging for CobiGen needs Node 6 or higher to be installed at your machine.
 
 NOTE: This is a short introduction to the Angular generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-devonfw-ide-CobiGen-PoC-E2E_v3.2.pdf[this document].
