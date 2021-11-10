@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
 import java.util.Objects;
@@ -98,16 +99,33 @@ public class ExtractTemplatesUtil {
 
     LOG.debug("Processing jar file @ {}", sourcesJarPath);
 
+    // extract sources jar to target directory
     extractArchive(sourcesJarPath, destinationPath);
-    deleteDirectoryRecursively(destinationPath.resolve("META-INF"));
 
-    extractArchive(classesJarPath, destinationPath.resolve("target/classes"));
-    Files.deleteIfExists(destinationPath.resolve("pom.xml"));
-    // If we are unzipping a sources jar, we need to get the pom.xml from the normal jar
-    Files.copy(destinationPath.resolve("target/classes/pom.xml"), destinationPath.resolve("pom.xml"));
-    Files.deleteIfExists(destinationPath.resolve("target/classes/pom.xml"));
-    deleteDirectoryRecursively(destinationPath.resolve("target/classes/src"));
-    deleteDirectoryRecursively(destinationPath.resolve("target/classes/META-INF"));
+    // create src/main/java directory
+    Files.createDirectory(destinationPath.resolve("src/main/java"));
+
+    // move com folder to src/main/java/com
+    Files.move(destinationPath.resolve("com"), destinationPath.resolve("src/main/java/com"),
+        StandardCopyOption.REPLACE_EXISTING);
+
+    // create src/main/resources directory
+    Files.createDirectory(destinationPath.resolve("src/main/resources"));
+
+    // move META-INF folder to src/main/resources
+    Files.move(destinationPath.resolve("META-INF"), destinationPath.resolve("src/main/resources/META-INF"),
+        StandardCopyOption.REPLACE_EXISTING);
+
+    // delete MANIFEST.MF
+    Files.deleteIfExists(destinationPath.resolve("src/main/resources/META-INF/MANIFEST.MF"));
+
+    URI zipFile = URI.create("jar:file:" + classesJarPath.toUri().getPath());
+
+    // extract classes jar pom.xml
+    try (FileSystem fs = FileSystemUtil.getOrCreateFileSystem(zipFile)) {
+      Files.copy(fs.getPath("pom.xml"), destinationPath.resolve("pom.xml"), StandardCopyOption.REPLACE_EXISTING);
+    }
+
   }
 
   /**
