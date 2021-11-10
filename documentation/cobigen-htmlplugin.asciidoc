@@ -3,11 +3,11 @@ toc::[]
 
 = HTML Plug-in
 
-The HTML Plug-in enables merging result HTML files to existing ones. This plug-in is used at the moment for generate an Angular2 client. Currently, the generation of Angular2 client requires an ETO java object as input so, there is no need to implement an input reader for ts artifacts for the moment.
+The HTML Plug-in enables merging result HTML files to existing ones. This plug-in is used at the moment for generate an Angular client. Currently, the generation of Angular client requires an ETO java object as input so, there is no need to implement an input reader for ts artifacts for the moment.
 
 == Trigger Extensions
 
-As for the Angular2 generation the input is a java object, the trigger expressions (including matchers and variable assignments) are implemented as link:https://github.com/devonfw/cobigen/wiki/cobigen-javaplugin#trigger-extension[Java]. 
+As for the Angular generation the input is a java object, the trigger expressions (including matchers and variable assignments) are implemented as link:https://github.com/devonfw/cobigen/wiki/cobigen-javaplugin#trigger-extension[Java]. 
 
 == Merger extensions
 There are currently two merge strategies:
@@ -15,7 +15,7 @@ There are currently two merge strategies:
 * merge strategy `html-ng*` (add the new code respecting the existing is case of conflict)
 * merge strategy `html-ng*_override` (add the new code overwriting the existent in case of conflict)
 
-The merging of two Angular2 files will be processed in the following way:
+The merging of two Angular files will be processed in the following way:
 
 The merge algorithm handles the following AST nodes:
 
