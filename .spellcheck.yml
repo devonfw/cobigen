@@ -15,6 +15,9 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       escapes: '^.*[\/\\][^\/\\]+$'
+  - pyspelling.filters.context: 
+      context_visible_first: true
+      escapes: '\b[A-Z]+[_-][A-Z]+|([A-Z]+)\b'
   #Ignore for upper camel case
   - pyspelling.filters.context:
       context_visible_first: true
