@@ -17,7 +17,7 @@ matrix:
       escapes: '^.*[\/\\][^\/\\]+$'
   - pyspelling.filters.context: 
       context_visible_first: true
-      escapes: '\b[A-Z]+[_-][A-Z]+|([A-Z]+)\b'
+      escapes: '\b[A-Z]+([_-][A-Z]+)*\b'
   #Ignore for upper camel case
   - pyspelling.filters.context:
       context_visible_first: true
@@ -44,5 +44,5 @@ matrix:
       context_visible_first: true
       delimiters:
       # Ignore multiline content between [source, *] and blank line
-      - open: '[source, *]'
+      - open: '\[source,.*\]'
         close: '^\s*$'   
