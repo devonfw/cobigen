@@ -210,7 +210,7 @@ if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).siz
      wiz.open();
      LOG.info("Generate Wizard opened.");
 }
-Adapt Template: Select Entity file and right click then select cobigen  Adapt Template.If cobigen template  jar not available then it download automatically.If Cobigen templates is already then it will oveeride existing template in workspace and click on OK then imported template successfully message will come .If Template not available the it automatically 
+Adapt Template: Select Entity file and right click then select cobigen  Adapt Template.If cobigen template  jar not available then it download automatically.If Cobigen templates is already then it will override existing template in workspace and click on OK then imported template successfully message will come .If Template not available the it automatically 
 === Wizard and WizardPages
 
 The Wizard class from the *org.eclipse.jface.wizard* package provides the functionality to build custom wizards. This class controls the navigation between the different pages and provides the base user interface, for example, an area for error and information messages.
@@ -294,7 +294,7 @@ protected void generateContents(ProgressMonitorDialog dialog) {
     try {
         dialog.run(true, false, job);
     } catch (InvocationTargetException e) {
-        LOG.error("An internal error occured while invoking the generation job.", e);
+        LOG.error("An internal error occurred while invoking the generation job.", e);
     } catch (InterruptedException e) {
         LOG.warn("The working thread doing the generation job has been interrupted.", e);
     }
@@ -306,7 +306,7 @@ Calling the `generate()` method from the *CobiGenWrapper* will call the method w
 
 === Batch Mode
 
-At batch mode, the generation job will be instantiaed depending if the selection was a container or a multiple files selection.
+At batch mode, the generation job will be instantiated depending if the selection was a container or a multiple files selection.
 
 [source,java]
 @Override
@@ -327,7 +327,7 @@ protected void generateContents(ProgressMonitorDialog dialog) {
     try {
         dialog.run(true, false, job);
     } catch (InvocationTargetException e) {
-        LOG.error("An internal error occured while invoking the generation batch job.", e);
+        LOG.error("An internal error occurred while invoking the generation batch job.", e);
     } catch (InterruptedException e) {
         LOG.warn("The working thread doing the generation job has been interrupted.", e);
     }
