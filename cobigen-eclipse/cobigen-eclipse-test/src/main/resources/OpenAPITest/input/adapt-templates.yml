@@ -1,0 +1,66 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/devonfw-server/services/rest'
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+  x-rootpackage: com.devonfw.test
+paths:
+  /sampledatamanagement/v1/sampledata/custom/{id}:
+    get:
+      operationId: customMethod
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 100
+      responses:
+        '200':
+          description: Custom Method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleData'
+    delete:
+      summary: 'Delegates to {@link Sampledatamanagement#deleteSampleData}.'
+      description: Deletes an existent SampleData from his ID.
+      operationId: deleteCustomSampleData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 100
+      responses:
+        '200':
+          description: An SampleDataETO object
+          content:
+             application/json:
+               schema:
+                 type: boolean
+components:
+  schemas:
+    SampleData:
+      x-component: sampledatamanagement
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 0
+          description: Name string.
+  requestBodies:
+    SampleData:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SampleData'
+      required: true
