@@ -13,31 +13,20 @@ In any of these cases you can fix the issue by running a `mvn clean package -Pp2
 You are facing an error like
 ```
 [ERROR] [ERROR] Some problems were encountered while processing the POMs:
-[ERROR] Unresolveable build extension: Plugin org.apache.maven.wagon:wagon-ftp:1
-.0-beta-6 or one of its dependencies could not be resolved: Failed to read artif
-act descriptor for org.apache.maven.wagon:wagon-ftp:jar:1.0-beta-6 @
-@
+[ERROR] Unresolveable build extension: Plugin org.apache.maven.wagon:wagon-ftp:1.0-beta-6 or one of its dependencies could not be resolved: Failed to read artifact descriptor for org.apache.maven.wagon:wagon-ftp:jar:1.0-beta-6 @@
 [ERROR] The build could not read 1 project -> [Help 1]
 [ERROR]
-[ERROR]   The project com.capgemini:cobigen-htmlplugin:1.1.0 (D:\toolscobigen\to
-ols-cobigen2\cobigen\cobigen\cobigen-htmlplugin\pom.xml) has 1 error
-[ERROR]     Unresolveable build extension: Plugin org.apache.maven.wagon:wagon-f
-tp:1.0-beta-6 or one of its dependencies could not be resolved: Failed to read a
-rtifact descriptor for org.apache.maven.wagon:wagon-ftp:jar:1.0-beta-6: Could no
-t transfer artifact org.apache.maven.wagon:wagon-ftp:pom:1.0-beta-6 from/to publ
-ic (https://devon.s2-eu.capgemini.com/nexus/content/groups/public/): Not authori
-zed , ReasonPhrase: Unauthorized. -> [Help 2]
+[ERROR]   The project com.capgemini:cobigen-htmlplugin:1.1.0 (D:\toolscobigen\tools-cobigen2\cobigen\cobigen\cobigen-htmlplugin\pom.xml) has 1 error
+[ERROR]     Unresolveable build extension: Plugin org.apache.maven.wagon:wagon-ftp:1.0-beta-6 or one of its dependencies could not be resolved: Failed to read a
+rtifact descriptor for org.apache.maven.wagon:wagon-ftp:jar:1.0-beta-6: Could not transfer artifact org.apache.maven.wagon:wagon-ftp:pom:1.0-beta-6 from/to publ
+ic (https://devon.s2-eu.capgemini.com/nexus/content/groups/public/): Not authorized , ReasonPhrase: Unauthorized. -> [Help 2]
 [ERROR]
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e swit
-ch.
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
 [ERROR] Re-run Maven using the -X switch to enable full debug logging.
 [ERROR]
-[ERROR] For more information about the errors and possible solutions, please rea
-d the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/ProjectBuildin
-gException
-[ERROR] [Help 2] http://cwiki.apache.org/confluence/display/MAVEN/PluginManagerE
-xception
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/ProjectBuildingException
+[ERROR] [Help 2] http://cwiki.apache.org/confluence/display/MAVEN/PluginManagerException
 ```
 
 ==== Solution
