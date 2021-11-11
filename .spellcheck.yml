@@ -38,7 +38,7 @@ matrix:
       context_visible_first: true
       delimiters:
       - open: '\b[A-Z]+'
-        close: '[_-][A-Z]+|([A-Z]+)\b'
+        close: '([_][A-Z]+)*\b'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
