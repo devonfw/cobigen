@@ -39,6 +39,12 @@ matrix:
       delimiters:
       - open: '\b[A-Z]+'
         close: '([_][A-Z]+)*\b'
+  #Ignore for special cases in CobiGen in upper camel case
+  - pyspelling.filters.context:
+      context_visible_first: true
+      delimiters:
+      - open: '\b__[A-Z][a-z0-9]+[A-Z]'
+        close: '[a-z0-9.]*__\b'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
