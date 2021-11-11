@@ -182,7 +182,7 @@ try {
 At this point, if all is correct, the user can choose to finish the HealtCheck process or run the Advance Health Check running the *__AdvancedHealthCheck.java__* to check the the validity of template configurations. That check has three steps:
 
 . *Get configuration resources* +
-Will get the template configuration file from the template folder corresponding to the input of the plugin provided by the triggers defined at the __contex.xml__ file for that input.
+Will get the template configuration file from the template folder corresponding to the input of the plugin provided by the triggers defined at the __context.xml__ file for that input.
 
 . *Determine current state* +
 Will check if the template configuration file exists, if it is accessible and if the version is up-to-date allowing upgrading if not.
