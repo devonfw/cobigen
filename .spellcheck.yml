@@ -37,3 +37,9 @@ matrix:
       # ----
       - open: '(?s)^(?P<open> *-{4,})$'
         close: '^(?P=open)$'  
+  - pyspelling.filters.context:
+      context_visible_first: true
+      delimiters:
+      # Ignore multiline content between [source, *] and blank line
+      - open: '[source, *]'
+        close: '^\s*$'   
