@@ -21,7 +21,7 @@ matrix:
       escapes: 
       delimiters:
       - open: '`+[^`]+'
-        close: '`+b'  
+        close: '`+'  
   #Ignore for upper camel case
   - pyspelling.filters.context:
       context_visible_first: true
