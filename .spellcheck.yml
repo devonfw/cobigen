@@ -30,6 +30,12 @@ matrix:
       delimiters:
       - open: '\b[a-z]+[A-Z]'
         close: '[a-z0-9]*\b'
+  #Ignore for constants in upper case
+  - pyspelling.filters.context:
+      context_visible_first: true
+      delimiters:
+      - open: '\b[A-Z]+'
+        close: '[_-][A-Z]+|([A-Z]+)\b'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
