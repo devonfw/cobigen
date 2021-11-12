@@ -22,9 +22,9 @@ Within the configuration jar or directory you will find the following structure:
 
 ```
 CobiGen_Templates
- |- `templateFolder1`
+ |- templateFolder1
     |- templates.xml
- |- `templateFolder2`
+ |- templateFolder2
     |- templates.xml
  |- context.xml
 ```
@@ -344,4 +344,4 @@ In addition to what is served by the different model builders of the different p
 
 Since cobigen-core 4.1.0, we changed the plug-in discovery mechanism. So far it was necessary to register new plugins programmatically, which introduces the need to let every tool integration, i.e. for eclipse or maven, be dependent on every plug-in, which should be released. This made release cycles take long time as all plug-ins have to be integrated into a final release of maven or eclipse integration.
 
-Now, plug-ins are automatically discovered by the Java https://docs.oracle.com/javase/tutorial/ext/basics/spi.html[Service Loader] mechanism from the classpath. This also effects the setup of link:cobigen-eclipse_installation#upgrading-to-v3[eclipse] and link:cobigen-maven_configuration#additions-since-v3[maven] integrations to allow modular releases of CobiGen in future. We are now able to provide faster rollouts of bug-fixes in any of the plug-ins as they can be released completely independently.
+Now, plug-ins are automatically discovered by the Java https://docs.oracle.com/javase/tutorial/ext/basics/spi.html[Service Loader] mechanism from the classpath. This also effects the setup of link:cobigen-eclipse_installation#upgrading-to-v3[eclipse] and link:cobigen-maven_configuration#additions-since-v3[maven] integration to allow modular releases of CobiGen in future. We are now able to provide faster rollouts of bug-fixes in any of the plug-ins as they can be released completely independently.
