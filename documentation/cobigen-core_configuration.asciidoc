@@ -16,15 +16,15 @@ The actual configuration of CobiGen is maintained by a single folder or jar. The
 2. The file `$cghome/.cobigen` exists and the property `templates` is set to a valid configuration (e.g. `templates=C:\project\ide\conf\templates` or `templates=C:\project\ide\conf\templates.jar`) _Hint: Check for log entry like `Value of property templates in $cghome/.cobigen is invalid` to identify an invalid configuration which is not taken up as expected_
 3. The folder `$cghome/templates/CobiGen_Templates` exists
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
-5. CobiGen will automatically download the latest jar configuration from maven central with groupId `com.devonfw.cobigen` and artifactId `templates-devon4j` and take it like described in 4.
+5. CobiGen will automatically download the latest jar configuration from maven central with `groupId` `com.devonfw.cobigen` and `artifactId` `templates-devon4j` and take it like described in 4.
 
 Within the configuration jar or directory you will find the following structure:
 
 ```
 CobiGen_Templates
- |- templateFolder1
+ |- `templateFolder1`
     |- templates.xml
- |- templateFolder2
+ |- `templateFolder2`
     |- templates.xml
  |- context.xml
 ```
@@ -61,7 +61,7 @@ As children of the `<triggers>` node you can define different triggers. By defin
 ```
 
 * The attribute `id` should be unique within an context configuration. It is necessary for efficient internal processing.
-* The attribute `type` declares a specific _trigger interpreter_, which might be provided by additional plug-ins. A _trigger interpreter_ has to provide an _input reader_, which reads specific inputs and creates a template object model out of it to be processed by the FreeMarker template engine later on. Have a look at the plug-in's documentation of your interest and see, which trigger types and thus inputs are currently supported.
+* The attribute `type` declares a specific _trigger interpreter_, which might be provided by additional plug-ins. A _trigger interpreter_ has to provide an _input reader_, which reads specific inputs and creates a template object model out of it to be processed by the `FreeMarker` template engine later on. Have a look at the plug-in's documentation of your interest and see, which trigger types and thus inputs are currently supported.
 * The attribute `templateFolder` declares the relative path to the template folder, which will be used if the trigger gets activated.
 * The attribute `inputCharset` _(optional)_ determines the charset to be used for reading any input file.
 
@@ -71,7 +71,7 @@ A trigger will be activated if its matchers hold the following formula:
 
 `!(NOT || ... || NOT) && AND && ... && AND && (OR || ... || OR)`
 
-Whereas NOT/AND/OR describes the accumulationType of a _matcher_ (see below) and e.g. `NOT` means 'a _matcher_ with accumulationType NOT matches a given input'. Thus additionally to an _input reader_, a _trigger interpreter_ has to define at least one set of _matchers_, which are satisfiable, to be fully functional. A `<matcher>` node declares a specific characteristics a valid input should have.
+Whereas NOT/AND/OR describes the `accumulationType` of a _matcher_ (see below) and e.g. `NOT` means 'a _matcher_ with `accumulationType` NOT matches a given input'. Thus additionally to an _input reader_, a _trigger interpreter_ has to define at least one set of _matchers_, which are satisfiable, to be fully functional. A `<matcher>` node declares a specific characteristics a valid input should have.
 
 .Matcher Configuration
 ```xml
@@ -87,7 +87,7 @@ Whereas NOT/AND/OR describes the accumulationType of a _matcher_ (see below) and
 ** AND: if any matcher with AND accumulation type does _not match_, the trigger will _not_ be activated 
 ** NOT: if any matcher with NOT accumulation type _matches_, the trigger will _not_ be activated
 
-=== VariableAssignment Node
+=== `VariableAssignment` Node
 
 Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as children. _Variable assignments_ allow to parametrize the generation by additional values, which will be added to the object model for template processing. The variables declared using _variable assignments_, will be made accessible in the templates.xml as well in the object model for template processing via the namespace `variables.*`.
 
@@ -111,11 +111,11 @@ Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as ch
 * The attribute `key` declares the namespace under which the resolved value will be accessible later on.
 * The attribute `value` might declare a constant value to be assigned or any hint for value resolution done by the _trigger interpreter_ providing plug-in. For instance, if `type` is `regex`, then on `value` you will assign the matched group number by the regex (1, 2, 3...)
 
-=== ContainerMatcher Node
+=== `ContainerMatcher` Node
 The `<containerMatcher>` node is an additional matcher for matching containers of multiple input objects.
 Such a container might be a package, which encloses multiple types or---more generic---a model, which encloses multiple elements. A container matcher can be declared side by side with other matchers:
 
-.ContainerMatcher Declaration
+.`ContainerMatcher` Declaration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <contextConfiguration xmlns="http://capgemini.com" 
@@ -150,7 +150,7 @@ The semantics of a container matchers are the following:
 The template configuration (`templates.xml`) specifies, which templates exist and under which circumstances it will be generated. There are two possible configuration styles:
 
 1. Configure the template meta-data for each template file by xref:template-node[template nodes]
-2. _(since cobigen-core-v1.2.0)_: Configure xref:templatescan-node[templateScan nodes] to automatically retrieve a default configuration for all files within a configured folder and possibly modify the automatically configured templates using xref:templateextension-node[templateExtension nodes]
+2. _(since cobigen-core-v1.2.0)_: Configure xref:templatescan-node[`templateScan` nodes] to automatically retrieve a default configuration for all files within a configured folder and possibly modify the automatically configured templates using xref:templateextension-node[`templateExtension` nodes]
 
 To get an intuition of the idea, the following will initially describe the first (more extensive) configuration style. Such an configuration root structure looks as follows:
 
@@ -186,11 +186,11 @@ The `<templates>` node groups multiple `<template>` declarations, which enables 
 A template declaration consist of multiple information:
 
 * The attribute `name` specifies an unique ID within the templates configuration, which will later be reused in the xref:increment-node[increment definitions].
-* The attribute `destinationPath` specifies the destination path the template will be generated to. It is possible to use all variables defined by xref:variableassignment-node[variable assignments] within the path declaration using the FreeMarker syntax `${variables.*}`. While resolving the variable expressions, each dot within the value will be automatically replaced by a slash. This behavior is accounted for by the transformations of Java packages to paths as CobiGen has first been developed in the context of the Java world. Furthermore, the destination path variable resolution provides the following additional built-in operators analogue to the FreeMarker syntax:
-** `?cap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_cap_first[FreeMarker]
-** `?uncap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_uncap_first[FreeMarker]
-** `?lower_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_lower_case[FreeMarker]
-** `?upper_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_upper_case[FreeMarker]
+* The attribute `destinationPath` specifies the destination path the template will be generated to. It is possible to use all variables defined by xref:variableassignment-node[variable assignments] within the path declaration using the `FreeMarker` syntax `${variables.*}`. While resolving the variable expressions, each dot within the value will be automatically replaced by a slash. This behavior is accounted for by the transformations of Java packages to paths as CobiGen has first been developed in the context of the Java world. Furthermore, the destination path variable resolution provides the following additional built-in operators analogue to the `FreeMarker` syntax:
+** `?cap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_cap_first[`FreeMarker`]
+** `?uncap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_uncap_first[`FreeMarker`]
+** `?lower_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_lower_case[`FreeMarker`]
+** `?upper_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_upper_case[`FreeMarker`]
 ** `?replace(regex, replacement)` - Replaces all occurrences of the regular expression `regex` in the variable's value with the given `replacement` string. (since cobigen-core v1.1.0)
 ** `?removeSuffix(suffix)` - Removes the given `suffix` in the variable's value iff the variable's value ends with the given `suffix`. Otherwise nothing will happen. (since cobigen-core v1.1.0)
 ** `?removePrefix(prefix)` - Analogue to `?removeSuffix` but removes the prefix of the variable's value. (since cobigen-core v1.1.0)
@@ -200,7 +200,7 @@ A template declaration consist of multiple information:
 
 _(Since version 4.1.0)_ It is possible to reference external `template` (templates defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
-=== TemplateScan Node
+=== `TemplateScan` Node
 _(since cobigen-core-v1.2.0)_
 
 The second configuration style for template meta-data is driven by initially scanning all available templates and automatically configure them with a default set of meta-data. A scanning configuration might look like this:
@@ -233,15 +233,15 @@ A `templateScan` will result in the following **default configuration of templat
 * `mergeStrategy`: _(optional)_ not set means not mergeable
 * `targetCharset`:  _(optional)_ defaults to UTF-8
 
-_(Since version 4.1.0)_ It is possible to reference external `templateScan` (templateScans defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
+_(Since version 4.1.0)_ It is possible to reference external `templateScan` (`templateScans` defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
 
-=== TemplateExtension Node
+=== `TemplateExtension` Node
 _(since cobigen-core-v1.2.0)_
 
-Additionally to the xref:templatescan-node[templateScan declaration] it is easily possible to rewrite specific attributes for any scanned and automatically configured template.
+Additionally to the xref:templatescan-node[`templateScan` declaration] it is easily possible to rewrite specific attributes for any scanned and automatically configured template.
 
-.Example Configuration of a TemplateExtension
+.Example Configuration of a `TemplateExtension`
 ```xml
 <templates>
     <templateExtension ref="prefix_FooClass.java" mergeStrategy="javamerge" />
@@ -256,7 +256,7 @@ Lets assume, that the above example declares a `template-scan` for the folder `f
 
 Using the `templateExtension` declaration above will reference the scanned template by the attribute `ref` and overrides the `mergeStrategy` of the automatically configured template by the value `javamerge`. Thus we are able to minimize the needed templates configuration.
 
-_(Since version 4.1.0)_ It is possible to reference external `templateExtension` (templateExtensions defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
+_(Since version 4.1.0)_ It is possible to reference external `templateExtension` (`templateExtensions` defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
 === Increment Node
 The `<increments>` node groups multiple `<increment>` nodes, which can be seen as a collection of templates to be generated. An increment will be defined by a unique `id` and a human readable `description`.
@@ -273,7 +273,7 @@ The `<increments>` node groups multiple `<increment>` nodes, which can be seen a
 
 An increment might contain multiple increments and/or templates, which will be referenced using `<incrementRef ...>`, `<templateRef ...>`, resp. `<templateScanRef ...>` nodes. These nodes only declare the attribute `ref`, which will reference an increment, a template, or a template-scan by its `id` or `name`.
 
-_(Since version 4.1.0)_  An special case of `<incrementRef ...>` is the external incrementsRef. By default, `<incrementRef ...>` are used to reference increments defined in the same `templates.xml` file. So for example, we could have:
+_(Since version 4.1.0)_  An special case of `<incrementRef ...>` is the external `incrementsRef`. By default, `<incrementRef ...>` are used to reference increments defined in the same `templates.xml` file. So for example, we could have:
 
 ```xml
 <increments>
@@ -287,7 +287,7 @@ _(Since version 4.1.0)_  An special case of `<incrementRef ...>` is the external
 </increments>
 ```
 
-However, if we want to reference an increment that it is not defined inside our `templates.xml` (an increment defined for another trigger), then we can use external incrementRef as shown below:
+However, if we want to reference an increment that it is not defined inside our `templates.xml` (an increment defined for another trigger), then we can use external `incrementRef` as shown below:
 
 ```xml 
 <increment name="..." description="...">
@@ -302,7 +302,7 @@ The ref string is split using as delimiter `::`. The first part of the string, i
 _since cobigen-core-3.0.0 which is included in the Eclipse and Maven Plugin since version 2.0.0_
 In addition, it is possible to implement more complex template logic by custom Java code. To enable this feature, you can simply import the the `CobiGen_Templates` by clicking on _Adapt Templates_, turn it into a simple maven project (if it is not already) and implement any Java logic in the common maven layout (e.g. in the source folder `src/main/java`). Each Java class will be instantiated by CobiGen for each generation process. Thus, you can even store any state within a Java class instance during generation. However, there is currently no guarantee according to the template processing order. 
 
-As a consequence, you have to implement your Java classes with a public default (non-parameter) constructor to be used by any template. Methods of the implemented Java classes can be called within templates by the simple standard FreeMarker expression for calling Bean methods: `SimpleType.methodName(param1)`. Until now, CobiGen will shadow multiple types with the same simple name non-deterministically. So please prevent yourself from that situation.
+As a consequence, you have to implement your Java classes with a public default (non-parameter) constructor to be used by any template. Methods of the implemented Java classes can be called within templates by the simple standard `FreeMarker` expression for calling Bean methods: `SimpleType.methodName(param1)`. Until now, CobiGen will shadow multiple types with the same simple name non-deterministically. So please prevent yourself from that situation.
 
 Finally, if you would like to do some reflection within your Java code accessing any type of the template project or any type referenced by the input, you should load classes by making use of the classloader of the util classes. CobiGen will take care of the correct classloader building including the classpath of the input source as well as of the classpath of the template project. If you use any other classloader or build it by your own, there will be no guarantee, that generation succeeds.
 
