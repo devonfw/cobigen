@@ -171,7 +171,7 @@ Dolor Sit
 
 == Error List
 
-- If there are anchors in the text, but either base or patch do not start with one, the merging process wil be aborted, as text might go missing this way.
+- If there are anchors in the text, but either base or patch do not start with one, the merging process will be aborted, as text might go missing this way.
 - Using `\_newline` or `newline_` with mergestrategies that don't support it , like `override`, will abort the merging process. See <<mergestrategies,Merge Strategies>> ->2 for details.
 - Using undefined mergestrategies will abort the merging process.
 - Wrong anchor definitions, for example `anchor:${}:anchorend` will abort the merging process, see <<anchordef,Anchor Definition>> for details.
