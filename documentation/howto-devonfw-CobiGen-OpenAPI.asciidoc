@@ -5,7 +5,7 @@ toc::[]
 This article helps to create a sample application using cobigen.
 
 == Prerequisites
-Download and install devonnfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
+Download and install devonfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
 
 == Steps to create a Sample Project using Cobigen
 The HOW_TO is divided in 2 parts:
@@ -18,7 +18,7 @@ image:images/howtos/e2e_gen/image9.png[cobigen contract-first generation]
 So, ready to go! We’re going to start from the BE part …
 
 === Back End
-Under your path installation of DevonFW, you can find the _eclipe-main.bat_ script and you can run it: +
+Under your path installation of DevonFW, you can find the _eclipse-main.bat_ script and you can run it: +
 run _installation_path_\eclipse-main.bat
 
 It will open eclipse
@@ -84,7 +84,7 @@ Now create a new file _devonfw.yml_ in the root of your core folder. This will b
 
 *Important 1:* Please pay attention to the content of the _devonfw.yml_ file. +
 The section _x-rootpackage_ it must be filled with the same package used when you have created the java application. +
-So i.e. if you have creaated the BE Java Application with:
+So i.e. if you have created the BE Java Application with:
 [source, java]
 devon java create com.example.domain.myapp
 
@@ -107,7 +107,7 @@ image:images/howtos/e2e_gen/image19.png[cobigen generate]
 
 It will automatically download the latest version of _CobiGen_Templates_.
 
-*Attention:* If you want to adapt the CobiGen_Templates, (normally this is not neccessary), you will find at the end of this document (in a separate chapter) a tutorial on how to import them and adapt them!
+*Attention:* If you want to adapt the CobiGen_Templates, (normally this is not necessary), you will find at the end of this document (in a separate chapter) a tutorial on how to import them and adapt them!
 
 [arabic]
 Click on all the option selected as below:
@@ -152,7 +152,7 @@ To do this it's necessary to add two kind of dependecies in the pom.xml of the _
 
 image:images/howtos/e2e_gen/image70.png[pom xml]
 
-Next step is to add some prperties under your _application.properties_ file, in the myapp-core folder in the _resources/config_:
+Next step is to add some properties under your _application.properties_ file, in the myapp-core folder in the _resources/config_:
 
 [source, properties]
 security.cors.spring.allowCredentials=true
@@ -218,7 +218,7 @@ http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
 Thenk click on *"SEND"* button...
 
-Now you‘ve to check that response has got *Status: 200 OK* and to see the below Employee
+Now you have to check that response has got *Status: 200 OK* and to see the below Employee
 
 image:images/howtos/e2e_gen/image73.png[postman]
 
@@ -268,7 +268,7 @@ image:images/howtos/e2e_gen/image38.png[eclipse]
 [arabic]
 The entire ANGULAR structure has been auto generated. The generated code will be merged to the existing.
 
-image:images/howtos/e2e_gen/image39.png[angular ee layer]
+image:images/howtos/e2e_gen/image39.png[angular End to End layer]
 
 [arabic]
 IMPORTANT now you have to check in the *_app-routing.module.ts_* file, if the content corresponding to the code below:
