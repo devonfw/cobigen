@@ -120,15 +120,15 @@ Is important to know that any exception caused by the merger must throw a MergeE
 
 Since version 3.x the Eclipse and Maven plugins of CobiGen utilize the Java `ServiceLoader` mechanic to find and register plugins at runtime. To enable a new plugin to be discovered by this mechanic the following steps are needed:
 
-* create the file `META-INF/services/com.capgemini.cobigen.api.extension.GeneratorPluginActivator` containing just the full qualified name of the class implementing the `GeneratorPluginActivator` interface, if the plugin provides a `Merger` and/or a `TriggerInterpreter`
-* create the file `META-INF/services/com.capgemini.cobigen.api.extension.TextTemplateEngine` containing just the full qualified name of the class implementing the `TextTemplateEngine` interface, if provided by the plugin
+* create the file `META-INF/services/com.devonfw.cobigen.api.extension.GeneratorPluginActivator` containing just the full qualified name of the class implementing the `GeneratorPluginActivator` interface, if the plugin provides a `Merger` and/or a `TriggerInterpreter`
+* create the file `META-INF/services/com.devonfw.cobigen.api.extension.TextTemplateEngine` containing just the full qualified name of the class implementing the `TextTemplateEngine` interface, if provided by the plugin
 * include `META-INF` into the target bundle (i.e. the folder `META-INF` has to be present in the target jar file)
 
 .Example: Java Plugin
 ****
-The java plugin provides both a `Merger` and a `TriggerInterpreter`. It contains therefore a `com.capgemini.cobigen.api.extension.GeneratorPluginActivator` file with the following content:
+The java plugin provides both a `Merger` and a `TriggerInterpreter`. It contains therefore a `com.devonfw.cobigen.api.extension.GeneratorPluginActivator` file with the following content:
 ```
-com.capgemini.cobigen.javaplugin.JavaPluginActivator
+com.devonfw.cobigen.javaplugin.JavaPluginActivator
 ```
 This makes the `JavaPluginActivator` class discoverable by the `ServiceLoader` at runtime.
 ****
@@ -137,7 +137,7 @@ This makes the `JavaPluginActivator` class discoverable by the `ServiceLoader` a
 [source,xml]
 ----
 <parent>
-    <groupId>com.capgemini</groupId>
+    <groupId>com.devonfw</groupId>
     <artifactId>cobigen-parent</artifactId>
     <version>dev-SNAPSHOT</version>
 </parent>
@@ -146,7 +146,7 @@ or `/cobigen/cobigen-templateengines/pom.xml` (in case of a `Merger`/`TriggerInt
 [source,xml]
 ----
 <parent>
-    <groupId>com.capgemini</groupId>
+    <groupId>com.devonfw</groupId>
     <artifactId>cobigen-tempeng-parent</artifactId>
     <version>dev-SNAPSHOT</version>
 </parent>
@@ -155,7 +155,7 @@ If the plugin provides both just use the `/cobigen/pom.xml`.
 
 * The dependencies of the plugin are included in the bundle
 
-* To make the plugin available to the Eclipse plugin it must be included into the current `compositeContent.xml` and `compositeArtifacts.xml` files. Both files are located in link:http://de-mucevolve02/files/cobigen/updatesite[`http://de-mucevolve02/files/cobigen/updatesite/{experimental|nightly|stable}`]. To do so, add an `<child>` entry to the `<children>` tag in both files and adapt the `size` attribute to match the new number of references. The `location` attribute of the new `<child>` tag needs to be the artifact id of the plugins `pom.xml`.
+* To make the plugin available to the Eclipse plugin it must be included into the current `compositeContent.xml` and `compositeArtifacts.xml` files. Both files are located in link:https://github.com/devonfw/cobigen/tree/gh-pages/updatesite/stable[`https://github.com/devonfw/cobigen/tree/gh-pages/updatesite/{test|stable}`]. To do so, add an `<child>` entry to the `<children>` tag in both files and adapt the `size` attribute to match the new number of references. The `location` attribute of the new `<child>` tag needs to be the artifact id of the plugins `pom.xml`.
 
 .Example: Java Plugin
 ****
@@ -167,25 +167,8 @@ In case of the Java plugin, the entry is
 ****
 === Deployment
 
-==== For the Maven Plugin
-
-Execute `mvn clean deploy` from the plugins project folder. You need to configure write access to the link:https://devon.s2-eu.capgemini.com/nexus/[devon nexus] (e.g in the CobiGen IDE via the `variables-customized` script)
-
-==== For the Eclipse Plugin
-
-Depending on the kind of release you want to publish you can chose from the following maven profiles:
-
-* `experimental` is for, as the name suggests, experimental snapshot builds. In case of new plugins this is a good place to upload first drafts.
-* `nightly` is for periodically CI deployment.
-* `stable` is solely for releases.
-
-E.g. you want an experimental release you need to follow these steps:
+If you want to create a test release of eclipse you need to run the command
 ```shell
-# Builds the Manifest and bundles the dependencies
-mvn clean package bundle:bundle -Pp2-bundle
-# Uses the created bundle and builds a p2 update site for it. Do NOT use clean
-mvn install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-experimental p2:site
-# Uploads the p2 update site to the experimental repository. Do NOT use clean
-mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
+sh deploy.sh
 ```
-You need write access to the link:http://de-mucevolve02[iCSD file server] configured (e.g in the CobiGen IDE via the `variables-customized` script).
+on the cloned cobigen repository while making sure, that your current version of cobigen cloned is a snapshot version. This will automatically be detected by the deploy script. 
