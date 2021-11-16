@@ -48,7 +48,7 @@ image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 *BEFORE to start to create an Entity class, remember to create the tables, for this `POC` it's used an H2 Database!*
 
 [arabic]
-Create a new *`SQL`* *file* (`i.e: V0002__CreateTables_myapp.sql`) inside _myapp-core_ , under the folder path _/myapp-core/src/main/resources/db/migration/1.0_ and insert the following script:
+Create a new *`SQL`* *file* (`i.e: V0002__CreateTables_myapp.sql`) inside _`myapp-core`_ , under the folder path _`/myapp-core/src/main/resources/db/migration/1.0`_ and insert the following script:
 
 [source, sql]
 ----
@@ -243,7 +243,7 @@ http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
 Thenk click on *"SEND"* button...
 
-Now you‘ve to check that response has got *Status: 200 OK* and to see the below Employee
+Now you have to check that response has got *Status: 200 OK* and to see the below Employee
 
 image:images/howtos/e2e_gen/image73.png[postman]
 
