@@ -10,7 +10,7 @@ The Eclipse plugin is where all the other plugins (`JavaPlugin`, `XMLPlugin`, `P
 
 === Activator java
 
-Activator class is the start point of the plugin. Activator class is loaded initially and it extends the *AbstractUIPlugin*, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform `UI`.
+Activator class is the start point of the plugin. Activator class is loaded initially and it extends the *`AbstractUIPlugin`*, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform `UI`.
 An `ID` for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
 
 [source,java]
@@ -32,7 +32,7 @@ PluginRegistry.loadPlugin(PluginActivator.class);
 How the `loadPlugin` works is explained deeply at https://github.com/devonfw/cobigen/wiki/Core-Development#2-2-loadplugin[core development].
 ===============================
 
-The activator has the listener *__ConfigurationProjectListener.java__* from the *workbenchcontrol* package that checks continuously changes on the templates project
+The activator has the listener *__`ConfigurationProjectListener.java`__* from the *`workbenchcontrol`* package that checks continuously changes on the templates project
 
 === Plugin xml
 
@@ -113,17 +113,17 @@ Adapt Template: Select Entity file and right click then select cobigen _Adapt Te
 
 === Generate Action Handler
 
-The wizard launching is the responsibility of the generate handler (*__GenerateHandler.java__*). In case of Generate action and depending of the input provided for that, the handler will create a JavaGeneratorWrapper or XMlGeneratorWrapper object.
-For JavaGeneratorWrapper, if the input is a package or a selection of multiple entity files, the wizard will be launched in batch mode calling the *__GenerateBatchWizard.java__* from the *wizard.generate* package. But if the input is a single entity java class file, it will be launched in normal mode calling the *__GenerateWizard.java__* from the same package.
+The wizard launching is the responsibility of the generate handler (*__GenerateHandler.java__*). In case of Generate action and depending of the input provided for that, the handler will create a `JavaGeneratorWrapper` or `XMlGeneratorWrapper` object.
+For `JavaGeneratorWrapper`, if the input is a package or a selection of multiple entity files, the wizard will be launched in batch mode calling the *__`GenerateBatchWizard.java`__* from the *wizard.generate* package. But if the input is a single entity java class file, it will be launched in normal mode calling the *__`GenerateWizard.java`__* from the same package.
 
 [NOTE]
 ===============================
-For both Wrapper objects, the inputs will be converted to valid inputs for Freemarker using the *__Xml/JavaInputConverter.java__* from the *generator.xml/java* package.
+For both Wrapper objects, the inputs will be converted to valid inputs for Freemarker using the *__`Xml/JavaInputConverter.java`__* from the *generator.xml/java* package.
 ===============================
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag1.png[Diagram 1,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag1.png"]
 
-For XmlGeneratorWrapper, the input must be a single valid `XML` file. As only has a single file as input, the *__GenerateWizard.java__* will be called.
+For `XmlGeneratorWrapper`, the input must be a single valid `XML` file. As only has a single file as input, the *__GenerateWizard.java__* will be called.
 
 In summary, this will be the process for the Generate Action before calling the wizard:
 
@@ -131,7 +131,7 @@ image:images/howtos/eclipse-plugin/eclipse-plugin_diag2.png[diagram 2,width="450
 
 === Health Check Action Handler
 
-At the case of Health Check action, a success/error dialog is shown instead of a wizard itself. The *__HealtchCheckHandler.java__* will call the execute method of *__HealthCheck.java__* from the *healthcheck* package. That class will test first if the templates project exists at the workspace opening and error dialog if not by throwing and handling the custom exception *__GeneratorProjectNotExistentException.java__* from the *common.exceptions* package.
+At the case of Health Check action, a success/error dialog is shown instead of a wizard itself. The *__`HealtchCheckHandler.java`__* will call the execute method of *__`HealthCheck.java`__* from the *healthcheck* package. That class will test first if the templates project exists at the workspace opening and error dialog if not by throwing and handling the custom exception *__`GeneratorProjectNotExistentException.java`__* from the *common.exceptions* package.
 [source,java]
 ----
 try {
@@ -151,7 +151,7 @@ try {
 ----
 
 
-If the project exists, `HealthCheck` will test if the __context.xml__ file is valid. In case of invalid, `HealthCheck` will throw and handle the *InvalidConfigurationException* from the core and check if it is possible to upgrade the version of the xml file, showing an __UPGRADE__ button at the dialog. If the upgrade is not possible, will show a dialog message telling the user to check the __context.xml__ file for errors.
+If the project exists, `HealthCheck` will test if the __context.xml__ file is valid. In case of invalid, `HealthCheck` will throw and handle the *`InvalidConfigurationException`* from the core and check if it is possible to upgrade the version of the xml file, showing an __UPGRADE__ button at the dialog. If the upgrade is not possible, will show a dialog message telling the user to check the __context.xml__ file for errors.
 [source,java]
 ----
 try {
@@ -191,7 +191,7 @@ try {
 }
 ----
 
-At this point, if all is correct, the user can choose to finish the `HealtCheck` process or run the Advance Health Check running the *__AdvancedHealthCheck.java__* to check the the validity of template configurations. That check has three steps:
+At this point, if all is correct, the user can choose to finish the `HealtCheck` process or run the Advance Health Check running the *__`AdvancedHealthCheck.java`__* to check the the validity of template configurations. That check has three steps:
 
 . *Get configuration resources* +
 Will get the template configuration file from the template folder corresponding to the input of the plugin provided by the triggers defined at the __context.xml__ file for that input.
@@ -200,13 +200,13 @@ Will get the template configuration file from the template folder corresponding 
 Will check if the template configuration file exists, if it is accessible and if the version is up-to-date allowing upgrading if not.
 
 . *Show current status to the user* +
-Will call the *__AdvancedHealthCheckDialog.java__* showing a dialog with the current state of each configuration template, showing an __UPGRADE__ button if the configuration version can be upgraded.
+Will call the *__`AdvancedHealthCheckDialog.java`__* showing a dialog with the current state of each configuration template, showing an __UPGRADE__ button if the configuration version can be upgraded.
 
 == Wizard Development
 === Starting the Wizard
 
-To open a wizard, use the *`WizardDialog`* class from the *org.eclipse.jface.wizard* package.
-The plugin does that at *__GenerateHandler.java__* as previously explained https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#3-1-generate-action-handler[here]:
+To open a wizard, use the *`WizardDialog`* class from the *`org.eclipse.jface.wizard`* package.
+The plugin does that at *__`GenerateHandler.java`__* as previously explained https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#3-1-generate-action-handler[here]:
 
 [source,java]
 ----
@@ -228,7 +228,7 @@ if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).siz
 Adapt Template: Select Entity file and right click then select cobigen  Adapt Template.If cobigen template  jar not available then it download automatically.If Cobigen templates is already then it will override existing template in workspace and click on OK then imported template successfully message will come .If Template not available the it automatically 
 === Wizard and `WizardPages`
 
-The Wizard class from the *org.eclipse.jface.wizard* package provides the functionality to build custom wizards. This class controls the navigation between the different pages and provides the base user interface, for example, an area for error and information messages.
+The Wizard class from the *`org.eclipse.jface.wizard`* package provides the functionality to build custom wizards. This class controls the navigation between the different pages and provides the base user interface, for example, an area for error and information messages.
 
 A wizard contains one or several pages of the type *`WizardPage`*. Such a page is added to a Wizard object via the `__addPage()__` method.
 
@@ -247,7 +247,7 @@ In case that has been launched in batch mode, the wizard only will have the sele
 
 In case of normal mode with an entity java class as input, the wizard will have an optional second page provided for *__`SelectAttributesPage.java`__* of the package *wizard.generate.common* for selecting attributes of the entity that will be used for the generation. The page is optional because the user can finish the wizard and perform the generation from the first page.
 
-The pages of the CobiGen wizard is composed essentially for container. The containers have a CheckBoxTreeViewer object, a content provider object and a listener (that defines the behavior of the wizard when a check box is checked or unchecked) 
+The pages of the CobiGen wizard is composed essentially for container. The containers have a `CheckBoxTreeViewer` object, a content provider object and a listener (that defines the behavior of the wizard when a check box is checked or unchecked) 
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag4.png[Diagram 4,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag4.png"]
 
@@ -259,7 +259,7 @@ The first page (__`SelectFilesPage`__) is composed by two containers:
 * Created as a *`CustomizedCheckBoxTreeViewer`*
 * The content provider is a *`SelectIncrementContentProvider`*
 * Setting the input will upgrade the labels to show
-* Set *CheckStateListener* as listener
+* Set *`CheckStateListener`* as listener
 [source,java]
 ----
 incrementSelector = new CustomizedCheckboxTreeViewer(containerLeft);
