@@ -274,6 +274,7 @@ image:images/howtos/e2e_gen/image39.png[angular End to End layer]
 IMPORTANT now you have to check in the *_app-routing.module.ts_* file, if the content corresponding to the code below:
 
 [source, ts]
+----
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/security/auth-guard.service';
@@ -325,6 +326,7 @@ const routes: Routes = [{
 })
 export class AppRoutingModule {
 }
+----
 
 After that, if you want to make visible the Employee Grid in you FE application, you have to modify the nav-bar.component.html, to add the Employee grid in the section:
 
@@ -387,12 +389,14 @@ image:images/howtos/e2e_gen/image43.png[configure]
 For example in this case the URL should be since the context path is empty the server URLS should be like:
 
 [source, ts]
+----
 export const environment = {
     production: false,
     restPathRoot: 'http://localhost:8081/',
     restServiceRoot: 'http://localhost:8081/services/rest/',
     security: 'csrf'
 };
+----
 
 *Warning*: REMEMBER to set security filed to *csrf* , if it is not configured already.
 
