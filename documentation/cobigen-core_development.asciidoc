@@ -76,12 +76,14 @@ The CobiGen initialization must initialize the context configuration and the `Fr
 When a CobiGen object is instantiated, the constructor initializes the Freemarker configuration creating a configuration instance from the class *freemarker.template.Configuration* and adjust its settings.
 
 [source, java]
+----
 freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
 freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
 freeMarkerConfig.clearEncodingMap();
 freeMarkerConfig.setDefaultEncoding("UTF-8");
 freeMarkerConfig.setLocalizedLookup(false);
 freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(`configFolder`));
+----
 
 Using the *__FileSystemUtil__* from the *util* package the `URI` of the root folder containing the `context.xml` and all templates, configurations etc... is converted to a Path object passing it as argument to the *__ContextConfiguration__* constructor.
 The *__ContextConfiguration__* creates a new `ContextConfiguration` from the *config* package with the contents initially loaded from the `context.xml`
@@ -114,11 +116,14 @@ That reader uses the `JAXB`, `JAXB` (Java Architecture for `XML` Binding) provid
 `JAXB` auto generates the Java object within the JAXBContext specified at the `xmlns` attribute of the `contextConfiguration` field from the `context.xml` file
 
 [source, java]
+----
 Unmarshaller unmarshaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+----
 
 That auto-generation follows the `contextConfiguration.xsd` schema. Each Java object follows the template specified with the field `<xs:CompleType>` from the schema file.
 
 [source,xml]
+----
 <xs:complexType name="trigger">
     <xs:sequence>
          <xs:element name="containerMatcher" type="tns:containerMatcher" minOccurs="0" maxOccurs="unbounded"/>
@@ -137,11 +142,13 @@ That auto-generation follows the `contextConfiguration.xsd` schema. Each Java ob
     <xs:attribute name="value" type="xs:string" use="required"/>
     <xs:attribute name="accumulationType" type="tns:accumulationType" use="optional" default="OR"/>
   </xs:complexType>
+----
 
 image:images/howtos/cobigen-core/cobigen-core_sshot1.png[`JAXB`,width="450",link="images/howtos/cobigen-core/cobigen-core_sshot1.png"]
 
 The generated Java objects has the elements and attributes specified at the schema:
 [source, java]
+----
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "trigger", namespace = "http://capgemini.com/devonfw/cobigen/ContextConfiguration", propOrder = {
     "containerMatcher",
@@ -166,10 +173,13 @@ public class Trigger {
     ..
     .
 }
+----
 
 This process it is done when calling the `unmarshal()` method.
 [source, java]
+----
 Object rootNode = unmarshaller.unmarshal(Files.newInputStream(contextFile));
+----
 
 [NOTE]
 ===========
@@ -183,6 +193,7 @@ If the version retrieved after the `unmarshal` process is null, an *InvalidConfi
 If it is not null, will be compared using the `validate()` method from *__VersionValidator.java__* from *config.versioning* package with the project version retrieved by the *__MavenMetadata.java__*. The *__MavenMetadata.java__* file is provided by the `POM` while building the `JAR` file
 
 [source,xml]
+----
 <build>
     <plugins>
       <!-- Inject Maven Properties in java-templates source folder -->
@@ -203,16 +214,20 @@ If it is not null, will be compared using the `validate()` method from *__Versio
       .
     </plugins>
 </build>
+----
 
 *`MavenMetadata`* gets the current CobiGen version by reading the `<version>` label inside the `<project>` label from the `POM` file
 
 [source, java]
+----
 public class MavenMetadata {
     /** Maven version */
     public static final String VERSION = "${project.version}";
 }
+----
 
 [source,xml]
+----
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
@@ -224,6 +239,7 @@ public class MavenMetadata {
   ..
   .
 }
+----
 
 The comparison has three possibilities:
 
@@ -233,6 +249,7 @@ The comparison has three possibilities:
 
 Reaching this point, the configuration version and root node has been validated. Unmarshal with schema checks for checking the correctness and give the user more hints to correct his failures.
 [source, java]
+----
 SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
 try (
@@ -244,21 +261,25 @@ try (
     rootNode = unmarshaller.unmarshal(configInputStream);
     contextNode = (ContextConfiguration) rootNode;
 }
+----
 
 ==== Load Triggers, Matchers, `containerMatcher`, `AccumulationTypes` and `VariableAssigments`
 
 To finish the context configuration initialization, the, trigger, matchers, container matchers, accumulation types and variables assignments are retrieved from the correspondent Java objects generated by `JAXB`.
 
 [source, java]
+----
 public Map<String, Trigger> loadTriggers()
 private List<Matcher> loadMatchers(Trigger trigger)
 private List<ContainerMatcher> loadContainerMatchers(Trigger trigger)
 private List<VariableAssignment> loadVariableAssignments(Matcher matcher)
+----
 
 == Perform Generation
 
 Depending on the input, the generation process can begin from two different `generate()` methods called at the *`CobiGenWrapper`* from the eclipse-plugin:
 [source, java]
+----
 public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException, MergeException {
     if (singleNonContainerInput) {
         Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
@@ -270,6 +291,7 @@ public void generate(TemplateTo template, boolean forceOverride) throws IOExcept
         }
     }
 }
+----
 
 === Single Non Container Input
 
