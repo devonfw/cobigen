@@ -257,7 +257,7 @@ private List<VariableAssignment> loadVariableAssignments(Matcher matcher)
 
 == Perform Generation
 
-Depending on the input, the generation process can begin from two different `generate()` methods called at the *CobiGenWrapper* from the eclipse-plugin:
+Depending on the input, the generation process can begin from two different `generate()` methods called at the *`CobiGenWrapper`* from the eclipse-plugin:
 [source,java]
 public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException, MergeException {
     if (singleNonContainerInput) {
@@ -283,7 +283,7 @@ The generation process in this case will follow this main steps:
 . Test if the input is a package. +
 This only can be possible in the case of java inputs. As the input is a single non container input, this check will fail and the execution will continue.
 . Check if the model parameter is null and if it is, create a new model +
-As the model has been created at the *CobiGenWrapper*, there is no need to create it again.
+As the model has been created at the *`CobiGenWrapper`*, there is no need to create it again.
 . Get the destination file.
 . Check if the destination file already exists +
 If it exists, but the `forceOverride` is set to `true` or the merge strategy of the template is null, the file will be overwritten, not merged. Otherwise, first generate output into a writter object, get the merger and merge the original file with the writter and write the file with the merge result.
