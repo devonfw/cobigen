@@ -10,7 +10,9 @@ The `TypeScript` Plug-in enables merging result TS files to existing ones. This 
 As for the Angular2 generation the input is a java object, the trigger expressions (including matchers and variable assignments) are implemented as link:https://github.com/devonfw/cobigen/wiki/cobigen-javaplugin#trigger-extension[Java]. 
 
 == Merger extensions
-This plugin uses the https://github.com/oasp/ts-merger[`OASP` `TypeScript` Merger] to merge files. There are currently two merge strategies:
+
+This plugin uses the https://github.com/oasp/ts-merger[`TypeScript` Merger] to merge files. There are currently two merge strategies:
+
 
 * merge strategy `tsmerge` (add the new code respecting the existing is case of conflict)
 * merge strategy `tsmerge_override` (add the new code overwriting the existent in case of conflict)
