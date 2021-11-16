@@ -239,13 +239,13 @@ image:images/howtos/eclipse-plugin/eclipse-plugin_diag3.png[Diagram 3,width="450
 
 The `WizardPage` class defines the `canFlipToNextPage()` and `setPageComplete()` methods to control if the __NEXT__ or the __FINISH__ button in the wizard becomes active.
 
-The Wizard class defines the `canFinish()` method in which you can define if the wizard can be completed. This last method is overrode at *__AbstractGenerateWizard.java__*.
+The Wizard class defines the `canFinish()` method in which you can define if the wizard can be completed. This last method is overrode at *__`AbstractGenerateWizard.java`__*.
 
-=== SelectFilesPage and SelectAttributesPage
+=== `SelectFilesPage` and `SelectAttributesPage`
 
-In case that has been launched in batch mode, the wizard only will have the select increment and files page (initialized and configured at *__SelectFilePage.java__* from the package *wizard.common*)
+In case that has been launched in batch mode, the wizard only will have the select increment and files page (initialized and configured at *__`SelectFilePage.java`__* from the package *wizard.common*)
 
-In case of normal mode with an entity java class as input, the wizard will have an optional second page provided for *__SelectAttributesPage.java__* of the package *wizard.generate.common* for selecting attributes of the entity that will be used for the generation. The page is optional because the user can finish the wizard and perform the generation from the first page.
+In case of normal mode with an entity java class as input, the wizard will have an optional second page provided for *__`SelectAttributesPage.java`__* of the package *wizard.generate.common* for selecting attributes of the entity that will be used for the generation. The page is optional because the user can finish the wizard and perform the generation from the first page.
 
 The pages of the CobiGen wizard is composed essentially for container. The containers have a CheckBoxTreeViewer object, a content provider object and a listener (that defines the behavior of the wizard when a check box is checked or unchecked) 
 
@@ -253,11 +253,11 @@ image:images/howtos/eclipse-plugin/eclipse-plugin_diag4.png[Diagram 4,width="450
 
 ==== Select Files Page
 
-The first page (__SelectFilesPage__) is composed by two containers:
+The first page (__`SelectFilesPage`__) is composed by two containers:
 
 . *Left container - Increment Selector* +
-* Created as a *CustomizedCheckBoxTreeViewer*
-* The content provider is a *SelectIncrementContentProvider*
+* Created as a *`CustomizedCheckBoxTreeViewer`*
+* The content provider is a *`SelectIncrementContentProvider`*
 * Setting the input will upgrade the labels to show
 * Set *CheckStateListener* as listener
 [source,java]
@@ -273,11 +273,11 @@ incrementSelector.addCheckStateListener(checkListener);incrementSelector.expandA
 ----
 
 . *Right Container - Resources to be generated* +
-* Created as *SimulatedCheckBoxTreeViewer* if the Customize button is not enabled or as *CustomizedCheckBoxTreeViewer* if it is.
-* *SelectFileContentProvider* as content provider.
-* *SelectFileLabelProvider* as label provider
+* Created as *`SimulatedCheckBoxTreeViewer`* if the Customize button is not enabled or as *`CustomizedCheckBoxTreeViewer`* if it is.
+* *`SelectFileContentProvider`* as content provider.
+* *`SelectFileLabelProvider`* as label provider
 * Generation target project as input
-* Set *CheckStateListener* as listener
+* Set *`CheckStateListener`* as listener
 
 [NOTE]
 ===============================
@@ -288,12 +288,12 @@ To know how a content provider works check the official documentation http://hel
 
 As previously explained, this page is optional, the user can press the Finish button at the previous page. Nevertheless, this page can only be accessed in case of a single entity file as input, never on batch mode.
 
-The container is composed by a single *CheckBoxTableViewer* with a __SelectAttributesContentProvider__ as content provider and a __SelectAttributesLabelProvider__ as label provider.
+The container is composed by a single *`CheckBoxTableViewer`* with a __`SelectAttributesContentProvider`__ as content provider and a __`SelectAttributesLabelProvider`__ as label provider.
 
 == Finish and perform generation
 
 When the user press the Finish button, the generation process will begin. For that, a generation job will be created using as argument a list of templates to be generated retrieving them from the user selection of the first page (Select Files Page).
-The generate wizard will use the *__GenerateSelectionJob.java__* or the *__GenerateBatchSelectionJob.java__* for normal mode or batch mode respectively.
+The generate wizard will use the *__`GenerateSelectionJob.java`__* or the *__`GenerateBatchSelectionJob.java`__* for normal mode or batch mode respectively.
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag5.png[Diagram 5,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag5.png"]
 
@@ -319,7 +319,7 @@ protected void generateContents(ProgressMonitorDialog dialog) {
 }
 ----
 
-The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __GenerateSelectionJob.java__
+The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __`GenerateSelectionJob.java`__
 
 Calling the `generate()` method from the *`CobiGenWrapper`* will call the method with the same name from the core and the generation will begin.
 
@@ -354,4 +354,4 @@ protected void generateContents(ProgressMonitorDialog dialog) {
 }
 ----
 
-The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __GenerateBatchSelectionJob.java__
+The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __`GenerateBatchSelectionJob.java`__
