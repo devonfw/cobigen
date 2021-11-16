@@ -50,11 +50,11 @@ image::images/howtos/ionic-gen/rightClick.png[Eclipse CobiGen generation,width="
 
 * Select the Ionic increments for generating as shown below. _Increments group a set of templates for generating
 different projects_.
-..  **Ionic List** used for generating the page containing the list.
-..  **Ionic devon4ng environments**  is for stating the server path.
-..  **Ionic i18n** used for generating the different language translations for the _translationService_ (currently English and Spanish).
-..  **Ionic routing** adds an app-routing.module.ts file to allow navigation similar to the one available in Angular.
-..  **Ionic theme** generates the variables.scss file which contains variables to style the application.
+..  **`Ionic List`** used for generating the page containing the list.
+..  **`Ionic devon4ng environments`**  is for stating the server path.
+..  **`Ionic i18n`** used for generating the different language translations for the _`translationService`_ (currently English and Spanish).
+..  **`Ionic routing`** adds an app-routing.module.ts file to allow navigation similar to the one available in Angular.
+..  **`Ionic theme`** generates the `variables.scss` file which contains variables to style the application.
 
 image::images/howtos/ionic-gen/wizardCobiGen.png[CobiGen Ionic Wizard,width="500"link="images/howtos/ionic-gen/wizardCobiGen.png"]
 
@@ -84,6 +84,8 @@ To run the application in an android emulated device, it is necessary to have An
 
 * ``ionic build --configuration=android``. To use this command, you must add an android build configuration at angular.json
 
+[source]
+----
     "build": {
       ...
       "configurations": {
@@ -98,7 +100,7 @@ To run the application in an android emulated device, it is necessary to have An
         },
       }
     }
-
+----
 
 * ``npx cap add android``
 
