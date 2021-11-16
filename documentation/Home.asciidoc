@@ -12,9 +12,9 @@ Due to a template-based approach, CobiGen *generates any set of text-based docum
 **Input (currently):**
 
 * Java classes
-* XML-based files
+* `XML`-based files
 * OpenAPI documents
-* Possibly more inputs like WSDL, which is currently not implemented.
+* Possibly more inputs like `WSDL`, which is currently not implemented.
 
 **Output:**
 
@@ -29,8 +29,8 @@ CobiGen is build as an extensible framework for incremental code generation. It 
 == Features and Characteristics
 
 * Generate fresh files across all the layers of a application - ready to run.
-* Add on to existing files merging code into it. E.g. generate new methods into existing java classes or adding nodes to an XML file. Merging of contents into existing files will be done using structural merge mechanisms.
-* Structural merge mechanisms are currently implemented for Java, XML, Java Property Syntax, JSON, Basic HTML, Text Append, TypeScript.
+* Add on to existing files merging code into it. E.g. generate new methods into existing java classes or adding nodes to an `XML` file. Merging of contents into existing files will be done using structural merge mechanisms.
+* Structural merge mechanisms are currently implemented for Java, XML, Java Property Syntax, `JSON`, Basic `HTML`, Text Append, `TypeScript`.
 * Conflicts can be resolved individually but automatically by former configuration for each template.
 * CobiGen provides an link:cobigen-eclipse_usage[Eclipse integration] as well as a link:cobigen-maven_configuration[Maven Integration].
 * CobiGen comes with an extensive documentation for link:cobigen-eclipse_installation[users] and link:cobigen-core_configuration[developers].
@@ -40,14 +40,14 @@ CobiGen is build as an extensible framework for incremental code generation. It 
 
 General applications:
 
-* Generation of a **Java CRUD application based on link:https://github.com/oasp/[devonfw] architecture** including all software-layers on the server plus code for js-clients (Angular). You can find details link:cobigen-usecases[here].
-* Generation of a *Java CRUD application according to the Register Factory architecture*. Persistence entities are the input for generation.
-* Generation of *builder classes for generating test data* for JUnit-Tests. Input are the persistence entities.
-* Generation of a **EXT JS 6** client with full CRUD operations connected a devon4j server.
-* Generation of a **Angular 6** client with full CRUD operations connected a devon4j server.
+* Generation of a **Java `CRUD` application based on link:https://github.com/oasp/[devonfw] architecture** including all software-layers on the server plus code for `js`-clients (Angular). You can find details link:cobigen-usecases[here].
+* Generation of a *Java `CRUD` application according to the Register Factory architecture*. Persistence entities are the input for generation.
+* Generation of *builder classes for generating test data* for `JUnit`-Tests. Input are the persistence entities.
+* Generation of a **`EXT JS` 6** client with full `CRUD` operations connected a devon4j server.
+* Generation of a **`Angular` 6** client with full `CRUD` operations connected a devon4j server.
 
 Project-specific applications in the past:
 
 * Generation of an *additional Java type hierarchy on top of existing Java classes* in combination with additional methods to be integrated in the modified classes. Hibernate entities were considered as input as well as output of the generation. The rational in this case, was to generate an additional business object hierarchy on top of an existing data model for efficient business processing.
 * Generation of *hash- and equals-methods* as well as copy constructors depending on the field types of the input Java class. Furthermore, CobiGen is able to re-generate these methods/constructors triggered by the user, i.e, when fields have been changed.
-* *Extraction of JavaDoc* of test classes and their methods for generating a csv test documentation. This test documentation has been further processed manually in Excel to provide a good overview about the currently available tests in the software system, which enables further human analysis.
+* *Extraction of `JavaDoc`* of test classes and their methods for generating a csv test documentation. This test documentation has been further processed manually in Excel to provide a good overview about the currently available tests in the software system, which enables further human analysis.

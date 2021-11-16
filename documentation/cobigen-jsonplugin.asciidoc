@@ -12,8 +12,8 @@ There are currently these merge strategies:
 * merge strategy `jsonmerge`(add the new code respecting the existent is case of conflict)
 * merge strategy `jsonmerge_override` (add the new code overwriting the existent in case of conflict)
 
-. JsonArray's will be ignored / replaced in total
-. JsonObjects in conflict will be processed recursively ignoring adding non existent elements.
+. `JsonArray's` will be ignored / replaced in total
+. `JsonObjects` in conflict will be processed recursively ignoring adding non existent elements.
 
 == Merge Process
 

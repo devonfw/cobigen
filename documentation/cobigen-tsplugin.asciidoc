@@ -1,23 +1,23 @@
 :toc:
 toc::[]
 
-= TypeScript Plug-in
+= `TypeScript` Plug-in
 
-The TypeScript Plug-in enables merging result TS files to existing ones. This plug-in is used at the moment for generate an Angular2 client with all CRUD functionalities enabled. The plug-in also generates de i18n functionality just appending at the end of the word the ES or EN suffixes, to put into the developer knowledge that this words must been translated to the correspondent language. Currently, the generation of Angular2 client requires an ETO java object as input so, there is no need to implement an input reader for ts artifacts for the moment.
+The `TypeScript` Plug-in enables merging result TS files to existing ones. This plug-in is used at the moment for generate an Angular2 client with all CRUD functionalities enabled. The plug-in also generates de i18n functionality just appending at the end of the word the `ES` or `EN` suffixes, to put into the developer knowledge that this words must been translated to the correspondent language. Currently, the generation of Angular2 client requires an `ETO` java object as input so, there is no need to implement an input reader for ts artifacts for the moment.
 
 == Trigger Extensions
 
 As for the Angular2 generation the input is a java object, the trigger expressions (including matchers and variable assignments) are implemented as link:https://github.com/devonfw/cobigen/wiki/cobigen-javaplugin#trigger-extension[Java]. 
 
 == Merger extensions
-This plugin uses the https://github.com/oasp/ts-merger[OASP TypeScript Merger] to merge files. There are currently two merge strategies:
+This plugin uses the https://github.com/oasp/ts-merger[`OASP` `TypeScript` Merger] to merge files. There are currently two merge strategies:
 
 * merge strategy `tsmerge` (add the new code respecting the existing is case of conflict)
 * merge strategy `tsmerge_override` (add the new code overwriting the existent in case of conflict)
 
-The merge algorithm mainly handles the following AST nodes:
+The merge algorithm mainly handles the following `AST` nodes:
 
-* *ImportDeclaration*
+* *`ImportDeclaration`*
 ** Will add non existent imports whatever the merge strategy is.
 ** For different imports from same module, the import clauses will be merged.
 +
@@ -27,30 +27,30 @@ import { c } from 'b';
 //Result
 import { a, c } from 'b';
 
-* *ClassDeclaration*
+* *`ClassDeclaration`*
 ** Adds non existent base properties from patch based on the name property.
 ** Adds non existent base methods from patch based on the name signature.
 ** Adds non existent annotations to class, properties and methods.
-* *PropertyDeclaration*
+* *`PropertyDeclaration`*
 ** Adds non existent decorators.
 ** Merge existent decorators.
 ** With override strategy, the value of the property will be replaced by the patch value.
-* *MethodDeclaration*
+* *`MethodDeclaration`*
 ** With override strategy, the body will be replaced.
 ** The parameters will be merged.
-* *ParameterDeclaration*
+* *`ParameterDeclaration`*
 ** Replace type and modifiers with override merge strategy, adding non existent from patch into base.
-* *ConstructorDeclaration*
+* *`ConstructorDeclaration`*
 ** Merged in the same way as Method is.
-* *FunctionDeclaration*
+* *`FunctionDeclaration`*
 ** Merged in the same way as Method is.
 
 == Input reader
-The TypeScript input reader is based on the one that the link:https://github.com/devonfw/ts-merger[TypeScript merger] uses. The current extensions are additional module fields giving from which library any entity originates. 
+The `TypeScript` input reader is based on the one that the link:https://github.com/devonfw/ts-merger[`TypeScript` merger] uses. The current extensions are additional module fields giving from which library any entity originates. 
 `module: null` specifies a standard entity or type as `string` or `number`.
 
 === Object model
-To get a first impression of the created object after parsing, let us start with analyzing a small example, namely the parsing of a simple link:https://typeorm.io/#/[type-orm] model written in TypeScript. 
+To get a first impression of the created object after parsing, let us start with analyzing a small example, namely the parsing of a simple link:https://typeorm.io/#/[type-orm] model written in `TypeScript`. 
 
 ```Typescript
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
@@ -172,7 +172,7 @@ The returned object has the following structure
   ]
 }
 ```
-If we only consider the first level of the JSON response, we spot two lists of `imports` and `classes`, providing information about the only import statement and the only *User* class, respectively. Moving one level deeper we observe that:
+If we only consider the first level of the `JSON` response, we spot two lists of `imports` and `classes`, providing information about the only import statement and the only *User* class, respectively. Moving one level deeper we observe that:
 
 * Every import statement is translated to an import declaration entry in the declarations list, containing the module name, as well as a list of entities imported from the given module.
 * Every class entry provides besides the class identifier, its decoration(s), modifier(s), as well as a list of properties that the original class contains. 
@@ -186,10 +186,10 @@ Note that, for each given type, the module from which it is imported is also giv
   }
 ```
 
-Returning to the general case, independently from the given TypeScript file, an object having the following Structure will be created. 
+Returning to the general case, independently from the given `TypeScript` file, an object having the following Structure will be created. 
 
-* *importDeclarations*: A list of import statement as described above
-* *exportDeclarations*: A list of export declarations
+* *`importDeclarations`*: A list of import statement as described above
+* *`exportDeclarations`*: A list of export declarations
 * *classes*: A list of classes extracted from the given file, where each entry is full of class specific fields, describing its properties and decorator for example. 
 * *interfaces*: A list of interfaces.
 * *variables*: A list of variables. 

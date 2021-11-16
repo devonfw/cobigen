@@ -12,25 +12,25 @@ It is discouraged to have `cobigen-core` dependencies at runtime, except for `co
 
 == Plugin Activator
 
-Each plug-in has to have an plug-in activator class implementing the interface `GeneratorPluginActivator` from the core-api. This class will be used to load the plug-in using the PluginRegistry as explained link:cobigen-core_development#loadplugin[here]. This class implements two methods:
+Each plug-in has to have an plug-in activator class implementing the interface `GeneratorPluginActivator` from the core-api. This class will be used to load the plug-in using the `PluginRegistry` as explained link:cobigen-core_development#loadplugin[here]. This class implements two methods:
 
 . `bindMerger()` -> returns a mapping of merge strategies and its implementation to be registered.
 . `bindTriggerInterpreter()`-> returns the trigger interpreters to be provided by this plug-in.
 
 Both methods create and register instances of mergers and trigger interpreters to be provided by the new plug-in.
 
-== Adding TriggerInterpreter
+== Adding `TriggerInterpreter`
 
-The trigger interpreter has to implement the TriggerInterpreter interface from the core. The trigger interpreter defines the type for the new plugin and creates new InputReader and new Matcher objects.
+The trigger interpreter has to implement the `TriggerInterpreter` interface from the core. The trigger interpreter defines the type for the new plugin and creates new `InputReader` and new Matcher objects.
 
-== Adding InputReader
+== Adding `InputReader`
 
 The input reader is responsible of read the input object and parse it into
- FreeMarker models. The input reader must be implemented for the type of the
+ `FreeMarker` models. The input reader must be implemented for the type of the
  input file. If there is any existent plugin that has the same file type as input,
  there will be no need to add a new input reader to the new plug-in.
 
-=== InputReader Interface
+=== `InputReader` Interface
 
 The interface needed to add a new input reader is defined at the core. Each new
 sub plug-in must implements this interface if is needed an input reader for it.
@@ -46,7 +46,7 @@ The methods to be implemented by the input reader of the new sub plugin are:
 |======================
 |Method | Return Type | Description
 | `isValidInput(Object input)`  | *boolean* | This function will be called if matching triggers or matching templates should be retrieved for a given input object.
-| `createModel(Object input)` | *Map<String, Object>*  |This function should create the FreeMarker object model from the given input.
+| `createModel(Object input)` | *Map<String, Object>*  |This function should create the `FreeMarker` object model from the given input.
 | `combinesMultipleInputObjects(Object input)` | *boolean*  | States whether the given input object combines multiple input objects to be used for generation.
 | `getInputObjects(Object input, Charset inputCharset)` |  *List<Object>*  |Will return the set of combined input objects if the given input combines multiple input objects.
 | `getTemplateMethods(Object input)` | *Map<String, Object>* | This method returns available template methods from the plugins as Map. If the plugin which corresponds to the input does not provide any template methods an empty Map will be returned.
@@ -55,8 +55,8 @@ The methods to be implemented by the input reader of the new sub plugin are:
 
 === Model Constants
 
-The Input reader will create a model for FreeMarker. A Freemarker model must
-have variables to use them at the `.ftl` template file. Refer to link:cobigen-javaplugin#java-input-reader[Java Model] to see the FreeMarker model example for java input files.
+The Input reader will create a model for `FreeMarker`. A Freemarker model must
+have variables to use them at the `.ftl` template file. Refer to link:cobigen-javaplugin#java-input-reader[Java Model] to see the `FreeMarker` model example for java input files.
 
 === Registering the Input Reader
 
@@ -68,13 +68,13 @@ The input reader is an object that can be retrieved using the correspondent get
 
 == Adding Matcher
 
-The matcher implements the MatcherInterpreter interface from the core-api.
+The matcher implements the `MatcherInterpreter` interface from the core-api.
 Should be implemented for providing a new input matcher. Input matcher are
 defined as part of a trigger and provide the ability to restrict specific
 inputs to a set of templates.
-This restriction is implemented with a MatcherType `enum`.
+This restriction is implemented with a `MatcherType` `enum`.
 
-E.g JavaPlugin
+E.g `JavaPlugin`
 
 [source,java]
 private enum MatcherType {
@@ -114,7 +114,7 @@ The implementation of the Merge interface must override the following methods:
 | `merge(File base, String patch, String targetCharset)` | *String*  | Merges the patch into the base file.
 |======================
 
-Is important to know that any exception caused by the merger must throw a MergeException from the core-api to the eclipse-plugin handle it.
+Is important to know that any exception caused by the merger must throw a `MergeException` from the core-api to the eclipse-plugin handle it.
 
 == Changes since Eclipse / Maven 3.x
 

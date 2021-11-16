@@ -23,15 +23,15 @@ First, we will install the devonfw-ide. It is a tool that will setup your IDE wi
 
 We are going to use the template of devon4net as a base to generate all the code, so what we have to do now is to download said template using the following steps.
 
-First of all you have to set up all the environment for .NET, you can do this using https://devon4net.github.io/environment.html[the following tutorial]. Next we are going to create a new folder where we want to have the WebAPI project, lastly we are going to open the terminal there.
+First of all you have to set up all the environment for .NET, you can do this using https://devon4net.github.io/environment.html[the following tutorial]. Next we are going to create a new folder where we want to have the `WebAPI` project, lastly we are going to open the terminal there.
 
 Type the following:
 
-    dotnet new -i Devon4Net.WebAPI.Template
+    `dotnet new -i Devon4Net.WebAPI.Template`
     
 and then:
 
-    dotnet new Devon4NetAPI
+    `dotnet new Devon4NetAPI`
     
 ==== [navy]#OpenAPI File#
 
@@ -87,7 +87,7 @@ In ordet to generate the files using the Cobigen CLI it is needed to do the foll
 
 ==== [navy]#Data base#
 
-Cobigen is generating an empty context that has to be filled with manually in order to be able to work with the database. The context can be found in *[Project_Name]/Devon4Net.WebAPI.Implementation/Domain/Database/CobigenContext.cs*.
+Cobigen is generating an empty context that has to be filled with manually in order to be able to work with the database. The context can be found in `*[Project_Name]/Devon4Net.WebAPI.Implementation/Domain/Database/CobigenContext.cs*`.
 
 [[img-cobigen]]
 image::images/howtos/devon4net/CobigenContextLocation.png["cobigen", width=="350", link=="images/howtos/devon4net/CobigenContextLocation.png]

@@ -4,14 +4,14 @@ toc::[]
 
 = Eclipse Plugin Development
 
-The Eclipse plugin is where all the other plugins (JavaPlugin, XMLPlugin, PropertyPlugin, TextMerger and the core) are loaded.
+The Eclipse plugin is where all the other plugins (`JavaPlugin`, `XMLPlugin`, `PropertyPlugin`, `TextMerger` and the core) are loaded.
 
 == Configuration
 
 === Activator java
 
-Activator class is the start point of the plugin. Activator class is loaded initially and it extends the *AbstractUIPlugin*, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform UI.
-An ID for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
+Activator class is the start point of the plugin. Activator class is loaded initially and it extends the *AbstractUIPlugin*, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform `UI`.
+An `ID` for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
 
 [source,java]
 /**
@@ -19,7 +19,7 @@ An ID for the plugin is defined for configuration at https://github.com/devonfw/
 */
 public static final String PLUGIN_ID = "com.capgemini.cobigen.eclipseplugin"; //$NON-NLS-1$
 
-The overrode `__start()__` method starts the plugin and loads all the sub-plugins using the *PluginRegistry* from the core for each plug-in:  
+The overrode `__start()__` method starts the plugin and loads all the sub-plugins using the *`PluginRegistry`* from the core for each plug-in:  
 [source,java]
 PluginRegistry.loadPlugin(PluginActivator.class);
 
@@ -94,7 +94,7 @@ image:images/howtos/eclipse-plugin/eclipse-plugin_sshot1.png[CobiGen Menu,width=
 
 == Handlers
 
-The *workbenchcontrol* package provides to the plugin the listener regarding to the templates project, the listener for logging needs and the handler for the two main use cases (Generate and HealthCheck).
+The *workbenchcontrol* package provides to the plugin the listener regarding to the templates project, the listener for logging needs and the handler for the two main use cases (Generate and `HealthCheck`).
 
 === Update Templates: 
 Update Template: Select Entity file and right click, then select cobigen Update Templates after that click on download then download successfully will be come.
@@ -115,7 +115,7 @@ For both Wrapper objects, the inputs will be converted to valid inputs for Freem
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag1.png[Diagram 1,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag1.png"]
 
-For XmlGeneratorWrapper, the input must be a single valid XML file. As only has a single file as input, the *__GenerateWizard.java__* will be called.
+For XmlGeneratorWrapper, the input must be a single valid `XML` file. As only has a single file as input, the *__GenerateWizard.java__* will be called.
 
 In summary, this will be the process for the Generate Action before calling the wizard:
 
@@ -141,7 +141,7 @@ try {
 }
 
 
-If the project exists, HealthCheck will test if the __context.xml__ file is valid. In case of invalid, HealthCheck will throw and handle the *InvalidConfigurationException* from the core and check if it is possible to upgrade the version of the xml file, showing an __UPGRADE__ button at the dialog. If the upgrade is not possible, will show a dialog message telling the user to check the __context.xml__ file for errors.
+If the project exists, `HealthCheck` will test if the __context.xml__ file is valid. In case of invalid, `HealthCheck` will throw and handle the *InvalidConfigurationException* from the core and check if it is possible to upgrade the version of the xml file, showing an __UPGRADE__ button at the dialog. If the upgrade is not possible, will show a dialog message telling the user to check the __context.xml__ file for errors.
 [source,java]
 try {
    //The Cobigen constructor will throw the InvalidConfigurationException
@@ -179,7 +179,7 @@ try {
         }
 }
 
-At this point, if all is correct, the user can choose to finish the HealtCheck process or run the Advance Health Check running the *__AdvancedHealthCheck.java__* to check the the validity of template configurations. That check has three steps:
+At this point, if all is correct, the user can choose to finish the `HealtCheck` process or run the Advance Health Check running the *__AdvancedHealthCheck.java__* to check the the validity of template configurations. That check has three steps:
 
 . *Get configuration resources* +
 Will get the template configuration file from the template folder corresponding to the input of the plugin provided by the triggers defined at the __context.xml__ file for that input.
@@ -193,7 +193,7 @@ Will call the *__AdvancedHealthCheckDialog.java__* showing a dialog with the cur
 == Wizard Development
 === Starting the Wizard
 
-To open a wizard, use the *WizardDialog* class from the *org.eclipse.jface.wizard* package.
+To open a wizard, use the *`WizardDialog`* class from the *org.eclipse.jface.wizard* package.
 The plugin does that at *__GenerateHandler.java__* as previously explained https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#3-1-generate-action-handler[here]:
 
 [source,java]
@@ -211,18 +211,18 @@ if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).siz
      LOG.info("Generate Wizard opened.");
 }
 Adapt Template: Select Entity file and right click then select cobigen  Adapt Template.If cobigen template  jar not available then it download automatically.If Cobigen templates is already then it will override existing template in workspace and click on OK then imported template successfully message will come .If Template not available the it automatically 
-=== Wizard and WizardPages
+=== Wizard and `WizardPages`
 
 The Wizard class from the *org.eclipse.jface.wizard* package provides the functionality to build custom wizards. This class controls the navigation between the different pages and provides the base user interface, for example, an area for error and information messages.
 
-A wizard contains one or several pages of the type *WizardPage*. Such a page is added to a Wizard object via the `__addPage()__` method.
+A wizard contains one or several pages of the type *`WizardPage`*. Such a page is added to a Wizard object via the `__addPage()__` method.
 
-A *WizardPage* must create a new Composite in its `__createControl()__` method. This new Composite must use the Composite of the method parameter as parent. It also must call the `__setControl()__` method with this new Composite as parameter. If this is omitted, Eclipse will throw an error.
+A *`WizardPage`* must create a new Composite in its `__createControl()__` method. This new Composite must use the Composite of the method parameter as parent. It also must call the `__setControl()__` method with this new Composite as parameter. If this is omitted, Eclipse will throw an error.
 
 On the CobiGen eclipse-plugin project:
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag3.png[Diagram 3,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag3.png"]
 
-The WizardPage class defines the `canFlipToNextPage()` and `setPageComplete()` methods to control if the __NEXT__ or the __FINISH__ button in the wizard becomes active.
+The `WizardPage` class defines the `canFlipToNextPage()` and `setPageComplete()` methods to control if the __NEXT__ or the __FINISH__ button in the wizard becomes active.
 
 The Wizard class defines the `canFinish()` method in which you can define if the wizard can be completed. This last method is overrode at *__AbstractGenerateWizard.java__*.
 
@@ -302,7 +302,7 @@ protected void generateContents(ProgressMonitorDialog dialog) {
 
 The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __GenerateSelectionJob.java__
 
-Calling the `generate()` method from the *CobiGenWrapper* will call the method with the same name from the core and the generation will begin.
+Calling the `generate()` method from the *`CobiGenWrapper`* will call the method with the same name from the core and the generation will begin.
 
 === Batch Mode
 

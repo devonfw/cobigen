@@ -9,7 +9,7 @@ This might be caused as of the fact, that the `cobigen-eclipse*/lib` folder is n
 
 In any of these cases you can fix the issue by running a `mvn clean package -Pp2-build-photon`.
 
-== Getting Not authorized , ReasonPhrase: Unauthorized
+== Getting Not authorized , `ReasonPhrase`: Unauthorized
 You are facing an error like
 ```
 [ERROR] [ERROR] Some problems were encountered while processing the POMs:
@@ -31,7 +31,7 @@ ic (https://devon.s2-eu.capgemini.com/nexus/content/groups/public/): Not authori
 
 ==== Solution
 
-Please note the message `Not authorized , ReasonPhrase: Unauthorized. -> [Help 2]`! 
+Please note the message `Not authorized , `ReasonPhrase`: Unauthorized. -> [Help 2]`! 
 
 1. Please check, that you run the command by using the console.bat or a simliar console initialized with the IDE environment variables.
 2. Please check your corporate login in the variables-customized.bat to be correct (`DEVON_NEXUS_USER` and `DEVON_NEXUS_PASSWD`). Make sure, that you restart the console.bat you are working in after changing the variables-customized.bat. Same holds for eclipse instances running. Please restart to make the new values accessible.
@@ -73,5 +73,5 @@ Error message will be like:
 ```
 
 ==== Solution
-Delete or rename the runtime-EclipseApplication inside workspaces folder. Re- run and try setting up workspace in that environment again. It should work!!
+Delete or rename the runtime-`EclipseApplication` inside workspaces folder. Re- run and try setting up workspace in that environment again. It should work!!
  

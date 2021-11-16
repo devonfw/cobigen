@@ -5,12 +5,12 @@ toc::[]
 
 = CobiGen Core Development
 
-CobiGen uses Apache FreeMarker as engine for generation through FreeMarker templates.
+CobiGen uses Apache `FreeMarker` as engine for generation through `FreeMarker` templates.
 
 [NOTE]
 ================
-* To know more about development using Apache FreeMarker, please refer to http://freemarker.org/docs/pgui.html[official documentation].
-* To know more about FreeMarker template development, please refer to the http://freemarker.org/docs/dgui.html[official template development documentation] and the guide of this wiki for each plugin:
+* To know more about development using Apache `FreeMarker`, please refer to http://freemarker.org/docs/pgui.html[official documentation].
+* To know more about `FreeMarker` template development, please refer to the http://freemarker.org/docs/dgui.html[official template development documentation] and the guide of this wiki for each plugin:
 . https://github.com/devonfw/cobigen/wiki/cobigen-javaplugin[Java Plugin]
 . https://github.com/devonfw/cobigen/wiki/cobigen-xmlplugin[Xml Plugin]
 . https://github.com/devonfw/cobigen/wiki/cobigen-propertyplugin[Property Plugin]
@@ -36,19 +36,19 @@ The *extension* package from the API project contains the interfaces to be imple
 * *__TriggerInterpreter.java__*
 * *__ModelBuilder.java__*
 
-The ModelBuilder is an interface for accessing the internal model builder instance. Is implemented by *__ModelBuilder.java__* from the *model* package from the implementation project that provides the methods to call the `createModel()` from the correspondent input reader from the correspondent trigger interpreter to create the object models for a given object.
+The `ModelBuilder` is an interface for accessing the internal model builder instance. Is implemented by *__ModelBuilder.java__* from the *model* package from the implementation project that provides the methods to call the `createModel()` from the correspondent input reader from the correspondent trigger interpreter to create the object models for a given object.
 
 The *to* package have the transfer objects of `template`, `matcher`, `increment` and `variable assignment` classes that will be used as "communication channel" between the core and sub plug-ins methods
 
 == Plugin Registry
 
-The core must load all the sub plugins to get their Merger, Matcher, TriggerInterpreter and InputReader. That elements must implement their respective interfaces from the core.
+The core must load all the sub plugins to get their Merger, Matcher, `TriggerInterpreter` and `InputReader`. That elements must implement their respective interfaces from the core.
 
 image:images/howtos/cobigen-core/core_01.png[Diagram 1,width="450",link="images/howtos/cobigen-core/core_01.png"]
 
-Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an InputReader (advanced information https://github.com/devonfw/cobigen/wiki/new_plugin[here])
+Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an `InputReader` (advanced information https://github.com/devonfw/cobigen/wiki/new_plugin[here])
 
-=== LoadPlugin
+=== `LoadPlugin`
 
 The process of loading plugins to the core is done at the https://github.com/devonfw/cobigen/wiki/eclipse-plugin_development#1-1-activator-java[eclipse-plugin initialization].
 
@@ -69,9 +69,9 @@ https://github.com/devonfw/cobigen/wiki/new_plugin#3-adding-inputreader[How to a
 
 == CobiGen Initialization
 
-The CobiGen initialization must initialize the context configuration and the FreeMarker configuration
+The CobiGen initialization must initialize the context configuration and the `FreeMarker` configuration
 
-=== FreeMarker Initialization
+=== `FreeMarker` Initialization
 
 When a CobiGen object is instantiated, the constructor initializes the Freemarker configuration creating a configuration instance from the class *freemarker.template.Configuration* and adjust its settings.
 
@@ -81,20 +81,20 @@ freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.
 freeMarkerConfig.clearEncodingMap();
 freeMarkerConfig.setDefaultEncoding("UTF-8");
 freeMarkerConfig.setLocalizedLookup(false);
-freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(configFolder));
+freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(`configFolder`));
 
 Using the *__FileSystemUtil__* from the *util* package the URI of the root folder containing the `context.xml` and all templates, configurations etc... is converted to a Path object passing it as argument to the *__ContextConfiguration__* constructor.
-The *__ContextConfiguration__* creates a new ContextConfiguration from the *config* package with the contents initially loaded from the `context.xml`
+The *__ContextConfiguration__* creates a new `ContextConfiguration` from the *config* package with the contents initially loaded from the `context.xml`
 
 [NOTE]
 =========
-How the ContextConfiguration works explained deeply https://github.com/devonfw/cobigen/wiki/Core-Development#4-1-contextconfiguration[here].
+How the `ContextConfiguration` works explained deeply https://github.com/devonfw/cobigen/wiki/Core-Development#4-1-contextconfiguration[here].
 =========
 
-The Configuration initialization requires the version of Freemarker to be used and at the ObjectWrapper initialization as well.
-The *__DefaultObjectWrapperBuilder__* creates an *__DefaultObjectWrapper__* object that maps Java objects to the type-system of FreeMarker Template Language (FTL) with the given `incompatibleImprovements` specified by the version used as argument.
+The Configuration initialization requires the version of `FreeMarker` to be used and at the `ObjectWrapper` initialization as well.
+The *__DefaultObjectWrapperBuilder__* creates an *__DefaultObjectWrapper__* object that maps Java objects to the type-system of `FreeMarker` Template Language (FTL) with the given `incompatibleImprovements` specified by the version used as argument.
 
-The configuration of Freemarker requires to specify to a __TemplateLoader__. A __TemplateLoader__ is an interface provided by Freemarker library that the developer should implement to fit the needs. The __TemplateLoader__ implementation at CobiGen is the class *__NioFileSystemTemplateLoader.java__* from the *config.nio* package.
+The configuration of `FreeMarker` requires to specify to a __TemplateLoader__. A __TemplateLoader__ is an interface provided by `FreeMarker` library that the developer should implement to fit the needs. The __TemplateLoader__ implementation at CobiGen is the class *__NioFileSystemTemplateLoader.java__* from the *config.nio* package.
 
 image:images/howtos/cobigen-core/core_03.png[Diagram 5,width="450",link="images/howtos/cobigen-core/core_03.png"]
 
@@ -204,7 +204,7 @@ If it is not null, will be compared using the `validate()` method from *__Versio
     </plugins>
 </build>
 
-*MavenMetadata* gets the current CobiGen version by reading the `<version>` label inside the `<project>` label from the POM file
+*`MavenMetadata`* gets the current CobiGen version by reading the `<version>` label inside the `<project>` label from the POM file
 
 [source,java]
 public class MavenMetadata {
@@ -245,7 +245,7 @@ try (
     contextNode = (ContextConfiguration) rootNode;
 }
 
-==== Load Triggers, Matchers, containerMatcher, AccumulationTypes and VariableAssigments
+==== Load Triggers, Matchers, `containerMatcher`, `AccumulationTypes` and `VariableAssigments`
 
 To finish the context configuration initialization, the, trigger, matchers, container matchers, accumulation types and variables assignments are retrieved from the correspondent Java objects generated by JAXB.
 
@@ -273,7 +273,7 @@ public void generate(TemplateTo template, boolean forceOverride) throws IOExcept
 
 === Single Non Container Input
 
-If the input is a single non container input, first step is to create the model, then allow customization by the user (`adaptModel()`) and finally call the `generate()` method from CobiGen using the input, template, model and the boolean forceOverride.
+If the input is a single non container input, first step is to create the model, then allow customization by the user (`adaptModel()`) and finally call the `generate()` method from CobiGen using the input, template, model and the boolean `forceOverride`.
 The generation process in this case will follow this main steps:
 
 . Check if the input is not null
@@ -286,7 +286,7 @@ This only can be possible in the case of java inputs. As the input is a single n
 As the model has been created at the *CobiGenWrapper*, there is no need to create it again.
 . Get the destination file.
 . Check if the destination file already exists +
-If it exists, but the forceOverride is set to `true` or the merge strategy of the template is null, the file will be overwritten, not merged. Otherwise, first generate output into a writter object, get the merger and merge the original file with the writter and write the file with the merge result.
+If it exists, but the `forceOverride` is set to `true` or the merge strategy of the template is null, the file will be overwritten, not merged. Otherwise, first generate output into a writter object, get the merger and merge the original file with the writter and write the file with the merge result.
 . If the file does not exist, simple write the file.
 
 === Single Container Input or multiple files selection

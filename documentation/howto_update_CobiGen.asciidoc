@@ -5,7 +5,7 @@ toc::[]
 
 In order to update CobiGen from our devonfw distribution, we have two options:
 
-* Open Eclipse, click on _Help_ -> _Check for updates_
+* Open Eclipse, click on _Help_ -> _Check for update_
 
 image::images/howtos/update_CobiGen/check_updates.png[Check updates,width="450"link="images/howtos/update_CobiGen/check_updates.png"]
 
