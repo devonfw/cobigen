@@ -36,7 +36,7 @@ The *extension* package from the `API` project contains the interfaces to be imp
 * *__`TriggerInterpreter.java`__*
 * *__`ModelBuilder.java`__*
 
-The `ModelBuilder` is an interface for accessing the internal model builder instance. Is implemented by *__ModelBuilder.java__* from the *model* package from the implementation project that provides the methods to call the `createModel()` from the correspondent input reader from the correspondent trigger interpreter to create the object models for a given object.
+The `ModelBuilder` is an interface for accessing the internal model builder instance. Is implemented by *__`ModelBuilder.java`__* from the *model* package from the implementation project that provides the methods to call the `createModel()` from the correspondent input reader from the correspondent trigger interpreter to create the object models for a given object.
 
 The *to* package have the transfer objects of `template`, `matcher`, `increment` and `variable assignment` classes that will be used as "communication channel" between the core and sub plug-ins methods
 
@@ -52,7 +52,7 @@ Is important to note that not all the sub plug-ins need to have implemented a Ma
 
 The process of loading plugins to the core is done at the https://github.com/devonfw/cobigen/wiki/eclipse-plugin_development#1-1-activator-java[eclipse-plugin initialization].
 
-Each sub plugin has an activator class that extends the *__GeneratorPluginActivator__* interface from the *extension* package. That class implements the methods `bindMerger()` and `bindTriggerInterpreter()`.
+Each sub plugin has an activator class that extends the *__`GeneratorPluginActivator`__* interface from the *extension* package. That class implements the methods `bindMerger()` and `bindTriggerInterpreter()`.
 
 
 image:images/howtos/cobigen-core/core_02.png[Diagram 2,width="450",link="images/howtos/cobigen-core/core_02.png"]
