@@ -53,7 +53,7 @@ _Remark:_ This is only done once, if you have `header` in another anchor, it wil
 . `anchor:${documentpart}::anchorend` will use the merge strategy from templates.xml, see <<extensions,Merger-Extensions>>.
 . `anchor:${}:${mergestrategy}\_newline:anchorend` or `anchor:${}:newline_${mergestrategy}:anchorend` states that a new line should be appended before or after this anchors text, depending on where the newline is (before or after the `mergestrategy`). `anchor:${documentpart}:newline:anchorend` puts a new line after the anchors text.
 _Remark:_ Only works with appending strategies, not merging/replacing ones. These strategies currently include: `appendbefore`, `append`/`appendafter`
-. `anchor:${documentpart}:override:anchorend` means that the new text of this documentpart will replace the existing one completely
+. `anchor:${documentpart}:override:anchorend` means that the new text of this `documentpart` will replace the existing one completely
 . `anchor:${documentpart}:appendbefore:anchorend` or `anchor:${documentpart}:appendafter:anchorend`/`anchor:${documentpart}:append:anchorend` specifies whether the text of the patch should come before the existing text or after.
 
 == Usage Examples
