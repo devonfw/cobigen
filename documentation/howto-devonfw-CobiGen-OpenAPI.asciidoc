@@ -48,7 +48,7 @@ image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 *BEFORE to start to create an Entity class, remember to create the tables, for this `POC` it's used an H2 Database!*
 
 [arabic]
-Create a new *`SQL`* *file* (i.e: `V0002__CreateTables_myapp.sql`) inside _myapp-core_ , under the folder path _/myapp-core/src/main/resources/db/migration/1.0_ and insert the following script:
+Create a new *`SQL`* *file* (i.e: `V0002__CreateTables_myapp.sql`) inside _`myapp-core`_ , under the folder path _`/myapp-core/src/main/resources/db/migration/1.0`_ and insert the following script:
 
 [source, sql]
 ----
@@ -69,7 +69,7 @@ image:images/howtos/e2e_gen/image64.png[sql file]
 
 [arabic]
 Now create another `SQL` file (`i.e: V0003__PopulateTables-myapp.sql`) and add following script about the INSERT in order to populate the table created before.
-The script must be inserted at the same path used before: _/myapp-core/src/main/resources/db/migration/1.0_
+The script must be inserted at the same path used before: _`/myapp-core/src/main/resources/db/migration/1.0`_
 
 *_WARNING 1_*: please note that there in that folder is present only one file, 0001, and you have to add the other files in progressive number order (i.e. 0003)! +
 *_WARNING 2_*: please note that there are 2 underscore in the name!
@@ -92,11 +92,15 @@ Now create a new file _devonfw.yml_ in the root of your core folder. This will b
 The section _x-rootpackage_ it must be filled with the same package used when you have created the java application. +
 So i.e. if you have created the `BE` Java Application with:
 [source, java]
+----
 devon java create com.example.domain.myapp
+----
 
 You have to populate the _devonfw.yml_ in this way:
 [source, yml]
+----
 x-rootpackage: com.example.domain.myapp
+----
 
 image:images/howtos/e2e_gen/image76.png[package corresponding]
 
@@ -127,11 +131,11 @@ image:images/howtos/e2e_gen/image21.png[cobigen finish]
 
 *The entire [.underline]#`BE layer`# structure having `CRUD` operation methods will be auto generated.*
 
-Some classes will be generated on the api part (_myapp-api)_, normally it will be interfaces, as shown below:
+Some classes will be generated on the api part (_`myapp-api`)_, normally it will be interfaces, as shown below:
 
 image:images/howtos/e2e_gen/image22.png[be layer]
 
-Some other classes will be generated on the core part (_myapp-core)_, normally it will be implementations as shown below:
+Some other classes will be generated on the core part (_`myapp-core`)_, normally it will be implementations as shown below:
 
 image:images/howtos/e2e_gen/image23.png[core folder]
 
@@ -144,7 +148,7 @@ So, we need to prepare server side to accept request from other domains. We need
 * Accept devonfw used headers like `X-CSRF-TOKEN` or `correlationId`.
 * Be prepared to receive secured request (cookies).
 
-To do this it's necessary to add two kind of dependecies in the pom.xml of the _myapp-core_ folder, at the end of the list of dependecies:
+To do this it's necessary to add two kind of dependecies in the pom.xml of the _`myapp-core`_ folder, at the end of the list of dependecies:
 
 [source, xml]
 ----
@@ -160,7 +164,7 @@ To do this it's necessary to add two kind of dependecies in the pom.xml of the _
 
 image:images/howtos/e2e_gen/image70.png[pom xml]
 
-Next step is to add some properties under your _application.properties_ file, in the myapp-core folder in the _resources/config_:
+Next step is to add some properties under your _application.properties_ file, in the `myapp-core` folder in the _resources/config_:
 
 [source, properties]
 ----
@@ -265,7 +269,7 @@ image:images/howtos/e2e_gen/image84.png[import]
 image:images/howtos/e2e_gen/image86.png[import]
 
 [arabic]
-Once done, right click on the *_devonfw.yml_* (present in the _myapp-core_ module) in order to use CobiGen.
+Once done, right click on the *_devonfw.yml_* (present in the _`myapp-core`_ module) in order to use CobiGen.
 Click on the selected options as seen in the screenshot:
 
 image:images/howtos/e2e_gen/image37.png[eclipse generate]
@@ -338,7 +342,7 @@ export class AppRoutingModule {
 }
 ----
 
-After that, if you want to make visible the Employee Grid in you `FE` application, you have to modify the nav-bar.component.html, to add the Employee grid in the section:
+After that, if you want to make visible the Employee Grid in you `FE` application, you have to modify the `nav-bar.component.html`, to add the Employee grid in the section:
 
 [source, html]
 ----
