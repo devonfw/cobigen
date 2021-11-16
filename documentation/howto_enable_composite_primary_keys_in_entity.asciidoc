@@ -12,6 +12,7 @@ Also, the current generation from Entity still holds good - right click from an 
 After generating, below example shows how composite primary keys can be enabled.
 
 [source, java]
+----
 @Entity
 @Table(name = "employee")
 public class EmployeeEntity {
@@ -30,16 +31,19 @@ public class EmployeeEntity {
 	.
 	.
 	.
-	
+----	
 
 [source, java]
+----
 public class CompositeEmployeeKey implements Serializable {
   private String companyId;
   private String employeeId;
+----
   
-Once the generation is complete, implement `PersistenceEntity<ID>`.java in the EmployeeEntity and pass the composite primary key object which is CompositeEmployeeKey in this case as the parameter `ID`. 
+Once the generation is complete, implement `PersistenceEntity<ID>`.java in the EmployeeEntity and pass the composite primary key object which is `CompositeEmployeeKey` in this case as the parameter `ID`. 
 
 [source, java]
+----
 import com.devonfw.module.basic.common.api.entity.PersistenceEntity;
 @Entity
 @Table(name = "employee")
@@ -47,10 +51,12 @@ public class EmployeeEntity implements PersistenceEntity<CompositeEmployeeKey> {
 	private CompositeEmployeeKey id;
 	private String name;
 	private String lastName;
+----
 
 Also, the `modificationCounter` methods needs to be implemented from the interface `PersistenceEntity<ID>`. The sample implementation of the modification counter can be referred below.
 
 [source, java]
+----
 @Override
   public int getModificationCounter() {
     if (this.persistentEntity != null) {
@@ -66,4 +72,4 @@ Also, the `modificationCounter` methods needs to be implemented from the interfa
   public void setModificationCounter(int version) {
     this.modificationCounter = version;
   }
-
+----
