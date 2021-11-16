@@ -307,7 +307,7 @@ toc::[]
 | added | mmm-util-pojo | 7.4.0 | Apache Software License 2.0 | https://github.com/m-m-m/mmm/wiki/License
 |=============================================
 
-=== cobigen-tempeng-velocity-plugin v1.0.0
+=== `cobigen-tempeng-velocity-plugin v1.0.0`
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *`URL`*
@@ -329,12 +329,12 @@ toc::[]
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *`URL`*
-| updated | cobigen-core | 4.0.0 |  | 
-| updated | cobigen-javaplugin | 1.5.0 |  | 
-| updated | cobigen-jsonplugin | 1.1.0 |  | 
-| added | cobigen-tsplugin | 1.0.0 | |
-| added | cobigen-htmlplugin | 1.0.0 | |
-| added | cobigen-tempeng-freemarkerplugin | 1.0.0-`SNAPSHOT`| |
+| updated | `cobigen-core` | 4.0.0 |  | 
+| updated | `cobigen-javaplugin` | 1.5.0 |  | 
+| updated | `cobigen-jsonplugin` | 1.1.0 |  | 
+| added | `cobigen-tsplugin` | 1.0.0 | |
+| added | `cobigen-htmlplugin` | 1.0.0 | |
+| added | `cobigen-tempeng-freemarkerplugin` | 1.0.0-`SNAPSHOT`| |
 |=============================================
 
 === cobigen-maven v2.1.0
@@ -347,7 +347,7 @@ toc::[]
 | updated | cobigen-jsonplugin | 1.1.0 |  | 
 | added | cobigen-tsplugin | 1.0.0 | |
 | added | cobigen-htmlplugin | 1.0.0 | |
-| added | cobigen-tempeng-freemarkerplugin | 1.0.0-`SNAPSHOT`| |
+| added | `cobigen-tempeng-freemarkerplugin` | 1.0.0-`SNAPSHOT`| |
 |=============================================
 
 === cobigen-tsplugin v1.1.0
@@ -361,7 +361,7 @@ toc::[]
 | removed| rhino | | | 
 |=============================================
 
-=== cobigen-tempeng-freemarker-plugin v1.0.0
+=== `cobigen-tempeng-freemarker-plugin v1.0.0`
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *`URL`*
@@ -384,7 +384,7 @@ toc::[]
 | removed | cobigen-textmerger |  |  | 
 | removed | cobigen-tsplugin | | |
 | removed | cobigen-xmlplugin | | |
-| removed | cobigen-tempeng-freemarkerplugin | | |
+| removed | `cobigen-tempeng-freemarkerplugin` | | |
 |=============================================
 
 === cobigen-xmlplugin v3.1.0
@@ -407,7 +407,7 @@ toc::[]
 | removed | cobigen-textmerger |  |  | 
 | removed | cobigen-tsplugin | | |
 | removed | cobigen-xmlplugin | | |
-| removed | cobigen-tempeng-freemarkerplugin | | |
+| removed | `cobigen-tempeng-freemarkerplugin` | | |
 |=============================================
 
 === cobigen-propertyplugin v1.2.0
