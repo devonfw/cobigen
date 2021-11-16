@@ -113,7 +113,7 @@ Adapt Template: Select Entity file and right click then select cobigen _Adapt Te
 
 === Generate Action Handler
 
-The wizard launching is the responsibility of the generate handler (*__GenerateHandler.java__*). In case of Generate action and depending of the input provided for that, the handler will create a `JavaGeneratorWrapper` or `XMlGeneratorWrapper` object.
+The wizard launching is the responsibility of the generate handler (*__`GenerateHandler.java`__*). In case of Generate action and depending of the input provided for that, the handler will create a `JavaGeneratorWrapper` or `XMlGeneratorWrapper` object.
 For `JavaGeneratorWrapper`, if the input is a package or a selection of multiple entity files, the wizard will be launched in batch mode calling the *__`GenerateBatchWizard.java`__* from the *wizard.generate* package. But if the input is a single entity java class file, it will be launched in normal mode calling the *__`GenerateWizard.java`__* from the same package.
 
 [NOTE]
@@ -123,7 +123,7 @@ For both Wrapper objects, the inputs will be converted to valid inputs for Freem
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag1.png[Diagram 1,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag1.png"]
 
-For `XmlGeneratorWrapper`, the input must be a single valid `XML` file. As only has a single file as input, the *__GenerateWizard.java__* will be called.
+For `XmlGeneratorWrapper`, the input must be a single valid `XML` file. As only has a single file as input, the *__`GenerateWizard.java`__* will be called.
 
 In summary, this will be the process for the Generate Action before calling the wizard:
 
