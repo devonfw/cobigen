@@ -32,7 +32,9 @@ image:images/howtos/e2e_gen/image85.png[eclipse devon]
 
 Then launch this command from CMD:
 [source, java]
+----
 devon java create com.example.domain.myapp
+----
 
 Import the project to eclipse as maven project
 image:images/howtos/e2e_gen/image14.png[eclipse devon]
@@ -73,9 +75,11 @@ The script must be inserted at the same path used before: _/myapp-core/src/main/
 *_WARNING 2_*: please note that there are 2 underscore in the name!
 
 [source, sql]
+----
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'John','Doe','john.doe@example.com');
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Tom','Smith', 'tom.smith@example.com');
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Joe','Schmoe', 'joe.schmoe@example.com');
+----
 
 image:images/howtos/e2e_gen/image65.png[sql insert]
 
@@ -482,11 +486,15 @@ with this line:
 *2:* +
 You have to change this line:
 [source,ts]
+----
 return this.restPath + '/security/v1/csrftoken';
+----
 
 with this line:
 [source,ts]
+----
 return this.restPath + 'csrf/v1/token/';
+----
 
 [arabic]
 Once checked if all the files are correct, open a `CMD` devon `CLI` on the folder of the ionic template application (_workspaces/main/devon4ng-ionic-application-template_), under your `devonFW` workspace. +
@@ -512,7 +520,7 @@ image:images/howtos/e2e_gen/image51.png[]
 
 ===== Build `APK`
 
-Since We’re going to create `apk` remember the following pre-conditions:
+Since We’re going to create `apk` remember the following preconditions:
 
 * https://gradle.org/install/[Gradle]
 * https://developer.android.com/studio[Android Studio]
