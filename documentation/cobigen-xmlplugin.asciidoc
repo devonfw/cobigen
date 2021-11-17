@@ -13,9 +13,11 @@ The `XML` Plug-in provides a trigger for `xml` related inputs. It accepts `xml` 
 +
 .Example of a xml trigger definition.
 [source,xml]
+----
 <trigger id="..." type="xml" templateFolder="...">
     ...
 </trigger>
+----
 +
 This trigger type enables xml documents as inputs.
 
@@ -25,9 +27,11 @@ This trigger type enables xml documents as inputs.
 +
 .Example of a xpath trigger definition.
 [source,xml]
+----
 <trigger id="..." type="xpath" templateFolder="...">
     ...
 </trigger>
+----
 +
 This trigger type enables xml documents as container inputs, which consists of several subdocuments.
 
@@ -38,11 +42,13 @@ A `ContainerMatcher` check if the input is a valid container.
 +
 .Example of a `xml` trigger definition with a nodename matcher.
 [source,xml]
+----
 <trigger id="..." type="xml" templateFolder="...">
     <containerMatcher type="xpath" value="./uml:Model//packagedElement[@xmi:type='uml:Class']">
         ...
     </matcher>
 </trigger>
+----
 +
 
 Before applying any Matcher, this `containerMatcher` checks if the `XML` file contains a node `uml:Model` with a childnode `packagedElement` which contains an attribute `xmi:type` with the value `uml:Class`.
@@ -54,23 +60,28 @@ With the trigger you might define matchers, which restrict the input upon specif
 +
 .Example of a xml trigger definition with a nodename matcher
 [source,xml]
+----
 <trigger id="..." type="xml" templateFolder="...">
     <matcher type="nodename" value="\D\w*">
         ...
     </matcher>
 </trigger>
+----
 +
+
 This trigger will be enabled if the root name of the declaring input document matches the given regular expression (`value`).
 
 * xpath: type: 'xpath' -> matching a node with a xpath value
 +
 .Example of a xpath trigger definition with a xpath matcher.
 [source,xml]
+----
 <trigger id="..." type="xml" templateFolder="...">
     <matcher type="xpath" value="/packagedElement[@xmi:type='uml:Class']">
         ...
     </matcher>
 </trigger>
+----
 +
 This trigger will be enabled if the `XML` file contains a node `/packagedElement` where the `xmi:type` property equals `uml:Class`.
 
@@ -80,11 +91,13 @@ Furthermore, it provides the ability to extract information from each input for 
 * type 'constant' -> constant parameter
 +
 [source,xml]
+----
 <trigger id="..." type="xml" templateFolder="...">
     <matcher type="nodename" value="\D\w*">
         <variableAssignment type="constant" key="domain" value="restaurant" />
     </matcher>
 </trigger>
+----
 
 This variable assignment assigns the `value` to the `key` as a constant.
 
@@ -97,12 +110,12 @@ Due to the heterogeneous structure an `xml` document can have, the `xml` input r
 
 The `XML` input reader will create the following object model for template creation (`~EXAMPLEROOT~, ~EXAMPLENODE1~, ~EXAMPLENODE2~, ~EXAMPLEATTR1~,...` are just used here as examples. Of course they will be replaced later by the actual node or attribute names):
 
-* *\~EXAMPLEROOT~* ('Map<String, Object>' :: common element structure)
-** *\_nodeName_* ('String' :: Simple name of the root node)
-** *\_text_* ('String' :: Concatenated text content (`PCDATA`) of the root node)
-** *TextNodes* ('List<String>' :: List of all the root's text node contents)
-** *\_at_\~EXAMPLEATTR1~* ('String' :: String representation of the attribute's value)
-** *\_at_\~EXAMPLEATTR2~* ('String' :: String representation of the attribute's value)
+* *`\~EXAMPLEROOT~`* ('Map<String, Object>' :: common element structure)
+** *`\_nodeName_`* ('String' :: Simple name of the root node)
+** *`\_text_`* ('String' :: Concatenated text content (`PCDATA`) of the root node)
+** *`TextNodes`* ('List<String>' :: List of all the root's text node contents)
+** *`\_at_\~EXAMPLEATTR1~`* ('String' :: String representation of the attribute's value)
+** *`\_at_\~EXAMPLEATTR2~`* ('String' :: String representation of the attribute's value)
 ** *\_at_...*
 ** *Attributes* ('List<Map<String, Object>>' :: List of the root's attributes
 *** at ('Map<String, Object>' :: List element)
@@ -111,28 +124,30 @@ The `XML` input reader will create the following object model for template creat
 ** *Children* ('List<Map<String, Object>>' :: List of the root's child elements
 *** child ('Map<String, Object>' :: List element)
 **** ...common element sub structure...
-** *\~EXAMPLENODE1~* ('Map<String, Object>' :: One of the root's child nodes)
+** *`\~EXAMPLENODE1~`* ('Map<String, Object>' :: One of the root's child nodes)
 *** ...common element structure...
-** *\~EXAMPLENODE2~* ('Map<String, Object>' :: One of the root's child nodes)
+** *`\~EXAMPLENODE2~`* ('Map<String, Object>' :: One of the root's child nodes)
 *** ...common element sub structure...
-*** *\~EXAMPLENODE21~* ('Map<String, Object>' :: One of the nodes' child nodes)
+*** *`\~EXAMPLENODE21~`* ('Map<String, Object>' :: One of the nodes' child nodes)
 **** ...common element structure...
-*** *\~EXAMPLENODE...~*
-** *\~EXAMPLENODE...~*
+*** *`\~EXAMPLENODE...~`*
+** *`\~EXAMPLENODE...~`*
 
 In contrast to the java input reader, this xml input reader does currently not provide any additional template methods.
 
 == Merger extensions
 
-The XML plugin uses the link:https://github.com/maybeec/lexeme[LeXeMe] merger library to produce semantically correct merge products. The merge strategies can be found in the link:https://github.com/devonfw/cobigen/blob/master/cobigen/cobigen-xmlplugin/src/main/java/com/devonfw/cobigen/xmlplugin/merger/delegates/MergeType.java#L11[`MergeType` enum] and can be configured in the `templates.xml` as a `mergeStrategy` attribute:
+The XML plugin uses the link:https://github.com/maybeec/lexeme[`LeXeMe`] merger library to produce semantically correct merge products. The merge strategies can be found in the link:https://github.com/devonfw/cobigen/blob/master/cobigen/cobigen-xmlplugin/src/main/java/com/devonfw/cobigen/xmlplugin/merger/delegates/MergeType.java#L11[`MergeType` enum] and can be configured in the `templates.xml` as a `mergeStrategy` attribute:
 
 * `mergeStrategy` 'xmlmerge'
 +
 .Example of a template using the `mergeStrategy` `xmlmerge`
 [source,xml]
+----
 <templates>
 	<template name="..." destinationPath="..." templateFile="..." mergeStrategy="xmlmerge"/>
 </templates>
+----
 
 Currently only the document types included in LeXeMe are supported.
 On how the merger works consult the link:https://github.com/maybeec/lexeme/wiki[LeXeMe Wiki].
