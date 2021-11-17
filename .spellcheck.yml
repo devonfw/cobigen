@@ -20,7 +20,25 @@ matrix:
       context_visible_first: true
       delimiters:
       - open: '`+[^`]+'
-        close: '`+'
+        close: '\['
+  #Ignore links
+  - pyspelling.filters.context: 
+      context_visible_first: true
+      delimiters:
+      - open: 'link:[^[]+'
+        close: '\['
+  #Ignore Image tag
+  - pyspelling.filters.context: 
+      context_visible_first: true
+      delimiters:
+      - open: 'image::[^[]+'
+        close: '\['
+  #Ignore Image tag content after name
+  - pyspelling.filters.context: 
+      context_visible_first: true
+      delimiters:
+      - open: '(?<=image::[^[]+\[[^,]+),[^\]]+'
+        close: '\]'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
