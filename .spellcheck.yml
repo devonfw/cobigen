@@ -29,10 +29,6 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       escapes: 'image::[^[]+\['
-  #Ignore Image tag content after name
-  - pyspelling.filters.context: 
-      context_visible_first: true
-      escapes: '(?<=image::[^[]+\[[^,]+),[^\]]+\]'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
