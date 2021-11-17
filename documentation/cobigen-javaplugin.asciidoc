@@ -61,7 +61,7 @@ This trigger will be enabled if the expression evaluates to true. Valid expressi
 * `instanceof fqn`: checks an 'is a' relation of the input type
 * `isAbstract`: checks, whether the input type is declared abstract
 
-=== `ContainerMatcher` types
+=== Container Matcher types
 Additionally, the java plugin provides the ability to match packages (containers) as follows:
 
 * type 'package'
@@ -77,7 +77,7 @@ Additionally, the java plugin provides the ability to match packages (containers
 The container matcher matches packages provided by the type `com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder` with a regular expression stated in the `value` attribute. (See link:cobigen-core_configuration#containermatcher-node[containerMatcher semantics] to get more information about containerMatchers itself.)
 
 
-=== `VariableAssignment` types
+=== Variable Assignment types
 Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The Java Plug-in currently provides two different mechanisms:
 
 * type 'regex' -> regular expression group
