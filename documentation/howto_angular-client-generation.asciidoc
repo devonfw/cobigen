@@ -81,6 +81,7 @@ Due to the nature of the `TypeScript` merger, currently is not possible to merge
 
 This would be the generated `app-routing.module` file:
 [source, ts]
+----
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './shared/security/auth-guard.service';
@@ -111,17 +112,21 @@ const appRoutes: Routes = [{
     pathMatch: 'full'
 }];
 export const routing = RouterModule.forRoot(appRoutes);
+----
 
 Adding the following into the children object of `home`, will add into the side menu the entry for the component generated:
 
 [source, ts]
+----
 {
     path: 'sampleData',
     component: SampleDataGridComponent,
     canActivate: [AuthGuard],
 } 
+----
 
 [source, ts]
+----
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './shared/security/auth-guard.service';
@@ -156,6 +161,7 @@ const appRoutes: Routes = [{
     pathMatch: 'full'
 }];
 export const routing = RouterModule.forRoot(appRoutes);
+----
 
 image::images/howtos/angular4-gen/ng4gen_6.png[`APP SideMenu`,width="450"link="images/howtos/angular4-gen/ng4gen_6.png"]
 
@@ -174,12 +180,16 @@ image::images/howtos/angular4-gen/ng4gen_4.png[Starting `SpringBoot`,width="450"
 Once the the server is running, open a Devon console at the output directory defined previously and run:
 
 [source, cmd]
+----
 ng serve --open
+----
 
 This will run the Angular 8 application at:
 
 [source, `URL`]
+----
 http://localhost:4200
+----
 
 image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 8 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
 
