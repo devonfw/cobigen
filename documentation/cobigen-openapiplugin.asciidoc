@@ -1,9 +1,9 @@
 :toc:
 toc::[]
 
-= `OpenApi` Plug-in
+= OpenApi Plug-in
 
-The `OpenApi` Plug-in enables the support for Swagger files that follows the `OpenApi 3.0` standard as input for CobiGen. Until now, CobiGen was thought to follow a "code first" generation, with this plugin, now it can also follow the "contract first" strategy
+The OpenApi Plug-in enables the support for Swagger files that follows the `OpenApi 3.0` standard as input for CobiGen. Until now, CobiGen was thought to follow a "code first" generation, with this plugin, now it can also follow the "contract first" strategy
 
 * *Code First*
 ** Generating from a file with code (Java/XML code in our case)
@@ -14,7 +14,7 @@ NOTE: If you are not a CobiGen developer, you will be more interested in <<Usage
 
 == Trigger Extensions
 
-The `OpenApi` Plug-in provides a new trigger for `Swagger OpenApi 3.0` related inputs. It accepts different representations as inputs (see <<openapi-input-reader,`OpenApi` input reader>>) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
+The OpenApi Plug-in provides a new trigger for `Swagger OpenApi 3.0` related inputs. It accepts different representations as inputs (see <<openapi-input-reader,OpenApi input reader>>) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
 
 * type 'openapi'
 +
@@ -26,7 +26,7 @@ The `OpenApi` Plug-in provides a new trigger for `Swagger OpenApi 3.0` related i
 </trigger>
 ----
 +
-This trigger type enables `OpenApi` elements as inputs.
+This trigger type enables OpenApi elements as inputs.
 
 === Matcher type
 With the trigger you might define matchers, which restrict the input upon specific aspects:
@@ -44,7 +44,7 @@ The container matcher matches elements as Java Objects, in this case will be alw
 
 [[openapi-variable-assignment]]
 === `VariableAssignment` types
-Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The `OpenApi` Plug-in currently provides two different mechanisms:
+Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The OpenApi Plug-in currently provides two different mechanisms:
 
 * type 'constant' -> constant parameter
 +
@@ -142,7 +142,7 @@ If no property with that name was found, then it will be set to `null`.
 [[openapi-input-reader]]
 == Input reader
 
-The Cobigen `OpenApi` Plug-in implements an input reader for `OpenApi 3.0` files. The XML input reader will create the following object model for template creation:
+The Cobigen OpenApi Plug-in implements an input reader for `OpenApi 3.0` files. The XML input reader will create the following object model for template creation:
 
 
 * *model* ('Map<String, Object>' :: common element structure)
@@ -224,7 +224,7 @@ The Cobigen `OpenApi` Plug-in implements an input reader for `OpenApi 3.0` files
 
 == Merger extensions
 
-This plugin only provides an input reader, there is no support for `OpenApi` merging. Nevertheless, the files generated from an `OpenApi` file will be Java, `XML`, JSON, `TS`, etc... so, 
+This plugin only provides an input reader, there is no support for OpenApi merging. Nevertheless, the files generated from an OpenApi file will be Java, XML, JSON, TS, etc... so, 
 for each file to be generated defined at templates.xml, must set the mergeStrategy for the specific language (`javamerge`, `javamerge_override`, `jsonmerge`, etc...)
 
 [source,xml]
@@ -286,7 +286,7 @@ That way, CobiGen will be able to generate the endpoint (REST service) `customOp
 [[service]]
 === Service based generation
 
-In previous CobiGen versions, we were able to generate code from a contract-first `OpenApi` specification only when we defined components like the following:
+In previous CobiGen versions, we were able to generate code from a contract-first OpenApi specification only when we defined components like the following:
 
 ```yaml
 components:

@@ -5,7 +5,7 @@ toc::[]
 
 The generation can create a full Angular 8 client using the devon4ng-application-template package located at workspaces/examples folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
 
-Take into account that the `TypeScript` merging for CobiGen needs Node 6 or higher to be installed at your machine.
+Take into account that the TypeScript merging for CobiGen needs Node 6 or higher to be installed at your machine.
 
 NOTE: This is a short introduction to the Angular generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-devonfw-ide-CobiGen-PoC-E2E_v3.2.pdf[this document].
 
@@ -77,7 +77,7 @@ image::images/howtos/angular4-gen/ng4gen_3.png[CobiGen Client Generation Wizard 
 
 == Routing
 
-Due to the nature of the `TypeScript` merger, currently is not possible to merge properly the array of paths objects of the routings at app.routing.ts file so, this modification should be done by hand on this file. However, the import related to the new component generated is added.
+Due to the nature of the TypeScript merger, currently is not possible to merge properly the array of paths objects of the routings at app.routing.ts file so, this modification should be done by hand on this file. However, the import related to the new component generated is added.
 
 This would be the generated `app-routing.module` file:
 [source, ts]

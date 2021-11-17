@@ -190,7 +190,7 @@ For extended information about JAXB check the https://docs.oracle.com/javase/tut
 
 If the version retrieved after the `unmarshal` process is null, an *`InvalidConfigurationException`* defined at *exceptions* package will be thrown.
 
-If it is not null, will be compared using the `validate()` method from *__`VersionValidator.java`__* from *config.versioning* package with the project version retrieved by the *__`MavenMetadata.java`__*. The *__`MavenMetadata.java`__* file is provided by the `POM` while building the `JAR` file
+If it is not null, will be compared using the `validate()` method from *__`VersionValidator.java`__* from *config.versioning* package with the project version retrieved by the *__`MavenMetadata.java`__*. The *__`MavenMetadata.java`__* file is provided by the POM while building the `JAR` file
 
 [source,xml]
 ----
@@ -216,7 +216,7 @@ If it is not null, will be compared using the `validate()` method from *__`Versi
 </build>
 ----
 
-*`MavenMetadata`* gets the current CobiGen version by reading the `<version>` label inside the `<project>` label from the `POM` file
+*`MavenMetadata`* gets the current CobiGen version by reading the `<version>` label inside the `<project>` label from the POM file
 
 [source, java]
 ----

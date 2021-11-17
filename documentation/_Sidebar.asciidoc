@@ -12,8 +12,8 @@
 * link:howto_devon4net[.Net generation]
 * link:howto_Release-creation[Release creation]
 * link:howto_create-external-plugin.asciidoc[External plugin creation]
-* link:howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[End to End `POC` Code generation using Entity class]
-* link:howto-devonfw-CobiGen-OpenAPI.asciidoc[End to End `POC` Code generation using `OpenAPI`]
+* link:howto-devonfw-ide-CobiGen-PoC-E2E.asciidoc[End to End POC Code generation using Entity class]
+* link:howto-devonfw-CobiGen-OpenAPI.asciidoc[End to End POC Code generation using `OpenAPI`]
 * link:howto-devonfw-adapt_template.asciidoc[Adapt Template from Cobigen]
 
 === Configuration
@@ -33,8 +33,8 @@
 * link:cobigen-textmerger[Text Merger Plug-in]
 * link:cobigen-jsonplugin[JSON Plug-in]
 * link:cobigen-htmlplugin[HTML Plug-in]
-* link:cobigen-tsplugin[`TypeScript` Plug-in]
-* link:cobigen-openapiplugin[`OpenApi` Plug-in]
+* link:cobigen-tsplugin[TypeScript Plug-in]
+* link:cobigen-openapiplugin[OpenApi Plug-in]
 
 === CobiGen Development
 * link:mgmt_ide-setup[Dev IDE Setup]

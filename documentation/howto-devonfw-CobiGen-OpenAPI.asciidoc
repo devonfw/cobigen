@@ -1,11 +1,11 @@
 :doctype: book
 :toc:
 toc::[]
-= End to End `POC` Code generation using OpenAPI
+= End to End POC Code generation using OpenAPI
 This article helps to create a sample application using cobigen.
 
 == Prerequisites
-Download and install devonfw `IDE` https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
+Download and install devonfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
 
 == Steps to create a Sample Project using Cobigen
 The `HOW_TO` is divided in 2 parts:
@@ -45,7 +45,7 @@ Now We have the following 4 projects.
 
 image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 
-*BEFORE to start to create an Entity class, remember to create the tables, for this `POC` it's used an H2 Database!*
+*BEFORE to start to create an Entity class, remember to create the tables, for this POC it's used an H2 Database!*
 
 [arabic]
 Create a new *`SQL`* *file* (i.e: `V0002__CreateTables_myapp.sql`) inside _`myapp-core`_ , under the folder path _`/myapp-core/src/main/resources/db/migration/1.0`_ and insert the following script:
@@ -256,7 +256,7 @@ image:images/howtos/e2e_gen/image74.png[devon dist folder]
 [arabic]
 IMPORTANT when you download the zip of the source code of your `FE` application, the name of the app MUST BE *devon4ng-application-template* and you can extract it in your DevonFW folder, under _workspaces/main_
 
-Once downloaded the `APP`, you can open the application with your favourite `IDE` (Intellij, Visual Studio Code, ...) +
+Once downloaded the `APP`, you can open the application with your favourite IDE (Intellij, Visual Studio Code, ...) +
 Instead, if you want to open this project with Eclipse, you have to follow these steps: +
 [arabic]
 . Right click on the left part of Eclipse, anch click on "Import":
@@ -445,7 +445,7 @@ https://github.com/devonfw/devon4ng-ionic-application-template
 [arabic]
 IMPORTANT when you download the zip of the source code of your `FE` application, the name of the app MUST BE *devon4ng-ionic-application-template* and you can extract it in your DevonFW folder, under _workspaces/main_
 
-Once downloaded the `APP`, you can open the application with your favourite `IDE` (Intellij, Visual Studio Code, ...) +
+Once downloaded the `APP`, you can open the application with your favourite IDE (Intellij, Visual Studio Code, ...) +
 Instead, if you want to open this project with Eclipse, you have to follow these steps: +
 [arabic]
 . Right click on the left part of Eclipse, anch click on "Import":
