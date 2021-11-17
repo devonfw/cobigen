@@ -3,7 +3,7 @@
 * link:Guide-to-the-Reader[Guide to the Reader]
 * link:cobigen-usecases[General CobiGen Use Cases]
 
-==== `HowTo's`
+==== HowTo's
 * link:howto_angular-client-generation[Angular Client Generation]
 * link:howto_ionic-client-generation[Ionic Client Generation]
 * link:howto_EA-client-generation[Enterprise Architect UML diagram Generation]
