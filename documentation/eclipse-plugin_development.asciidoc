@@ -10,7 +10,7 @@ The Eclipse plugin is where all the other plugins (`JavaPlugin`, `XMLPlugin`, `P
 
 === Activator java
 
-Activator class is the start point of the plugin. Activator class is loaded initially and it extends the *`AbstractUIPlugin`*, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform `UI`.
+Activator class is the start point of the plugin. Activator class is loaded initially and it extends the `*AbstractUIPlugin*`, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform `UI`.
 An `ID` for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
 
 [source,java]
@@ -239,7 +239,7 @@ image:images/howtos/eclipse-plugin/eclipse-plugin_diag3.png[Diagram 3,width="450
 
 The `WizardPage` class defines the `canFlipToNextPage()` and `setPageComplete()` methods to control if the __NEXT__ or the __FINISH__ button in the wizard becomes active.
 
-The Wizard class defines the `canFinish()` method in which you can define if the wizard can be completed. This last method is overrode at *__`AbstractGenerateWizard.java`__*.
+The Wizard class defines the `canFinish()` method in which you can define if the wizard can be completed. This last method is overrode at `*__AbstractGenerateWizard.java__*`.
 
 === `SelectFilesPage` and `SelectAttributesPage`
 
