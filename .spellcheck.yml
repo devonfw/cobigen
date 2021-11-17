@@ -31,6 +31,12 @@ matrix:
       escapes: 'image::[^[]+\['
   - pyspelling.filters.context:
       context_visible_first: true
+      delimiters:
+      # Ignore Image tag content after name
+      - open: '(?<=image::[^[]+\[[^,]+),[^\]]+'
+        close: '\]'
+  - pyspelling.filters.context:
+      context_visible_first: true
       escapes: \\[\\-~]
       delimiters:
       # Ignore multiline content between fences (fences can have 4 or more hyphens)
