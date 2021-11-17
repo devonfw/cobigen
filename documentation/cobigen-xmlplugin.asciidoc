@@ -1,13 +1,13 @@
 :toc:
 toc::[]
 
-= `XML` Plug-in
-The CobiGen `XML` Plug-in comes with an input reader for `xml artifacts, xml` related trigger and matchers and provides different merge mechanisms for `XML` result documents.
+= XML Plug-in
+The CobiGen XML Plug-in comes with an input reader for `xml artifacts, xml` related trigger and matchers and provides different merge mechanisms for XML result documents.
 
 == Trigger extension
 _(since cobigen-xmlplugin v2.0.0)_
 
-The `XML` Plug-in provides a trigger for `xml` related inputs. It accepts `xml` documents as input (see `xref:xml-input-reader[XML input reader]`) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
+The XML Plug-in provides a trigger for `xml` related inputs. It accepts `xml` documents as input (see `xref:xml-input-reader[XML input reader]`) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
 
 * type 'xml'
 +
@@ -51,7 +51,7 @@ A `ContainerMatcher` check if the input is a valid container.
 ----
 +
 
-Before applying any Matcher, this `containerMatcher` checks if the `XML` file contains a node `uml:Model` with a childnode `packagedElement` which contains an attribute `xmi:type` with the value `uml:Class`.
+Before applying any Matcher, this `containerMatcher` checks if the XML file contains a node `uml:Model` with a childnode `packagedElement` which contains an attribute `xmi:type` with the value `uml:Class`.
 
 === Matcher types
 With the trigger you might define matchers, which restrict the input upon specific aspects:
@@ -83,10 +83,10 @@ This trigger will be enabled if the root name of the declaring input document ma
 </trigger>
 ----
 +
-This trigger will be enabled if the `XML` file contains a node `/packagedElement` where the `xmi:type` property equals `uml:Class`.
+This trigger will be enabled if the XML file contains a node `/packagedElement` where the `xmi:type` property equals `uml:Class`.
 
 === `VariableAssignment` types
-Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of `context.xml` through the namespace `variables.<key>`. The `XML` Plug-in currently provides only one mechanism:
+Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of `context.xml` through the namespace `variables.<key>`. The XML Plug-in currently provides only one mechanism:
 
 * type 'constant' -> constant parameter
 +
@@ -101,14 +101,14 @@ Furthermore, it provides the ability to extract information from each input for 
 
 This variable assignment assigns the `value` to the `key` as a constant.
 
-=== `XML` input reader
-The Cobigen `XML` Plug-in implements an input reader for parsed xml documents. So `API` user can pass `org.w3c.dom.Document` objects for generation. For getting the right parsed `xml` inputs you can easily use the `xmlplugin.util.XmlUtil`, which provides static functionality to parse `xml` files or input streams and get the appropriate `Document` object.
+=== XML input reader
+The Cobigen XML Plug-in implements an input reader for parsed xml documents. So `API` user can pass `org.w3c.dom.Document` objects for generation. For getting the right parsed `xml` inputs you can easily use the `xmlplugin.util.XmlUtil`, which provides static functionality to parse `xml` files or input streams and get the appropriate `Document` object.
 
 ==== Template object
 Due to the heterogeneous structure an `xml` document can have, the `xml` input reader does not always create exactly the same model structure (in contrast to the java input reader). For example the model's depth differs strongly, according to it's input document. To allow navigational access to the nodes, the model also depends on the document's element's node names. All child elements with unique names, are directly accessible via their names. In addition it is possible to iterate over all child elements with held of the child list `Children`. So it is also possible to access child elements with non unique names.
 
 
-The `XML` input reader will create the following object model for template creation (`~EXAMPLEROOT~, ~EXAMPLENODE1~, ~EXAMPLENODE2~, ~EXAMPLEATTR1~,...` are just used here as examples. Of course they will be replaced later by the actual node or attribute names):
+The XML input reader will create the following object model for template creation (`~EXAMPLEROOT~, ~EXAMPLENODE1~, ~EXAMPLENODE2~, ~EXAMPLEATTR1~,...` are just used here as examples. Of course they will be replaced later by the actual node or attribute names):
 
 * *`\~EXAMPLEROOT~`* ('Map<String, Object>' :: common element structure)
 ** *`\_nodeName_`* ('String' :: Simple name of the root node)

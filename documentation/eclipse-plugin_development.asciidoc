@@ -123,7 +123,7 @@ For both Wrapper objects, the inputs will be converted to valid inputs for Freem
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag1.png[Diagram 1,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag1.png"]
 
-For `XmlGeneratorWrapper`, the input must be a single valid `XML` file. As only has a single file as input, the *__`GenerateWizard.java`__* will be called.
+For `XmlGeneratorWrapper`, the input must be a single valid XML file. As only has a single file as input, the *__`GenerateWizard.java`__* will be called.
 
 In summary, this will be the process for the Generate Action before calling the wizard:
 
