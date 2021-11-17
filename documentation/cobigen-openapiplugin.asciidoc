@@ -224,7 +224,7 @@ The Cobigen `OpenApi` Plug-in implements an input reader for `OpenApi 3.0` files
 
 == Merger extensions
 
-This plugin only provides an input reader, there is no support for `OpenApi` merging. Nevertheless, the files generated from an `OpenApi` file will be Java, `XML`, `JSON`, `TS`, etc... so, 
+This plugin only provides an input reader, there is no support for `OpenApi` merging. Nevertheless, the files generated from an `OpenApi` file will be Java, `XML`, JSON, `TS`, etc... so, 
 for each file to be generated defined at templates.xml, must set the mergeStrategy for the specific language (`javamerge`, `javamerge_override`, `jsonmerge`, etc...)
 
 [source,xml]

@@ -218,11 +218,11 @@ http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
 Now download https://www.getpostman.com/apps[Postman] to test the rest services.
 
-Once done, you have to create a `POST` Request for the LOGIN and insert in the body the `JSON` containing the username and password _admin_
+Once done, you have to create a `POST` Request for the LOGIN and insert in the body the JSON containing the username and password _admin_
 
 image:images/howtos/e2e_gen/image72.png[postman]
 
-*_WARNING_*: please note that the body of the request must be `JSON` type!
+*_WARNING_*: please note that the body of the request must be JSON type!
 
 Once done with success (*Status: 200 OK*) - _you can see the status of the response in the top right corner of Postman_ - we can create a NEW GET Request in order to get one employee.
 

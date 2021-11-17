@@ -174,7 +174,7 @@ The returned object has the following structure
   ]
 }
 ```
-If we only consider the first level of the `JSON` response, we spot two lists of `imports` and `classes`, providing information about the only import statement and the only *User* class, respectively. Moving one level deeper we observe that:
+If we only consider the first level of the JSON response, we spot two lists of `imports` and `classes`, providing information about the only import statement and the only *User* class, respectively. Moving one level deeper we observe that:
 
 * Every import statement is translated to an import declaration entry in the declarations list, containing the module name, as well as a list of entities imported from the given module.
 * Every class entry provides besides the class identifier, its decoration(s), modifier(s), as well as a list of properties that the original class contains. 

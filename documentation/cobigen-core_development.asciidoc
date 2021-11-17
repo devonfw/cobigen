@@ -15,7 +15,7 @@ CobiGen uses Apache FreeMarker as engine for generation through FreeMarker templ
 . https://github.com/devonfw/cobigen/wiki/cobigen-xmlplugin[Xml Plugin]
 . https://github.com/devonfw/cobigen/wiki/cobigen-propertyplugin[Property Plugin]
 . https://github.com/devonfw/cobigen/wiki/cobigen-textmerger[Text Plugin]
-. https://github.com/devonfw/cobigen/wiki/cobigen-jsonplugin[`JSON` Plugin]
+. https://github.com/devonfw/cobigen/wiki/cobigen-jsonplugin[JSON Plugin]
 . https://github.com/devonfw/cobigen/wiki/cobigen-templates_helpful-links[Helpful Links]
 ================
 

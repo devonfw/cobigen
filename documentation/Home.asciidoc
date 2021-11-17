@@ -30,7 +30,7 @@ CobiGen is build as an extensible framework for incremental code generation. It 
 
 * Generate fresh files across all the layers of a application - ready to run.
 * Add on to existing files merging code into it. E.g. generate new methods into existing java classes or adding nodes to an `XML` file. Merging of contents into existing files will be done using structural merge mechanisms.
-* Structural merge mechanisms are currently implemented for Java, XML, Java Property Syntax, `JSON`, Basic `HTML`, Text Append, `TypeScript`.
+* Structural merge mechanisms are currently implemented for Java, XML, Java Property Syntax, JSON, Basic `HTML`, Text Append, `TypeScript`.
 * Conflicts can be resolved individually but automatically by former configuration for each template.
 * CobiGen provides an link:cobigen-eclipse_usage[Eclipse integration] as well as a link:cobigen-maven_configuration[Maven Integration].
 * CobiGen comes with an extensive documentation for link:cobigen-eclipse_installation[users] and link:cobigen-core_configuration[developers].
