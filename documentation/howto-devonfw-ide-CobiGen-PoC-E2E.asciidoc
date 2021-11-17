@@ -486,7 +486,7 @@ The _angular.json_ file inside the project has already a build configuration for
 
 image:images/howtos/e2e_gen/image48.png[]
 
-The only *TWO* thing that you have to modify, in this `IONIC` app is in _employee-list.page.html_ and _business-operator.service.ts_.y +
+The only *TWO* thing that you have to modify, in this IONIC app is in _employee-list.page.html_ and _business-operator.service.ts_.y +
 
 *1:* +
 You have to change this line:
@@ -523,7 +523,7 @@ Once the execution is successful, you can make the LOGIN with *admin/admin* and.
 
 image:images/howtos/e2e_gen/image50.png[]
 
-*`IONIC` Mobile App DONE*
+*IONIC Mobile App DONE*
 
 So: *Well Done!!!*
 

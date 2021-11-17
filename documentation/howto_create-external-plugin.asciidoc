@@ -149,7 +149,7 @@ image::images/howtos/todo-plugin/setPomProperties.png[Pom properties,width="550"
 Now that you have finished with the implementation of the server and the creation of a new CobiGen plug-in, we are going to explain how you can test that everything works fine:
 
 . Deploy the server on port 5000.
-. Run `mvn clean test` on the CobiGen-plugin or run the `JUnit` tests directly on Eclipse. 
+. Run `mvn clean test` on the CobiGen-plugin or run the JUnit tests directly on Eclipse. 
 .. If the server and the plug-in are working properly, some tests will pass and other will fail (we need to tweak them).
 .. If every test fails, something is wrong in your code.
 
@@ -308,7 +308,7 @@ image::images/howtos/todo-plugin/runAsArgs.png[Run version,width="450"link="imag
 ```
 c. If that worked, now you can send any arguments to the CLI in order to generate with your templates. Please follow link:https://github.com/devonfw/cobigen/wiki/howto_Cobigen-CLI-generation[this guide] that explains all the CLI commands.
 
-2. Modify the already present `JUnit` tests on the CLI project: They test the generation of templates from multiple plug-ins, you can add your own tests and input files.
+2. Modify the already present JUnit tests on the CLI project: They test the generation of templates from multiple plug-ins, you can add your own tests and input files.
 
 3. Use the CLI jar to execute commands:
 
