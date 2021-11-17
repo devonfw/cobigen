@@ -186,13 +186,13 @@ ng serve --open
 
 This will run the Angular 8 application at:
 
-[source, `URL`]
+[source, URL]
 ----
 http://localhost:4200
 ----
 
 image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 8 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
 
-Once finished, the browser will open automatically at the previous localhost `URL` showing the Angular 8 application, using the credentials set at the devon4j java server you will be able to access.
+Once finished, the browser will open automatically at the previous localhost URL showing the Angular 8 application, using the credentials set at the devon4j java server you will be able to access.
 
 

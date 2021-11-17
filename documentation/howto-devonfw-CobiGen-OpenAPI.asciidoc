@@ -25,9 +25,9 @@ It will open eclipse
 
 [arabic]
 Create a project using a command from the command prompt. +
-To made it, it's necessary to open a `CMD` and open the folder where it's installed DevonFW and launch this command under the path _workspaces/main_. +
+To made it, it's necessary to open a CMD and open the folder where it's installed DevonFW and launch this command under the path _workspaces/main_. +
 
-NOTE: To facilitate this step, you can go from your "_File Explorer_" under *workspaces/main* folder and with the right button of the mouse, choose "_Open devonfw `CMD` shell here_"
+NOTE: To facilitate this step, you can go from your "_File Explorer_" under *workspaces/main* folder and with the right button of the mouse, choose "_Open devonfw CMD shell here_"
 image:images/howtos/e2e_gen/image85.png[eclipse devon]
 
 Then launch this command from CMD:
@@ -48,7 +48,7 @@ image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 *BEFORE to start to create an Entity class, remember to create the tables, for this POC it's used an H2 Database!*
 
 [arabic]
-Create a new *`SQL`* *file* (i.e: `V0002__CreateTables_myapp.sql`) inside _`myapp-core`_ , under the folder path _`/myapp-core/src/main/resources/db/migration/1.0`_ and insert the following script:
+Create a new *SQL* *file* (i.e: `V0002__CreateTables_myapp.sql`) inside _`myapp-core`_ , under the folder path _`/myapp-core/src/main/resources/db/migration/1.0`_ and insert the following script:
 
 [source, sql]
 ----
@@ -68,7 +68,7 @@ PRIMARY KEY (employeeid)
 image:images/howtos/e2e_gen/image64.png[sql file]
 
 [arabic]
-Now create another `SQL` file (`i.e: V0003__PopulateTables-myapp.sql`) and add following script about the INSERT in order to populate the table created before.
+Now create another SQL file (`i.e: V0003__PopulateTables-myapp.sql`) and add following script about the INSERT in order to populate the table created before.
 The script must be inserted at the same path used before: _`/myapp-core/src/main/resources/db/migration/1.0`_
 
 *_WARNING 1_*: please note that there in that folder is present only one file, 0001, and you have to add the other files in progressive number order (i.e. 0003)! +
@@ -86,7 +86,7 @@ image:images/howtos/e2e_gen/image65.png[sql insert]
 *Let's create the yml file for the code generation*
 
 [arabic]
-Now create a new file _devonfw.yml_ in the root of your core folder. This will be our OpenAPI contract, like shown below. Then, copy the contents of https://github.com/devonfw/tools-cobigen/blob/master/documentation/files/devonfw_employee.yml[this file] into your OpenAPI. It defines some `REST` service endpoints and a _`EmployeeEntity`_ with its properties defined.
+Now create a new file _devonfw.yml_ in the root of your core folder. This will be our OpenAPI contract, like shown below. Then, copy the contents of https://github.com/devonfw/tools-cobigen/blob/master/documentation/files/devonfw_employee.yml[this file] into your OpenAPI. It defines some REST service endpoints and a _`EmployeeEntity`_ with its properties defined.
 
 *Important 1:* Please pay attention to the content of the _devonfw.yml_ file. +
 The section _x-rootpackage_ it must be filled with the same package used when you have created the java application. +
@@ -189,13 +189,13 @@ image:images/howtos/e2e_gen/image26.png[Spring boot run]
 
 *`BE` DONE*
 
-Last but not least: We make a quick `REST` services test !
+Last but not least: We make a quick REST services test !
 
-See in the _application.properties_ the `TCP` Port and the PATH
+See in the _application.properties_ the TCP Port and the PATH
 
 image:images/howtos/e2e_gen/image27.png[application properties]
 
-Now compose the Rest service `URL`:
+Now compose the Rest service URL:
 
 *service class <path>/<service method path>*
 
@@ -206,7 +206,7 @@ Now compose the Rest service `URL`:
 
 image:images/howtos/e2e_gen/image28.png[url mapping]
 
-`URL` of `getEmployee` for this example is:
+URL of `getEmployee` for this example is:
 
 For all employees (`POST`)
 [source, URL]
@@ -226,7 +226,7 @@ image:images/howtos/e2e_gen/image72.png[postman]
 
 Once done with success (*Status: 200 OK*) - _you can see the status of the response in the top right corner of Postman_ - we can create a NEW GET Request in order to get one employee.
 
-To do this you have to create a new request in Postman, `GET` type, and insert the `URL` specified before:
+To do this you have to create a new request in Postman, `GET` type, and insert the URL specified before:
 [source, URL]
 http://localhost:8081/services/rest/employeemanagement/v1/employee/1
 
@@ -398,11 +398,11 @@ Check the file *environment.ts* if the server path is correct. (for production y
 
 image:images/howtos/e2e_gen/image42.png[environment]
 
-In order to do that, it’s important to look at the application.properties to see the values as PATH, `TCP` port etc...
+In order to do that, it’s important to look at the application.properties to see the values as PATH, TCP port etc...
 
 image:images/howtos/e2e_gen/image43.png[configure]
 
-For example in this case the `URL` should be since the context path is empty the server `URLS` should be like:
+For example in this case the URL should be since the context path is empty the server `URLS` should be like:
 
 [source, ts]
 ----
@@ -414,7 +414,7 @@ export const environment = {
 };
 ----
 
-*Warning*: REMEMBER to set security filed to *`csrf`* , if it is not configured already.
+*Warning*: REMEMBER to set security filed to *CSRF* , if it is not configured already.
 
 [arabic]
 Now run the *devon ng serve -o* command to run the Angular Application, from your application folder (_workspaces/main/devon4ng-application-template_), as done before.
@@ -501,7 +501,7 @@ return this.restPath + 'csrf/v1/token/';
 ----
 
 [arabic]
-Once checked if all the files are correct, open a `CMD` devon `CLI` on the folder of the ionic template application (_workspaces/main/devon4ng-ionic-application-template_), under your `devonFW` workspace. +
+Once checked if all the files are correct, open a CMD devon CLI on the folder of the ionic template application (_workspaces/main/devon4ng-ionic-application-template_), under your `devonFW` workspace. +
 In this folder: +
 Run the command _*devon npm install*_ in the root folder to download the dependecies. +
 Once finished, run the command _*devon ionic serve*_
@@ -516,7 +516,7 @@ image:images/howtos/e2e_gen/image50.png[]
 
 So: *Well Done!!!*
 
-`*Starting from an Entity class you’ve successfully generated the Back-End layer (`REST`, `SOAP`, `DTO`, Spring services, `Hibernate DAO`), the Angular Web App and the Ionic mobile App!*`
+`*Starting from an Entity class you’ve successfully generated the Back-End layer (REST, SOAP, `DTO`, Spring services, `Hibernate DAO`), the Angular Web App and the Ionic mobile App!*`
 
 image:images/howtos/e2e_gen/image51.png[]
 
