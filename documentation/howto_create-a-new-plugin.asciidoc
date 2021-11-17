@@ -37,7 +37,7 @@ sub plug-in must implements this interface if is needed an input reader for it.
 
 The interface implements the basic methods that an input reader must have,
 but if additional methods are required, the developer must add a new interface
-that extends the original interface *__InputReader.java__* from the core-api
+that extends the original interface *__`InputReader.java`__* from the core-api
 and implement that on the sub plug-in.
 
 The methods to be implemented by the input reader of the new sub plugin are:
@@ -77,6 +77,7 @@ This restriction is implemented with a `MatcherType` `enum`.
 E.g `JavaPlugin`
 
 [source,java]
+----
 private enum MatcherType {
     /** Full Qualified Name Matching */
     FQN,
@@ -85,20 +86,23 @@ private enum MatcherType {
     /** Expression interpretation */
     EXPRESSION
 }
+----
 
 Furthermore, matchers may provide several variable assignments, which might be
 dependent on any information of the matched input and thus should be resolvable
 by the defined matcher.
 
-E.g JavaPlugin
+E.g `JavaPlugin`
 
 [source,java]
+----
 private enum VariableType {
     /** Constant variable assignment */
     CONSTANT,
     /** Regular expression group assignment */
     REGEX
 }
+----
 
 == Adding Merger
 
