@@ -31,10 +31,7 @@ matrix:
       escapes: 'image::[^[]+\['
   - pyspelling.filters.context:
       context_visible_first: true
-      delimiters:
-      # Ignore Image tag content after name
-      - open: '(?:(?<=image::[^[]+\[[^,]+),[^\]]+)'
-        close: '\]'
+      escapes: '(?:(?<=image::[^[]+\[[^,]+),[^\]]+)\]'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
