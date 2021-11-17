@@ -31,7 +31,7 @@ matrix:
       escapes: 'image::[^[]+\['
   - pyspelling.filters.context:
       context_visible_first: true
-      escapes: ',(?=link)[^\]]+\]'
+      escapes: '(?<=image::[^[]+\[[^,]+),[^\]]+\]'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
