@@ -61,7 +61,7 @@ As children of the `<triggers>` node you can define different triggers. By defin
 ```
 
 * The attribute `id` should be unique within an context configuration. It is necessary for efficient internal processing.
-* The attribute `type` declares a specific _trigger interpreter_, which might be provided by additional plug-ins. A _trigger interpreter_ has to provide an _input reader_, which reads specific inputs and creates a template object model out of it to be processed by the `FreeMarker` template engine later on. Have a look at the plug-in's documentation of your interest and see, which trigger types and thus inputs are currently supported.
+* The attribute `type` declares a specific _trigger interpreter_, which might be provided by additional plug-ins. A _trigger interpreter_ has to provide an _input reader_, which reads specific inputs and creates a template object model out of it to be processed by the FreeMarker template engine later on. Have a look at the plug-in's documentation of your interest and see, which trigger types and thus inputs are currently supported.
 * The attribute `templateFolder` declares the relative path to the template folder, which will be used if the trigger gets activated.
 * The attribute `inputCharset` _(optional)_ determines the charset to be used for reading any input file.
 
@@ -168,7 +168,7 @@ To get an intuition of the idea, the following will initially describe the first
     </increments>
 </templatesConfiguration>
 ```
-The root node `<templatesConfiguration>` specifies two attributes. The attribute `version` provides further usability support and will be handled analogous to the `version` attribute of the xref:context-configuration[context configuration]. The optional attribute `templateEngine` specifies the template engine to be used for processing the templates (_since cobigen-core-4.0.0_). By default it is set to `FreeMarker`.
+The root node `<templatesConfiguration>` specifies two attributes. The attribute `version` provides further usability support and will be handled analogous to the `version` attribute of the xref:context-configuration[context configuration]. The optional attribute `templateEngine` specifies the template engine to be used for processing the templates (_since cobigen-core-4.0.0_). By default it is set to FreeMarker.
 The node `<templatesConfiguration>` allows two different grouping nodes as children. First, there is the `<templates>` node, which groups all declarations of templates. Second, there is the `<increments>` node, which groups all declarations about increments.
 
 === Template Node
@@ -186,11 +186,11 @@ The `<templates>` node groups multiple `<template>` declarations, which enables 
 A template declaration consist of multiple information:
 
 * The attribute `name` specifies an unique ID within the templates configuration, which will later be reused in the xref:increment-node[increment definitions].
-* The attribute `destinationPath` specifies the destination path the template will be generated to. It is possible to use all variables defined by xref:variableassignment-node[variable assignments] within the path declaration using the `FreeMarker` syntax `${variables.*}`. While resolving the variable expressions, each dot within the value will be automatically replaced by a slash. This behavior is accounted for by the transformations of Java packages to paths as CobiGen has first been developed in the context of the Java world. Furthermore, the destination path variable resolution provides the following additional built-in operators analogue to the `FreeMarker` syntax:
-** `?cap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_cap_first[`FreeMarker`]
-** `?uncap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_uncap_first[`FreeMarker`]
-** `?lower_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_lower_case[`FreeMarker`]
-** `?upper_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_upper_case[`FreeMarker`]
+* The attribute `destinationPath` specifies the destination path the template will be generated to. It is possible to use all variables defined by xref:variableassignment-node[variable assignments] within the path declaration using the FreeMarker syntax `${variables.*}`. While resolving the variable expressions, each dot within the value will be automatically replaced by a slash. This behavior is accounted for by the transformations of Java packages to paths as CobiGen has first been developed in the context of the Java world. Furthermore, the destination path variable resolution provides the following additional built-in operators analogue to the FreeMarker syntax:
+** `?cap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_cap_first[FreeMarker]
+** `?uncap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_uncap_first[FreeMarker]
+** `?lower_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_lower_case[FreeMarker]
+** `?upper_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_upper_case[FreeMarker]
 ** `?replace(regex, replacement)` - Replaces all occurrences of the regular expression `regex` in the variable's value with the given `replacement` string. (since cobigen-core v1.1.0)
 ** `?removeSuffix(suffix)` - Removes the given `suffix` in the variable's value iff the variable's value ends with the given `suffix`. Otherwise nothing will happen. (since cobigen-core v1.1.0)
 ** `?removePrefix(prefix)` - Analogue to `?removeSuffix` but removes the prefix of the variable's value. (since cobigen-core v1.1.0)
@@ -302,7 +302,7 @@ The ref string is split using as delimiter `::`. The first part of the string, i
 _since cobigen-core-3.0.0 which is included in the Eclipse and Maven Plugin since version 2.0.0_
 In addition, it is possible to implement more complex template logic by custom Java code. To enable this feature, you can simply import the the `CobiGen_Templates` by clicking on _Adapt Templates_, turn it into a simple maven project (if it is not already) and implement any Java logic in the common maven layout (e.g. in the source folder `src/main/java`). Each Java class will be instantiated by CobiGen for each generation process. Thus, you can even store any state within a Java class instance during generation. However, there is currently no guarantee according to the template processing order. 
 
-As a consequence, you have to implement your Java classes with a public default (non-parameter) constructor to be used by any template. Methods of the implemented Java classes can be called within templates by the simple standard `FreeMarker` expression for calling Bean methods: `SimpleType.methodName(param1)`. Until now, CobiGen will shadow multiple types with the same simple name non-deterministically. So please prevent yourself from that situation.
+As a consequence, you have to implement your Java classes with a public default (non-parameter) constructor to be used by any template. Methods of the implemented Java classes can be called within templates by the simple standard FreeMarker expression for calling Bean methods: `SimpleType.methodName(param1)`. Until now, CobiGen will shadow multiple types with the same simple name non-deterministically. So please prevent yourself from that situation.
 
 Finally, if you would like to do some reflection within your Java code accessing any type of the template project or any type referenced by the input, you should load classes by making use of the classloader of the util classes. CobiGen will take care of the correct classloader building including the classpath of the input source as well as of the classpath of the template project. If you use any other classloader or build it by your own, there will be no guarantee, that generation succeeds.
 

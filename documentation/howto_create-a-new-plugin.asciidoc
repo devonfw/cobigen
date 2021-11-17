@@ -26,7 +26,7 @@ The trigger interpreter has to implement the `TriggerInterpreter` interface from
 == Adding `InputReader`
 
 The input reader is responsible of read the input object and parse it into
- `FreeMarker` models. The input reader must be implemented for the type of the
+ FreeMarker models. The input reader must be implemented for the type of the
  input file. If there is any existent plugin that has the same file type as input,
  there will be no need to add a new input reader to the new plug-in.
 
@@ -46,7 +46,7 @@ The methods to be implemented by the input reader of the new sub plugin are:
 |======================
 |Method | Return Type | Description
 | `isValidInput(Object input)`  | *boolean* | This function will be called if matching triggers or matching templates should be retrieved for a given input object.
-| `createModel(Object input)` | *Map<String, Object>*  |This function should create the `FreeMarker` object model from the given input.
+| `createModel(Object input)` | *Map<String, Object>*  |This function should create the FreeMarker object model from the given input.
 | `combinesMultipleInputObjects(Object input)` | *boolean*  | States whether the given input object combines multiple input objects to be used for generation.
 | `getInputObjects(Object input, Charset inputCharset)` |  *List<Object>*  |Will return the set of combined input objects if the given input combines multiple input objects.
 | `getTemplateMethods(Object input)` | *Map<String, Object>* | This method returns available template methods from the plugins as Map. If the plugin which corresponds to the input does not provide any template methods an empty Map will be returned.
@@ -55,8 +55,8 @@ The methods to be implemented by the input reader of the new sub plugin are:
 
 === Model Constants
 
-The Input reader will create a model for `FreeMarker`. A Freemarker model must
-have variables to use them at the `.ftl` template file. Refer to link:cobigen-javaplugin#java-input-reader[Java Model] to see the `FreeMarker` model example for java input files.
+The Input reader will create a model for FreeMarker. A Freemarker model must
+have variables to use them at the `.ftl` template file. Refer to link:cobigen-javaplugin#java-input-reader[Java Model] to see the FreeMarker model example for java input files.
 
 === Registering the Input Reader
 

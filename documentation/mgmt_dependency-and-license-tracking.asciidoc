@@ -13,7 +13,7 @@ toc::[]
 | SLF4J | 1.7.7 | `MIT` | http://www.slf4j.org/license.html
 | Guava | 17.0  | Apache License 2.0 | http://code.google.com/p/guava-libraries/
 | Reflections | 0.9.9-RC2 | `WTFPL` | https://code.google.com/p/reflections/
-| `FreeMarker` | 2.3.20 | `BSD-style` | http://freemarker.org/docs/app_license.html
+| FreeMarker | 2.3.20 | `BSD-style` | http://freemarker.org/docs/app_license.html
 | Jaxen | 1.1.4 | "Apache-style open source license" | http://jaxen.codehaus.org/license.html
 | `Apache Commons IO` | 2.4 | Apache License 2.0 | http://commons.apache.org/proper/commons-io/
 | `Apache Commons Lang `| 3.1 | Apache License 2.0 | http://commons.apache.org/proper/commons-lang/
@@ -296,7 +296,7 @@ toc::[]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *`URL`*
 | added | mmm-util-core | 7.4.0 | Apache Software License 2.0 | https://github.com/m-m-m/mmm/wiki/License
-| removed | `FreeMarker` | 2.3.23 | |
+| removed | FreeMarker | 2.3.23 | |
 |=============================================
 
 === cobigen-javaplugin v1.5.0
