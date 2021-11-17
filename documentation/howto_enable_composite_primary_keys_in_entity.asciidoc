@@ -40,7 +40,7 @@ public class CompositeEmployeeKey implements Serializable {
   private String employeeId;
 ----
   
-Once the generation is complete, implement `PersistenceEntity<ID>`.java in the EmployeeEntity and pass the composite primary key object which is `CompositeEmployeeKey` in this case as the parameter `ID`. 
+Once the generation is complete, implement `PersistenceEntity<ID>`.java in the `EmployeeEntity` and pass the composite primary key object which is `CompositeEmployeeKey` in this case as the parameter `ID`. 
 
 [source, java]
 ----
