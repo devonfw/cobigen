@@ -33,7 +33,7 @@ matrix:
       context_visible_first: true
       delimiters:
       # Ignore Image tag content after name
-      - open: '(?<=image::[^,]+),[^\]]+'
+      - open: '\b(?<=image::[^[]+\[[^,]+),[^\]]+'
         close: '\]'
   - pyspelling.filters.context:
       context_visible_first: true
