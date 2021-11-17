@@ -12,7 +12,7 @@ Due to a template-based approach, CobiGen *generates any set of text-based docum
 **Input (currently):**
 
 * Java classes
-* `XML`-based files
+* XML-based files
 * OpenAPI documents
 * Possibly more inputs like WSDL, which is currently not implemented.
 
