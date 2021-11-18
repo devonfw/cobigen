@@ -31,7 +31,7 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-      - open: 'image::[^[]+'
+      - open: 'image:[^[]+'
         close: '\['
   #Ignore Image tags link part
   - pyspelling.filters.context:
