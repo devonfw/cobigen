@@ -25,8 +25,8 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-      - open: '```[^`]+|(?<!`)`[^`]*\S+'
-        close: '```|`'
+      - open: '`+[^`]+'
+        close: '`+'
   #Ignore links
   - pyspelling.filters.context: 
       context_visible_first: true
@@ -37,8 +37,8 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-      - open: 'image:[^\]]+'
-        close: '\]'
+      - open: 'image:[^[]+'
+        close: '\['
   #Ignore Image tags link part
   - pyspelling.filters.context:
       context_visible_first: true
@@ -64,6 +64,6 @@ matrix:
   - pyspelling.filters.context:
       context_visible_first: true
       delimiters:
-      # Ignore multiline content between ] and ----
-      - open: '\[source, .*\]\r?\n\s*----[^-]*'
-        close: '----|^\s*$' 
+      # Ignore multiline content between [source, *] and blank line
+      - open: '\[source, .*\]'
+        close: '^\s*$'
