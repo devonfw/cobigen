@@ -11,37 +11,46 @@ The Java Plug-in provides a new trigger for Java related inputs. It accepts diff
 +
 .Example of a java trigger definition
 [source,xml]
+----
 <trigger id="..." type="java" templateFolder="...">
     ...
 </trigger>
+----
 +
+
 This trigger type enables Java elements as inputs.
 
 === Matcher types
 With the trigger you might define matchers, which restrict the input upon specific aspects:
 
-* type 'fqn' -> full qualified name matching
+* type `fqn` -> full qualified name matching
 +
 .Example of a java trigger definition with a full qualified name matcher
 [source,xml]
+----
 <trigger id="..." type="java" templateFolder="...">
     <matcher type="fqn" value="(.+)\.persistence\.([^\.]+)\.entity\.([^\.]+)">
         ...
     </matcher>
 </trigger>
+----
 +
+
 This trigger will be enabled if the full qualified name (`fqn`) of the declaring input class matches the given regular expression (`value`). 
 
 * type 'package' -> package name of the input
 +
 .Example of a java trigger definition with a package name matcher
 [source,xml]
+----
 <trigger id="..." type="java" templateFolder="...">
     <matcher type="package" value="(.+)\.persistence\.([^\.]+)\.entity">
         ...
     </matcher>
 </trigger>
+----
 +
+
 This trigger will be enabled if the package name (`package`) of the declaring input class matches the given regular expression (`value`). 
 
 * type 'expression'
@@ -56,6 +65,7 @@ This trigger will be enabled if the package name (`package`) of the declaring in
 </trigger>
 ----
 +
+
 This trigger will be enabled if the expression evaluates to true. Valid expressions are
 
 * `instanceof fqn`: checks an 'is a' relation of the input type
@@ -74,7 +84,8 @@ Additionally, the java plugin provides the ability to match packages (containers
 </trigger>
 ----
 +
-The container matcher matches packages provided by the type `com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder` with a regular expression stated in the `value` attribute. (See link:cobigen-core_configuration#containermatcher-node[containerMatcher semantics] to get more information about containerMatchers itself.)
+
+The container matcher matches packages provided by the type `com.capgemini.cobigen.javaplugin.inputreader.to.PackageFolder` with a regular expression stated in the `value` attribute. (See link:cobigen-core_configuration#containermatcher-node[`containerMatcher` semantics] to get more information about `containerMatchers` itself.)
 
 
 === Variable Assignment types
@@ -122,7 +133,7 @@ No matter whether you use reflection objects or parsed java classes as input, yo
 ** *package* ('String' :: Package name of the input class)
 ** *`canonicalName`* ('String' :: Full qualified name of the input class)
 ** *annotations* ('Map<String, Object>' :: Annotations, which will be represented by a mapping of the full qualified type of an annotation to its value. To gain template compatibility, the key will be stored with '_' instead of '.' in the full qualified annotation type. Furthermore, the annotation might be recursively defined and thus be accessed using the same type of mapping. Example `${pojo.annotations.javax_persistence_Id}`)
-** *`javaDoc`* ('Map<String, Object>') :: A generic way of addressing all available javaDoc doclets and comments. The only fixed variable is `comment` (see below). All other provided variables depend on the doclets found while parsing. The value of a doclet can be accessed by the doclets name (e.g. `${...javaDoc.author}`). In case of doclet tags that can be declared multiple times (currently `@param` and `@throws`), you will get a map, which you access in a specific way (see below).
+** *javaDoc* ('Map<String, Object>') :: A generic way of addressing all available javaDoc doclets and comments. The only fixed variable is `comment` (see below). All other provided variables depend on the doclets found while parsing. The value of a doclet can be accessed by the doclets name (e.g. `${...javaDoc.author}`). In case of doclet tags that can be declared multiple times (currently `@param` and `@throws`), you will get a map, which you access in a specific way (see below).
 *** *comment* ('String' :: javaDoc comment, which does not include any doclets)
 *** *params* ('Map<String,String> :: javaDoc parameter info. If the comment follows proper conventions, the key will be the name of the parameter and the value being its description. You can also access the parameters by their number, as in `arg0`, `arg1` etc, following the order of declaration in the signature, not in order of javadoc)
 *** *throws* ('Map<String,String> :: javaDoc exception info. If the comment follows proper conventions, the key will be the name of the thrown exception and the value being its description)
@@ -130,7 +141,7 @@ No matter whether you use reflection objects or parsed java classes as input, yo
 *** *name* ('String' :: Simple name of the supertype)
 *** *`canonicalName`* ('String' :: Full qualified name of the supertype)
 *** *package* ('String' :: Package name of the supertype)
-** *`implementedTypes`* ('List<Map<String, Object>>' :: A list of all implementedTypes (interfaces) represented by a set of mappings _(since cobigen-javaplugin v1.1.0)_
+** `*implementedTypes*` ('List<Map<String, Object>>' :: A list of all `implementedTypes` (interfaces) represented by a set of mappings _(since cobigen-javaplugin v1.1.0)_
 *** *interface* ('Map<String, Object>' :: List element)
 **** *name* ('String' :: Simple name of the interface)
 **** *`canonicalName`* ('String' :: Full qualified name of the interface)
@@ -139,11 +150,11 @@ No matter whether you use reflection objects or parsed java classes as input, yo
 *** field ('Map<String, Object>' :: List element)
 **** *name* ('String' :: Name of the Java field)
 **** *type* ('String' :: Type of the Java field)
-**** *`canonicalType`* ('String' :: Full qualified type declaration of the Java field's type)
+**** `*canonicalType*` ('String' :: Full qualified type declaration of the Java field's type)
 **** '*`isId`*' ('Deprecated' :: 'boolean' :: true if the Java field or its setter or its getter is annotated with the javax.persistence.Id annotation, false otherwise. Equivalent to `${pojo.attributes[i].annotations.javax_persistence_Id?has_content}`)
 **** *`javaDoc`* (see pojo.javaDoc)
 **** *annotations* (see pojo.annotations with the remark, that for fields all annotations of its setter and getter will also be collected)
-** *`methodAccessibleFields`* ('List<Map<String, Object>>' :: List of fields of the input class or its inherited classes, which are accessible using setter and getter methods)
+** `*methodAccessibleFields*` ('List<Map<String, Object>>' :: List of fields of the input class or its inherited classes, which are accessible using setter and getter methods)
 *** same as for _field_ (but without javaDoc!)
 ** *methods* ('List<Map<String, Object>>' :: The list of all methods, whereas one method will be represented by a set of property mappings)
 *** method ('Map<String, Object>' :: List element)
