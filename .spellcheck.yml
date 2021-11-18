@@ -51,6 +51,12 @@ matrix:
       delimiters:
       - open: 'include:[^[]+'
         close: '\['
+  #Ignore ```
+  - pyspelling.filters.context: 
+      context_visible_first: true
+      delimiters:
+      - open: '```((.|\n)*?)'
+        close: '```'
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
