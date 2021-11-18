@@ -25,7 +25,7 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-      - open: ''```[^`]+|(?<!`)`[^`]*\S+'
+      - open: '```[^`]+|(?<!`)`[^`]*\S+'
         close: '```|`'
   #Ignore links
   - pyspelling.filters.context: 
