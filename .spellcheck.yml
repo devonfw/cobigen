@@ -32,7 +32,7 @@ matrix:
   - pyspelling.filters.context:
       context_visible_first: true
       delimiters:
-      - open: '(?<=image:[^]+)link[^\]]+'
+      - open: ',.+?link=[^\]]+'
         close: '\]'
   - pyspelling.filters.context:
       context_visible_first: true
