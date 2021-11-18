@@ -39,6 +39,12 @@ matrix:
       delimiters:
       - open: ',.+?link=[^\]]+'
         close: '\]'
+  #Ignore include tag
+  - pyspelling.filters.context: 
+      context_visible_first: true
+      delimiters:
+      - open: 'include:[^[]+'
+        close: '\['
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
