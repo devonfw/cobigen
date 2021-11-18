@@ -320,8 +320,8 @@ toc::[]
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | added | cobigen-core | 4.0.0 |  | 
 | added | ts-merger | 1.0.0 | Apache Public License 2.0 | https://github.com/devonfw/ts-merger
-| added | js-beautifier | 1.6.14 | `MIT` | https://github.com/beautify-web/js-beautify
-| added | rhino | 1.7R4 | Mozilla Public License 2.0 | https://github.com/mozilla/rhino/blob/master/`LICENSE`.txt
+| added | `js-beautifier` | 1.6.14 | `MIT` | https://github.com/beautify-web/js-beautify
+| added | rhino | 1.7R4 | Mozilla Public License 2.0 | https://github.com/mozilla/rhino/blob/master/LICENSE.txt
 |=============================================
 
 === cobigen-eclipse v2.1.0
