@@ -169,7 +169,7 @@ image::images/howtos/angular4-gen/ng4gen_6.png[`APP SideMenu`,width="450"link="i
 
 If you are using a back end server with `JWT` Authentication (there is a sample in workspaces/folder called *`sampleJwt`*) you have to specify the Angular application to use this kind of authentication.
 
-By default the variable is set to ‘csrf’ but you can change it to `JWT` by going to the link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts#L10[Enviroment.ts] and setting `security: 'jwt'`.
+By default the variable is set to CSRF but you can change it to `JWT` by going to the link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts#L10[Enviroment.ts] and setting `security: 'jwt'`.
 
 == Running
 
