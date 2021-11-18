@@ -201,7 +201,7 @@ public class EmployeeEntity {
 
 ***2. Testing scenarios***
 * [ ] You are able to log-in into both Ionic and Angular apps using JWT authentication.
-* [ ] You are able to log-in into Angular using csrf authentication.
+* [ ] You are able to log-in into Angular using CSRF authentication.
 * [ ] You are able to retrieve all the employees in both Ionic and Angular.
 * [ ] You are able to create an employee in both Ionic and Angular.
 * [ ] You are able to find an employee by any of its fields in both Ionic and Angular.
