@@ -24,7 +24,9 @@ matrix:
   #Ignore content between backticks
   - pyspelling.filters.context: 
       context_visible_first: true
-      escapes: '```[^`]+```|(?<!`)`[^`]*\S+`'
+      delimiters:
+      - open: ''```[^`]+|(?<!`)`[^`]*\S+'
+        close: '```|`'
   #Ignore links
   - pyspelling.filters.context: 
       context_visible_first: true
