@@ -125,7 +125,8 @@ To properly test the Ionic and Angular templates we need to follow the next step
 * Copy the _jwtsample_ project from the worskpaces/examples folder and paste it to the workspaces/main folder, then import it into your workspace.
 * Add to the database of the project the following SQL script, so that we can test the retrieval of data.
 
-```SQL
+[source, SQL]
+----
 CREATE TABLE EMPLOYEE (
 
   id BIGINT auto_increment ,
@@ -147,12 +148,13 @@ CREATE TABLE EMPLOYEE (
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Mister','Boss','mister.boss@capgemini.com');
 
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Intern','Student', 'intern.student@capgemini.com'); 
-```
+----
 
 * Create a Hibernate entity to map the data of the previous SQL script.
 
 
-```java
+[source, java]
+----
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -184,7 +186,7 @@ public class EmployeeEntity {
   private String email;
 
 } 
-```
+----
 
 * Using the `EmployeeEntity`, generate increments `CRUD DAO'S, CRUD REST services, CRUD SOAP services, CRUD logic (all in one), Entity infrastructure and TO's`. After generating, follow first the following tutorial related to link:howto_ionic-client-generation#generation[Ionic Client Generation] and afterwards the link:howto_angular-client-generation#generating[Angular tutorial].
 
