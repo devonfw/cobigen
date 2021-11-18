@@ -66,4 +66,4 @@ matrix:
       delimiters:
       # Ignore multiline content between ] and ----
       - open: '\[source, .*\]\r?\n\s*----[^-]*'
-        close: '----' 
+        close: '----|^\s*$' 
