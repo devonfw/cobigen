@@ -71,5 +71,5 @@ matrix:
       context_visible_first: true
       delimiters:
       # Ignore multiline content between [source, *] and blank line
-      - open: '\[source, .*\]'
-        close: '^\s*$'
+      - open: ']\r?\n\s*----'
+        close: '----'
