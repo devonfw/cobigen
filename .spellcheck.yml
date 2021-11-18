@@ -65,11 +65,5 @@ matrix:
       context_visible_first: true
       delimiters:
       # Ignore multiline content between ] and ----
-      - open: ']\r?\n\s*----[^-]*'
-        close: '----'
-  - pyspelling.filters.context:
-      context_visible_first: true
-      delimiters:
-      # Ignore multiline content between [source, *] and blank line
-      - open: '\[source, .*\]'
-        close: '^\s*$' 
+      - open: '\[source, .*\]\r?\n\s*----[^-]*'
+        close: '----' 
