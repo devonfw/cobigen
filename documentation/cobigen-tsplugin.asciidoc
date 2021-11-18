@@ -3,7 +3,7 @@ toc::[]
 
 = TypeScript Plug-in
 
-The TypeScript Plug-in enables merging result TS files to existing ones. This plug-in is used at the moment for generate an Angular2 client with all CRUD functionalities enabled. The plug-in also generates de i18n functionality just appending at the end of the word the `ES` or `EN` suffixes, to put into the developer knowledge that this words must been translated to the correspondent language. Currently, the generation of Angular2 client requires an `ETO` java object as input so, there is no need to implement an input reader for ts artifacts for the moment.
+The TypeScript Plug-in enables merging result TS files to existing ones. This plug-in is used at the moment for generate an Angular2 client with all CRUD functionalities enabled. The plug-in also generates i18n functionality just appending at the end of the word the `ES` or `EN` suffixes, to put into the developer knowledge that this words must been translated to the correspondent language. Currently, the generation of Angular2 client requires an `ETO` java object as input so, there is no need to implement an input reader for ts artifacts for the moment.
 
 == Trigger Extensions
 
