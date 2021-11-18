@@ -169,7 +169,7 @@ Furthermore, when providing a `Class<?>` object as input, the Java Plug-in will 
 
 
 ==== Model Restrictions
-As stated before both inputs (`Class<?>` objects and `JavaClass` objects ) have their restrictions according to model building. In the following these restrictions are listed for both models, the `ParsedJava` Model which results from an `JavaClass` input and the `ReflectedJava` Model, which results from a Class<?>` input.
+As stated before both inputs (`Class<?>` objects and `JavaClass` objects ) have their restrictions according to model building. In the following these restrictions are listed for both models, the `ParsedJava` Model which results from an `JavaClass` input and the `ReflectedJava` Model, which results from a Class<?> input.
 
 It is important to understand, that these restrictions are only present if you work with either Parsed Model *OR* the Reflected Model. If you use the _Maven Build Plug-in_ or _Eclipse Plug-in_ these two models are merged together so that they can mutually compensate their weaknesses. 
 
