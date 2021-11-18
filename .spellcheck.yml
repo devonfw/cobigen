@@ -24,7 +24,9 @@ matrix:
   #Ignore links
   - pyspelling.filters.context: 
       context_visible_first: true
-      escapes: 'link:[^[]+\['
+      delimiters:
+      - open: 'link:[^[]+'
+        close: '\['
   #Ignore Image tags
   - pyspelling.filters.context: 
       context_visible_first: true
