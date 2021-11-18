@@ -66,11 +66,12 @@ In Eclipse, you can click the small downward arrow in the upper right corner of 
 
 == Issue when testing Eclipse plugin by Running as Eclipse Application. 
 Error message will be like:
-```
+[source]
+----
 1) Caused by: java.lang.ClassNotFoundException: An error occurred while automatically activating bundle com.devonfw.cobigen.eclipse
 2) org.osgi.framework.BundleException: Error starting module.
 3) org.eclipse.core.runtime.CoreException: Plug-in com.devonfw.cobigen.eclipse was unable to load class com.devonfw.cobigen.eclipse.workbenchcontrol.handler.XXXXHandler.
-```
+----
 
 ==== Solution
 Delete or rename the runtime-`EclipseApplication` inside workspaces folder. Re- run and try setting up workspace in that environment again. It should work!!
