@@ -15,6 +15,10 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       escapes: '^.*[\/\\][^\/\\]+$'
+  #Ignore for url starting with http or https
+  - pyspelling.filters.context: 
+      context_visible_first: true
+      escapes: '(http:|https:)//(?:.(?!//))+$'
   #Ignore content between backticks
   - pyspelling.filters.context: 
       context_visible_first: true
