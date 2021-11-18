@@ -59,7 +59,7 @@ Furthermore, it provides the ability to extract information from each input for 
 ----
 
 This variable assignment assigns the value of the given regular expression group number to the given `key`.
-In this case, the constant type variableAssignment is used to specify the root package where the generate will place the files generated.
+In this case, the constant type `variableAssignment` is used to specify the root package where the generate will place the files generated.
 
 * type 'extension' -> Extraction of the info extensions and the extensions of each entity. (the tags that start with `"x-..."`).
 +
@@ -118,8 +118,8 @@ The value is assigned to the `key`. The current properties that you will able to
     .. String type.
     .. String format.
     .. String description.
-    .. Boolean isCollection.
-    .. Boolean isEntity.
+    .. Boolean `isCollection`.
+    .. Boolean `isEntity`.
     .. Boolean required.
     .. Map<String, Object> constraints
 
@@ -225,7 +225,7 @@ The Cobigen OpenApi Plug-in implements an input reader for `OpenApi 3.0` files. 
 == Merger extensions
 
 This plugin only provides an input reader, there is no support for OpenApi merging. Nevertheless, the files generated from an OpenApi file will be Java, XML, JSON, TS, etc... so, 
-for each file to be generated defined at templates.xml, must set the mergeStrategy for the specific language (`javamerge`, `javamerge_override`, `jsonmerge`, etc...)
+for each file to be generated defined at templates.xml, must set the `mergeStrategy` for the specific language (`javamerge`, `javamerge_override`, `jsonmerge`, etc...)
 
 [source,xml]
 ----
