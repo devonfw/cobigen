@@ -55,7 +55,7 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-      - open: '```((.|\n)*?)'
+      - open: '```[^`]+'
         close: '```'
   - pyspelling.filters.context:
       context_visible_first: true
