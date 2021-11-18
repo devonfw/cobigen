@@ -7,9 +7,8 @@ toc::[]
 
 Create a new issue with the following markdown contents for each release of any plugin/module containing the following tasks to be performed on release:
 
-.*Template for release tasks *
-[source]
-----
+.*Template for release tasks (markdown)*
+```markdown
 
  **Release tasks:**
 ***1. Preparation***
@@ -19,14 +18,14 @@ Create a new issue with the following markdown contents for each release of any 
 * [ ] Check/Update documentation according to changelog to be released
   * [ ] especially update version number of module to be released [here](https://github.com/devonfw/cobigen/wiki/CobiGen)
   * [ ] Update the wiki submodule and commit the latest version to target the updated release version of the wiki 
-
-     cd cobigen-documentation/cobigen.wiki
-     git pull origin master
-     cd ..
-     git add cobigen.wiki
-     git commit -m"#<releaseIssueNo> update docs"
-     git push
-
+    \```
+    cd cobigen-documentation/cobigen.wiki
+    git pull origin master
+    cd ..
+    git add cobigen.wiki
+    git commit -m"#<releaseIssueNo> update docs"
+    git push
+    \```
   * [ ] Check branch build to not fail in production line https://devon.s2-eu.capgemini.com/
 
 ***2. Merging / Review***
@@ -53,16 +52,16 @@ Create a new issue with the following markdown contents for each release of any 
 ***4. Deployment***
 * [ ] Close eclipse IDE
 * [ ] In case of non-eclipse component (for cobigen-core, just execute first line): 
-
-   mvn clean package bundle:bundle -Pp2-bundle -Dmaven.test.skip=true
-   mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true
-   mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable
-
+  \```
+  mvn clean package bundle:bundle -Pp2-bundle -Dmaven.test.skip=true
+  mvn install bundle:bundle -Pp2-bundle p2:site -Dmaven.test.skip=true
+  mvn deploy -Pp2-upload-stable -Dmaven.test.skip=true -Dp2.upload=stable
+  \```
 * [ ] In case of eclipse plug-in release: 
- 
-   cd cobigen-eclipse
-   mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable
-  
+  \```
+  cd cobigen-eclipse
+  mvn clean deploy -Pp2-build-stable,p2-upload-stable,p2-build-mars -Dp2.upload=stable
+  \```
 * [ ] Check the update site `http://de-mucevolve02/files/cobigen/updatesite/stable/` by installing/updating it once to an eclipse distribution.
 * [ ] Assure, that everything is committed and the working copy is clean
 * [ ] Create a tag according to the naming conventions
@@ -74,7 +73,7 @@ Create a new issue with the following markdown contents for each release of any 
 * [ ] Create new Milestone (minor version update)
 * [ ] increase version on dev branch to next minor version + SNAPSHOT
 * [ ] Push
-----
+```
 
 == Testing process
 
@@ -96,8 +95,7 @@ Starting from a clean devonfw 3.0.0 distribution, follow the next steps to test 
 
 .. Try to generate something. The generated files should be visible after generating.
 
-[source]
-----
+```markdown
 
 **Quality assurance plan Update Templates feature:**
 
@@ -118,7 +116,7 @@ Starting from a clean devonfw 3.0.0 distribution, follow the next steps to test 
 ***3. Deployment***
 
 If every of these test scenarios are checked out, then release process can continue.
-----
+```
 
 === Ionic and Angular
 
@@ -129,27 +127,27 @@ To properly test the Ionic and Angular templates we need to follow the next step
 
 [source, SQL]
 ----
-CREATE TABLE EMPLOYEE (
+CREATE TABLE EMPLOYEE (
 
-  id BIGINT auto_increment ,
+  id BIGINT auto_increment ,
 
-  modificationCounter INTEGER NOT NULL,
+  modificationCounter INTEGER NOT NULL,
 
-  employeeid BIGINT auto_increment,
+  employeeid BIGINT auto_increment,
 
-  name VARCHAR(255),
+  name VARCHAR(255),
 
-  surname VARCHAR(255),
+  surname VARCHAR(255),
 
-  email VARCHAR(255),
+  email VARCHAR(255),
 
-  PRIMARY KEY (employeeid)
+  PRIMARY KEY (employeeid)
 
 ); 
 
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Mister','Boss','mister.boss@capgemini.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Mister','Boss','mister.boss@capgemini.com');
 
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Intern','Student', 'intern.student@capgemini.com'); 
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Intern','Student', 'intern.student@capgemini.com'); 
 ----
 
 * Create a Hibernate entity to map the data of the previous SQL script.
@@ -165,27 +163,27 @@ import javax.persistence.Column;
 
 @Entity
 
-@javax.persistence.Table(name = "EMPLOYEE")
+@javax.persistence.Table(name = "EMPLOYEE")
 
-public class EmployeeEntity {
+public class EmployeeEntity {
 
-  @Column(name = "EMPLOYEEID")
+  @Column(name = "EMPLOYEEID")
 
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-  private Long employeeId;
+  private Long employeeId;
 
-  @Column(name = "NAME")
+  @Column(name = "NAME")
 
-  private String name;
+  private String name;
 
-  @Column(name = "SURNAME")
+  @Column(name = "SURNAME")
 
-  private String surname;
+  private String surname;
 
-  @Column(name = "EMAIL")
+  @Column(name = "EMAIL")
 
-  private String email;
+  private String email;
 
 } 
 ----
@@ -194,8 +192,8 @@ public class EmployeeEntity {
 
 * The final step before releasing should be creating an issue with the following Markdown template. If every test scenario is completed, then testing phase is over and you can release.
 
-[source]
-----
+```markdown
+
 **Quality assurance plan Ionic and Angular:**
 
 ***1. Preparation***
@@ -215,7 +213,6 @@ public class EmployeeEntity {
 ***3. Deployment***
 
 If every of these test scenarios are checked out, then release process can continue.
-----
-
+```
 
 
