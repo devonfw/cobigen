@@ -53,13 +53,14 @@ To test changes implemented on the `cobigen-core` you have to follow the next pr
 == Issues with workspace when Oomph automatic updates don't work (especially for Indian colleagues)
 Executing eclipse-cobigen-development.bat file will open Eclipse with all the projects automatically imported. Oomph creates 'Working Sets' and set 'Top Level Elements' pointing to that working set. For Countries where proxy restricts Oomph to execute, we see no projects imported into project explorer/Navigator. Rather than trying manual import which later can give build issues we should follow below solution.
 Build Issues could be like:
-```
+[source]
+----
 [ERROR] Cannot resolve project dependencies:
 [ERROR]   You requested to install 'com.capgemini.cobigen-htmlplugin 0.0.0' but it could not be found
 [ERROR]
 [ERROR] See http://wiki.eclipse.org/Tycho/Dependency_Resolution_Troubleshooting for help.
 [ERROR] Cannot resolve dependencies of MavenProject: com.capgemini:com.capgemini.cobigen.eclipse.test:3.0.1 @
-```
+----
 
 ==== Solution
 In Eclipse, you can click the small downward arrow in the upper right corner of the Navigator/Project Explorer view and go to 'Top Level Elements' and point them to 'Projects'. This should show all the projects inside Project Explorer View. Also, Each plugin should point to respective branch.
