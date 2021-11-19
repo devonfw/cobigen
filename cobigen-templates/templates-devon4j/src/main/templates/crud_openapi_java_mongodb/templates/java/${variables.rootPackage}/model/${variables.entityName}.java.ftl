@@ -22,14 +22,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ${variables.entityName} {
 
-
-  <#list model.properties as property>
-  <#if property.name == "id">@${property.name?cap_first}<#else>@NotBlank(message="${property.description!}")</#if>
+<#list model.properties as property>
+  <#if property.name == "id">@${property.name?cap_first}<#else>@NotBlank(message = "${property.description!}")</#if>
   <#if property.type == "date">
   @DateTimeFormat(pattern="dd-MM-yyyy")
   @NotBlank(message="${property.description!}")
   </#if>
-    private <#if property.type == "date">LocalDate<#else>${property.type?cap_first}</#if> ${property.name};
+  <@definePropertyNameAndType property true/>
+    private <#if property.type == "date">LocalDate<#else>${propType}</#if> ${property.name};
 
-  </#list>
+</#list>
 }
