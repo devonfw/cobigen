@@ -133,10 +133,10 @@ No matter whether you use reflection objects or parsed java classes as input, yo
 ** *package* ('String' :: Package name of the input class)
 ** *`canonicalName`* ('String' :: Full qualified name of the input class)
 ** *annotations* ('Map<String, Object>' :: Annotations, which will be represented by a mapping of the full qualified type of an annotation to its value. To gain template compatibility, the key will be stored with '_' instead of '.' in the full qualified annotation type. Furthermore, the annotation might be recursively defined and thus be accessed using the same type of mapping. Example `${pojo.annotations.javax_persistence_Id}`)
-** *javaDoc* ('Map<String, Object>') :: A generic way of addressing all available javaDoc doclets and comments. The only fixed variable is `comment` (see below). All other provided variables depend on the doclets found while parsing. The value of a doclet can be accessed by the doclets name (e.g. `${...javaDoc.author}`). In case of doclet tags that can be declared multiple times (currently `@param` and `@throws`), you will get a map, which you access in a specific way (see below).
-*** *comment* ('String' :: javaDoc comment, which does not include any doclets)
-*** *params* ('Map<String,String> :: javaDoc parameter info. If the comment follows proper conventions, the key will be the name of the parameter and the value being its description. You can also access the parameters by their number, as in `arg0`, `arg1` etc, following the order of declaration in the signature, not in order of javadoc)
-*** *throws* ('Map<String,String> :: javaDoc exception info. If the comment follows proper conventions, the key will be the name of the thrown exception and the value being its description)
+** *JavaDoc* ('Map<String, Object>') :: A generic way of addressing all available JavaDoc doclets and comments. The only fixed variable is `comment` (see below). All other provided variables depend on the doclets found while parsing. The value of a doclet can be accessed by the doclets name (e.g. `${...JavaDoc.author}`). In case of doclet tags that can be declared multiple times (currently `@param` and `@throws`), you will get a map, which you access in a specific way (see below).
+*** *comment* ('String' :: JavaDoc comment, which does not include any doclets)
+*** *params* ('Map<String,String> :: JavaDoc parameter info. If the comment follows proper conventions, the key will be the name of the parameter and the value being its description. You can also access the parameters by their number, as in `arg0`, `arg1` etc, following the order of declaration in the signature, not in order of javadoc)
+*** *throws* ('Map<String,String> :: JavaDoc exception info. If the comment follows proper conventions, the key will be the name of the thrown exception and the value being its description)
 ** *`extendedType`* ('Map<String, Object>' :: The supertype, represented by a set of mappings _(since cobigen-javaplugin v1.1.0)_
 *** *name* ('String' :: Simple name of the supertype)
 *** *`canonicalName`* ('String' :: Full qualified name of the supertype)
@@ -152,14 +152,14 @@ No matter whether you use reflection objects or parsed java classes as input, yo
 **** *type* ('String' :: Type of the Java field)
 **** `*canonicalType*` ('String' :: Full qualified type declaration of the Java field's type)
 **** '*`isId`*' ('Deprecated' :: 'boolean' :: true if the Java field or its setter or its getter is annotated with the javax.persistence.Id annotation, false otherwise. Equivalent to `${pojo.attributes[i].annotations.javax_persistence_Id?has_content}`)
-**** *`javaDoc`* (see pojo.javaDoc)
+**** *JavaDoc* (see pojo.JavaDoc)
 **** *annotations* (see pojo.annotations with the remark, that for fields all annotations of its setter and getter will also be collected)
 ** `*methodAccessibleFields*` ('List<Map<String, Object>>' :: List of fields of the input class or its inherited classes, which are accessible using setter and getter methods)
-*** same as for _field_ (but without javaDoc!)
+*** same as for _field_ (but without JavaDoc!)
 ** *methods* ('List<Map<String, Object>>' :: The list of all methods, whereas one method will be represented by a set of property mappings)
 *** method ('Map<String, Object>' :: List element)
 **** *name* ('String' :: Name of the method)
-**** *`javaDoc`* (see pojo.javaDoc)
+**** *JavaDoc* (see pojo.JavaDoc)
 **** *annotations* (see pojo.annotations)
 
 Furthermore, when providing a `Class<?>` object as input, the Java Plug-in will provide additional functionalities as template methods _(deprecated)_: 
