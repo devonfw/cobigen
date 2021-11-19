@@ -165,7 +165,7 @@ import javax.persistence.Column;
 
 @javax.persistence.Table(name = "EMPLOYEE")
 
-public class EmployeeEntity {
+public class EmployeeEntity{
 
   @Column(name = "EMPLOYEEID")
 
