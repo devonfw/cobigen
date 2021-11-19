@@ -31,7 +31,7 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-      - open: '(?<!`)`[\sA-Za-z0-9]+[^`]+'
+      - open: '(?<!`)`[\sA-Za-z0-9\*\_]+[^`]+'
         close: '`'
   #Ignore links
   - pyspelling.filters.context: 
