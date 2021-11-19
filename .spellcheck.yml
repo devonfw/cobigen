@@ -31,7 +31,7 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-      - open: '(?<!`)`[\w\/\*\.\_\-\\\]+[^`]+'
+      - open: '(?<!`)`[\w\~\!\|\#\$\%\^\&\*\(\)\+\=\[\{\]\}\|\\\'\<\,\.\>\?\/\"\;\:]+[^`]+'
         close: '`'
   #Ignore links
   - pyspelling.filters.context: 
