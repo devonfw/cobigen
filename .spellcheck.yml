@@ -25,12 +25,6 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-      - open: '`+[^`]+'
-        close: '`+'
-  #Ignore content between backticks
-  - pyspelling.filters.context: 
-      context_visible_first: true
-      delimiters:
       - open: '```'
         close: '(\w|\W)+?(?=```)'
   #Ignore links
