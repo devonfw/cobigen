@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  version="2.1">
+  <templates>
+    <templateExtension ref="${variables.entityName}Controller.java" mergeStrategy="javamerge"/>
+    <!-- <templateExtension ref="${variables.entityName}ThymeleafController.java" mergeStrategy="javamerge"/> -->
+    <templateExtension ref="${variables.entityName}Service.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="${variables.entityName}Repository.java" mergeStrategy="javamerge"/>
+    <templateExtension ref="MongoApplication.java" mergeStrategy="javamerge_override"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templatePath="templates" destinationPath="src/main"/>
+  </templateScans>
+
+  <increments>
+    <increment name="MongoDB" description="Java MongoDB">
+      <templateRef ref="${variables.entityName}Controller.java"/>
+      <!-- <templateRef ref="${variables.entityName}ThymeleafController.java"/> -->
+      <templateRef ref="${variables.entityName}Service.java"/>
+      <templateRef ref="${variables.entityName}.java"/>
+      <templateRef ref="${variables.entityName}Repository.java"/>
+      <templateRef ref="MongoApplication.java"/>
+    </increment>
+  </increments>
+</templatesConfiguration>
