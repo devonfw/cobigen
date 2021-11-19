@@ -34,8 +34,7 @@ public class PropertyMergerTest extends TestCase {
         IOUtils.toString(new FileReader(new File(testFileRootPath + "Name.ftl"))), "UTF-8");
     assertThat(mergedPropFile).contains("NachNameOverride");
     assertThat(mergedPropFile).doesNotContain("nachNameOriginal");
-    assertThat(mergedPropFile).contains("firstName");
-    assertThat(mergedPropFile).contains("lastName");
+    assertThat(mergedPropFile).containsSequence("lastName", "firstName");
   }
 
   /**
