@@ -5,7 +5,7 @@ toc::[]
 This article helps to create a sample application using cobigen.
 
 == Prerequisites
-Download and install devonnfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
+Download and install devonfw IDE https://devonfw.com/website/pages/docs/devonfw-ide-introduction.asciidoc.html#setup.asciidoc[here],
 
 == Steps to create a Sample Project using Cobigen
 The HOW_TO is divided in 2 parts:
@@ -96,7 +96,7 @@ image:images/howtos/e2e_gen/image76.png[package corresponding]
 
 *Important 2:* if you want to know how to write an OpenAPI contract compatible with CobiGen, please read https://github.com/devonfw/tools-cobigen/wiki/cobigen-openapiplugin#usage[this tutorial].
 
-image:images/howtos/e2e_gen/image18.png[Swagger at OASP4J Project]
+image:images/howtos/e2e_gen/image18.png[Swagger]
 
 [arabic]
 Use Cobigen to generate code. Right click _devonfw.yml_. CobiGen -> Generate
