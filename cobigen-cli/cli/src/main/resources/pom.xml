@@ -61,26 +61,6 @@
       <artifactId>templates-devon4j</artifactId>
       <version>${revision}</version>
     </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-java-parser</artifactId>
-      <version>1.0.0-beta7</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-base</artifactId>
-      <version>1.0.0-beta7</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-code-java-maven</artifactId>
-      <version>1.0.0-beta7</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-util-core</artifactId>
-      <version>8.7.0</version>
-    </dependency>
   </dependencies>
 
 </project>
