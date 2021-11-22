@@ -3,7 +3,7 @@ toc::[]
 
 = General use cases
 
-In addition to the link:Home#selection-of-current-and-past-cobigen-applications[selection of CobiGen applications] introduced before, this chapter provides a more detailed overview about the currently implemented and maintained general use cases. These can be used by any project following a supported reference architecture as e.g. the link:https://github.com/oasp/[devonfw] or link:http://www.bva.bund.de/SharedDocs/Downloads/DE/BIT/RegisterFactory/Whitepaper_Register_Factory.html[Register Factory].
+In addition to the link:Home#selection-of-current-and-past-cobigen-applications[selection of CobiGen applications] introduced before, this chapter provides a more detailed overview about the currently implemented and maintained general use cases. These can be used by any project following a supported reference architecture as e.g. the link:https://github.com/devonfw[devonfw] or link:http://www.bva.bund.de/SharedDocs/Downloads/DE/BIT/RegisterFactory/Whitepaper_Register_Factory.html[Register Factory].
 
 == devon4j
 

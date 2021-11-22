@@ -3,7 +3,7 @@ toc::[]
 
 = Wiki documentation -- conventions & hints
 == Conventions
-* Stick to the https://github.com/oasp/oasp-docgen[devonfw-docgen conventions] to make the generation of the PDF document from the wiki work properly.
+* Stick to the https://github.com/devonfw/docgen/blob/master/documentation/usage.asciidoc[devonfw-docgen conventions] to make the generation of the PDF document from the wiki work properly.
 * The source code of CobiGen should be documented completely and consistent using JavaDoc. Please check JavaDoc as well after changing any logic.
 * Further documentation of more abstract and informative issues for users, template developers and CobiGen developers should be done using the GitHub Wiki
  * All GitHub Wiki pages should be edited in AsciiDoc mode to ensure the PDF documentation generation possibility 
