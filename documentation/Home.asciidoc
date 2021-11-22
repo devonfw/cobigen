@@ -40,7 +40,7 @@ CobiGen is build as an extensible framework for incremental code generation. It 
 
 General applications:
 
-* Generation of a **Java `CRUD` application based on link:https://github.com/oasp/[devonfw] architecture** including all software-layers on the server plus code for `js`-clients (Angular). You can find details link:cobigen-usecases[here].
+* Generation of a **Java `CRUD` application based on link:https://github.com/devonfw/[devonfw] architecture** including all software-layers on the server plus code for `js`-clients (Angular). You can find details link:cobigen-usecases[here].
 * Generation of a *Java `CRUD` application according to the Register Factory architecture*. Persistence entities are the input for generation.
 * Generation of *builder classes for generating test data* for JUnit-Tests. Input are the persistence entities.
 * Generation of a **`EXT JS` 6** client with full `CRUD` operations connected a devon4j server.
