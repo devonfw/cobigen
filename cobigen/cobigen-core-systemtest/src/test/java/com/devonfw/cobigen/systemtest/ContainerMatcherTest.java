@@ -163,11 +163,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
 
   /**
    * Tests whether multiple triggers will be activated if their container matcher matches a given input. <br/>
-<<<<<<< HEAD
-   * <a href="https://github.com/oasp/cobigen/issues/57">(Bug #57)</a>
-=======
    * <a href="https://github.com/devonfw/cobigen/issues/57">(Bug #57)</a>
->>>>>>> fbcd15c62d3cc027fdcb6cfca7268c708eae9032
    *
    * @throws Exception test fails
    */
