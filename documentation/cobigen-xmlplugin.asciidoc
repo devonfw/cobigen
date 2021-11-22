@@ -22,7 +22,6 @@ The XML Plug-in provides a trigger for `xml` related inputs. It accepts `xml` do
 This trigger type enables xml documents as inputs.
 
 
-
 * type `'xpath'`
 +
 .Example of a xpath trigger definition.
@@ -35,7 +34,7 @@ This trigger type enables xml documents as inputs.
 +
 This trigger type enables xml documents as container inputs, which consists of several subdocuments.
 
-=== `ContainerMatcher` type
+=== Container Matcher type
 A `ContainerMatcher` check if the input is a valid container.
 
 * `xpath: type: 'xpath'`
@@ -85,7 +84,7 @@ This trigger will be enabled if the root name of the declaring input document ma
 +
 This trigger will be enabled if the XML file contains a node `/packagedElement` where the `xmi:type` property equals `uml:Class`.
 
-=== `VariableAssignment` types
+=== Variable Assignment types
 Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of `context.xml` through the namespace `variables.<key>`. The XML Plug-in currently provides only one mechanism:
 
 * type 'constant' -> constant parameter

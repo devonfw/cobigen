@@ -19,18 +19,18 @@ Each plug-in has to have an plug-in activator class implementing the interface `
 
 Both methods create and register instances of mergers and trigger interpreters to be provided by the new plug-in.
 
-== Adding `TriggerInterpreter`
+== Adding Trigger Interpreter
 
 The trigger interpreter has to implement the `TriggerInterpreter` interface from the core. The trigger interpreter defines the type for the new plugin and creates new `InputReader` and new Matcher objects.
 
-== Adding `InputReader`
+== Adding Input Reader
 
 The input reader is responsible of read the input object and parse it into
  FreeMarker models. The input reader must be implemented for the type of the
  input file. If there is any existent plugin that has the same file type as input,
  there will be no need to add a new input reader to the new plug-in.
 
-=== `InputReader` Interface
+=== Input Reader Interface
 
 The interface needed to add a new input reader is defined at the core. Each new
 sub plug-in must implements this interface if is needed an input reader for it.

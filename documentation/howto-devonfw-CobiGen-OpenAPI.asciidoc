@@ -524,7 +524,7 @@ image:images/howtos/e2e_gen/image51.png[]
 
 ===== Build `APK`
 
-Since We’re going to create `apk` remember the following preconditions:
+Since We are going to create `apk` remember the following preconditions:
 
 * https://gradle.org/install/[Gradle]
 * https://developer.android.com/studio[Android Studio]

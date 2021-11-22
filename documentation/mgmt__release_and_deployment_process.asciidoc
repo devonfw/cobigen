@@ -125,36 +125,34 @@ To properly test the Ionic and Angular templates we need to follow the next step
 * Copy the _jwtsample_ project from the worskpaces/examples folder and paste it to the workspaces/main folder, then import it into your workspace.
 * Add to the database of the project the following SQL script, so that we can test the retrieval of data.
 
-[source, SQL]
-----
-CREATE TABLE EMPLOYEE (
+```SQL
+CREATE TABLE EMPLOYEE (
 
-  id BIGINT auto_increment ,
+  id BIGINT auto_increment ,
 
-  modificationCounter INTEGER NOT NULL,
+  modificationCounter INTEGER NOT NULL,
 
-  employeeid BIGINT auto_increment,
+  employeeid BIGINT auto_increment,
 
-  name VARCHAR(255),
+  name VARCHAR(255),
 
-  surname VARCHAR(255),
+  surname VARCHAR(255),
 
-  email VARCHAR(255),
+  email VARCHAR(255),
 
-  PRIMARY KEY (employeeid)
+  PRIMARY KEY (employeeid)
 
 ); 
 
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Mister','Boss','mister.boss@capgemini.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'Mister','Boss','mister.boss@capgemini.com');
 
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Intern','Student', 'intern.student@capgemini.com'); 
-----
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Intern','Student', 'intern.student@capgemini.com'); 
+```
 
 * Create a Hibernate entity to map the data of the previous SQL script.
 
 
-[source, java]
-----
+```java
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -162,33 +160,32 @@ import javax.persistence.Column;
 
 
 @Entity
+@javax.persistence.Table(name = "EMPLOYEE")
 
-@javax.persistence.Table(name = "EMPLOYEE")
+public class EmployeeEntity {
 
-public class EmployeeEntity{
+  @Column(name = "EMPLOYEEID")
 
-  @Column(name = "EMPLOYEEID")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long employeeId;
 
-  private Long employeeId;
+  @Column(name = "NAME")
 
-  @Column(name = "NAME")
+  private String name;
 
-  private String name;
+  @Column(name = "SURNAME")
 
-  @Column(name = "SURNAME")
+  private String surname;
 
-  private String surname;
+  @Column(name = "EMAIL")
 
-  @Column(name = "EMAIL")
-
-  private String email;
+  private String email;
 
 } 
-----
+```
 
-* Using the `EmployeeEntity`, generate increments `CRUD DAO'S, CRUD REST services, CRUD SOAP services, CRUD logic (all in one), Entity infrastructure and TO's`. After generating, follow first the following tutorial related to link:howto_ionic-client-generation#generation[Ionic Client Generation] and afterwards the link:howto_angular-client-generation#generating[Angular tutorial].
+* Using the EmployeeEntity, generate increments `CRUD DAO'S, CRUD REST services, CRUD SOAP services, CRUD logic (all in one), Entity infrastructure and TO's`. After generating, follow first the following tutorial related to link:howto_ionic-client-generation#generation[Ionic Client Generation] and afterwards the link:howto_angular-client-generation#generating[Angular tutorial].
 
 * The final step before releasing should be creating an issue with the following Markdown template. If every test scenario is completed, then testing phase is over and you can release.
 
@@ -214,5 +211,4 @@ public class EmployeeEntity{
 
 If every of these test scenarios are checked out, then release process can continue.
 ```
-
 

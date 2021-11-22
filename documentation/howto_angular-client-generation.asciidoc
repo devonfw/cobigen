@@ -47,6 +47,7 @@ root/
    |- server/
 ----
 
+
 Once the output path is chosen, copy the files of link:https://github.com/devonfw/devon4ng-application-template[`DEVON4NG-APPLICATION-TEMPLATE`] repository into this output path. 
 
 == Install Node dependencies

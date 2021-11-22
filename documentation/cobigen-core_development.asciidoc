@@ -27,6 +27,7 @@ The core implementation are divided in three projects:
 
 == Extension Mechanism
 
+
 The *extension* package from the `API` project contains the interfaces to be implemented if necessary by the sub plugins:
 
 * *__`GeneratorPluginActivator.java`__*
@@ -48,14 +49,14 @@ image:images/howtos/cobigen-core/core_01.png[Diagram 1,width="450",link="images/
 
 Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an `InputReader` (advanced information https://github.com/devonfw/cobigen/wiki/new_plugin[here])
 
-=== `LoadPlugin`
+=== Load Plugin
 
 The process of loading plugins to the core is done at the https://github.com/devonfw/cobigen/wiki/eclipse-plugin_development#1-1-activator-java[eclipse-plugin initialization].
 
 Each sub plugin has an activator class that extends the *__`GeneratorPluginActivator`__* interface from the *extension* package. That class implements the methods `bindMerger()` and `bindTriggerInterpreter()`.
 
-
 image:images/howtos/cobigen-core/core_02.png[Diagram 2,width="450",link="images/howtos/cobigen-core/core_02.png"]
+
 
 This is the class passed as argument to the `loadPlugin()` method of *__`PluginRegister.java`__* of the *pluginmanager* package.
 
@@ -98,6 +99,7 @@ The `*__DefaultObjectWrapperBuilder__*` creates an `*__DefaultObjectWrapper__*` 
 
 The configuration of FreeMarker requires to specify to a __`TemplateLoader`__. A __`TemplateLoader`__ is an interface provided by FreeMarker library that the developer should implement to fit the needs. The __`TemplateLoader`__ implementation at CobiGen is the class *__`NioFileSystemTemplateLoader.java`__* from the *config.nio* package.
 
+
 image:images/howtos/cobigen-core/core_03.png[Diagram 5,width="450",link="images/howtos/cobigen-core/core_03.png"]
 
 === Context Configuration
@@ -113,6 +115,7 @@ That reader uses the JAXB, JAXB (Java Architecture for XML Binding) provides a f
 
 ==== JAXB
 
+<<<<<<< HEAD
 JAXB auto generates the Java object within the `JAXBContext` specified at the `xmlns` attribute of the `contextConfiguration` field from the `context.xml` file
 
 [source, java]
@@ -122,7 +125,7 @@ Unmarshaller unmarshaller = JAXBContext.newInstance(ContextConfiguration.class).
 
 That auto-generation follows the `contextConfiguration.xsd` schema. Each Java object follows the template specified with the field `<xs:CompleType>` from the schema file.
 
-[source,xml]
+[source, xml]
 ----
 <xs:complexType name="trigger">
     <xs:sequence>
@@ -244,6 +247,7 @@ public class MavenMetadata {
 The comparison has three possibilities:
 
 . Versions are equal -> Valid
+<<<<<<< HEAD
 . `context.xml` version is greater than current CobiGen version -> *`InvalidConfigurationException`*
 . Current CobiGen version is greater that `context.xml` version -> Compatible if there not exists a version step (breaking change) in between, otherwise, throw an error.
 
@@ -296,6 +300,7 @@ public void generate(TemplateTo template, boolean forceOverride) throws IOExcept
 === Single Non Container Input
 
 If the input is a single non container input, first step is to create the model, then allow customization by the user (`adaptModel()`) and finally call the `generate()` method from CobiGen using the input, template, model and the boolean `forceOverride`.
+
 The generation process in this case will follow this main steps:
 
 . Check if the input is not null
@@ -309,6 +314,7 @@ As the model has been created at the `*CobiGenWrapper*`, there is no need to cre
 . Get the destination file.
 . Check if the destination file already exists +
 If it exists, but the `forceOverride` is set to `true` or the merge strategy of the template is null, the file will be overwritten, not merged. Otherwise, first generate output into a writter object, get the merger and merge the original file with the writter and write the file with the merge result.
+
 . If the file does not exist, simple write the file.
 
 === Single Container Input or multiple files selection

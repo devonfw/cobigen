@@ -18,6 +18,7 @@ The actual configuration of CobiGen is maintained by a single folder or jar. The
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
 5. CobiGen will automatically download the latest jar configuration from maven central with `groupId` `com.devonfw.cobigen` and `artifactId` `templates-devon4j` and take it like described in 4.
 
+
 Within the configuration jar or directory you will find the following structure:
 
 ```
@@ -87,7 +88,8 @@ Whereas NOT/AND/OR describes the `accumulationType` of a _matcher_ (see below) a
 ** AND: if any matcher with AND accumulation type does _not match_, the trigger will _not_ be activated 
 ** NOT: if any matcher with NOT accumulation type _matches_, the trigger will _not_ be activated
 
-=== `VariableAssignment` Node
+=== Variable Assignment Node
+
 
 Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as children. _Variable assignments_ allow to parametrize the generation by additional values, which will be added to the object model for template processing. The variables declared using _variable assignments_, will be made accessible in the templates.xml as well in the object model for template processing via the namespace `variables.*`.
 
@@ -111,7 +113,8 @@ Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as ch
 * The attribute `key` declares the namespace under which the resolved value will be accessible later on.
 * The attribute `value` might declare a constant value to be assigned or any hint for value resolution done by the _trigger interpreter_ providing plug-in. For instance, if `type` is `regex`, then on `value` you will assign the matched group number by the regex (1, 2, 3...)
 
-=== `ContainerMatcher` Node
+
+=== Container Matcher Node
 The `<containerMatcher>` node is an additional matcher for matching containers of multiple input objects.
 Such a container might be a package, which encloses multiple types or---more generic---a model, which encloses multiple elements. A container matcher can be declared side by side with other matchers:
 
@@ -150,6 +153,7 @@ The semantics of a container matchers are the following:
 The template configuration (`templates.xml`) specifies, which templates exist and under which circumstances it will be generated. There are two possible configuration styles:
 
 1. Configure the template meta-data for each template file by xref:template-node[template nodes]
+
 2. _(since cobigen-core-v1.2.0)_: Configure xref:templatescan-node[`templateScan` nodes] to automatically retrieve a default configuration for all files within a configured folder and possibly modify the automatically configured templates using xref:templateextension-node[`templateExtension` nodes]
 
 To get an intuition of the idea, the following will initially describe the first (more extensive) configuration style. Such an configuration root structure looks as follows:
@@ -169,6 +173,7 @@ To get an intuition of the idea, the following will initially describe the first
 </templatesConfiguration>
 ```
 The root node `<templatesConfiguration>` specifies two attributes. The attribute `version` provides further usability support and will be handled analogous to the `version` attribute of the xref:context-configuration[context configuration]. The optional attribute `templateEngine` specifies the template engine to be used for processing the templates (_since cobigen-core-4.0.0_). By default it is set to FreeMarker.
+
 The node `<templatesConfiguration>` allows two different grouping nodes as children. First, there is the `<templates>` node, which groups all declarations of templates. Second, there is the `<increments>` node, which groups all declarations about increments.
 
 === Template Node
@@ -200,7 +205,8 @@ A template declaration consist of multiple information:
 
 _(Since version 4.1.0)_ It is possible to reference external `template` (templates defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
-=== `TemplateScan` Node
+=== Template Scan Node
+
 _(since cobigen-core-v1.2.0)_
 
 The second configuration style for template meta-data is driven by initially scanning all available templates and automatically configure them with a default set of meta-data. A scanning configuration might look like this:
@@ -235,13 +241,13 @@ A `templateScan` will result in the following **default configuration of templat
 
 _(Since version 4.1.0)_ It is possible to reference external `templateScan` (`templateScans` defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
-
-=== `TemplateExtension` Node
+=== Template Extension Node
 _(since cobigen-core-v1.2.0)_
 
 Additionally to the xref:templatescan-node[`templateScan` declaration] it is easily possible to rewrite specific attributes for any scanned and automatically configured template.
 
 .Example Configuration of a `TemplateExtension`
+
 ```xml
 <templates>
     <templateExtension ref="prefix_FooClass.java" mergeStrategy="javamerge" />

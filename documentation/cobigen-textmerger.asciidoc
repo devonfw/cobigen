@@ -32,7 +32,7 @@ Anchors will also be read when they are not comments due to the merger being abl
 _Remark:_ If the resulting language has closing tags for comments, they have to appear in the next line.
 _Remark:_ If you do not put the anchor into a new line, all the text that appears before it will be added to the anchor.
 
-=== `Documentparts`
+=== Document parts
 In general, `${documentpart}` is an id to mark a part of the document, that way the merger knows what parts of the text to merge with which parts of the patch (e.g. if the existing text contains `anchor:table:${}:anchorend` that part will be merged with the part tagged `anchor:table:${}:anchorend` of the patch). 
 
 If the same `documentpart` is defined multiple times, it can lead to errors, so instead of defining `table` multiple times, use `table1`, `table2`, `table3` etc. 

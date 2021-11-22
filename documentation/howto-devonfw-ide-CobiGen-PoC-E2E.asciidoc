@@ -532,7 +532,6 @@ So: *Well Done!!!*
 image:images/howtos/e2e_gen/image51.png[]
 
 
-
 ===== Build `APK`
 
 Since We’re going to create apk remember the following preconditions:

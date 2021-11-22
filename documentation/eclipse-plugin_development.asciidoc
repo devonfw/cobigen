@@ -241,7 +241,7 @@ The `WizardPage` class defines the `canFlipToNextPage()` and `setPageComplete()`
 
 The Wizard class defines the `canFinish()` method in which you can define if the wizard can be completed. This last method is overrode at `*__AbstractGenerateWizard.java__*`.
 
-=== `SelectFilesPage` and `SelectAttributesPage`
+=== Select Files Page and Select Attributes Page
 
 In case that has been launched in batch mode, the wizard only will have the select increment and files page (initialized and configured at *__`SelectFilePage.java`__* from the package *wizard.common*)
 
@@ -279,6 +279,7 @@ incrementSelector.addCheckStateListener(checkListener);incrementSelector.expandA
 * Generation target project as input
 * Set *`CheckStateListener`* as listener
 
+
 [NOTE]
 ===============================
 To know how a content provider works check the official documentation http://help.eclipse.org/mars/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fjface%2Fviewers%2FITreeContentProvider.html[here].
@@ -300,6 +301,7 @@ image:images/howtos/eclipse-plugin/eclipse-plugin_diag5.png[Diagram 5,width="450
 === Normal Mode
 [source,java]
 ----
+
 @Override
 protected void generateContents(ProgressMonitorDialog dialog) {
     if (cobigenWrapper instanceof JavaGeneratorWrapper) {
@@ -323,12 +325,14 @@ The `dialog.run(true, false, job)` method will call the `performGeneration()` me
 
 Calling the `generate()` method from the *`CobiGenWrapper`* will call the method with the same name from the core and the generation will begin.
 
+
 === Batch Mode
 
 At batch mode, the generation job will be instantiated depending if the selection was a container or a multiple files selection.
 
 [source,java]
 ----
+
 @Override
 protected void generateContents(ProgressMonitorDialog dialog) {
     List<TemplateTo> templatesToBeGenerated = page1.getTemplatesToBeGenerated();

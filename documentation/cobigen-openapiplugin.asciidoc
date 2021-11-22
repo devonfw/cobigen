@@ -35,7 +35,7 @@ With the trigger you might define matchers, which restrict the input upon specif
 
 This trigger will be enabled if the element (Java Object) of the input file is and `EntityDef` (`value`). 
 
-=== `ContainerMatcher` type
+=== Container Matcher type
 Additionally, the java plugin provides the ability to match packages (`containers`) as follows:
 
 * type 'element'
@@ -43,7 +43,7 @@ Additionally, the java plugin provides the ability to match packages (`container
 The container matcher matches elements as Java Objects, in this case will be always an `OpenApiFile` object. (See link:cobigen-core_configuration#containermatcher-node[`containerMatcher` semantics] to get more information about `containerMatchers` itself.)
 
 [[openapi-variable-assignment]]
-=== `VariableAssignment` types
+=== Variable Assignment types
 Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The OpenApi Plug-in currently provides two different mechanisms:
 
 * type 'constant' -> constant parameter
@@ -219,7 +219,6 @@ The Cobigen OpenApi Plug-in implements an input reader for `OpenApi 3.0` files. 
 ** *code* ('String' :: String representation of the HTTP status code)
 ** *`mediaTypes`* ('List<String>' :: List of media types that can be returned)
 ** *description* ('String' :: Description of the response)
-
 
 
 == Merger extensions

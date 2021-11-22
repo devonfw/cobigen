@@ -87,6 +87,7 @@ In order to generate the files using the Cobigen CLI it is needed to do the foll
 
 ==== [navy]#Data base#
 
+
 Cobigen is generating an empty context that has to be filled with manually in order to be able to work with the database. The context can be found in `*[Project_Name]/Devon4Net.WebAPI.Implementation/Domain/Database/CobigenContext.cs*`.
 
 [[img-cobigen]]

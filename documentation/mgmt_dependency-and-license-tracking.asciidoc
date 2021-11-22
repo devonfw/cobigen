@@ -203,7 +203,7 @@ toc::[]
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| updated | freemarker | 2.3.23 | Apache License 2.0 | http://freemarker.org/`LICENSE`.txt
+| updated | freemarker | 2.3.23 | Apache License 2.0 | http://freemarker.org/LICENSE.txt
 |=============================================
 
 === cobigen-eclipse v1.4.1
@@ -212,7 +212,7 @@ toc::[]
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | updated | cobigen-core | 2.1.1 |  | 
 | updated | cobigen-javaplugin | 1.3.2 |  | 
-| added | ant | 1.9.6 | Apache License 2.0 | http://www.apache.org/licenses/`LICENSE`-2.0.html
+| added | ant | 1.9.6 | Apache License 2.0 | http://www.apache.org/licenses/LICENSE-2.0.html
 |=============================================
 
 === cobigen-javaplugin v1.4.0
@@ -307,7 +307,7 @@ toc::[]
 | added | mmm-util-pojo | 7.4.0 | Apache Software License 2.0 | https://github.com/m-m-m/mmm/wiki/License
 |=============================================
 
-=== `cobigen-tempeng-velocity-plugin v1.0.0`
+=== cobigen-tempeng-velocity-plugin v1.0.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -361,7 +361,8 @@ toc::[]
 | removed| rhino | | | 
 |=============================================
 
-=== `cobigen-tempeng-freemarker-plugin v1.0.0`
+
+=== cobigen-tempeng-freemarker-plugin v1.0.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
