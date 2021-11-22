@@ -79,11 +79,7 @@ public class XmlPluginMergerIntegrationTest {
   }
 
   /**
-<<<<<<< HEAD
-   * Tests Issue #18 - https://github.com/oasp/cobigen/issues/18
-=======
    * Tests Issue #18 - https://github.com/devonfw/cobigen/issues/18
->>>>>>> fbcd15c62d3cc027fdcb6cfca7268c708eae9032
    *
    * @throws Exception test fails
    */
