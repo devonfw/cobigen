@@ -15,7 +15,6 @@ matrix:
   - pyspelling.filters.context: 
       context_visible_first: true
       escapes: '^.*[\/\\][^\/\\]+$'
-<<<<<<< HEAD
   #Ignore for url starting with http or https
   - pyspelling.filters.context: 
       context_visible_first: true
@@ -28,13 +27,10 @@ matrix:
       delimiters:
       - open: '```'
         close: '(\w|\W)+?(?=```)'
-=======
->>>>>>> fbcd15c62d3cc027fdcb6cfca7268c708eae9032
   #Ignore content between backticks
   - pyspelling.filters.context: 
       context_visible_first: true
       delimiters:
-<<<<<<< HEAD
       - open: '(?<!``)`[^`]+'
         close: '`'
   #Ignore links
@@ -61,34 +57,6 @@ matrix:
       delimiters:
       - open: 'include:[^[]+'
         close: '\['
-=======
-      - open: '`+[^`]+'
-        close: '`+'
-  #Ignore for upper camel case
-  - pyspelling.filters.context:
-      context_visible_first: true
-      delimiters:
-      - open: '\b[A-Z][a-z0-9]+[A-Z]'
-        close: '[a-z0-9]*\b'
-  #Ignore for lower camel case
-  - pyspelling.filters.context:
-      context_visible_first: true
-      delimiters:
-      - open: '\b[a-z]+[A-Z]'
-        close: '[a-z0-9]*\b'
-  #Ignore for constants in upper case
-  - pyspelling.filters.context:
-      context_visible_first: true
-      delimiters:
-      - open: '\b[A-Z]+'
-        close: '([_][A-Z]+)*\b'
-  #Ignore for special cases in CobiGen in upper camel case
-  - pyspelling.filters.context:
-      context_visible_first: true
-      delimiters:
-      - open: '\b__[A-Z][a-z0-9]+[A-Z]'
-        close: '[a-z0-9.]*__\b'
->>>>>>> fbcd15c62d3cc027fdcb6cfca7268c708eae9032
   - pyspelling.filters.context:
       context_visible_first: true
       escapes: \\[\\-~]
@@ -103,10 +71,5 @@ matrix:
       context_visible_first: true
       delimiters:
       # Ignore multiline content between [source, *] and blank line
-<<<<<<< HEAD
       - open: '\[source, .*\]\r?\n\s*----'
         close: '[^-]*'
-=======
-      - open: '\[source,.*\]'
-        close: '^\s*$'   
->>>>>>> fbcd15c62d3cc027fdcb6cfca7268c708eae9032
