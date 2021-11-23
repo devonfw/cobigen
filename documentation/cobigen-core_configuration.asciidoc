@@ -16,7 +16,8 @@ The actual configuration of CobiGen is maintained by a single folder or jar. The
 2. The file `$cghome/.cobigen` exists and the property `templates` is set to a valid configuration (e.g. `templates=C:\project\ide\conf\templates` or `templates=C:\project\ide\conf\templates.jar`) _Hint: Check for log entry like `Value of property templates in $cghome/.cobigen is invalid` to identify an invalid configuration which is not taken up as expected_
 3. The folder `$cghome/templates/CobiGen_Templates` exists
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
-5. CobiGen will automatically download the latest jar configuration from maven central with groupId `com.devonfw.cobigen` and artifactId `templates-devon4j` and take it like described in 4.
+5. CobiGen will automatically download the latest jar configuration from maven central with `groupId` `com.devonfw.cobigen` and `artifactId` `templates-devon4j` and take it like described in 4.
+
 
 Within the configuration jar or directory you will find the following structure:
 
@@ -71,7 +72,7 @@ A trigger will be activated if its matchers hold the following formula:
 
 `!(NOT || ... || NOT) && AND && ... && AND && (OR || ... || OR)`
 
-Whereas NOT/AND/OR describes the accumulationType of a _matcher_ (see below) and e.g. `NOT` means 'a _matcher_ with accumulationType NOT matches a given input'. Thus additionally to an _input reader_, a _trigger interpreter_ has to define at least one set of _matchers_, which are satisfiable, to be fully functional. A `<matcher>` node declares a specific characteristics a valid input should have.
+Whereas NOT/AND/OR describes the `accumulationType` of a _matcher_ (see below) and e.g. `NOT` means 'a _matcher_ with `accumulationType` NOT matches a given input'. Thus additionally to an _input reader_, a _trigger interpreter_ has to define at least one set of _matchers_, which are satisfiable, to be fully functional. A `<matcher>` node declares a specific characteristics a valid input should have.
 
 .Matcher Configuration
 ```xml
@@ -87,7 +88,8 @@ Whereas NOT/AND/OR describes the accumulationType of a _matcher_ (see below) and
 ** AND: if any matcher with AND accumulation type does _not match_, the trigger will _not_ be activated 
 ** NOT: if any matcher with NOT accumulation type _matches_, the trigger will _not_ be activated
 
-=== VariableAssignment Node
+=== Variable Assignment Node
+
 
 Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as children. _Variable assignments_ allow to parametrize the generation by additional values, which will be added to the object model for template processing. The variables declared using _variable assignments_, will be made accessible in the templates.xml as well in the object model for template processing via the namespace `variables.*`.
 
@@ -111,11 +113,12 @@ Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as ch
 * The attribute `key` declares the namespace under which the resolved value will be accessible later on.
 * The attribute `value` might declare a constant value to be assigned or any hint for value resolution done by the _trigger interpreter_ providing plug-in. For instance, if `type` is `regex`, then on `value` you will assign the matched group number by the regex (1, 2, 3...)
 
-=== ContainerMatcher Node
+
+=== Container Matcher Node
 The `<containerMatcher>` node is an additional matcher for matching containers of multiple input objects.
 Such a container might be a package, which encloses multiple types or---more generic---a model, which encloses multiple elements. A container matcher can be declared side by side with other matchers:
 
-.ContainerMatcher Declaration
+.`ContainerMatcher` Declaration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <contextConfiguration xmlns="http://capgemini.com" 
@@ -150,7 +153,8 @@ The semantics of a container matchers are the following:
 The template configuration (`templates.xml`) specifies, which templates exist and under which circumstances it will be generated. There are two possible configuration styles:
 
 1. Configure the template meta-data for each template file by xref:template-node[template nodes]
-2. _(since cobigen-core-v1.2.0)_: Configure xref:templatescan-node[templateScan nodes] to automatically retrieve a default configuration for all files within a configured folder and possibly modify the automatically configured templates using xref:templateextension-node[templateExtension nodes]
+
+2. _(since cobigen-core-v1.2.0)_: Configure xref:templatescan-node[`templateScan` nodes] to automatically retrieve a default configuration for all files within a configured folder and possibly modify the automatically configured templates using xref:templateextension-node[`templateExtension` nodes]
 
 To get an intuition of the idea, the following will initially describe the first (more extensive) configuration style. Such an configuration root structure looks as follows:
 
@@ -168,7 +172,8 @@ To get an intuition of the idea, the following will initially describe the first
     </increments>
 </templatesConfiguration>
 ```
-The root node `<templatesConfiguration>` specifies two attributes. The attribute `version` provides further usability support and will be handled analogous to the `version` attribute of the xref:context-configuration[context configuration]. The optional attribute `templateEngine` specifies the template engine to be used for processing the templates (_since cobigen-core-4.0.0_). By default it is set to `FreeMarker`.
+The root node `<templatesConfiguration>` specifies two attributes. The attribute `version` provides further usability support and will be handled analogous to the `version` attribute of the xref:context-configuration[context configuration]. The optional attribute `templateEngine` specifies the template engine to be used for processing the templates (_since cobigen-core-4.0.0_). By default it is set to FreeMarker.
+
 The node `<templatesConfiguration>` allows two different grouping nodes as children. First, there is the `<templates>` node, which groups all declarations of templates. Second, there is the `<increments>` node, which groups all declarations about increments.
 
 === Template Node
@@ -200,7 +205,8 @@ A template declaration consist of multiple information:
 
 _(Since version 4.1.0)_ It is possible to reference external `template` (templates defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
-=== TemplateScan Node
+=== Template Scan Node
+
 _(since cobigen-core-v1.2.0)_
 
 The second configuration style for template meta-data is driven by initially scanning all available templates and automatically configure them with a default set of meta-data. A scanning configuration might look like this:
@@ -233,15 +239,15 @@ A `templateScan` will result in the following **default configuration of templat
 * `mergeStrategy`: _(optional)_ not set means not mergeable
 * `targetCharset`:  _(optional)_ defaults to UTF-8
 
-_(Since version 4.1.0)_ It is possible to reference external `templateScan` (templateScans defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
+_(Since version 4.1.0)_ It is possible to reference external `templateScan` (`templateScans` defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
-
-=== TemplateExtension Node
+=== Template Extension Node
 _(since cobigen-core-v1.2.0)_
 
-Additionally to the xref:templatescan-node[templateScan declaration] it is easily possible to rewrite specific attributes for any scanned and automatically configured template.
+Additionally to the xref:templatescan-node[`templateScan` declaration] it is easily possible to rewrite specific attributes for any scanned and automatically configured template.
 
-.Example Configuration of a TemplateExtension
+.Example Configuration of a `TemplateExtension`
+
 ```xml
 <templates>
     <templateExtension ref="prefix_FooClass.java" mergeStrategy="javamerge" />
@@ -256,7 +262,7 @@ Lets assume, that the above example declares a `template-scan` for the folder `f
 
 Using the `templateExtension` declaration above will reference the scanned template by the attribute `ref` and overrides the `mergeStrategy` of the automatically configured template by the value `javamerge`. Thus we are able to minimize the needed templates configuration.
 
-_(Since version 4.1.0)_ It is possible to reference external `templateExtension` (templateExtensions defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
+_(Since version 4.1.0)_ It is possible to reference external `templateExtension` (`templateExtensions` defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
 === Increment Node
 The `<increments>` node groups multiple `<increment>` nodes, which can be seen as a collection of templates to be generated. An increment will be defined by a unique `id` and a human readable `description`.
@@ -273,7 +279,7 @@ The `<increments>` node groups multiple `<increment>` nodes, which can be seen a
 
 An increment might contain multiple increments and/or templates, which will be referenced using `<incrementRef ...>`, `<templateRef ...>`, resp. `<templateScanRef ...>` nodes. These nodes only declare the attribute `ref`, which will reference an increment, a template, or a template-scan by its `id` or `name`.
 
-_(Since version 4.1.0)_  An special case of `<incrementRef ...>` is the external incrementsRef. By default, `<incrementRef ...>` are used to reference increments defined in the same `templates.xml` file. So for example, we could have:
+_(Since version 4.1.0)_  An special case of `<incrementRef ...>` is the external `incrementsRef`. By default, `<incrementRef ...>` are used to reference increments defined in the same `templates.xml` file. So for example, we could have:
 
 ```xml
 <increments>
@@ -287,7 +293,7 @@ _(Since version 4.1.0)_  An special case of `<incrementRef ...>` is the external
 </increments>
 ```
 
-However, if we want to reference an increment that it is not defined inside our `templates.xml` (an increment defined for another trigger), then we can use external incrementRef as shown below:
+However, if we want to reference an increment that it is not defined inside our `templates.xml` (an increment defined for another trigger), then we can use external `incrementRef` as shown below:
 
 ```xml 
 <increment name="..." description="...">
@@ -344,4 +350,4 @@ In addition to what is served by the different model builders of the different p
 
 Since cobigen-core 4.1.0, we changed the plug-in discovery mechanism. So far it was necessary to register new plugins programmatically, which introduces the need to let every tool integration, i.e. for eclipse or maven, be dependent on every plug-in, which should be released. This made release cycles take long time as all plug-ins have to be integrated into a final release of maven or eclipse integration.
 
-Now, plug-ins are automatically discovered by the Java https://docs.oracle.com/javase/tutorial/ext/basics/spi.html[Service Loader] mechanism from the classpath. This also effects the setup of link:cobigen-eclipse_installation#upgrading-to-v3[eclipse] and link:cobigen-maven_configuration#additions-since-v3[maven] integrations to allow modular releases of CobiGen in future. We are now able to provide faster rollouts of bug-fixes in any of the plug-ins as they can be released completely independently.
+Now, plug-ins are automatically discovered by the Java https://docs.oracle.com/javase/tutorial/ext/basics/spi.html[Service Loader] mechanism from the classpath. This also effects the setup of link:cobigen-eclipse_installation#upgrading-to-v3[eclipse] and link:cobigen-maven_configuration#additions-since-v3[maven] integration to allow modular releases of CobiGen in future. We are now able to provide faster rollouts of bug-fixes in any of the plug-ins as they can be released completely independently.

@@ -47,7 +47,8 @@ root/
    |- server/
 ----
 
-Once the output path is chosen, copy the files of link:https://github.com/devonfw/devon4ng-application-template[DEVON4NG-APPLICATION-TEMPLATE] repository into this output path. 
+
+Once the output path is chosen, copy the files of link:https://github.com/devonfw/devon4ng-application-template[`DEVON4NG-APPLICATION-TEMPLATE`] repository into this output path. 
 
 == Install Node dependencies
 
@@ -81,6 +82,7 @@ Due to the nature of the TypeScript merger, currently is not possible to merge p
 
 This would be the generated `app-routing.module` file:
 [source, ts]
+----
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './shared/security/auth-guard.service';
@@ -111,17 +113,21 @@ const appRoutes: Routes = [{
     pathMatch: 'full'
 }];
 export const routing = RouterModule.forRoot(appRoutes);
+----
 
 Adding the following into the children object of `home`, will add into the side menu the entry for the component generated:
 
 [source, ts]
+----
 {
     path: 'sampleData',
     component: SampleDataGridComponent,
     canActivate: [AuthGuard],
 } 
+----
 
 [source, ts]
+----
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './shared/security/auth-guard.service';
@@ -156,34 +162,38 @@ const appRoutes: Routes = [{
     pathMatch: 'full'
 }];
 export const routing = RouterModule.forRoot(appRoutes);
+----
 
-image::images/howtos/angular4-gen/ng4gen_6.png[APP SideMenu,width="450"link="images/howtos/angular4-gen/ng4gen_6.png"]
+image::images/howtos/angular4-gen/ng4gen_6.png[`APP SideMenu`,width="450"link="images/howtos/angular4-gen/ng4gen_6.png"]
 
-== JWT Authentication
+== `JWT` Authentication
 
-If you are using a back end server with JWT Authentication (there is a sample in workspaces/folder called *sampleJwt*) you have to specify the Angular application to use this kind of authentication.
+If you are using a back end server with `JWT` Authentication (there is a sample in workspaces/folder called `*sampleJwt*`) you have to specify the Angular application to use this kind of authentication.
 
-By default the variable is set to ‘csrf’ but you can change it to JWT by going to the link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts#L10[Enviroment.ts] and setting `security: 'jwt'`.
+By default the variable is set to CSRF but you can change it to `JWT` by going to the link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts#L10[Enviroment.ts] and setting `security: 'jwt'`.
 
 == Running
 
-First of all, run your devon4j java server by right clicking over SpringBootApp.java Run As -> Java Application. This will start to run the SpringBoot server. Once you see the Started SpringBoot in XX seconds, the backend is running.
+First of all, run your devon4j java server by right clicking over `SpringBootApp.java` Run As -> Java Application. This will start to run the `SpringBoot` server. Once you see the Started `SpringBoot` in `XX` seconds, the backend is running.
 
-image::images/howtos/angular4-gen/ng4gen_4.png[Starting SpringBoot,width="450"link="images/howtos/angular4-gen/ng4gen_4.png"]
+image::images/howtos/angular4-gen/ng4gen_4.png[Starting `SpringBoot`,width="450"link="images/howtos/angular4-gen/ng4gen_4.png"]
 
 Once the the server is running, open a Devon console at the output directory defined previously and run:
 
 [source, cmd]
+----
 ng serve --open
+----
 
 This will run the Angular 8 application at:
 
 [source, URL]
+----
 http://localhost:4200
+----
 
 image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 8 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
 
 Once finished, the browser will open automatically at the previous localhost URL showing the Angular 8 application, using the credentials set at the devon4j java server you will be able to access.
-
 
 

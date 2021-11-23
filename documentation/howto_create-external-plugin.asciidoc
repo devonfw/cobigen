@@ -45,7 +45,7 @@ The server can be programmed in any language that is able to implement REST serv
 
 We have already created a NestJS server that implements the API defined above. You can find the code link:https://github.com/devonfw/cobigen-devon4node-server/blob/master/cobigen-nest-server/src/processmanagement/processmanagement.controller.ts[here] which you can use as an example.
 
-As you can see, the endpoints have the following naming convention: `processmanagement/todoplugin/nameOfService` where you will have to change `todo` to your plug-in name (e.g. rustplugin, pyplugin, goplugin...)
+As you can see, the endpoints have the following naming convention: `processmanagement/todoplugin/nameOfService` where you will have to change `todo` to your plug-in name (e.g. `rustplugin`, `pyplugin`, `goplugin`...)
 
 When implementing service `getInputModel` which returns a model from the input file there are only two restrictions:
 
@@ -129,7 +129,7 @@ image::images/howtos/todo-plugin/setPomProperties.png[Pom properties,width="550"
 
 .. We are going to explain the server properties: 
 
-... artifactId: This is the name of your plug-in, that will be used for a future release on Maven Central.
+... `artifactId`: This is the name of your plug-in, that will be used for a future release on Maven Central.
 
 ... plugin.name: does not need to be changed as it uses the property from the `artifactId`. When connecting to the server, it will send a request to `localhost:5000/{plugin.name}plugin/isConnectionReady`, that is why it is important to use an unique name for the plug-in.
 
@@ -267,7 +267,7 @@ image::images/howtos/todo-plugin/templatesInside.png[Templates project,width="45
   </trigger>
 ```
 
-* Change `templateFolder` to your templates folder name. `id` you can use any, but it is recommendable to use the same as the template folder name. `type` is the `TRIGGER_TYPE` we defined above on the `NestPluginActivator` class. On `matcher` just change the `value`: `([^\.]+).entity.ts` means that we will only accept input files that contain "anyString.entity.ts". This improves usability, so that users only generate using the correct input files. You will find more info about `variableAssignment` link:https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration#variableassignment-node[here].
+* Change `templateFolder` to your templates folder name. `id` you can use any, but it is recommendable to use the same as the template folder name. `type` is the `TRIGGER_TYPE` we defined above on the `NestPluginActivator` class. On `matcher` just change the `value`: `([^\.]+).entity.ts` means that we will only accept input files that contain `anyString.entity.ts`. This improves usability, so that users only generate using the correct input files. You will find more info about `variableAssignment` link:https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration#variableassignment-node[here].
 
 * Finally, is time to configure `templates.xml`. It is needed for organizing templates into increments, please take a look into this link:https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration#templates-configuration[documentation].
 

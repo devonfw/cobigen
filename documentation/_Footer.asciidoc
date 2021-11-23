@@ -6,8 +6,7 @@ Contributions to this wiki are done through the main repo under the folder link:
 **License**  
 
 image:http://i.creativecommons.org/l/by-nd/4.0/88x31.png[]
-This documentation is licensed under the link:http://creativecommons.org/licenses/by-nd/4.0/[Creative Commons License (Attribution-NoDerivatives 4.0 International)]
 
-
+This documentation is licensed under the link:http://creativecommons.org/licenses/by-nd/4.0/[Creative Commons License (`Attribution-NoDerivatives 4.0 International`)]
 
 //To change the footnote in the pdf, change https://github.com/devonfw/devonfw-docgen/blob/master/src/main/docbook/xsl/cobigen-pdf.xsl

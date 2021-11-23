@@ -4,31 +4,35 @@ toc::[]
 
 = Eclipse Plugin Development
 
-The Eclipse plugin is where all the other plugins (JavaPlugin, XMLPlugin, PropertyPlugin, TextMerger and the core) are loaded.
+The Eclipse plugin is where all the other plugins (`JavaPlugin`, `XMLPlugin`, `PropertyPlugin`, `TextMerger` and the core) are loaded.
 
 == Configuration
 
 === Activator java
 
-Activator class is the start point of the plugin. Activator class is loaded initially and it extends the *AbstractUIPlugin*, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform UI.
-An ID for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
+Activator class is the start point of the plugin. Activator class is loaded initially and it extends the `*AbstractUIPlugin*`, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform `UI`.
+An `ID` for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
 
 [source,java]
+----
 /**
 * The plug-in ID
 */
 public static final String PLUGIN_ID = "com.capgemini.cobigen.eclipseplugin"; //$NON-NLS-1$
+----
 
-The overrode `__start()__` method starts the plugin and loads all the sub-plugins using the *PluginRegistry* from the core for each plug-in:  
+The overrode `__start()__` method starts the plugin and loads all the sub-plugins using the *`PluginRegistry`* from the core for each plug-in:  
 [source,java]
+----
 PluginRegistry.loadPlugin(PluginActivator.class);
+----
 
 [NOTE]
 ===============================
 How the `loadPlugin` works is explained deeply at https://github.com/devonfw/cobigen/wiki/Core-Development#2-2-loadplugin[core development].
 ===============================
 
-The activator has the listener *__ConfigurationProjectListener.java__* from the *workbenchcontrol* package that checks continuously changes on the templates project
+The activator has the listener *__`ConfigurationProjectListener.java`__* from the *`workbenchcontrol`* package that checks continuously changes on the templates project
 
 === Plugin xml
 
@@ -37,6 +41,7 @@ Plugin.xml file is used to initialize plugin. Here are defined the commands and 
 The command configuration:
 
 [source,xml]
+----
 <extension point="org.eclipse.ui.commands">
     <command
         id="com.capgemini.cobigen.eclipseplugin.generate"
@@ -57,12 +62,14 @@ The command configuration:
         commandId="com.capgemini.cobigen.eclipseplugin.health_check">
     </handler>
 </extension>
+----
 
 As can be seen, to define the commands, the `*PLUGIN_ID*` defined at the *__Activator.java__* is used followed of the name of the command.  Then, a handler from *workbenchcontrol.handler* package is assigned for each command.
 
 After that, is defined the views where we want to show the CobiGen menu as Popup menu.
 (e.g. Project Explorer view)
 [source,xml]
+----
 <extension point="org.eclipse.ui.menus">
     <menuContribution
         allPopups="false"
@@ -89,12 +96,13 @@ After that, is defined the views where we want to show the CobiGen menu as Popup
         </separator>
     </menuContribution>
 </extension>
+----
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_sshot1.png[CobiGen Menu,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_sshot1.png"]
 
 == Handlers
 
-The *workbenchcontrol* package provides to the plugin the listener regarding to the templates project, the listener for logging needs and the handler for the two main use cases (Generate and HealthCheck).
+The *workbenchcontrol* package provides to the plugin the listener regarding to the templates project, the listener for logging needs and the handler for the two main use cases (Generate and `HealthCheck`).
 
 === Update Templates: 
 Update Template: Select Entity file and right click, then select cobigen Update Templates after that click on download then download successfully will be come.
@@ -105,17 +113,17 @@ Adapt Template: Select Entity file and right click then select cobigen _Adapt Te
 
 === Generate Action Handler
 
-The wizard launching is the responsibility of the generate handler (*__GenerateHandler.java__*). In case of Generate action and depending of the input provided for that, the handler will create a JavaGeneratorWrapper or XMlGeneratorWrapper object.
-For JavaGeneratorWrapper, if the input is a package or a selection of multiple entity files, the wizard will be launched in batch mode calling the *__GenerateBatchWizard.java__* from the *wizard.generate* package. But if the input is a single entity java class file, it will be launched in normal mode calling the *__GenerateWizard.java__* from the same package.
+The wizard launching is the responsibility of the generate handler (*__`GenerateHandler.java`__*). In case of Generate action and depending of the input provided for that, the handler will create a `JavaGeneratorWrapper` or `XMlGeneratorWrapper` object.
+For `JavaGeneratorWrapper`, if the input is a package or a selection of multiple entity files, the wizard will be launched in batch mode calling the *__`GenerateBatchWizard.java`__* from the *wizard.generate* package. But if the input is a single entity java class file, it will be launched in normal mode calling the *__`GenerateWizard.java`__* from the same package.
 
 [NOTE]
 ===============================
-For both Wrapper objects, the inputs will be converted to valid inputs for Freemarker using the *__Xml/JavaInputConverter.java__* from the *generator.xml/java* package.
+For both Wrapper objects, the inputs will be converted to valid inputs for Freemarker using the *__`Xml/JavaInputConverter.java`__* from the *generator.xml/java* package.
 ===============================
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag1.png[Diagram 1,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag1.png"]
 
-For XmlGeneratorWrapper, the input must be a single valid XML file. As only has a single file as input, the *__GenerateWizard.java__* will be called.
+For `XmlGeneratorWrapper`, the input must be a single valid XML file. As only has a single file as input, the *__`GenerateWizard.java`__* will be called.
 
 In summary, this will be the process for the Generate Action before calling the wizard:
 
@@ -123,8 +131,9 @@ image:images/howtos/eclipse-plugin/eclipse-plugin_diag2.png[diagram 2,width="450
 
 === Health Check Action Handler
 
-At the case of Health Check action, a success/error dialog is shown instead of a wizard itself. The *__HealtchCheckHandler.java__* will call the execute method of *__HealthCheck.java__* from the *healthcheck* package. That class will test first if the templates project exists at the workspace opening and error dialog if not by throwing and handling the custom exception *__GeneratorProjectNotExistentException.java__* from the *common.exceptions* package.
+At the case of Health Check action, a success/error dialog is shown instead of a wizard itself. The *__`HealtchCheckHandler.java`__* will call the execute method of *__`HealthCheck.java`__* from the *healthcheck* package. That class will test first if the templates project exists at the workspace opening and error dialog if not by throwing and handling the custom exception *__`GeneratorProjectNotExistentException.java`__* from the *common.exceptions* package.
 [source,java]
+----
 try {
     // check configuration project existence
     //That method will throw GeneratorProjectNotExistentException
@@ -139,10 +148,12 @@ try {
                            + "documentation of CobiGen or in the one of your project.";
      PlatformUIUtil.openErrorDialog(HEALTH_CHECK_DIALOG_TITLE, healthyCheckMessage, null);
 }
+----
 
 
-If the project exists, HealthCheck will test if the __context.xml__ file is valid. In case of invalid, HealthCheck will throw and handle the *InvalidConfigurationException* from the core and check if it is possible to upgrade the version of the xml file, showing an __UPGRADE__ button at the dialog. If the upgrade is not possible, will show a dialog message telling the user to check the __context.xml__ file for errors.
+If the project exists, `HealthCheck` will test if the __context.xml__ file is valid. In case of invalid, `HealthCheck` will throw and handle the *`InvalidConfigurationException`* from the core and check if it is possible to upgrade the version of the xml file, showing an __UPGRADE__ button at the dialog. If the upgrade is not possible, will show a dialog message telling the user to check the __context.xml__ file for errors.
 [source,java]
+----
 try {
    //The Cobigen constructor will throw the InvalidConfigurationException
    new CobiGen(generatorConfProj.getLocationURI());
@@ -178,8 +189,9 @@ try {
             healthyCheckMessage += "\n\n=> " + e.getLocalizedMessage();
         }
 }
+----
 
-At this point, if all is correct, the user can choose to finish the HealtCheck process or run the Advance Health Check running the *__AdvancedHealthCheck.java__* to check the the validity of template configurations. That check has three steps:
+At this point, if all is correct, the user can choose to finish the `HealtCheck` process or run the Advance Health Check running the *__`AdvancedHealthCheck.java`__* to check the the validity of template configurations. That check has three steps:
 
 . *Get configuration resources* +
 Will get the template configuration file from the template folder corresponding to the input of the plugin provided by the triggers defined at the __context.xml__ file for that input.
@@ -188,15 +200,16 @@ Will get the template configuration file from the template folder corresponding 
 Will check if the template configuration file exists, if it is accessible and if the version is up-to-date allowing upgrading if not.
 
 . *Show current status to the user* +
-Will call the *__AdvancedHealthCheckDialog.java__* showing a dialog with the current state of each configuration template, showing an __UPGRADE__ button if the configuration version can be upgraded.
+Will call the *__`AdvancedHealthCheckDialog.java`__* showing a dialog with the current state of each configuration template, showing an __UPGRADE__ button if the configuration version can be upgraded.
 
 == Wizard Development
 === Starting the Wizard
 
-To open a wizard, use the *WizardDialog* class from the *org.eclipse.jface.wizard* package.
-The plugin does that at *__GenerateHandler.java__* as previously explained https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#3-1-generate-action-handler[here]:
+To open a wizard, use the *`WizardDialog`* class from the *`org.eclipse.jface.wizard`* package.
+The plugin does that at *__`GenerateHandler.java`__* as previously explained https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#3-1-generate-action-handler[here]:
 
 [source,java]
+----
 if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).size() == 1)
      && ((IStructuredSelection) sel).getFirstElement() instanceof IPackageFragment) {
      WizardDialog wiz = new WizardDialog(HandlerUtil.getActiveShell(event),
@@ -210,42 +223,45 @@ if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).siz
      wiz.open();
      LOG.info("Generate Wizard opened.");
 }
+----
+
 Adapt Template: Select Entity file and right click then select cobigen  Adapt Template.If cobigen template  jar not available then it download automatically.If Cobigen templates is already then it will override existing template in workspace and click on OK then imported template successfully message will come .If Template not available the it automatically 
-=== Wizard and WizardPages
+=== Wizard and `WizardPages`
 
-The Wizard class from the *org.eclipse.jface.wizard* package provides the functionality to build custom wizards. This class controls the navigation between the different pages and provides the base user interface, for example, an area for error and information messages.
+The Wizard class from the *`org.eclipse.jface.wizard`* package provides the functionality to build custom wizards. This class controls the navigation between the different pages and provides the base user interface, for example, an area for error and information messages.
 
-A wizard contains one or several pages of the type *WizardPage*. Such a page is added to a Wizard object via the `__addPage()__` method.
+A wizard contains one or several pages of the type *`WizardPage`*. Such a page is added to a Wizard object via the `__addPage()__` method.
 
-A *WizardPage* must create a new Composite in its `__createControl()__` method. This new Composite must use the Composite of the method parameter as parent. It also must call the `__setControl()__` method with this new Composite as parameter. If this is omitted, Eclipse will throw an error.
+A *`WizardPage`* must create a new Composite in its `__createControl()__` method. This new Composite must use the Composite of the method parameter as parent. It also must call the `__setControl()__` method with this new Composite as parameter. If this is omitted, Eclipse will throw an error.
 
 On the CobiGen eclipse-plugin project:
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag3.png[Diagram 3,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag3.png"]
 
-The WizardPage class defines the `canFlipToNextPage()` and `setPageComplete()` methods to control if the __NEXT__ or the __FINISH__ button in the wizard becomes active.
+The `WizardPage` class defines the `canFlipToNextPage()` and `setPageComplete()` methods to control if the __NEXT__ or the __FINISH__ button in the wizard becomes active.
 
-The Wizard class defines the `canFinish()` method in which you can define if the wizard can be completed. This last method is overrode at *__AbstractGenerateWizard.java__*.
+The Wizard class defines the `canFinish()` method in which you can define if the wizard can be completed. This last method is overrode at `*__AbstractGenerateWizard.java__*`.
 
-=== SelectFilesPage and SelectAttributesPage
+=== Select Files Page and Select Attributes Page
 
-In case that has been launched in batch mode, the wizard only will have the select increment and files page (initialized and configured at *__SelectFilePage.java__* from the package *wizard.common*)
+In case that has been launched in batch mode, the wizard only will have the select increment and files page (initialized and configured at *__`SelectFilePage.java`__* from the package *wizard.common*)
 
-In case of normal mode with an entity java class as input, the wizard will have an optional second page provided for *__SelectAttributesPage.java__* of the package *wizard.generate.common* for selecting attributes of the entity that will be used for the generation. The page is optional because the user can finish the wizard and perform the generation from the first page.
+In case of normal mode with an entity java class as input, the wizard will have an optional second page provided for *__`SelectAttributesPage.java`__* of the package *wizard.generate.common* for selecting attributes of the entity that will be used for the generation. The page is optional because the user can finish the wizard and perform the generation from the first page.
 
-The pages of the CobiGen wizard is composed essentially for container. The containers have a CheckBoxTreeViewer object, a content provider object and a listener (that defines the behavior of the wizard when a check box is checked or unchecked) 
+The pages of the CobiGen wizard is composed essentially for container. The containers have a `CheckBoxTreeViewer` object, a content provider object and a listener (that defines the behavior of the wizard when a check box is checked or unchecked) 
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag4.png[Diagram 4,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag4.png"]
 
 ==== Select Files Page
 
-The first page (__SelectFilesPage__) is composed by two containers:
+The first page (__`SelectFilesPage`__) is composed by two containers:
 
 . *Left container - Increment Selector* +
-* Created as a *CustomizedCheckBoxTreeViewer*
-* The content provider is a *SelectIncrementContentProvider*
+* Created as a *`CustomizedCheckBoxTreeViewer`*
+* The content provider is a *`SelectIncrementContentProvider`*
 * Setting the input will upgrade the labels to show
-* Set *CheckStateListener* as listener
+* Set *`CheckStateListener`* as listener
 [source,java]
+----
 incrementSelector = new CustomizedCheckboxTreeViewer(containerLeft);
 incrementSelector.setContentProvider(new SelectIncrementContentProvider());
 incrementSelector.setInput(cobigenWrapper.getAllIncrements());
@@ -254,13 +270,15 @@ gd.grabExcessVerticalSpace = true;
 incrementSelector.getTree().setLayoutData(gd);
 CheckStateListener checkListener = new CheckStateListener(cobigenWrapper, this, batch);
 incrementSelector.addCheckStateListener(checkListener);incrementSelector.expandAll();
+----
 
 . *Right Container - Resources to be generated* +
-* Created as *SimulatedCheckBoxTreeViewer* if the Customize button is not enabled or as *CustomizedCheckBoxTreeViewer* if it is.
-* *SelectFileContentProvider* as content provider.
-* *SelectFileLabelProvider* as label provider
+* Created as *`SimulatedCheckBoxTreeViewer`* if the Customize button is not enabled or as *`CustomizedCheckBoxTreeViewer`* if it is.
+* *`SelectFileContentProvider`* as content provider.
+* *`SelectFileLabelProvider`* as label provider
 * Generation target project as input
-* Set *CheckStateListener* as listener
+* Set *`CheckStateListener`* as listener
+
 
 [NOTE]
 ===============================
@@ -271,17 +289,19 @@ To know how a content provider works check the official documentation http://hel
 
 As previously explained, this page is optional, the user can press the Finish button at the previous page. Nevertheless, this page can only be accessed in case of a single entity file as input, never on batch mode.
 
-The container is composed by a single *CheckBoxTableViewer* with a __SelectAttributesContentProvider__ as content provider and a __SelectAttributesLabelProvider__ as label provider.
+The container is composed by a single *`CheckBoxTableViewer`* with a __`SelectAttributesContentProvider`__ as content provider and a __`SelectAttributesLabelProvider`__ as label provider.
 
 == Finish and perform generation
 
 When the user press the Finish button, the generation process will begin. For that, a generation job will be created using as argument a list of templates to be generated retrieving them from the user selection of the first page (Select Files Page).
-The generate wizard will use the *__GenerateSelectionJob.java__* or the *__GenerateBatchSelectionJob.java__* for normal mode or batch mode respectively.
+The generate wizard will use the *__`GenerateSelectionJob.java`__* or the *__`GenerateBatchSelectionJob.java`__* for normal mode or batch mode respectively.
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag5.png[Diagram 5,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag5.png"]
 
 === Normal Mode
 [source,java]
+----
+
 @Override
 protected void generateContents(ProgressMonitorDialog dialog) {
     if (cobigenWrapper instanceof JavaGeneratorWrapper) {
@@ -299,16 +319,20 @@ protected void generateContents(ProgressMonitorDialog dialog) {
         LOG.warn("The working thread doing the generation job has been interrupted.", e);
     }
 }
+----
 
-The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __GenerateSelectionJob.java__
+The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __`GenerateSelectionJob.java`__
 
-Calling the `generate()` method from the *CobiGenWrapper* will call the method with the same name from the core and the generation will begin.
+Calling the `generate()` method from the *`CobiGenWrapper`* will call the method with the same name from the core and the generation will begin.
+
 
 === Batch Mode
 
 At batch mode, the generation job will be instantiated depending if the selection was a container or a multiple files selection.
 
 [source,java]
+----
+
 @Override
 protected void generateContents(ProgressMonitorDialog dialog) {
     List<TemplateTo> templatesToBeGenerated = page1.getTemplatesToBeGenerated();
@@ -332,5 +356,6 @@ protected void generateContents(ProgressMonitorDialog dialog) {
         LOG.warn("The working thread doing the generation job has been interrupted.", e);
     }
 }
+----
 
-The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __GenerateBatchSelectionJob.java__
+The `dialog.run(true, false, job)` method will call the `performGeneration()` method from __`GenerateBatchSelectionJob.java`__
