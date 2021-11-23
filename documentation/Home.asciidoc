@@ -40,7 +40,7 @@ CobiGen is build as an extensible framework for incremental code generation. It 
 
 General applications:
 
-* Generation of a **Java `CRUD` application based on link:https://github.com/devonfw/[devonfw] architecture** including all software-layers on the server plus code for `js`-clients (Angular). You can find details link:cobigen-usecases[here].
+* Generation of a **Java CRUD application based on link:https://github.com/devonfw/[devonfw] architecture** including all software-layers on the server plus code for JS-clients (Angular). You can find details link:cobigen-usecases[here].
 * Generation of a *Java `CRUD` application according to the Register Factory architecture*. Persistence entities are the input for generation.
 * Generation of *builder classes for generating test data* for JUnit-Tests. Input are the persistence entities.
 * Generation of a **`EXT JS` 6** client with full `CRUD` operations connected a devon4j server.
@@ -50,4 +50,4 @@ Project-specific applications in the past:
 
 * Generation of an *additional Java type hierarchy on top of existing Java classes* in combination with additional methods to be integrated in the modified classes. Hibernate entities were considered as input as well as output of the generation. The rational in this case, was to generate an additional business object hierarchy on top of an existing data model for efficient business processing.
 * Generation of *hash- and equals-methods* as well as copy constructors depending on the field types of the input Java class. Furthermore, CobiGen is able to re-generate these methods/constructors triggered by the user, i.e, when fields have been changed.
-* *Extraction of `JavaDoc`* of test classes and their methods for generating a csv test documentation. This test documentation has been further processed manually in Excel to provide a good overview about the currently available tests in the software system, which enables further human analysis.
+* *Extraction of JavaDoc* of test classes and their methods for generating a csv test documentation. This test documentation has been further processed manually in Excel to provide a good overview about the currently available tests in the software system, which enables further human analysis.

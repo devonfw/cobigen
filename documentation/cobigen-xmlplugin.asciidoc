@@ -2,16 +2,16 @@
 toc::[]
 
 = XML Plug-in
-The CobiGen XML Plug-in comes with an input reader for `xml artifacts, xml` related trigger and matchers and provides different merge mechanisms for XML result documents.
+The CobiGen XML Plug-in comes with an input reader for XML artifacts, XML related trigger and matchers and provides different merge mechanisms for XML result documents.
 
 == Trigger extension
 _(since cobigen-xmlplugin v2.0.0)_
 
-The XML Plug-in provides a trigger for `xml` related inputs. It accepts `xml` documents as input (see `xref:xml-input-reader[XML input reader]`) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
+The XML Plug-in provides a trigger for XML related inputs. It accepts XML documents as input (see `xref:xml-input-reader[XML input reader]`) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
 
 * type 'xml'
 +
-.Example of a xml trigger definition.
+.Example of a XML trigger definition.
 [source,xml]
 ----
 <trigger id="..." type="xml" templateFolder="...">
@@ -19,10 +19,10 @@ The XML Plug-in provides a trigger for `xml` related inputs. It accepts `xml` do
 </trigger>
 ----
 +
-This trigger type enables xml documents as inputs.
+This trigger type enables XML documents as inputs.
 
 
-* type `'xpath'`
+* type 'xpath'
 +
 .Example of a xpath trigger definition.
 [source,xml]
@@ -32,14 +32,14 @@ This trigger type enables xml documents as inputs.
 </trigger>
 ----
 +
-This trigger type enables xml documents as container inputs, which consists of several subdocuments.
+This trigger type enables XML documents as container inputs, which consists of several subdocuments.
 
 === Container Matcher type
 A `ContainerMatcher` check if the input is a valid container.
 
-* `xpath: type: 'xpath'`
+* xpath: type: 'xpath'
 +
-.Example of a `xml` trigger definition with a nodename matcher.
+.Example of a XML trigger definition with a nodename matcher.
 [source,xml]
 ----
 <trigger id="..." type="xml" templateFolder="...">
@@ -55,9 +55,9 @@ Before applying any Matcher, this `containerMatcher` checks if the XML file cont
 === Matcher types
 With the trigger you might define matchers, which restrict the input upon specific aspects:
 
-* `xml`: type 'nodename' -> document's root name matching
+* XML: type 'nodename' -> document's root name matching
 +
-.Example of a xml trigger definition with a nodename matcher
+.Example of a XML trigger definition with a nodename matcher
 [source,xml]
 ----
 <trigger id="..." type="xml" templateFolder="...">
@@ -101,10 +101,10 @@ Furthermore, it provides the ability to extract information from each input for 
 This variable assignment assigns the `value` to the `key` as a constant.
 
 === XML input reader
-The Cobigen XML Plug-in implements an input reader for parsed xml documents. So `API` user can pass `org.w3c.dom.Document` objects for generation. For getting the right parsed `xml` inputs you can easily use the `xmlplugin.util.XmlUtil`, which provides static functionality to parse `xml` files or input streams and get the appropriate `Document` object.
+The Cobigen XML Plug-in implements an input reader for parsed XML documents. So API user can pass `org.w3c.dom.Document` objects for generation. For getting the right parsed XML inputs you can easily use the `xmlplugin.util.XmlUtil`, which provides static functionality to parse XML files or input streams and get the appropriate `Document` object.
 
 ==== Template object
-Due to the heterogeneous structure an `xml` document can have, the `xml` input reader does not always create exactly the same model structure (in contrast to the java input reader). For example the model's depth differs strongly, according to it's input document. To allow navigational access to the nodes, the model also depends on the document's element's node names. All child elements with unique names, are directly accessible via their names. In addition it is possible to iterate over all child elements with held of the child list `Children`. So it is also possible to access child elements with non unique names.
+Due to the heterogeneous structure an XML document can have, the XML input reader does not always create exactly the same model structure (in contrast to the java input reader). For example the model's depth differs strongly, according to it's input document. To allow navigational access to the nodes, the model also depends on the document's element's node names. All child elements with unique names, are directly accessible via their names. In addition it is possible to iterate over all child elements with held of the child list `Children`. So it is also possible to access child elements with non unique names.
 
 
 The XML input reader will create the following object model for template creation (`~EXAMPLEROOT~, ~EXAMPLENODE1~, ~EXAMPLENODE2~, ~EXAMPLEATTR1~,...` are just used here as examples. Of course they will be replaced later by the actual node or attribute names):
@@ -132,7 +132,7 @@ The XML input reader will create the following object model for template creatio
 *** *`\~EXAMPLENODE...~`*
 ** *`\~EXAMPLENODE...~`*
 
-In contrast to the java input reader, this xml input reader does currently not provide any additional template methods.
+In contrast to the java input reader, this XML input reader does currently not provide any additional template methods.
 
 == Merger extensions
 
