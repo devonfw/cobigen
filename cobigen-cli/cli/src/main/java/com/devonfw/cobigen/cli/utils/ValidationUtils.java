@@ -100,7 +100,7 @@ public final class ValidationUtils {
    * @param isJavaInput true when input file is Java
    * @param isOpenApiInput true when input file is OpenAPI
    */
-  public static void printNoTriggersMatched(File inputFile, boolean isJavaInput, boolean isOpenApiInput) {
+  public static void throwNoTriggersMatched(File inputFile, boolean isJavaInput, boolean isOpenApiInput) {
 
     LOG.error("Your input file '{}' is not valid as input for any generation purpose. It does not match any trigger.",
         inputFile.getName());

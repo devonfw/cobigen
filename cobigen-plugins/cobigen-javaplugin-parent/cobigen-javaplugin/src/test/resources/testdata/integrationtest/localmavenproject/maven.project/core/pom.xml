@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+	<groupId>testing</groupId>
+	<artifactId>maven.project</artifactId>
+	<version>${revision}</version>
+  </parent>
+  <artifactId>core</artifactId>
+  <packaging>jar</packaging>
+  <name>${project.artifactId}</name>
+
+  <dependencies>
+	  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.java.modules</groupId>
+      <artifactId>devon4j-basic</artifactId>
+      <version>2021.04.002</version>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <!-- separate eclipse build from command-line... -->
+      <id>eclipse</id>
+      <activation>
+        <property>
+          <name>eclipse.application</name>
+        </property>
+      </activation>
+      <build>
+        <directory>eclipse-target</directory>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

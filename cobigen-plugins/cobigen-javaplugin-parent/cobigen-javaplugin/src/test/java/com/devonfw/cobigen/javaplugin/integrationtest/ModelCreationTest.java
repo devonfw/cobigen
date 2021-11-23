@@ -72,6 +72,31 @@ public class ModelCreationTest extends AbstractIntegrationTest {
   }
 
   /**
+   * Tests if a valid child pom artifact dependency version can be resolved from its parent using dependencyManagement
+   * (mvn help:effective-pom still works)
+   *
+   * https://github.com/m-m-m/code/issues/35
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testResolveDependencyManagementVersionFromParent() throws Exception {
+
+    // given
+    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
+
+    // when
+    Object input = cobiGen.read(new File(
+        "src/test/resources/testdata/integrationtest/localmavenproject/maven.project/core/src/main/java/com/example/CustomerEntity.java")
+            .toPath().toAbsolutePath(),
+        Charset.forName("UTF-8"));
+
+    // then
+    assertThat(input).isNotNull();
+
+  }
+
+  /**
    * Tests that annotation string values for methods are not quoted. See issue #251
    *
    * @throws Exception test fails
