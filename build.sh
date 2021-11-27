@@ -1,74 +1,26 @@
-#!/bin/sh
-set -e
-
-SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-pushd "$SCRIPT_PATH"
-trap popd EXIT
-
+#!/usr/bin/env bash
+source "$(dirname "${0}")"/functions.sh
 echo ""
 echo "##########################################"
 echo ""
-echo "Script config: "
-if [[ "$*" == *test* ]]
-then
-    ENABLED_TEST=""
-    echo "  * With test execution"
-else
-	  ENABLED_TEST="-DskipTests"
-    echo "  * No test execution (pass 'test' as argument to enable)"
-fi
-
-if [[ "$*" == *parallel* ]]
-then
-    PARALLELIZED="-T1C"
-    echo "  * Parallel execution of 1 thread per core"
-else
-    PARALLELIZED=""
-    echo "  * No parallel execution (pass 'parallel' as argument to enable)"
-fi
-
-if [[ "$*" == *debug* ]]
-then
-    DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true -X" # set to false to see hidden exceptions
-    echo "  * Debug On"
-else
-	# the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
-    DEBUG="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
-    echo "  * Debug Off (pass 'debug' as argument to enable)"
-fi
-echo ""
-echo "##########################################"
-
-log_step() {
-  echo ""
-  echo ""
-  echo "##########################################"
-  echo "### $1"
-  echo "##########################################"
-  echo ""
-  echo ""
-}
-
-# https://stackoverflow.com/a/66801171
-BATCH_MODE="-Djansi.force=true -Djansi.passthrough=true -B"
 
 log_step "Cleanup Projects"
-mvn clean $PARALLELIZED $BATCH_MODE $DEBUG
+doRunCommand "mvn clean $PARALLELIZED $BATCH_MODE $DEBUG"
 
 log_step "Build & Test Core"
-mvn install -f cobigen --projects !cobigen-core-systemtest $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE
+doRunCommand "mvn install -f cobigen --projects !cobigen-core-systemtest $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE"
 
 log_step "Build & Test Core Plugins"
-mvn install -f cobigen-plugins $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE
+doRunCommand "mvn install -f cobigen-plugins $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE"
 
 log_step "Build Core Plugins - P2 Update Sites"
-mvn package bundle:bundle -Pp2-build,p2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=test
-mvn install bundle:bundle -Pp2-build,p2-bundle -DskipTests p2:site -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=test
+doRunCommand "mvn package bundle:bundle -Pp2-build,p2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE"
+doRunCommand "mvn install bundle:bundle -Pp2-build,p2-bundle -DskipTests p2:site -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE"
 
 log_step "Package & Run E2E Tests"
-mvn test -f cobigen/cobigen-core-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE
-mvn install -f cobigen-cli $ENABLED_TEST $DEBUG $BATCH_MODE
-mvn install -f cobigen-maven $ENABLED_TEST $DEBUG $BATCH_MODE
-mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE
-mvn install -f cobigen-eclipse -Pp2-build $ENABLED_TEST $DEBUG $BATCH_MODE
+doRunCommand "mvn test -f cobigen/cobigen-core-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE"
+doRunCommand "mvn install -f cobigen-cli $ENABLED_TEST $DEBUG $BATCH_MODE"
+doRunCommand "mvn install -f cobigen-maven $ENABLED_TEST $DEBUG $BATCH_MODE"
+doRunCommand "mvn install -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE"
+doRunCommand "mvn install -f cobigen-eclipse -Pp2-build $ENABLED_TEST $DEBUG $BATCH_MODE"
 
