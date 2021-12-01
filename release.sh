@@ -95,19 +95,19 @@ echo ""
 log_step "Remove -SNAPSHOT from revision"
 doRunCommand "sed -E -i 's@<revision>([^<]+)-SNAPSHOT</revision>@<revision>\1</revision>@' pom.xml"
 SED_OUT="$(sed -r -E -n 's@<revision>([0-9]+\.[0-9]+\.[0-9]+)</revision>@\1@p' pom.xml)"
-SED_OUT=$(trim $SED_OUT)
-if [[ -z "$SED_OUT" ]]
+RELEASE_VERSION=$(trim $SED_OUT)
+if [[ -z "$RELEASE_VERSION" ]]
 then
   echo -e "\e[91m  !ERR! could not set release revision in /pom.xml\e[39m"
   exit 1
 else 
-  echo "Set release version to $SED_OUT"
+  echo "Set release revision to $RELEASE_VERSION"
 fi
 
-log_step "Build to set revision for p2 artifacts"
+log_step "Build to set revision $RELEASE_VERSION for p2 artifacts"
 doRunCommand "bash ./build.sh parallel $CALL_PARAMS"
 
-log_step "Commit set release version"
+log_step "Commit set release revision $RELEASE_VERSION"
 doRunCommand "git add -u"
 doRunCommand "git commit -m'Set release version'"
 
@@ -120,13 +120,36 @@ then
   doRunCommand "bash ./build.sh test $CALL_PARAMS"
 fi
 
-log_step "Deploy Release"
+log_step "Deploy Release ${RELEASE_VERSION}"
 # need to activate beforehand to cleanup if an error occurred
 DEPLOYED=true
 doRunCommand "bash ./deploy.sh $CALL_PARAMS"
 
-log_step "Create Git Tag"
-doRunCommand "git tag v${SED_OUT}"
+log_step "Create Git Tag v${RELEASE_VERSION}"
+doRunCommand "git tag v${RELEASE_VERSION}"
+
+log_step "Increase revision and convert to SNAPSHOT"
+SED_OUT="$(sed -r -E -n 's@<revision>([0-9]+)\.([0-9]+)\.([0-9]+)</revision>@\3@p' pom.xml)"
+SED_OUT=$(trim $SED_OUT)
+if [[ -z "$SED_OUT" ]]
+then
+  echo -e "\e[91m  !ERR! could not identify release revision in /pom.xml\e[39m"
+  exit 1
+else
+  SED_OUT=$((SED_OUT+1))
+  NEW_PATCH=$(printf "%03d\n" $SED_OUT)
+  VERSION_PREFIX="$(sed -r -E -n 's@<revision>([0-9]+)\.([0-9]+)\.([0-9]+)</revision>@\1.\2.@p' pom.xml)"
+  VERSION_PREFIX=$(trim $VERSION_PREFIX)
+  NEW_VERSION="$VERSION_PREFIX$NEW_PATCH-SNAPSHOT"
+  doRunCommand "sed -E -i 's@<revision>([^<]+)</revision>@<revision>$NEW_VERSION</revision>@' pom.xml"
+fi
+
+log_step "Build to set revision $NEW_VERSION for p2 artifacts"
+doRunCommand "bash ./build.sh parallel $CALL_PARAMS"
+
+log_step "Commit set revision $NEW_VERSION"
+doRunCommand "git add -u"
+doRunCommand "git commit -m'Set next revision $NEW_VERSION'"
 
 if [[ "$DRYRUN" = true ]]
 then
@@ -137,6 +160,7 @@ then
   exit 0
 else
   log_step "Publish Release"
+  doRunCommand "git push --tags"
   doRunCommand "cd ../gh-pages && git push && cd $SCRIPT_PATH"
   doRunCommand "mvn nexus-staging:release -f cobigen $DEBUG $BATCH_MODE"
   doRunCommand "mvn nexus-staging:release -f cobigen-plugins $DEBUG $BATCH_MODE"
