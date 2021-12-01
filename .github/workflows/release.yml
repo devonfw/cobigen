@@ -5,13 +5,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-     - name: Clone
-       uses: actions/checkout@v2
-     - name: Cache Maven Dependencies
-       uses: actions/cache@v2
-       with:
-         path: ~/.m2/repository
-         key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
-     - name: Release including test run
-       shell: bash
-       run: ./release.sh
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      - name: Clone
+        uses: actions/checkout@v2
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+      - name: Release including test run
+        shell: bash
+        run: ./release.sh

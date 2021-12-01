@@ -66,16 +66,20 @@ if [[ "$*" == *gpgkey=* ]]
 then
   GPG_KEYNAME=$(echo "$*" | sed -r -E -n 's|.*gpgkey=([^ ]+).*|\1|p')
   echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
-  DEPLOY_SIGN="-Poss -Dgpg.keyname=$GPG_KEYNAME -Dgpg.executable=gpg"
-  if [[ "$SILENT" = true ]] && [[ -z "$GPG_PASSPHRASE" ]]
-  then
-    echo -e "\e[91m  !ERR! to comply to 'silent' parameter semantics, you should pass the GPG_PASSPHRASE for the key '$GPG_KEYNAME' to be able to sign.\e[39m"
-    exit 1
-  fi
+elif [[ -n "$GPG_KEY" ]]
+  GPG_KEYNAME=$GPG_KEY
+  echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
 elif [[ "$(basename \"$0\")" != "build.sh" ]]
   then
-    echo -e "\e[91m  !ERR! Cannot sign artifacts without passing a gpg key for signing. Please pass gpgkey=<your key> as a parameter.\e[39m"
+    echo -e "\e[91m  !ERR! Cannot sign artifacts without passing a gpg key for signing. Please pass gpgkey=<your key> as a parameter or GPG_KEY as secret.\e[39m"
     exit 1
+fi
+
+DEPLOY_SIGN="-Poss -Dgpg.keyname=$GPG_KEYNAME -Dgpg.executable=gpg"
+if [[ "$SILENT" = true ]] && [[ -z "$GPG_PASSPHRASE" ]]
+then
+  echo -e "\e[91m  !ERR! to comply to 'silent' parameter semantics, you should pass GPG_PASSPHRASE as secret to be able to sign artifacts.\e[39m"
+  exit 1
 fi
 
 log_step() {
