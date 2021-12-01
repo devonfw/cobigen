@@ -1,23 +1,13 @@
 #!/usr/bin/env bash
 source "$(dirname "${0}")"/functions.sh
 
-if [[ "$*" == *gpgkey=* ]]
-then
-  GPG_KEYNAME=$(echo "$*" | sed -r -E -n 's|gpgkey=([^\s]+)|\1|p')
-  echo "  > GPG Key set to $GPG_KEYNAME"
-  DEPLOY_SIGN="-Poss -Dgpg.keyname=$GPG_KEYNAME -Dgpg.executable=gpg"
-else 
-  echo "  !ERR! Cannot sign artifacts without passing a gpg key for signing. Please pass gpgkey=<your key> as a parameter"
-  exit 1
-fi
-
 if [[ $(sed -r -E -n 's@<revision>([^<]+)-SNAPSHOT</revision>@\1@p' pom.xml) ]]
 then
   DEPLOY_UPDATESITE="test"
   echo "  * Detected snapshot release number. Releasing to test p2 repository"
 else
   DEPLOY_UPDATESITE="stable"
-  echo "  > Detected final release number. Releasing to stable p2 repository"
+  echo -e "\e[92m  > Detected final release number. Releasing to stable p2 repository\e[39m"
 fi
 
 echo ""
@@ -35,9 +25,7 @@ then
   else
     echo " ! ../gh-pages is not clean"
     doAskQuestion "Should I cleanup?" # will exit if no
-    doRunCommand "git reset --hard HEAD"
-    doRunCommand "git clean -xf"
-    doRunCommand "git pull"
+    gitCleanup
   fi
   cd "$SCRIPT_PATH"
 else

@@ -1,5 +1,50 @@
 #!/usr/bin/env bash
+> release.log
+exec > >(tee -i release.log)
+exec 2>&1
+
+CALL_PARAMS=$*
+
 source "$(dirname "${0}")"/functions.sh
+
+DEPLOYED=false
+
+undoRelease() {
+  if { [ $? -ne 0 ] || [ "$DRYRUN" = true ]; } && [ "$DEPLOYED" = true ];
+  then
+    log_step "Drop all sonatype releases as the release script exited abnormally or it was a dryrun"
+    pauseUntilKeyPressed
+    
+    doRunCommand "mvn nexus-staging:drop -f cobigen $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop -f cobigen-plugins $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop -f cobigen-cli $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop -f cobigen-maven $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop -f cobigen-templates $DEBUG $BATCH_MODE" false
+    
+    log_step "Cleanup ../gh-pages"
+    cd ../gh-pages
+    gitCleanup
+    cd ../cobigen
+
+    if [ "$DRYRUN" = true ]
+    then
+      exit 0
+    else
+      exit 1
+    fi
+  fi
+  # redo popd manually, as this EXIT trap will overwrite the popd trap from functions.sh
+  popd
+}
+trap 'undoRelease' EXIT ERR
+
+if [[ "$*" == *skip-qa* ]]
+then
+  SKIP_TESTRUN=true
+  echo -e "\e[93m  !!! Explicitly notified that tests already executed successful beforehand - disabling tests!\e[39m"
+else
+  SKIP_TESTRUN=false
+fi
 
 echo ""
 echo "##########################################"
@@ -9,11 +54,15 @@ echo "Checking preconditions:"
 # check preconditions
 cd "$SCRIPT_PATH"
 
-if [[ $(git diff --shortstat && git status --porcelain) ]]
+GIT_STATUS="$(git diff --shortstat && git status --porcelain)"
+if [[ -z "$GIT_STATUS" ]]
 then
   echo "  * Working copy clean, continuing release"
 else
-  echo "  !ERR! Working copy not clean. Please make sure everything is committed and pushed."
+  echo -e "\e[91m  !ERR! Working copy not clean. Please make sure everything is committed and pushed.\e[39m"
+  echo ""
+  echo "git diff --shortstat && git status --porcelain"
+  echo "$GIT_STATUS"
   exit 1
 fi
 
@@ -26,10 +75,10 @@ else
   SED_OUT="$(sed -r -E -n 's@<revision>([0-9]+\.[0-9]+\.[0-9]+)</revision>@\1@p' pom.xml)"
   if [[ -n "$SED_OUT" ]]
   then
-    echo "  !ERR! Detected release revision $SED_OUT. This script is intended to be executed on -SNAPSHOT versions only."
+    echo -e "\e[91m  !ERR! Detected release revision $SED_OUT. This script is intended to be executed on -SNAPSHOT versions only.\e[39m"
     exit 1
   else
-    echo "  !ERR! No revision detected in pom.xml."
+    echo -e "\e[91m  !ERR! No revision detected in pom.xml.\e[39m"
     exit 1
   fi
 fi
@@ -37,7 +86,7 @@ fi
 ORIGIN="$(git config --get remote.origin.url)"
 case "$ORIGIN" in
   *devonfw/cobigen*) echo "  * Detected clone from $ORIGIN." ;;
-  *) echo "  !ERR! You are working on a fork, please make sure, you are releasing from devonfw/cobigen#master" && exit 1 ;;
+  *) echo -e "\e[91m  !ERR! You are working on a fork, please make sure, you are releasing from devonfw/cobigen#master\e[39m" && exit 1 ;;
 esac
 echo ""
 echo "##########################################"
@@ -46,38 +95,52 @@ echo ""
 log_step "Remove -SNAPSHOT from revision"
 doRunCommand "sed -E -i 's@<revision>([^<]+)-SNAPSHOT</revision>@<revision>\1</revision>@' pom.xml"
 SED_OUT="$(sed -r -E -n 's@<revision>([0-9]+\.[0-9]+\.[0-9]+)</revision>@\1@p' pom.xml)"
+SED_OUT=$(trim $SED_OUT)
 if [[ -z "$SED_OUT" ]]
 then
-  echo "!ERR! could not set release revision in /pom.xml"
+  echo -e "\e[91m  !ERR! could not set release revision in /pom.xml\e[39m"
   exit 1
 else 
   echo "Set release version to $SED_OUT"
 fi
 
 log_step "Build to set revision for p2 artifacts"
-doRunCommand "sh ./build.sh parallel $*"
+doRunCommand "bash ./build.sh parallel $CALL_PARAMS"
 
 log_step "Commit set release version"
 doRunCommand "git add -u"
-doRunCommand "git commit 'Set release version'"
+doRunCommand "git commit -m'Set release version'"
 
-log_step "Final test run of new release"
-# need to run in extra command for the tests as P2 resolution is done before the maven build aggregator and thus does not reflect the revision changes directly
-# also it's not recommended to run the final test in the deploy script as flaky UI tests could end up in a partial release.
-# Need to evaluate mvn nexus-staging:release command usage as we are running multiple commands it's not a trivial use and not intended as we would use it
-doRunCommand "sh ./build.sh test $*" 
+if [[ -z "$SKIP_TESTRUN" ]]
+then
+  log_step "Final test run of new release"
+  # need to run in extra command for the tests as P2 resolution is done before the maven build aggregator and thus does not reflect the revision changes directly
+  # also it's not recommended to run the final test in the deploy script as flaky UI tests could end up in a partial release.
+  # Need to evaluate mvn nexus-s  taging:release command usage as we are running multiple commands it's not a trivial use and not intended as we would use it
+  doRunCommand "bash ./build.sh test $CALL_PARAMS"
+fi
 
 log_step "Deploy Release"
-doRunCommand "sh ./deploy.sh $*"
+# need to activate beforehand to cleanup if an error occurred
+DEPLOYED=true
+doRunCommand "bash ./deploy.sh $CALL_PARAMS"
 
 log_step "Create Git Tag"
 doRunCommand "git tag v${SED_OUT}"
 
-log_step "Publish Release"
-if [ "$DRYRUN" = true ]
+if [[ "$DRYRUN" = true ]]
 then
-  echo "[DRYRUN] would push now ../gh-pages to remote"
-  doRunCommand "cd ../gh-pages && git status && cd $SCRIPT_PATH"
-  exit 1
+  log_step "[DRYRUN] Review and Abort"
+  echo "Git Status of ../gh-pages for review:"
+  doRunCommand "cd ../gh-pages && git status"
+  cd $SCRIPT_PATH
+  exit 0
+else
+  log_step "Publish Release"
+  doRunCommand "cd ../gh-pages && git push && cd $SCRIPT_PATH"
+  doRunCommand "mvn nexus-staging:release -f cobigen $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release -f cobigen-plugins $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release -f cobigen-cli $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release -f cobigen-maven $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release -f cobigen-templates $DEBUG $BATCH_MODE"
 fi
-# doRunCommand "cd ../gh-pages && git push && cd $SCRIPT_PATH"
