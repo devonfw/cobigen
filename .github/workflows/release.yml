@@ -5,6 +5,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Clone
+        uses: actions/checkout@v2
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v4
         with:
@@ -12,8 +14,6 @@ jobs:
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
           git_user_signingkey: true
           git_commit_gpgsign: true
-      - name: Clone
-        uses: actions/checkout@v2
       - name: Cache Maven Dependencies
         uses: actions/cache@v2
         with:
