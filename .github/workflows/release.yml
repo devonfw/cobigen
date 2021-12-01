@@ -1,0 +1,17 @@
+name: Release 
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+     - name: Clone
+       uses: actions/checkout@v2
+     - name: Cache Maven Dependencies
+       uses: actions/cache@v2
+       with:
+         path: ~/.m2/repository
+         key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+     - name: Release including test run
+       shell: bash
+       run: ./release.sh
