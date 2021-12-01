@@ -21,4 +21,6 @@ jobs:
           key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       - name: Release including test run
         shell: bash
+        env: 
+          GPG_KEY: ${{ secrets.GPG_KEY }}
         run: ./release.sh
