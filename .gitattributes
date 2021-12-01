@@ -41,7 +41,7 @@
 *.jpg           binary
 *.jpeg          binary
 *.png           binary
-*.PNG
+*.PNG		binary
 *.so            binary
 *.war           binary
 *.pdf		binary
