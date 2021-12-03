@@ -12,32 +12,32 @@ It is discouraged to have `cobigen-core` dependencies at runtime, except for `co
 
 == Plugin Activator
 
-Each plug-in has to have an plug-in activator class implementing the interface `GeneratorPluginActivator` from the core-api. This class will be used to load the plug-in using the PluginRegistry as explained link:cobigen-core_development#loadplugin[here]. This class implements two methods:
+Each plug-in has to have an plug-in activator class implementing the interface `GeneratorPluginActivator` from the core-api. This class will be used to load the plug-in using the `PluginRegistry` as explained link:cobigen-core_development#loadplugin[here]. This class implements two methods:
 
 . `bindMerger()` -> returns a mapping of merge strategies and its implementation to be registered.
 . `bindTriggerInterpreter()`-> returns the trigger interpreters to be provided by this plug-in.
 
 Both methods create and register instances of mergers and trigger interpreters to be provided by the new plug-in.
 
-== Adding TriggerInterpreter
+== Adding Trigger Interpreter
 
-The trigger interpreter has to implement the TriggerInterpreter interface from the core. The trigger interpreter defines the type for the new plugin and creates new InputReader and new Matcher objects.
+The trigger interpreter has to implement the `TriggerInterpreter` interface from the core. The trigger interpreter defines the type for the new plugin and creates new `InputReader` and new Matcher objects.
 
-== Adding InputReader
+== Adding Input Reader
 
 The input reader is responsible of read the input object and parse it into
  FreeMarker models. The input reader must be implemented for the type of the
  input file. If there is any existent plugin that has the same file type as input,
  there will be no need to add a new input reader to the new plug-in.
 
-=== InputReader Interface
+=== Input Reader Interface
 
 The interface needed to add a new input reader is defined at the core. Each new
 sub plug-in must implements this interface if is needed an input reader for it.
 
 The interface implements the basic methods that an input reader must have,
 but if additional methods are required, the developer must add a new interface
-that extends the original interface *__InputReader.java__* from the core-api
+that extends the original interface *__`InputReader.java`__* from the core-api
 and implement that on the sub plug-in.
 
 The methods to be implemented by the input reader of the new sub plugin are:
@@ -68,15 +68,16 @@ The input reader is an object that can be retrieved using the correspondent get
 
 == Adding Matcher
 
-The matcher implements the MatcherInterpreter interface from the core-api.
+The matcher implements the `MatcherInterpreter` interface from the core-api.
 Should be implemented for providing a new input matcher. Input matcher are
 defined as part of a trigger and provide the ability to restrict specific
 inputs to a set of templates.
-This restriction is implemented with a MatcherType `enum`.
+This restriction is implemented with a `MatcherType` `enum`.
 
-E.g JavaPlugin
+E.g `JavaPlugin`
 
 [source,java]
+----
 private enum MatcherType {
     /** Full Qualified Name Matching */
     FQN,
@@ -85,20 +86,23 @@ private enum MatcherType {
     /** Expression interpretation */
     EXPRESSION
 }
+----
 
 Furthermore, matchers may provide several variable assignments, which might be
 dependent on any information of the matched input and thus should be resolvable
 by the defined matcher.
 
-E.g JavaPlugin
+E.g `JavaPlugin`
 
 [source,java]
+----
 private enum VariableType {
     /** Constant variable assignment */
     CONSTANT,
     /** Regular expression group assignment */
     REGEX
 }
+----
 
 == Adding Merger
 
@@ -114,7 +118,7 @@ The implementation of the Merge interface must override the following methods:
 | `merge(File base, String patch, String targetCharset)` | *String*  | Merges the patch into the base file.
 |======================
 
-Is important to know that any exception caused by the merger must throw a MergeException from the core-api to the eclipse-plugin handle it.
+Is important to know that any exception caused by the merger must throw a `MergeException` from the core-api to the eclipse-plugin handle it.
 
 == Changes since Eclipse / Maven 3.x
 

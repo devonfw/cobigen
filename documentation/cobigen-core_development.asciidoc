@@ -27,37 +27,38 @@ The core implementation are divided in three projects:
 
 == Extension Mechanism
 
-The *extension* package from the API project contains the interfaces to be implemented if necessary by the sub plugins:
 
-* *__GeneratorPluginActivator.java__*
-* *__InputReader.java__*
-* *__MatcherInterpreter.java__*
+The *extension* package from the `API` project contains the interfaces to be implemented if necessary by the sub plugins:
+
+* *__`GeneratorPluginActivator.java`__*
+* *__`InputReader.java`__*
+* *__`MatcherInterpreter.java`__*
 * *__Merger.java__*
-* *__TriggerInterpreter.java__*
-* *__ModelBuilder.java__*
+* *__`TriggerInterpreter.java`__*
+* *__`ModelBuilder.java`__*
 
-The ModelBuilder is an interface for accessing the internal model builder instance. Is implemented by *__ModelBuilder.java__* from the *model* package from the implementation project that provides the methods to call the `createModel()` from the correspondent input reader from the correspondent trigger interpreter to create the object models for a given object.
+The `ModelBuilder` is an interface for accessing the internal model builder instance. Is implemented by *__`ModelBuilder.java`__* from the *model* package from the implementation project that provides the methods to call the `createModel()` from the correspondent input reader from the correspondent trigger interpreter to create the object models for a given object.
 
 The *to* package have the transfer objects of `template`, `matcher`, `increment` and `variable assignment` classes that will be used as "communication channel" between the core and sub plug-ins methods
 
 == Plugin Registry
 
-The core must load all the sub plugins to get their Merger, Matcher, TriggerInterpreter and InputReader. That elements must implement their respective interfaces from the core.
+The core must load all the sub plugins to get their Merger, Matcher, `TriggerInterpreter` and `InputReader`. That elements must implement their respective interfaces from the core.
 
 image:images/howtos/cobigen-core/core_01.png[Diagram 1,width="450",link="images/howtos/cobigen-core/core_01.png"]
 
-Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an InputReader (advanced information https://github.com/devonfw/cobigen/wiki/new_plugin[here])
+Is important to note that not all the sub plug-ins need to have implemented a Matcher and/or an `InputReader` (advanced information https://github.com/devonfw/cobigen/wiki/new_plugin[here])
 
-=== LoadPlugin
+=== Load Plugin
 
 The process of loading plugins to the core is done at the https://github.com/devonfw/cobigen/wiki/eclipse-plugin_development#1-1-activator-java[eclipse-plugin initialization].
 
-Each sub plugin has an activator class that extends the *__GeneratorPluginActivator__* interface from the *extension* package. That class implements the methods `bindMerger()` and `bindTriggerInterpreter()`.
-
+Each sub plugin has an activator class that extends the *__`GeneratorPluginActivator`__* interface from the *extension* package. That class implements the methods `bindMerger()` and `bindTriggerInterpreter()`.
 
 image:images/howtos/cobigen-core/core_02.png[Diagram 2,width="450",link="images/howtos/cobigen-core/core_02.png"]
 
-This is the class passed as argument to the `loadPlugin()` method of *__PluginRegister.java__* of the *pluginmanager* package.
+
+This is the class passed as argument to the `loadPlugin()` method of *__`PluginRegister.java`__* of the *pluginmanager* package.
 
 This method registers the mergers and the trigger interpreter of the sub plugins to the core.
 The trigger interpreter has the correspondent input reader of the plugin.
@@ -75,32 +76,35 @@ The CobiGen initialization must initialize the context configuration and the Fre
 
 When a CobiGen object is instantiated, the constructor initializes the Freemarker configuration creating a configuration instance from the class *freemarker.template.Configuration* and adjust its settings.
 
-[source,java]
+[source, java]
+----
 freeMarkerConfig = new Configuration(Configuration.VERSION_2_3_23);
 freeMarkerConfig.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_23).build());
 freeMarkerConfig.clearEncodingMap();
 freeMarkerConfig.setDefaultEncoding("UTF-8");
 freeMarkerConfig.setLocalizedLookup(false);
-freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(configFolder));
+freeMarkerConfig.setTemplateLoader(new NioFileSystemTemplateLoader(`configFolder`));
+----
 
-Using the *__FileSystemUtil__* from the *util* package the URI of the root folder containing the `context.xml` and all templates, configurations etc... is converted to a Path object passing it as argument to the *__ContextConfiguration__* constructor.
-The *__ContextConfiguration__* creates a new ContextConfiguration from the *config* package with the contents initially loaded from the `context.xml`
+Using the `*__FileSystemUtil__*` from the *util* package the `URI` of the root folder containing the `context.xml` and all templates, configurations etc... is converted to a Path object passing it as argument to the `*__ContextConfiguration__*` constructor.
+The `*__ContextConfiguration__*` creates a new `ContextConfiguration` from the *config* package with the contents initially loaded from the `context.xml`
 
 [NOTE]
 =========
-How the ContextConfiguration works explained deeply https://github.com/devonfw/cobigen/wiki/Core-Development#4-1-contextconfiguration[here].
+How the `ContextConfiguration` works explained deeply https://github.com/devonfw/cobigen/wiki/Core-Development#4-1-contextconfiguration[here].
 =========
 
-The Configuration initialization requires the version of Freemarker to be used and at the ObjectWrapper initialization as well.
-The *__DefaultObjectWrapperBuilder__* creates an *__DefaultObjectWrapper__* object that maps Java objects to the type-system of FreeMarker Template Language (FTL) with the given `incompatibleImprovements` specified by the version used as argument.
+The Configuration initialization requires the version of FreeMarker to be used and at the `ObjectWrapper` initialization as well.
+The `*__DefaultObjectWrapperBuilder__*` creates an `*__DefaultObjectWrapper__*` object that maps Java objects to the type-system of FreeMarker Template Language (`FTL`) with the given `incompatibleImprovements` specified by the version used as argument.
 
-The configuration of Freemarker requires to specify to a __TemplateLoader__. A __TemplateLoader__ is an interface provided by Freemarker library that the developer should implement to fit the needs. The __TemplateLoader__ implementation at CobiGen is the class *__NioFileSystemTemplateLoader.java__* from the *config.nio* package.
+The configuration of FreeMarker requires to specify to a __`TemplateLoader`__. A __`TemplateLoader`__ is an interface provided by FreeMarker library that the developer should implement to fit the needs. The __`TemplateLoader`__ implementation at CobiGen is the class *__`NioFileSystemTemplateLoader.java`__* from the *config.nio* package.
+
 
 image:images/howtos/cobigen-core/core_03.png[Diagram 5,width="450",link="images/howtos/cobigen-core/core_03.png"]
 
 === Context Configuration
 
-The context configuration reads the `context.xml` file from the template project (default: *CobiGen_Templates*)  passing the path as argument to the constructor. At the constructor, it is created an instance of *__ContextConfigurationReader.java__* from the *config.reader* package.
+The context configuration reads the `context.xml` file from the template project (default: *CobiGen_Templates*)  passing the path as argument to the constructor. At the constructor, it is created an instance of `*__ContextConfigurationReader.java__*` from the *config.reader* package.
 
 [NOTE]
 ==========
@@ -111,14 +115,18 @@ That reader uses the JAXB, JAXB (Java Architecture for XML Binding) provides a f
 
 ==== JAXB
 
-JAXB auto generates the Java object within the JAXBContext specified at the `xmlns` attribute of the `contextConfiguration` field from the `context.xml` file
+<<<<<<< HEAD
+JAXB auto generates the Java object within the `JAXBContext` specified at the `xmlns` attribute of the `contextConfiguration` field from the `context.xml` file
 
-[source,java]
+[source, java]
+----
 Unmarshaller unmarshaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+----
 
 That auto-generation follows the `contextConfiguration.xsd` schema. Each Java object follows the template specified with the field `<xs:CompleType>` from the schema file.
 
-[source,xml]
+[source, xml]
+----
 <xs:complexType name="trigger">
     <xs:sequence>
          <xs:element name="containerMatcher" type="tns:containerMatcher" minOccurs="0" maxOccurs="unbounded"/>
@@ -137,11 +145,13 @@ That auto-generation follows the `contextConfiguration.xsd` schema. Each Java ob
     <xs:attribute name="value" type="xs:string" use="required"/>
     <xs:attribute name="accumulationType" type="tns:accumulationType" use="optional" default="OR"/>
   </xs:complexType>
+----
 
 image:images/howtos/cobigen-core/cobigen-core_sshot1.png[JAXB,width="450",link="images/howtos/cobigen-core/cobigen-core_sshot1.png"]
 
 The generated Java objects has the elements and attributes specified at the schema:
-[source,java]
+[source, java]
+----
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "trigger", namespace = "http://capgemini.com/devonfw/cobigen/ContextConfiguration", propOrder = {
     "containerMatcher",
@@ -166,10 +176,13 @@ public class Trigger {
     ..
     .
 }
+----
 
 This process it is done when calling the `unmarshal()` method.
-[source,java]
+[source, java]
+----
 Object rootNode = unmarshaller.unmarshal(Files.newInputStream(contextFile));
+----
 
 [NOTE]
 ===========
@@ -178,11 +191,12 @@ For extended information about JAXB check the https://docs.oracle.com/javase/tut
 
 ==== Version Validation
 
-If the version retrieved after the `unmarshal` process is null, an *InvalidConfigurationException* defined at *exceptions* package will be thrown.
+If the version retrieved after the `unmarshal` process is null, an *`InvalidConfigurationException`* defined at *exceptions* package will be thrown.
 
-If it is not null, will be compared using the `validate()` method from *__VersionValidator.java__* from *config.versioning* package with the project version retrieved by the *__MavenMetadata.java__*. The *__MavenMetadata.java__* file is provided by the POM while building the `JAR` file
+If it is not null, will be compared using the `validate()` method from *__`VersionValidator.java`__* from *config.versioning* package with the project version retrieved by the *__`MavenMetadata.java`__*. The *__`MavenMetadata.java`__* file is provided by the POM while building the `JAR` file
 
 [source,xml]
+----
 <build>
     <plugins>
       <!-- Inject Maven Properties in java-templates source folder -->
@@ -203,16 +217,20 @@ If it is not null, will be compared using the `validate()` method from *__Versio
       .
     </plugins>
 </build>
+----
 
-*MavenMetadata* gets the current CobiGen version by reading the `<version>` label inside the `<project>` label from the POM file
+*`MavenMetadata`* gets the current CobiGen version by reading the `<version>` label inside the `<project>` label from the POM file
 
-[source,java]
+[source, java]
+----
 public class MavenMetadata {
     /** Maven version */
     public static final String VERSION = "${project.version}";
 }
+----
 
 [source,xml]
+----
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
@@ -224,15 +242,18 @@ public class MavenMetadata {
   ..
   .
 }
+----
 
 The comparison has three possibilities:
 
 . Versions are equal -> Valid
-. `context.xml` version is greater than current CobiGen version -> *InvalidConfigurationException*
+<<<<<<< HEAD
+. `context.xml` version is greater than current CobiGen version -> *`InvalidConfigurationException`*
 . Current CobiGen version is greater that `context.xml` version -> Compatible if there not exists a version step (breaking change) in between, otherwise, throw an error.
 
 Reaching this point, the configuration version and root node has been validated. Unmarshal with schema checks for checking the correctness and give the user more hints to correct his failures.
-[source,java]
+[source, java]
+----
 SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
 try (
@@ -244,21 +265,25 @@ try (
     rootNode = unmarshaller.unmarshal(configInputStream);
     contextNode = (ContextConfiguration) rootNode;
 }
+----
 
-==== Load Triggers, Matchers, containerMatcher, AccumulationTypes and VariableAssigments
+==== Load Triggers, Matchers, container Matcher, Accumulation Types and Variable Assignments
 
 To finish the context configuration initialization, the, trigger, matchers, container matchers, accumulation types and variables assignments are retrieved from the correspondent Java objects generated by JAXB.
 
-[source,java]
+[source, java]
+----
 public Map<String, Trigger> loadTriggers()
 private List<Matcher> loadMatchers(Trigger trigger)
 private List<ContainerMatcher> loadContainerMatchers(Trigger trigger)
 private List<VariableAssignment> loadVariableAssignments(Matcher matcher)
+----
 
 == Perform Generation
 
-Depending on the input, the generation process can begin from two different `generate()` methods called at the *CobiGenWrapper* from the eclipse-plugin:
-[source,java]
+Depending on the input, the generation process can begin from two different `generate()` methods called at the `*CobiGenWrapper*` from the eclipse-plugin:
+[source, java]
+----
 public void generate(TemplateTo template, boolean forceOverride) throws IOException, TemplateException, MergeException {
     if (singleNonContainerInput) {
         Map<String, Object> model = cobiGen.getModelBuilder(inputs.get(0), template.getTriggerId()).createModel();
@@ -270,10 +295,12 @@ public void generate(TemplateTo template, boolean forceOverride) throws IOExcept
         }
     }
 }
+----
 
 === Single Non Container Input
 
-If the input is a single non container input, first step is to create the model, then allow customization by the user (`adaptModel()`) and finally call the `generate()` method from CobiGen using the input, template, model and the boolean forceOverride.
+If the input is a single non container input, first step is to create the model, then allow customization by the user (`adaptModel()`) and finally call the `generate()` method from CobiGen using the input, template, model and the boolean `forceOverride`.
+
 The generation process in this case will follow this main steps:
 
 . Check if the input is not null
@@ -283,10 +310,11 @@ The generation process in this case will follow this main steps:
 . Test if the input is a package. +
 This only can be possible in the case of java inputs. As the input is a single non container input, this check will fail and the execution will continue.
 . Check if the model parameter is null and if it is, create a new model +
-As the model has been created at the *CobiGenWrapper*, there is no need to create it again.
+As the model has been created at the `*CobiGenWrapper*`, there is no need to create it again.
 . Get the destination file.
 . Check if the destination file already exists +
-If it exists, but the forceOverride is set to `true` or the merge strategy of the template is null, the file will be overwritten, not merged. Otherwise, first generate output into a writter object, get the merger and merge the original file with the writter and write the file with the merge result.
+If it exists, but the `forceOverride` is set to `true` or the merge strategy of the template is null, the file will be overwritten, not merged. Otherwise, first generate output into a writter object, get the merger and merge the original file with the writter and write the file with the merge result.
+
 . If the file does not exist, simple write the file.
 
 === Single Container Input or multiple files selection

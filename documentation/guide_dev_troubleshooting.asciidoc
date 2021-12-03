@@ -31,9 +31,9 @@ ic (https://devon.s2-eu.capgemini.com/nexus/content/groups/public/): Not authori
 
 ==== Solution
 
-Please note the message `Not authorized , ReasonPhrase: Unauthorized. -> [Help 2]`! 
+Please note the message Not authorized , ReasonPhrase: Unauthorized. -> [Help 2]! 
 
-1. Please check, that you run the command by using the console.bat or a simliar console initialized with the IDE environment variables.
+1. Please check, that you run the command by using the console.bat or a similar console initialized with the IDE environment variables.
 2. Please check your corporate login in the variables-customized.bat to be correct (`DEVON_NEXUS_USER` and `DEVON_NEXUS_PASSWD`). Make sure, that you restart the console.bat you are working in after changing the variables-customized.bat. Same holds for eclipse instances running. Please restart to make the new values accessible.
 3. Please check your password to http://www.robvanderwoude.com/escapechars.php[escape special characters].
 4. Please check whether you are able to login to https://devon.s2-eu.capgemini.com and Nexus is up and running. If you cannot login, contact one of the main developers.
@@ -53,6 +53,7 @@ To test changes implemented on the `cobigen-core` you have to follow the next pr
 == Issues with workspace when Oomph automatic updates don't work (especially for Indian colleagues)
 Executing eclipse-cobigen-development.bat file will open Eclipse with all the projects automatically imported. Oomph creates 'Working Sets' and set 'Top Level Elements' pointing to that working set. For Countries where proxy restricts Oomph to execute, we see no projects imported into project explorer/Navigator. Rather than trying manual import which later can give build issues we should follow below solution.
 Build Issues could be like:
+
 ```
 [ERROR] Cannot resolve project dependencies:
 [ERROR]   You requested to install 'com.capgemini.cobigen-htmlplugin 0.0.0' but it could not be found
@@ -66,12 +67,20 @@ In Eclipse, you can click the small downward arrow in the upper right corner of 
 
 == Issue when testing Eclipse plugin by Running as Eclipse Application. 
 Error message will be like:
+[source]
+----
+1) Caused by: java.lang.ClassNotFoundException: An error occurred while automatically activating bundle com.devonfw.cobigen.eclipse
+2) org.osgi.framework.BundleException: Error starting module.
+3) org.eclipse.core.runtime.CoreException: Plug-in com.devonfw.cobigen.eclipse was unable to load class com.devonfw.cobigen.eclipse.workbenchcontrol.handler.XXXXHandler.
+----
+
+==== Solution
+Delete or rename the runtime-`EclipseApplication` inside workspaces folder. Re- run and try setting up workspace in that environment again. It should work!!
+=======
 ```
 1) Caused by: java.lang.ClassNotFoundException: An error occurred while automatically activating bundle com.devonfw.cobigen.eclipse
 2) org.osgi.framework.BundleException: Error starting module.
 3) org.eclipse.core.runtime.CoreException: Plug-in com.devonfw.cobigen.eclipse was unable to load class com.devonfw.cobigen.eclipse.workbenchcontrol.handler.XXXXHandler.
 ```
 
-==== Solution
-Delete or rename the runtime-EclipseApplication inside workspaces folder. Re- run and try setting up workspace in that environment again. It should work!!
  

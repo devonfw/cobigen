@@ -151,7 +151,7 @@ public class GenerateCommand extends CommandCommons {
         List<T> matching = (List<T>) (isIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input));
 
         if (matching.isEmpty()) {
-          ValidationUtils.printNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
+          ValidationUtils.throwNoTriggersMatched(inputFile, isJavaInput, isOpenApiInput);
         }
 
         if (firstIteration) {

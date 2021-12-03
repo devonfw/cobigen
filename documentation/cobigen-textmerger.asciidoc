@@ -17,14 +17,14 @@ _Remark_: empty patches will not result in appending a new line any more since v
 _Remark_: Only suitable if no anchors are defined, otherwise it will simply act as `textmerge_append`
 
 * merge strategy `textmerge\_override` (replaces the contents of the existing file with the patch)
-_Remark_: If anchors are defined, override is set as the default mergestrategy for every text block if not redefined in an anchor specification.
+_Remark_: If anchors are defined, override is set as the default `mergestrategy` for every text block if not redefined in an anchor specification.
 
 == Anchor functionality
 If a template contains text that fits the definition of `anchor:${documentpart}:${mergestrategy}:anchorend` or more specifically the regular expression `(.\*)anchor:([^:]+):(newline_)?([^:]+)(_newline)?:anchorend\\s*(\\r\\n|\\r|\\n)`, some additional functionality becomes available about specific parts of the incoming text and the way it will be merged with the existing text. These anchors always change things about the text to come up until the next anchor, text before it is ignored.
 
 If no anchors are defined, the complete patch will be appended depending on your choice for the template in the file `templates.xml`.
 
-[[anchordef]]
+[[`anchordef`]]
 
 === Anchor Definition
 Anchors should always be defined as a comment of the language the template results in, as you do not want them to appear in your readable version, but cannot define them as freemarker comments in the template, or the merger will not know about them.
@@ -32,28 +32,28 @@ Anchors will also be read when they are not comments due to the merger being abl
 _Remark:_ If the resulting language has closing tags for comments, they have to appear in the next line.
 _Remark:_ If you do not put the anchor into a new line, all the text that appears before it will be added to the anchor.
 
-=== Documentparts
-In general, ${documentpart} is an id to mark a part of the document, that way the merger knows what parts of the text to merge with which parts of the patch (e.g. if the existing text contains `anchor:table:${}:anchorend` that part will be merged with the part tagged `anchor:table:${}:anchorend` of the patch). 
+=== Document parts
+In general, `${documentpart}` is an id to mark a part of the document, that way the merger knows what parts of the text to merge with which parts of the patch (e.g. if the existing text contains `anchor:table:${}:anchorend` that part will be merged with the part tagged `anchor:table:${}:anchorend` of the patch). 
 
-If the same documentpart is defined multiple times, it can lead to errors, so instead of defining `table` multiple times, use `table1`, `table2`, `table3` etc. 
+If the same `documentpart` is defined multiple times, it can lead to errors, so instead of defining `table` multiple times, use `table1`, `table2`, `table3` etc. 
 
-If a `${documentpart}` is defined in the document but not in the patch and they are in the same position, it is processed in the following way: If only the documentparts `header`, `test` and `footer` are defined in the document in that order, and the patch contains `header`, `order` and `footer`, the resulting order will be `header`, `test`, `order` then `footer`.
+If a `${documentpart}` is defined in the document but not in the patch and they are in the same position, it is processed in the following way: If only the `documentparts header`, `test` and `footer` are defined in the document in that order, and the patch contains `header`, `order` and `footer`, the resulting order will be `header`, `test`, `order` then `footer`.
 
-The following documentparts have default functionality:
+The following `documentparts` have default functionality:
 
 . `anchor:header:${mergestrategy}:anchorend` marks the beginning of a header, that will be added once when the document is created, but not again.
 _Remark:_ This is only done once, if you have `header` in another anchor, it will be ignored
 . `anchor:footer:${mergestrategy}:anchorend` marks the beginning of a footer, that will be added once when the document is created, but not again. Once this is invoked, all following text will be included in the footer, including other anchors.
 
-[[mergestrategies]]
+[[`mergestrategies`]]
 
-=== Mergestrategies
-Mergestrategies are only relevant in the patch, as the merger is only interested in how text in the patch should be managed, not how it was managed in the past.
+=== `Mergestrategies`
+`Mergestrategies` are only relevant in the patch, as the merger is only interested in how text in the patch should be managed, not how it was managed in the past.
 
 . `anchor:${documentpart}::anchorend` will use the merge strategy from templates.xml, see <<extensions,Merger-Extensions>>.
-. `anchor:${}:${mergestrategy}\_newline:anchorend` or `anchor:${}:newline_${mergestrategy}:anchorend` states that a new line should be appended before or after this anchors text, depending on where the newline is (before or after the mergestrategy). `anchor:${documentpart}:newline:anchorend` puts a new line after the anchors text.
+. `anchor:${}:${mergestrategy}\_newline:anchorend` or `anchor:${}:newline_${mergestrategy}:anchorend` states that a new line should be appended before or after this anchors text, depending on where the newline is (before or after the `mergestrategy`). `anchor:${documentpart}:newline:anchorend` puts a new line after the anchors text.
 _Remark:_ Only works with appending strategies, not merging/replacing ones. These strategies currently include: `appendbefore`, `append`/`appendafter`
-. `anchor:${documentpart}:override:anchorend` means that the new text of this documentpart will replace the existing one completely
+. `anchor:${documentpart}:override:anchorend` means that the new text of this `documentpart` will replace the existing one completely
 . `anchor:${documentpart}:appendbefore:anchorend` or `anchor:${documentpart}:appendafter:anchorend`/`anchor:${documentpart}:append:anchorend` specifies whether the text of the patch should come before the existing text or after.
 
 == Usage Examples
@@ -171,7 +171,7 @@ Dolor Sit
 
 == Error List
 
-- If there are anchors in the text, but either base or patch do not start with one, the merging process wil be aborted, as text might go missing this way.
-- Using `\_newline` or `newline_` with mergestrategies that don't support it , like `override`, will abort the merging process. See <<mergestrategies,Merge Strategies>> ->2 for details.
-- Using undefined mergestrategies will abort the merging process.
-- Wrong anchor definitions, for example `anchor:${}:anchorend` will abort the merging process, see <<anchordef,Anchor Definition>> for details.
+- If there are anchors in the text, but either base or patch do not start with one, the merging process will be aborted, as text might go missing this way.
+- Using `\_newline` or `newline_` with `mergestrategies` that don't support it , like `override`, will abort the merging process. See <<`mergestrategies`,Merge Strategies>> ->2 for details.
+- Using undefined `mergestrategies` will abort the merging process.
+- Wrong anchor definitions, for example `anchor:${}:anchorend` will abort the merging process, see <<`anchordef`,Anchor Definition>> for details.

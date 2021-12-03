@@ -14,6 +14,7 @@
   <properties>
     <skip.deployment>false</skip.deployment>
     <eclipse.host.version>3.0.1</eclipse.host.version>
+    <maven.test.path>src\test\resources\testdata\integrationtest\localmavenproject\maven.project</maven.test.path>
   </properties>
 
   <dependencies>
@@ -57,7 +58,7 @@
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-code-java-impl</artifactId>
-      <version>1.0.0-beta6</version>
+      <version>1.0.0-beta7</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.maven</groupId>
@@ -79,4 +80,40 @@
       <version>2.0.0</version>
     </dependency>
   </dependencies>
+
+
+  <build>
+    <plugins>
+
+      <!-- Building a Maven project that is used on the tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>Install test project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>mvn</executable>
+          <workingDirectory>${maven.test.path}</workingDirectory>
+          <arguments>
+            <argument>install</argument>
+            <!-- https://stackoverflow.com/a/66801171 -->
+            <argument>-Djansi.force=true</argument>
+            <argument>-Djansi.passthrough=true</argument>
+            <argument>-B</argument>
+            <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
 </project>

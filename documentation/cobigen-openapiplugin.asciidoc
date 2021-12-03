@@ -3,7 +3,7 @@ toc::[]
 
 = OpenApi Plug-in
 
-The OpenApi Plug-in enables the support for Swagger files that follows the OpenApi 3.0 standard as input for CobiGen. Until now, CobiGen was thought to follow a "code first" generation, with this plugin, now it can also follow the "contract first" strategy
+The OpenApi Plug-in enables the support for Swagger files that follows the `OpenApi 3.0` standard as input for CobiGen. Until now, CobiGen was thought to follow a "code first" generation, with this plugin, now it can also follow the "contract first" strategy
 
 * *Code First*
 ** Generating from a file with code (Java/XML code in our case)
@@ -14,15 +14,17 @@ NOTE: If you are not a CobiGen developer, you will be more interested in <<Usage
 
 == Trigger Extensions
 
-The OpenApi Plug-in provides a new trigger for Swagger OpenApi 3.0 related inputs. It accepts different representations as inputs (see <<openapi-input-reader,OpenApi input reader>>) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
+The OpenApi Plug-in provides a new trigger for `Swagger OpenApi 3.0` related inputs. It accepts different representations as inputs (see <<openapi-input-reader,OpenApi input reader>>) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
 
 * type 'openapi'
 +
 .Example of a openapi trigger definition
 [source,xml]
+----
 <trigger id="..." type="openapi" templateFolder="...">
     ...
 </trigger>
+----
 +
 This trigger type enables OpenApi elements as inputs.
 
@@ -31,35 +33,38 @@ With the trigger you might define matchers, which restrict the input upon specif
 
 * type 'element' -> An object
 
-This trigger will be enabled if the element (Java Object) of the input file is and EntityDef (`value`). 
+This trigger will be enabled if the element (Java Object) of the input file is and `EntityDef` (`value`). 
 
-=== ContainerMatcher type
+=== Container Matcher type
 Additionally, the java plugin provides the ability to match packages (`containers`) as follows:
 
 * type 'element'
 
-The container matcher matches elements as Java Objects, in this case will be always an OpenApiFile object. (See link:cobigen-core_configuration#containermatcher-node[containerMatcher semantics] to get more information about containerMatchers itself.)
+The container matcher matches elements as Java Objects, in this case will be always an `OpenApiFile` object. (See link:cobigen-core_configuration#containermatcher-node[`containerMatcher` semantics] to get more information about `containerMatchers` itself.)
 
 [[openapi-variable-assignment]]
-=== VariableAssignment types
+=== Variable Assignment types
 Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The OpenApi Plug-in currently provides two different mechanisms:
 
 * type 'constant' -> constant parameter
 +
 [source,xml]
+----
 <trigger id="..." type="openapi" templateFolder="...">
     <containerMatcher type="element" value="OpenApiFile"/>
     <matcher type="element" value="EntityDef">
         <variableAssignment type="constant" key="rootPackage" value="com.capgemini.demo" />
     </matcher>
 </trigger>
+----
 
 This variable assignment assigns the value of the given regular expression group number to the given `key`.
-In this case, the constant type variableAssignment is used to specify the root package where the generate will place the files generated.
+In this case, the constant type `variableAssignment` is used to specify the root package where the generate will place the files generated.
 
 * type 'extension' -> Extraction of the info extensions and the extensions of each entity. (the tags that start with `"x-..."`).
 +
 [source,xml]
+----
   <trigger id="..." type="openapi" templateFolder="...">
     <containerMatcher type="element" value="OpenAPIFile"/>
     <matcher type="element" value="EntityDef">
@@ -68,6 +73,7 @@ In this case, the constant type variableAssignment is used to specify the root p
       <variableAssignment type="extension" key="globalVariable" value="x-global"/>
     </matcher>
   </trigger>
+----
 
 The 'extension' variable assignment tries to find 'extensions' (tags that start with `"x-...")` on the 'info' 
 part of your file and on the extensions of each entity. `value` is the extension that our plug-in will try to find on your OpenAPI file. The result will 
@@ -86,12 +92,14 @@ If no extension with that name was found, then an empty string will be assigned.
 * type 'property' -> property of the Java Object
 +
 [source,xml]
+----
 <trigger id="..." type="openapi" templateFolder="...">
     <containerMatcher type="element" value="OpenApiFile"/>
     <matcher type="element" value="EntityDef">
         <variableAssignment type="property" key="entityName" value="name" />
     </matcher>
 </trigger>
+----
 
 The 'property' variable assignment tries to find the property `value` of the entities defined on the schema. 
 The value is assigned to the `key`. The current properties that you will able to get are:
@@ -105,13 +113,13 @@ The value is assigned to the `key`. The current properties that you will able to
 
 .   `String *description*`: Description of this entity.
 
-.   `List<PropertyDef> *properties*`: List containing all the properties of this entity. PropertyDef is an object that has the next properties:
+.   `List<PropertyDef> *properties*`: List containing all the properties of this entity. `PropertyDef` is an object that has the next properties:
     .. String name.
     .. String type.
     .. String format.
     .. String description.
-    .. Boolean isCollection.
-    .. Boolean isEntity.
+    .. Boolean `isCollection`.
+    .. Boolean `isEntity`.
     .. Boolean required.
     .. Map<String, Object> constraints
 
@@ -120,6 +128,7 @@ If no property with that name was found, then it will be set to `null`.
 === Full trigger configuration
 
 [source,xml]
+----
 <trigger id="..." type="openapi" templateFolder="...">
     <containerMatcher type="element" value="OpenApiFile">
     <matcher type="element" value="EntityDef">
@@ -128,96 +137,97 @@ If no property with that name was found, then it will be set to `null`.
         <variableAssignment type="property" key="entityName" value="name" />
     </matcher>
 </trigger>
+----
 
 [[openapi-input-reader]]
 == Input reader
 
-The Cobigen OpenApi Plug-in implements an input reader for OpenApi 3.0 files. The XML input reader will create the following object model for template creation:
+The Cobigen OpenApi Plug-in implements an input reader for `OpenApi 3.0` files. The XML input reader will create the following object model for template creation:
 
 
 * *model* ('Map<String, Object>' :: common element structure)
-** *header* ('HeaderDef' :: Definition of the header found at the top of the file)
+** *header* (`HeaderDef` :: Definition of the header found at the top of the file)
 ** *name* ('String' :: Name of the current Entity)
-** *componentName* ('String' :: name of the component the entity belongs to)
-** *component* ('ComponentDef' :: Full definition of the component that entity belongs to)
+** *`componentName`* ('String' :: name of the component the entity belongs to)
+** *component* (`ComponentDef` :: Full definition of the component that entity belongs to)
 ** *description* ('String' :: Description of the Entity)
-** *properties* ('List<PropertyDef>' :: List of properties the entity has)
-** *relationShips* ('List<RelationShip' :: List of Relationships the entity has)
+** *properties* (`List<PropertyDef>` :: List of properties the entity has)
+** *`relationShips`* (`List<RelationShip>` :: List of Relationships the entity has)
 
-* *HeaderDef* ('Map<String, Object>' :: common element structure)
-** *info* ('InfoDef' :: Definition of the info found in the header)
-** *servers* ('List<ServerDef>' :: List of servers the specification uses)
+* *`HeaderDef`* ('Map<String, Object>' :: common element structure)
+** *info* (`InfoDef` :: Definition of the info found in the header)
+** *servers* (`List<ServerDef>` :: List of servers the specification uses)
 
-* *InfoDef* ('Map<String, Object>' :: common element structure)
+* *`InfoDef`* ('Map<String, Object>' :: common element structure)
 ** *title* ('String' :: The title of the specification)
 ** *description* ('String' :: The description of the specification)
 
-* *ServerDef* ('Map<String, Object>' :: common element structure)
-** *URI* ('String' :: String representation of the Server location)
+* *`ServerDef`* ('Map<String, Object>' :: common element structure)
+** *`URI`* ('String' :: String representation of the Server location)
 ** *description* ('String' :: description of the server)
 
-* *ComponentDef* ('Map<String, Object>' :: common element structure)
-** *paths* ('List<PathDef>' :: List of services for this component)
+* *`ComponentDef`* ('Map<String, Object>' :: common element structure)
+** *paths* (`List<PathDef>` :: List of services for this component)
 
-* *PropertyDef* ('Map<String, Object>' :: common element structure)
+* *`PropertyDef`* ('Map<String, Object>' :: common element structure)
 ** *name* ('String' :: Name of the property)
 ** *type* ('String' :: type of the property)
 ** *format* ('String' :: format of the property (i.e. int64))
-** *isCollection* ('boolean' :: *true* if the property is a collection, false by default)
-** *isEntity* ('boolean' :: *true* if the property refers to another entity, false by default)
-** *sameComponent* ('boolean' :: *true* if the entity that the property refers to belongs to the same component, false by default)
+** *`isCollection`* ('boolean' :: *true* if the property is a collection, false by default)
+** *`isEntity`* ('boolean' :: *true* if the property refers to another entity, false by default)
+** *`sameComponent`* ('boolean' :: *true* if the entity that the property refers to belongs to the same component, false by default)
 ** *description* ('String' :: Description of the property)
 ** *required* ('boolean' :: *true* if the property is set as required)
 ** *constraints* ('Map<String, Object>')
 
-* *RelationShip* ('Map<String, Object>' :: common element structure)
-** *type* ('String' :: type of the relationship (OneToOne, ManyToMany, etc...))
+* *`RelationShip`* ('Map<String, Object>' :: common element structure)
+** *type* ('String' :: type of the relationship (`OneToOne`, `ManyToMany`, etc...))
 ** *entity* ('String' :: destination entity name)
-** *sameComponent* ('boolean' :: *true* if the destination entity belongs to the same component of the source entity, false by default)
-** *unidirectional* ('boolean' :: *true* if the relationship is unidirectional, false by default)
+** *`sameComponent`* ('boolean' :: *true* if the destination entity belongs to the same component of the source entity, false by default)
+** *`unidirectional`* ('boolean' :: *true* if the relationship is unidirectional, false by default)
 
-* *PathDef* ('Map<String, Object>' :: common element structure)
-** *rootComponent* ('String' :: the first segment of the path)
+* *`PathDef`* ('Map<String, Object>' :: common element structure)
+** *`rootComponent`* ('String' :: the first segment of the path)
 ** *version* ('String' :: version of the service)
-** *pathURI* ('String' :: URI of the path, the segment after the version)
-** *operations* ('List<OperationDef>' :: List of operations for this path)
+** *`pathURI`* ('String' :: URI of the path, the segment after the version)
+** *operations* (`List<OperationDef>` :: List of operations for this path)
 
-* *OperationDef* ('Map<String, Object>' :: common element structure)
+* *`OperationDef`* ('Map<String, Object>' :: common element structure)
 ** *type* ('String' :: type of the operation (GET, PUT, etc...))
-** *parameters* ('List<ParameterDef>' :: List of parameters)
-** *operationId* ('String' :: name of the operation prototype)
-** *description* ('String' :: JavaDoc Description of the operation)
-** *summary* ('List<PropertyDef>' :: JavaDoc operation Summary)
+** *parameters* (`List<ParameterDef>` :: List of parameters)
+** *`operationId`* ('String' :: name of the operation prototype)
+** *description* ('String' :: `JavaDoc` Description of the operation)
+** *summary* (`List<PropertyDef>` :: `JavaDoc` operation Summary)
 ** *tags* ('List<String>' :: List of different tags)
-** *responses* ('List<ResponseDef>' :: Responses of the operation)
+** *responses* (`List<ResponseDef>` :: Responses of the operation)
 
-* *ParameterDef* ('Map<String, Object>' :: common element structure)
-** *isSearchCriteria* ('boolean' :: *true* if the response is an SearchCriteria object)
-** *inPath* ('boolean' :: *true* if this parameter is contained in the request path)
-** *inQuery* ('boolean' :: *true* if this parameter is contained in a query)
-** *isBody* ('boolean' :: *true* if this parameter is a response body)
-** *inHeader* ('boolean' :: *true* if this parameter is contained in a header)
-** *mediaType* ('String' :: String representation of the media type of the parameter)
+* *`ParameterDef`* ('Map<String, Object>' :: common element structure)
+** *`isSearchCriteria`* ('boolean' :: *true* if the response is an `SearchCriteria` object)
+** *`inPath`* ('boolean' :: *true* if this parameter is contained in the request path)
+** *`inQuery`* ('boolean' :: *true* if this parameter is contained in a query)
+** *`isBody`* ('boolean' :: *true* if this parameter is a response body)
+** *`inHeader`* ('boolean' :: *true* if this parameter is contained in a header)
+** *`mediaType`* ('String' :: String representation of the media type of the parameter)
 
-* *ResponseDef* ('Map<String, Object>' :: common element structure)
-** *isArray* ('boolean' :: *true* if the type of the response is an Array)
-** *isPaginated* ('boolean' :: *true* if the type of the response is paginated)
-** *isVoid* ('boolean' :: *true* if there is no type/an empty type)
-** *isEntity* ('boolean' :: *true* if the type of the response is an Entity)
-** *entityRef* ('EntityDef' :: Incomplete EntityDef containing the name and properties of the referenced Entity)
+* *`ResponseDef`* ('Map<String, Object>' :: common element structure)
+** *`isArray`* ('boolean' :: *true* if the type of the response is an Array)
+** *`isPaginated`* ('boolean' :: *true* if the type of the response is paginated)
+** *`isVoid`* ('boolean' :: *true* if there is no type/an empty type)
+** *`isEntity`* ('boolean' :: *true* if the type of the response is an Entity)
+** *`entityRef`* (`EntityDef` :: Incomplete `EntityDef` containing the name and properties of the referenced Entity)
 ** *type* ('String' :: String representation of the attribute's value)
 ** *code* ('String' :: String representation of the HTTP status code)
-** *mediaTypes* ('List<String>' :: List of media types that can be returned)
+** *`mediaTypes`* ('List<String>' :: List of media types that can be returned)
 ** *description* ('String' :: Description of the response)
-
 
 
 == Merger extensions
 
 This plugin only provides an input reader, there is no support for OpenApi merging. Nevertheless, the files generated from an OpenApi file will be Java, XML, JSON, TS, etc... so, 
-for each file to be generated defined at templates.xml, must set the mergeStrategy for the specific language (javamerge, javamerge_override, jsonmerge, etc...)
+for each file to be generated defined at templates.xml, must set the `mergeStrategy` for the specific language (`javamerge`, `javamerge_override`, `jsonmerge`, etc...)
 
 [source,xml]
+----
 <templates>
     ...
     <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
@@ -226,24 +236,25 @@ for each file to be generated defined at templates.xml, must set the mergeStrate
     ...
     <templateExtension ref="en.json" mergeStrategy="jsonmerge"/>
 </templates>
+----
 
 == Usage
 
-=== Writing OpenApi 3.0 contract file
+=== Writing `OpenApi 3.0` contract file
 
-The Swagger file must follow the OpenApi 3.0 standard to be readable by CobiGen, otherwise and error will be thrown.
+The Swagger file must follow the `OpenApi 3.0` standard to be readable by CobiGen, otherwise and error will be thrown.
 A full documentation about how to follow this standard can be found link:https://swagger.io/docs/specification/about/[Swagger3 Docs].
 
 The Swagger file must be at the core folder of your devon4j project, like shown below:
 
 image:images/howtos/openapi-gen/openapi_howto1.png[Swagger at devon4j Project, width="450",link="images/howtos/openapi-gen/openapi_howto1.png"]
 
-To be compatible with CobiGen and devon4j, it must follow some specific configurations. This configurations allows us to avoid redundant definitions as SearchCriteria and PaginatedList objects are used at the services definitions.
+To be compatible with CobiGen and devon4j, it must follow some specific configurations. This configurations allows us to avoid redundant definitions as `SearchCriteria` and `PaginatedList` objects are used at the services definitions.
 
 [[paths]]
 === Paths
 
-* Just adding the _tags_ property at the end of the service definitions with the items _SearchCriteria_ and/or _paginated_ put into CobiGen knowledge that an standard devon4j SearchCriteria and/or PaginateListTo object must be generated. That way, the Swagger file will be easier to write and even more understandable.
+* Just adding the _tags_ property at the end of the service definitions with the items _`SearchCriteria`_ and/or _paginated_ put into CobiGen knowledge that an standard devon4j `SearchCriteria` and/or `PaginateListTo` object must be generated. That way, the Swagger file will be easier to write and even more understandable.
 * The path must start with the component name, and define an `x-component` tag with the component name. That way this service will be included into the component services list.
 
 ```yaml

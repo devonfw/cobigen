@@ -1,8 +1,8 @@
 = Set up JRE for development
 
-Cobigen is supposed to support both java 8 and java 11 even though we are moving to 11. Here is a short description of how to setup the execution enviromment for developing so that you can test both environments.
+Cobigen is supposed to support both java 8 and java 11 even though we are moving to 11. Here is a short description of how to setup the execution environment for developing so that you can test both environments.
 
-By default, cobigen development tools come with some installed JREs in /software/java (11) and /software/java/additionalJdk (7 and 8)
+By default, cobigen development tools come with some installed JREs in `/software/java (11)` and `/software/java/additionalJdk (7 and 8)`
 
 image:documentation/images/howtos/setup-jre/installed-jre.PNG[]
 

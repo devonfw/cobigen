@@ -82,7 +82,7 @@ We currently provide a generic deployed version of the templates on the devonfw-
 Using the following configuration you will be able to customize your generation as follows:
 
 * `<destinationRoot>` specifies the root directory the relative `destinationPath` of link:cobigen-core_configuration#Templates-configuration[CobiGen templates configuration] should depend on. _Default ${basedir}_
-* `<inputPackage>` declares a package name to be used as input for batch generation. This refers directly to the CobiGen Java Plug-in link:cobigen-javaplugin#ContainerMatcher-types[container matchers of type package] configuration.
+* `<inputPackage>` declares a package name to be used as input for batch generation. This refers directly to the CobiGen Java Plug-in link:cobigen-javaplugin#`ContainerMatcher`-types[container matchers of type package] configuration.
 * `<inputFile>` declares a file to be used as input. The CobiGen maven plug-in will try to parse this file to get an appropriate input to be interpreted by any CobiGen plug-in.
 * `<increment>` specifies an link:cobigen-core_configuration#increment-node[increment] ID to be generated. You can specify one single increment with content `ALL` to generate all increments matching the input(s).
 * `<template>` specifies a link:cobigen-core_configuration#increment-node[template] ID to be generated. You can specify one single template with content `ALL` to generate all templates matching the input(s).

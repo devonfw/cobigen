@@ -33,7 +33,7 @@ Create a new issue with the following markdown contents for each release of any 
   * [ ] Check for changed maven dependencies and document them. _As dependencies have been changed:_
     * [ ] check new dependencies with legal (in case of not yet used licenses).
     * **If there are any issues with the dependencies. Abort, get in contact.**
-    * [ ] document the changes in the [ChangeLog of the dependency tracking](https://github.com/devonfw/cobigen/wiki/mgmt_dependency-and-license-tracking).
+    * [ ] document the changes in the [`ChangeLog` of the dependency tracking](https://github.com/devonfw/cobigen/wiki/mgmt_dependency-and-license-tracking).
     * [ ] create a new licensing document 
   * [ ] Perform final review of merged contents
     * [ ] Are there any changes in a different module not corresponding to the current development branch? Try to find the cause and potentially discuss with the guy failing.
@@ -160,7 +160,6 @@ import javax.persistence.Column;
 
 
 @Entity
-
 @javax.persistence.Table(name = "EMPLOYEE")
 
 public class EmployeeEntity {
@@ -199,7 +198,7 @@ public class EmployeeEntity {
 
 ***2. Testing scenarios***
 * [ ] You are able to log-in into both Ionic and Angular apps using JWT authentication.
-* [ ] You are able to log-in into Angular using csrf authentication.
+* [ ] You are able to log-in into Angular using CSRF authentication.
 * [ ] You are able to retrieve all the employees in both Ionic and Angular.
 * [ ] You are able to create an employee in both Ionic and Angular.
 * [ ] You are able to find an employee by any of its fields in both Ionic and Angular.
@@ -212,6 +211,4 @@ public class EmployeeEntity {
 
 If every of these test scenarios are checked out, then release process can continue.
 ```
-
-
 
