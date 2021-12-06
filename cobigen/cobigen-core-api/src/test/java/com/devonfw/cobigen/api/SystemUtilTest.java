@@ -22,7 +22,7 @@ public class SystemUtilTest {
    * @throws Exception test fails
    */
   @Test
-  public void testInvalidMarkOfLargeFile() throws Exception {
+  public void testInvalidMarkOfLargeFileThrowsException() throws Exception {
 
     Path path = Paths.get(testdataRoot, "TestInvalidMark.txt");
     String targetCharset = "UTF-8";

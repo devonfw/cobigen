@@ -74,9 +74,8 @@ public class SystemUtil {
           }
         }
         return null;
-      } finally {
-        emptyReader(reader);
-        bis.reset();
+      } catch (IOException e) {
+        throw new IOException("Could not read next char of file:" + path.toString(), e);
       }
 
     } catch (IOException e) {
