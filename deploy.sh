@@ -45,21 +45,21 @@ doRunCommand "mvn clean $PARALLELIZED $BATCH_MODE"
 
 log_step "Build & Test Core"
 # need to exclude cobigen-core-systemtest as of https://issues.sonatype.org/browse/NEXUS-19853 for deployment only!
-doRunCommand "mvn deploy -f cobigen --projects !cobigen-core-systemtest $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE $DEPLOY_SIGN"
+doRunCommand "mvn deploy -s .mvn/settings.xml -f cobigen --projects !cobigen-core-systemtest $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE $DEPLOY_SIGN"
 
 log_step "Build & Test Core Plugins"
-doRunCommand "mvn deploy -f cobigen-plugins $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE $DEPLOY_SIGN"
+doRunCommand "mvn deploy -s .mvn/settings.xml -f cobigen-plugins $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE $DEPLOY_SIGN"
 
 log_step "Build Core Plugins - P2 Update Sites"
 doRunCommand "mvn package bundle:bundle -Pp2-build,p2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE "
 doRunCommand "mvn install bundle:bundle -Pp2-build,p2-bundle -DskipTests p2:site -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE "
-doRunCommand "mvn deploy -Pp2-build,p2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE"
+doRunCommand "mvn deploy -s .mvn/settings.xml -Pp2-build,p2-bundle -DskipTests -f cobigen-plugins --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $DEBUG $PARALLELIZED $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE"
 
 log_step "Package & Run E2E Tests"
 doRunCommand "mvn test -f cobigen/cobigen-core-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE"
 # need to exclude cli-systemtest as of https://issues.sonatype.org/browse/NEXUS-19853 for deployment only!
-doRunCommand "mvn deploy -f cobigen-cli --projects !cli-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
+doRunCommand "mvn deploy -s .mvn/settings.xml -f cobigen-cli --projects !cli-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
 # need to exclude cobigen-maven-systemtest as of https://issues.sonatype.org/browse/NEXUS-19853 for deployment only!
-doRunCommand "mvn deploy -f cobigen-maven --projects !cobigen-maven-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
-doRunCommand "mvn deploy -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
-doRunCommand "mvn deploy -f cobigen-eclipse -Pp2-build -DskipTests $ENABLED_TEST $DEBUG $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE"
+doRunCommand "mvn deploy -s .mvn/settings.xml -f cobigen-maven --projects !cobigen-maven-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
+doRunCommand "mvn deploy -s .mvn/settings.xml -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE $DEPLOY_SIGN"
+doRunCommand "mvn deploy -s .mvn/settings.xml -f cobigen-eclipse -Pp2-build -DskipTests $ENABLED_TEST $DEBUG $BATCH_MODE -Dupdatesite.repository=$DEPLOY_UPDATESITE"
