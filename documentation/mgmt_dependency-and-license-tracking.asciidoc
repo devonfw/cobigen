@@ -10,15 +10,15 @@ toc::[]
 [options="header"]
 |=============================================
 |*Dependency Name*  | *Version* |*License* | *URL*
-| SLF4J | 1.7.7 | MIT | http://www.slf4j.org/license.html
+| SLF4J | 1.7.7 | `MIT` | http://www.slf4j.org/license.html
 | Guava | 17.0  | Apache License 2.0 | http://code.google.com/p/guava-libraries/
-| Reflections | 0.9.9-RC2 | WTFPL | https://code.google.com/p/reflections/
-| FreeMarker | 2.3.20 | BSD-style | http://freemarker.org/docs/app_license.html
+| Reflections | 0.9.9-RC2 | `WTFPL` | https://code.google.com/p/reflections/
+| FreeMarker | 2.3.20 | `BSD-style` | http://freemarker.org/docs/app_license.html
 | Jaxen | 1.1.4 | "Apache-style open source license" | http://jaxen.codehaus.org/license.html
-| Apache Commons IO | 2.4 | Apache License 2.0 | http://commons.apache.org/proper/commons-io/
-| Apache Commons Lang | 3.1 | Apache License 2.0 | http://commons.apache.org/proper/commons-lang/
-| Apache Commons JXPath | 1.3 | Apache License 2.0 | http://commons.apache.org/proper/commons-jxpath/
-| JDOM | 1.1.3 | "Apache-style open source license" | http://www.jdom.org/docs/faq.html#a0030
+| `Apache Commons IO` | 2.4 | Apache License 2.0 | http://commons.apache.org/proper/commons-io/
+| `Apache Commons Lang `| 3.1 | Apache License 2.0 | http://commons.apache.org/proper/commons-lang/
+| `Apache Commons JXPath` | 1.3 | Apache License 2.0 | http://commons.apache.org/proper/commons-jxpath/
+| `JDOM` | 1.1.3 | "Apache-style open source license" | http://www.jdom.org/docs/faq.html#a0030
 |=============================================
 
 === cobigen-javaplugin v1.0.0
@@ -27,8 +27,8 @@ toc::[]
 |=============================================
 |*Dependency Name*  | *Version* |*License* | *URL*
 | cobigen-core | v1.0.0 | |
-| SLF4J | 1.7.7 | MIT | http://www.slf4j.org/license.html
-| QDox | 2.0-M2 | Apache License 2.0 | http://qdox.codehaus.org/license.html
+| `SLF4J` | 1.7.7 | `MIT` | http://www.slf4j.org/license.html
+| `QDox` | 2.0-M2 | Apache License 2.0 | http://qdox.codehaus.org/license.html
 |=============================================
 
 === cobigen-propertyplugin v1.0.0
@@ -37,7 +37,7 @@ toc::[]
 |=============================================
 |*Dependency Name*  | *Version* |*License* | *URL*
 | cobigen-core | v1.0.0 | |
-| SLF4J | 1.7.7 | MIT | http://www.slf4j.org/license.html
+| `SLF4J` | 1.7.7 | `MIT` | http://www.slf4j.org/license.html
 |=============================================
 
 === cobigen-xmlplugin v1.0.0
@@ -46,9 +46,9 @@ toc::[]
 |=============================================
 |*Dependency Name*  | *Version* |*License* | *URL*
 | cobigen-core | v1.0.0 | |
-| SLF4J | 1.7.7 | MIT | http://www.slf4j.org/license.html
-| XMLMerge | 3.1 |  LGPL 2.0 | http://geonetwork.tv/xmlmerge/License.txt  http://el4j.sourceforge.net/license.html
-| atinject | 1 | Apache License 2.0 | https://code.google.com/p/atinject/
+| SLF4J | 1.7.7 | `MIT` | http://www.slf4j.org/license.html
+| XMLMerge | 3.1 |  `LGPL` 2.0 | http://geonetwork.tv/xmlmerge/License.txt  http://el4j.sourceforge.net/license.html
+| `atinject` | 1 | Apache License 2.0 | https://code.google.com/p/atinject/
 |=============================================
 
 === cobigen-textmerger v1.0.0
@@ -57,7 +57,7 @@ toc::[]
 |=============================================
 |*Dependency Name*  | *Version* |*License* | *URL*
 | cobigen-core | v1.0.0 | |
-| SLF4J | 1.7.7 | MIT | http://www.slf4j.org/license.html
+| SLF4J | 1.7.7 | `MIT` | http://www.slf4j.org/license.html
 |=============================================
 
 === cobigen-eclipse v1.0.0
@@ -78,7 +78,7 @@ toc::[]
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| removed | JDOM | | |
+| removed | `JDOM` | | |
 |=============================================
 
 === cobigen-javaplugin v1.1.0
@@ -94,7 +94,7 @@ toc::[]
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| added | JDOM | 1.1.3 | "Apache-style open source license" | http://www.jdom.org/docs/faq.html#a0030
+| added | `JDOM` | 1.1.3 | "Apache-style open source license" | http://www.jdom.org/docs/faq.html#a0030
 |=============================================
 
 === cobigen-eclipse v1.1.0
@@ -149,14 +149,14 @@ toc::[]
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| added | maven-core | 3.0 | Apache License 2.0 | http://maven.apache.org/ref/3.0/maven-core/
-| added | maven-compat | 3.0 | Apache License 2.0 | http://maven.apache.org/ref/3.0/maven-compat/
-| added | maven-plugin-api | 3.0 | Apache License 2.0 | http://maven.apache.org/ref/3.0/maven-plugin-api/
-| added | cobigen-core | 2.0.0 |  | 
-| added | cobigen-xmlplugin | 2.1.0 |  | 
-| added | cobigen-javaplugin | 1.3.0 |  | 
-| added | cobigen-propertyplugin | 1.0.0 |  | 
-| added | cobigen-textmerger | 1.0.1 |  | 
+| added | `maven-core` | 3.0 | Apache License 2.0 | http://maven.apache.org/ref/3.0/maven-core/
+| added | `maven-compat` | 3.0 | Apache License 2.0 | http://maven.apache.org/ref/3.0/maven-compat/
+| added | `maven-plugin-api` | 3.0 | Apache License 2.0 | http://maven.apache.org/ref/3.0/maven-plugin-api/
+| added | `cobigen-core` | 2.0.0 |  | 
+| added | `cobigen-xmlplugin` | 2.1.0 |  | 
+| added | `cobigen-javaplugin` | 1.3.0 |  | 
+| added | `cobigen-propertyplugin` | 1.0.0 |  | 
+| added | `cobigen-textmerger` | 1.0.1 |  | 
 |=============================================
 
 === cobigen-eclipse v1.3.0
@@ -228,7 +228,7 @@ toc::[]
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | added | cobigen-core | 3.0.0 |  | 
 | added | mmm-util-core | 5.0.0 | Apache License 2.0 | 
-| added | json | 20160810 | MIT | https://github.com/stleary/JSON-java
+| added | json | 20160810 | `MIT` | https://github.com/stleary/JSON-java
 | added | gson | 2.7 | Apache License 2.0 | https://github.com/google/gson
 |=============================================
 
@@ -281,7 +281,7 @@ toc::[]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 |added | cobigen-core | 4.0.0 |  | 
-| added | JSoup | 1.10.2 | MIT | https://jsoup.org/
+| added | JSoup | 1.10.2 | `MIT` | https://jsoup.org/
 |=============================================
 
 === cobigen-jsonplugin v1.1.0
@@ -320,7 +320,7 @@ toc::[]
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | added | cobigen-core | 4.0.0 |  | 
 | added | ts-merger | 1.0.0 | Apache Public License 2.0 | https://github.com/devonfw/ts-merger
-| added | js-beautifier | 1.6.14 | MIT | https://github.com/beautify-web/js-beautify
+| added | `js-beautifier` | 1.6.14 | `MIT` | https://github.com/beautify-web/js-beautify
 | added | rhino | 1.7R4 | Mozilla Public License 2.0 | https://github.com/mozilla/rhino/blob/master/LICENSE.txt
 |=============================================
 
@@ -329,12 +329,12 @@ toc::[]
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| updated | cobigen-core | 4.0.0 |  | 
-| updated | cobigen-javaplugin | 1.5.0 |  | 
-| updated | cobigen-jsonplugin | 1.1.0 |  | 
-| added | cobigen-tsplugin | 1.0.0 | |
-| added | cobigen-htmlplugin | 1.0.0 | |
-| added | cobigen-tempeng-freemarkerplugin | 1.0.0-SNAPSHOT| |
+| updated | `cobigen-core` | 4.0.0 |  | 
+| updated | `cobigen-javaplugin` | 1.5.0 |  | 
+| updated | `cobigen-jsonplugin` | 1.1.0 |  | 
+| added | `cobigen-tsplugin` | 1.0.0 | |
+| added | `cobigen-htmlplugin` | 1.0.0 | |
+| added | `cobigen-tempeng-freemarkerplugin` | 1.0.0-`SNAPSHOT`| |
 |=============================================
 
 === cobigen-maven v2.1.0
@@ -347,7 +347,7 @@ toc::[]
 | updated | cobigen-jsonplugin | 1.1.0 |  | 
 | added | cobigen-tsplugin | 1.0.0 | |
 | added | cobigen-htmlplugin | 1.0.0 | |
-| added | cobigen-tempeng-freemarkerplugin | 1.0.0-SNAPSHOT| |
+| added | `cobigen-tempeng-freemarkerplugin` | 1.0.0-`SNAPSHOT`| |
 |=============================================
 
 === cobigen-tsplugin v1.1.0
@@ -360,6 +360,7 @@ toc::[]
 | updated | beautify | 1.6.14 | |
 | removed| rhino | | | 
 |=============================================
+
 
 === cobigen-tempeng-freemarker-plugin v1.0.0
 [options="header"]
@@ -384,7 +385,7 @@ toc::[]
 | removed | cobigen-textmerger |  |  | 
 | removed | cobigen-tsplugin | | |
 | removed | cobigen-xmlplugin | | |
-| removed | cobigen-tempeng-freemarkerplugin | | |
+| removed | `cobigen-tempeng-freemarkerplugin` | | |
 |=============================================
 
 === cobigen-xmlplugin v3.1.0
@@ -407,7 +408,7 @@ toc::[]
 | removed | cobigen-textmerger |  |  | 
 | removed | cobigen-tsplugin | | |
 | removed | cobigen-xmlplugin | | |
-| removed | cobigen-tempeng-freemarkerplugin | | |
+| removed | `cobigen-tempeng-freemarkerplugin` | | |
 |=============================================
 
 === cobigen-propertyplugin v1.2.0
@@ -448,14 +449,14 @@ toc::[]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | added | cobigen-core-api | v4.1.0 | |
-| added | kaizen.openapi-parser | v0.0.1.201709142043 | EPL v1.0 | link:https://github.com/RepreZen/KaiZen-OpenApi-Parser[KaiZen Open Api parser]
+| added | kaizen.openapi-parser | v0.0.1.201709142043 | `EPL` v1.0 | link:https://github.com/RepreZen/KaiZen-OpenApi-Parser[`KaiZen` Open Api parser]
 |=============================================
 
 === cobigen-openapiplugin v1.1.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| changed | kaizen.openapi-parser | v0.0.3.201803041924 | EPL v1.0 | link:https://github.com/RepreZen/KaiZen-OpenApi-Parser[KaiZen Open Api parser]
+| changed | kaizen.openapi-parser | v0.0.3.201803041924 | `EPL` v1.0 | link:https://github.com/RepreZen/KaiZen-OpenApi-Parser[`KaiZen` Open Api parser]
 | added | json-path | 2.4.0 | Apache License 2.0 | https://github.com/json-path/JsonPath/blob/master/LICENSE
 |=============================================
 
@@ -464,7 +465,7 @@ toc::[]
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| removed | json | 20160810 | MIT | https://github.com/stleary/JSON-java
+| removed | json | 20160810 | `MIT` | https://github.com/stleary/JSON-java
 |=============================================
 
 

@@ -19,7 +19,7 @@ On the right side of the wizard all files are shown, which might be effected by 
 * *red:* files, which are currently existent in the file system. These files will be overwritten if manually selected.
 * *no color:* files, which are currently existent in the file system. Additionally files, which were unselected and thus will be ignored during generation.
 
-Selecting an increment on the left side will initialize the selection of all shown files to be generated on the right side, whereas green and yellow categorized files will be selected initially. A manual modification of the pre-selection can be performed by switching to the customization tree using the _Customize_ button on the right lower corner.
+Selecting an increment on the left side will initialize the selection of all shown files to be generated on the right side, whereas green and yellow categorized files will be selected initially. A manual modification of the preselection can be performed by switching to the customization tree using the _Customize_ button on the right lower corner.
 
 ____
 *Optional:* If you want to customize the generation object model of a Java input class, you might continue with the _Next >_ button instead of finishing the generation wizard. The next generation wizard page is currently available for Java file inputs and lists all non-static fields of the input. Unselecting entries will lead to an adapted object model for generation, such that unselected fields will be removed in the object model for generation. By default all fields will be included in the object model.

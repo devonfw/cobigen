@@ -12,32 +12,32 @@ It is discouraged to have `cobigen-core` dependencies at runtime, except for `co
 
 == Plugin Activator
 
-Each plug-in has to have an plug-in activator class implementing the interface `GeneratorPluginActivator` from the core-api. This class will be used to load the plug-in using the PluginRegistry as explained link:cobigen-core_development#loadplugin[here]. This class implements two methods:
+Each plug-in has to have an plug-in activator class implementing the interface `GeneratorPluginActivator` from the core-api. This class will be used to load the plug-in using the `PluginRegistry` as explained link:cobigen-core_development#loadplugin[here]. This class implements two methods:
 
 . `bindMerger()` -> returns a mapping of merge strategies and its implementation to be registered.
 . `bindTriggerInterpreter()`-> returns the trigger interpreters to be provided by this plug-in.
 
 Both methods create and register instances of mergers and trigger interpreters to be provided by the new plug-in.
 
-== Adding TriggerInterpreter
+== Adding Trigger Interpreter
 
-The trigger interpreter has to implement the TriggerInterpreter interface from the core. The trigger interpreter defines the type for the new plugin and creates new InputReader and new Matcher objects.
+The trigger interpreter has to implement the `TriggerInterpreter` interface from the core. The trigger interpreter defines the type for the new plugin and creates new `InputReader` and new Matcher objects.
 
-== Adding InputReader
+== Adding Input Reader
 
 The input reader is responsible of read the input object and parse it into
  FreeMarker models. The input reader must be implemented for the type of the
  input file. If there is any existent plugin that has the same file type as input,
  there will be no need to add a new input reader to the new plug-in.
 
-=== InputReader Interface
+=== Input Reader Interface
 
 The interface needed to add a new input reader is defined at the core. Each new
 sub plug-in must implements this interface if is needed an input reader for it.
 
 The interface implements the basic methods that an input reader must have,
 but if additional methods are required, the developer must add a new interface
-that extends the original interface *__InputReader.java__* from the core-api
+that extends the original interface *__`InputReader.java`__* from the core-api
 and implement that on the sub plug-in.
 
 The methods to be implemented by the input reader of the new sub plugin are:
@@ -68,15 +68,16 @@ The input reader is an object that can be retrieved using the correspondent get
 
 == Adding Matcher
 
-The matcher implements the MatcherInterpreter interface from the core-api.
+The matcher implements the `MatcherInterpreter` interface from the core-api.
 Should be implemented for providing a new input matcher. Input matcher are
 defined as part of a trigger and provide the ability to restrict specific
 inputs to a set of templates.
-This restriction is implemented with a MatcherType `enum`.
+This restriction is implemented with a `MatcherType` `enum`.
 
-E.g JavaPlugin
+E.g `JavaPlugin`
 
 [source,java]
+----
 private enum MatcherType {
     /** Full Qualified Name Matching */
     FQN,
@@ -85,20 +86,23 @@ private enum MatcherType {
     /** Expression interpretation */
     EXPRESSION
 }
+----
 
 Furthermore, matchers may provide several variable assignments, which might be
 dependent on any information of the matched input and thus should be resolvable
 by the defined matcher.
 
-E.g JavaPlugin
+E.g `JavaPlugin`
 
 [source,java]
+----
 private enum VariableType {
     /** Constant variable assignment */
     CONSTANT,
     /** Regular expression group assignment */
     REGEX
 }
+----
 
 == Adding Merger
 
@@ -114,21 +118,21 @@ The implementation of the Merge interface must override the following methods:
 | `merge(File base, String patch, String targetCharset)` | *String*  | Merges the patch into the base file.
 |======================
 
-Is important to know that any exception caused by the merger must throw a MergeException from the core-api to the eclipse-plugin handle it.
+Is important to know that any exception caused by the merger must throw a `MergeException` from the core-api to the eclipse-plugin handle it.
 
 == Changes since Eclipse / Maven 3.x
 
 Since version 3.x the Eclipse and Maven plugins of CobiGen utilize the Java `ServiceLoader` mechanic to find and register plugins at runtime. To enable a new plugin to be discovered by this mechanic the following steps are needed:
 
-* create the file `META-INF/services/com.capgemini.cobigen.api.extension.GeneratorPluginActivator` containing just the full qualified name of the class implementing the `GeneratorPluginActivator` interface, if the plugin provides a `Merger` and/or a `TriggerInterpreter`
-* create the file `META-INF/services/com.capgemini.cobigen.api.extension.TextTemplateEngine` containing just the full qualified name of the class implementing the `TextTemplateEngine` interface, if provided by the plugin
+* create the file `META-INF/services/com.devonfw.cobigen.api.extension.GeneratorPluginActivator` containing just the full qualified name of the class implementing the `GeneratorPluginActivator` interface, if the plugin provides a `Merger` and/or a `TriggerInterpreter`
+* create the file `META-INF/services/com.devonfw.cobigen.api.extension.TextTemplateEngine` containing just the full qualified name of the class implementing the `TextTemplateEngine` interface, if provided by the plugin
 * include `META-INF` into the target bundle (i.e. the folder `META-INF` has to be present in the target jar file)
 
 .Example: Java Plugin
 ****
-The java plugin provides both a `Merger` and a `TriggerInterpreter`. It contains therefore a `com.capgemini.cobigen.api.extension.GeneratorPluginActivator` file with the following content:
+The java plugin provides both a `Merger` and a `TriggerInterpreter`. It contains therefore a `com.devonfw.cobigen.api.extension.GeneratorPluginActivator` file with the following content:
 ```
-com.capgemini.cobigen.javaplugin.JavaPluginActivator
+com.devonfw.cobigen.javaplugin.JavaPluginActivator
 ```
 This makes the `JavaPluginActivator` class discoverable by the `ServiceLoader` at runtime.
 ****
@@ -137,7 +141,7 @@ This makes the `JavaPluginActivator` class discoverable by the `ServiceLoader` a
 [source,xml]
 ----
 <parent>
-    <groupId>com.capgemini</groupId>
+    <groupId>com.devonfw</groupId>
     <artifactId>cobigen-parent</artifactId>
     <version>dev-SNAPSHOT</version>
 </parent>
@@ -146,7 +150,7 @@ or `/cobigen/cobigen-templateengines/pom.xml` (in case of a `Merger`/`TriggerInt
 [source,xml]
 ----
 <parent>
-    <groupId>com.capgemini</groupId>
+    <groupId>com.devonfw</groupId>
     <artifactId>cobigen-tempeng-parent</artifactId>
     <version>dev-SNAPSHOT</version>
 </parent>
@@ -155,7 +159,7 @@ If the plugin provides both just use the `/cobigen/pom.xml`.
 
 * The dependencies of the plugin are included in the bundle
 
-* To make the plugin available to the Eclipse plugin it must be included into the current `compositeContent.xml` and `compositeArtifacts.xml` files. Both files are located in link:http://de-mucevolve02/files/cobigen/updatesite[`http://de-mucevolve02/files/cobigen/updatesite/{experimental|nightly|stable}`]. To do so, add an `<child>` entry to the `<children>` tag in both files and adapt the `size` attribute to match the new number of references. The `location` attribute of the new `<child>` tag needs to be the artifact id of the plugins `pom.xml`.
+* To make the plugin available to the Eclipse plugin it must be included into the current `compositeContent.xml` and `compositeArtifacts.xml` files. Both files are located in link:https://github.com/devonfw/cobigen/tree/gh-pages/updatesite/stable[`https://github.com/devonfw/cobigen/tree/gh-pages/updatesite/{test|stable}`]. To do so, add an `<child>` entry to the `<children>` tag in both files and adapt the `size` attribute to match the new number of references. The `location` attribute of the new `<child>` tag needs to be the artifact id of the plugins `pom.xml`.
 
 .Example: Java Plugin
 ****
@@ -167,25 +171,8 @@ In case of the Java plugin, the entry is
 ****
 === Deployment
 
-==== For the Maven Plugin
-
-Execute `mvn clean deploy` from the plugins project folder. You need to configure write access to the link:https://devon.s2-eu.capgemini.com/nexus/[devon nexus] (e.g in the CobiGen IDE via the `variables-customized` script)
-
-==== For the Eclipse Plugin
-
-Depending on the kind of release you want to publish you can chose from the following maven profiles:
-
-* `experimental` is for, as the name suggests, experimental snapshot builds. In case of new plugins this is a good place to upload first drafts.
-* `nightly` is for periodically CI deployment.
-* `stable` is solely for releases.
-
-E.g. you want an experimental release you need to follow these steps:
+If you want to create a test release of eclipse you need to run the command
 ```shell
-# Builds the Manifest and bundles the dependencies
-mvn clean package bundle:bundle -Pp2-bundle
-# Uses the created bundle and builds a p2 update site for it. Do NOT use clean
-mvn install bundle:bundle -Pp2-bundle,p2-build-mars,p2-build-experimental p2:site
-# Uploads the p2 update site to the experimental repository. Do NOT use clean
-mvn deploy -Pp2-build-mars,p2-build-experimental -Dp2.upload=experimental
+sh deploy.sh
 ```
-You need write access to the link:http://de-mucevolve02[iCSD file server] configured (e.g in the CobiGen IDE via the `variables-customized` script).
+on the cloned cobigen repository while making sure, that your current version of cobigen cloned is a snapshot version. This will automatically be detected by the deploy script. 

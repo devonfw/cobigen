@@ -6,6 +6,6 @@
 
 ** http://freemarker.org/docs/ref.html[Complete Language reference]
 
-** http://freemarker-online.kenshoo.com/[FreeMarker Template Tester]
+** https://try.freemarker.apache.org/[FreeMarker Template Tester]
 
 * link:cobigen-javaplugin#template-object-model[Variables to access Java source model]

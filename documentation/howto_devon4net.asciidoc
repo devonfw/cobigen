@@ -11,7 +11,7 @@ toc::[]
 
 In this guide we will explain how to generate a new WebApi project from an OpenAPI 3.0.0 specification. This  means that we are going to use a “contract first” strategy. This is going to be possible due to these type of files that contain all the information about entities, operations, etc…
 
-In order to make it work we are using https://github.com/devonfw/cobigen[CobiGen], a powerful tool for generating source code. CobiGen allows users to generate all the structure and code of the components, helping to save a lot of time otherwise waisted on repetitive tasks.
+In order to make it work we are using https://github.com/devonfw/cobigen[CobiGen], a powerful tool for generating source code. CobiGen allows users to generate all the structure and code of the components, helping to save a lot of time otherwise wasted on repetitive tasks.
 
 === [navy]#Getting things ready#
 
@@ -23,15 +23,15 @@ First, we will install the devonfw-ide. It is a tool that will setup your IDE wi
 
 We are going to use the template of devon4net as a base to generate all the code, so what we have to do now is to download said template using the following steps.
 
-First of all you have to set up all the environment for .NET, you can do this using https://devon4net.github.io/environment.html[the following tutorial]. Next we are going to create a new folder where we want to have the WebAPI project, lastly we are going to open the terminal there.
+First of all you have to set up all the environment for .NET, you can do this using https://devon4net.github.io/environment.html[the following tutorial]. Next we are going to create a new folder where we want to have the `WebAPI` project, lastly we are going to open the terminal there.
 
 Type the following:
 
-    dotnet new -i Devon4Net.WebAPI.Template
+    `dotnet new -i Devon4Net.WebAPI.Template`
     
 and then:
 
-    dotnet new Devon4NetAPI
+    `dotnet new Devon4NetAPI`
     
 ==== [navy]#OpenAPI File#
 
@@ -43,7 +43,7 @@ You can read more information about how to configure your OpenAPI file and a wor
 
 === [navy]#Generating files#
 
-Cobigen allow us to generate the files in two different ways. One of them is using Eclipse which it can be done by using the its grafical interface. The other way to generate the code is using the Cobigen CLI tool.
+Cobigen allow us to generate the files in two different ways. One of them is using Eclipse which it can be done by using the its graphical interface. The other way to generate the code is using the Cobigen CLI tool.
 
 ==== [navy]#Generating files through Eclipse#
 In order to generate the files using Eclipse we need to follow some simple steps.
@@ -72,7 +72,7 @@ Ones you select all the files that you want to generate, click on the _“Finish
 
 ==== [navy]#Generating files through Cobigen CLI#
 
-In ordet to generate the files using the Cobigen CLI it is needed to do the following steps:
+In order to generate the files using the Cobigen CLI it is needed to do the following steps:
 
 1. Go to devonfw distribution folder
 2. Run *console.bat*, this will open a console.
@@ -87,7 +87,8 @@ In ordet to generate the files using the Cobigen CLI it is needed to do the foll
 
 ==== [navy]#Data base#
 
-Cobigen is generating an empty context that has to be filled with manualy in order to be able to work with the database. The context can be found in *[Project_Name]/Devon4Net.WebAPI.Implementation/Domain/Database/CobigenContext.cs*.
+
+Cobigen is generating an empty context that has to be filled with manually in order to be able to work with the database. The context can be found in `*[Project_Name]/Devon4Net.WebAPI.Implementation/Domain/Database/CobigenContext.cs*`.
 
 [[img-cobigen]]
 image::images/howtos/devon4net/CobigenContextLocation.png["cobigen", width=="350", link=="images/howtos/devon4net/CobigenContextLocation.png]
