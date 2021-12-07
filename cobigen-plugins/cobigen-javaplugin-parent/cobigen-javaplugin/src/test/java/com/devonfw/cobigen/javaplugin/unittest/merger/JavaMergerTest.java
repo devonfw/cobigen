@@ -442,7 +442,7 @@ public class JavaMergerTest {
    * href=https://github.com/devonfw/cobigen/issues/108>#108</a>
    *
    * @throws IOException shouldn't happen
-   * @throws MergeException shoudln't happen either
+   * @throws MergeException shouldn't happen either
    */
   @Test
   public void testMergeExpizitAndImplizitParameterTypes() throws IOException, MergeException {
@@ -464,7 +464,7 @@ public class JavaMergerTest {
    * Tests whether static and object Initializers are getting merged https://github.com/devonfw/cobigen/issues/791
    *
    * @throws IOException shouldn't happen
-   * @throws MergeException shoudln't happen either
+   * @throws MergeException shouldn't happen either
    */
   @Test
   public void testStaticIntializer() throws IOException, MergeException {
@@ -483,7 +483,7 @@ public class JavaMergerTest {
    * https://github.com/devonfw/cobigen/issues/1439
    *
    * @throws IOException shouldn't happen
-   * @throws MergeException shoudln't happen either
+   * @throws MergeException shouldn't happen either
    */
   @Test
   public void testMergeInterfacesWithoutSuperClass() throws IOException, MergeException {
@@ -500,7 +500,7 @@ public class JavaMergerTest {
   }
 
   /**
-   * Calls the {@link JavaMerger} to merge the base and patch file wit the given overriding behavior
+   * Calls the {@link JavaMerger} to merge the base and patch file with the given overriding behavior
    *
    * @param baseFile base file
    * @param patchFile patch file
