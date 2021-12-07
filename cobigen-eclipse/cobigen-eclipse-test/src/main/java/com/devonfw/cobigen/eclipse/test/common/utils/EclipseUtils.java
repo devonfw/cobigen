@@ -1,8 +1,10 @@
 package com.devonfw.cobigen.eclipse.test.common.utils;
 
 import static org.eclipse.swtbot.eclipse.finder.matchers.WidgetMatcherFactory.withTitle;
+import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withMnemonic;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.waitForWidget;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -78,8 +80,11 @@ public class EclipseUtils {
 
     SWTBotShell popup = bot.activeShell();
     bot.tree().expandNode("General").select("Existing Projects into Workspace");
+    bot.waitUntil(waitForWidget(withMnemonic(IDialogConstants.NEXT_LABEL)));
     bot.button(IDialogConstants.NEXT_LABEL).click();
-    bot.radio("Select root directory:").click();
+    String selectRootDirLabel = "Select root directory:";
+    bot.waitUntil(waitForWidget(withMnemonic(selectRootDirLabel)));
+    bot.radio(selectRootDirLabel).click();
     SWTBotCombo comboBox = bot.comboBox();
     comboBox.setText(projectPath);
 
