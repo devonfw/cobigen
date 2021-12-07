@@ -1,13 +1,18 @@
 name: Release 
 on:
-  workflow_dispatch:
   workflow_call:
+    inputs:
+      run-tests:
+        description: Run tests
+        required: false
+        type: boolean
+        default: true
 env: 
   BUILD_USER: ${{ secrets.BUILD_USER }}
   BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
 jobs:
   release:
-    if: ${{ startsWith(github.repository, 'devonfw/') }}
+    if: ${{ startsWith(github.repository, 'devonfw/') && github.head_ref == 'master' }}
     environment:
       name: production
     runs-on: ubuntu-latest

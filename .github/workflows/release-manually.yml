@@ -1,0 +1,6 @@
+name: Release manually
+on:
+  workflow_dispatch:
+jobs:
+  release:
+    uses: devonfw/cobigen/.github/workflows/release.yml@master
