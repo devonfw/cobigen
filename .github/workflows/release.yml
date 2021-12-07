@@ -12,7 +12,7 @@ env:
   BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
 jobs:
   release:
-    if: ${{ startsWith(github.repository, 'devonfw/') && github.head_ref == 'master' }}
+    if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
     environment:
       name: production
     runs-on: ubuntu-latest
