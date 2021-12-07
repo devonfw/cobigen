@@ -479,6 +479,27 @@ public class JavaMergerTest {
   }
 
   /**
+   * Tests whether two interfaces without a super class are getting merged
+   * https://github.com/devonfw/cobigen/issues/1439
+   *
+   * @throws IOException shouldn't happen
+   * @throws MergeException shoudln't happen either
+   */
+  @Test
+  public void testMergeInterfacesWithoutSuperClass() throws IOException, MergeException {
+
+    File baseFile = new File(testFileRootPath + "BaseFile_InterfaceWOSuperClass.java");
+    File patchFile = new File(testFileRootPath + "PatchFile_InterfaceWOSuperClass.java");
+
+    String mergedContents = new JavaMerger("", true).merge(baseFile,
+        FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+
+    assertThat(mergedContents).contains("public void testMethod();");
+    assertThat(mergedContents).contains("public void anotherTestMethod();");
+
+  }
+
+  /**
    * Calls the {@link JavaMerger} to merge the base and patch file wit the given overriding behavior
    *
    * @param baseFile base file
