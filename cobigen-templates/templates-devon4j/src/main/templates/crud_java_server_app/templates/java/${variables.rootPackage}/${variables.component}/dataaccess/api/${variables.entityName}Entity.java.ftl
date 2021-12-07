@@ -22,7 +22,7 @@ public class ${pojo.name} <#if compositeIdTypeVar=="null"> extends ApplicationPe
    <#if !field.type?starts_with("List<") && !field.type?starts_with("Set<")>
       @Override
       @Transient
-      public ${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${DevonUtil.resolveIdGetter(field, false,"")} {
+      public ${DevonfwUtil.getSimpleEntityTypeAsLongReference(field)} ${DevonfwUtil.resolveIdGetter(field, false,"")} {
     
       if (this.${field.name} == null) {
           return null;
@@ -30,9 +30,9 @@ public class ${pojo.name} <#if compositeIdTypeVar=="null"> extends ApplicationPe
         return this.${field.name}.getId();
       }
     
-      <#assign idVar = DevonUtil.resolveIdVariableName(classObject,field)>
+      <#assign idVar = DevonfwUtil.resolveIdVariableName(classObject,field)>
       @Override
-      public void ${DevonUtil.resolveIdSetter(field,false,"")}(${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+      public void ${DevonfwUtil.resolveIdSetter(field,false,"")}(${DevonfwUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
     
         if (${idVar} == null) {
           this.${field.name} = null;

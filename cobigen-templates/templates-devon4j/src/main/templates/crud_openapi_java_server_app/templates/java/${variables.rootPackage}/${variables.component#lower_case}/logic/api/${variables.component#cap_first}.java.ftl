@@ -13,7 +13,7 @@ public interface ${variables.component?cap_first} extends UcFind${variables.enti
 
   <#list model.component.paths as path>
   	<#list path.operations as operation>
-  		<#if !DevonUtil.isCrudOperation(operation.operationId, variables.entityName)>
+  		<#if !DevonfwUtil.isCrudOperation(operation.operationId, variables.entityName)>
         <#assign responses=operation.responses>
         <#list responses as response>
 

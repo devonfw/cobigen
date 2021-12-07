@@ -18,7 +18,7 @@ import com.sun.org.apache.xerces.internal.dom.DeferredElementNSImpl;
  *
  */
 @SuppressWarnings("restriction")
-public class DevonUtil {
+public class DevonfwUtil {
 
   /**
    * Check whether the given 'canonicalType' is a devon4j Entity, which is declared in the given 'component'
@@ -377,7 +377,7 @@ public class DevonUtil {
   public String getSimpleEntityTypeAsLongReference(Map<String, Object> field) {
 
     String fieldType = (String) field.get(Field.TYPE.toString());
-    if (fieldType.contains("Entity")) {
+    if (fieldType.endsWith("Entity")) {
       fieldType = fieldType.replaceAll("[^<>]+Entity", "Long");
     }
     return fieldType;
