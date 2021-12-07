@@ -23,4 +23,4 @@ jobs:
         shell: bash
         env: 
           GPG_KEY: ${{ secrets.GPG_KEY }}
-        run: ./release.sh
+        run: ./release.sh silent dryrun

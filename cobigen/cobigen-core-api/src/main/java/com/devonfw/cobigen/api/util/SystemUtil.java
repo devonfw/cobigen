@@ -60,29 +60,20 @@ public class SystemUtil {
         InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
 
       bis.mark(0);
-      try {
-        while (reader.ready()) {
-          int nextChar = reader.read();
-          if (nextChar == '\r') {
-            nextChar = reader.read();
-            if (nextChar == '\n') {
-              return "\r\n";
-            }
-            return "\r";
-          } else if (nextChar == '\n') {
-            return "\n";
+      while (reader.ready()) {
+        int nextChar = reader.read();
+        if (nextChar == '\r') {
+          nextChar = reader.read();
+          if (nextChar == '\n') {
+            return "\r\n";
           }
+          return "\r";
+        } else if (nextChar == '\n') {
+          return "\n";
         }
-        return null;
-      } finally {
-        emptyReader(reader);
-        bis.reset();
       }
-
-    } catch (IOException e) {
-      throw new IOException("Could not read file:" + path.toString(), e);
+      return null;
     }
-
   }
 
   /**

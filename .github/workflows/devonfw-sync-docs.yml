@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - master
+    paths: 
+      - 'documentation/**'
 name: Sync Docs
 jobs:
   update-wiki:
