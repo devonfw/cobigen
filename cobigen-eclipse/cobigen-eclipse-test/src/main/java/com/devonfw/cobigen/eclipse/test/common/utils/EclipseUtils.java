@@ -1,13 +1,16 @@
 package com.devonfw.cobigen.eclipse.test.common.utils;
 
 import static org.eclipse.swtbot.eclipse.finder.matchers.WidgetMatcherFactory.withTitle;
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Awaitility;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -27,6 +30,7 @@ import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCombo;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.slf4j.Logger;
@@ -72,6 +76,7 @@ public class EclipseUtils {
     SWTBotTree packageExplorerTree = view.bot().tree();
     packageExplorerTree.contextMenu("Import...").click();
 
+    SWTBotShell popup = bot.activeShell();
     bot.tree().expandNode("General").select("Existing Projects into Workspace");
     bot.button(IDialogConstants.NEXT_LABEL).click();
     bot.radio("Select root directory:").click();
@@ -92,9 +97,8 @@ public class EclipseUtils {
     SWTBotButton finishButton = bot.button("Finish");
     bot.waitUntil(widgetIsEnabled(finishButton));
     finishButton.click();
-    bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT * 2);
+    bot.waitUntil(shellCloses(popup));
     ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-    bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
   }
@@ -108,16 +112,16 @@ public class EclipseUtils {
    */
   public static void updateMavenProject(SWTWorkbenchBot bot, String projectName) throws Exception {
 
-    bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
+    Awaitility.await().atMost(EclipseCobiGenUtils.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+        .untilAsserted(() -> bot.viewById(JavaUI.ID_PACKAGES));
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     SWTBotTreeItem configurationProject = view.bot().tree().expandNode(projectName);
     configurationProject.contextMenu().menu("Maven", false, 0).menu("Update Project...", false, 0).click();
-    bot.waitUntil(shellIsActive("Update Maven Project"));
+    bot.waitUntil(shellIsActive("Update Maven Project"), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
     bot.checkBox("Force Update of Snapshots/Releases").click();
     bot.button(IDialogConstants.OK_LABEL).click();
     Retry.runWithRetry(bot, () -> ResourcesPlugin.getWorkspace().getRoot().getProject(projectName)
         .build(IncrementalProjectBuilder.CLEAN_BUILD, new NullProgressMonitor()), CoreException.class, 2);
-    bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
   }
 
   /**
