@@ -1,6 +1,16 @@
 name: CI
 
-on: [push, pull_request]
+on: 
+  push:
+    paths-ignore:
+      - 'documentation/**'
+      - 'solicitor/**'
+      - '**.asciidoc'
+  pull_request:
+    paths-ignore:
+      - 'documentation/**'
+      - 'solicitor/**'
+      - '**.asciidoc'
 
 # Try fixing random Connection Reset on Maven downloads by '-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120' as proposed here: https://github.com/actions/virtual-environments/issues/2715#issuecomment-797388909
 
