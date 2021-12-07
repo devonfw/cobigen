@@ -2,8 +2,6 @@ package com.devonfw.cobigen.cli.logger;
 
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.cli.CobiGenCLI;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -19,7 +17,7 @@ public class CLILogger {
   /**
    * Getting logger instance from LoggerFactory for reset logger layout
    */
-  private static Logger rootLogger = (Logger) LoggerFactory.getLogger(CobiGenCLI.class);
+  private static Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
   /**
    * This method is setting the custom layout of logger
