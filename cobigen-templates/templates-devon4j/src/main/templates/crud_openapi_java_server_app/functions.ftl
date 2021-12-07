@@ -34,7 +34,7 @@
   <#assign amountOfTypes=0>
   <#list operation.responses as response>
     <#list response.mediaTypes as mt>
-      <#assign springType = DevonUtil.getSpringMediaType(mt)>
+      <#assign springType = DevonfwUtil.getSpringMediaType(mt)>
       <#if !(result?contains(springType))>
         <#if !(result==" ")>
           <#assign result=result+",">

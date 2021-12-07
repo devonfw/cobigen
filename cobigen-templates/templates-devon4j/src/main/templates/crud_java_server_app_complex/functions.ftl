@@ -22,16 +22,16 @@
 <#list pojo.fields as field>
 <#if field.type?contains("Entity")> <#-- add ID getter & setter for Entity references only for ID references -->
 
-	<#assign idVar = DevonUtil.resolveIdVariableName(classObject,field)>
+	<#assign idVar = DevonfwUtil.resolveIdVariableName(classObject,field)>
 	<#if implementsInterface>
 	@Override</#if>
-	public ${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${DevonUtil.resolveIdGetter(classObject,field)} {
+	public ${DevonfwUtil.getSimpleEntityTypeAsLongReference(field)} ${DevonfwUtil.resolveIdGetter(classObject,field)} {
 		return ${idVar};
 	}
 
 	<#if implementsInterface>
 	@Override</#if>
-	public void ${DevonUtil.resolveIdSetter(classObject,field)}(${DevonUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
+	public void ${DevonfwUtil.resolveIdSetter(classObject,field)}(${DevonfwUtil.getSimpleEntityTypeAsLongReference(field)} ${idVar}) {
 		this.${idVar} = ${idVar};
 	}
 <#else>
