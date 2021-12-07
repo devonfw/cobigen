@@ -16,7 +16,7 @@ public class HasBeenBuilt extends DefaultCondition {
   /**
    * Creates a new condition waiting until a job is started containing the given string it is job name.
    *
-   * @param project {@link #project}
+   * @param project Java project to wait for finished building
    */
   public HasBeenBuilt(IJavaProject project) {
 

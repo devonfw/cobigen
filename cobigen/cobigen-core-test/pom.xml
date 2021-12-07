@@ -56,5 +56,10 @@
       <artifactId>system-lambda</artifactId>
       <version>1.2.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>4.1.1</version>
+    </dependency>
   </dependencies>
 </project>
