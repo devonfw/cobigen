@@ -70,7 +70,7 @@ elif [[ -n "$GPG_KEY" ]]
 then
   GPG_KEYNAME=$GPG_KEY
   echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
-elif [[ "$(basename \"$0\")" != "build.sh" ]]
+elif [[ "$(basename \"$0\")" != "\"build.sh\"" ]]
 then
   echo -e "\e[91m  !ERR! Cannot sign artifacts without passing a gpg key for signing. Please pass gpgkey=<your key> as a parameter or GPG_KEY as secret.\e[39m"
   exit 1
