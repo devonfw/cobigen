@@ -373,7 +373,7 @@ jobs:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
     uses: devonfw/cobigen/.github/workflows/release.yml@master
     with:
-      run-tests: false
+      runTests: false
     secrets:
       GPG_KEY: ${{ secrets.GPG_KEY }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}

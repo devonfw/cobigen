@@ -2,8 +2,8 @@ name: Release
 on:
   workflow_call:
     inputs:
-      run-tests:
-        description: Run tests
+      runTests:
+        description: Run tests before release
         required: false
         type: boolean
         default: true
@@ -51,6 +51,7 @@ jobs:
           path: ~/.m2/repository
           key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       - name: Release including test run
+        if: ${{ inputs.runTests }}
         shell: bash
         env:
           GPG_KEY: ${{ secrets.GPG_KEY }}
@@ -58,3 +59,12 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: ./release.sh silent
+      - name: Release excluding test run
+        if: ${{ !inputs.runTests }}
+        shell: bash
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: ./release.sh silent skip-qa
