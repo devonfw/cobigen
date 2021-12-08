@@ -7,6 +7,19 @@ on:
         required: false
         type: boolean
         default: true
+    secrets:
+      GPG_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
+      SONATYPE_USERNAME:
+        required: true
+      SONATYPE_PASSWORD:
+        required: true
+      BUILD_USER:
+        required: true
+      BUILD_USER_EMAIL:
+        required: true
 env: 
   BUILD_USER: ${{ secrets.BUILD_USER }}
   BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
