@@ -31,6 +31,11 @@ then
 else
   echo " ! Not detected cloned gh-pages branch in ../gh-pages folder."
   ORIGIN="$(git config --get remote.origin.url)"
+  SED_OUT=$(echo $ORIGIN | sed -r -E -n 's@^https:\/\/(github.com.*)@\1@p')
+  if [[ -n "$SED_OUT" && -n "$GITHUB_TOKEN" ]]
+  then
+    ORIGIN="https://$GITHUB_TOKEN@$SED_OUT"
+  fi
   case "$ORIGIN" in
     *devonfw/cobigen*) doAskQuestion "Should I clone gh-pages from $ORIGIN" && echo "Cloning from $ORIGIN into ../gh-pages ..." && doRunCommand "git clone --branch gh-pages $ORIGIN ../gh-pages" ;;
     *) echo "You are working on a fork, please make sure, you are releasing from devonfw/cobigen#master" && exit 1 ;;

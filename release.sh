@@ -12,6 +12,7 @@ DEPLOYED=false
 undoRelease() {
   if { [ $? -ne 0 ] || [ "$DRYRUN" = true ]; } && [ "$DEPLOYED" = true ];
   then
+    cd $SCRIPT_PATH
     log_step "Drop all sonatype releases as the release script exited abnormally or it was a dryrun"
     pauseUntilKeyPressed
     
