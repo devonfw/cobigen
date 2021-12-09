@@ -16,11 +16,12 @@ undoRelease() {
     log_step "Drop all sonatype releases as the release script exited abnormally or it was a dryrun"
     pauseUntilKeyPressed
     
-    doRunCommand "mvn nexus-staging:drop -f cobigen $DEBUG $BATCH_MODE" false
-    doRunCommand "mvn nexus-staging:drop -f cobigen-plugins $DEBUG $BATCH_MODE" false
-    doRunCommand "mvn nexus-staging:drop -f cobigen-cli $DEBUG $BATCH_MODE" false
-    doRunCommand "mvn nexus-staging:drop -f cobigen-maven $DEBUG $BATCH_MODE" false
-    doRunCommand "mvn nexus-staging:drop -f cobigen-templates $DEBUG $BATCH_MODE" false
+    doRunCommand "git push origin :refs/tags/v$RELEASE_VERSION"
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen-plugins $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen-cli $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen-maven $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen-templates $DEBUG $BATCH_MODE" false
     
     log_step "Cleanup ../gh-pages"
     cd ../gh-pages
@@ -163,9 +164,9 @@ else
   log_step "Publish Release"
   doRunCommand "git push --tags"
   doRunCommand "cd ../gh-pages && git push && cd $SCRIPT_PATH"
-  doRunCommand "mvn nexus-staging:release -f cobigen $DEBUG $BATCH_MODE"
-  doRunCommand "mvn nexus-staging:release -f cobigen-plugins $DEBUG $BATCH_MODE"
-  doRunCommand "mvn nexus-staging:release -f cobigen-cli $DEBUG $BATCH_MODE"
-  doRunCommand "mvn nexus-staging:release -f cobigen-maven $DEBUG $BATCH_MODE"
-  doRunCommand "mvn nexus-staging:release -f cobigen-templates $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-plugins $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-cli $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-maven $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-templates $DEBUG $BATCH_MODE"
 fi

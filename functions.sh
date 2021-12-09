@@ -16,6 +16,15 @@ else
   echo "  * No test execution (pass 'test' as argument to enable)"
 fi
 
+if [[ "$*" == *repo-mvn-settings* ]]
+then
+  MVN_SETTINGS="-s .mvn/settings.xml"
+  echo -e "\e[92m  > Executing with .mvn/settings.xml \e[39m"
+else
+  MVN_SETTINGS=""
+  echo "  * Executing with individually configured settings.xml (pass 'repo-mvn-settings' as argument to enable execution with .mvn/settings.xml)"
+fi
+
 if [[ "$*" == *batch* ]]
 then
   # https://stackoverflow.com/a/66801171 # the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
