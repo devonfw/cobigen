@@ -71,6 +71,15 @@ else
   echo "  * No silent execution (pass 'silent' as argument to enable)"
 fi
 
+if [[ "$*" == *no-clean* ]]
+then
+  NO_CLEAN=true
+  echo -e "\e[92m  > Skip mvn clean\e[39m"
+else
+  NO_CLEAN=false
+  echo "  * Executing mvn clean before execution (pass 'no-clean' as argument to skip)"
+fi
+
 if [[ "$*" == *gpgkey=* ]]
 then
   GPG_KEYNAME=$(echo "$*" | sed -r -E -n 's|.*gpgkey=([^ ]+).*|\1|p')

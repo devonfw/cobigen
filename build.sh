@@ -5,8 +5,11 @@ echo ""
 echo "##########################################"
 echo ""
 
+if [[ "$NO_CLEAN" = false ]]
+then
 log_step "Cleanup Projects"
 doRunCommand "mvn clean $MVN_SETTINGS $PARALLELIZED $BATCH_MODE $DEBUG"
+fi
 
 log_step "Build & Test Core"
 doRunCommand "mvn install $MVN_SETTINGS -f cobigen --projects !cobigen-core-systemtest $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE"

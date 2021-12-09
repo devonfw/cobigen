@@ -32,6 +32,18 @@ else
   echo " ! Not detected cloned gh-pages branch in ../gh-pages folder."
   ORIGIN="$(git config --get remote.origin.url)"
   SED_OUT=$(echo $ORIGIN | sed -r -E -n 's@^https:\/\/(github.com.*)@\1@p')
+  if [ -n "$BUILD_USER" ]
+  then
+    echo "BUILD_USER SET"
+  fi
+  if [ -n "$BUILD_USER_PASSWD" ]
+  then
+    echo "BUILD_USER_PASSWD SET"
+  fi
+  if [ -n "$BUILD_USER" ] && [ -n "$BUILD_USER_PASSWD" ]
+  then
+    echo "BUILD_USER AND BUILD_USER_PASSWD SET"
+  fi
   if [ -n "$SED_OUT" ] && [ -n "$BUILD_USER" ] && [ -n "$BUILD_USER_PASSWD" ]
   then
     ORIGIN="https://${BUILD_USER}:${BUILD_USER_PASSWD}@$SED_OUT"
