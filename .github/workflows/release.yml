@@ -62,7 +62,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-        run: ./release.sh silent
+        run: ./release.sh silent repo-mvn-settings
       - name: Release excluding test run
         if: ${{ !inputs.runTests }}
         shell: bash
@@ -71,4 +71,4 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-        run: ./release.sh silent skip-qa
+        run: ./release.sh silent skip-qa repo-mvn-settings
