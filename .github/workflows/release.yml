@@ -22,6 +22,8 @@ on:
         required: true
       BUILD_USER:
         required: true
+      BUILD_USER_PASSWD:
+        required: true
       BUILD_USER_EMAIL:
         required: true
 env: 
