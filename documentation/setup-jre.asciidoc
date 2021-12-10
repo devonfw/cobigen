@@ -1,12 +1,12 @@
 = Set up JRE for development
 
-Cobigen is supposed to support both java 8 and java 11 even though we are moving to 11. Here is a short description of how to setup the execution environment for developing so that you can test both environments.
+CobiGen is supposed to support both java 8 and java 11 even though we are moving to 11. Here is a short description of how to setup the execution environment for developing so that you can test both environments.
 
-By default, cobigen development tools come with some installed JREs in `/software/java (11)` and `/software/java/additionalJdk (7 and 8)`
+By default, CobiGen development tools come with some installed JREs in `/software/java (11)` and `/software/java/additionalJdk (7 and 8)`
 
 image:documentation/images/howtos/setup-jre/installed-jre.PNG[]
 
-In cobigen, there is a fixed setup of JAVASE-1.8 in maven, which leads to the odd that no matter which Java is currently used, eclipse keeps showing JAVASE-1.8. A temporary reconfiguration of JRE in build path will also be overwritten by a maven update.
+In CobiGen, there is a fixed setup of JAVASE-1.8 in maven, which leads to the odd that no matter which Java is currently used, eclipse keeps showing JAVASE-1.8. A temporary reconfiguration of JRE in build path will also be overwritten by a maven update.
 
 image:documentation/images/howtos/setup-jre/java-11.PNG[]
 

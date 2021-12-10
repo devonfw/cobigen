@@ -6,7 +6,7 @@ toc::[]
 We are going to show you **how to** generate a CRUD Ionic application from an **ETO**
 using CobiGen. 
 
-NOTE: This is a short introduction to the Ionic generation. For a deeper tutorial including the generation of the backend, we strongly recommend you to follow link:files/HOW-TO-devonfw-ide-CobiGen-PoC-E2E_v3.2.pdf[this document].
+NOTE: This is a short introduction to the Ionic generation. For a deeper tutorial including the generation of the back end, we strongly recommend you to follow link:files/HOW-TO-devonfw-ide-CobiGen-PoC-E2E_v3.2.pdf[this document].
 
 == Prerequisites
 
@@ -59,15 +59,15 @@ different projects_.
 image::images/howtos/ionic-gen/wizardCobiGen.png[CobiGen Ionic Wizard,width="500"link="images/howtos/ionic-gen/wizardCobiGen.png"]
 
 NOTE: By default, the generated files will be placed inside "devon4ng-ionic-application-template", next to the root of your project's folder.
-See the image below to know where they are generated. For **changing the generation path** and the name of the application go to _CobiGen_Templates/crud_ionic_client_app/cobigen.properties_.
+See the image below to know where they are generated. For **changing the generation path** and the name of the application go to `_CobiGen_Templates/crud_ionic_client_app/cobigen.properties_`.
 
 image::images/howtos/ionic-gen/pathOfGeneration.png[Generation path,width="500"link="images/howtos/ionic-gen/pathOfGeneration.png"]
 
 Now that we have generated the files, lets start testing them:
 
-* First change the **SERVER_URL** of your application. For doing that, modify _src/environments/environments.ts_, also modify _src/environments/environments.android.ts_ (android) and _src/environments/environments.prod.ts_ (production) if you want to test in different environments.
+* First change the **SERVER_URL** of your application. For doing that, modify `_src/environments/environments.ts_`, also modify `_src/environments/environments.android.ts_` (android) and `_src/environments/environments.prod.ts_` (production) if you want to test in different environments.
 
-* Check that there are no duplicated imports. Sometimes there are duplicated imports in _src/app/app.module.ts_.
+* Check that there are no duplicated imports. Sometimes there are duplicated imports in `_src/app/app.module.ts_`.
 This happens because the merger of CobiGen prefers to duplicate rather than to delete.
 
 * Run ``npm install`` to install all the required dependencies.

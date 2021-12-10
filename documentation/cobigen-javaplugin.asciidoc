@@ -89,7 +89,7 @@ The container matcher matches packages provided by the type `com.capgemini.cobig
 
 
 === Variable Assignment types
-Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The Java Plug-in currently provides two different mechanisms:
+Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of `context.xml` through the namespace `variables.<key>`. The Java Plug-in currently provides two different mechanisms:
 
 * type 'regex' -> regular expression group
 +
@@ -120,7 +120,7 @@ This variable assignment assigns the value of the given regular expression group
 This variable assignment assigns the `value` to the `key` as a constant.
 
 === Java input reader
-The Cobigen Java Plug-in implements an input reader for parsed java sources as well as for java `Class<?>` objects (loaded by reflection). So API user can pass `Class<?>` objects as well as `JavaClass` objects for generation. The latter depends on https://github.com/paul-hammant/qdox[QDox], which will be used for parsing and merging java sources. For getting the right parsed java inputs you can easily use the `JavaParserUtil`, which provides static functionality to parse java files and get the appropriate `JavaClass` object.
+The CobiGen Java Plug-in implements an input reader for parsed java sources as well as for java `Class<?>` objects (loaded by reflection). So API user can pass `Class<?>` objects as well as `JavaClass` objects for generation. The latter depends on https://github.com/paul-hammant/qdox[QDox], which will be used for parsing and merging java sources. For getting the right parsed java inputs you can easily use the `JavaParserUtil`, which provides static functionality to parse java files and get the appropriate `JavaClass` object.
 
 Furthermore, due to restrictions on both inputs according to model building (see below), it is also possible to provide an array of length two as an input, which contains the `Class<?>` as well as the `JavaClass` object of the same class.
 
@@ -135,23 +135,23 @@ No matter whether you use reflection objects or parsed java classes as input, yo
 ** *annotations* ('Map<String, Object>' :: Annotations, which will be represented by a mapping of the full qualified type of an annotation to its value. To gain template compatibility, the key will be stored with '_' instead of '.' in the full qualified annotation type. Furthermore, the annotation might be recursively defined and thus be accessed using the same type of mapping. Example `${pojo.annotations.javax_persistence_Id}`)
 ** *JavaDoc* ('Map<String, Object>') :: A generic way of addressing all available JavaDoc doclets and comments. The only fixed variable is `comment` (see below). All other provided variables depend on the doclets found while parsing. The value of a doclet can be accessed by the doclets name (e.g. `${...JavaDoc.author}`). In case of doclet tags that can be declared multiple times (currently `@param` and `@throws`), you will get a map, which you access in a specific way (see below).
 *** *comment* ('String' :: JavaDoc comment, which does not include any doclets)
-*** *params* ('Map<String,String> :: JavaDoc parameter info. If the comment follows proper conventions, the key will be the name of the parameter and the value being its description. You can also access the parameters by their number, as in `arg0`, `arg1` etc, following the order of declaration in the signature, not in order of javadoc)
+*** *params* ('Map<String,String> :: JavaDoc parameter info. If the comment follows proper conventions, the key will be the name of the parameter and the value being its description. You can also access the parameters by their number, as in `arg0`, `arg1` etc, following the order of declaration in the signature, not in order of JavaDoc)
 *** *throws* ('Map<String,String> :: JavaDoc exception info. If the comment follows proper conventions, the key will be the name of the thrown exception and the value being its description)
-** *`extendedType`* ('Map<String, Object>' :: The supertype, represented by a set of mappings _(since cobigen-javaplugin v1.1.0)_
+** *`extendedType`* ('Map<String, Object>' :: The supertype, represented by a set of mappings _(since `cobigen-javaplugin v1.1.0`)_
 *** *name* ('String' :: Simple name of the supertype)
 *** *`canonicalName`* ('String' :: Full qualified name of the supertype)
 *** *package* ('String' :: Package name of the supertype)
-** `*implementedTypes*` ('List<Map<String, Object>>' :: A list of all `implementedTypes` (interfaces) represented by a set of mappings _(since cobigen-javaplugin v1.1.0)_
+** `*implementedTypes*` ('List<Map<String, Object>>' :: A list of all `implementedTypes` (interfaces) represented by a set of mappings _(since `cobigen-javaplugin v1.1.0`)_
 *** *interface* ('Map<String, Object>' :: List element)
 **** *name* ('String' :: Simple name of the interface)
 **** *`canonicalName`* ('String' :: Full qualified name of the interface)
 **** *package* ('String' :: Package name of the interface)
-** *fields* ('List<Map<String, Object>>' :: List of fields of the input class) _(renamed since cobigen-javaplugin v1.2.0; previously *attributes*)_
+** *fields* ('List<Map<String, Object>>' :: List of fields of the input class) _(renamed since `cobigen-javaplugin v1.2.0`; previously *attributes*)_
 *** field ('Map<String, Object>' :: List element)
 **** *name* ('String' :: Name of the Java field)
 **** *type* ('String' :: Type of the Java field)
 **** `*canonicalType*` ('String' :: Full qualified type declaration of the Java field's type)
-**** '*`isId`*' ('Deprecated' :: 'boolean' :: true if the Java field or its setter or its getter is annotated with the javax.persistence.Id annotation, false otherwise. Equivalent to `${pojo.attributes[i].annotations.javax_persistence_Id?has_content}`)
+**** '*`isId`*' ('Deprecated' :: 'boolean' :: true if the Java field or its setter or its getter is annotated with the `javax.persistence.Id` annotation, false otherwise. Equivalent to `${pojo.attributes[i].annotations.javax_persistence_Id?has_content}`)
 **** *JavaDoc* (see pojo.JavaDoc)
 **** *annotations* (see pojo.annotations with the remark, that for fields all annotations of its setter and getter will also be collected)
 ** `*methodAccessibleFields*` ('List<Map<String, Object>>' :: List of fields of the input class or its inherited classes, which are accessible using setter and getter methods)
@@ -164,8 +164,8 @@ No matter whether you use reflection objects or parsed java classes as input, yo
 
 Furthermore, when providing a `Class<?>` object as input, the Java Plug-in will provide additional functionalities as template methods _(deprecated)_: 
 
-. `isAbstract(String fqn)` (Checks whether the type with the given full qualified name is an abstract class. Returns a boolean value.) _(since cobigen-javaplugin v1.1.1)_  _(deprecated)_
-. `isSubtypeOf(String subType, String superType)` (Checks whether the `subType` declared by its full qualified name is a sub type of the `superType` declared by its full qualified name. Equals the Java expression `subType instanceof superType` and so also returns a boolean value.) _(since cobigen-javaplugin v1.1.1)_  _(deprecated)_
+. `isAbstract(String fqn)` (Checks whether the type with the given full qualified name is an abstract class. Returns a Boolean value.) _(since `cobigen-javaplugin v1.1.1`)_  _(deprecated)_
+. `isSubtypeOf(String subType, String superType)` (Checks whether the `subType` declared by its full qualified name is a sub type of the `superType` declared by its full qualified name. Equals the Java expression `subType instanceof superType` and so also returns a Boolean value.) _(since `cobigen-javaplugin v1.1.1`)_  _(deprecated)_
 
 
 ==== Model Restrictions
@@ -176,8 +176,8 @@ It is important to understand, that these restrictions are only present if you w
 ===== Parsed Model
 * annotations of the input's supertype are not accessible due to restrictions in the https://github.com/paul-hammant/qdox[QDox] library. So `pojo.methodAccessibleFields[i].annotations` will always be empty for super type fields.
 * annotations' parameter values are available as Strings only (e.g. the Boolean value `true` is transformed into `"true"`). This also holds for the Reflected Model.
-* fields of "supersupertypes" of the input JavaClass are not available at all. So `pojo.methodAccessibleFields` will only contain the input type's and the direct superclass's fields.
-* [resolved, since cobigen-javaplugin 1.3.1] field types of supertypes are always canonical. So `pojo.methodAccessibleFields[i].type` will always provide the same value as `pojo.methodAccessibleFields[i].canonicalType` (e.g. `java.lang.String` instead of the expected `String`) for super type fields.
+* fields of "supertypes" of the input `JavaClass` are not available at all. So `pojo.methodAccessibleFields` will only contain the input type's and the direct superclass's fields.
+* [resolved, since `cobigen-javaplugin 1.3.1`] field types of supertypes are always canonical. So `pojo.methodAccessibleFields[i].type` will always provide the same value as `pojo.methodAccessibleFields[i].canonicalType` (e.g. `java.lang.String` instead of the expected `String`) for super type fields.
 
 ===== Reflected Model
 * annotations' parameter values are available as Strings only (e.g. the Boolean value `true` is transformed into `"true"`). This also holds for the Parsed Model.

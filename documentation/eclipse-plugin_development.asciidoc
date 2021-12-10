@@ -11,7 +11,7 @@ The Eclipse plugin is where all the other plugins (`JavaPlugin`, `XMLPlugin`, `P
 === Activator java
 
 Activator class is the start point of the plugin. Activator class is loaded initially and it extends the `*AbstractUIPlugin*`, which tells the Eclipse Run-time that this Plugin is someway related to the Eclipse Platform `UI`.
-An `ID` for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[Plugin.xml] needs.
+An `ID` for the plugin is defined for configuration at https://github.com/devonfw/cobigen/wiki/Eclipse-Plugin-Development#plugin-xml[`Plugin.xml`] needs.
 
 [source,java]
 ----
@@ -34,9 +34,9 @@ How the `loadPlugin` works is explained deeply at https://github.com/devonfw/cob
 
 The activator has the listener *__`ConfigurationProjectListener.java`__* from the *`workbenchcontrol`* package that checks continuously changes on the templates project
 
-=== Plugin xml
+=== Plugin XML
 
-Plugin.xml file is used to initialize plugin. Here are defined the commands and the handler for each command, and also in which views should be shown the plugin menu with the commands.
+`Plugin.xml` file is used to initialize plugin. Here are defined the commands and the handler for each command, and also in which views should be shown the plugin menu with the commands.
 
 The command configuration:
 
@@ -64,7 +64,7 @@ The command configuration:
 </extension>
 ----
 
-As can be seen, to define the commands, the `*PLUGIN_ID*` defined at the *__Activator.java__* is used followed of the name of the command.  Then, a handler from *workbenchcontrol.handler* package is assigned for each command.
+As can be seen, to define the commands, the `*PLUGIN_ID*` defined at the *__Activator.java__* is used followed of the name of the command.  Then, a handler from `*workbenchcontrol.handler*` package is assigned for each command.
 
 After that, is defined the views where we want to show the CobiGen menu as Popup menu.
 (e.g. Project Explorer view)
@@ -102,14 +102,14 @@ image:images/howtos/eclipse-plugin/eclipse-plugin_sshot1.png[CobiGen Menu,width=
 
 == Handlers
 
-The *workbenchcontrol* package provides to the plugin the listener regarding to the templates project, the listener for logging needs and the handler for the two main use cases (Generate and `HealthCheck`).
+The `*workbenchcontrol*` package provides to the plugin the listener regarding to the templates project, the listener for logging needs and the handler for the two main use cases (Generate and `HealthCheck`).
 
 === Update Templates: 
-Update Template: Select Entity file and right click, then select cobigen Update Templates after that click on download then download successfully will be come.
+Update Template: Select Entity file and right click, then select CobiGen Update Templates after that click on download then download successfully will be come.
 
 === Adapt Templates
 
-Adapt Template: Select Entity file and right click then select cobigen _Adapt Template_ .If cobigen template jar not available then it download automatically. If Cobigen templates is already then it will override existing template in workspace and click on OK then imported template successfully message will come.
+Adapt Template: Select Entity file and right click then select CobiGen _Adapt Template_ .If CobiGen template jar not available then it download automatically. If CobiGen templates is already then it will override existing template in workspace and click on OK then imported template successfully message will come.
 
 === Generate Action Handler
 
@@ -118,7 +118,7 @@ For `JavaGeneratorWrapper`, if the input is a package or a selection of multiple
 
 [NOTE]
 ===============================
-For both Wrapper objects, the inputs will be converted to valid inputs for Freemarker using the *__`Xml/JavaInputConverter.java`__* from the *generator.xml/java* package.
+For both Wrapper objects, the inputs will be converted to valid inputs for FreeMarker using the *__`Xml/JavaInputConverter.java`__* from the `*generator.xml/java* package`.
 ===============================
 
 image:images/howtos/eclipse-plugin/eclipse-plugin_diag1.png[Diagram 1,width="450",link="images/howtos/eclipse-plugin/eclipse-plugin_diag1.png"]
@@ -151,11 +151,11 @@ try {
 ----
 
 
-If the project exists, `HealthCheck` will test if the __context.xml__ file is valid. In case of invalid, `HealthCheck` will throw and handle the *`InvalidConfigurationException`* from the core and check if it is possible to upgrade the version of the xml file, showing an __UPGRADE__ button at the dialog. If the upgrade is not possible, will show a dialog message telling the user to check the __context.xml__ file for errors.
+If the project exists, `HealthCheck` will test if the `__context.xml__` file is valid. In case of invalid, `HealthCheck` will throw and handle the *`InvalidConfigurationException`* from the core and check if it is possible to upgrade the version of the XML file, showing an __UPGRADE__ button at the dialog. If the upgrade is not possible, will show a dialog message telling the user to check the `__context.xml__` file for errors.
 [source,java]
 ----
 try {
-   //The Cobigen constructor will throw the InvalidConfigurationException
+   //The CobiGen constructor will throw the InvalidConfigurationException
    new CobiGen(generatorConfProj.getLocationURI());
     ...
     ..
@@ -194,7 +194,7 @@ try {
 At this point, if all is correct, the user can choose to finish the `HealtCheck` process or run the Advance Health Check running the *__`AdvancedHealthCheck.java`__* to check the the validity of template configurations. That check has three steps:
 
 . *Get configuration resources* +
-Will get the template configuration file from the template folder corresponding to the input of the plugin provided by the triggers defined at the __context.xml__ file for that input.
+Will get the template configuration file from the template folder corresponding to the input of the plugin provided by the triggers defined at the `__context.xml__` file for that input.
 
 . *Determine current state* +
 Will check if the template configuration file exists, if it is accessible and if the version is up-to-date allowing upgrading if not.
@@ -225,7 +225,7 @@ if (((IStructuredSelection) sel).size() > 1 || (((IStructuredSelection) sel).siz
 }
 ----
 
-Adapt Template: Select Entity file and right click then select cobigen  Adapt Template.If cobigen template  jar not available then it download automatically.If Cobigen templates is already then it will override existing template in workspace and click on OK then imported template successfully message will come .If Template not available the it automatically 
+Adapt Template: Select Entity file and right click then select CobiGen  Adapt Template.If CobiGen template  jar not available then it download automatically.If CobiGen templates is already then it will override existing template in workspace and click on OK then imported template successfully message will come .If Template not available the it automatically 
 === Wizard and `WizardPages`
 
 The Wizard class from the *`org.eclipse.jface.wizard`* package provides the functionality to build custom wizards. This class controls the navigation between the different pages and provides the base user interface, for example, an area for error and information messages.

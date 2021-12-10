@@ -5,15 +5,15 @@ toc::[]
 
 CobiGen is maintaining a home directory further referenced in this documentation as `$cghome`, which is used to maintain temporary or transient data. The home folder is determined with the following location fall-back:
 
-1. System environment variable `COBIGEN_HOME` (e.g. C:\project\ide\conf\cobigen-home)
-2. `.cobigen` directory in OS user home (e.g. ~/.cobigen)
+1. System environment variable `COBIGEN_HOME` (e.g. `C:\project\ide\conf\cobigen-home`)
+2. `.cobigen` directory in OS user home (e.g. `~/.cobigen`)
 
 The actual configuration of CobiGen is maintained by a single folder or jar. The location can be configured with respect to the implemented configuration fall-back mechanism. CobiGen will search for the location of the configuration in the following order:
 
 1. A configuration jar or directory, which is passed to CobiGen by the Maven or Eclipse integration or any other program using the CobiGen programming interface:
 1.1. the Maven integration allows to configure a jar dependency to be included in the currently running classpath _(of interest for link:cobigen-maven_configuration#plugin-injection-since-v3[maven configuration]_
 1.2. the Eclipse integration allows to specify a `CobiGen_Templates` project in the eclipse workspace 
-2. The file `$cghome/.cobigen` exists and the property `templates` is set to a valid configuration (e.g. `templates=C:\project\ide\conf\templates` or `templates=C:\project\ide\conf\templates.jar`) _Hint: Check for log entry like `Value of property templates in $cghome/.cobigen is invalid` to identify an invalid configuration which is not taken up as expected_
+2. The file `$cghome/.cobigen` exists and the property `templates` is set to a valid configuration (e.g. `templates=C:\project\ide\conf\templates` or `templates=C:\project\ide\conf\templates.jar`) _Hint: Check for log entry like `Value of property templates in `$cghome/.cobigen` is invalid` to identify an invalid configuration which is not taken up as expected_
 3. The folder `$cghome/templates/CobiGen_Templates` exists
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
 5. CobiGen will automatically download the latest jar configuration from maven central with `groupId` `com.devonfw.cobigen` and `artifactId` `templates-devon4j` and take it like described in 4.
@@ -154,7 +154,7 @@ The template configuration (`templates.xml`) specifies, which templates exist an
 
 1. Configure the template meta-data for each template file by xref:template-node[template nodes]
 
-2. _(since cobigen-core-v1.2.0)_: Configure xref:templatescan-node[`templateScan` nodes] to automatically retrieve a default configuration for all files within a configured folder and possibly modify the automatically configured templates using xref:templateextension-node[`templateExtension` nodes]
+2. `_(since cobigen-core-v1.2.0)_`: Configure `xref:templatescan-node[templateScan nodes]` to automatically retrieve a default configuration for all files within a configured folder and possibly modify the automatically configured templates using xref:templateextension-node[`templateExtension` nodes]
 
 To get an intuition of the idea, the following will initially describe the first (more extensive) configuration style. Such an configuration root structure looks as follows:
 
@@ -172,7 +172,7 @@ To get an intuition of the idea, the following will initially describe the first
     </increments>
 </templatesConfiguration>
 ```
-The root node `<templatesConfiguration>` specifies two attributes. The attribute `version` provides further usability support and will be handled analogous to the `version` attribute of the xref:context-configuration[context configuration]. The optional attribute `templateEngine` specifies the template engine to be used for processing the templates (_since cobigen-core-4.0.0_). By default it is set to FreeMarker.
+The root node `<templatesConfiguration>` specifies two attributes. The attribute `version` provides further usability support and will be handled analogous to the `version` attribute of the xref:context-configuration[context configuration]. The optional attribute `templateEngine` specifies the template engine to be used for processing the templates (_since `cobigen-core-4.0.0`_). By default it is set to FreeMarker.
 
 The node `<templatesConfiguration>` allows two different grouping nodes as children. First, there is the `<templates>` node, which groups all declarations of templates. Second, there is the `<increments>` node, which groups all declarations about increments.
 
@@ -196,9 +196,9 @@ A template declaration consist of multiple information:
 ** `?uncap_first` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_uncap_first[FreeMarker]
 ** `?lower_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_lower_case[FreeMarker]
 ** `?upper_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_upper_case[FreeMarker]
-** `?replace(regex, replacement)` - Replaces all occurrences of the regular expression `regex` in the variable's value with the given `replacement` string. (since cobigen-core v1.1.0)
-** `?removeSuffix(suffix)` - Removes the given `suffix` in the variable's value iff the variable's value ends with the given `suffix`. Otherwise nothing will happen. (since cobigen-core v1.1.0)
-** `?removePrefix(prefix)` - Analogue to `?removeSuffix` but removes the prefix of the variable's value. (since cobigen-core v1.1.0)
+** `?replace(regex, replacement)` - Replaces all occurrences of the regular expression `regex` in the variable's value with the given `replacement` string. (since `cobigen-core v1.1.0`)
+** `?removeSuffix(suffix)` - Removes the given `suffix` in the variable's value iff the variable's value ends with the given `suffix`. Otherwise nothing will happen. (since `cobigen-core v1.1.0`)
+** `?removePrefix(prefix)` - Analogue to `?removeSuffix` but removes the prefix of the variable's value. (since `cobigen-core v1.1.0`)
 * The attribute `templateFile` describes the relative path dependent on the template folder specified in the xref:trigger-node[trigger] to the template file to be generated.
 * The attribute `mergeStrategy` _(optional)_ can be _optionally_ specified and declares the type of merge mechanism to be used, when the `destinationPath` points to an already existing file. CobiGen by itself just comes with a `mergeStrategy` `override`, which enforces file regeneration in total. Additional available merge strategies have to be obtained from the different plug-in's documentations (see here for link:cobigen-javaplugin#merger-extensions[java], link:cobigen-xmlplugin#merger-extensions[XML], link:cobigen-propertyplugin#merger-extensions[properties], and link:cobigen-textmerger#merger-extensions[text]). Default: _not set_ (means not mergeable)
 * The attribute `targetCharset` _(optional)_ can be _optionally_ specified and declares the encoding with which the contents will be written into the destination file. This also includes reading an existing file at the destination path for merging its contents with the newly generated ones. Default: _UTF-8_
@@ -207,7 +207,7 @@ _(Since version 4.1.0)_ It is possible to reference external `template` (templat
 
 === Template Scan Node
 
-_(since cobigen-core-v1.2.0)_
+_(since `cobigen-core-v1.2.0`)_
 
 The second configuration style for template meta-data is driven by initially scanning all available templates and automatically configure them with a default set of meta-data. A scanning configuration might look like this:
 
@@ -224,7 +224,7 @@ The second configuration style for template meta-data is driven by initially sca
 ```
 You can specify multiple `<templateScan ...>` nodes for different `templatePaths` and different `templateNamePrefixes`. 
 
-* The `name` can be specified to later on reference the templates found by a template-scan within an xref:increment-node[increment]. _(since cobigen-core-v2.1.)_
+* The `name` can be specified to later on reference the templates found by a template-scan within an xref:increment-node[increment]. _(since `cobigen-core-v2.1.`)_
 * The `templatePath` specifies the relative path from the `templates.xml` to the root folder from which the template scan should be performed. 
 * The `templateNamePrefix` _(optional)_ defines a common id prefix, which will be added to all found and automatically configured templates.
 * The `destinationPath` defines the root folder all found templates should be generated to, whereas the root folder will be a prefix for all found and automatically configured templates.
@@ -242,9 +242,9 @@ A `templateScan` will result in the following **default configuration of templat
 _(Since version 4.1.0)_ It is possible to reference external `templateScan` (`templateScans` defined on another trigger), thanks to using `<incrementRef ...>` that are explained xref:increment-node[here].
 
 === Template Extension Node
-_(since cobigen-core-v1.2.0)_
+_(since `cobigen-core-v1.2.0`)_
 
-Additionally to the xref:templatescan-node[`templateScan` declaration] it is easily possible to rewrite specific attributes for any scanned and automatically configured template.
+Additionally to the `xref:templatescan-node[templateScan declaration]` it is easily possible to rewrite specific attributes for any scanned and automatically configured template.
 
 .Example Configuration of a `TemplateExtension`
 
@@ -258,7 +258,7 @@ Additionally to the xref:templatescan-node[`templateScan` declaration] it is eas
 </templateScans>
 ```
 
-Lets assume, that the above example declares a `template-scan` for the folder `foo`, which contains a file `FooClass.java.ftl` in any folder depth. Thus the template scan will automatically create a virtual xref:template-node[template] declaration with `id=prefix_FooClass.java` and further xref:templatescan-node[default configuration].
+Lets assume, that the above example declares a `template-scan` for the folder `foo`, which contains a file `FooClass.java.ftl` in any folder depth. Thus the template scan will automatically create a virtual xref:template-node[template] declaration with `id=prefix_FooClass.java` and further `xref:templatescan-node[default configuration]`.
 
 Using the `templateExtension` declaration above will reference the scanned template by the attribute `ref` and overrides the `mergeStrategy` of the automatically configured template by the value `javamerge`. Thus we are able to minimize the needed templates configuration.
 
@@ -305,7 +305,7 @@ The ref string is split using as delimiter `::`. The first part of the string, i
 
 == Java Template Logic
 
-_since cobigen-core-3.0.0 which is included in the Eclipse and Maven Plugin since version 2.0.0_
+_since `cobigen-core-3.0.0` which is included in the Eclipse and Maven Plugin since version 2.0.0_
 In addition, it is possible to implement more complex template logic by custom Java code. To enable this feature, you can simply import the the `CobiGen_Templates` by clicking on _Adapt Templates_, turn it into a simple maven project (if it is not already) and implement any Java logic in the common maven layout (e.g. in the source folder `src/main/java`). Each Java class will be instantiated by CobiGen for each generation process. Thus, you can even store any state within a Java class instance during generation. However, there is currently no guarantee according to the template processing order. 
 
 As a consequence, you have to implement your Java classes with a public default (non-parameter) constructor to be used by any template. Methods of the implemented Java classes can be called within templates by the simple standard FreeMarker expression for calling Bean methods: `SimpleType.methodName(param1)`. Until now, CobiGen will shadow multiple types with the same simple name non-deterministically. So please prevent yourself from that situation.
@@ -314,16 +314,16 @@ Finally, if you would like to do some reflection within your Java code accessing
 
 == Template Properties
 
-_since cobigen-core-4.0.0_
-Using a configuration with xref:templatescan-node[template scan], you can make use of properties in templates specified in property files named `cobigen.properties` next to the templates. The property files are specified as https://en.wikipedia.org/wiki/.properties[Java property files]. Property files can be nested in subfolders. Properties will be resolved including property shading. Properties defined nearest to the template to be generated will take precedence.
+_since `cobigen-core-4.0.0`_
+Using a configuration with `xref:templatescan-node[template scan]`, you can make use of properties in templates specified in property files named `cobigen.properties` next to the templates. The property files are specified as https://en.wikipedia.org/wiki/.properties[Java property files]. Property files can be nested in sub-folders. Properties will be resolved including property shading. Properties defined nearest to the template to be generated will take precedence.
 In addition, a `cobigen.properties` file can be specified in the target folder root (in eclipse plugin, this is equal to the source project root). These properties take precedence over template properties specified in the template folder.
 
 NOTE: It is not allowed to override context variables in `cobigen.properties` specifications as we have not found any interesting use case. This is most probably an error of the template designer, CobiGen will raise an error in this case.
 
 === Multi module support or template target path redirects
 
-_since cobigen-core-4.0.0_
-One special property you can specify in the template properties is the property `relocate`. It will cause the current folder and its subfolders to be relocated at destination path resolution time. Take the following example:
+_since `cobigen-core-4.0.0`_
+One special property you can specify in the template properties is the property `relocate`. It will cause the current folder and its sub-folders to be relocated at destination path resolution time. Take the following example:
 
 ```
 folder
@@ -332,7 +332,7 @@ folder
     cobigen.properties
 ```
 
-Let the `cobigen.properties` file contain the line `relocate=../sub2/${cwd}`. Given that, the relative destination path of `Template.java.ftl` will be resolved to `folder/sub2/Template.java`. Compare xref:templatescan-node[template scan] configuration for more information about basic path resolution. The `relocate` property specifies a relative path from the location of the `cobigen.properties`. The `${cwd}` placeholder will contain the remaining relative path from the `cobigen.properties` location to the template file. In this basic example it just contains `Template.java.ftl`, but it may even be any relative path including subfolders of sub1 and its templates.
+Let the `cobigen.properties` file contain the line `relocate=../sub2/${cwd}`. Given that, the relative destination path of `Template.java.ftl` will be resolved to `folder/sub2/Template.java`. Compare `xref:templatescan-node[template scan]` configuration for more information about basic path resolution. The `relocate` property specifies a relative path from the location of the `cobigen.properties`. The `${cwd}` placeholder will contain the remaining relative path from the `cobigen.properties` location to the template file. In this basic example it just contains `Template.java.ftl`, but it may even be any relative path including subfolders of sub1 and its templates.
 Given the `relocate` feature, you can even step out of the root path, which in general is the project/maven module the input is located in. This enables template designers to even address, e.g., maven modules located next to the module the input is coming from.
 
 == Basic Template Model
@@ -340,7 +340,7 @@ Given the `relocate` feature, you can even step out of the root path, which in g
 In addition to what is served by the different model builders of the different plug-ins, CobiGen provides a minimal model based on context variables as well as CobiGen properties. The following model is independent of the input format and will be served as a template model all the time:
 
 * variables
-** all triggered xref:variableassignment-node[context variables] mapped to its assigned/mapped value
+** all triggered `xref:variableassignment-node[context variables]` mapped to its assigned/mapped value
 ** all xref:template-properties[template properties]
 * all simple names of xref:java-template-logic[Java template logic] implementation classes
 * all full qualified names of xref:java-template-logic[Java template logic] implementation classes
@@ -348,6 +348,6 @@ In addition to what is served by the different model builders of the different p
 
 == Plugin Mechanism
 
-Since cobigen-core 4.1.0, we changed the plug-in discovery mechanism. So far it was necessary to register new plugins programmatically, which introduces the need to let every tool integration, i.e. for eclipse or maven, be dependent on every plug-in, which should be released. This made release cycles take long time as all plug-ins have to be integrated into a final release of maven or eclipse integration.
+Since cobigen-core 4.1.0, we changed the plug-in discovery mechanism. So far it was necessary to register new plugins programmaticaly, which introduces the need to let every tool integration, i.e. for eclipse or maven, be dependent on every plug-in, which should be released. This made release cycles take long time as all plug-ins have to be integrated into a final release of maven or eclipse integration.
 
 Now, plug-ins are automatically discovered by the Java https://docs.oracle.com/javase/tutorial/ext/basics/spi.html[Service Loader] mechanism from the classpath. This also effects the setup of link:cobigen-eclipse_installation#upgrading-to-v3[eclipse] and link:cobigen-maven_configuration#additions-since-v3[maven] integration to allow modular releases of CobiGen in future. We are now able to provide faster rollouts of bug-fixes in any of the plug-ins as they can be released completely independently.
