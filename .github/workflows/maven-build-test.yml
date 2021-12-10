@@ -1,6 +1,16 @@
 name: CI
 
-on: [push, pull_request]
+on: 
+  push:
+    paths-ignore:
+      - 'documentation/**'
+      - 'solicitor/**'
+      - '**.asciidoc'
+  pull_request:
+    paths-ignore:
+      - 'documentation/**'
+      - 'solicitor/**'
+      - '**.asciidoc'
 
 # Try fixing random Connection Reset on Maven downloads by '-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120' as proposed here: https://github.com/actions/virtual-environments/issues/2715#issuecomment-797388909
 
@@ -358,4 +368,19 @@ jobs:
         shell: bash
         run: |
           mvn install -f cobigen-templates -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
-
+  
+  release:
+    needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
+    uses: devonfw/cobigen/.github/workflows/release.yml@master
+    with:
+      runTests: false
+    secrets:
+      GPG_KEY: ${{ secrets.GPG_KEY }}
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+      SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+      BUILD_USER: ${{ secrets.BUILD_USER }}
+      BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
+      BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

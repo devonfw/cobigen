@@ -1,8 +1,40 @@
 name: Release 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      runTests:
+        description: Run tests before release
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      GPG_KEY:
+        required: true
+      GPG_PRIVATE_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
+      GITHUB_TOKEN:
+        required: true
+      SONATYPE_USERNAME:
+        required: true
+      SONATYPE_PASSWORD:
+        required: true
+      BUILD_USER:
+        required: true
+      BUILD_USER_PASSWD:
+        required: true
+      BUILD_USER_EMAIL:
+        required: true
+env: 
+  BUILD_USER: ${{ secrets.BUILD_USER }}
+  BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
+  BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
 jobs:
-  build:
+  release:
+    if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
+    environment:
+      name: production
     runs-on: ubuntu-latest
     steps:
       - name: Clone
@@ -14,13 +46,30 @@ jobs:
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
           git_user_signingkey: true
           git_commit_gpgsign: true
+      - name: Setup git user
+        run: |
+          git config --global user.email ${BUILD_USER_EMAIL}
+          git config --global user.name ${BUILD_USER}
       - name: Cache Maven Dependencies
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       - name: Release including test run
+        if: ${{ inputs.runTests }}
         shell: bash
-        env: 
+        env:
           GPG_KEY: ${{ secrets.GPG_KEY }}
-        run: ./release.sh
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: ./release.sh silent repo-mvn-settings
+      - name: Release excluding test run
+        if: ${{ !inputs.runTests }}
+        shell: bash
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: ./release.sh silent skip-qa repo-mvn-settings

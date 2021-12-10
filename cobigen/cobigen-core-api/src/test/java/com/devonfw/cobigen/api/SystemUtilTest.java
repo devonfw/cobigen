@@ -16,6 +16,20 @@ public class SystemUtilTest {
   private static final String testdataRoot = "src/test/resources/testdata/unittest/SystemUtilTest";
 
   /**
+   * Tests whether determineLineDelimiter throws an IOException when resetting the index of a large file to an invalid
+   * mark
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testInvalidMarkOfLargeFileThrowsException() throws Exception {
+
+    Path path = Paths.get(testdataRoot, "TestInvalidMark.txt");
+    String targetCharset = "UTF-8";
+    SystemUtil.determineLineDelimiter(path, targetCharset);
+  }
+
+  /**
    * Tests whether determineLineDelimiter returns Linux line endings
    *
    * @throws Exception test fails

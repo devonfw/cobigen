@@ -71,7 +71,7 @@ public interface ${variables.component?cap_first}RestService {
   
 <#list model.component.paths as path>
 	<#list path.operations as operation>	
-	    <#if !DevonUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)> 
+	    <#if !DevonfwUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)> 
   			<#if operation.type == "get">
   @GET
   			<#elseif operation.type == "post">
@@ -85,7 +85,7 @@ public interface ${variables.component?cap_first}RestService {
   			<#assign returnType = getReturnType(operation,true)>
   <#list operation.parameters as parameter>
     <#if parameter.mediaType??>
-  @Consumes(MediaType.${DevonUtil.getSpringMediaType(parameter.mediaType)})
+  @Consumes(MediaType.${DevonfwUtil.getSpringMediaType(parameter.mediaType)})
   	</#if>
   </#list>
   <#if hasMediaTypeInResponses(operation)>

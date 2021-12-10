@@ -10,7 +10,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.devonfw.cobigen.templates.devon4j.utils.DevonUtil;
+import com.devonfw.cobigen.templates.devon4j.utils.DevonfwUtil;
 
 /**
  *
@@ -179,7 +179,7 @@ public class UmlUtil {
           content += "\n\n\tprivate " + connectedClassName + "Entity " + connectedClassName.toLowerCase() + ";";
         } else if (multiplicity != null && multiplicity.equals("*")) {
           content += "\n\n\tprivate List<" + connectedClassName + "Entity> "
-              + new DevonUtil().removePlural(connectedClassName.toLowerCase()) + "s;";
+              + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s;";
         }
       }
     }
@@ -253,17 +253,17 @@ public class UmlUtil {
         }
         content += getRelationshipAnnotations(connector) + "\n\t";
         content += "public List<" + connectedClassName + "Entity> get"
-            + new DevonUtil().removePlural(connectedClassName) + "s()";
-        content += "{" + "\n\t\treturn this." + new DevonUtil().removePlural(connectedClassName.toLowerCase()) + "s;"
+            + new DevonfwUtil().removePlural(connectedClassName) + "s()";
+        content += "{" + "\n\t\treturn this." + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s;"
             + "\n\t}";
         content += "\n\n\t";
         if (isOverride) {
           content += "@Override\n\t";
         }
-        content += "public void set" + new DevonUtil().removePlural(connectedClassName) + "s(List<" + connectedClassName
-            + "Entity> " + new DevonUtil().removePlural(connectedClassName.toLowerCase()) + "s)";
-        content += "{" + "\n\t\tthis." + new DevonUtil().removePlural(connectedClassName.toLowerCase()) + "s = "
-            + new DevonUtil().removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
+        content += "public void set" + new DevonfwUtil().removePlural(connectedClassName) + "s(List<" + connectedClassName
+            + "Entity> " + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s)";
+        content += "{" + "\n\t\tthis." + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s = "
+            + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
       }
     }
     return content;
@@ -310,7 +310,7 @@ public class UmlUtil {
       } else if (source.getCounterpartMultiplicity().equals("*")) {
         if (source.getMultiplicity().equals("*")) {
           relationship += "@ManyToMany(mappedBy = \""
-              + new DevonUtil().removePlural(source.getClassName()).toLowerCase() + "s\")";
+              + new DevonfwUtil().removePlural(source.getClassName()).toLowerCase() + "s\")";
         } else if (source.getMultiplicity().equals("1")) {
           relationship = "@OneToMany(fetch = FetchType.LAZY, mappedBy = \"" + source.getCounterpartName().toLowerCase()
               + "\")";

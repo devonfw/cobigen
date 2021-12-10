@@ -2,7 +2,7 @@
 <feature
       id="com.devonfw.cobigen.eclipse.feature"
       label="CobiGen Eclipse Plug-in"
-      version="2021.08.003.qualifier"
+      version="2021.12.002.qualifier"
       provider-name="devonfw Team">
 
    <description>

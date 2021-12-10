@@ -43,7 +43,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
         <#if property.type?ends_with("Entity")>
       cto.set${property.name?cap_first}(getBeanMapper().map(entity.get${property.name?cap_first}(), ${property.type?replace("Entity", "Eto")}.class));
         <#elseif property.type?contains("Entity") && JavaUtil.isCollection(classObject, property.name)>
-      cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${DevonUtil.getListArgumentType(property, classObject)}Eto.class));
+      cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${DevonfwUtil.getListArgumentType(property, classObject)}Eto.class));
         </#if>
       </#list>
    
@@ -62,7 +62,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
           <#if property.type?ends_with("Entity")>
         cto.set${property.name?cap_first}(getBeanMapper().map(entity.get${property.name?cap_first}(), ${property.type?replace("Entity", "Eto")}.class));
           <#elseif property.type?contains("Entity") && JavaUtil.isCollection(classObject, property.name)>
-        cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${DevonUtil.getListArgumentType(property, classObject)}Eto.class));
+        cto.set${property.name?cap_first}(getBeanMapper().mapList(entity.get${property.name?cap_first}(), ${DevonfwUtil.getListArgumentType(property, classObject)}Eto.class));
           </#if>
         </#list>
         ctos.add(cto);

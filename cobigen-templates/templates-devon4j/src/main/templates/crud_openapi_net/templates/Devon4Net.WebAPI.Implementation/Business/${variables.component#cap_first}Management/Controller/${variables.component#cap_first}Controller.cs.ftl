@@ -107,7 +107,7 @@ namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_fir
     <#list model.component.paths as path>
 	    <#list path.operations as operation>
             <#list operation.parameters as parameter>
-                <#if !DevonUtil.isCrudOperation(operation.operationId!null, variables.entityName?cap_first)>
+                <#if !DevonfwUtil.isCrudOperation(operation.operationId!null, variables.entityName?cap_first)>
                     <#if !pathInUse?contains(path.pathURI)>
 
         /// <summary>
