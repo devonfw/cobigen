@@ -6,7 +6,7 @@ This document contains the documentation of the CobiGen core module as well as a
 
 [IMPORTANT]
 --
-DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonfw unless otherwise denoted.
+DISCLAIMER: All CobiGen plugins are compatible with the latest release of Devonfw unless otherwise denoted.
 --
 
 **Current versions:**
