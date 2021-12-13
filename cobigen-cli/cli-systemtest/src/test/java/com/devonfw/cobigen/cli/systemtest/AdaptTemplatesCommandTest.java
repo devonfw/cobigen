@@ -33,8 +33,9 @@ public class AdaptTemplatesCommandTest extends AbstractCliTest {
         .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
     assertThat(cobigenTemplatesFolderPath).exists();
     // check if templates exist
-    assertThat(Paths.get(cobigenTemplatesFolderPath.toString() + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER))
-        .exists();
+    assertThat(Paths
+        .get(cobigenTemplatesFolderPath.toString() + File.separator + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER))
+            .exists();
     // check if context configuration exists
     assertThat(Paths
         .get(cobigenTemplatesFolderPath.toString() + File.separator + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER
