@@ -1,7 +1,7 @@
 :doctype: book
 :toc:
 toc::[]
-= Adapt Templates from Cobigen
+= Adapt Templates from CobiGen
 
 == Adapt CobiGen_Templates
 
@@ -11,7 +11,7 @@ Right click in any part of the package explorer, then click on CobiGen -> Adapt 
 
 image:images/howtos/e2e_gen/image56.png[]
 
-Click _Ok_:
+Click `_Ok_`:
 
 image:images/howtos/e2e_gen/image57.png[]
 
@@ -28,7 +28,7 @@ image:images/howtos/e2e_gen/image60.png[]
 Now change the version to Java 1.8
 image:images/howtos/e2e_gen/image61.png[]
 
-Now you have successfully imported the CobiGen templates. If you want to edit them, you will find them in the folder _src/main/templates._ For instance, the Java templates are located here:
+Now you have successfully imported the CobiGen templates. If you want to edit them, you will find them in the folder `_src/main/templates._` For instance, the Java templates are located here:
 
 image:images/howtos/e2e_gen/image62.png[]
 

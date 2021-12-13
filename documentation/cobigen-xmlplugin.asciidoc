@@ -55,9 +55,9 @@ Before applying any Matcher, this `containerMatcher` checks if the XML file cont
 === Matcher types
 With the trigger you might define matchers, which restrict the input upon specific aspects:
 
-* XML: type 'nodename' -> document's root name matching
+* XML: type `nodename` -> document's root name matching
 +
-.Example of a XML trigger definition with a nodename matcher
+.Example of a XML trigger definition with a node name matcher
 [source,xml]
 ----
 <trigger id="..." type="xml" templateFolder="...">

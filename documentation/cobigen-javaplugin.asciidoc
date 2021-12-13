@@ -128,7 +128,7 @@ Furthermore, due to restrictions on both inputs according to model building (see
 No matter whether you use reflection objects or parsed java classes as input, you will get the following object model for template creation:
 
 * *`classObject`* ('Class' :: Class object of the Java input)
-* *pojo*
+* *POJO*
 ** *name* ('String' :: Simple name of the input class)
 ** *package* ('String' :: Package name of the input class)
 ** *`canonicalName`* ('String' :: Full qualified name of the input class)

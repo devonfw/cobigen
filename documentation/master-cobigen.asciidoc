@@ -31,6 +31,7 @@ DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonf
 
 **Authors:**
 
+```
 * Malte Brunnlieb
 * Jaime Diaz Gonzalez
 * Steffen Holzer
@@ -44,6 +45,7 @@ DISCLAIMER: All Cobigen plugins are compatible with the latest release of Devonf
 * Mike Schumacher
 * Marco Rose
 * Mohamed Ghanmi
+```
 
 include::Guide-to-the-Reader.asciidoc[leveloffset=3]
 

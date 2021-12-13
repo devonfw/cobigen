@@ -86,7 +86,7 @@ In order to generate the files using the CobiGen CLI it is needed to do the foll
 
 CobiGen is generating an empty context that has to be filled with manually in order to be able to work with the database. The context can be found in `*[Project_Name]/Devon4Net.WebAPI.Implementation/Domain/Database/CobigenContext.cs*`.
 
-image::images/howtos/devon4net/CobigenContextLocation.png["cobigen", width=="350", link=="images/howtos/devon4net/CobigenContextLocation.png]
+image::images/howtos/devon4net/CobigenContextLocation.png["CobiGen", width=="350", link=="images/howtos/devon4net/CobigenContextLocation.png]
 
 ==== [navy]#Run the application#
 

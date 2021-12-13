@@ -111,9 +111,9 @@ E.g. the method `withExternalStudent()` might create a person, which is a studen
 
 Generates a CRUD application with persistence entities as inputs. This includes DAOs, TOs, use cases, as well as a CRUD JSF user interface if needed.
 
-===  Testdata Builder
+===  Test data Builder
 
-Analogous to xref:testdata-builder-for-devon4j[Testdata Builder for devon4J]
+Analogous to xref:testdata-builder-for-devon4j[Test data Builder for devon4J]
 
 === Test documentation
 
