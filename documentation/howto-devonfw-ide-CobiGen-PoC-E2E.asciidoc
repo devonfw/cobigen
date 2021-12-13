@@ -50,7 +50,7 @@ image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 [arabic]
 Create a new *SQL* *file* (`i.e: V0002__CreateTables_myapp.sql`) inside _`myapp-core`_ , under the folder path _`/myapp-core/src/main/resources/db/migration/1.0`_ and insert the following script:
 
-[source, sql]
+[source]
 ----
 CREATE TABLE EMPLOYEE (
 id BIGINT auto_increment, modificationCounter INTEGER NOT NULL,
@@ -74,7 +74,7 @@ The script must be inserted at the same path used before: _`/myapp-core/src/main
 *_WARNING 1_*: please note that there in that folder is present only one file, 0001, and you have to add the other files in progressive number order (i.e. 0003)! +
 *_WARNING 2_*: please note that there are 2 underscore in the name!
 
-[source, sql]
+[source]
 ----
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'John','Doe','john.doe@example.com');
 INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Tom','Smith', 'tom.smith@example.com');
@@ -271,7 +271,7 @@ https://github.com/devonfw/devon4ng-application-template
 image:images/howtos/e2e_gen/image74.png[devon dist folder]
 
 [arabic]
-IMPORTANT when you download the zip of the source code of your `FE` application, the name of the app MUST BE *devon4ng-application-template* and you can extract it in your devonfw folder, under _workspaces/main_
+IMPORTANT when you download the zip of the source code of your `FE` application, the name of the app MUST BE *devon4ng-application-template* and you can extract it in your devonfw folder, under `_workspaces/main_`
 
 Once downloaded the `APP`, you can open the application with your favorite IDE (IntelliJ, Visual Studio Code, ...) +
 Instead, if you want to open this project with Eclipse, you have to follow these steps: +
@@ -408,7 +408,7 @@ After that, if you want to make visible the Employee Grid in you `FE` applicatio
 ----
 
 [arabic]
-Open the command prompt and execute _devon npm install_ from your application folder `(_workspaces/main/devon4ng-application-template_`), which would download all the required libraries.
+Open the command prompt and execute _devon npm install_ from your application folder (`_workspaces/main/devon4ng-application-template_`), which would download all the required libraries.
 
 [arabic]
 Check the file *environment.ts* if the server path is correct. (for production you will have to change also the environment.prod.ts file)
@@ -466,14 +466,14 @@ https://github.com/devonfw/devon4ng-ionic-application-template
 [arabic]
 IMPORTANT when you download the zip of the source code of your `FE` application, the name of the app MUST BE *devon4ng-ionic-application-template* and you can extract it in your devonfw folder, under `_workspaces/main_`
 
-Once downloaded the `APP`, you can open the application with your favourite IDE (IntelliJ, Visual Studio Code, ...) +
+Once downloaded the `APP`, you can open the application with your favorite IDE (IntelliJ, Visual Studio Code, ...) +
 Instead, if you want to open this project with Eclipse, you have to follow these steps: +
 [arabic]
-. Right click on the left part of Eclipse, anch click on "Import":
+. Right click on the left part of Eclipse, and click on "Import":
 image:images/howtos/e2e_gen/image83.png[import]
 . Click on "Projects from Folder or Archive"
 image:images/howtos/e2e_gen/image82.png[import]
-. Select your folder where you have saved the Angular `FE` Application, under `_workspaces/main_`. Wait that all the dependecies are charged and then click on "Finish"
+. Select your folder where you have saved the Angular `FE` Application, under `_workspaces/main_`. Wait that all the dependencies are charged and then click on "Finish"
 image:images/howtos/e2e_gen/image84.png[import]
 . At the end, you will have a structure like this:
 image:images/howtos/e2e_gen/image86.png[import]
