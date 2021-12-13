@@ -42,15 +42,6 @@ public class ExtractTemplatesUtil {
    */
   public static void extractTemplates(Path extractTo, boolean forceOverride) throws DirectoryNotEmptyException {
 
-    Objects.requireNonNull(extractTo, "Target path cannot be null");
-    if (!Files.isDirectory(extractTo)) {
-      try {
-        Files.createDirectories(extractTo);
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException("Unable to create directory " + extractTo);
-      }
-    }
-
     // find templates will also download jars if needed as a side effect and will return teh path to the
     // files.
     URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
@@ -58,6 +49,15 @@ public class ExtractTemplatesUtil {
       LOG.info("Templates already found at {}. You can edit them in place to adapt your generation results.",
           extractTo);
       return;
+    }
+
+    Objects.requireNonNull(extractTo, "Target path cannot be null");
+    if (!Files.isDirectory(extractTo)) {
+      try {
+        Files.createDirectories(extractTo);
+      } catch (IOException e) {
+        throw new CobiGenRuntimeException("Unable to create directory " + extractTo);
+      }
     }
 
     try {
