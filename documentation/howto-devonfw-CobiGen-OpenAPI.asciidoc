@@ -350,7 +350,7 @@ export class AppRoutingModule {
 
 After that, if you want to make visible the Employee Grid in you `FE` application, you have to modify the `nav-bar.component.html`, to add the Employee grid in the section:
 
-[source, html]
+[source, HTML]
 ----
 <div class="home-container-outer">
   <div class="home-container-inner">
@@ -423,9 +423,9 @@ export const environment = {
 *Warning*: REMEMBER to set security filed to *CSRF* , if it is not configured already.
 
 [arabic]
-Now run the *devon ng serve -o* command to run the Angular Application, from your application folder (`_workspaces/main/devon4ng-application-template_`), as done before.
+Now run the `*devon ng serve -o*` command to run the Angular Application, from your application folder (`_workspaces/main/devon4ng-application-template_`), as done before.
 
-image:images/howtos/e2e_gen/image75.png[ng serve command]
+image:images/howtos/e2e_gen/image75.png[`ng serve` command]
 
 [arabic]
 If the command execution is *successful*, the below screen will *appear* and it would be automatically redirected to the URL:
@@ -485,11 +485,11 @@ The only *TWO* thing that you have to modify, in this IONIC app is in `_employee
 
 *1:* +
 You have to change this line:
-[source,html]
+[source,HTML]
 <layoutheader Title="Employee"></layoutheader>
 
 with this line:
-[source,html]
+[source,HTML]
 <app-layout-header title="Employee"></app-layout-header>
 
 

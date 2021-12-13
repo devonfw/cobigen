@@ -111,7 +111,7 @@ The context configuration reads the `context.xml` file from the template project
 Please, check the https://github.com/devonfw/cobigen/wiki/cobigen-core_configuration[CobiGen configuration] for extended information about the `context.xml` and `templates.xml` configuration.
 ==========
 
-That reader uses the `JAXB`, `JAXB (Java Architecture for XML Binding)` provides a fast and convenient way to bind XML schemas and Java representations, making it easy for Java developers to incorporate XML data and processing functions in Java applications. As part of this process, `JAXB` provides methods for unmarshaling (reading) XML instance documents into Java content trees.
+That reader uses the `JAXB`, `JAXB (Java Architecture for XML Binding)` provides a fast and convenient way to bind XML schemas and Java representations, making it easy for Java developers to incorporate XML data and processing functions in Java applications. As part of this process, `JAXB` provides methods for `unmarshalling` (reading) XML instance documents into Java content trees.
 
 ==== Java Architecture for XML Binding
 

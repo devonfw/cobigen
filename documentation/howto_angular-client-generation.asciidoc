@@ -35,8 +35,7 @@ root/
 
 However, this path can be changed, for example to `__src/main/client__` folder of the devon4j project:
 
-
-```relocate: ./src/main/client/${cwd}```
+`relocate: ./src/main/client/${cwd}`
 
 ```
 root/
