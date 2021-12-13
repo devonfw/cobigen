@@ -151,16 +151,16 @@ No matter whether you use reflection objects or parsed java classes as input, yo
 **** *name* ('String' :: Name of the Java field)
 **** *type* ('String' :: Type of the Java field)
 **** `*canonicalType*` ('String' :: Full qualified type declaration of the Java field's type)
-**** '*`isId`*' ('Deprecated' :: 'boolean' :: true if the Java field or its setter or its getter is annotated with the `javax.persistence.Id` annotation, false otherwise. Equivalent to `${pojo.attributes[i].annotations.javax_persistence_Id?has_content}`)
-**** *JavaDoc* (see pojo.JavaDoc)
-**** *annotations* (see pojo.annotations with the remark, that for fields all annotations of its setter and getter will also be collected)
+**** '*`isId`*' (`Deprecated` :: `boolean` :: true if the Java field or its setter or its getter is annotated with the `javax.persistence.Id` annotation, false otherwise. Equivalent to `${pojo.attributes[i].annotations.javax_persistence_Id?has_content}`)
+**** *JavaDoc* (see `pojo.JavaDoc`)
+**** *annotations* (see `pojo.annotations` with the remark, that for fields all annotations of its setter and getter will also be collected)
 ** `*methodAccessibleFields*` ('List<Map<String, Object>>' :: List of fields of the input class or its inherited classes, which are accessible using setter and getter methods)
 *** same as for _field_ (but without JavaDoc!)
 ** *methods* ('List<Map<String, Object>>' :: The list of all methods, whereas one method will be represented by a set of property mappings)
 *** method ('Map<String, Object>' :: List element)
 **** *name* ('String' :: Name of the method)
-**** *JavaDoc* (see pojo.JavaDoc)
-**** *annotations* (see pojo.annotations)
+**** *JavaDoc* (see `pojo.JavaDoc`)
+**** *annotations* (see `pojo.annotations`)
 
 Furthermore, when providing a `Class<?>` object as input, the Java Plug-in will provide additional functionalities as template methods _(deprecated)_: 
 
