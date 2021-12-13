@@ -17,7 +17,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 public class AdaptTemplatesCommandTest extends AbstractCliTest {
 
   /**
-   * Checks if adapt-templates command successfully created cobigen templates folder
+   * Checks if adapt-templates command successfully created cobigen templates folder and its sub folders
    *
    * @throws Exception test fails
    */

@@ -42,7 +42,7 @@ public class ExtractTemplatesUtil {
    */
   public static void extractTemplates(Path extractTo, boolean forceOverride) throws DirectoryNotEmptyException {
 
-    // find templates will also download jars if needed as a side effect and will return teh path to the
+    // find templates will also download jars if needed as a side effect and will return the path to the
     // files.
     URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
     if (Files.isDirectory(Paths.get(findTemplatesLocation))) {
