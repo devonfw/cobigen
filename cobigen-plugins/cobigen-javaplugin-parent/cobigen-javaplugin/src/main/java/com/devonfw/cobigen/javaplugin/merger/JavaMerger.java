@@ -131,7 +131,8 @@ public class JavaMerger implements Merger {
 
     if (this.patchOverrides) {
       baseClass.setImplementz(patchClass.getInterfaces());
-      if (!patchClass.getSuperClass().getCanonicalName().equals("java.lang.Enum")) {
+      if (patchClass.getSuperClass() != null
+          && !patchClass.getSuperClass().getCanonicalName().equals("java.lang.Enum")) {
         baseClass.setSuperClass(patchClass.getSuperClass());
       }
     } else {
