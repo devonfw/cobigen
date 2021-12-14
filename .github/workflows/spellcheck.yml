@@ -6,4 +6,4 @@ jobs:
   spellchecker:
     uses: devonfw/.github/.github/workflows/devonfw-spellchecker.yml@master
     secrets:
-      RESUSABLE_GH_ACTION_TOKEN: ${{ secrets.RESUSABLE_GH_ACTION_TOKEN }}
+      RESUSABLE_GH_ACTION_TOKEN: ${{ secrets.GHA_TOKEN }}
