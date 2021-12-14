@@ -332,7 +332,7 @@ folder
     cobigen.properties
 ```
 
-Let the `cobigen.properties` file contain the line `relocate=../sub2/${cwd}`. Given that, the relative destination path of `Template.java.ftl` will be resolved to `folder/sub2/Template.java`. Compare `xref:templatescan-node[template scan]` configuration for more information about basic path resolution. The `relocate` property specifies a relative path from the location of the `cobigen.properties`. The `${cwd}` placeholder will contain the remaining relative path from the `cobigen.properties` location to the template file. In this basic example it just contains `Template.java.ftl`, but it may even be any relative path including subfolders of sub1 and its templates.
+Let the `cobigen.properties` file contain the line `relocate=../sub2/${cwd}`. Given that, the relative destination path of `Template.java.ftl` will be resolved to `folder/sub2/Template.java`. Compare `xref:templatescan-node[template scan]` configuration for more information about basic path resolution. The `relocate` property specifies a relative path from the location of the `cobigen.properties`. The `${cwd}` placeholder will contain the remaining relative path from the `cobigen.properties` location to the template file. In this basic example it just contains `Template.java.ftl`, but it may even be any relative path including sub-folders of sub1 and its templates.
 Given the `relocate` feature, you can even step out of the root path, which in general is the project/maven module the input is located in. This enables template designers to even address, e.g., maven modules located next to the module the input is coming from.
 
 == Basic Template Model
@@ -348,6 +348,6 @@ In addition to what is served by the different model builders of the different p
 
 == Plugin Mechanism
 
-Since cobigen-core 4.1.0, we changed the plug-in discovery mechanism. So far it was necessary to register new plugins programmaticaly, which introduces the need to let every tool integration, i.e. for eclipse or maven, be dependent on every plug-in, which should be released. This made release cycles take long time as all plug-ins have to be integrated into a final release of maven or eclipse integration.
+Since `cobigen-core 4.1.0`, we changed the plug-in discovery mechanism. So far it was necessary to register new plugins programmatically, which introduces the need to let every tool integration, i.e. for eclipse or maven, be dependent on every plug-in, which should be released. This made release cycles take long time as all plug-ins have to be integrated into a final release of maven or eclipse integration.
 
 Now, plug-ins are automatically discovered by the Java https://docs.oracle.com/javase/tutorial/ext/basics/spi.html[Service Loader] mechanism from the classpath. This also effects the setup of link:cobigen-eclipse_installation#upgrading-to-v3[eclipse] and link:cobigen-maven_configuration#additions-since-v3[maven] integration to allow modular releases of CobiGen in future. We are now able to provide faster rollouts of bug-fixes in any of the plug-ins as they can be released completely independently.

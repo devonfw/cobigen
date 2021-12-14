@@ -21,7 +21,7 @@ toc::[]
 | `JDOM` | 1.1.3 | "Apache-style open source license" | http://www.jdom.org/docs/faq.html#a0030
 |=============================================
 
-=== CobiGen-javaplugin v1.0.0
+=== CobiGen-Java plugin v1.0.0
 
 [options="header"]
 |=============================================
@@ -31,7 +31,7 @@ toc::[]
 | `QDox` | 2.0-M2 | Apache License 2.0 | http://qdox.codehaus.org/license.html
 |=============================================
 
-=== CobiGen-propertyplugin v1.0.0
+=== CobiGen-property plugin v1.0.0
 
 [options="header"]
 |=============================================
@@ -40,7 +40,7 @@ toc::[]
 | `SLF4J` | 1.7.7 | `MIT` | http://www.slf4j.org/license.html
 |=============================================
 
-=== CobiGen-xmlplugin v1.0.0
+=== CobiGen-XML plugin v1.0.0
 
 [options="header"]
 |=============================================
@@ -51,7 +51,7 @@ toc::[]
 | `atinject` | 1 | Apache License 2.0 | https://code.google.com/p/atinject/
 |=============================================
 
-=== CobiGen-textmerger v1.0.0
+=== CobiGen-text merger v1.0.0
 
 [options="header"]
 |=============================================
@@ -65,11 +65,11 @@ toc::[]
 [options="header"]
 |=============================================
 |*Dependency Name*  | *Version* |*License* | *URL*
-| cobigen-core | v1.0.0 | |
-| cobigen-javaplugin |v1.0.0 | |
-| cobigen-propertyplugin | v1.0.0 | |
-| cobigen-xmlplugin | v1.0.0 | |
-| cobigen-textmerger | v1.0.0 | |
+| `cobigen-core` | v1.0.0 | |
+| `cobigen-javaplugin` |v1.0.0 | |
+| `cobigen-propertyplugin` | v1.0.0 | |
+| `cobigen-xmlplugin` | v1.0.0 | |
+| `cobigen-textmerger` | v1.0.0 | |
 |=============================================
 
 == Changelog
@@ -81,7 +81,7 @@ toc::[]
 | removed | `JDOM` | | |
 |=============================================
 
-=== CobiGen-javaplugin v1.1.0
+=== CobiGen-Java plugin v1.1.0
 
 [options="header"]
 |=============================================
@@ -89,7 +89,7 @@ toc::[]
 |updated |` cobigen-core `| v1.1.0 | |
 |=============================================
 
-=== CobiGen-xmlplugin v1.0.1
+=== CobiGen-XML plugin v1.0.1
 
 [options="header"]
 |=============================================
@@ -106,7 +106,7 @@ toc::[]
 | updated | `cobigen-xmlplugin` | 1.0.1 |  | 
 |=============================================
 
-=== CobiGen-xmlplugin v2.0.0
+=== CobiGen-XML plugin v2.0.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -114,7 +114,7 @@ toc::[]
 |=============================================
 
 
-=== CobiGen-javaplugin v1.2.0
+=== CobiGen-Java plugin v1.2.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -138,7 +138,7 @@ toc::[]
 | updated | `cobigen-javaplugin` | 1.2.1 |  | 
 |=============================================
 
-=== CobiGen-javaplugin v1.3.0
+=== CobiGen-Java plugin v1.3.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -173,10 +173,10 @@ toc::[]
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| added | dozer | 5.5.1 | Apache License 2.0 | http://dozer.sourceforge.net/license.html
+| added | Dozer | 5.5.1 | Apache License 2.0 | http://dozer.sourceforge.net/license.html
 |=============================================
 
-=== CobiGen-javaplugin v1.3.1
+=== CobiGen-Java plugin v1.3.1
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -215,14 +215,14 @@ toc::[]
 | added | ant | 1.9.6 | Apache License 2.0 | http://www.apache.org/licenses/LICENSE-2.0.html
 |=============================================
 
-=== CobiGen-javaplugin v1.4.0
+=== CobiGen-Java plugin v1.4.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | updated | `cobigen-core` | 3.0.0 |  | 
 |=============================================
 
-=== CobiGen-jsonplugin v1.0.0
+=== CobiGen-JSON plugin v1.0.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -232,16 +232,16 @@ toc::[]
 | added | `gson` | 2.7 | Apache License 2.0 | https://github.com/google/gson
 |=============================================
 
-=== CobiGen-xmlplugin v3.0.0
+=== CobiGen-XML plugin v3.0.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | updated | `cobigen-core` | 3.0.0 |  | 
-| removed | XMLMerge |  |  |
+| removed | `XMLMerge` |  |  |
 | removed | module-xml_merge-common |  |  |
-| removed | javax.inject |  |  |
-| removed | jdom |  |  |
-| added | lexeme | 1.0.0 | Apache License 2.0 | https://github.com/maybeec/lexeme
+| removed | `javax.inject` |  |  |
+| removed | JDOM |  |  |
+| added | LeXeMe | 1.0.0 | Apache License 2.0 | https://github.com/maybeec/lexeme
 |=============================================
 
 === CobiGen-maven v2.0.0
@@ -276,7 +276,7 @@ toc::[]
 | added | `cobigen-jsonplugin` | 1.0.0 |  | 
 |=============================================
 
-=== CobiGen-htmlmerger v1.0.0
+=== CobiGen-HTML merger v1.0.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -284,7 +284,7 @@ toc::[]
 | added | jsoup | 1.10.2 | `MIT` | https://jsoup.org/
 |=============================================
 
-=== CobiGen-jsonplugin v1.1.0
+=== CobiGen-JSON plugin v1.1.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -299,7 +299,7 @@ toc::[]
 | removed | FreeMarker | 2.3.23 | |
 |=============================================
 
-=== CobiGen-javaplugin v1.5.0
+=== CobiGen-Java plugin v1.5.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -314,7 +314,7 @@ toc::[]
 | added | velocity | 1.7 | Apache Software License 2.0 | http://velocity.apache.org/engine/1.7/license.html
 |=============================================
 
-=== CobiGen-tsplugin v1.0.0
+=== CobiGen-TS plugin v1.0.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -350,7 +350,7 @@ toc::[]
 | added | `cobigen-tempeng-freemarkerplugin` | 1.0.0-`SNAPSHOT`| |
 |=============================================
 
-=== CobiGen-tsplugin v1.1.0
+=== CobiGen-TS plugin v1.1.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -388,7 +388,7 @@ toc::[]
 | removed | `cobigen-tempeng-freemarkerplugin` | | |
 |=============================================
 
-=== CobiGen-xmlplugin v3.1.0
+=== CobiGen-XML plugin v3.1.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -411,7 +411,7 @@ toc::[]
 | removed | `cobigen-tempeng-freemarkerplugin` | | |
 |=============================================
 
-=== CobiGen-propertyplugin v1.2.0
+=== CobiGen-property plugin v1.2.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -419,7 +419,7 @@ toc::[]
 | updated | `cobigen-core-api` | v4.1.0 | |
 |=============================================
 
-=== CobiGen-textmerger v1.2.0
+=== CobiGen-text merger v1.2.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -427,7 +427,7 @@ toc::[]
 | updated | `cobigen-core-api` | v4.1.0 | |
 |=============================================
 
-=== CobiGen-htmlplugin v1.1.0
+=== CobiGen-HTML plugin v1.1.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -436,7 +436,7 @@ toc::[]
 | added | commons-io | 2.4 | Apache License 2.0 | https://commons.apache.org/proper/commons-io/
 |=============================================
 
-=== CobiGen-jsonplugin v1.2.0
+=== CobiGen-JSON plugin v1.2.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -444,7 +444,7 @@ toc::[]
 | updated | `cobigen-core-api` | v4.1.0 | |
 |=============================================
 
-=== CobiGen-openapiplugin v1.0.1
+=== CobiGen-OpenAPI plugin v1.0.1
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
@@ -452,20 +452,20 @@ toc::[]
 | added | `kaizen.openapi-parser`| v0.0.1.201709142043 | `EPL` v1.0 | link:https://github.com/RepreZen/KaiZen-OpenApi-Parser[`KaiZen` Open API parser]
 |=============================================
 
-=== CobiGen-openapiplugin v1.1.0
+=== CobiGen-OpenAPI plugin v1.1.0
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | changed | `kaizen.openapi-parser` | v0.0.3.201803041924 | `EPL` v1.0 | link:https://github.com/RepreZen/KaiZen-OpenApi-Parser[`KaiZen` Open API parser]
-| added | json-path | 2.4.0 | Apache License 2.0 | https://github.com/json-path/JsonPath/blob/master/LICENSE
+| added | `json-path` | 2.4.0 | Apache License 2.0 | https://github.com/json-path/JsonPath/blob/master/LICENSE
 |=============================================
 
 
-=== CobiGen-jsonplugin v1.2.1
+=== CobiGen-JSON plugin v1.2.1
 [options="header"]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
-| removed | json | 20160810 | `MIT` | https://github.com/stleary/JSON-java
+| removed | `json` | 20160810 | `MIT` | https://github.com/stleary/JSON-java
 |=============================================
 
 
