@@ -304,7 +304,7 @@ toc::[]
 |=============================================
 |*Action* | *Dependency Name*  | *Version* |*License* | *URL*
 | removed | mmm-util-core |  |  | 
-| added | mmm-util-pojo | 7.4.0 | Apache Software License 2.0 | https://github.com/m-m-m/mmm/wiki/License
+| added | `mmm-util-pojo` | 7.4.0 | Apache Software License 2.0 | https://github.com/m-m-m/mmm/wiki/License
 |=============================================
 
 === CobiGen-tempeng-velocity-plugin v1.0.0
