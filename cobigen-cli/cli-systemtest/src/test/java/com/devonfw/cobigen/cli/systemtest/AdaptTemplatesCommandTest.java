@@ -2,7 +2,9 @@ package com.devonfw.cobigen.cli.systemtest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 
@@ -15,7 +17,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 public class AdaptTemplatesCommandTest extends AbstractCliTest {
 
   /**
-   * Checks if adapt-templates command successfully created cobigen templates folder
+   * Checks if adapt-templates command successfully created cobigen templates folder and its sub folders
    *
    * @throws Exception test fails
    */
@@ -30,5 +32,16 @@ public class AdaptTemplatesCommandTest extends AbstractCliTest {
     Path cobigenTemplatesFolderPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
         .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
     assertThat(cobigenTemplatesFolderPath).exists();
+    // check if templates exist
+    assertThat(Paths
+        .get(cobigenTemplatesFolderPath.toString() + File.separator + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER))
+            .exists();
+    // check if context configuration exists
+    assertThat(Paths
+        .get(cobigenTemplatesFolderPath.toString() + File.separator + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER
+            + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME)).exists();
+    // check if sources of utility classes exist
+    assertThat(Paths.get(cobigenTemplatesFolderPath.toString() + File.separator + "src" + File.separator + "main"
+        + File.separator + "java")).exists();
   }
 }
