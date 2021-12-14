@@ -14,8 +14,6 @@ on:
         required: true
       GPG_PASSPHRASE:
         required: true
-      GITHUB_TOKEN:
-        required: true
       SONATYPE_USERNAME:
         required: true
       SONATYPE_PASSWORD:
