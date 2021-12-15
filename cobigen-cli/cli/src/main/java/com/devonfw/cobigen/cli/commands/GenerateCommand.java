@@ -146,6 +146,31 @@ public class GenerateCommand extends CommandCommons {
       boolean isJavaInput = extension.endsWith(".java");
       boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
 
+      // checks for OpenApi input file, output root path and project root being detectable
+      if (isOpenApiInput && this.outputRootPath == null
+          && MavenUtil.getProjectRoot(inputFile.toPath(), false) == null) {
+
+        LOG.info(
+            "No ouput directory was found. Please specify an ouput path or just press enter to generate your files to this directory: {}",
+            inputFile.getAbsoluteFile().getParent().toString());
+
+        String userInput = getUserInput();
+
+        File preprocessedFile = Paths.get(userInput).toFile();
+
+        if (!userInput.isEmpty()) {
+          while (!ValidationUtils.isOutputRootPathValid(preprocessedFile)) {
+            File userFolder = Paths.get(getUserInput()).toFile();
+            preprocessedFile = preprocessInputFile(userFolder);
+          }
+          this.outputRootPath = preprocessedFile;
+          LOG.info("Your output directory was successfully set to: {}",
+              Paths.get(this.outputRootPath.getAbsolutePath()).toString());
+        } else {
+          setOutputRootPath(inputFile.toPath().toAbsolutePath().getParent());
+        }
+      }
+
       try {
         Object input = cg.read(inputFile.toPath(), StandardCharsets.UTF_8);
         List<T> matching = (List<T>) (isIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input));
@@ -294,7 +319,7 @@ public class GenerateCommand extends CommandCommons {
         "As you did not specify where the code will be generated, we will use the project of your current Input file.");
     LOG.debug("Generating to: {}", inputProject);
 
-    this.outputRootPath = inputProject.toFile();
+    this.outputRootPath = inputProject.toFile().getAbsoluteFile();
   }
 
   /**
