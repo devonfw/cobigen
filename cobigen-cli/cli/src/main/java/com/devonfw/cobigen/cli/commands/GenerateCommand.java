@@ -151,8 +151,8 @@ public class GenerateCommand extends CommandCommons {
           && MavenUtil.getProjectRoot(inputFile.toPath(), false) == null) {
 
         LOG.info(
-            "No ouput directory was found. Please specify an ouput path or just press enter to generate your files to this directory: {}",
-            inputFile.getAbsoluteFile().getParent().toString());
+            "No output directory was found. Please specify an output path or just press enter to generate your files to this directory: {}",
+            inputFile.getAbsoluteFile().getParent());
 
         String userInput = getUserInput();
 
