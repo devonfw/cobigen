@@ -1,7 +1,6 @@
 
 package com.devonfw.cobigen.cli.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -39,13 +38,13 @@ public class ParsingUtils {
    * @return true only if the parsed file exists, false otherwise
    *
    */
-  public static boolean parseRelativePath(List<File> inputFiles, File inputFile, int index) {
+  public static boolean parseRelativePath(List<Path> inputFiles, Path inputFile, int index) {
 
     try {
       Path inputFilePath = Paths.get(System.getProperty("user.dir"), inputFile.toString());
 
       if (inputFilePath.toFile().exists()) {
-        inputFiles.set(index, inputFilePath.toFile());
+        inputFiles.set(index, inputFilePath);
         return true;
       }
     } catch (InvalidPathException e) {

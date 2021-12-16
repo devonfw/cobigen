@@ -1,6 +1,8 @@
 package com.devonfw.cobigen.cli.utils;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.InputMismatchException;
 
 import org.slf4j.Logger;
@@ -53,10 +55,10 @@ public final class ValidationUtils {
    *
    * @return true if it is a valid output root path
    */
-  public static boolean isOutputRootPathValid(File outputRootPath) {
+  public static boolean isOutputRootPathValid(Path outputRootPath) {
 
     // As outputRootPath is an optional parameter, it means that it can be null
-    if (outputRootPath == null || outputRootPath.exists()) {
+    if (outputRootPath == null || Files.exists(outputRootPath)) {
       return true;
     } else {
       LOG.error("Your <outputRootPath> '{}' does not exist, please use a valid path.", outputRootPath);
@@ -100,10 +102,10 @@ public final class ValidationUtils {
    * @param isJavaInput true when input file is Java
    * @param isOpenApiInput true when input file is OpenAPI
    */
-  public static void throwNoTriggersMatched(File inputFile, boolean isJavaInput, boolean isOpenApiInput) {
+  public static void throwNoTriggersMatched(Path inputFile, boolean isJavaInput, boolean isOpenApiInput) {
 
     LOG.error("Your input file '{}' is not valid as input for any generation purpose. It does not match any trigger.",
-        inputFile.getName());
+        inputFile.getFileName());
     if (isJavaInput) {
       LOG.error("Check that your Java input file is following devon4j naming convention. "
           + "Explained on https://devonfw.com/website/pages/docs/devon4j.asciidoc_coding-conventions.html");
