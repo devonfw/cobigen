@@ -27,7 +27,7 @@ Select _CobiGen Eclipse Plug-in_ -> _Next_ -> _Next_ -> accept the license -> _F
 . Checkout (clone) your project's templates folder or use the current templates released with CobiGen (https://github.com/devonfw/cobigen/tree/master/cobigen-templates) and then choose +Import -> General -> Existing Projects into Workspace+ to import the templates into your workspace. +
 . Now you can start generating. To get an introduction of CobiGen try the devon4j templates and work on the devon4j sample application. There you might want to start with Entity objects as a selection to run CobiGen with, which will give you a good overview of what CobiGen can be used for right out of the box in devon4j based development. If you need some more introduction in how to come up with your templates and increments, please be referred to the documentation of the link:cobigen-core_configuration#context-configuration[context configuration] and the link:cobigen-core_configuration#templates-configuration[templates configuration]
 
-Dependent on your context configuration menu entry _Generate..._ may be grey out or not. See  for more information about valid selections for generation.
+Dependent on your context configuration menu entry _Generate..._ may be gray out or not. See  for more information about valid selections for generation.
 
 == Updating
 
