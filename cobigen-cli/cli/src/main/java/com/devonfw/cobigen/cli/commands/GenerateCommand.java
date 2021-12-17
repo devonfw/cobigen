@@ -144,28 +144,23 @@ public class GenerateCommand extends CommandCommons {
       boolean isJavaInput = extension.endsWith(".java");
       boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
 
-      // checks for OpenApi input file, output root path and project root being detectable
-      if (isOpenApiInput && this.outputRootPath == null && MavenUtil.getProjectRoot(inputFile, false) == null) {
+      // checks for output root path and project root being detectable
+      if (this.outputRootPath == null && MavenUtil.getProjectRoot(inputFile, false) == null) {
 
         LOG.info(
-            "No output directory was found. Please specify an output path or just press enter to generate your files to this directory: {}",
-            inputFile.toAbsolutePath().getParent().toString());
+            "Did not detect the input as part of a maven project, the root directory of the maven project was not found.");
 
-        String userInput = getUserInput();
-
-        Path preprocessedFile = Paths.get(userInput);
-
-        if (!userInput.isEmpty()) {
-          while (!ValidationUtils.isOutputRootPathValid(preprocessedFile)) {
-            Path userFolder = Paths.get(getUserInput());
-            preprocessedFile = preprocessInputFile(userFolder);
-          }
-          this.outputRootPath = preprocessedFile;
-          LOG.info("Your output directory was successfully set to: {}",
-              this.outputRootPath.toAbsolutePath().toString());
-        } else {
-          setOutputRootPath(inputFile.toAbsolutePath().getParent());
+        // cancels with an error if more than one input file was provided
+        if (this.inputFiles.size() > 1) {
+          LOG.error(
+              "As multiple input files were provided, setting an automatic output path is not possible. Cancelling...");
+          System.exit(1);
         }
+        LOG.info("Would you like to take '{}' as a root directory for output generation? \n"
+            + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
+
+        setOutputPathWithPrompt();
+
       }
 
       try {
@@ -201,6 +196,37 @@ public class GenerateCommand extends CommandCommons {
         ? generableArtifactSelection(this.increments, toIncrementTo(finalTos), IncrementTo.class)
         : generableArtifactSelection(this.templates, toTemplateTo(finalTos), TemplateTo.class));
     return new Tuple<>(generationInputs, selectedGenerableArtifacts);
+  }
+
+  /**
+   * Opens a repeatable prompt with a yes/no question and sets the output directory to the current user directory.
+   *
+   */
+  private void setOutputPathWithPrompt() {
+
+    Path outputDirectory = Paths.get(System.getProperty("user.dir"));
+    boolean decided = false;
+    while (!decided) {
+      String userInput = getUserInput();
+      switch (userInput) {
+        case "yes":
+        case "y":
+        case "":
+          LOG.info("Set output directory to: {}", outputDirectory.toString());
+          this.outputRootPath = outputDirectory;
+          decided = true;
+          break;
+        case "no":
+        case "n":
+          LOG.info("Cancelling generate process... you can use -o to explicitly set the output directory.");
+          decided = true;
+          System.exit(0);
+          break;
+        default:
+          LOG.info("Invalid input. Please answer yes/n or no/n (or hit return for yes).");
+          break;
+      }
+    }
   }
 
   /**
