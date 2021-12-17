@@ -13,4 +13,3 @@ jobs:
       BUILD_USER: ${{ secrets.BUILD_USER }}
       BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
       BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
