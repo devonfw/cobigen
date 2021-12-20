@@ -442,7 +442,7 @@ public class JavaMergerTest {
    * href=https://github.com/devonfw/cobigen/issues/108>#108</a>
    *
    * @throws IOException shouldn't happen
-   * @throws MergeException shoudln't happen either
+   * @throws MergeException shouldn't happen either
    */
   @Test
   public void testMergeExpizitAndImplizitParameterTypes() throws IOException, MergeException {
@@ -464,7 +464,7 @@ public class JavaMergerTest {
    * Tests whether static and object Initializers are getting merged https://github.com/devonfw/cobigen/issues/791
    *
    * @throws IOException shouldn't happen
-   * @throws MergeException shoudln't happen either
+   * @throws MergeException shouldn't happen either
    */
   @Test
   public void testStaticIntializer() throws IOException, MergeException {
@@ -479,7 +479,28 @@ public class JavaMergerTest {
   }
 
   /**
-   * Calls the {@link JavaMerger} to merge the base and patch file wit the given overriding behavior
+   * Tests whether two interfaces without a super class are getting merged
+   * https://github.com/devonfw/cobigen/issues/1439
+   *
+   * @throws IOException shouldn't happen
+   * @throws MergeException shouldn't happen either
+   */
+  @Test
+  public void testMergeInterfacesWithoutSuperClass() throws IOException, MergeException {
+
+    File baseFile = new File(testFileRootPath + "BaseFile_InterfaceWOSuperClass.java");
+    File patchFile = new File(testFileRootPath + "PatchFile_InterfaceWOSuperClass.java");
+
+    String mergedContents = new JavaMerger("", true).merge(baseFile,
+        FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+
+    assertThat(mergedContents).contains("public void testMethod();");
+    assertThat(mergedContents).contains("public void anotherTestMethod();");
+
+  }
+
+  /**
+   * Calls the {@link JavaMerger} to merge the base and patch file with the given overriding behavior
    *
    * @param baseFile base file
    * @param patchFile patch file

@@ -14,8 +14,6 @@ on:
         required: true
       GPG_PASSPHRASE:
         required: true
-      GITHUB_TOKEN:
-        required: true
       SONATYPE_USERNAME:
         required: true
       SONATYPE_PASSWORD:
@@ -50,6 +48,17 @@ jobs:
         run: |
           git config --global user.email ${BUILD_USER_EMAIL}
           git config --global user.name ${BUILD_USER}
+      - name: Setup repo for push on protected branch
+        shell: bash
+        run: |
+          ORIGIN="$(git config --get remote.origin.url)"
+          SED_OUT=$(echo $ORIGIN | sed -r -E -n 's@^https:\/\/(github.com.*)@\1@p')
+          if [ -n "$SED_OUT" ]
+          then
+            ORIGIN="https://${BUILD_USER}:${BUILD_USER_PASSWD}@$SED_OUT"
+            git remote set-url origin $ORIGIN
+            echo "Changed remote URL to enable pushing on protected branch"
+          fi
       - name: Cache Maven Dependencies
         uses: actions/cache@v2
         with:
