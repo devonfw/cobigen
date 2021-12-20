@@ -22,6 +22,7 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.PluginUpdateUtil;
+import com.devonfw.cobigen.cli.utils.ValidationUtils;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 
 import picocli.CommandLine.Command;
@@ -103,7 +104,7 @@ public class UpdateCommand extends CommandCommons {
    */
   private void userInputPluginSelection(ArrayList<String> userInputPluginForUpdate) {
 
-    for (String userArtifact : GenerateCommand.getUserInput().split(",")) {
+    for (String userArtifact : ValidationUtils.getUserInput().split(",")) {
       userInputPluginForUpdate.add(userArtifact);
     }
   }

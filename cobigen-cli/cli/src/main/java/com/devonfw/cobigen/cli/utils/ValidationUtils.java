@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.InputMismatchException;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,11 @@ public final class ValidationUtils {
    * Logger useful for printing information
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
+
+  /**
+   * Used for getting users input
+   */
+  private static final Scanner inputReader = new Scanner(System.in);
 
   /**
    * Validating user input file is correct or not. We check if file exists and it can be read
@@ -114,6 +120,47 @@ public final class ValidationUtils {
           + "More info here https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin#usage");
     }
     throw new InputMismatchException("Your input file is invalid.");
+  }
+
+  /**
+   * Asks the user for input and returns the value
+   *
+   * @return String containing the user input
+   */
+  public static String getUserInput() {
+
+    String userInput = "";
+    userInput = inputReader.nextLine();
+    return userInput;
+  }
+
+  /**
+   * Creates a simple looping yes/no prompt with customizable valid/invalid/cancel messages
+   *
+   * @param validInputMessage String for a message in case of a valid input
+   * @param invalidInputMessage String for a message in case of an invalid input
+   * @param cancelMessage String for a message in case the user cancelled the process
+   * @return boolean decision of the user
+   */
+  public static boolean yesNoPrompt(String validInputMessage, String invalidInputMessage, String cancelMessage) {
+
+    while (true) {
+      String userInput = getUserInput();
+      switch (userInput) {
+        case "yes":
+        case "y":
+        case "":
+          LOG.info(validInputMessage);
+          return true;
+        case "no":
+        case "n":
+          LOG.info(cancelMessage);
+          return false;
+        default:
+          LOG.info(invalidInputMessage);
+          break;
+      }
+    }
   }
 
 }

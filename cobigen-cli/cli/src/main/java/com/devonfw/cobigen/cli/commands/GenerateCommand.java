@@ -13,7 +13,6 @@ import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +30,7 @@ import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.Tuple;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
+import com.devonfw.cobigen.cli.exceptions.UserAbortException;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
@@ -80,11 +80,6 @@ public class GenerateCommand extends CommandCommons {
    * Logger to output useful information to the user
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
-
-  /**
-   * Used for getting users input
-   */
-  private static final Scanner inputReader = new Scanner(System.in);
 
   /**
    * Constructor needed for Picocli
@@ -159,7 +154,7 @@ public class GenerateCommand extends CommandCommons {
         LOG.info("Would you like to take '{}' as a root directory for output generation? \n"
             + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
 
-        setOutputPathWithPrompt();
+        setRootOutputDirectoryWithPrompt();
 
       }
 
@@ -199,34 +194,28 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
-   * Opens a repeatable prompt with a yes/no question and sets the output directory to the current user directory.
+   * Opens a looping prompt with a yes/no question and sets the root output directory to the current user directory.
    *
    */
-  private void setOutputPathWithPrompt() {
+  private void setRootOutputDirectoryWithPrompt() {
 
     Path outputDirectory = Paths.get(System.getProperty("user.dir"));
-    boolean decided = false;
-    while (!decided) {
-      String userInput = getUserInput();
-      switch (userInput) {
-        case "yes":
-        case "y":
-        case "":
-          LOG.info("Set output directory to: {}", outputDirectory.toString());
-          this.outputRootPath = outputDirectory;
-          decided = true;
-          break;
-        case "no":
-        case "n":
-          LOG.info("Cancelling generate process... you can use -o to explicitly set the output directory.");
-          decided = true;
-          System.exit(0);
-          break;
-        default:
-          LOG.info("Invalid input. Please answer yes/n or no/n (or hit return for yes).");
-          break;
+
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("Set output directory to: " + outputDirectory.toString(),
+        "Invalid input. Please answer yes/n or no/n (or hit return for yes).",
+        "Cancelling generate process... you can use -o to explicitly set the output directory.");
+
+    try {
+      if (setToUserDir) {
+        this.outputRootPath = outputDirectory;
+      } else {
+        throw new UserAbortException();
       }
+    } catch (UserAbortException e) {
+      LOG.debug("Generation process was cancelled by the user.");
+      System.exit(255);
     }
+
   }
 
   /**
@@ -365,7 +354,7 @@ public class GenerateCommand extends CommandCommons {
       printFoundArtifacts(matching, isIncrements, artifactType, userInputIncrements);
 
       userInputIncrements = new ArrayList<>();
-      for (String userArtifact : getUserInput().split(",")) {
+      for (String userArtifact : ValidationUtils.getUserInput().split(",")) {
         userInputIncrements.add(userArtifact);
       }
     }
@@ -476,7 +465,7 @@ public class GenerateCommand extends CommandCommons {
   private <T extends GenerableArtifact> List<T> artifactStringSelection(List<T> userSelection,
       List<T> possibleArtifacts, String artifactType) {
 
-    for (String userArtifact : getUserInput().split(",")) {
+    for (String userArtifact : ValidationUtils.getUserInput().split(",")) {
       try {
         if ("0".equals(userArtifact)) {
           userSelection = possibleArtifacts;
@@ -556,18 +545,6 @@ public class GenerateCommand extends CommandCommons {
       }
     }
     return chosen;
-  }
-
-  /**
-   * Asks the user for input and returns the value
-   *
-   * @return String containing the user input
-   */
-  public static String getUserInput() {
-
-    String userInput = "";
-    userInput = inputReader.nextLine();
-    return userInput;
   }
 
   /**
