@@ -163,6 +163,7 @@ then
 else
   log_step "Publish Release"
   doRunCommand "cd ../gh-pages"
+  doRunCommand "git add *"
   doRunCommand "git commit -m'Deploy P2 Bundles for Release $NEW_VERSION'"
   doRunCommand "git push origin gh-pages"
   doRunCommand "cd $SCRIPT_PATH"
