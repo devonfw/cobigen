@@ -6,7 +6,7 @@
       matInput
       type="${JavaUtil.getAngularType(property.type)}"
       name="${property.name?uncap_first}"
-      "'${variables.component}.${variables.etoName}.columns.${property.name?uncap_first}' |  transloco"
+      [placeholder] = "'${variables.component}.${variables.etoName}.columns.${property.name?uncap_first}' |  transloco"
       [(ngModel)] = "items.${property.name?uncap_first}"
       required
     />
