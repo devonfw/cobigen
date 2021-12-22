@@ -163,9 +163,9 @@ then
 else
   log_step "Publish Release"
   # Remove GA auth header in case of CI (workaround): https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101/47
+  doRunCommand "cd ../gh-pages && git push origin gh-pages && cd $SCRIPT_PATH"
   doRunCommand "git -c "http.https://github.com/.extraheader=" push origin master"
   doRunCommand "git -c "http.https://github.com/.extraheader=" push origin v$RELEASE_VERSION"
-  doRunCommand "cd ../gh-pages && git push origin master && cd $SCRIPT_PATH"
   doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen $DEBUG $BATCH_MODE"
   doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-plugins $DEBUG $BATCH_MODE"
   doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-cli $DEBUG $BATCH_MODE"
