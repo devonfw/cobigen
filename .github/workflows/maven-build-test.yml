@@ -3,12 +3,15 @@ name: CI
 on:
   workflow_dispatch:
   push:
+    # https://github.community/t/action-does-not-run-on-master-with-tags-ignore-v/128354/4
+    branches:
+      - '**'
     paths-ignore:
       - 'documentation/**'
       - 'solicitor/**'
       - '**.asciidoc'
     tags-ignore:
-      - '*'
+      - '**'
   pull_request:
     paths-ignore:
       - 'documentation/**'
