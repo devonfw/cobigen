@@ -145,12 +145,6 @@ public class GenerateCommand extends CommandCommons {
         LOG.info(
             "Did not detect the input as part of a maven project, the root directory of the maven project was not found.");
 
-        // cancels with an error if more than one input file was provided
-        if (this.inputFiles.size() > 1) {
-          LOG.error(
-              "As multiple input files were provided, setting an automatic output path is not possible. Cancelling...");
-          System.exit(1);
-        }
         LOG.info("Would you like to take '{}' as a root directory for output generation? \n"
             + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
 
