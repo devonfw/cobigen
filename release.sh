@@ -162,8 +162,9 @@ then
   exit 0
 else
   log_step "Publish Release"
-  doRunCommand "git push origin master"
-  doRunCommand "git push origin v$NEW_VERSION"
+  # Remove GA auth header in case of CI (workaround): https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101/47
+  doRunCommand "git push -c "http.https://github.com/.extraheader=" origin master"
+  doRunCommand "git push -c "http.https://github.com/.extraheader=" origin v$NEW_VERSION"
   doRunCommand "cd ../gh-pages && git push origin master && cd $SCRIPT_PATH"
   doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen $DEBUG $BATCH_MODE"
   doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-plugins $DEBUG $BATCH_MODE"
