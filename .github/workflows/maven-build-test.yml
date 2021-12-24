@@ -377,7 +377,6 @@ jobs:
   
   release:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
-    continue-on-error: true
     uses: devonfw/cobigen/.github/workflows/release.yml@master
     with:
       runTests: false
