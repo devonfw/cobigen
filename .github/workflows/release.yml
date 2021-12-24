@@ -33,6 +33,7 @@ jobs:
     if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
     environment:
       name: production
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: Clone
