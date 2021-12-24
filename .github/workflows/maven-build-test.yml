@@ -380,6 +380,7 @@ jobs:
     uses: devonfw/cobigen/.github/workflows/release.yml@master
     with:
       runTests: false
+    continue-on-error: true
     secrets:
       GPG_KEY: ${{ secrets.GPG_KEY }}
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
