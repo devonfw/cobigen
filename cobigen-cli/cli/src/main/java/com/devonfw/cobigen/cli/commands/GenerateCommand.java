@@ -3,8 +3,8 @@ package com.devonfw.cobigen.cli.commands;
 import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -13,7 +13,6 @@ import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +30,7 @@ import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.Tuple;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
+import com.devonfw.cobigen.cli.exceptions.UserAbortException;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
@@ -56,13 +56,13 @@ public class GenerateCommand extends CommandCommons {
    * User input file
    */
   @Parameters(index = "0", arity = "1..*", split = ",", description = MessagesConstants.INPUT_FILE_DESCRIPTION)
-  List<File> inputFiles = null;
+  List<Path> inputFiles = null;
 
   /**
    * User output project
    */
   @Option(names = { "--out", "-o" }, arity = "0..1", description = MessagesConstants.OUTPUT_ROOT_PATH_DESCRIPTION)
-  File outputRootPath = null;
+  Path outputRootPath = null;
 
   /**
    * This option provides the use of multiple available increments
@@ -80,11 +80,6 @@ public class GenerateCommand extends CommandCommons {
    * Logger to output useful information to the user
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
-
-  /**
-   * Used for getting users input
-   */
-  private static final Scanner inputReader = new Scanner(System.in);
 
   /**
    * Constructor needed for Picocli
@@ -107,16 +102,14 @@ public class GenerateCommand extends CommandCommons {
     if (this.increments == null && this.templates != null) {
       Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);
       for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
-        generate(this.inputFiles.get(i).toPath(), inputsAndArtifacts.getA().get(i),
-            MavenUtil.getProjectRoot(this.inputFiles.get(i).toPath(), false), inputsAndArtifacts.getB(), cg,
-            TemplateTo.class);
+        generate(this.inputFiles.get(i), inputsAndArtifacts.getA().get(i),
+            MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg, TemplateTo.class);
       }
     } else {
       Tuple<List<Object>, List<IncrementTo>> inputsAndArtifacts = preprocess(cg, IncrementTo.class);
       for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
-        generate(this.inputFiles.get(i).toPath(), inputsAndArtifacts.getA().get(i),
-            MavenUtil.getProjectRoot(this.inputFiles.get(i).toPath(), false), inputsAndArtifacts.getB(), cg,
-            IncrementTo.class);
+        generate(this.inputFiles.get(i), inputsAndArtifacts.getA().get(i),
+            MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg, IncrementTo.class);
       }
     }
     return 0;
@@ -140,14 +133,27 @@ public class GenerateCommand extends CommandCommons {
     boolean firstIteration = true;
     List<T> finalTos = new ArrayList<>();
     List<Object> generationInputs = new ArrayList<>();
-    for (File inputFile : this.inputFiles) {
+    for (Path inputFile : this.inputFiles) {
 
-      String extension = inputFile.getName().toLowerCase();
+      String extension = inputFile.getFileName().toString().toLowerCase();
       boolean isJavaInput = extension.endsWith(".java");
       boolean isOpenApiInput = extension.endsWith(".yaml") || extension.endsWith(".yml");
 
+      // checks for output root path and project root being detectable
+      if (this.outputRootPath == null && MavenUtil.getProjectRoot(inputFile, false) == null) {
+
+        LOG.info(
+            "Did not detect the input as part of a maven project, the root directory of the maven project was not found.");
+
+        LOG.info("Would you like to take '{}' as a root directory for output generation? \n"
+            + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
+
+        setRootOutputDirectoryWithPrompt();
+
+      }
+
       try {
-        Object input = cg.read(inputFile.toPath(), StandardCharsets.UTF_8);
+        Object input = cg.read(inputFile, StandardCharsets.UTF_8);
         List<T> matching = (List<T>) (isIncrements ? cg.getMatchingIncrements(input) : cg.getMatchingTemplates(input));
 
         if (matching.isEmpty()) {
@@ -179,6 +185,31 @@ public class GenerateCommand extends CommandCommons {
         ? generableArtifactSelection(this.increments, toIncrementTo(finalTos), IncrementTo.class)
         : generableArtifactSelection(this.templates, toTemplateTo(finalTos), TemplateTo.class));
     return new Tuple<>(generationInputs, selectedGenerableArtifacts);
+  }
+
+  /**
+   * Opens a looping prompt with a yes/no question and sets the root output directory to the current user directory.
+   *
+   */
+  private void setRootOutputDirectoryWithPrompt() {
+
+    Path outputDirectory = Paths.get(System.getProperty("user.dir"));
+
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("Set output directory to: " + outputDirectory.toString(),
+        "Invalid input. Please answer yes/n or no/n (or hit return for yes).",
+        "Cancelling generate process... you can use -o to explicitly set the output directory.");
+
+    try {
+      if (setToUserDir) {
+        this.outputRootPath = outputDirectory;
+      } else {
+        throw new UserAbortException();
+      }
+    } catch (UserAbortException e) {
+      LOG.debug("Generation process was cancelled by the user.");
+      System.exit(255);
+    }
+
   }
 
   /**
@@ -214,12 +245,12 @@ public class GenerateCommand extends CommandCommons {
   public boolean areArgumentsValid() {
 
     int index = 0;
-    for (File inputFile : this.inputFiles) {
+    for (Path inputFile : this.inputFiles) {
       inputFile = preprocessInputFile(inputFile);
       // Input file can be: C:\folder\input.java
-      if (inputFile.exists() == false) {
+      if (Files.exists(inputFile) == false) {
         LOG.debug("We could not find input file: {}. But we will keep trying, maybe you are using relative paths",
-            inputFile.getAbsolutePath());
+            inputFile.toAbsolutePath());
 
         // Input file can be: folder\input.java. We should use current working directory
         if (ParsingUtils.parseRelativePath(this.inputFiles, inputFile, index) == false) {
@@ -227,9 +258,9 @@ public class GenerateCommand extends CommandCommons {
           return false;
         }
       }
-      if (inputFile.isDirectory()) {
+      if (Files.isDirectory(inputFile)) {
         LOG.error("Your input file: {} is a directory. CobiGen cannot understand that. Please use files.",
-            inputFile.getAbsolutePath());
+            inputFile.toAbsolutePath());
         return false;
       }
     }
@@ -267,9 +298,8 @@ public class GenerateCommand extends CommandCommons {
     GenerationReportTo report = null;
     LOG.info("Generating {} for input '{}, this can take a while...", isIncrements ? "increments" : "templates",
         inputFile);
-    report = cg.generate(input, generableArtifacts, Paths.get(this.outputRootPath.getAbsolutePath()), false,
-        (task, progress) -> {
-        });
+    report = cg.generate(input, generableArtifacts, this.outputRootPath.toAbsolutePath(), false, (task, progress) -> {
+    });
     ValidationUtils.checkGenerationReport(report);
     Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream().filter(e -> e.getFileName().endsWith(".java"))
         .collect(Collectors.toSet());
@@ -294,7 +324,7 @@ public class GenerateCommand extends CommandCommons {
         "As you did not specify where the code will be generated, we will use the project of your current Input file.");
     LOG.debug("Generating to: {}", inputProject);
 
-    this.outputRootPath = inputProject.toFile();
+    this.outputRootPath = inputProject.toAbsolutePath();
   }
 
   /**
@@ -318,7 +348,7 @@ public class GenerateCommand extends CommandCommons {
       printFoundArtifacts(matching, isIncrements, artifactType, userInputIncrements);
 
       userInputIncrements = new ArrayList<>();
-      for (String userArtifact : getUserInput().split(",")) {
+      for (String userArtifact : ValidationUtils.getUserInput().split(",")) {
         userInputIncrements.add(userArtifact);
       }
     }
@@ -429,7 +459,7 @@ public class GenerateCommand extends CommandCommons {
   private <T extends GenerableArtifact> List<T> artifactStringSelection(List<T> userSelection,
       List<T> possibleArtifacts, String artifactType) {
 
-    for (String userArtifact : getUserInput().split(",")) {
+    for (String userArtifact : ValidationUtils.getUserInput().split(",")) {
       try {
         if ("0".equals(userArtifact)) {
           userSelection = possibleArtifacts;
@@ -512,32 +542,20 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
-   * Asks the user for input and returns the value
-   *
-   * @return String containing the user input
-   */
-  public static String getUserInput() {
-
-    String userInput = "";
-    userInput = inputReader.nextLine();
-    return userInput;
-  }
-
-  /**
    * Processes the input file's path. Strips the quotes from the file path if they are given.
    *
    * @param inputFile the input file
    * @return input file with processed path
    */
-  public static File preprocessInputFile(File inputFile) {
+  public static Path preprocessInputFile(Path inputFile) {
 
-    String path = inputFile.getPath();
+    String path = inputFile.toString();
     String pattern = "[\\\"|\\'](.+)[\\\"|\\']";
     boolean matches = path.matches(pattern);
     if (matches) {
       path = path.replace("\"", "");
       path = path.replace("\'", "");
-      return new File(path);
+      return Paths.get(path);
     }
     return inputFile;
   }
