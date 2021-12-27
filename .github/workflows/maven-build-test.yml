@@ -425,7 +425,7 @@ jobs:
 
   github-release:
     needs: release
-    uses: devonfw/cobigen/.github/workflows/create-github-release.yml@master
+    uses: devonfw/.github/.github/workflows/create-github-release.yml@master
     secrets:
       GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
       RELEASE_STATUS: ${{ needs.release.outputs.status }}
