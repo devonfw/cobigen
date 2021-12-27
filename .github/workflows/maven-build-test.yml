@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   workflow_dispatch:
@@ -377,15 +377,56 @@ jobs:
   
   release:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
-    uses: devonfw/cobigen/.github/workflows/release.yml@master
-    with:
-      runTests: false
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
+    environment:
+      name: production
+    outputs:
+      status: ${{ join(steps.*.outcome) }}
+    continue-on-error: true
+    steps:
+      - name: Clone
+        uses: actions/checkout@v2
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      - name: Setup git user
+        run: |
+          git config --global user.email ${BUILD_USER_EMAIL}
+          git config --global user.name ${BUILD_USER}
+      - name: Setup repo for push on protected branch
+        shell: bash
+        run: |
+          ORIGIN="$(git config --get remote.origin.url)"
+          SED_OUT=$(echo $ORIGIN | sed -r -E -n 's@^https:\/\/(github.com.*)@\1@p')
+          if [ -n "$SED_OUT" ]
+          then
+            ORIGIN="https://${BUILD_USER}:${BUILD_USER_PASSWD}@$SED_OUT"
+            git remote set-url origin $ORIGIN
+            echo "Changed remote URL to enable pushing on protected branch"
+          fi
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+      - name: Release excluding test run
+        shell: bash
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: ./release.sh silent skip-qa repo-mvn-settings
+
+  github-release:
+    needs: release
+    uses: devonfw/cobigen/.github/workflows/create-github-release.yml@master
     secrets:
-      GPG_KEY: ${{ secrets.GPG_KEY }}
-      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-      SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-      BUILD_USER: ${{ secrets.BUILD_USER }}
-      BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
-      BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
+      GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
+      RELEASE_STATUS: ${{ needs.release.outputs.status }}
+
