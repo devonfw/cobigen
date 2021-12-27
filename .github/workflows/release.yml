@@ -85,10 +85,10 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: ./release.sh silent skip-qa repo-mvn-settings
-  
+
   github-release:
     needs: release
-    if: !contains(needs.release.outputs.status, 'failure')
     uses: devonfw/cobigen/.github/workflows/create-github-release.yml@master
     secrets:
       GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
+      RELEASE_STATUS: ${{ needs.release.outputs.status }}
