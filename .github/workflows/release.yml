@@ -33,6 +33,8 @@ jobs:
     if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
     environment:
       name: production
+    outputs:
+      status: ${{ join(steps.*.outcome) }}
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
@@ -83,3 +85,10 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: ./release.sh silent skip-qa repo-mvn-settings
+  
+  github-release:
+    needs: release
+    if: !contains(needs.release.outputs.status, 'failure')
+    uses: devonfw/cobigen/.github/workflows/create-github-release.yml@master
+    secrets:
+      GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
