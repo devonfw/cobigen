@@ -382,8 +382,7 @@ jobs:
     environment:
       name: production
     outputs:
-      status: ${{ join(steps.*.outcome) }}
-    continue-on-error: true
+      outcome: ${{ steps.release-status.release-outcome }}
     env: 
       BUILD_USER: ${{ secrets.BUILD_USER }}
       BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
@@ -419,6 +418,7 @@ jobs:
           path: ~/.m2/repository
           key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       - name: Release excluding test run
+        id: release
         shell: bash
         env:
           GPG_KEY: ${{ secrets.GPG_KEY }}
@@ -426,12 +426,16 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: ./release.sh silent skip-qa repo-mvn-settings
+      - name: Preserve release status
+        id: release-status
+        if: always()
+        run: echo "::set-output name=release-outcome::"${{ steps.release.outcome }}
 
   github-release:
     needs: release
     uses: devonfw/.github/.github/workflows/create-github-release.yml@master
     with:
-      RELEASE_STATUS: ${{ needs.release.outputs.status }}
+      RELEASE_STATUS: ${{ needs.release.outputs.outcome }}
     secrets:
       GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
 
