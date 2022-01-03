@@ -23,19 +23,14 @@ on:
 jobs:
   cache-dependencies:
     runs-on: ubuntu-latest
-    steps:    
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - name: Clone CobiGen Repo
+    steps:      
+      - name: Clone Repository
         uses: actions/checkout@v2
-      
-      - name: Cache m2 repository
-        uses: actions/cache@v2
+
+      - uses: devonfw-actions/java-maven-setup@main
         with:
-          path: ~/.m2/repository
-          key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          clone: false
       
       - name: Resolve non-cobigen dependencies
         run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -T1C -P!p2-build -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 || true # never fail
