@@ -229,7 +229,7 @@ jobs:
     environment:
       name: production
     outputs:
-      released: ${{ steps.release.outputs.released }}
+      release_tag: ${{ steps.get_tag.outputs.tagname }}
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
@@ -251,15 +251,22 @@ jobs:
           BUILD_USER: ${{ secrets.BUILD_USER }}
           BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
           BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
-        run: |
-          ./release.sh silent skip-qa repo-mvn-settings
-          echo "::set-output name=released::true"
+        run: ./release.sh silent skip-qa repo-mvn-settings
+          
+      - name: 'Get release tag'
+        id: get_tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GHA_TOKEN }}"
 
   github-release:
     needs: release
-    uses: devonfw/.github/.github/workflows/create-github-release.yml@master
-    with:
-      SKIP: ${{ needs.release.outputs.released != 'true' }}
-    secrets:
-      GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
+    steps:
+      - if: needs.release.outputs.released_tag != ''
+        uses: devonfw-actions/create-github-release@main
+        with:
+          release_tag: ${{ needs.release.outputs.released_tag }}
+          GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
 
