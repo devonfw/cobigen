@@ -379,10 +379,11 @@ jobs:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
+    continue-on-error: true
     environment:
       name: production
     outputs:
-      outcome: ${{ steps.release-status.release-outcome }}
+      released: ${{ steps.release.outputs.released }}
     env: 
       BUILD_USER: ${{ secrets.BUILD_USER }}
       BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
@@ -417,7 +418,7 @@ jobs:
         with:
           path: ~/.m2/repository
           key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
-      - name: Release excluding test run
+      - name: Release
         id: release
         shell: bash
         env:
@@ -425,17 +426,15 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-        run: ./release.sh silent skip-qa repo-mvn-settings
-      - name: Preserve release status
-        id: release-status
-        if: always()
-        run: echo "::set-output name=release-outcome::"${{ steps.release.outcome }}
+        run: |
+          ./release.sh silent skip-qa repo-mvn-settings
+          echo "::set-output name=released::true"
 
   github-release:
     needs: release
     uses: devonfw/.github/.github/workflows/create-github-release.yml@master
     with:
-      RELEASE_STATUS: ${{ needs.release.outputs.outcome }}
+      SKIP: ${{ needs.release.outputs.released != 'true' }}
     secrets:
       GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
 
