@@ -1,12 +1,17 @@
-name: CI
+name: CI/CD
 
 on:
   workflow_dispatch:
   push:
+    # https://github.community/t/action-does-not-run-on-master-with-tags-ignore-v/128354/4
+    branches:
+      - '**'
     paths-ignore:
       - 'documentation/**'
       - 'solicitor/**'
       - '**.asciidoc'
+    tags-ignore:
+      - '**'
   pull_request:
     paths-ignore:
       - 'documentation/**'
@@ -18,19 +23,14 @@ on:
 jobs:
   cache-dependencies:
     runs-on: ubuntu-latest
-    steps:    
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - name: Clone CobiGen Repo
+    steps:      
+      - name: Clone Repository
         uses: actions/checkout@v2
-      
-      - name: Cache m2 repository
-        uses: actions/cache@v2
+
+      - uses: devonfw-actions/java-maven-setup@v1
         with:
-          path: ~/.m2/repository
-          key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          clone: false
       
       - name: Resolve non-cobigen dependencies
         run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -T1C -P!p2-build -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 || true # never fail
@@ -45,30 +45,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-      - name: Cache m2 repository
-        uses: actions/cache@v2
+      - uses: devonfw-actions/java-maven-setup@v1
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
-          restore-keys: |
-            cobigen-dep-${{ hashFiles('**/pom.xml') }}
-
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - uses: actions/checkout@v2
-
-      - name: Set up OpenJDK
-        uses: actions/setup-java@v1
-        with:
+          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }} # new key will cache
+          maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           java-version: ${{ matrix.javaVersion }}
-          settings-path: ${{ github.workspace }}
 
       - name: Build & Test Core
         shell: bash
@@ -85,30 +66,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-      - name: Restore m2 repository
-        uses: actions/cache@v2
+      - uses: devonfw-actions/java-maven-setup@v1
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
-
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - uses: actions/checkout@v2
-
-      - name: Set up OpenJDK
-        uses: actions/setup-java@v1
-        with:
+          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
+          maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
           java-version: ${{ matrix.javaVersion }}
-          settings-path: ${{ github.workspace }}
 
       - name: Build & Test Plugins
         shell: bash
@@ -125,34 +87,16 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-      - name: Restore m2 repository
-        uses: actions/cache@v2
+      - uses: devonfw-actions/java-maven-setup@v1
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+          java-version: ${{ matrix.javaVersion }}
 
       - name: Cache p2 plugin repositories
         uses: actions/cache@v2
         with:
           path: ./**/target/repository/
           key: p2-plugins-${{ github.sha }} # new key will cache
-
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - uses: actions/checkout@v2
-
-      - name: Set up OpenJDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.javaVersion }}
-          settings-path: ${{ github.workspace }}
 
       - name: Build Plugins UpdateSite
         shell: bash
@@ -170,28 +114,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-      - name: Restore m2 repository
-        uses: actions/cache@v2
+      - uses: devonfw-actions/java-maven-setup@v1
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
-
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - uses: actions/checkout@v2
-
-      - name: Set up OpenJDK
-        uses: actions/setup-java@v1
-        with:
+          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
-          settings-path: ${{ github.workspace }}
 
       - name: Run Core Systemtest
         shell: bash
@@ -208,28 +134,16 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
+      - uses: devonfw-actions/java-maven-setup@v1
+        with:
+          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
+          java-version: ${{ matrix.javaVersion }}
         
       - name: Cache Eclipse repository
         uses: actions/cache@v2
         with:
           path: ./**/eclipse/target/repository/
           key: p2-eclipse-${{ github.sha }} # new key will cache
-
-      - name: Restore m2 repository
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
-
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - uses: actions/checkout@v2
       
       # After checkout we need to restore the built repositories
       - name: Restore P2 plugins repositories
@@ -237,12 +151,6 @@ jobs:
         with:
           path: ./**/target/repository/
           key: p2-plugins-${{ github.sha }} # key hit will not update cache
-
-      - name: Set up OpenJDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.javaVersion }}
-          settings-path: ${{ github.workspace }}
 
       # There is no retry for jobs, just for steps, so doing the retry by hand
       - name: Build Plugins
@@ -260,30 +168,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-      - name: Restore m2 repository
-        uses: actions/cache@v2
+      - uses: devonfw-actions/java-maven-setup@v1
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
-
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - uses: actions/checkout@v2
-
-      - name: Set up OpenJDK
-        uses: actions/setup-java@v1
-        with:
+          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
+          maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
           java-version: ${{ matrix.javaVersion }}
-          settings-path: ${{ github.workspace }}
 
       - name: Build & Test Maven Plugin
         shell: bash
@@ -300,30 +189,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-      - name: Restore m2 repository
-        uses: actions/cache@v2
+      - uses: devonfw-actions/java-maven-setup@v1
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
-
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - uses: actions/checkout@v2
-
-      - name: Set up OpenJDK
-        uses: actions/setup-java@v1
-        with:
+          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
+          maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
           java-version: ${{ matrix.javaVersion }}
-          settings-path: ${{ github.workspace }}
 
       - name: Build & Test CLI
         shell: bash
@@ -340,30 +210,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: "Use GNU tar instead BSD tar (Workaround https://github.com/actions/cache/issues/576#issuecomment-830796954)"
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: cmd
-        run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-        
-      - name: Cache m2 repository of templates build
-        uses: actions/cache@v2
+      - uses: devonfw-actions/java-maven-setup@v1
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
-
-      - name: Enable git support for long paths on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      - uses: actions/checkout@v2
-
-      - name: Set up OpenJDK
-        uses: actions/setup-java@v1
-        with:
+          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
+          maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
           java-version: ${{ matrix.javaVersion }}
-          settings-path: ${{ github.workspace }}
 
       - name: Build & Test Templates
         shell: bash
@@ -372,15 +223,49 @@ jobs:
   
   release:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
-    uses: devonfw/cobigen/.github/workflows/release.yml@master
-    with:
-      runTests: false
-    secrets:
-      GPG_KEY: ${{ secrets.GPG_KEY }}
-      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-      SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-      BUILD_USER: ${{ secrets.BUILD_USER }}
-      BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
-      BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
+    continue-on-error: true
+    environment:
+      name: production
+    outputs:
+      release_tag: ${{ steps.get_tag.outputs.tagname }}
+    steps:
+      - uses: devonfw-actions/java-maven-setup@v1
+        with:
+          maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          BUILD_USER: ${{ secrets.BUILD_USER }}
+          BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
+          BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
+
+      - name: Release
+        id: release
+        shell: bash
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          BUILD_USER: ${{ secrets.BUILD_USER }}
+          BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
+          BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
+        run: ./release.sh silent skip-qa repo-mvn-settings
+          
+      - name: 'Get release tag'
+        id: get_tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GHA_TOKEN }}"
+
+  github-release:
+    needs: release
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' && needs.release.outputs.released_tag != '' }}
+    steps:
+      - uses: devonfw-actions/create-github-release@v1
+        with:
+          release_tag: ${{ needs.release.outputs.released_tag }}
+          GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
+

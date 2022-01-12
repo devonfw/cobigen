@@ -162,10 +162,14 @@ then
   exit 0
 else
   log_step "Publish Release"
+  doRunCommand "cd ../gh-pages"
+  doRunCommand "git add *"
+  doRunCommand "git commit -m'Deploy P2 Bundles for Release $NEW_VERSION'"
+  doRunCommand "git push origin gh-pages"
+  doRunCommand "cd $SCRIPT_PATH"
   # Remove GA auth header in case of CI (workaround): https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101/47
   doRunCommand "git -c "http.https://github.com/.extraheader=" push origin master"
-  doRunCommand "git -c "http.https://github.com/.extraheader=" push origin v$NEW_VERSION"
-  doRunCommand "cd ../gh-pages && git push origin master && cd $SCRIPT_PATH"
+  doRunCommand "git -c "http.https://github.com/.extraheader=" push origin v$RELEASE_VERSION"
   doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen $DEBUG $BATCH_MODE"
   doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-plugins $DEBUG $BATCH_MODE"
   doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-cli $DEBUG $BATCH_MODE"
