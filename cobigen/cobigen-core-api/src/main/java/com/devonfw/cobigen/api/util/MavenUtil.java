@@ -46,14 +46,7 @@ public class MavenUtil {
     List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:build-classpath",
         "-Dmdep.outputFile=" + cpFile.toString());
     if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
-      Path cachedPomXml = cpFile.resolveSibling("cached-pom.xml");
-      try {
-        Files.copy(pomFile, cachedPomXml);
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException("Unable to extract " + pomFile.toUri() + " from JAR to " + cachedPomXml);
-      }
-      pomFile = cachedPomXml;
-      cachedPomXml.toFile().deleteOnExit();
+      pomFile = createCachedPomFromJar(pomFile, cpFile.getParent());
       // just add this command in case your are working on jar
       // otherwise, pom resolution will fail if you work on a general maven module
       args.add("-f");
@@ -76,6 +69,51 @@ public class MavenUtil {
     List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:resolve");
     runCommand(mvnProjectRoot, args);
     LOG.debug("Downloaded dependencies successfully.");
+  }
+
+  /**
+   * Resolve all maven dependencies of given pom.xml inside given project
+   *
+   * @param pomFile to cache and resolve from
+   *
+   * @param mvnProjectRoot the maven project root
+   */
+  public static void resolveDependencies(Path pomFile, Path mvnProjectRoot) {
+
+    LOG.info(
+        "Resolving maven dependencies for maven project {} to be able to make use of reflection in templates. Please be patient...",
+        mvnProjectRoot);
+
+    if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
+      pomFile = createCachedPomFromJar(pomFile, mvnProjectRoot);
+    }
+
+    List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString());
+    args.add("-f");
+    args.add(pomFile.toString());
+    args.add("dependency:resolve");
+    runCommand(mvnProjectRoot, args);
+    LOG.debug("Downloaded dependencies successfully.");
+  }
+
+  /**
+   * Generates a cached-pom.xml file from a jar archive, automatically deletes the cached-pom.xml on exit
+   *
+   * @param pomFile to cache
+   * @param outputPath output directory
+   * @return the cached-pom.xml file
+   */
+  public static Path createCachedPomFromJar(Path pomFile, Path outputPath) {
+
+    Path cachedPomXml = outputPath.resolve("cached-pom.xml");
+    try {
+      Files.copy(pomFile, cachedPomXml);
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Unable to extract " + pomFile.toUri() + " from JAR to " + cachedPomXml, e);
+    }
+    pomFile = cachedPomXml;
+    cachedPomXml.toFile().deleteOnExit();
+    return cachedPomXml;
   }
 
   /**
