@@ -46,7 +46,7 @@ public class MavenUtil {
     List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:build-classpath",
         "-Dmdep.outputFile=" + cpFile.toString());
     if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
-      pomFile = createCachedPomFromJar(pomFile, cpFile);
+      pomFile = createCachedPomFromJar(pomFile, cpFile.getParent());
       // just add this command in case your are working on jar
       // otherwise, pom resolution will fail if you work on a general maven module
       args.add("-f");
@@ -109,7 +109,7 @@ public class MavenUtil {
     try {
       Files.copy(pomFile, cachedPomXml);
     } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to extract " + pomFile.toUri() + " from JAR to " + cachedPomXml);
+      throw new CobiGenRuntimeException("Unable to extract " + pomFile.toUri() + " from JAR to " + cachedPomXml, e);
     }
     pomFile = cachedPomXml;
     cachedPomXml.toFile().deleteOnExit();
