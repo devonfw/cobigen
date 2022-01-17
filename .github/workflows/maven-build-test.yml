@@ -27,7 +27,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v2
 
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           clone: false
@@ -45,7 +45,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
@@ -66,7 +66,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
@@ -87,7 +87,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
@@ -114,7 +114,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
@@ -134,7 +134,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
@@ -168,7 +168,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
@@ -189,7 +189,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
@@ -210,7 +210,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
@@ -231,7 +231,7 @@ jobs:
     outputs:
       release_tag: ${{ steps.get_tag.outputs.tagname }}
     steps:
-      - uses: devonfw-actions/java-maven-setup@v1
+      - uses: devonfw-actions/java-maven-setup@v2
         with:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
