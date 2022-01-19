@@ -3,8 +3,6 @@ package com.devonfw.cobigen.cli.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,9 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
-import org.codehaus.plexus.util.Os;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +27,6 @@ import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.ClassServiceLoader;
 import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
 
 /**
  * Utilities class for CobiGen related operations. For instance, it creates a new CobiGen instance and registers all the
@@ -83,36 +78,17 @@ public class CobiGenUtils {
 
     Path rootCLIPath = getCliHomePath();
     File pomFile = extractArtificialPom();
-    String pomFileHash;
-    try {
-      pomFileHash = com.google.common.io.Files.asByteSource(pomFile).hash(Hashing.murmur3_128()).toString();
-    } catch (IOException e) {
-      LOG.warn("Could not calculate hash of {}", pomFile.getAbsolutePath());
-      pomFileHash = "";
-    }
+
+    String pomFileHash = MavenUtil.generatePomFileHash(pomFile.toPath());
+
     Path cpFile = rootCLIPath.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
 
-    if (!Files.exists(cpFile)) {
-      MavenUtil.cacheMavenClassPath(pomFile.toPath(), cpFile);
-    }
-    // Read classPath.txt file and add to the class path all dependencies
-    try (Stream<String> fileLinesStream = Files.lines(cpFile)) {
-      URL[] classpathEntries = fileLinesStream
-          .flatMap(e -> Arrays.stream(e.split(Os.isFamily(Os.FAMILY_WINDOWS) ? ";" : ":"))).map(path -> {
-            try {
-              return new File(path).toURI().toURL();
-            } catch (MalformedURLException e) {
-              LOG.error("URL of classpath entry {} is malformed", path, e);
-            }
-            return null;
-          }).toArray(size -> new URL[size]);
-      URLClassLoader cobigenClassLoader = new URLClassLoader(classpathEntries,
-          Thread.currentThread().getContextClassLoader());
-      ClassServiceLoader.lookupServices(cobigenClassLoader);
-      return cobigenClassLoader;
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to read " + cpFile, e);
-    }
+    URLClassLoader cobigenClassLoader = MavenUtil.addURLsFromCachedClassPathsFile(cpFile, pomFile.toPath(),
+        Thread.currentThread().getContextClassLoader());
+
+    ClassServiceLoader.lookupServices(cobigenClassLoader);
+    return cobigenClassLoader;
+
   }
 
   /**
