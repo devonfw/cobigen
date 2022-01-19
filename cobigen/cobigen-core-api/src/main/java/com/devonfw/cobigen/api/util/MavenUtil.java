@@ -1,14 +1,20 @@
 package com.devonfw.cobigen.api.util;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -22,6 +28,8 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.google.common.collect.Lists;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
 
 /**
  * Utils to operate with maven artifacts
@@ -114,6 +122,61 @@ public class MavenUtil {
     pomFile = cachedPomXml;
     cachedPomXml.toFile().deleteOnExit();
     return cachedPomXml;
+  }
+
+  /**
+   * Adds URLs from class paths cache file to URLClassLoader. If no class paths cache file was found a new one will be
+   * generated.
+   *
+   * @param classPathCacheFile the class paths cache file to read/create
+   * @param pomFile POM file that defines the needed CobiGen dependencies to build
+   * @param parentClassLoader parent ClassLoader
+   *
+   * @return URLClassLoader
+   */
+  public static URLClassLoader addURLsFromCachedClassPathsFile(Path classPathCacheFile, Path pomFile,
+      ClassLoader parentClassLoader) {
+
+    if (!Files.exists(classPathCacheFile)) {
+      LOG.debug("Building class paths for maven configuration ...");
+      cacheMavenClassPath(pomFile, classPathCacheFile);
+    } else {
+      LOG.debug("Taking cached class paths from: {}", classPathCacheFile);
+    }
+
+    try (Stream<String> fileLinesStream = Files.lines(classPathCacheFile)) {
+      URL[] classPathEntries = fileLinesStream
+          .flatMap(e -> Arrays.stream(e.split(SystemUtil.getOS().contains("win") ? ";" : ":"))).map(path -> {
+            try {
+              return new File(path).toURI().toURL();
+            } catch (MalformedURLException e) {
+              LOG.error("URL of class path entry {} is malformed", path, e);
+            }
+            return null;
+          }).toArray(size -> new URL[size]);
+
+      return new URLClassLoader(classPathEntries, parentClassLoader);
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Unable to read " + classPathCacheFile, e);
+    }
+  }
+
+  /**
+   * Generates a hash for the provided POM file
+   *
+   * @param pomFile to generate hash from
+   * @return String generated hash
+   */
+  public static String generatePomFileHash(Path pomFile) {
+
+    String pomFileHash;
+    try {
+      pomFileHash = ByteSource.wrap(Files.readAllBytes(pomFile)).hash(Hashing.murmur3_128()).toString();
+    } catch (IOException e) {
+      LOG.warn("Could not calculate hash of {}", pomFile.toUri());
+      pomFileHash = "";
+    }
+    return pomFileHash;
   }
 
   /**
