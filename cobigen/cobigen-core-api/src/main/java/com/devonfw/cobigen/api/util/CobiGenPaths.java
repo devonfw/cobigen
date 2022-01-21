@@ -37,7 +37,9 @@ public class CobiGenPaths {
           ConfigurationConstants.CONFIG_ENV_HOME, envValue);
       cobiGenPath = Paths.get(envValue);
     } else {
-      cobiGenPath = ConfigurationConstants.DEFAULT_HOME;
+      // sets CobiGen path to maven .m2 directory
+      cobiGenPath = MavenUtil.determineMavenRepositoryPath().getParent()
+          .resolve(ConfigurationConstants.DEFAULT_HOME_DIR_NAME);
     }
 
     // We first check whether we already have a directory
