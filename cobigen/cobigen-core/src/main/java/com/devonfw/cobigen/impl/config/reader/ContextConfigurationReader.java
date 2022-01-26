@@ -1,11 +1,14 @@
 package com.devonfw.cobigen.impl.config.reader;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +45,11 @@ import jakarta.xml.bind.Unmarshaller;
 /** The {@link ContextConfigurationReader} reads the context xml */
 public class ContextConfigurationReader {
 
-  /** XML Node 'context' of the context.xml */
-  private ContextConfiguration contextNode;
+  /** XML Nodes 'context' of the context.xml files */
+  private List<ContextConfiguration> contextNodes;
 
-  /** Path of the context configuration file */
-  private Path contextFile;
+  /** Paths of the context configuration files */
+  private List<Path> contextFiles;
 
   /** Root of the context configuration file, used for passing to ContextConfiguration */
   private Path contextRoot;
@@ -59,19 +62,44 @@ public class ContextConfigurationReader {
    */
   public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
 
-    if (configRoot != null) {
-      this.contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-    } else {
+    if (configRoot == null) {
       throw new IllegalArgumentException("Configuration path cannot be null.");
     }
 
-    if (!Files.exists(this.contextFile)) {
+    this.contextFiles = new ArrayList<>();
+
+    Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    if (!Files.exists(contextFile)) {
       configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-      this.contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-      if (!Files.exists(this.contextFile)) {
-        throw new InvalidConfigurationException(this.contextFile, "Could not find context configuration file.");
+      contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+      if (!Files.exists(contextFile)) {
+
+        // Search the context.xml in the template folders
+        FileFilter fileFilter = new FileFilter() {
+          @Override
+          public boolean accept(File file) {
+
+            return file.isDirectory();
+          }
+        };
+        File[] templateFolders = configRoot.toFile().listFiles(fileFilter);
+        for (File file : templateFolders) {
+          Path contextPath = file.toPath().resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+          if (Files.exists(contextPath)) {
+            this.contextFiles.add(contextPath);
+          }
+        }
+
+        if (this.contextFiles.isEmpty()) {
+          throw new InvalidConfigurationException(contextFile, "Could not find any context configuration file.");
+        }
+      } else {
+        this.contextFiles.add(contextFile);
       }
+    } else {
+      this.contextFiles.add(contextFile);
     }
+
     this.contextRoot = configRoot;
 
     readConfiguration();
@@ -89,62 +117,66 @@ public class ContextConfigurationReader {
       Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
     }
 
-    try (InputStream in = Files.newInputStream(this.contextFile)) {
-      Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+    this.contextNodes = new ArrayList<>();
 
-      // Unmarshal without schema checks for getting the version attribute of the root node.
-      // This is necessary to provide an automatic upgrade client later on
-      Object rootNode = unmarschaller.unmarshal(in);
-      if (rootNode instanceof ContextConfiguration) {
-        BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
-        if (configVersion == null) {
-          throw new InvalidConfigurationException(this.contextFile,
-              "The required 'version' attribute of node \"contextConfiguration\" has not been set");
+    for (Path contextFile : this.contextFiles) {
+      try (InputStream in = Files.newInputStream(contextFile)) {
+        Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+
+        // Unmarshal without schema checks for getting the version attribute of the root node.
+        // This is necessary to provide an automatic upgrade client later on
+        Object rootNode = unmarschaller.unmarshal(in);
+        if (rootNode instanceof ContextConfiguration) {
+          BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
+          if (configVersion == null) {
+            throw new InvalidConfigurationException(contextFile,
+                "The required 'version' attribute of node \"contextConfiguration\" has not been set");
+          } else {
+            VersionValidator validator = new VersionValidator(Type.CONTEXT_CONFIGURATION, MavenMetadata.VERSION);
+            validator.validate(configVersion.floatValue());
+          }
         } else {
-          VersionValidator validator = new VersionValidator(Type.CONTEXT_CONFIGURATION, MavenMetadata.VERSION);
-          validator.validate(configVersion.floatValue());
+          throw new InvalidConfigurationException(contextFile,
+              "Unknown Root Node. Use \"contextConfiguration\" as root Node");
         }
-      } else {
-        throw new InvalidConfigurationException(this.contextFile,
-            "Unknown Root Node. Use \"contextConfiguration\" as root Node");
-      }
 
-      // If we reach this point, the configuration version and root node has been validated.
-      // Unmarshal with schema checks for checking the correctness and give the user more hints to
-      // correct his failures
-      SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
-      try (
-          InputStream schemaStream = getClass()
-              .getResourceAsStream("/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");
-          InputStream configInputStream = Files.newInputStream(this.contextFile)) {
+        // If we reach this point, the configuration version and root node has been validated.
+        // Unmarshal with schema checks for checking the correctness and give the user more hints to
+        // correct his failures
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
+        try (
+            InputStream schemaStream = getClass()
+                .getResourceAsStream("/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");
+            InputStream configInputStream = Files.newInputStream(contextFile)) {
 
-        Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
-        unmarschaller.setSchema(schema);
-        rootNode = unmarschaller.unmarshal(configInputStream);
-        this.contextNode = (ContextConfiguration) rootNode;
-      }
-    } catch (JAXBException e) {
-      // try getting SAXParseException for better error handling and user support
-      Throwable parseCause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
-      String message = "";
-      if (parseCause != null && parseCause.getMessage() != null) {
-        message = parseCause.getMessage();
-      }
+          Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+          unmarschaller.setSchema(schema);
+          rootNode = unmarschaller.unmarshal(configInputStream);
+          this.contextNodes.add((ContextConfiguration) rootNode);
+        }
+      } catch (JAXBException e) {
+        // try getting SAXParseException for better error handling and user support
+        Throwable parseCause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+        String message = "";
+        if (parseCause != null && parseCause.getMessage() != null) {
+          message = parseCause.getMessage();
+        }
 
-      throw new InvalidConfigurationException(this.contextFile, "Could not parse configuration file:\n" + message, e);
-    } catch (SAXException e) {
-      // Should never occur. Programming error.
-      throw new IllegalStateException("Could not parse context configuration schema. Please state this as a bug.");
-    } catch (NumberFormatException e) {
-      // The version number is currently the only xml value which will be parsed to a number data type
-      // So provide help
-      throw new InvalidConfigurationException(
-          "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
-    } catch (IOException e) {
-      throw new InvalidConfigurationException(this.contextFile, "Could not read context configuration file.", e);
-    } finally {
-      Thread.currentThread().setContextClassLoader(orig);
+        throw new InvalidConfigurationException(contextFile, "Could not parse configuration file:\n" + message, e);
+      } catch (SAXException e) {
+        // Should never occur. Programming error.
+        throw new IllegalStateException("Could not parse context configuration schema. Please state this as a bug.");
+      } catch (NumberFormatException e) {
+        // The version number is currently the only xml value which will be parsed to a number data type
+        // So provide help
+        throw new InvalidConfigurationException(
+            "Invalid version number defined. The version of the context configuration should consist of 'major.minor' version.");
+      } catch (IOException e) {
+        throw new InvalidConfigurationException(contextFile, "Could not read context configuration file.", e);
+      } finally {
+        Thread.currentThread().setContextClassLoader(orig);
+      }
     }
   }
 
@@ -156,9 +188,11 @@ public class ContextConfigurationReader {
   public Map<String, Trigger> loadTriggers() {
 
     Map<String, Trigger> triggers = Maps.newHashMap();
-    for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : this.contextNode.getTrigger()) {
-      triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), t.getTemplateFolder(),
-          Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
+    for (ContextConfiguration contextConfiguration : this.contextNodes) {
+      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
+        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), t.getTemplateFolder(),
+            Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
+      }
     }
     return triggers;
   }
