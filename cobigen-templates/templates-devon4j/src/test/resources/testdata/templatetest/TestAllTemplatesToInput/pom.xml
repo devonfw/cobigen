@@ -23,7 +23,7 @@
       <plugin>
         <groupId>com.devonfw.cobigen</groupId>
         <artifactId>cobigen-maven-plugin</artifactId>
-        <version>7.1.0</version>
+        <version>${pluginVersion}</version>
         <executions>
           <execution>
             <id>generate</id>
