@@ -83,11 +83,8 @@ public class ContextConfigurationReader {
           }
         };
         File[] templateFolders = configRoot.toFile().listFiles(fileFilter);
-        for (File file : templateFolders) {
-          Path contextPath = file.toPath().resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-          if (Files.exists(contextPath)) {
-            this.contextFiles.add(contextPath);
-          }
+        for (File templateFolder : templateFolders) {
+          addContextFilesRecursively(templateFolder.toPath());
         }
 
         if (this.contextFiles.isEmpty()) {
@@ -249,5 +246,25 @@ public class ContextConfigurationReader {
   public Path getContextRoot() {
 
     return this.contextRoot;
+  }
+
+  /**
+   * Search all context.xml configuration files in all subfolders of the template root directory recursively
+   *
+   * @param directory the directory where the context.xml files are searched recursively
+   */
+  private void addContextFilesRecursively(Path directory) {
+
+    Path contextPath = directory.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    if (Files.exists(contextPath)) {
+      this.contextFiles.add(contextPath);
+    } else {
+      File[] subFolders = directory.toFile().listFiles();
+      for (File subFolder : subFolders) {
+        if (subFolder.isDirectory()) {
+          addContextFilesRecursively(subFolder.toPath());
+        }
+      }
+    }
   }
 }
