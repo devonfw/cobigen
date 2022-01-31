@@ -41,9 +41,9 @@
         <configuration>
           <configurationFolder>${templatesProject}</configurationFolder>
           <inputFiles>
-            <inputFile>src/main/java/io/github/devonfw/cobigen/generator/service/api/rest/InputNoAnnotationsRestService.java</inputFile>
-            <inputFile>src/main/java/io/github/devonfw/cobigen/generator/service/api/rest/JavaxAnnotationsInputRestService.java</inputFile>
-            <inputFile>src/main/java/io/github/devonfw/cobigen/generator/service/api/rest/SpringAnnotationsInputRestService.java</inputFile>
+            <inputFile>./src/main/java/io/github/devonfw/cobigen/generator/service/api/rest/InputNoAnnotationsRestService.java</inputFile>
+            <inputFile>./src/main/java/io/github/devonfw/cobigen/generator/service/api/rest/JavaxAnnotationsInputRestService.java</inputFile>
+            <inputFile>./src/main/java/io/github/devonfw/cobigen/generator/service/api/rest/SpringAnnotationsInputRestService.java</inputFile>
           </inputFiles>
           <templates>
             <template>ALL</template>
