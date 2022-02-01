@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
 
-  <trigger id="Swagger_Docs" type="java" templateFolder="documentation/kafka">
-    <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data"
+
+  <trigger id="REST_Docs" type="java">
+    <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.api\.rest"
       retrieveObjectsRecursively="false"/>
-    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data\.([^\.]+)To">
+    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.api\.rest\.([^\.]+)RestService">
       <variableAssignment type="regex" key="rootPackage" value="1"/>
       <variableAssignment type="regex" key="domain" value="3"/>
       <variableAssignment type="regex" key="component" value="4"/>
-      <variableAssignment type="regex" key="toName" value="5"/>
     </matcher>
   </trigger>
+
+
 </contextConfiguration>

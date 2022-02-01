@@ -2,7 +2,7 @@
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
 
 
-  <trigger id="crud_java_ea_uml" type="xml" templateFolder="crud_java_ea_uml">
+  <trigger id="crud_java_ea_uml" type="xml">
     <containerMatcher type="xpath" value="./uml:Model//packagedElement[@xmi:type='uml:Class']"/>
     <matcher type="xpath" value="self::node()[@xmi:type='uml:Class']/ancestor::uml:Model">
       <variableAssignment type="xpath" key="rootPackage"

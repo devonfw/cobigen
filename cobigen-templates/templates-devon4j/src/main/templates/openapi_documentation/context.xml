@@ -2,7 +2,7 @@
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
 
 
- <trigger id="OpenAPI_docs" type="openapi" templateFolder="documentation/openapi">
+ <trigger id="OpenAPI_docs" type="openapi">
     <containerMatcher type="element" value="openAPIFile"/>
     <matcher type="element" value="EntityDef">
       <variableAssignment type="constant" key="rootPackage" value="com.devonfw"/>
@@ -10,5 +10,5 @@
       <variableAssignment type="property" key="entityName" value="name"/>
     </matcher>
   </trigger>
-  
+
 </contextConfiguration>
