@@ -34,17 +34,6 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests whether a valid configuration can be read from src/main/templates folder (old config location)
-   *
-   * @throws Exception test fails
-   */
-  @Test
-  public void testContextLoadedFromRootAndSourceFolder() throws Exception {
-
-    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder_backward_compatible").toURI());
-  }
-
-  /**
    * Tests whether not having a context.xml top level in a template set results in an
    * {@link InvalidConfigurationException}
    *
@@ -58,6 +47,18 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
+   * Tests whether a valid configuration can be read from src/main/templates folder (old config location) Backward
+   * Compatibility test, remove when monolithic context.xml is deprecated.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testContextLoadedFromRootAndSourceFolder() throws Exception {
+
+    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder_root").toURI());
+  }
+
+  /**
    * Tests whether a valid configuartion can be read from src/main/templates/templateSet (new config location)
    *
    * @throws Exception test fails
@@ -66,6 +67,18 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   public void testContextLoadedFromTemplateSetFolder() throws Exception {
 
     CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder_modular").toURI());
+  }
+
+  /**
+   * Tests whether a valid configuartion can be read from both root and templateSet folders (new templates with old
+   * custom templates) Backward Compatibility test, remove when monolithic context.xml is deprecated.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testContextLoadedFromTemplateSetFolderAndRoot() throws Exception {
+
+    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder_modular_and_root").toURI());
   }
 
   /**
