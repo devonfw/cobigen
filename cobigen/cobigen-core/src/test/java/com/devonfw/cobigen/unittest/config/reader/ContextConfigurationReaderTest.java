@@ -34,14 +34,38 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests whether a valid configuration can be read from src/main/templates folder
+   * Tests whether a valid configuration can be read from src/main/templates folder (old config location)
    *
    * @throws Exception test fails
    */
   @Test
   public void testContextLoadedFromRootAndSourceFolder() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI());
+    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder_backward_compatible").toURI());
+  }
+
+  /**
+   * Tests whether not having a context.xml top level in a template set results in an
+   * {@link InvalidConfigurationException}
+   *
+   * @throws InvalidConfigurationException expected
+   */
+  @Test(expected = InvalidConfigurationException.class)
+  public void testErrorOnInvalidConfigurationNotTopLevel() throws InvalidConfigurationException {
+
+    new ContextConfigurationReader(
+        Paths.get(new File(testFileRootPath + "invalid_source_context_not_top_level").toURI()));
+  }
+
+  /**
+   * Tests whether a valid configuartion can be read from src/main/templates/templateSet (new config location)
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testContextLoadedFromTemplateSetFolder() throws Exception {
+
+    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder_modular").toURI());
   }
 
   /**
