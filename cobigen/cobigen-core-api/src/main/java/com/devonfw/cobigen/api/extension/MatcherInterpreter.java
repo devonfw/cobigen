@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.annotation.ExceptionFacade;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 
@@ -32,10 +33,11 @@ public interface MatcherInterpreter {
    *
    * @param matcher the parent matcher of the given variable assignments
    * @param variableAssignments the variable assignments which should be resolved
+   * @param report adding relevant information about the resolved variables as side-effect
    * @return resolved variable, value mapping (not null)
    * @throws InvalidConfigurationException if one of the requested variable assignment types could not be managed by
    *         this {@link MatcherInterpreter} instance
    */
-  public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
-      throws InvalidConfigurationException;
+  public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments,
+      GenerationReportTo report) throws InvalidConfigurationException;
 }

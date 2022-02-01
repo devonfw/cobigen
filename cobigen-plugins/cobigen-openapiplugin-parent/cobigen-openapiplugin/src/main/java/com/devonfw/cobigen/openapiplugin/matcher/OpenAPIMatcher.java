@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.openapiplugin.model.EntityDef;
@@ -75,8 +76,8 @@ public class OpenAPIMatcher implements MatcherInterpreter {
   }
 
   @Override
-  public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
-      throws InvalidConfigurationException {
+  public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments,
+      GenerationReportTo report) throws InvalidConfigurationException {
 
     Map<String, String> resolvedVariables = new HashMap<>();
     VariableType variableType = null;
@@ -98,7 +99,8 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             field.setAccessible(true);
             Object extensionProperties = field.get(matcher.getTarget());
 
-            String attributeValue = getExtendedProperty((Map<String, Object>) extensionProperties, va.getValue());
+            String attributeValue = getExtendedProperty((Map<String, Object>) extensionProperties, va.getValue(),
+                report);
 
             resolvedVariables.put(va.getVarName(), attributeValue);
           } catch (NoSuchFieldException | SecurityException e) {
@@ -141,12 +143,15 @@ public class OpenAPIMatcher implements MatcherInterpreter {
    * @param key to search in the Map
    * @return the value of that key, and if nothing was found, an empty string
    */
-  private String getExtendedProperty(Map<String, Object> extensionProperties, String key) {
+  private String getExtendedProperty(Map<String, Object> extensionProperties, String key, GenerationReportTo report) {
 
     Map<String, Object> properties = extensionProperties;
     if (properties.containsKey(key)) {
       return properties.get(key).toString();
     } else {
+      String warningMessage = "The property " + key
+          + " was requested in a variable assignment although the input does not provide this property. Setting it to null";
+      report.addWarning(warningMessage);
       LOG.warn(
           "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
           key);
