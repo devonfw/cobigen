@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +46,8 @@ import jakarta.xml.bind.Unmarshaller;
 /** The {@link ContextConfigurationReader} reads the context xml */
 public class ContextConfigurationReader {
 
-  /** XML Nodes 'context' of the context.xml files */
-  private List<ContextConfiguration> contextNodes;
+  /** Map with XML Nodes 'context' of the context.xml files */
+  private Map<Path, ContextConfiguration> contextConfigurations;
 
   /** Paths of the context configuration files */
   private List<Path> contextFiles;
@@ -70,11 +71,11 @@ public class ContextConfigurationReader {
 
     Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
     if (!Files.exists(contextFile)) {
+      // if no context.xml is found in the root folder search in src/main/templates
       configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
       contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
       if (!Files.exists(contextFile)) {
-
-        // Search the context.xml in the template folders
+        // search the context.xml in the template subfolders
         FileFilter fileFilter = new FileFilter() {
           @Override
           public boolean accept(File file) {
@@ -84,7 +85,10 @@ public class ContextConfigurationReader {
         };
         File[] templateFolders = configRoot.toFile().listFiles(fileFilter);
         for (File templateFolder : templateFolders) {
-          addContextFilesRecursively(templateFolder.toPath());
+          Path contextPath = templateFolder.toPath().resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+          if (Files.exists(contextPath)) {
+            this.contextFiles.add(contextPath);
+          }
         }
 
         if (this.contextFiles.isEmpty()) {
@@ -114,7 +118,7 @@ public class ContextConfigurationReader {
       Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
     }
 
-    this.contextNodes = new ArrayList<>();
+    this.contextConfigurations = new HashMap<>();
 
     for (Path contextFile : this.contextFiles) {
       try (InputStream in = Files.newInputStream(contextFile)) {
@@ -150,7 +154,7 @@ public class ContextConfigurationReader {
           Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
           unmarschaller.setSchema(schema);
           rootNode = unmarschaller.unmarshal(configInputStream);
-          this.contextNodes.add((ContextConfiguration) rootNode);
+          this.contextConfigurations.put(contextFile, (ContextConfiguration) rootNode);
         }
       } catch (JAXBException e) {
         // try getting SAXParseException for better error handling and user support
@@ -185,9 +189,15 @@ public class ContextConfigurationReader {
   public Map<String, Trigger> loadTriggers() {
 
     Map<String, Trigger> triggers = Maps.newHashMap();
-    for (ContextConfiguration contextConfiguration : this.contextNodes) {
+    for (Path contextFile : this.contextConfigurations.keySet()) {
+      ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
-        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), t.getTemplateFolder(),
+        // templateFolder property is optional in schema version 2.2. If not set take the path of the context.xml file
+        String templateFolder = t.getTemplateFolder();
+        if (templateFolder.isEmpty() || templateFolder.equals("/")) {
+          templateFolder = contextFile.getParent().getFileName().toString();
+        }
+        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder,
             Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
       }
     }
@@ -246,25 +256,5 @@ public class ContextConfigurationReader {
   public Path getContextRoot() {
 
     return this.contextRoot;
-  }
-
-  /**
-   * Search all context.xml configuration files in all subfolders of the template root directory recursively
-   *
-   * @param directory the directory where the context.xml files are searched recursively
-   */
-  private void addContextFilesRecursively(Path directory) {
-
-    Path contextPath = directory.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-    if (Files.exists(contextPath)) {
-      this.contextFiles.add(contextPath);
-    } else {
-      File[] subFolders = directory.toFile().listFiles();
-      for (File subFolder : subFolders) {
-        if (subFolder.isDirectory()) {
-          addContextFilesRecursively(subFolder.toPath());
-        }
-      }
-    }
   }
 }
