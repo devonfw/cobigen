@@ -68,8 +68,8 @@ public class PluginMockFactory {
         argThat(hasItemsInList(
             //
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-                .thenReturn(variables);
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3")))),
+        any())).thenReturn(variables);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
