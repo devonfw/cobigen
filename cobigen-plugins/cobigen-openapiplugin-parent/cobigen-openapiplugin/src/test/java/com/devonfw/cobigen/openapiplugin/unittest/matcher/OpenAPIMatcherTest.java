@@ -2,9 +2,14 @@ package com.devonfw.cobigen.openapiplugin.unittest.matcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
+import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.openapiplugin.matcher.OpenAPIMatcher;
 import com.devonfw.cobigen.openapiplugin.model.ComponentDef;
 import com.devonfw.cobigen.openapiplugin.model.EntityDef;
@@ -73,4 +78,43 @@ public class OpenAPIMatcherTest {
 
     assertThat(matches).isFalse();
   }
+
+  /**
+   * Test variable assigned
+   */
+  @Test
+  public void testXRootPackageVariable() {
+
+    ComponentDef componentDef = new ComponentDef();
+    componentDef.setName("Tablemanagement");
+    componentDef.setUserProperty("x-rootpackage", "com.devonfw");
+
+    OpenAPIMatcher matcher = new OpenAPIMatcher();
+    GenerationReportTo report = new GenerationReportTo();
+    List<VariableAssignmentTo> va = new ArrayList<>();
+    va.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage"));
+
+    matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), va, report);
+    assertThat(report.getWarnings().size()).isEqualTo(0);
+  }
+
+  /**
+   * Test variable missing
+   */
+  @Test
+  public void testMissingXRootPackageVariable() {
+
+    ComponentDef componentDef = new ComponentDef();
+    componentDef.setName("Tablemanagement");
+
+    OpenAPIMatcher matcher = new OpenAPIMatcher();
+    GenerationReportTo report = new GenerationReportTo();
+    List<VariableAssignmentTo> va = new ArrayList<>();
+    va.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage"));
+
+    matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), va, report);
+    assertThat(report.getWarnings().get(0)).containsSequence(
+        "The property x-rootpackage was requested in a variable assignment although the input does not provide this property. Setting it to empty");
+  }
+
 }

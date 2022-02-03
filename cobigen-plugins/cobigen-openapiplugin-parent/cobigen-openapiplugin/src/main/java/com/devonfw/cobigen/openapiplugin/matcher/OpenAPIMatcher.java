@@ -105,7 +105,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             resolvedVariables.put(va.getVarName(), attributeValue);
           } catch (NoSuchFieldException | SecurityException e) {
             LOG.warn(
-                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
                 matcher.getValue());
           } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new CobiGenRuntimeException("This is a programming error, please report an issue on github", e);
@@ -121,7 +121,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             resolvedVariables.put(va.getVarName(), o.toString());
           } catch (NoSuchFieldException | SecurityException e) {
             LOG.warn(
-                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
                 matcher.getValue());
           } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new CobiGenRuntimeException("This is a programming error, please report an issue on github", e);
@@ -150,7 +150,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
       return properties.get(key).toString();
     } else {
       String warningMessage = "The property " + key
-          + " was requested in a variable assignment although the input does not provide this property. Setting it to null";
+          + " was requested in a variable assignment although the input does not provide this property. Setting it to empty";
       report.addWarning(warningMessage);
       LOG.warn(
           "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
