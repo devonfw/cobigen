@@ -1,7 +1,5 @@
 package com.devonfw.cobigen.impl.config.reader;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -28,6 +26,7 @@ import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
+import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
@@ -69,23 +68,29 @@ public class ContextConfigurationReader {
 
     this.contextFiles = new ArrayList<>();
 
+    // use old context.xml in templates root
     Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+
     if (!Files.exists(contextFile)) {
       // if no context.xml is found in the root folder search in src/main/templates
       configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
       contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
       if (!Files.exists(contextFile)) {
-        // search the context.xml in the template subfolders
-        FileFilter fileFilter = new FileFilter() {
-          @Override
-          public boolean accept(File file) {
 
-            return file.isDirectory();
-          }
-        };
-        File[] templateFolders = configRoot.toFile().listFiles(fileFilter);
-        for (File templateFolder : templateFolders) {
-          Path contextPath = templateFolder.toPath().resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        List<Path> templateDirectories = new ArrayList<>();
+
+        try {
+          Files.list(configRoot).forEach(path -> {
+            if (Files.isDirectory(path)) {
+              templateDirectories.add(path);
+            }
+          });
+        } catch (IOException e) {
+          throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
+        }
+
+        for (Path file : templateDirectories) {
+          Path contextPath = file.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
           if (Files.exists(contextPath)) {
             this.contextFiles.add(contextPath);
           }
@@ -96,6 +101,24 @@ public class ContextConfigurationReader {
         }
       } else {
         this.contextFiles.add(contextFile);
+        // check if conflict with old and modular configuration exists
+
+        try {
+          Files.list(configRoot).forEach(path -> {
+            if (Files.isDirectory(path)) {
+              Path contextPath = path.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+              if (Files.exists(contextPath)) {
+                throw new InvalidConfigurationException(contextPath,
+                    "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
+                        + WikiConstants.WIKI_UPDATE_OLD_CONFIG);
+              }
+            }
+          });
+
+        } catch (IOException e) {
+          throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
+        }
+
       }
     } else {
       this.contextFiles.add(contextFile);
@@ -257,4 +280,13 @@ public class ContextConfigurationReader {
 
     return this.contextRoot;
   }
+
+  /**
+   * @return the list of the context files
+   */
+  public List<Path> getContextFiles() {
+
+    return this.contextFiles;
+  }
+
 }
