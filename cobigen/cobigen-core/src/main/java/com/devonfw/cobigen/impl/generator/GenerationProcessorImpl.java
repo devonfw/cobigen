@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -65,8 +63,6 @@ import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
-import com.google.common.hash.Hashing;
-import com.google.common.io.ByteSource;
 
 /**
  * Generation processor. Caches calculations and thus should be newly created on each request.
@@ -272,13 +268,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         if (Files.exists(pomFile)) {
           LOG.debug("Found templates to be configured by maven.");
 
-          String pomFileHash;
-          try {
-            pomFileHash = ByteSource.wrap(Files.readAllBytes(pomFile)).hash(Hashing.murmur3_128()).toString();
-          } catch (IOException e) {
-            LOG.warn("Could not calculate hash of {}", pomFile.toUri());
-            pomFileHash = "";
-          }
+          String pomFileHash = MavenUtil.generatePomFileHash(pomFile);
 
           if (this.configurationHolder.isJarConfig()) {
             cpCacheFile = configLocation
@@ -287,25 +277,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             cpCacheFile = configLocation.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
           }
 
-          if (!Files.exists(cpCacheFile)) {
-            LOG.debug("Building classpath for maven templates configuration ...");
-            MavenUtil.cacheMavenClassPath(pomFile, cpCacheFile);
-          } else {
-            LOG.debug("Taking cached classpath from {}", cpCacheFile);
-          }
-
-          // Read classPath.txt file and add to the class path all dependencies
-          try (Stream<String> fileLines = Files.lines(cpCacheFile)) {
-            URL[] classpathEntries = fileLines.flatMap(e -> Arrays.stream(e.split(";"))).map(path -> {
-              try {
-                return new File(path).toURI().toURL();
-              } catch (MalformedURLException e) {
-                LOG.error("URL of classpath entry {} is malformed", path, e);
-              }
-              return null;
-            }).toArray(size -> new URL[size]);
-            combinedClassLoader = new URLClassLoader(classpathEntries, combinedClassLoader);
-          }
+          combinedClassLoader = MavenUtil.addURLsFromCachedClassPathsFile(cpCacheFile, pomFile, combinedClassLoader);
         }
 
         // prepend jar/compiled resources as well
