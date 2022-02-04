@@ -1,5 +1,7 @@
 package com.devonfw.cobigen.unittest.config.reader;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.nio.file.Paths;
 
@@ -31,6 +33,42 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
     new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
+  }
+
+  /**
+   * Tests v2.2 context configuration reading two templates with context.xmls
+   *
+   */
+  @Test
+  public void testNewModularConfiguration() {
+
+    ContextConfigurationReader context = new ContextConfigurationReader(
+        Paths.get(new File(testFileRootPath + "valid_new").toURI()));
+    assertThat(context.getContextFiles().size()).isEqualTo(2);
+  }
+
+  /**
+   * Tests v2.1 context configuration reading one template with one context.xml
+   *
+   */
+  @Test
+  public void testOldConfiguration() {
+
+    ContextConfigurationReader context = new ContextConfigurationReader(
+        Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
+    assertThat(context.getContextFiles().size()).isEqualTo(1);
+  }
+
+  /**
+   * Tests if a conflict between old and new template structures occurred and an exception was thrown
+   *
+   * @throws InvalidConfigurationException if a conflict occurred
+   *
+   */
+  @Test(expected = InvalidConfigurationException.class)
+  public void testConflictConfiguration() throws InvalidConfigurationException {
+
+    new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "invalid_new").toURI()));
   }
 
   /**
