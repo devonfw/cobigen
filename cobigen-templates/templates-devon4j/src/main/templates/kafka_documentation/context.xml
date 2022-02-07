@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
 
-  <trigger id="Swagger_Docs" type="java" templateFolder="documentation/kafka">
+  <trigger id="Swagger_Docs" type="java">
     <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data"
       retrieveObjectsRecursively="false"/>
     <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data\.([^\.]+)To">
