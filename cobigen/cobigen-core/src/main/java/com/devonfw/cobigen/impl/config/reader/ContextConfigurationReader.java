@@ -77,47 +77,20 @@ public class ContextConfigurationReader {
       contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
       if (!Files.exists(contextFile)) {
 
-        List<Path> templateDirectories = new ArrayList<>();
-
-        try {
-          Files.list(configRoot).forEach(path -> {
-            if (Files.isDirectory(path)) {
-              templateDirectories.add(path);
-            }
-          });
-        } catch (IOException e) {
-          throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
-        }
-
-        for (Path file : templateDirectories) {
-          Path contextPath = file.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-          if (Files.exists(contextPath)) {
-            this.contextFiles.add(contextPath);
-          }
-        }
+        this.contextFiles = loadContextFilesInSubfolder(configRoot);
 
         if (this.contextFiles.isEmpty()) {
           throw new InvalidConfigurationException(contextFile, "Could not find any context configuration file.");
         }
+
       } else {
         this.contextFiles.add(contextFile);
         // check if conflict with old and modular configuration exists
 
-        try {
-          Files.list(configRoot).forEach(path -> {
-            if (Files.isDirectory(path)) {
-              Path contextPath = path.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-              if (Files.exists(contextPath)) {
-                throw new InvalidConfigurationException(contextPath,
-                    "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
-                        + WikiConstants.WIKI_UPDATE_OLD_CONFIG);
-              }
-            }
-          });
-
-        } catch (IOException e) {
-          throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
-        }
+        if (!loadContextFilesInSubfolder(configRoot).isEmpty())
+          throw new InvalidConfigurationException(contextFile,
+              "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
+                  + WikiConstants.WIKI_UPDATE_OLD_CONFIG);
 
       }
     } else {
@@ -127,6 +100,32 @@ public class ContextConfigurationReader {
     this.contextRoot = configRoot;
 
     readConfiguration();
+  }
+
+  private List<Path> loadContextFilesInSubfolder(Path configRoot) {
+
+    List<Path> contextPathes = new ArrayList<>();
+
+    List<Path> templateDirectories = new ArrayList<>();
+
+    try {
+      Files.list(configRoot).forEach(path -> {
+        if (Files.isDirectory(path)) {
+          templateDirectories.add(path);
+        }
+      });
+    } catch (IOException e) {
+      throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
+    }
+
+    for (Path file : templateDirectories) {
+      Path contextPath = file.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+      if (Files.exists(contextPath)) {
+        contextPathes.add(contextPath);
+      }
+    }
+
+    return contextPathes;
   }
 
   /**
