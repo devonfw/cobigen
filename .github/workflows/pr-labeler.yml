@@ -6,7 +6,9 @@
 # https://github.com/actions/labeler
 
 name: PR-Labeler
-on: [pull_request]
+on: 
+  pull_request:
+    types: [opened, edited, reopened, unlocked, unlabeled, unassigned]
 
 jobs:
   label:
