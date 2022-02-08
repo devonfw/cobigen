@@ -25,6 +25,9 @@ public class SampleDataEntity implements SampleData {
   @Size(max = 30, min = 3)
   private String mail;
 
+  @Column(name = "PRIMITVEINT")
+  private int primitiveInt;
+
   private static final long serialVersionUID = 1L;
 
   /**
@@ -113,6 +116,14 @@ public class SampleDataEntity implements SampleData {
 
     // TODO Auto-generated method stub
 
+  }
+
+  public int getPrimitiveInt() {
+    return this.primitiveInt;
+  }
+
+  public void setPrimitiveInt(int primitiveInt) {
+    this.primitiveInt = primitiveInt;
   }
 
 }

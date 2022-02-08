@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-solicitor_version=v1.2.0
+solicitor_version=v1.2.3
 
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 pushd "$SCRIPT_PATH"

@@ -164,7 +164,7 @@ else
   log_step "Publish Release"
   doRunCommand "cd ../gh-pages"
   doRunCommand "git add *"
-  doRunCommand "git commit -m'Deploy P2 Bundles for Release $NEW_VERSION'"
+  doRunCommand "git commit -m'Deploy P2 Bundles for Release ${RELEASE_VERSION}'"
   doRunCommand "git push origin gh-pages"
   doRunCommand "cd $SCRIPT_PATH"
   # Remove GA auth header in case of CI (workaround): https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101/47

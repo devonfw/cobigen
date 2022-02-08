@@ -3,6 +3,8 @@ package com.devonfw.cobigen.cli.commands;
 import static java.util.Map.Entry.comparingByValue;
 import static java.util.stream.Collectors.toMap;
 
+import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +36,8 @@ import com.devonfw.cobigen.cli.exceptions.UserAbortException;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.googlejavaformat.java.FormatterException;
 
 import picocli.CommandLine.Command;
@@ -99,6 +103,8 @@ public class GenerateCommand extends CommandCommons {
     LOG.debug("Input files and output root path confirmed to be valid.");
     CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject);
 
+    resolveTemplateDependencies();
+
     if (this.increments == null && this.templates != null) {
       Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);
       for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
@@ -113,6 +119,31 @@ public class GenerateCommand extends CommandCommons {
       }
     }
     return 0;
+  }
+
+  /**
+   * Resolves dependencies from templates
+   *
+   * @throws IOException
+   */
+  private void resolveTemplateDependencies() throws IOException {
+
+    Path templatesPath = null;
+    Path pomFile = null;
+    if (this.templatesProject != null) {
+      templatesPath = FileSystemUtil.createFileSystemDependentPath(this.templatesProject.toUri());
+    } else {
+      URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
+      templatesPath = FileSystemUtil.createFileSystemDependentPath(findTemplatesLocation);
+    }
+
+    pomFile = templatesPath.resolve("pom.xml");
+
+    if (pomFile != null && Files.exists(pomFile)) {
+      Path temporaryDirectory = Files.createDirectory(CobiGenUtils.getCliHomePath().resolve("temp"));
+      temporaryDirectory.toFile().deleteOnExit();
+      MavenUtil.resolveDependencies(pomFile, temporaryDirectory);
+    }
   }
 
   /**
