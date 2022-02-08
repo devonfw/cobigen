@@ -1,6 +1,7 @@
 name: PR-Labeler
 on:
   schedule:
+  # stupid workaround as of https://github.com/actions/labeler/issues/12
   - cron: "*/5 * * * *"
 
 jobs:
