@@ -102,6 +102,12 @@ public class ContextConfigurationReader {
     readConfiguration();
   }
 
+  /**
+   * search for configuration Files in the subfolders of configRoot
+   *
+   * @param configRoot root directory of the configuration
+   * @throws InvalidConfigurationException if the configuration is not valid against its xsd specification
+   */
   private List<Path> loadContextFilesInSubfolder(Path configRoot) {
 
     List<Path> contextPathes = new ArrayList<>();
