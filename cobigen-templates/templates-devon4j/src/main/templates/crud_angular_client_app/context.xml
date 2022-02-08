@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
+
+
+
+
+  <trigger id="crud_angular_client_app" type="java">
+    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
+      <variableAssignment type="regex" key="rootPackage" value="1"/>
+      <variableAssignment type="regex" key="domain" value="3"/>
+      <variableAssignment type="regex" key="component" value="4"/>
+      <variableAssignment type="regex" key="etoName" value="5"/>
+    </matcher>
+  </trigger>
+
+
+
+
+</contextConfiguration>

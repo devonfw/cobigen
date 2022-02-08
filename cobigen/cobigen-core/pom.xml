@@ -112,6 +112,7 @@
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v1_2</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_1</excludePackageNames>
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_2</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v4_0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io</excludePackageNames>
         </configuration>
@@ -202,6 +203,20 @@
             </configuration>
           </execution>
           <execution>
+            <id>generate-v2.2-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v2_2</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v2.2</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v2.2</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
             <id>generate-v4.0-configuration</id>
             <phase>generate-sources</phase>
             <goals>
@@ -226,7 +241,7 @@
               <packageName>com.devonfw.cobigen.impl.config.entity.io</packageName>
               <outputDirectory>${project.build.directory}/generated-sources/config/current</outputDirectory>
               <sources>
-                <source>${basedir}/src/main/resources/schema/v2.1/contextConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v2.2/contextConfiguration.xsd</source>
                 <source>${basedir}/src/main/resources/schema/v4.0/templatesConfiguration.xsd</source>
               </sources>
             </configuration>
