@@ -21,3 +21,9 @@ jobs:
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         sync-labels: false
+    
+    - name: Label by Team
+      uses: JulienKode/team-labeler-action@v0.1.1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/teams.yml
