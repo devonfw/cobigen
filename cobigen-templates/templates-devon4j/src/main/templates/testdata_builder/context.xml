@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
 
- 
-  <trigger id="testdata_builder" type="java" templateFolder="testdata_builder">
+
+  <trigger id="testdata_builder" type="java">
     <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"
       retrieveObjectsRecursively="false"/>
     <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+Entity)">
@@ -20,5 +20,5 @@
     <matcher type="expression" value="instanceof java.lang.Enum" accumulationType="NOT"/>
     <matcher type="expression" value="isAbstract" accumulationType="NOT"/>
   </trigger>
- 
+
 </contextConfiguration>
