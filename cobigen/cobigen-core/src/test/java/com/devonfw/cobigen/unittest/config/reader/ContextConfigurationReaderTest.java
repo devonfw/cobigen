@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -46,16 +47,14 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
    * @throws InvalidConfigurationException if a conflict occurred
    *
    */
-  @Test(expected = InvalidConfigurationException.class)
   public void testConflictConfiguration() throws InvalidConfigurationException {
 
     Throwable bothPresent = assertThrows(InvalidConfigurationException.class, () -> {
-      CobiGenFactory.create(new File(testFileRootPath + "invalid_new").toURI());
+      new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "invalid_new").toURI()));
     });
 
-    assertThat(bothPresent.getMessage())
-        .contains("https://devonfw.com/website/pages/docs/master-cobigen.asciidoc_cobigen.html"
-            + "#cobigen-core_configuration.asciidoc");
+    assertThat(bothPresent instanceof InvalidConfigurationException);
+    assertThat(bothPresent.getMessage()).contains(WikiConstants.WIKI_UPDATE_OLD_CONFIG);
   }
 
   /**
