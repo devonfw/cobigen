@@ -1,0 +1,50 @@
+app:cli:
+- 'cobigen-cli/**/*'
+
+app:eclipse:
+- 'cobigen-eclipse/**/*'
+
+app:maven:
+- 'cobigen-maven/**/*'
+
+CI/CD:
+- any:['.github/**/*', '*.sh']
+
+comp:core:
+- 'cobigen/**/*'
+
+comp:htmlplugin:
+- 'cobigen-plugins/cobigen-htmlplugin/**/*'
+
+comp:javaplugin:
+- 'cobigen-plugins/cobigen-javaplugin-parent/**/*'
+
+comp:jsonplugin:
+- 'cobigen-plugins/cobigen-jsonplugin/**/*'
+
+comp:openapiplugin:
+- 'cobigen-plugins/cobigen-openapiplugin-parent/**/*'
+
+comp:propertyplugin:
+- 'cobigen-plugins/cobigen-propertyplugin/**/*'
+
+comp:tempeng:freemarker:
+- 'cobigen-plugins/cobigen-templateengines/cobigen-tempeng-freemarker/**/*'
+
+comp:tempeng:velocity:
+- 'cobigen-plugins/cobigen-templateengines/cobigen-tempeng-velocity/**/*'
+
+comp:textmerger:
+- 'cobigen-plugins/cobigen-textmerger/**/*'
+
+comp:tsplugin:
+- 'cobigen-plugins/cobigen-tsplugin/**/*'
+
+comp:xmlplugin:
+- 'cobigen-plugins/cobigen-xmlplugin/**/*'
+
+documentation:
+- 'documentation/**/*'
+
+templates:
+- 'cobigen-templates/**/*'
