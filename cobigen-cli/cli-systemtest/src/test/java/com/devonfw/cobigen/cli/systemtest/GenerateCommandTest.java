@@ -290,7 +290,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "--out";
     args[3] = outputRootPath.toFile().getAbsolutePath();
     args[4] = "--increments";
-    args[5] = "15";
+    args[5] = "OpenAPI_Docs";
 
     execute(args, true);
 
