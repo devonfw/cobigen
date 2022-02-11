@@ -266,6 +266,6 @@ jobs:
     steps:
       - uses: devonfw-actions/create-github-release@v1
         with:
-          release_tag: ${{ needs.release.outputs.released_tag }}
+          release_version: ${{ needs.release.outputs.release_tag }}
           GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
 
