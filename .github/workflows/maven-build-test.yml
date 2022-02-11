@@ -229,7 +229,7 @@ jobs:
     environment:
       name: production
     outputs:
-      release_tag: ${{ steps.get_tag.outputs.tagname }}
+      release_tag: ${{ steps.get_tag.outputs.tag }}
     steps:
       - uses: devonfw-actions/java-maven-setup@v2
         with:
@@ -255,7 +255,7 @@ jobs:
           
       - name: 'Get release tag'
         id: get_tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        uses: "WyriHaximus/github-action-get-previous-tag@v1.1.0"
         env:
           GITHUB_TOKEN: "${{ secrets.GHA_TOKEN }}"
 
