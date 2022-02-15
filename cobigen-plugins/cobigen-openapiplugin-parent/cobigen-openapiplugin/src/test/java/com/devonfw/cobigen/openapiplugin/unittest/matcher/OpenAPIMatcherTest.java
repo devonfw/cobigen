@@ -92,7 +92,7 @@ public class OpenAPIMatcherTest {
     OpenAPIMatcher matcher = new OpenAPIMatcher();
     GenerationReportTo report = new GenerationReportTo();
     List<VariableAssignmentTo> va = new ArrayList<>();
-    va.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage"));
+    va.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", "false"));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), va, report);
     assertThat(report.getWarnings().size()).isEqualTo(0);
@@ -109,12 +109,23 @@ public class OpenAPIMatcherTest {
 
     OpenAPIMatcher matcher = new OpenAPIMatcher();
     GenerationReportTo report = new GenerationReportTo();
-    List<VariableAssignmentTo> va = new ArrayList<>();
-    va.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage"));
+    List<VariableAssignmentTo> vaOptionalXRootPackage = new ArrayList<>();
+    vaOptionalXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", "false"));
 
-    matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), va, report);
-    assertThat(report.getWarnings().get(0)).containsSequence(
-        "The property x-rootpackage was requested in a variable assignment although the input does not provide this property. Setting it to empty");
+    matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaOptionalXRootPackage, report);
+    assertThat(report.getWarnings().get(0))
+        .containsSequence("The property x-rootpackage was requested in a variable assignment "
+            + "although the input does not provide this property. Setting it to empty");
+
+    List<VariableAssignmentTo> vaMandatoryXRootPackage = new ArrayList<>();
+    vaMandatoryXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", "true"));
+
+    matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaMandatoryXRootPackage, report);
+    assertThat(report.getErrors().get(0).getMessage())
+        .containsSequence("The property x-rootpackage was required in a variable assignment "
+            + "although the input does not provide this property. "
+            + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". "
+            + "Check ");
   }
 
 }
