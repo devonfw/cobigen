@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.utils.swtbot.SwtBotProjectActions;
 
 /**
  * Eclipse specific operations to make test setup easier.
@@ -161,10 +162,11 @@ public class EclipseUtils {
   /**
    * Cleanup workspace by deleting all projects
    *
+   * @param bot the {@link SWTWorkbenchBot} of the test
    * @param cleanCobiGenConfiguration if <code>true</code>, the cobigen configuration project will be removed as well
    * @throws Exception test fails
    */
-  public static void cleanWorkspace(boolean cleanCobiGenConfiguration) throws Exception {
+  public static void cleanWorkspace(SWTWorkbenchBot bot, boolean cleanCobiGenConfiguration) throws Exception {
 
     LOG.debug("Clean workspace {}", cleanCobiGenConfiguration ? "incl. CobiGen_Templates" : "");
 
@@ -180,12 +182,12 @@ public class EclipseUtils {
             project.close(new NullProgressMonitor());
             // don't delete sources, which might be reused by other tests
             if (project.getLocationURI().toString().contains("cobigen-eclipse-test/target")) {
-              project.delete(true, true, new NullProgressMonitor());
+              SwtBotProjectActions.deleteProject(bot, project.getName(), true);
             } else {
               LOG.debug(
                   "Project sources in '{}' will not be physically deleted as they are not physically imported into the test workspace '{}'",
                   project.getLocationURI(), project.getWorkspace().getRoot().getLocationURI());
-              project.delete(false, true, new NullProgressMonitor());
+              SwtBotProjectActions.deleteProject(bot, project.getName(), false);
             }
           }
         }
@@ -199,6 +201,7 @@ public class EclipseUtils {
       }
     }
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+
   }
 
   /**

@@ -74,7 +74,7 @@ public abstract class SystemTest {
 
     bot.resetWorkbench();
     bot.waitUntil(new AllJobsAreFinished());
-    EclipseUtils.cleanWorkspace(false);
+    EclipseUtils.cleanWorkspace(bot, false);
 
     // this flag is set to be true and will suppress ErrorDialogs,
     // which is completely strange, so we enable them again.
