@@ -37,23 +37,23 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
 
     switch (source) {
       case v2_0:
-        // to v2.1
+        // to v2.2
 
         MapperFactory mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
         mapperFactory
             .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContextConfiguration.class,
-                com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class)
+                com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class)
             .field("triggers.trigger", "trigger").byDefault().register();
         mapperFactory
             .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContainerMatcher.class,
-                com.devonfw.cobigen.impl.config.entity.io.v2_1.ContainerMatcher.class)
+                com.devonfw.cobigen.impl.config.entity.io.v2_2.ContainerMatcher.class)
             .field(
                 "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
                 "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
             .byDefault().register();
         MapperFacade mapper = mapperFactory.getMapperFacade();
-        com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration upgradedConfig = mapper.map(
-            previousConfigurationRootNode, com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class);
+        com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration upgradedConfig = mapper.map(
+            previousConfigurationRootNode, com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class);
         upgradedConfig.setVersion(new BigDecimal("2.1"));
 
         result.setResultConfigurationJaxbRootNode(upgradedConfig);
