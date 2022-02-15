@@ -25,6 +25,43 @@ public class VariableAssignment {
   private String value;
 
   /**
+   * True if the value is required, false if not
+   */
+  protected boolean mandatory;
+
+  /**
+   * Constructor to create a {@link VariableAssignment} for a concrete string value
+   *
+   * @param type Type of the variable assignment, interpreted by the plug-ins
+   * @param varName variable name
+   * @param value concrete string value
+   * @author mbrunnli (15.04.2013)
+   */
+  public VariableAssignment(String type, String varName, String value, String mandatory) {
+
+    this.type = type;
+    this.varName = varName;
+    this.value = value;
+    this.mandatory = Boolean.getBoolean(mandatory);
+  }
+
+  /**
+   * Constructor to create a {@link VariableAssignment} for a concrete string value
+   *
+   * @param type Type of the variable assignment, interpreted by the plug-ins
+   * @param varName variable name
+   * @param value concrete string value
+   * @author mbrunnli (15.04.2013)
+   */
+  public VariableAssignment(String type, String varName, String value, boolean mandatory) {
+
+    this.type = type;
+    this.varName = varName;
+    this.value = value;
+    this.mandatory = mandatory;
+  }
+
+  /**
    * Constructor to create a {@link VariableAssignment} for a concrete string value
    *
    * @param type Type of the variable assignment, interpreted by the plug-ins
@@ -37,6 +74,7 @@ public class VariableAssignment {
     this.type = type;
     this.varName = varName;
     this.value = value;
+    this.mandatory = false;
   }
 
   /**
@@ -72,9 +110,25 @@ public class VariableAssignment {
     return this.value;
   }
 
+  /**
+   * @return mandatory
+   */
+  public boolean isMandatory() {
+
+    return this.mandatory;
+  }
+
+  /**
+   * @param mandatory new value of {@link #getmandatory}.
+   */
+  public void setMandatory(boolean mandatory) {
+
+    this.mandatory = mandatory;
+  }
+
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.type, this.varName, this.value);
+    return Objects.hash(this.type, this.varName, this.value, this.mandatory);
   }
 }

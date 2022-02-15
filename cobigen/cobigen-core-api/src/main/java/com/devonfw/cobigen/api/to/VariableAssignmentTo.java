@@ -1,5 +1,7 @@
 package com.devonfw.cobigen.api.to;
 
+import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
+
 /**
  * Representation of a VariableAssignment node of the context configuration.
  */
@@ -21,7 +23,45 @@ public class VariableAssignmentTo {
   protected String value;
 
   /**
-   * Constructor to create a {@link VariableAssignmentTo} for a concrete string value
+   * True if the value is required, false if not
+   */
+  protected boolean mandatory;
+
+  /**
+   * Constructor to create a {@link VariableAssignmentTo} for a concrete string value. Requiredness as String
+   *
+   * @param type Type of the variable assignment, interpreted by the plug-ins
+   * @param varName variable name
+   * @param value concrete string value
+   * @param mandatory True if the value is required, false if not.
+   * @author mbrunnli (15.04.2013)
+   */
+  public VariableAssignmentTo(String type, String varName, String value, String mandatory) {
+
+    this.type = type;
+    this.varName = varName;
+    this.value = value;
+    this.mandatory = Boolean.getBoolean(mandatory);
+  }
+
+  /**
+   * Constructor to create a {@link VariableAssignment} for a concrete string value. Requiredness as boolean.
+   *
+   * @param type Type of the variable assignment, interpreted by the plug-ins
+   * @param varName variable name
+   * @param value concrete string value
+   * @author mbrunnli (15.04.2013)
+   */
+  public VariableAssignmentTo(String type, String varName, String value, boolean mandatory) {
+
+    this.type = type;
+    this.varName = varName;
+    this.value = value;
+    this.mandatory = mandatory;
+  }
+
+  /**
+   * Constructor to create a {@link VariableAssignment} for a concrete string value
    *
    * @param type Type of the variable assignment, interpreted by the plug-ins
    * @param varName variable name
@@ -33,6 +73,7 @@ public class VariableAssignmentTo {
     this.type = type;
     this.varName = varName;
     this.value = value;
+    this.mandatory = false;
   }
 
   /**
@@ -67,6 +108,22 @@ public class VariableAssignmentTo {
   public String getValue() {
 
     return this.value;
+  }
+
+  /**
+   * @return mandatory
+   */
+  public boolean isMandatory() {
+
+    return this.mandatory;
+  }
+
+  /**
+   * @param mandatory new value of {@link #getmandatory}.
+   */
+  public void setMandatory(boolean mandatory) {
+
+    this.mandatory = mandatory;
   }
 
   @Override
@@ -110,6 +167,12 @@ public class VariableAssignmentTo {
       if (getValue() != null) {
         equal = equal && getValue().equals(otherVariableAssignment.getValue());
       }
+      if (!equal) {
+        return false;
+      }
+
+      equal = equal && isMandatory() == otherVariableAssignment.isMandatory();
+
       return equal;
     }
     return false;
@@ -119,7 +182,7 @@ public class VariableAssignmentTo {
   public String toString() {
 
     return getClass().getSimpleName() + "[type='" + getType() + "'/varName='" + getVarName() + "'/value='" + getValue()
-        + "']";
+        + "/mandatory=" + isMandatory() + "']";
   }
 
 }

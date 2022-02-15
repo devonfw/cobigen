@@ -30,26 +30,33 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
   private Matcher<String> value;
 
   /**
+   * Matcher for the requiredness of the variable
+   */
+  private Matcher<Boolean> mandatory;
+
+  /**
    * Creates a new {@link VariableAssignmentToMatcher} with the given attribute sub matchers
    *
    * @param typeMatcher matcher for the type of the variable assignment, interpreted by the plug-ins
    * @param varNameMatcher matcher for the variable's name
    * @param valueMatcher matcher for the value
+   * @param mandatoryMatcher matcher for the requiredness
    * @author mbrunnli (15.04.2013)
    */
   public VariableAssignmentToMatcher(Matcher<String> typeMatcher, Matcher<String> varNameMatcher,
-      Matcher<String> valueMatcher) {
+      Matcher<String> valueMatcher, Matcher<Boolean> mandatoryMatcher) {
 
     this.type = typeMatcher;
     this.varName = varNameMatcher;
     this.value = valueMatcher;
+    this.mandatory = mandatoryMatcher;
   }
 
   @Override
   public void describeTo(Description description) {
 
     description.appendText(MatcherTo.class.getSimpleName() + "(type='" + this.type + "', varName='" + this.varName
-        + "', value='" + this.value + "')");
+        + "', value='" + this.value + "', mandatory='" + this.mandatory + "')");
   }
 
   @Override
@@ -58,7 +65,8 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
     if (item instanceof VariableAssignmentTo) {
       return this.type != null && this.type.matches(((VariableAssignmentTo) item).getType()) && this.varName != null
           && this.varName.matches(((VariableAssignmentTo) item).getVarName()) && this.value != null
-          && this.value.matches(((VariableAssignmentTo) item).getValue());
+          && this.value.matches(((VariableAssignmentTo) item).getValue())
+          && this.mandatory.matches(((VariableAssignmentTo) item).isMandatory());
     }
     return false;
   }
@@ -79,6 +87,8 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
     this.varName.describeTo(mismatchDescription);
     mismatchDescription.appendText(", ");
     this.value.describeTo(mismatchDescription);
+    mismatchDescription.appendText(", ");
+    this.mandatory.describeTo(mismatchDescription);
     mismatchDescription.appendText(")\nWas       VariableAssignmentTo('" + varAssignTo.getType() + "', '"
         + varAssignTo.getVarName() + "', '" + varAssignTo.getValue() + "')");
   }

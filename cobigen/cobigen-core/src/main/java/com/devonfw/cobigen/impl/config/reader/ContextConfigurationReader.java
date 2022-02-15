@@ -204,7 +204,7 @@ public class ContextConfigurationReader {
 
     List<VariableAssignment> variableAssignments = new LinkedList<>();
     for (com.devonfw.cobigen.impl.config.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {
-      variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue()));
+      variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue(), va.isMandatory()));
     }
     return variableAssignments;
   }

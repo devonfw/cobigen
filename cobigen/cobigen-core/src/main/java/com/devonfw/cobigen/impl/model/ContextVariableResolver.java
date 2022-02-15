@@ -104,7 +104,7 @@ public class ContextVariableResolver {
 
     List<VariableAssignmentTo> variableAssignments = Lists.newLinkedList();
     for (VariableAssignment va : m.getVariableAssignments()) {
-      variableAssignments.add(new VariableAssignmentTo(va.getType(), va.getVarName(), va.getValue()));
+      variableAssignments.add(new VariableAssignmentTo(va.getType(), va.getVarName(), va.getValue(), va.isMandatory()));
     }
     return variableAssignments;
   }
