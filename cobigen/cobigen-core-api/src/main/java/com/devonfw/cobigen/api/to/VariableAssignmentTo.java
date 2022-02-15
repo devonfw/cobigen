@@ -1,7 +1,5 @@
 package com.devonfw.cobigen.api.to;
 
-import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
-
 /**
  * Representation of a VariableAssignment node of the context configuration.
  */
@@ -26,23 +24,6 @@ public class VariableAssignmentTo {
    * True if the value is required, false if not
    */
   protected boolean mandatory;
-
-  /**
-   * Constructor to create a {@link VariableAssignmentTo} for a concrete string value. Requiredness as String
-   *
-   * @param type Type of the variable assignment, interpreted by the plug-ins
-   * @param varName variable name
-   * @param value concrete string value
-   * @param mandatory True if the value is required, false if not.
-   * @author mbrunnli (15.04.2013)
-   */
-  public VariableAssignmentTo(String type, String varName, String value, String mandatory) {
-
-    this.type = type;
-    this.varName = varName;
-    this.value = value;
-    this.mandatory = Boolean.getBoolean(mandatory);
-  }
 
   /**
    * Constructor to create a {@link VariableAssignment} for a concrete string value. Requiredness as boolean.

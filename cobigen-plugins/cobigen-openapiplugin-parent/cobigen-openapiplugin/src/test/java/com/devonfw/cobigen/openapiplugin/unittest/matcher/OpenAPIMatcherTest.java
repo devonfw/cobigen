@@ -92,7 +92,7 @@ public class OpenAPIMatcherTest {
     OpenAPIMatcher matcher = new OpenAPIMatcher();
     GenerationReportTo report = new GenerationReportTo();
     List<VariableAssignmentTo> va = new ArrayList<>();
-    va.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", "false"));
+    va.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", false));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), va, report);
     assertThat(report.getWarnings().size()).isEqualTo(0);
@@ -110,7 +110,7 @@ public class OpenAPIMatcherTest {
     OpenAPIMatcher matcher = new OpenAPIMatcher();
     GenerationReportTo report = new GenerationReportTo();
     List<VariableAssignmentTo> vaOptionalXRootPackage = new ArrayList<>();
-    vaOptionalXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", "false"));
+    vaOptionalXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", false));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaOptionalXRootPackage, report);
     assertThat(report.getWarnings().get(0))
@@ -118,7 +118,7 @@ public class OpenAPIMatcherTest {
             + "although the input does not provide this property. Setting it to empty");
 
     List<VariableAssignmentTo> vaMandatoryXRootPackage = new ArrayList<>();
-    vaMandatoryXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", "true"));
+    vaMandatoryXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", true));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaMandatoryXRootPackage, report);
     assertThat(report.getErrors().get(0).getMessage())

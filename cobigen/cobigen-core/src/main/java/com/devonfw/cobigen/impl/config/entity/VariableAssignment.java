@@ -37,22 +37,6 @@ public class VariableAssignment {
    * @param value concrete string value
    * @author mbrunnli (15.04.2013)
    */
-  public VariableAssignment(String type, String varName, String value, String mandatory) {
-
-    this.type = type;
-    this.varName = varName;
-    this.value = value;
-    this.mandatory = Boolean.getBoolean(mandatory);
-  }
-
-  /**
-   * Constructor to create a {@link VariableAssignment} for a concrete string value
-   *
-   * @param type Type of the variable assignment, interpreted by the plug-ins
-   * @param varName variable name
-   * @param value concrete string value
-   * @author mbrunnli (15.04.2013)
-   */
   public VariableAssignment(String type, String varName, String value, boolean mandatory) {
 
     this.type = type;

@@ -104,9 +104,17 @@ public class OpenAPIMatcher implements MatcherInterpreter {
 
             resolvedVariables.put(va.getVarName(), attributeValue);
           } catch (NoSuchFieldException | SecurityException e) {
-            LOG.warn(
-                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
-                matcher.getValue());
+
+            if (va.isMandatory()) {
+              LOG.error("The property " + va.getValue() + " was required in a variable assignment "
+                  + "although the input does not provide this property. "
+                  + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". "
+                  + "Check ");
+            } else {
+              LOG.warn(
+                  "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
+                  matcher.getValue());
+            }
           } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new CobiGenRuntimeException("This is a programming error, please report an issue on github", e);
           }

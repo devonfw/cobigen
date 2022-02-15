@@ -31,7 +31,15 @@ public enum ContextConfigurationVersion {
    * <li>target namespace changed</li>
    * </ul>
    */
-  v2_1(2.1f, false);
+  v2_1(2.1f, false),
+
+  /**
+   * ChangeLog:
+   * <ul>
+   * <li>made templateFolder optional</li>
+   * </ul>
+   */
+  v2_2(2.2f, true);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;
