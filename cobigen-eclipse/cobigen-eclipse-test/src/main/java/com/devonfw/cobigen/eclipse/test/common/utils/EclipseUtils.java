@@ -75,8 +75,7 @@ public class EclipseUtils {
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     view.show();
     view.setFocus();
-    SWTBotTree packageExplorerTree = view.bot().tree();
-    packageExplorerTree.contextMenu("Import...").click();
+    bot.menu("File").menu("Import...").click();
 
     SWTBotShell popup = bot.activeShell();
     bot.tree().expandNode("General").select("Existing Projects into Workspace");
