@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
@@ -253,17 +254,9 @@ public class InputReaderMatcherTest {
 
     File targetFolder = this.tmpFolder.newFolder();
     GenerationReportTo report = cobigen.generate(inputObjects.get(0), template, targetFolder.toPath());
-    assertThat(report).isSuccessful();
+    assertThat(report).containsException(CobiGenRuntimeException.class);
 
-    assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists()
-        .hasContent("testingAttributeTable");
-
-    template = findTemplate(cobigen, inputObjects.get(1), templateName);
-    targetFolder = this.tmpFolder.newFolder();
-    report = cobigen.generate(inputObjects.get(1), template, targetFolder.toPath());
-    assertThat(report).isSuccessful();
-
-    assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists().hasContent("");
+    assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).doesNotExist();
   }
 
   /**

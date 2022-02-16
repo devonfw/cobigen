@@ -104,17 +104,20 @@ public class OpenAPIMatcher implements MatcherInterpreter {
 
             resolvedVariables.put(va.getVarName(), attributeValue);
           } catch (NoSuchFieldException | SecurityException e) {
-
             if (va.isMandatory()) {
-              LOG.error("The property " + va.getValue() + " was required in a variable assignment "
-                  + "although the input does not provide this property. "
+              String errorMessage = "The property " + va.getValue()
+                  + " was required in a variable assignment although the input does not provide this property. "
                   + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". "
-                  + "Check ");
+                  + "Check ";
+              report.addError(new CobiGenRuntimeException(errorMessage));
+              LOG.error(errorMessage);
             } else {
-              LOG.warn(
-                  "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
-                  matcher.getValue());
+              String warningMessage = "The property " + va.getValue()
+                  + " was requested in a variable assignment although the input does not provide this property. Setting it to empty";
+              report.addWarning(warningMessage);
+              LOG.error(warningMessage);
             }
+
           } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new CobiGenRuntimeException("This is a programming error, please report an issue on github", e);
           }
@@ -150,20 +153,16 @@ public class OpenAPIMatcher implements MatcherInterpreter {
    * @param object to be cast to a Map
    * @param key to search in the Map
    * @return the value of that key, and if nothing was found, an empty string
+   * @throws NoSuchFieldException
    */
-  private String getExtendedProperty(Map<String, Object> extensionProperties, String key, GenerationReportTo report) {
+  private String getExtendedProperty(Map<String, Object> extensionProperties, String key, GenerationReportTo report)
+      throws NoSuchFieldException {
 
     Map<String, Object> properties = extensionProperties;
     if (properties.containsKey(key)) {
       return properties.get(key).toString();
     } else {
-      String warningMessage = "The property " + key
-          + " was requested in a variable assignment although the input does not provide this property. Setting it to empty";
-      report.addWarning(warningMessage);
-      LOG.warn(
-          "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
-          key);
-      return "";
+      throw new NoSuchFieldException("");
     }
   }
 
