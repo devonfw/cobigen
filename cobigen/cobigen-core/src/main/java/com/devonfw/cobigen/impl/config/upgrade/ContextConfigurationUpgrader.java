@@ -37,8 +37,7 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
 
     switch (source) {
       case v2_0:
-        // to v2.2
-
+      case v2_1:
         MapperFactory mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
         mapperFactory
             .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContextConfiguration.class,
@@ -54,7 +53,7 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         MapperFacade mapper = mapperFactory.getMapperFacade();
         com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration upgradedConfig = mapper.map(
             previousConfigurationRootNode, com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class);
-        upgradedConfig.setVersion(new BigDecimal("2.1"));
+        upgradedConfig.setVersion(new BigDecimal("2.2"));
 
         result.setResultConfigurationJaxbRootNode(upgradedConfig);
 
