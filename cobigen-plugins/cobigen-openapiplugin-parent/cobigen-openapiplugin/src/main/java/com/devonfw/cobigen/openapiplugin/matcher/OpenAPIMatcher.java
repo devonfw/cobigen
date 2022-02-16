@@ -162,7 +162,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
     if (properties.containsKey(key)) {
       return properties.get(key).toString();
     } else {
-      throw new NoSuchFieldException("");
+      throw new NoSuchFieldException("couldn't find property: " + key);
     }
   }
 
