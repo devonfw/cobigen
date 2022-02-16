@@ -2,6 +2,7 @@ package com.devonfw.cobigen.eclipse.test;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +41,9 @@ public class HealthCheckTest extends SystemTest {
   @Test
   public void testHealthCheckIfTemplateProjecNotCopiedIntoWS() throws Exception {
 
-    EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath(), false);
+    File tmpFolder = this.tmpFolderRule.newFolder();
+    FileUtils.copyDirectory(new File(resourcesRootPath + "templates"), tmpFolder);
+    EclipseUtils.importExistingGeneralProject(bot, tmpFolder.getAbsolutePath(), false);
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
     EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);

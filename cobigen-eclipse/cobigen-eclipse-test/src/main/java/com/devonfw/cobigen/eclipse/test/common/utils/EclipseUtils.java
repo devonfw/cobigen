@@ -187,7 +187,7 @@ public class EclipseUtils {
               LOG.debug(
                   "Project sources in '{}' will not be physically deleted as they are not physically imported into the test workspace '{}'",
                   project.getLocationURI(), project.getWorkspace().getRoot().getLocationURI());
-              SwtBotProjectActions.deleteProject(bot, project.getName(), false);
+              SwtBotProjectActions.deleteProject(bot, project.getName(), true);
             }
           }
         }
