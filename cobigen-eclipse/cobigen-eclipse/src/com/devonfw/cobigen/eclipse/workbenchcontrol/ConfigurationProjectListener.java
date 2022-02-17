@@ -54,10 +54,7 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
 
     MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-    // /////////////
-    // PRE_CLOSE //
-    // /////////////
-    if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
+    if (event.getType() == IResourceChangeEvent.PRE_CLOSE || event.getType() == IResourceChangeEvent.PRE_DELETE) {
       if (event.getResource() instanceof IProject) {
         IProject proj = (IProject) event.getResource();
         if (proj.getName().equals(ResourceConstants.CONFIG_PROJECT_NAME)) {
@@ -70,14 +67,12 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
       }
     }
 
-    // //////////////
-    // POST_CHANGE //
-    // //////////////
     if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
       IResourceDelta[] affectedProjects = event.getDelta().getAffectedChildren(IResourceDelta.CHANGED);
       for (IResourceDelta projDelta : affectedProjects) {
         if (projDelta.getResource() instanceof IProject
-            && projDelta.getResource().getName().equals(ResourceConstants.CONFIG_PROJECT_NAME)) {
+            && projDelta.getResource().getName().equals(ResourceConstants.CONFIG_PROJECT_NAME)
+            && projDelta.getResource().exists()) {
           registerLogbackConfigListenerIfNotAlreadyDone((IProject) projDelta.getResource());
         }
       }
