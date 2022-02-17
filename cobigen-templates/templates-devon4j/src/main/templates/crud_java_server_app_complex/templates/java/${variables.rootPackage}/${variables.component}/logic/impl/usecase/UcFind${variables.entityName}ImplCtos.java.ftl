@@ -47,7 +47,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
         <#if field.type?ends_with("Entity")>
       cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "Eto")}.class));
         <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${DevonUtil.getListArgumentType(field, classObject)}Eto.class));
+      cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${DevonfwUtil.getListArgumentType(field, classObject)}Eto.class));
         </#if>
       </#list>
    
@@ -66,7 +66,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
           <#if field.type?ends_with("Entity")>
         cto.set${field.name?cap_first}(getBeanMapper().map(entity.get${field.name?cap_first}(), ${field.type?replace("Entity", "Eto")}.class));
           <#elseif field.type?contains("Entity") && JavaUtil.isCollection(classObject, field.name)>
-        cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${DevonUtil.getListArgumentType(field, classObject)}Eto.class));
+        cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${DevonfwUtil.getListArgumentType(field, classObject)}Eto.class));
           </#if>
         </#list>
         ctos.add(cto);

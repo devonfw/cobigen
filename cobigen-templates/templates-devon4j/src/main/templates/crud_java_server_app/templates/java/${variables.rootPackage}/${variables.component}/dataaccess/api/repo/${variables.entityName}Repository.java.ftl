@@ -51,21 +51,21 @@ public interface ${variables.entityName}Repository extends <#if compositeIdTypeV
         <#if !JavaUtil.isCollection(classObject, field.name)>
           <#compress>
           <#if field.type?ends_with("Entity") && newFieldType=='Long'>
-              ${newFieldType} ${field.name} = criteria.${DevonUtil.resolveIdGetter(field,false,"")};
+              ${newFieldType} ${field.name} = criteria.${DevonfwUtil.resolveIdGetter(field,false,"")};
               if(${field.name} != null) {
                   query.where($(alias.get${fieldCapName}().getId()).eq(${field.name}));
               }
               
           <#elseif field.type="String">
-              String ${field.name} = criteria.${DevonUtil.resolveIdGetter(field,false,"")};
+              String ${field.name} = criteria.${DevonfwUtil.resolveIdGetter(field,false,"")};
               if (${field.name} != null && !${field.name}.isEmpty()) {
                 QueryUtil.get().whereString(query, $(alias.get${field.name?cap_first}()), ${field.name}, criteria.get${field.name?cap_first}Option());
               }
               
           <#else>
-              ${newFieldType} ${field.name} = criteria.${DevonUtil.resolveIdGetter(field,false,"")};
+              ${newFieldType} ${field.name} = criteria.${DevonfwUtil.resolveIdGetter(field,false,"")};
               if (${field.name} != null) {
-                query.where($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>${DevonUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
+                query.where($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>${DevonfwUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
               }
               
           </#if> 

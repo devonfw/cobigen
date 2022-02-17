@@ -1,14 +1,20 @@
 package com.devonfw.cobigen.api.util;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -22,6 +28,8 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.google.common.collect.Lists;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
 
 /**
  * Utils to operate with maven artifacts
@@ -46,14 +54,7 @@ public class MavenUtil {
     List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:build-classpath",
         "-Dmdep.outputFile=" + cpFile.toString());
     if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
-      Path cachedPomXml = cpFile.resolveSibling("cached-pom.xml");
-      try {
-        Files.copy(pomFile, cachedPomXml);
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException("Unable to extract " + pomFile.toUri() + " from JAR to " + cachedPomXml);
-      }
-      pomFile = cachedPomXml;
-      cachedPomXml.toFile().deleteOnExit();
+      pomFile = createCachedPomFromJar(pomFile, cpFile.getParent());
       // just add this command in case your are working on jar
       // otherwise, pom resolution will fail if you work on a general maven module
       args.add("-f");
@@ -76,6 +77,106 @@ public class MavenUtil {
     List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:resolve");
     runCommand(mvnProjectRoot, args);
     LOG.debug("Downloaded dependencies successfully.");
+  }
+
+  /**
+   * Resolve all maven dependencies of given pom.xml inside given project
+   *
+   * @param pomFile to cache and resolve from
+   *
+   * @param mvnProjectRoot the maven project root
+   */
+  public static void resolveDependencies(Path pomFile, Path mvnProjectRoot) {
+
+    LOG.info(
+        "Resolving maven dependencies for maven project {} to be able to make use of reflection in templates. Please be patient...",
+        mvnProjectRoot);
+
+    if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
+      pomFile = createCachedPomFromJar(pomFile, mvnProjectRoot);
+    }
+
+    List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString());
+    args.add("-f");
+    args.add(pomFile.toString());
+    args.add("dependency:resolve");
+    runCommand(mvnProjectRoot, args);
+    LOG.debug("Downloaded dependencies successfully.");
+  }
+
+  /**
+   * Generates a cached-pom.xml file from a jar archive, automatically deletes the cached-pom.xml on exit
+   *
+   * @param pomFile to cache
+   * @param outputPath output directory
+   * @return the cached-pom.xml file
+   */
+  public static Path createCachedPomFromJar(Path pomFile, Path outputPath) {
+
+    Path cachedPomXml = outputPath.resolve("cached-pom.xml");
+    try {
+      Files.copy(pomFile, cachedPomXml);
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Unable to extract " + pomFile.toUri() + " from JAR to " + cachedPomXml, e);
+    }
+    pomFile = cachedPomXml;
+    cachedPomXml.toFile().deleteOnExit();
+    return cachedPomXml;
+  }
+
+  /**
+   * Adds URLs from class paths cache file to URLClassLoader. If no class paths cache file was found a new one will be
+   * generated.
+   *
+   * @param classPathCacheFile the class paths cache file to read/create
+   * @param pomFile POM file that defines the needed CobiGen dependencies to build
+   * @param parentClassLoader parent ClassLoader
+   *
+   * @return URLClassLoader
+   */
+  public static URLClassLoader addURLsFromCachedClassPathsFile(Path classPathCacheFile, Path pomFile,
+      ClassLoader parentClassLoader) {
+
+    if (!Files.exists(classPathCacheFile)) {
+      LOG.debug("Building class paths for maven configuration ...");
+      cacheMavenClassPath(pomFile, classPathCacheFile);
+    } else {
+      LOG.debug("Taking cached class paths from: {}", classPathCacheFile);
+    }
+
+    try (Stream<String> fileLinesStream = Files.lines(classPathCacheFile)) {
+      URL[] classPathEntries = fileLinesStream
+          .flatMap(e -> Arrays.stream(e.split(SystemUtil.getOS().contains("win") ? ";" : ":"))).map(path -> {
+            try {
+              return new File(path).toURI().toURL();
+            } catch (MalformedURLException e) {
+              LOG.error("URL of class path entry {} is malformed", path, e);
+            }
+            return null;
+          }).toArray(size -> new URL[size]);
+
+      return new URLClassLoader(classPathEntries, parentClassLoader);
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Unable to read " + classPathCacheFile, e);
+    }
+  }
+
+  /**
+   * Generates a hash for the provided POM file
+   *
+   * @param pomFile to generate hash from
+   * @return String generated hash
+   */
+  public static String generatePomFileHash(Path pomFile) {
+
+    String pomFileHash;
+    try {
+      pomFileHash = ByteSource.wrap(Files.readAllBytes(pomFile)).hash(Hashing.murmur3_128()).toString();
+    } catch (IOException e) {
+      LOG.warn("Could not calculate hash of {}", pomFile.toUri());
+      pomFileHash = "";
+    }
+    return pomFileHash;
   }
 
   /**

@@ -7,6 +7,7 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotPerspective;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
+import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -59,6 +60,10 @@ public abstract class SystemTest {
   /** {@link SWTBot} for UI controls */
   protected static SWTWorkbenchBot bot = new SWTWorkbenchBot();
 
+  static {
+    SWTBotPreferences.TIMEOUT = EclipseCobiGenUtils.DEFAULT_TIMEOUT;
+  }
+
   /**
    * Setup workbench appropriately for tests
    *
@@ -68,7 +73,7 @@ public abstract class SystemTest {
   public void setupTest() throws Exception {
 
     bot.resetWorkbench();
-    bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
+    bot.waitUntil(new AllJobsAreFinished());
     EclipseUtils.cleanWorkspace(false);
 
     // this flag is set to be true and will suppress ErrorDialogs,

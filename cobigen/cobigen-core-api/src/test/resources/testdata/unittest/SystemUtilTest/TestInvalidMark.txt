@@ -1,0 +1,212 @@
+package com.example.domain.myapp.employeemanagement.logic.impl;
+
+import com.example.domain.myapp.general.logic.base.AbstractComponentFacade;
+import com.example.domain.myapp.employeemanagement.logic.api.Employeemanagement;
+import com.example.domain.myapp.employeemanagement.logic.api.to.PageableSortDtoSchemaEto;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcFindPageableSortDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcManagePageableSortDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.to.PageableSortDtoSchemaSearchCriteriaTo;
+import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import com.example.domain.myapp.employeemanagement.logic.api.to.PageableDtoSchemaEto;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcFindPageableDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcManagePageableDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.to.PageableDtoSchemaSearchCriteriaTo;
+import com.example.domain.myapp.employeemanagement.logic.api.to.EmployeeListRequestDtoSchemaEto;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcFindEmployeeListRequestDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcManageEmployeeListRequestDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.to.EmployeeListRequestDtoSchemaSearchCriteriaTo;
+import com.example.domain.myapp.employeemanagement.logic.api.to.EmployeeListContentResponseDtoSchemaEto;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcFindEmployeeListContentResponseDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcManageEmployeeListContentResponseDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.to.EmployeeListContentResponseDtoSchemaSearchCriteriaTo;
+import com.example.domain.myapp.employeemanagement.logic.api.to.EmployeeListResponseDtoSchemaEto;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcFindEmployeeListResponseDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.usecase.UcManageEmployeeListResponseDtoSchema;
+import com.example.domain.myapp.employeemanagement.logic.api.to.EmployeeListResponseDtoSchemaSearchCriteriaTo;
+
+/**
+ * Implementation of component interface of employeemanagement
+ */
+@Named
+public class EmployeemanagementImpl extends AbstractComponentFacade implements Employeemanagement {
+
+  @Inject
+  private UcFindPageableSortDtoSchema ucFindPageableSortDtoSchema;
+
+  @Inject
+  private UcManagePageableSortDtoSchema ucManagePageableSortDtoSchema;
+
+  @Inject
+  private UcFindPageableDtoSchema ucFindPageableDtoSchema;
+
+  @Inject
+  private UcManagePageableDtoSchema ucManagePageableDtoSchema;
+
+  @Inject
+  private UcFindEmployeeListRequestDtoSchema ucFindEmployeeListRequestDtoSchema;
+
+  @Inject
+  private UcManageEmployeeListRequestDtoSchema ucManageEmployeeListRequestDtoSchema;
+
+  @Inject
+  private UcFindEmployeeListContentResponseDtoSchema ucFindEmployeeListContentResponseDtoSchema;
+
+  @Inject
+  private UcManageEmployeeListContentResponseDtoSchema ucManageEmployeeListContentResponseDtoSchema;
+
+  @Inject
+  private UcFindEmployeeListResponseDtoSchema ucFindEmployeeListResponseDtoSchema;
+
+  @Inject
+  private UcManageEmployeeListResponseDtoSchema ucManageEmployeeListResponseDtoSchema;
+
+  @Override
+  public PageableSortDtoSchemaEto findPageableSortDtoSchema(long id) {
+
+      return this.ucFindPageableSortDtoSchema.findPageableSortDtoSchema(id);
+    }
+
+  @Override
+  public Page<PageableSortDtoSchemaEto> findPageableSortDtoSchemas(PageableSortDtoSchemaSearchCriteriaTo criteria) {
+      return this.ucFindPageableSortDtoSchema.findPageableSortDtoSchemas(criteria);
+    }
+
+  @Override
+  public PageableSortDtoSchemaEto savePageableSortDtoSchema(PageableSortDtoSchemaEto pageablesortdtoschema) {
+
+      return this.ucManagePageableSortDtoSchema.savePageableSortDtoSchema(pageablesortdtoschema);
+    }
+
+  @Override
+  public boolean deletePageableSortDtoSchema(long id) {
+
+      return this.ucManagePageableSortDtoSchema.deletePageableSortDtoSchema(id);
+    }
+
+  @Override
+  public String getEmployee(long employeeId) {
+// TODO getEmployee
+return null;
+}
+
+  public void getEmployee(long employeeId) {
+// TODO getEmployee
+}
+
+  @Override
+  public EmployeeListResponseDtoSchemaEto postsearch(EmployeeListRequestDtoSchemaSearchCriteriaTo criteria) {
+// TODO postsearch
+return null;
+}
+
+  public void postsearch(EmployeeListRequestDtoSchemaSearchCriteriaTo criteria) {
+// TODO postsearch
+}
+
+  @Override
+  public EmployeeInsertResponseDtoSchemaEto postemployee(EmployeeInsertRequestDtoSchemaEto employeeInsertRequestDtoSchema) {
+// TODO postemployee
+return null;
+}
+
+  public void postemployee(EmployeeInsertRequestDtoSchemaEto employeeInsertRequestDtoSchema) {
+// TODO postemployee
+}
+
+  @Override
+  public PageableDtoSchemaEto findPageableDtoSchema(long id) {
+
+      return this.ucFindPageableDtoSchema.findPageableDtoSchema(id);
+    }
+
+  @Override
+  public Page<PageableDtoSchemaEto> findPageableDtoSchemas(PageableDtoSchemaSearchCriteriaTo criteria) {
+      return this.ucFindPageableDtoSchema.findPageableDtoSchemas(criteria);
+    }
+
+  @Override
+  public PageableDtoSchemaEto savePageableDtoSchema(PageableDtoSchemaEto pageabledtoschema) {
+
+      return this.ucManagePageableDtoSchema.savePageableDtoSchema(pageabledtoschema);
+    }
+
+  @Override
+  public boolean deletePageableDtoSchema(long id) {
+
+      return this.ucManagePageableDtoSchema.deletePageableDtoSchema(id);
+    }
+
+  @Override
+  public EmployeeListRequestDtoSchemaEto findEmployeeListRequestDtoSchema(long id) {
+
+      return this.ucFindEmployeeListRequestDtoSchema.findEmployeeListRequestDtoSchema(id);
+    }
+
+  @Override
+  public Page<EmployeeListRequestDtoSchemaEto> findEmployeeListRequestDtoSchemas(EmployeeListRequestDtoSchemaSearchCriteriaTo criteria) {
+      return this.ucFindEmployeeListRequestDtoSchema.findEmployeeListRequestDtoSchemas(criteria);
+    }
+
+  @Override
+  public EmployeeListRequestDtoSchemaEto saveEmployeeListRequestDtoSchema(EmployeeListRequestDtoSchemaEto employeelistrequestdtoschema) {
+
+      return this.ucManageEmployeeListRequestDtoSchema.saveEmployeeListRequestDtoSchema(employeelistrequestdtoschema);
+    }
+
+  @Override
+  public boolean deleteEmployeeListRequestDtoSchema(long id) {
+
+      return this.ucManageEmployeeListRequestDtoSchema.deleteEmployeeListRequestDtoSchema(id);
+    }
+
+  @Override
+  public EmployeeListContentResponseDtoSchemaEto findEmployeeListContentResponseDtoSchema(long id) {
+
+      return this.ucFindEmployeeListContentResponseDtoSchema.findEmployeeListContentResponseDtoSchema(id);
+    }
+
+  @Override
+  public Page<EmployeeListContentResponseDtoSchemaEto> findEmployeeListContentResponseDtoSchemas(EmployeeListContentResponseDtoSchemaSearchCriteriaTo criteria) {
+      return this.ucFindEmployeeListContentResponseDtoSchema.findEmployeeListContentResponseDtoSchemas(criteria);
+    }
+
+  @Override
+  public EmployeeListContentResponseDtoSchemaEto saveEmployeeListContentResponseDtoSchema(EmployeeListContentResponseDtoSchemaEto employeelistcontentresponsedtoschema) {
+
+      return this.ucManageEmployeeListContentResponseDtoSchema.saveEmployeeListContentResponseDtoSchema(employeelistcontentresponsedtoschema);
+    }
+
+  @Override
+  public boolean deleteEmployeeListContentResponseDtoSchema(long id) {
+
+      return this.ucManageEmployeeListContentResponseDtoSchema.deleteEmployeeListContentResponseDtoSchema(id);
+    }
+
+  @Override
+  public EmployeeListResponseDtoSchemaEto findEmployeeListResponseDtoSchema(long id) {
+
+      return this.ucFindEmployeeListResponseDtoSchema.findEmployeeListResponseDtoSchema(id);
+    }
+
+  @Override
+  public Page<EmployeeListResponseDtoSchemaEto> findEmployeeListResponseDtoSchemas(EmployeeListResponseDtoSchemaSearchCriteriaTo criteria) {
+      return this.ucFindEmployeeListResponseDtoSchema.findEmployeeListResponseDtoSchemas(criteria);
+    }
+
+  @Override
+  public EmployeeListResponseDtoSchemaEto saveEmployeeListResponseDtoSchema(EmployeeListResponseDtoSchemaEto employeelistresponsedtoschema) {
+
+      return this.ucManageEmployeeListResponseDtoSchema.saveEmployeeListResponseDtoSchema(employeelistresponsedtoschema);
+    }
+
+  @Override
+  public boolean deleteEmployeeListResponseDtoSchema(long id) {
+
+      return this.ucManageEmployeeListResponseDtoSchema.deleteEmployeeListResponseDtoSchema(id);
+    }
+
+}

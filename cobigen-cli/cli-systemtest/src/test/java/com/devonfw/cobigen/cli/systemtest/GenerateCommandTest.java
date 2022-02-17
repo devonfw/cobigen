@@ -66,6 +66,34 @@ public class GenerateCommandTest extends AbstractCliTest {
   }
 
   /**
+   * Integration test of the generation from a templates jar using a utility class with an extra dependency. See:
+   * https://github.com/devonfw/cobigen/issues/1450
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void generateFromTemplatesJarWithUtilClassDependencyTest() throws Exception {
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    File templatesProject = this.tmpProject.resolve("templates-devon4j/target/templates-devon4j-dev-SNAPSHOT.jar")
+        .toFile();
+
+    String args[] = new String[6];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "tos";
+    args[4] = "-tp";
+    args[5] = templatesProject.getAbsolutePath();
+
+    execute(args, false);
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
+        .exists();
+  }
+
+  /**
    * Test with templates downloaded on demand
    *
    * @throws Exception test fails

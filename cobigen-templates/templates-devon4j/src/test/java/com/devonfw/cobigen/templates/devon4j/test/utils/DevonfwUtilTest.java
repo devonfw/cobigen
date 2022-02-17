@@ -11,15 +11,15 @@ import com.devonfw.cobigen.templates.devon4j.constants.Field;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.TestClass;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.TestEntity;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.dataaccess.api.DeepEntity;
-import com.devonfw.cobigen.templates.devon4j.utils.DevonUtil;
+import com.devonfw.cobigen.templates.devon4j.utils.DevonfwUtil;
 
 /**
- * Tests for {@link DevonUtil}
+ * Tests for {@link DevonfwUtil}
  */
-public class DevonUtilTest {
+public class DevonfwUtilTest {
 
   /**
-   * Tests {@link DevonUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,Map,boolean,boolean,String)} <br/>
+   * Tests {@link DevonfwUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,Map,boolean,boolean,String)} <br/>
    * With
    * <ul>
    * <li>Class {@link TestClass}</li>
@@ -35,12 +35,12 @@ public class DevonUtilTest {
     Map<String, Object> field = new HashMap<>();
     field.put(Field.NAME.toString(), "entity");
     field.put(Field.TYPE.toString(), "TestEntity");
-    assertThat(new DevonUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
+    assertThat(new DevonfwUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
         .isEqualTo("entityId");
   }
 
   /**
-   * Tests {@link DevonUtil#resolveIdGetter(Map,boolean,String)} <br/>
+   * Tests {@link DevonfwUtil#resolveIdGetter(Map,boolean,String)} <br/>
    * This method is handled in the generation of DAOs. We are testing a concrete case when the input Entity references
    * another Entity in the same component. Furthermore, verifies that the result is correct even if the entity name does
    * not end with "Entity".<br/>
@@ -64,11 +64,11 @@ public class DevonUtilTest {
     field.put(Field.TYPE.toString(), deepEntity.getTestEntityComponent().getClass().getTypeName());
     component = deepEntity.getClass().getPackage().getName();
 
-    assertThat(new DevonUtil().resolveIdGetter(field, true, component)).isEqualTo("getTestEntityComponent().getId()");
+    assertThat(new DevonfwUtil().resolveIdGetter(field, true, component)).isEqualTo("getTestEntityComponent().getId()");
   }
 
   /**
-   * Tests {@link DevonUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
+   * Tests {@link DevonfwUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
    * With
    * <ul>
    * <li>Class {@link TestClass}</li>
@@ -85,12 +85,12 @@ public class DevonUtilTest {
     field.put(Field.NAME.toString(), "entity");
     field.put(Field.TYPE.toString(), "TestEntity");
 
-    assertThat(new DevonUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, true, ""))
+    assertThat(new DevonfwUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, true, ""))
         .isEqualTo("EntityId");
   }
 
   /**
-   * Tests {@link DevonUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
+   * Tests {@link DevonfwUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
    * With
    * <ul>
    * <li>Class {@link TestClass}</li>
@@ -107,12 +107,12 @@ public class DevonUtilTest {
     field.put(Field.NAME.toString(), "object");
     field.put(Field.TYPE.toString(), "String");
 
-    assertThat(new DevonUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
+    assertThat(new DevonfwUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
         .isEqualTo("object");
   }
 
   /**
-   * Tests {@link DevonUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
+   * Tests {@link DevonfwUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
    * With
    * <ul>
    * <li>Class {@link TestClass}</li>
@@ -129,12 +129,12 @@ public class DevonUtilTest {
     field.put(Field.NAME.toString(), "entitys");
     field.put(Field.TYPE.toString(), "List<TestEntity>");
 
-    assertThat(new DevonUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
+    assertThat(new DevonfwUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, false, false, ""))
         .isEqualTo("entityIds");
   }
 
   /**
-   * Tests {@link DevonUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
+   * Tests {@link DevonfwUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
    * With
    * <ul>
    * <li>Class {@link TestClass}</li>
@@ -151,12 +151,12 @@ public class DevonUtilTest {
     field.put(Field.NAME.toString(), "deepEntity");
     field.put(Field.TYPE.toString(), "DeepEntity");
 
-    assertThat(new DevonUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "resources"))
+    assertThat(new DevonfwUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "resources"))
         .isEqualTo("deepEntity().getId");
   }
 
   /**
-   * Tests {@link DevonUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
+   * Tests {@link DevonfwUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
    * With
    * <ul>
    * <li>Class {@link TestClass}</li>
@@ -173,12 +173,12 @@ public class DevonUtilTest {
     field.put(Field.NAME.toString(), "deepEntity");
     field.put(Field.TYPE.toString(), "DeepEntity");
 
-    assertThat(new DevonUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, true, "resources"))
+    assertThat(new DevonfwUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, true, "resources"))
         .isEqualTo("DeepEntity().getId");
   }
 
   /**
-   * Tests {@link DevonUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
+   * Tests {@link DevonfwUtil#resolveIdVariableNameOrSetterGetterSuffix(Class,String,boolean,boolean,String)} <br/>
    * With
    * <ul>
    * <li>Class {@link TestClass}</li>
@@ -195,7 +195,7 @@ public class DevonUtilTest {
     field.put(Field.NAME.toString(), "deepEntity");
     field.put(Field.TYPE.toString(), "DeepEntity");
 
-    assertThat(new DevonUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "nomatch"))
+    assertThat(new DevonfwUtil().resolveIdVariableNameOrSetterGetterSuffix(clazz, field, true, false, "nomatch"))
         .isEqualTo("deepEntityId");
   }
 }

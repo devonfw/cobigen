@@ -126,4 +126,12 @@ public class LogbackConfigChangeListener implements IResourceChangeListener {
       }
     }
   }
+
+  /**
+    * Stop logback listen on logback.xml
+    */
+  public void tearDown() {
+      LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+      lc.reset();
+  }
 }

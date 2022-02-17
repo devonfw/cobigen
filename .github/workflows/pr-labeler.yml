@@ -1,0 +1,22 @@
+name: PR-Labeler
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, unlocked, unlabeled]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Label by changed paths
+      uses: actions/labeler@v3
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        sync-labels: false
+        configuration-path: .github/labeler.yml
+    
+    - name: Label by Team
+      uses: JulienKode/team-labeler-action@v0.1.1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/teams.yml

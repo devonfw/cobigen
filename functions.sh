@@ -16,6 +16,15 @@ else
   echo "  * No test execution (pass 'test' as argument to enable)"
 fi
 
+if [[ "$*" == *repo-mvn-settings* ]]
+then
+  MVN_SETTINGS="-s .mvn/settings.xml"
+  echo -e "\e[92m  > Executing with .mvn/settings.xml \e[39m"
+else
+  MVN_SETTINGS=""
+  echo "  * Executing with individually configured settings.xml (pass 'repo-mvn-settings' as argument to enable execution with .mvn/settings.xml)"
+fi
+
 if [[ "$*" == *batch* ]]
 then
   # https://stackoverflow.com/a/66801171 # the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
@@ -62,6 +71,15 @@ else
   echo "  * No silent execution (pass 'silent' as argument to enable)"
 fi
 
+if [[ "$*" == *no-clean* ]]
+then
+  NO_CLEAN=true
+  echo -e "\e[92m  > Skip mvn clean\e[39m"
+else
+  NO_CLEAN=false
+  echo "  * Executing mvn clean before execution (pass 'no-clean' as argument to skip)"
+fi
+
 if [[ "$*" == *gpgkey=* ]]
 then
   GPG_KEYNAME=$(echo "$*" | sed -r -E -n 's|.*gpgkey=([^ ]+).*|\1|p')
@@ -70,7 +88,7 @@ elif [[ -n "$GPG_KEY" ]]
 then
   GPG_KEYNAME=$GPG_KEY
   echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
-elif [[ "$(basename \"$0\")" != "\"build.sh\"" ]]
+elif [[ $(basename $0) != "build.sh" ]]
 then
   echo -e "\e[91m  !ERR! Cannot sign artifacts without passing a gpg key for signing. Please pass gpgkey=<your key> as a parameter or GPG_KEY as secret.\e[39m"
   exit 1

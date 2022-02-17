@@ -49,7 +49,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
   
   <#list model.component.paths as path>
 	<#list path.operations as operation>
-	    <#if !DevonUtil.isCrudOperation(operation.operationId!null, variables.entityName?cap_first)> 
+	    <#if !DevonfwUtil.isCrudOperation(operation.operationId!null, variables.entityName?cap_first)> 
   			<#assign returnType = getReturnType(operation,true)>
   @Override
   public ${returnType?replace("Entity", "Eto")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(

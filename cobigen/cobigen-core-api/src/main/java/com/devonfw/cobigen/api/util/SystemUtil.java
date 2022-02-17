@@ -38,10 +38,10 @@ public class SystemUtil {
    */
   public static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
-  /** Current Operating System, the code is exectued on */
+  /** Current Operating System, the code is executed on */
   private static final String OS = System.getProperty("os.name").toLowerCase();
 
-  /** Maven exectuable */
+  /** Maven executable */
   private static Path MVN_EXEC = null;
 
   /**
@@ -60,29 +60,20 @@ public class SystemUtil {
         InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
 
       bis.mark(0);
-      try {
-        while (reader.ready()) {
-          int nextChar = reader.read();
-          if (nextChar == '\r') {
-            nextChar = reader.read();
-            if (nextChar == '\n') {
-              return "\r\n";
-            }
-            return "\r";
-          } else if (nextChar == '\n') {
-            return "\n";
+      while (reader.ready()) {
+        int nextChar = reader.read();
+        if (nextChar == '\r') {
+          nextChar = reader.read();
+          if (nextChar == '\n') {
+            return "\r\n";
           }
+          return "\r";
+        } else if (nextChar == '\n') {
+          return "\n";
         }
-        return null;
-      } finally {
-        emptyReader(reader);
-        bis.reset();
       }
-
-    } catch (IOException e) {
-      throw new IOException("Could not read file:" + path.toString(), e);
+      return null;
     }
-
   }
 
   /**
@@ -195,6 +186,16 @@ public class SystemUtil {
       }
     }
     return returnVal;
+  }
+
+  /**
+   * Returns the Operating System type as a lower case string
+   *
+   * @return String Operating System type
+   */
+  public static String getOS() {
+
+    return OS;
   }
 
   /**

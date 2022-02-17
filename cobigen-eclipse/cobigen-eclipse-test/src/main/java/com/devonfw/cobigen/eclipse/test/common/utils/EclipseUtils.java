@@ -1,8 +1,10 @@
 package com.devonfw.cobigen.eclipse.test.common.utils;
 
 import static org.eclipse.swtbot.eclipse.finder.matchers.WidgetMatcherFactory.withTitle;
+import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withMnemonic;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellCloses;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
+import static org.eclipse.swtbot.swt.finder.waits.Conditions.waitForWidget;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -78,13 +80,17 @@ public class EclipseUtils {
 
     SWTBotShell popup = bot.activeShell();
     bot.tree().expandNode("General").select("Existing Projects into Workspace");
+    bot.waitUntil(waitForWidget(withMnemonic(IDialogConstants.NEXT_LABEL)));
     bot.button(IDialogConstants.NEXT_LABEL).click();
-    bot.radio("Select root directory:").click();
+    String selectRootDirLabel = "Select root directory:";
+    bot.waitUntil(waitForWidget(withMnemonic(selectRootDirLabel)));
+    bot.radio(selectRootDirLabel).click();
     SWTBotCombo comboBox = bot.comboBox();
     comboBox.setText(projectPath);
 
-    bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
-    SWTBotCheckBox cbCopyProjects = bot.checkBox("Copy projects into workspace");
+    String cbCopyProjectsLabel = "Copy projects into workspace";
+    bot.waitUntil(waitForWidget(withMnemonic(cbCopyProjectsLabel)));
+    SWTBotCheckBox cbCopyProjects = bot.checkBox(cbCopyProjectsLabel);
     SWTBotButton selectAll = bot.button("Select All");
     selectAll.setFocus();
     bot.waitUntil(widgetIsEnabled(selectAll));
@@ -100,7 +106,7 @@ public class EclipseUtils {
     bot.waitUntil(shellCloses(popup));
     ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-    bot.waitUntil(new AllJobsAreFinished(), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
+    bot.waitUntil(new AllJobsAreFinished());
   }
 
   /**
@@ -117,7 +123,7 @@ public class EclipseUtils {
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     SWTBotTreeItem configurationProject = view.bot().tree().expandNode(projectName);
     configurationProject.contextMenu().menu("Maven", false, 0).menu("Update Project...", false, 0).click();
-    bot.waitUntil(shellIsActive("Update Maven Project"), EclipseCobiGenUtils.DEFAULT_TIMEOUT);
+    bot.waitUntil(shellIsActive("Update Maven Project"));
     bot.checkBox("Force Update of Snapshots/Releases").click();
     bot.button(IDialogConstants.OK_LABEL).click();
     Retry.runWithRetry(bot, () -> ResourcesPlugin.getWorkspace().getRoot().getProject(projectName)

@@ -12,19 +12,21 @@ DEPLOYED=false
 undoRelease() {
   if { [ $? -ne 0 ] || [ "$DRYRUN" = true ]; } && [ "$DEPLOYED" = true ];
   then
+    cd $SCRIPT_PATH
     log_step "Drop all sonatype releases as the release script exited abnormally or it was a dryrun"
     pauseUntilKeyPressed
     
-    doRunCommand "mvn nexus-staging:drop -f cobigen $DEBUG $BATCH_MODE" false
-    doRunCommand "mvn nexus-staging:drop -f cobigen-plugins $DEBUG $BATCH_MODE" false
-    doRunCommand "mvn nexus-staging:drop -f cobigen-cli $DEBUG $BATCH_MODE" false
-    doRunCommand "mvn nexus-staging:drop -f cobigen-maven $DEBUG $BATCH_MODE" false
-    doRunCommand "mvn nexus-staging:drop -f cobigen-templates $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen-plugins $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen-cli $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen-maven $DEBUG $BATCH_MODE" false
+    doRunCommand "mvn nexus-staging:drop $MVN_SETTINGS -f cobigen-templates $DEBUG $BATCH_MODE" false
+    doRunCommand "git push origin :refs/tags/v$RELEASE_VERSION" false
     
     log_step "Cleanup ../gh-pages"
     cd ../gh-pages
     gitCleanup
-    cd ../cobigen
+    cd $SCRIPT_PATH
 
     if [ "$DRYRUN" = true ]
     then
@@ -109,7 +111,7 @@ doRunCommand "bash ./build.sh parallel $CALL_PARAMS"
 
 log_step "Commit set release revision $RELEASE_VERSION"
 doRunCommand "git add -u"
-doRunCommand "git commit -m'Set release version'"
+doRunCommand "git commit -m'Set release version $RELEASE_VERSION'"
 
 if [[ -z "$SKIP_TESTRUN" ]]
 then
@@ -145,7 +147,7 @@ else
 fi
 
 log_step "Build to set revision $NEW_VERSION for p2 artifacts"
-doRunCommand "bash ./build.sh parallel $CALL_PARAMS"
+doRunCommand "bash ./build.sh no-clean parallel $CALL_PARAMS"
 
 log_step "Commit set revision $NEW_VERSION"
 doRunCommand "git add -u"
@@ -160,11 +162,17 @@ then
   exit 0
 else
   log_step "Publish Release"
-  doRunCommand "git push --tags"
-  doRunCommand "cd ../gh-pages && git push && cd $SCRIPT_PATH"
-  doRunCommand "mvn nexus-staging:release -f cobigen $DEBUG $BATCH_MODE"
-  doRunCommand "mvn nexus-staging:release -f cobigen-plugins $DEBUG $BATCH_MODE"
-  doRunCommand "mvn nexus-staging:release -f cobigen-cli $DEBUG $BATCH_MODE"
-  doRunCommand "mvn nexus-staging:release -f cobigen-maven $DEBUG $BATCH_MODE"
-  doRunCommand "mvn nexus-staging:release -f cobigen-templates $DEBUG $BATCH_MODE"
+  doRunCommand "cd ../gh-pages"
+  doRunCommand "git add *"
+  doRunCommand "git commit -m'Deploy P2 Bundles for Release ${RELEASE_VERSION}'"
+  doRunCommand "git push origin gh-pages"
+  doRunCommand "cd $SCRIPT_PATH"
+  # Remove GA auth header in case of CI (workaround): https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101/47
+  doRunCommand "git -c "http.https://github.com/.extraheader=" push origin master"
+  doRunCommand "git -c "http.https://github.com/.extraheader=" push origin v$RELEASE_VERSION"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-plugins $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-cli $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-maven $DEBUG $BATCH_MODE"
+  doRunCommand "mvn nexus-staging:release $MVN_SETTINGS -f cobigen-templates $DEBUG $BATCH_MODE"
 fi

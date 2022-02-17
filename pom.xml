@@ -10,7 +10,7 @@
   <description>A Code-based incremental Generator</description>
 
   <properties>
-    <revision>2021.08.003-SNAPSHOT</revision>
+    <revision>2021.12.007-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
@@ -463,7 +463,7 @@
             <extensions>true</extensions>
             <configuration>
               <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
               <autoReleaseAfterClose>false</autoReleaseAfterClose>
               <autoDropAfterRelease>false</autoDropAfterRelease>
               <description>Release ${project.groupId}:${project.artifactId}.${project.version}</description>
@@ -618,12 +618,12 @@
     <repository>
       <id>ossrh</id>
       <name>Sonartype Releases</name>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
       <id>ossrh</id>
       <name>Sonartype Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -631,7 +631,7 @@
     <repository>
       <id>ossrh</id>
       <name>OSSRH Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>

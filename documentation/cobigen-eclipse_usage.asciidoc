@@ -17,12 +17,12 @@ On the right side of the wizard all files are shown, which might be effected by 
 * *green:* files, which are currently non-existent in the file system. These files will be created during generation
 * *yellow:* files, which are currently existent in the file system and which are configured to be merged with generated contents.
 * *red:* files, which are currently existent in the file system. These files will be overwritten if manually selected.
-* *no color:* files, which are currently existent in the file system. Additionally files, which were unselected and thus will be ignored during generation.
+* *no color:* files, which are currently existent in the file system. Additionally files, which were deselected and thus will be ignored during generation.
 
-Selecting an increment on the left side will initialize the selection of all shown files to be generated on the right side, whereas green and yellow categorized files will be selected initially. A manual modification of the preselection can be performed by switching to the customization tree using the _Customize_ button on the right lower corner.
+Selecting an increment on the left side will initialize the selection of all shown files to be generated on the right side, whereas green and yellow categorized files will be selected initially. A manual modification of the pre-selection can be performed by switching to the customization tree using the _Customize_ button on the right lower corner.
 
 ____
-*Optional:* If you want to customize the generation object model of a Java input class, you might continue with the _Next >_ button instead of finishing the generation wizard. The next generation wizard page is currently available for Java file inputs and lists all non-static fields of the input. Unselecting entries will lead to an adapted object model for generation, such that unselected fields will be removed in the object model for generation. By default all fields will be included in the object model.
+*Optional:* If you want to customize the generation object model of a Java input class, you might continue with the _Next >_ button instead of finishing the generation wizard. The next generation wizard page is currently available for Java file inputs and lists all non-static fields of the input. deselecting entries will lead to an adapted object model for generation, such that deselected fields will be removed in the object model for generation. By default all fields will be included in the object model.
 ____
 
 Using the _Finish_ button, the generation will be performed. Finally, CobiGen runs the eclipse internal _organize imports_ and _format source code_ for all generated sources and modified sources. Thus it is possible, that---especially _organize imports_ opens a dialog if some types could not be determined automatically. This dialog can be easily closed by pressing on _Continue_. If the generation is finished, the _Success!_ dialog will pop up.
@@ -96,11 +96,11 @@ image:images/howtos/eclipse/health_check_advanced_up_to_date.png[]
 Analogous to the upgrade of the _context configuration_, the _Advanced Health Check_ will also provide upgrade functionality for _templates configurations_ if available.
 
 == Update Templates
-Update Template: Select Entity file and right click then select cobigen Update Templates after that click on download then download successfully message will be come .
+Update Template: Select Entity file and right click then select CobiGen Update Templates after that click on download then download successfully message will be come .
 
 == Adapt Templates
 
-Adapt Template: Select any file and right click, then select cobigen -> _Adapt Templates_ .If cobigen templates jar is not available then it downloads them automatically. If Cobigen templates is already present then it will override existing template in workspace and click on OK then imported template successfully message will be come.
+Adapt Template: Select any file and right click, then select `cobigen -> _Adapt Templates_ `.If CobiGen templates jar is not available then it downloads them automatically. If CobiGen templates is already present then it will override existing template in workspace and click on OK then imported template successfully message will be come.
 
 Finally, please change the Java version of the project to 1.8 so that you don't have any compilation errors.
 
