@@ -80,10 +80,10 @@ public class OpenAPIMatcherTest {
   }
 
   /**
-   * Test variable assigned
+   * Test if the generation is successful and without warnings, if a requested variable is assigned
    */
   @Test
-  public void testXRootPackageVariable() {
+  public void testXRootPackageVariableAssigned() {
 
     ComponentDef componentDef = new ComponentDef();
     componentDef.setName("Tablemanagement");
@@ -99,10 +99,11 @@ public class OpenAPIMatcherTest {
   }
 
   /**
-   * Test variable missing
+   * Test if the generation is successful and the report contains warnings, if a requested but not mandatory variable
+   * isn't given.
    */
   @Test
-  public void testMissingXRootPackageVariable() {
+  public void testMissingXRootPackageVariableNotMandatory() {
 
     ComponentDef componentDef = new ComponentDef();
     componentDef.setName("Tablemanagement");
@@ -124,8 +125,27 @@ public class OpenAPIMatcherTest {
     assertThat(report.getErrors().get(0).getMessage())
         .containsSequence("The property x-rootpackage was required in a variable assignment "
             + "although the input does not provide this property. "
-            + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". "
-            + "Check ");
+            + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". ");
   }
 
+  /**
+   * Test if the generation isn't successful and the report contains errors, if a mandatory variable isn't given
+   */
+  @Test
+  public void testMissingXRootPackageVariableMandatory() {
+
+    ComponentDef componentDef = new ComponentDef();
+    componentDef.setName("Tablemanagement");
+
+    OpenAPIMatcher matcher = new OpenAPIMatcher();
+    GenerationReportTo report = new GenerationReportTo();
+    List<VariableAssignmentTo> vaMandatoryXRootPackage = new ArrayList<>();
+    vaMandatoryXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", true));
+
+    matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaMandatoryXRootPackage, report);
+    assertThat(report.getErrors().get(0).getMessage())
+        .containsSequence("The property x-rootpackage was required in a variable assignment "
+            + "although the input does not provide this property. "
+            + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". ");
+  }
 }

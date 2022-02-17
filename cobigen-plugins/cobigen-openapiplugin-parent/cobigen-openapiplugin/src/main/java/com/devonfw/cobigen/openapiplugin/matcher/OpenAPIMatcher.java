@@ -99,23 +99,22 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             field.setAccessible(true);
             Object extensionProperties = field.get(matcher.getTarget());
 
-            String attributeValue = getExtendedProperty((Map<String, Object>) extensionProperties, va.getValue(),
-                report);
+            String attributeValue = getExtendedProperty((Map<String, Object>) extensionProperties, va.getValue());
 
             resolvedVariables.put(va.getVarName(), attributeValue);
           } catch (NoSuchFieldException | SecurityException e) {
             if (va.isMandatory()) {
               String errorMessage = "The property " + va.getValue()
                   + " was required in a variable assignment although the input does not provide this property. "
-                  + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". "
-                  + "Check ";
+                  + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". ";
               report.addError(new CobiGenRuntimeException(errorMessage));
               LOG.error(errorMessage);
             } else {
               String warningMessage = "The property " + va.getValue()
                   + " was requested in a variable assignment although the input does not provide this property. Setting it to empty";
               report.addWarning(warningMessage);
-              LOG.error(warningMessage);
+              resolvedVariables.put(va.getVarName(), "");
+              LOG.warn(warningMessage);
             }
 
           } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -153,10 +152,9 @@ public class OpenAPIMatcher implements MatcherInterpreter {
    * @param object to be cast to a Map
    * @param key to search in the Map
    * @return the value of that key, and if nothing was found, an empty string
-   * @throws NoSuchFieldException
+   * @throws NoSuchFieldException if the property isn't given
    */
-  private String getExtendedProperty(Map<String, Object> extensionProperties, String key, GenerationReportTo report)
-      throws NoSuchFieldException {
+  private String getExtendedProperty(Map<String, Object> extensionProperties, String key) throws NoSuchFieldException {
 
     Map<String, Object> properties = extensionProperties;
     if (properties.containsKey(key)) {

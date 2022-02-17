@@ -9,8 +9,6 @@ import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 
 /**
  * A hamcrest matcher for providing matching functionality for {@link VariableAssignmentTo}s
- *
- * @author mbrunnli (13.10.2014)
  */
 public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentTo> {
 
@@ -30,7 +28,7 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
   private Matcher<String> value;
 
   /**
-   * Matcher for the requiredness of the variable
+   * Matcher for the variable's necessity
    */
   private Matcher<Boolean> mandatory;
 
@@ -40,8 +38,7 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
    * @param typeMatcher matcher for the type of the variable assignment, interpreted by the plug-ins
    * @param varNameMatcher matcher for the variable's name
    * @param valueMatcher matcher for the value
-   * @param mandatoryMatcher matcher for the requiredness
-   * @author mbrunnli (15.04.2013)
+   * @param mandatoryMatcher matcher for the variable's necessity
    */
   public VariableAssignmentToMatcher(Matcher<String> typeMatcher, Matcher<String> varNameMatcher,
       Matcher<String> valueMatcher, Matcher<Boolean> mandatoryMatcher) {

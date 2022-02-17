@@ -26,12 +26,12 @@ public class VariableAssignmentTo {
   protected boolean mandatory;
 
   /**
-   * Constructor to create a {@link VariableAssignment} for a concrete string value. Requiredness as boolean.
+   * Constructor to create a {@link VariableAssignment} for a concrete string value.
    *
    * @param type Type of the variable assignment, interpreted by the plug-ins
    * @param varName variable name
    * @param value concrete string value
-   * @author mbrunnli (15.04.2013)
+   * @param mandatory if the variable has to be set
    */
   public VariableAssignmentTo(String type, String varName, String value, boolean mandatory) {
 
@@ -42,26 +42,9 @@ public class VariableAssignmentTo {
   }
 
   /**
-   * Constructor to create a {@link VariableAssignment} for a concrete string value
-   *
-   * @param type Type of the variable assignment, interpreted by the plug-ins
-   * @param varName variable name
-   * @param value concrete string value
-   * @author mbrunnli (15.04.2013)
-   */
-  public VariableAssignmentTo(String type, String varName, String value) {
-
-    this.type = type;
-    this.varName = varName;
-    this.value = value;
-    this.mandatory = false;
-  }
-
-  /**
    * Returns the type, which should determine the variable resolution (if necessary)
    *
    * @return the type
-   * @author mbrunnli (14.04.2014)
    */
   public String getType() {
 
@@ -72,7 +55,6 @@ public class VariableAssignmentTo {
    * Returns the variable name
    *
    * @return variable name
-   * @author mbrunnli (14.04.2014)
    */
   public String getVarName() {
 
@@ -84,7 +66,6 @@ public class VariableAssignmentTo {
    * assigned value
    *
    * @return the value for the matcher
-   * @author mbrunnli (14.04.2014)
    */
   public String getValue() {
 
