@@ -1,9 +1,9 @@
 :toc:
 toc::[]
 
-= OpenApi Plug-in
+= OpenAPI Plug-in
 
-The OpenApi Plug-in enables the support for Swagger files that follows the `OpenApi 3.0` standard as input for CobiGen. Until now, CobiGen was thought to follow a "code first" generation, with this plugin, now it can also follow the "contract first" strategy
+The OpenAPI Plug-in enables the support for Swagger files that follows the `OpenAPI 3.0` standard as input for CobiGen. Until now, CobiGen was thought to follow a "code first" generation, with this plugin, now it can also follow the "contract first" strategy
 
 * *Code First*
 ** Generating from a file with code (Java/XML code in our case)
@@ -14,11 +14,11 @@ NOTE: If you are not a CobiGen developer, you will be more interested in <<Usage
 
 == Trigger Extensions
 
-The OpenApi Plug-in provides a new trigger for `Swagger OpenApi 3.0` related inputs. It accepts different representations as inputs (see <<openapi-input-reader,OpenApi input reader>>) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
+The OpenAPI Plug-in provides a new trigger for `Swagger OpenAPI 3.0` related inputs. It accepts different representations as inputs (see <<OpenAPI-input-reader,OpenAPI input reader>>) and provides additional matching and variable assignment mechanisms. The configuration in the `context.xml` for this trigger looks like this:
 
-* type 'openapi'
+* type `openapi`
 +
-.Example of a openapi trigger definition
+.Example of a OpenAPI trigger definition
 [source,xml]
 ----
 <trigger id="..." type="openapi" templateFolder="...">
@@ -26,7 +26,7 @@ The OpenApi Plug-in provides a new trigger for `Swagger OpenApi 3.0` related inp
 </trigger>
 ----
 +
-This trigger type enables OpenApi elements as inputs.
+This trigger type enables OpenAPI elements as inputs.
 
 === Matcher type
 With the trigger you might define matchers, which restrict the input upon specific aspects:
@@ -40,11 +40,11 @@ Additionally, the java plugin provides the ability to match packages (`container
 
 * type 'element'
 
-The container matcher matches elements as Java Objects, in this case will be always an `OpenApiFile` object. (See link:cobigen-core_configuration#containermatcher-node[`containerMatcher` semantics] to get more information about `containerMatchers` itself.)
+The container matcher matches elements as Java Objects, in this case will be always an `OpenAPIFile` object. (See link:cobigen-core_configuration#containermatcher-node[`containerMatcher` semantics] to get more information about `containerMatchers` itself.)
 
 [[openapi-variable-assignment]]
 === Variable Assignment types
-Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The OpenApi Plug-in currently provides two different mechanisms:
+Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The OpenAPI Plug-in currently provides two different mechanisms:
 
 * type 'constant' -> constant parameter
 +
@@ -66,7 +66,7 @@ In this case, the constant type `variableAssignment` is used to specify the root
 [source,xml]
 ----
   <trigger id="..." type="openapi" templateFolder="...">
-    <containerMatcher type="element" value="OpenAPIFile"/>
+    <containerMatcher type="element" value="OpenApiFile"/>
     <matcher type="element" value="EntityDef">
       <variableAssignment type="extension" key="testingAttribute" value="x-test"/>
       <variableAssignment type="extension" key="rootPackage" value="x-rootpackage"/>
@@ -139,10 +139,10 @@ If no property with that name was found, then it will be set to `null`.
 </trigger>
 ----
 
-[[openapi-input-reader]]
+[[OpenAPI-input-reader]]
 == Input reader
 
-The Cobigen OpenApi Plug-in implements an input reader for `OpenApi 3.0` files. The XML input reader will create the following object model for template creation:
+The CobiGen OpenAPI Plug-in implements an input reader for `OpenAPI 3.0` files. The XML input reader will create the following object model for template creation:
 
 
 * *model* ('Map<String, Object>' :: common element structure)
@@ -173,18 +173,18 @@ The Cobigen OpenApi Plug-in implements an input reader for `OpenApi 3.0` files. 
 ** *name* ('String' :: Name of the property)
 ** *type* ('String' :: type of the property)
 ** *format* ('String' :: format of the property (i.e. int64))
-** *`isCollection`* ('boolean' :: *true* if the property is a collection, false by default)
-** *`isEntity`* ('boolean' :: *true* if the property refers to another entity, false by default)
-** *`sameComponent`* ('boolean' :: *true* if the entity that the property refers to belongs to the same component, false by default)
+** *`isCollection`* (`boolean` :: *true* if the property is a collection, false by default)
+** *`isEntity`* (`boolean` :: *true* if the property refers to another entity, false by default)
+** *`sameComponent`* (`boolean` :: *true* if the entity that the property refers to belongs to the same component, false by default)
 ** *description* ('String' :: Description of the property)
-** *required* ('boolean' :: *true* if the property is set as required)
+** *required* (`boolean` :: *true* if the property is set as required)
 ** *constraints* ('Map<String, Object>')
 
 * *`RelationShip`* ('Map<String, Object>' :: common element structure)
 ** *type* ('String' :: type of the relationship (`OneToOne`, `ManyToMany`, etc...))
 ** *entity* ('String' :: destination entity name)
-** *`sameComponent`* ('boolean' :: *true* if the destination entity belongs to the same component of the source entity, false by default)
-** *`unidirectional`* ('boolean' :: *true* if the relationship is unidirectional, false by default)
+** *`sameComponent`* (`boolean` :: *true* if the destination entity belongs to the same component of the source entity, false by default)
+** *`unidirectional`* (`boolean` :: *true* if the relationship is unidirectional, false by default)
 
 * *`PathDef`* ('Map<String, Object>' :: common element structure)
 ** *`rootComponent`* ('String' :: the first segment of the path)
@@ -202,18 +202,18 @@ The Cobigen OpenApi Plug-in implements an input reader for `OpenApi 3.0` files. 
 ** *responses* (`List<ResponseDef>` :: Responses of the operation)
 
 * *`ParameterDef`* ('Map<String, Object>' :: common element structure)
-** *`isSearchCriteria`* ('boolean' :: *true* if the response is an `SearchCriteria` object)
-** *`inPath`* ('boolean' :: *true* if this parameter is contained in the request path)
-** *`inQuery`* ('boolean' :: *true* if this parameter is contained in a query)
-** *`isBody`* ('boolean' :: *true* if this parameter is a response body)
-** *`inHeader`* ('boolean' :: *true* if this parameter is contained in a header)
+** *`isSearchCriteria`* (`boolean` :: *true* if the response is an `SearchCriteria` object)
+** *`inPath`* (`boolean` :: *true* if this parameter is contained in the request path)
+** *`inQuery`* (`boolean` :: *true* if this parameter is contained in a query)
+** *`isBody`* (`boolean` :: *true* if this parameter is a response body)
+** *`inHeader`* (`boolean` :: *true* if this parameter is contained in a header)
 ** *`mediaType`* ('String' :: String representation of the media type of the parameter)
 
 * *`ResponseDef`* ('Map<String, Object>' :: common element structure)
-** *`isArray`* ('boolean' :: *true* if the type of the response is an Array)
-** *`isPaginated`* ('boolean' :: *true* if the type of the response is paginated)
-** *`isVoid`* ('boolean' :: *true* if there is no type/an empty type)
-** *`isEntity`* ('boolean' :: *true* if the type of the response is an Entity)
+** *`isArray`* (`boolean` :: *true* if the type of the response is an Array)
+** *`isPaginated`* (`boolean` :: *true* if the type of the response is paginated)
+** *`isVoid`* (`boolean` :: *true* if there is no type/an empty type)
+** *`isEntity`* (`boolean` :: *true* if the type of the response is an Entity)
 ** *`entityRef`* (`EntityDef` :: Incomplete `EntityDef` containing the name and properties of the referenced Entity)
 ** *type* ('String' :: String representation of the attribute's value)
 ** *code* ('String' :: String representation of the HTTP status code)
@@ -223,7 +223,7 @@ The Cobigen OpenApi Plug-in implements an input reader for `OpenApi 3.0` files. 
 
 == Merger extensions
 
-This plugin only provides an input reader, there is no support for OpenApi merging. Nevertheless, the files generated from an OpenApi file will be Java, XML, JSON, TS, etc... so, 
+This plugin only provides an input reader, there is no support for OpenAPI merging. Nevertheless, the files generated from an OpenAPI file will be Java, XML, JSON, TS, etc... so, 
 for each file to be generated defined at templates.xml, must set the `mergeStrategy` for the specific language (`javamerge`, `javamerge_override`, `jsonmerge`, etc...)
 
 [source,xml]
@@ -240,9 +240,9 @@ for each file to be generated defined at templates.xml, must set the `mergeStrat
 
 == Usage
 
-=== Writing `OpenApi 3.0` contract file
+=== Writing `OpenAPI 3.0` contract file
 
-The Swagger file must follow the `OpenApi 3.0` standard to be readable by CobiGen, otherwise and error will be thrown.
+The Swagger file must follow the `OpenAPI 3.0` standard to be readable by CobiGen, otherwise and error will be thrown.
 A full documentation about how to follow this standard can be found link:https://swagger.io/docs/specification/about/[Swagger3 Docs].
 
 The Swagger file must be at the core folder of your devon4j project, like shown below:
@@ -285,7 +285,7 @@ That way, CobiGen will be able to generate the endpoint (REST service) `customOp
 [[service]]
 === Service based generation
 
-In previous CobiGen versions, we were able to generate code from a contract-first OpenApi specification only when we defined components like the following:
+In previous CobiGen versions, we were able to generate code from a contract-first OpenAPI specification only when we defined components like the following:
 
 ```yaml
 components:
@@ -364,7 +364,7 @@ This example yaml file can be download from link:files/devonfw.yml[here].
 
 [WARNING] 
 As you will see on the file, "x-component" tags are obligatory if you want to generate components (entities). They have to be defined for each one.
-In addition, you will find the global variable "x-rootpackage" that are explained <<openapi-variable-assignment,here>>.
+In addition, you will find the global variable "x-rootpackage" that are explained <<,here>>.
 
 
 ```yaml

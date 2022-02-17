@@ -2,7 +2,7 @@
 toc::[]
 
 = JSON Plug-in
-At the moment the plug-in can be used for merge generic JSOn files depending on the merge strategy defined at the templates.
+At the moment the plug-in can be used for merge generic JSON files depending on the merge strategy defined at the templates.
 
 == Merger extensions
 There are currently these merge strategies:
@@ -23,7 +23,7 @@ The merge process will be:
 
 . Add non existent JSON Objects from patch file to base file.
 . For existent object in both files, will add non existent keys from patch to base object. This process will be done recursively for all existent objects.
-. For Json Arrays existent in both files, the arrays will be just concatenated.
+. For JSON Arrays existent in both files, the arrays will be just concatenated.
 
 
 
