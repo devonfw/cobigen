@@ -42,6 +42,20 @@ public class VariableAssignmentTo {
   }
 
   /**
+   * Constructor to create a {@link VariableAssignment} for a concrete string value
+   *
+   * @param type Type of the variable assignment, interpreted by the plug-ins
+   * @param varName variable name
+   * @param value concrete string value
+   */
+  public VariableAssignmentTo(String type, String varName, String value) {
+
+    this.type = type;
+    this.varName = varName;
+    this.value = value;
+    this.mandatory = false;
+  }
+  /**
    * Returns the type, which should determine the variable resolution (if necessary)
    *
    * @return the type
