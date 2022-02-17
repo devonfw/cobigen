@@ -114,8 +114,8 @@ public class ContextConfigurationReader {
 
     List<Path> templateDirectories = new ArrayList<>();
 
-    try {
-      Files.list(configRoot).forEach(path -> {
+    try (Stream<Path> files = Files.list(configRoot)) {
+      files.forEach(path -> {
         if (Files.isDirectory(path)) {
           templateDirectories.add(path);
         }
