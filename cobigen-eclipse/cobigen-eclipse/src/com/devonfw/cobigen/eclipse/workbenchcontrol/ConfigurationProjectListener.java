@@ -54,12 +54,13 @@ public class ConfigurationProjectListener implements IResourceChangeListener {
 
     MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-    if (event.getType() == IResourceChangeEvent.PRE_CLOSE || event.getType() == IResourceChangeEvent.PRE_DELETE) {
+    if (this.logbackConfigListener != null && event.getType() == IResourceChangeEvent.PRE_CLOSE || event.getType() == IResourceChangeEvent.PRE_DELETE) {
       if (event.getResource() instanceof IProject) {
         IProject proj = (IProject) event.getResource();
         if (proj.getName().equals(ResourceConstants.CONFIG_PROJECT_NAME)) {
           synchronized (this.logbackConfigListenerSync) {
             ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.logbackConfigListener);
+            logbackConfigListener.tearDown();
             this.logbackConfigListener = null;
             LOG.info("Logback configuration listener unregistered.");
           }
