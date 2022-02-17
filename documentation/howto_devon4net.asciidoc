@@ -94,4 +94,4 @@ After the configuration of the database, open a terminal in path: `*[Project_Nam
 
     `dotnet run`
     
-This will deploy our application in our local host with the port 8082, so when you click https://localhost:8082/swagger/index.html[here] (https://localhost:8082/swagger) you can see, in swagger, all the services and the data model.
+This will deploy our application in our localhost with the port 8082, so when you click https://localhost:8082/swagger/index.html[here] (https://localhost:8082/swagger) you can see, in swagger, all the services and the data model.

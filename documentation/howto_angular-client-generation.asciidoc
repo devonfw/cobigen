@@ -168,7 +168,7 @@ image::images/howtos/angular4-gen/ng4gen_6.png[`APP SideMenu`,width="450"link="i
 
 == `JWT` Authentication
 
-If you are using a back end server with `JWT` Authentication (there is a sample in `workspaces/folder` called `*sampleJwt*`) you have to specify the Angular application to use this kind of authentication.
+If you are using a backend server with `JWT` Authentication (there is a sample in `workspaces/folder` called `*sampleJwt*`) you have to specify the Angular application to use this kind of authentication.
 
 By default the variable is set to CSRF but you can change it to `JWT` by going to the link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts#L10[Enviroment.ts] and setting `security: 'jwt'`.
 
@@ -194,6 +194,6 @@ http://localhost:4200
 
 image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 8 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
 
-Once finished, the browser will open automatically at the previous local host URL showing the Angular 8 application, using the credentials set at the devon4j java server you will be able to access.
+Once finished, the browser will open automatically at the previous localhost URL showing the Angular 8 application, using the credentials set at the devon4j java server you will be able to access.
 
 

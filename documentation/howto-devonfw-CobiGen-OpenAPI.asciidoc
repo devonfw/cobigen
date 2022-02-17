@@ -10,14 +10,14 @@ Download and install devonfw IDE https://devonfw.com/website/pages/docs/devonfw-
 == Steps to create a Sample Project using CobiGen
 The `HOW_TO` is divided in 2 parts:
 [arabic]
-. `BE`-Back End generator (`DB` + `DAO` + services) – CONTRACT FIRST APPROACH
-. `FE`-Front End generator (Web App Angular + Ionic App) – CONTRACT FIRST APPROACH
+. `BE`-Backend generator (`DB` + `DAO` + services) – CONTRACT FIRST APPROACH
+. `FE`-Frontend generator (Web App Angular + Ionic App) – CONTRACT FIRST APPROACH
 
 image:images/howtos/e2e_gen/image9.png[CobiGen contract-first generation]
 
 So, ready to go! We’re going to start from the `BE` part …
 
-=== Back End
+=== Backend
 Under your path installation of devonfw, you can find the _eclipse-main.bat_ script and you can run it: +
 run _installation_path_\eclipse-main.bat
 
@@ -245,7 +245,7 @@ image:images/howtos/e2e_gen/image73.png[postman]
 Now that We have successfully tested the `BE` is time to go to create the `FE` !
 
 
-=== Front End
+=== Frontend
 
 Let’s start now with angular Web and then Ionic app.
 
@@ -522,7 +522,7 @@ image:images/howtos/e2e_gen/image50.png[]
 
 So: *Well Done!!!*
 
-`*Starting from an Entity class you’ve successfully generated the Back-End layer (REST, SOAP, `DTO`, Spring services, `Hibernate DAO`), the Angular Web App and the Ionic mobile App!*`
+`*Starting from an Entity class you’ve successfully generated the Backend layer (REST, SOAP, `DTO`, Spring services, `Hibernate DAO`), the Angular Web App and the Ionic mobile App!*`
 
 image:images/howtos/e2e_gen/image51.png[]
 

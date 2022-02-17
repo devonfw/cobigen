@@ -10,14 +10,14 @@ Download and install devonfw IDE https://devonfw.com/website/pages/docs/devonfw-
 == Steps to create a Sample Project using CobiGen
 The `HOW_TO` is divided in 2 parts:
 [arabic]
-. `BE`-Back End generator (`DB` + `DAO` + services) – CONTRACT FIRST APPROACH
-. `FE`-Front End generator (Web App Angular + Ionic App) – CONTRACT FIRST APPROACH
+. `BE`-Backend generator (`DB` + `DAO` + services) – CONTRACT FIRST APPROACH
+. `FE`-Frontend generator (Web App Angular + Ionic App) – CONTRACT FIRST APPROACH
 
 image:images/howtos/e2e_gen/image63.png[CobiGen code-first generation]
 
 So, ready to go! We’re going to start from the `BE` part …
 
-=== Back End
+=== Backend
 Under your path installation of devonfw, you can find the _eclipse-main.bat_ script and you can run it: +
 run _installation_path_\eclipse-main.bat
 
@@ -256,7 +256,7 @@ image:images/howtos/e2e_gen/image73.png[postman]
 Now that We have successfully tested the `BE` is time to go to create the `FE` !
 
 
-=== Front End
+=== Frontend
 
 Let’s start now with angular Web and then Ionic app.
 
@@ -286,7 +286,7 @@ image:images/howtos/e2e_gen/image84.png[import]
 image:images/howtos/e2e_gen/image86.png[import]
 
 [arabic]
-Once done, right click on `EmployeeEto`.java file present under the `package _com.devonfw.poc.employeemanagement.logic.api.to_`, in the Back End part (_`myapp-core_ module`).
+Once done, right click on `EmployeeEto`.java file present under the `package _com.devonfw.poc.employeemanagement.logic.api.to_`, in the Backend part (_`myapp-core_ module`).
 Click on the selected options as seen in the screenshot:
 
 image:images/howtos/e2e_gen/image37.png[eclipse generate]
@@ -537,7 +537,7 @@ image:images/howtos/e2e_gen/image50.png[]
 
 So: *Well Done!!!*
 
-`*Starting from an Entity class you have successfully generated the Back-End layer (REST, SOAP, `DTO`, Spring services, `Hibernate DAO`), the Angular Web App and the Ionic mobile App!*`
+`*Starting from an Entity class you have successfully generated the Backend layer (REST, SOAP, `DTO`, Spring services, `Hibernate DAO`), the Angular Web App and the Ionic mobile App!*`
 
 image:images/howtos/e2e_gen/image51.png[]
 

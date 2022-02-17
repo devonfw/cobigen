@@ -42,7 +42,7 @@ Additionally, the java plugin provides the ability to match packages (`container
 
 The container matcher matches elements as Java Objects, in this case will be always an `OpenAPIFile` object. (See link:cobigen-core_configuration#containermatcher-node[`containerMatcher` semantics] to get more information about `containerMatchers` itself.)
 
-[[OpenAPI-variable-assignment]]
+[[openapi-variable-assignment]]
 === Variable Assignment types
 Furthermore, it provides the ability to extract information from each input for further processing in the templates. The values assigned by variable assignments will be made available in template and the `destinationPath` of context.xml through the namespace `variables.<key>`. The OpenAPI Plug-in currently provides two different mechanisms:
 
@@ -51,7 +51,7 @@ Furthermore, it provides the ability to extract information from each input for 
 [source,xml]
 ----
 <trigger id="..." type="openapi" templateFolder="...">
-    <containerMatcher type="element" value="OpenAPIFile"/>
+    <containerMatcher type="element" value="OpenApiFile"/>
     <matcher type="element" value="EntityDef">
         <variableAssignment type="constant" key="rootPackage" value="com.capgemini.demo" />
     </matcher>
@@ -66,7 +66,7 @@ In this case, the constant type `variableAssignment` is used to specify the root
 [source,xml]
 ----
   <trigger id="..." type="openapi" templateFolder="...">
-    <containerMatcher type="element" value="OpenAPIFile"/>
+    <containerMatcher type="element" value="OpenApiFile"/>
     <matcher type="element" value="EntityDef">
       <variableAssignment type="extension" key="testingAttribute" value="x-test"/>
       <variableAssignment type="extension" key="rootPackage" value="x-rootpackage"/>
@@ -94,7 +94,7 @@ If no extension with that name was found, then an empty string will be assigned.
 [source,xml]
 ----
 <trigger id="..." type="openapi" templateFolder="...">
-    <containerMatcher type="element" value="OpenAPIFile"/>
+    <containerMatcher type="element" value="OpenApiFile"/>
     <matcher type="element" value="EntityDef">
         <variableAssignment type="property" key="entityName" value="name" />
     </matcher>
@@ -130,7 +130,7 @@ If no property with that name was found, then it will be set to `null`.
 [source,xml]
 ----
 <trigger id="..." type="openapi" templateFolder="...">
-    <containerMatcher type="element" value="OpenAPIFile">
+    <containerMatcher type="element" value="OpenApiFile">
     <matcher type="element" value="EntityDef">
         <variableAssignment type="constant" key="rootPackage" value="com.capgemini.demo" />
         <variableAssignment type="property" key="component" value="componentName" />
@@ -364,7 +364,7 @@ This example yaml file can be download from link:files/devonfw.yml[here].
 
 [WARNING] 
 As you will see on the file, "x-component" tags are obligatory if you want to generate components (entities). They have to be defined for each one.
-In addition, you will find the global variable "x-rootpackage" that are explained <<OpenAPI-variable-assignment,here>>.
+In addition, you will find the global variable "x-rootpackage" that are explained <<,here>>.
 
 
 ```yaml
