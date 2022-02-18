@@ -264,6 +264,7 @@ public class InputReaderMatcherTest {
     report = cobigen.generate(inputObjects.get(1), template, targetFolder.toPath());
     assertThat(report.hasWarnings());
     assertThat(report).isSuccessful();
+    assertThat(targetFolder.toPath().resolve("testVariableAssignment_attribute.txt").toFile()).exists().hasContent("");
   }
 
   /**
