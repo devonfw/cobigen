@@ -95,6 +95,8 @@ Now create a `JPA` Entity class in this package
 
 [source, java]
 ----
+package com.example.domain.myapp.general.dataaccess.api;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
