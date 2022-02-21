@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Original Source: https://github.com/GoogleCloudPlatform/google-cloud-eclipse/tree/master/plugins/com.google.cloud.tools.eclipse.swtbot/src/com/google/cloud/tools/eclipse/swtbot
+ */
+
 package com.devonfw.cobigen.eclipse.test.common.utils.swtbot;
 
 import static org.hamcrest.CoreMatchers.containsString;
