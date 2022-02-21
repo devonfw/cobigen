@@ -35,7 +35,7 @@ public interface ${variables.component?cap_first}RestService {
   @Path("/${variables.entityName?lower_case}/{id}/")
   @Produces(MediaType.APPLICATION_JSON_VALUE)
   public ${variables.entityName?cap_first}Eto get${variables.entityName?cap_first}(@PathParam("id") long id);
-  
+
   /**
    * Delegates to {@link ${variables.component?cap_first}#save${variables.entityName?cap_first}}.
    *
@@ -68,7 +68,7 @@ public interface ${variables.component?cap_first}RestService {
   @Produces(MediaType.APPLICATION_JSON_VALUE)
   @Consumes(MediaType.APPLICATION_JSON_VALUE)
   public Page<${variables.entityName?cap_first}Eto> find${variables.entityName?cap_first}sByPost(@Valid ${variables.entityName?cap_first}SearchCriteriaTo searchCriteriaTo);
-  
+
 <#list model.component.paths as path>
 	<#list path.operations as operation>	
 	    <#if !DevonfwUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)> 
@@ -89,7 +89,7 @@ public interface ${variables.component?cap_first}RestService {
   	</#if>
   </#list>
   <#if hasMediaTypeInResponses(operation)>
-  @Produces(${getDistinctMediaTypes(operation)})
+  @Produces({${getDistinctMediaTypes(operation)}})
   </#if>
   public ${returnType?replace("Entity","")} ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(<#rt>
     <#list operation.parameters as parameter>
@@ -98,5 +98,5 @@ public interface ${variables.component?cap_first}RestService {
   		</#if>
   	</#list>
  </#list>
- 
+
 }

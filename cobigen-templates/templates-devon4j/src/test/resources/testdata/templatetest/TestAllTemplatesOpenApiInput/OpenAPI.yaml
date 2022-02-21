@@ -22,6 +22,13 @@ paths:
       responses:
         '200':
           description: Any
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvenMoreData'
+            text/plain:
+              schema:
+                type: string
   /datamanagement/v1/moreData/{id}:
     get:
       operationId: findMoreData
@@ -100,6 +107,15 @@ components:
               type: array
               items:
                 type: string
+        EvenMoreData:
+          x-component: AnotherComponent
+          description: Entity definiton of more data
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              uniqueItems: true
     requestBodies:
         SomeData:
           content:
@@ -113,4 +129,3 @@ components:
               schema:
                 $ref: '#/components/schemas/MoreData'
           required: true
- 
