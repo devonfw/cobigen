@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -114,8 +115,8 @@ public class ContextConfigurationReader {
 
     List<Path> templateDirectories = new ArrayList<>();
 
-    try {
-      Files.list(configRoot).forEach(path -> {
+    try (Stream<Path> files = Files.list(configRoot)) {
+      files.forEach(path -> {
         if (Files.isDirectory(path)) {
           templateDirectories.add(path);
         }

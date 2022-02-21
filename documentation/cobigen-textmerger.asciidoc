@@ -27,7 +27,7 @@ If no anchors are defined, the complete patch will be appended depending on your
 [[`anchordef`]]
 
 === Anchor Definition
-Anchors should always be defined as a comment of the language the template results in, as you do not want them to appear in your readable version, but cannot define them as freemarker comments in the template, or the merger will not know about them.
+Anchors should always be defined as a comment of the language the template results in, as you do not want them to appear in your readable version, but cannot define them as FreeMarker comments in the template, or the merger will not know about them.
 Anchors will also be read when they are not comments due to the merger being able to merge multiple types of text-based languages, thus making it practically impossible to filter for the correct comment declaration. *That is why anchors have to always be followed by line breaks*. That way there is a universal way to filter anchors that should have anchor functionality and ones that should appear in the text.
 _Remark:_ If the resulting language has closing tags for comments, they have to appear in the next line.
 _Remark:_ If you do not put the anchor into a new line, all the text that appears before it will be added to the anchor.
@@ -50,7 +50,7 @@ _Remark:_ This is only done once, if you have `header` in another anchor, it wil
 === `Mergestrategies`
 `Mergestrategies` are only relevant in the patch, as the merger is only interested in how text in the patch should be managed, not how it was managed in the past.
 
-. `anchor:${documentpart}::anchorend` will use the merge strategy from templates.xml, see <<extensions,Merger-Extensions>>.
+. `anchor:${documentpart}::anchorend` will use the merge strategy from `templates.xml`, see <<extensions,Merger-Extensions>>.
 . `anchor:${}:${mergestrategy}\_newline:anchorend` or `anchor:${}:newline_${mergestrategy}:anchorend` states that a new line should be appended before or after this anchors text, depending on where the newline is (before or after the `mergestrategy`). `anchor:${documentpart}:newline:anchorend` puts a new line after the anchors text.
 _Remark:_ Only works with appending strategies, not merging/replacing ones. These strategies currently include: `appendbefore`, `append`/`appendafter`
 . `anchor:${documentpart}:override:anchorend` means that the new text of this `documentpart` will replace the existing one completely

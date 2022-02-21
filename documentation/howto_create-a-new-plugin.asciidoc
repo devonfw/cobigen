@@ -12,7 +12,7 @@ It is discouraged to have `cobigen-core` dependencies at runtime, except for `co
 
 == Plugin Activator
 
-Each plug-in has to have an plug-in activator class implementing the interface `GeneratorPluginActivator` from the core-api. This class will be used to load the plug-in using the `PluginRegistry` as explained link:cobigen-core_development#loadplugin[here]. This class implements two methods:
+Each plug-in has to have an plug-in activator class implementing the interface `GeneratorPluginActivator` from the `core-api`. This class will be used to load the plug-in using the `PluginRegistry` as explained link:cobigen-core_development#loadplugin[here]. This class implements two methods:
 
 . `bindMerger()` -> returns a mapping of merge strategies and its implementation to be registered.
 . `bindTriggerInterpreter()`-> returns the trigger interpreters to be provided by this plug-in.
@@ -37,7 +37,7 @@ sub plug-in must implements this interface if is needed an input reader for it.
 
 The interface implements the basic methods that an input reader must have,
 but if additional methods are required, the developer must add a new interface
-that extends the original interface *__`InputReader.java`__* from the core-api
+that extends the original interface *__`InputReader.java`__* from the `core-api`
 and implement that on the sub plug-in.
 
 The methods to be implemented by the input reader of the new sub plugin are:
@@ -45,9 +45,9 @@ The methods to be implemented by the input reader of the new sub plugin are:
 [options="header"]
 |======================
 |Method | Return Type | Description
-| `isValidInput(Object input)`  | *boolean* | This function will be called if matching triggers or matching templates should be retrieved for a given input object.
+| `isValidInput(Object input)`  | `*boolean*` | This function will be called if matching triggers or matching templates should be retrieved for a given input object.
 | `createModel(Object input)` | *Map<String, Object>*  |This function should create the FreeMarker object model from the given input.
-| `combinesMultipleInputObjects(Object input)` | *boolean*  | States whether the given input object combines multiple input objects to be used for generation.
+| `combinesMultipleInputObjects(Object input)` | `*boolean*`  | States whether the given input object combines multiple input objects to be used for generation.
 | `getInputObjects(Object input, Charset inputCharset)` |  *List<Object>*  |Will return the set of combined input objects if the given input combines multiple input objects.
 | `getTemplateMethods(Object input)` | *Map<String, Object>* | This method returns available template methods from the plugins as Map. If the plugin which corresponds to the input does not provide any template methods an empty Map will be returned.
 | `getInputObjectsRecursively(Object input, Charset inputCharset)` | *List<Object>* | Will return the set of combined input objects if the given input combines multiple input objects.
@@ -55,7 +55,7 @@ The methods to be implemented by the input reader of the new sub plugin are:
 
 === Model Constants
 
-The Input reader will create a model for FreeMarker. A Freemarker model must
+The Input reader will create a model for FreeMarker. A FreeMarker model must
 have variables to use them at the `.ftl` template file. Refer to link:cobigen-javaplugin#java-input-reader[Java Model] to see the FreeMarker model example for java input files.
 
 === Registering the Input Reader
@@ -68,7 +68,7 @@ The input reader is an object that can be retrieved using the correspondent get
 
 == Adding Matcher
 
-The matcher implements the `MatcherInterpreter` interface from the core-api.
+The matcher implements the `MatcherInterpreter` interface from the `core-api`.
 Should be implemented for providing a new input matcher. Input matcher are
 defined as part of a trigger and provide the ability to restrict specific
 inputs to a set of templates.
@@ -108,7 +108,7 @@ private enum VariableType {
 
 The merger is responsible to perform merge action between new output with the
 existent data at the file if it already exists. Must implement the Merger
-interface from the core-api.
+interface from the `core-api`.
 The implementation of the Merge interface must override the following methods:
 
 [options="header"]
@@ -118,7 +118,7 @@ The implementation of the Merge interface must override the following methods:
 | `merge(File base, String patch, String targetCharset)` | *String*  | Merges the patch into the base file.
 |======================
 
-Is important to know that any exception caused by the merger must throw a `MergeException` from the core-api to the eclipse-plugin handle it.
+Is important to know that any exception caused by the merger must throw a `MergeException` from the `core-api` to the eclipse-plugin handle it.
 
 == Changes since Eclipse / Maven 3.x
 
@@ -175,4 +175,4 @@ If you want to create a test release of eclipse you need to run the command
 ```shell
 sh deploy.sh
 ```
-on the cloned cobigen repository while making sure, that your current version of cobigen cloned is a snapshot version. This will automatically be detected by the deploy script. 
+on the cloned CobiGen repository while making sure, that your current version of CobiGen cloned is a snapshot version. This will automatically be detected by the deploy script. 
