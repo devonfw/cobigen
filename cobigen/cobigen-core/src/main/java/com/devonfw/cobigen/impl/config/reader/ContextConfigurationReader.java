@@ -111,7 +111,7 @@ public class ContextConfigurationReader {
    */
   private List<Path> loadContextFilesInSubfolder(Path configRoot) {
 
-    List<Path> contextPathes = new ArrayList<>();
+    List<Path> contextPaths = new ArrayList<>();
 
     List<Path> templateDirectories = new ArrayList<>();
 
@@ -128,11 +128,11 @@ public class ContextConfigurationReader {
     for (Path file : templateDirectories) {
       Path contextPath = file.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
       if (Files.exists(contextPath)) {
-        contextPathes.add(contextPath);
+        contextPaths.add(contextPath);
       }
     }
 
-    return contextPathes;
+    return contextPaths;
   }
 
   /**
