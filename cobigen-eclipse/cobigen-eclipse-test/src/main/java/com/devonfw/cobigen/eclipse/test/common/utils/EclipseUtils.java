@@ -171,31 +171,29 @@ public class EclipseUtils {
     LOG.debug("Clean workspace {}", cleanCobiGenConfiguration ? "incl. CobiGen_Templates" : "");
 
     int maxRetries = 10;
+    String projectName = "";
 
     for (int i = 1; i <= maxRetries; i++) {
       IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
       try {
         LOG.debug("Found projects to be cleaned: {}", Arrays.toString(allProjects));
         for (IProject project : allProjects) {
-          if (cleanCobiGenConfiguration || !ResourceConstants.CONFIG_PROJECT_NAME.equals(project.getName())) {
+          projectName = project.getName();
+          if (cleanCobiGenConfiguration || !ResourceConstants.CONFIG_PROJECT_NAME.equals(projectName)) {
+
             project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
             project.close(new NullProgressMonitor());
-            // don't delete sources, which might be reused by other tests
-            if (project.getLocationURI().toString().contains("cobigen-eclipse-test/target")) {
-              SwtBotProjectActions.deleteProject(bot, project.getName(), true);
-            } else {
-              LOG.debug(
-                  "Project sources in '{}' will not be physically deleted as they are not physically imported into the test workspace '{}'",
-                  project.getLocationURI(), project.getWorkspace().getRoot().getLocationURI());
-              SwtBotProjectActions.deleteProject(bot, project.getName(), true);
+
+            LOG.debug("Deleting project: {}", projectName);
+            SwtBotProjectActions.deleteProject(bot, projectName, true);
             }
           }
-        }
         break;
       } catch (Exception e) {
+        LOG.debug("An error occured while trying to delete project: {}", projectName);
         Thread.sleep(500);
         if (i == maxRetries) {
-          LOG.debug("Not able to cleanup the workspace after " + maxRetries + " retries");
+          LOG.debug("Not able to cleanup the workspace after: {} retries", maxRetries);
           throw e;
         }
       }
