@@ -73,9 +73,6 @@ public class EclipseUtils {
   public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath, boolean copyIntoWorkspace)
       throws CoreException {
 
-    SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
-    view.show();
-    view.setFocus();
     bot.menu("File").menu("Import...").click();
 
     SWTBotShell popup = bot.activeShell();
@@ -186,8 +183,8 @@ public class EclipseUtils {
 
             LOG.debug("Deleting project: {}", projectName);
             SwtBotProjectActions.deleteProject(bot, projectName, true);
-            }
           }
+        }
         break;
       } catch (Exception e) {
         LOG.debug("An error occured while trying to delete project: {}", projectName);
