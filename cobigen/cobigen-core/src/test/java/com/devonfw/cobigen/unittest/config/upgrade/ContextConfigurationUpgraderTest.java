@@ -31,12 +31,13 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   /**
-   * Tests the valid upgrade of a templates configuration from version v1.2 to v2.1.
+   * Tests the valid upgrade of a context configuration from version v2.0 to latest version. Please make sure that
+   * .../ContextConfigurationUpgraderTest/valid-latest_version exists
    *
    * @throws Exception test fails
    */
   @Test
-  public void testCorrectUpgrade_v2_0_TO_v2_1() throws Exception {
+  public void testCorrectUpgrade_v2_0_TO_LATEST() throws Exception {
 
     // preparation
     File tmpTargetConfig = this.tempFolder.newFile(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
@@ -53,27 +54,27 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
         .hasSameContentAs(sourceTestdata);
 
     version = sut.resolveLatestCompatibleSchemaVersion(this.tempFolder.getRoot().toPath());
-    assertThat(version).as("Target version").isEqualTo(ContextConfigurationVersion.v2_1);
+    assertThat(version).as("Target version").isEqualTo(ContextConfigurationVersion.getLatest());
 
     XMLUnit.setIgnoreWhitespace(true);
     new XMLTestCase() {
-    }.assertXMLEqual(new FileReader(testFileRootPath + "valid-v2.1/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME),
-        new FileReader(tmpTargetConfig));
+    }.assertXMLEqual(new FileReader(testFileRootPath + "valid-" + ContextConfigurationVersion.getLatest() + "/"
+        + ConfigurationConstants.CONTEXT_CONFIG_FILENAME), new FileReader(tmpTargetConfig));
   }
 
   /**
-   * Tests the valid upgrade of a templates configuration from version v1.2 to v2.1.
+   * Tests if latest context configuration is compatible to latest schema version.
    *
    * @throws Exception test fails
    */
   @Test
-  public void testCorrectV2_1SchemaDetection() throws Exception {
+  public void testCorrectLatestSchemaDetection() throws Exception {
 
     // preparation
-    File targetConfig = new File(testFileRootPath + "valid-v2.1");
+    File targetConfig = new File(testFileRootPath + "valid-" + ContextConfigurationVersion.getLatest());
 
     ContextConfigurationVersion version = new ContextConfigurationUpgrader()
         .resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
-    assertThat(version).isEqualTo(ContextConfigurationVersion.v2_1);
+    assertThat(version).isEqualTo(ContextConfigurationVersion.getLatest());
   }
 }
