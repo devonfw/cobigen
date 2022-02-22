@@ -17,6 +17,7 @@ import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.openapiplugin.model.EntityDef;
+import com.devonfw.cobigen.openapiplugin.util.constants.Constants;
 
 /**
  * Matcher for internal OpenAPI model.
@@ -104,14 +105,11 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             resolvedVariables.put(va.getVarName(), attributeValue);
           } catch (NoSuchFieldException | SecurityException e) {
             if (va.isMandatory()) {
-              String errorMessage = "The property " + va.getValue()
-                  + " was required in a variable assignment although the input does not provide this property. "
-                  + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". ";
+              String errorMessage = Constants.getMandatoryErrorMessage(va.getValue());
               report.addError(new CobiGenRuntimeException(errorMessage));
               LOG.error(errorMessage);
             } else {
-              String warningMessage = "The property " + va.getValue()
-                  + " was requested in a variable assignment although the input does not provide this property. Setting it to empty";
+              String warningMessage = Constants.getMandatoryWarning(va.getValue());
               report.addWarning(warningMessage);
               resolvedVariables.put(va.getVarName(), "");
               LOG.warn(warningMessage);
