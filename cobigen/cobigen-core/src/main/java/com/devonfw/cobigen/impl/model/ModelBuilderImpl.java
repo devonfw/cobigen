@@ -15,6 +15,7 @@ import com.devonfw.cobigen.api.extension.InputReader;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
 import com.devonfw.cobigen.api.extension.ModelBuilder;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
@@ -91,14 +92,15 @@ public class ModelBuilderImpl implements ModelBuilder {
    * @param triggerInterpreter {@link TriggerInterpreter} to resolve the variables
    * @param template the internal {@link Template} representation
    * @param targetRootPath root path template destinations should be resolved against
+   * @param report is getting filled as side-effect
    * @return the adapted model reference.
    */
   public Map<String, Object> enrichByContextVariables(Map<String, Object> model, TriggerInterpreter triggerInterpreter,
-      Template template, Path targetRootPath) {
+      Template template, Path targetRootPath, GenerationReportTo report) {
 
     Map<String, String> variables = Maps.newHashMap();
     Map<String, String> contextVariables = new ContextVariableResolver(this.generatorInput, this.trigger)
-        .resolveVariables(triggerInterpreter).asMap();
+        .resolveVariables(triggerInterpreter, report).asMap();
     Map<String, String> templateProperties = template.getVariables().asMap();
     Properties targetCobiGenProperties = CobiGenPropertiesReader.load(targetRootPath);
     // if there are properties overriding each other, throw an exception for better usability.

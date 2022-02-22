@@ -171,7 +171,7 @@ public class GenerationTest extends AbstractApiTest {
     // Simulate variable resolving of any plug-in
     HashMap<String, String> variables = new HashMap<>(1);
     variables.put("contextVar", "contextValue");
-    when(matcher.resolveVariables(any(MatcherTo.class), any(List.class))).thenReturn(variables);
+    when(matcher.resolveVariables(any(MatcherTo.class), any(List.class), any())).thenReturn(variables);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -224,7 +224,7 @@ public class GenerationTest extends AbstractApiTest {
     // Simulate variable resolving of any plug-in
     HashMap<String, String> variables = new HashMap<>(1);
     variables.put("contextVar", "contextValue");
-    when(matcher.resolveVariables(any(MatcherTo.class), any(List.class))).thenReturn(variables);
+    when(matcher.resolveVariables(any(MatcherTo.class), any(List.class), any())).thenReturn(variables);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 

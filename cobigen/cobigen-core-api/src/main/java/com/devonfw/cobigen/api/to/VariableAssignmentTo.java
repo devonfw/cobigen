@@ -21,25 +21,44 @@ public class VariableAssignmentTo {
   protected String value;
 
   /**
-   * Constructor to create a {@link VariableAssignmentTo} for a concrete string value
+   * True if the value is required, false if not
+   */
+  protected boolean mandatory;
+
+  /**
+   * Constructor to create a {@link VariableAssignment} for a concrete string value.
    *
    * @param type Type of the variable assignment, interpreted by the plug-ins
    * @param varName variable name
    * @param value concrete string value
-   * @author mbrunnli (15.04.2013)
+   * @param mandatory if the variable has to be set
+   */
+  public VariableAssignmentTo(String type, String varName, String value, boolean mandatory) {
+
+    this.type = type;
+    this.varName = varName;
+    this.value = value;
+    this.mandatory = mandatory;
+  }
+
+  /**
+   * Constructor to create a {@link VariableAssignment} for a concrete string value
+   *
+   * @param type Type of the variable assignment, interpreted by the plug-ins
+   * @param varName variable name
+   * @param value concrete string value
    */
   public VariableAssignmentTo(String type, String varName, String value) {
 
     this.type = type;
     this.varName = varName;
     this.value = value;
+    this.mandatory = false;
   }
-
   /**
    * Returns the type, which should determine the variable resolution (if necessary)
    *
    * @return the type
-   * @author mbrunnli (14.04.2014)
    */
   public String getType() {
 
@@ -50,7 +69,6 @@ public class VariableAssignmentTo {
    * Returns the variable name
    *
    * @return variable name
-   * @author mbrunnli (14.04.2014)
    */
   public String getVarName() {
 
@@ -62,11 +80,26 @@ public class VariableAssignmentTo {
    * assigned value
    *
    * @return the value for the matcher
-   * @author mbrunnli (14.04.2014)
    */
   public String getValue() {
 
     return this.value;
+  }
+
+  /**
+   * @return mandatory
+   */
+  public boolean isMandatory() {
+
+    return this.mandatory;
+  }
+
+  /**
+   * @param mandatory new value of {@link #getmandatory}.
+   */
+  public void setMandatory(boolean mandatory) {
+
+    this.mandatory = mandatory;
   }
 
   @Override
@@ -110,6 +143,12 @@ public class VariableAssignmentTo {
       if (getValue() != null) {
         equal = equal && getValue().equals(otherVariableAssignment.getValue());
       }
+      if (!equal) {
+        return false;
+      }
+
+      equal = equal && isMandatory() == otherVariableAssignment.isMandatory();
+
       return equal;
     }
     return false;
@@ -119,7 +158,7 @@ public class VariableAssignmentTo {
   public String toString() {
 
     return getClass().getSimpleName() + "[type='" + getType() + "'/varName='" + getVarName() + "'/value='" + getValue()
-        + "']";
+        + "/mandatory=" + isMandatory() + "']";
   }
 
 }

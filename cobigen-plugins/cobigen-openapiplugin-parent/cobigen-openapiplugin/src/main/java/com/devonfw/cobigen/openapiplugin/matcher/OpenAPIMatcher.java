@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.openapiplugin.model.EntityDef;
@@ -75,8 +76,8 @@ public class OpenAPIMatcher implements MatcherInterpreter {
   }
 
   @Override
-  public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
-      throws InvalidConfigurationException {
+  public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments,
+      GenerationReportTo report) throws InvalidConfigurationException {
 
     Map<String, String> resolvedVariables = new HashMap<>();
     VariableType variableType = null;
@@ -102,9 +103,20 @@ public class OpenAPIMatcher implements MatcherInterpreter {
 
             resolvedVariables.put(va.getVarName(), attributeValue);
           } catch (NoSuchFieldException | SecurityException e) {
-            LOG.warn(
-                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
-                matcher.getValue());
+            if (va.isMandatory()) {
+              String errorMessage = "The property " + va.getValue()
+                  + " was required in a variable assignment although the input does not provide this property. "
+                  + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". ";
+              report.addError(new CobiGenRuntimeException(errorMessage));
+              LOG.error(errorMessage);
+            } else {
+              String warningMessage = "The property " + va.getValue()
+                  + " was requested in a variable assignment although the input does not provide this property. Setting it to empty";
+              report.addWarning(warningMessage);
+              resolvedVariables.put(va.getVarName(), "");
+              LOG.warn(warningMessage);
+            }
+
           } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new CobiGenRuntimeException("This is a programming error, please report an issue on github", e);
           }
@@ -119,7 +131,7 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             resolvedVariables.put(va.getVarName(), o.toString());
           } catch (NoSuchFieldException | SecurityException e) {
             LOG.warn(
-                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to null",
+                "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
                 matcher.getValue());
           } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new CobiGenRuntimeException("This is a programming error, please report an issue on github", e);
@@ -140,17 +152,15 @@ public class OpenAPIMatcher implements MatcherInterpreter {
    * @param object to be cast to a Map
    * @param key to search in the Map
    * @return the value of that key, and if nothing was found, an empty string
+   * @throws NoSuchFieldException if the property isn't given
    */
-  private String getExtendedProperty(Map<String, Object> extensionProperties, String key) {
+  private String getExtendedProperty(Map<String, Object> extensionProperties, String key) throws NoSuchFieldException {
 
     Map<String, Object> properties = extensionProperties;
     if (properties.containsKey(key)) {
       return properties.get(key).toString();
     } else {
-      LOG.warn(
-          "The property {} was requested in a variable assignment although the input does not provide this property. Setting it to empty",
-          key);
-      return "";
+      throw new NoSuchFieldException("couldn't find property: " + key);
     }
   }
 

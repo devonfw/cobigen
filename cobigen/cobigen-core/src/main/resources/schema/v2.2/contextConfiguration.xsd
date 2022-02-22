@@ -49,6 +49,7 @@
     <xs:attribute name="type" use="required" type="xs:string"/>
     <xs:attribute name="key" use="required" type="xs:NCName"/>
     <xs:attribute name="value" use="required" type="xs:string"/>
+    <xs:attribute name="mandatory" use="optional" type="xs:boolean" default="false"/>
   </xs:complexType>
 
 </xs:schema>
