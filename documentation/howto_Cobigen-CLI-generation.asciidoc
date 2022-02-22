@@ -24,7 +24,7 @@ Using the following command and option you will be able to customize your genera
 
 ** `< --outputRootPath, -out >`: The project file path in which you want to generate your code. If no output path is given, CobiGen will use the project of your input file.
 
-• `[adapt-templates, a]`: Generates a new templates folder next to the cobigen cli and stores its location inside a configuration file. After executing this command, the CLI will attempt to use the specified Templates folder.
+• `[adapt-templates, a]`: Generates a new templates folder next to the CobiGen CLI and stores its location inside a configuration file. After executing this command, the CLI will attempt to use the specified Templates folder.
 
 • `< --verbose, -v >` : Prints debug information, verbose log.
 

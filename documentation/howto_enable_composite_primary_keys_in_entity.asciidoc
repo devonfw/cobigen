@@ -5,7 +5,7 @@ toc::[]
 
 In order to enable Composite Primary Keys in entity in CobiGen, the below approach is suggested
 
-The templates in cobigen have been enhanced to support Composite primary keys while still supporting the default devonfw/Cobigen values with Long id.
+The templates in CobiGen have been enhanced to support Composite primary keys while still supporting the default `devonfw/Cobigen` values with Long id.
 
 Also, the current generation from Entity still holds good - right click from an Entity object, CobiGen -> Generate will show the CobiGen wizard relative to the entity generation.
 

@@ -227,7 +227,7 @@ jobs:
     if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
     continue-on-error: true
     environment:
-      name: production
+      name: maven-central
     outputs:
       release_tag: ${{ steps.get_tag.outputs.tag }}
     steps:

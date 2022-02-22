@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
+
+
+  <trigger id="testdata_builder" type="java">
+    <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"
+      retrieveObjectsRecursively="false"/>
+    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+Entity)">
+      <variableAssignment type="regex" key="rootPackage" value="1"/>
+      <variableAssignment type="regex" key="domain" value="3"/>
+      <variableAssignment type="regex" key="component" value="4"/>
+      <variableAssignment type="regex" key="pojoName" value="5"/>
+    </matcher>
+    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+[E|C]to)">
+      <variableAssignment type="regex" key="rootPackage" value="1"/>
+      <variableAssignment type="regex" key="domain" value="3"/>
+      <variableAssignment type="regex" key="component" value="4"/>
+      <variableAssignment type="regex" key="pojoName" value="5"/>
+    </matcher>
+    <matcher type="expression" value="instanceof java.lang.Enum" accumulationType="NOT"/>
+    <matcher type="expression" value="isAbstract" accumulationType="NOT"/>
+  </trigger>
+
+</contextConfiguration>

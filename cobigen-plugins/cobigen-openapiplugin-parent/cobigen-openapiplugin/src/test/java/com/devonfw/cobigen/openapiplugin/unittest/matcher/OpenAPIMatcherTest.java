@@ -13,6 +13,7 @@ import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.openapiplugin.matcher.OpenAPIMatcher;
 import com.devonfw.cobigen.openapiplugin.model.ComponentDef;
 import com.devonfw.cobigen.openapiplugin.model.EntityDef;
+import com.devonfw.cobigen.openapiplugin.util.constants.Constants;
 
 /**
  * Test suite for {@link OpenAPIMatcher}
@@ -114,18 +115,14 @@ public class OpenAPIMatcherTest {
     vaOptionalXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", false));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaOptionalXRootPackage, report);
-    assertThat(report.getWarnings().get(0))
-        .containsSequence("The property x-rootpackage was requested in a variable assignment "
-            + "although the input does not provide this property. Setting it to empty");
+    assertThat(report.getWarnings().get(0)).containsSequence(Constants.getMandatoryWarning("x-rootPackage"));
 
     List<VariableAssignmentTo> vaMandatoryXRootPackage = new ArrayList<>();
-    vaMandatoryXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", true));
+    vaMandatoryXRootPackage.add(new VariableAssignmentTo("extension", "rootpackage", "x-rootpackage", true));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaMandatoryXRootPackage, report);
     assertThat(report.getErrors().get(0).getMessage())
-        .containsSequence("The property x-rootpackage was required in a variable assignment "
-            + "although the input does not provide this property. "
-            + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". ");
+        .containsSequence(Constants.getMandatoryErrorMessage("x-rootpackage"));
   }
 
   /**

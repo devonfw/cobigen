@@ -11,13 +11,13 @@ With our templates for link:https://github.com/devonfw/devon4j[devon4j], you can
 
 ===  CRUD server application for devon4j
 
-For the server, the required files for all architectural layers (Data access, logic, and service layer) can be created based on your Entity class. After the generation, you have CRUD functionality for the entity from bottom to top which can be accessed via a RESTful web service. Details are provided in the link:https://github.com/devonfw/devon/wiki/tutorial-devon-generator[Devon wiki].
+For the server, the required files for all architectural layers (Data access, logic, and service layer) can be created based on your Entity class. After the generation, you have CRUD functionality for the entity from bottom to top which can be accessed via a RESTful web service. Details are provided in the link:https://github.com/devonfw/devon/wiki/tutorial-devon-generator[devonfw wiki].
 
 === CRUD client application for devon4ng
 
 Based on the REST services on the server, you can also generate an link:https://angularjs.org/[Angular] client based on link:https://github.com/devonfw/devon4ng[devon4ng]. With the help of link:https://nodejs.org/[Node.js], you have a working client application for displaying your entities within minutes!
 
-=== Testdata Builder for devon4j
+=== Test data Builder for devon4j
 
 Generating a builder pattern for POJOs to easily create test data in your tests. CobiGen is not only able to generate a plain builder pattern but rather builder, which follow a specific concept to minimize test data generation efforts in your unit tests. The following `Person` class as an example:
 
@@ -111,9 +111,9 @@ E.g. the method `withExternalStudent()` might create a person, which is a studen
 
 Generates a CRUD application with persistence entities as inputs. This includes DAOs, TOs, use cases, as well as a CRUD JSF user interface if needed.
 
-===  Testdata Builder
+===  Test data Builder
 
-Analogous to xref:testdata-builder-for-devon4j[Testdata Builder for devon4J]
+Analogous to xref:testdata-builder-for-devon4j[Test data Builder for devon4J]
 
 === Test documentation
 

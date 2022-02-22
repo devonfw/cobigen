@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
+
+  <trigger id="constants_named_queries" type="xml" templateFolder="constants/named_queries">
+    <matcher type="nodename" value="entity-mappings">
+      <variableAssignment type="constant" key="rootPackage" value="com.devonfw.gastronomy.restaurant"/>
+    </matcher>
+  </trigger>
+ 
+</contextConfiguration>
