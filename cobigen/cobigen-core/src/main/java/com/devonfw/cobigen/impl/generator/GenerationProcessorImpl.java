@@ -563,7 +563,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     } else {
       model = modelBuilderImpl.createModel(triggerInterpreter);
     }
-    modelBuilderImpl.enrichByContextVariables(model, triggerInterpreter, template, this.targetRootPath);
+    modelBuilderImpl.enrichByContextVariables(model, triggerInterpreter, template, this.targetRootPath,
+        this.generationReport);
     if (this.logicClassesModel != null) {
       model.putAll(this.logicClassesModel);
     }

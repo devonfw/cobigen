@@ -9,8 +9,6 @@ import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 
 /**
  * A hamcrest matcher for providing matching functionality for {@link VariableAssignmentTo}s
- *
- * @author mbrunnli (13.10.2014)
  */
 public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentTo> {
 
@@ -30,26 +28,32 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
   private Matcher<String> value;
 
   /**
+   * Matcher for the variable's necessity
+   */
+  private Matcher<Boolean> mandatory;
+
+  /**
    * Creates a new {@link VariableAssignmentToMatcher} with the given attribute sub matchers
    *
    * @param typeMatcher matcher for the type of the variable assignment, interpreted by the plug-ins
    * @param varNameMatcher matcher for the variable's name
    * @param valueMatcher matcher for the value
-   * @author mbrunnli (15.04.2013)
+   * @param mandatoryMatcher matcher for the variable's necessity
    */
   public VariableAssignmentToMatcher(Matcher<String> typeMatcher, Matcher<String> varNameMatcher,
-      Matcher<String> valueMatcher) {
+      Matcher<String> valueMatcher, Matcher<Boolean> mandatoryMatcher) {
 
     this.type = typeMatcher;
     this.varName = varNameMatcher;
     this.value = valueMatcher;
+    this.mandatory = mandatoryMatcher;
   }
 
   @Override
   public void describeTo(Description description) {
 
     description.appendText(MatcherTo.class.getSimpleName() + "(type='" + this.type + "', varName='" + this.varName
-        + "', value='" + this.value + "')");
+        + "', value='" + this.value + "', mandatory='" + this.mandatory + "')");
   }
 
   @Override
@@ -58,7 +62,8 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
     if (item instanceof VariableAssignmentTo) {
       return this.type != null && this.type.matches(((VariableAssignmentTo) item).getType()) && this.varName != null
           && this.varName.matches(((VariableAssignmentTo) item).getVarName()) && this.value != null
-          && this.value.matches(((VariableAssignmentTo) item).getValue());
+          && this.value.matches(((VariableAssignmentTo) item).getValue())
+          && this.mandatory.matches(((VariableAssignmentTo) item).isMandatory());
     }
     return false;
   }
@@ -79,6 +84,8 @@ public class VariableAssignmentToMatcher extends BaseMatcher<VariableAssignmentT
     this.varName.describeTo(mismatchDescription);
     mismatchDescription.appendText(", ");
     this.value.describeTo(mismatchDescription);
+    mismatchDescription.appendText(", ");
+    this.mandatory.describeTo(mismatchDescription);
     mismatchDescription.appendText(")\nWas       VariableAssignmentTo('" + varAssignTo.getType() + "', '"
         + varAssignTo.getVarName() + "', '" + varAssignTo.getValue() + "')");
   }
