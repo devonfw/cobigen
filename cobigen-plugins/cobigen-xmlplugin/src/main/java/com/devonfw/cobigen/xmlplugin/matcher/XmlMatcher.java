@@ -18,6 +18,7 @@ import org.w3c.dom.NodeList;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.MatcherInterpreter;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.xmlplugin.inputreader.XmlInputReader;
@@ -137,8 +138,8 @@ public class XmlMatcher implements MatcherInterpreter {
   }
 
   @Override
-  public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments)
-      throws InvalidConfigurationException {
+  public Map<String, String> resolveVariables(MatcherTo matcher, List<VariableAssignmentTo> variableAssignments,
+      GenerationReportTo report) throws InvalidConfigurationException {
 
     Map<String, String> resolvedVariables = new HashMap<>();
     try {

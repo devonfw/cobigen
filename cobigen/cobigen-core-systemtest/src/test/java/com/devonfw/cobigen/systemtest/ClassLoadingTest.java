@@ -155,10 +155,11 @@ public class ClassLoadingTest extends AbstractApiTest {
     when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
         argThat(hasItemsInList(
             //
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-                .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
-                    .put("entityName", "Test").build());
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1"), equalTo(false)),
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"), equalTo(false)))),
+        any()))
+            .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
+                .put("entityName", "Test").build());
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 

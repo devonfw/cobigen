@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
@@ -50,23 +51,26 @@ public class ContextVariableResolver {
    * Resolves all {@link VariableAssignment}s by using the given {@link TriggerInterpreter}
    *
    * @param triggerInterpreter to be used
+   * @param report is getting filled as side-effect
    * @return the mapping of variable to value
    * @throws InvalidConfigurationException if there are {@link VariableAssignment}s, which could not be resolved
    */
-  public Variables resolveVariables(TriggerInterpreter triggerInterpreter) throws InvalidConfigurationException {
+  public Variables resolveVariables(TriggerInterpreter triggerInterpreter, GenerationReportTo report)
+      throws InvalidConfigurationException {
 
-    return resolveVariables(triggerInterpreter, null);
+    return resolveVariables(triggerInterpreter, null, report);
   }
 
   /**
    * Resolves all {@link VariableAssignment}s by using the given {@link TriggerInterpreter}
    *
    * @param triggerInterpreter to be used
+   * @param report is getting filled as side-effect
    * @param parent the parent {@link Variables} to inherit.
    * @return the mapping of variable to value
    * @throws InvalidConfigurationException if there are {@link VariableAssignment}s, which could not be resolved
    */
-  public Variables resolveVariables(TriggerInterpreter triggerInterpreter, Variables parent)
+  public Variables resolveVariables(TriggerInterpreter triggerInterpreter, Variables parent, GenerationReportTo report)
       throws InvalidConfigurationException {
 
     Variables variables = new Variables(parent);
@@ -75,7 +79,8 @@ public class ContextVariableResolver {
       if (triggerInterpreter.getMatcher().matches(matcherTo)) {
         Map<String, String> resolvedVariables;
         try {
-          resolvedVariables = triggerInterpreter.getMatcher().resolveVariables(matcherTo, getVariableAssignments(m));
+          resolvedVariables = triggerInterpreter.getMatcher().resolveVariables(matcherTo, getVariableAssignments(m),
+              report);
         } catch (InvalidConfigurationException e) {
           throw e;
         } catch (Throwable e) {
@@ -99,7 +104,7 @@ public class ContextVariableResolver {
 
     List<VariableAssignmentTo> variableAssignments = Lists.newLinkedList();
     for (VariableAssignment va : m.getVariableAssignments()) {
-      variableAssignments.add(new VariableAssignmentTo(va.getType(), va.getVarName(), va.getValue()));
+      variableAssignments.add(new VariableAssignmentTo(va.getType(), va.getVarName(), va.getValue(), va.isMandatory()));
     }
     return variableAssignments;
   }

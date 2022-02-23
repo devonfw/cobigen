@@ -15,6 +15,7 @@ import com.devonfw.cobigen.api.annotation.Cached;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
+import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
@@ -101,7 +102,9 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     InputValidator.validateTrigger(trigger);
 
     TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
-    Variables variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter);
+    // the GenerationReportTo won't be further processed
+    Variables variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter,
+        new GenerationReportTo());
     Template templateEty = this.configurationHolder.readTemplatesConfiguration(trigger).getTemplate(template.getId());
     try {
       String resolvedDestinationPath = new PathExpressionResolver(variables)

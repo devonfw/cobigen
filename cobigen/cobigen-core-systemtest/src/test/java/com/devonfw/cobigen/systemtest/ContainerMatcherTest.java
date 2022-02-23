@@ -229,10 +229,10 @@ public class ContainerMatcherTest extends AbstractApiTest {
     when(inputReader.isValidInput(any())).thenReturn(true);
 
     // Simulate container children resolution of any plug-in
-    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))), anyList()))
-        .thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
-    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))), anyList()))
-        .thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))), anyList(),
+        any())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))), anyList(),
+        any())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
     when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(child1, child2));
 
     // match container
@@ -349,10 +349,11 @@ public class ContainerMatcherTest extends AbstractApiTest {
     when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
         argThat(hasItemsInList(
             //
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-                .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
-                    .put("entityName", "Test").build());
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1"), equalTo(false)),
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"), equalTo(false)))),
+        any()))
+            .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
+                .put("entityName", "Test").build());
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 

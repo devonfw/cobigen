@@ -67,9 +67,9 @@ public class PluginMockFactory {
     when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))),
         argThat(hasItemsInList(
             //
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1")),
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"))))))
-                .thenReturn(variables);
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1"), equalTo(false)),
+            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"), equalTo(false)))),
+        any())).thenReturn(variables);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
