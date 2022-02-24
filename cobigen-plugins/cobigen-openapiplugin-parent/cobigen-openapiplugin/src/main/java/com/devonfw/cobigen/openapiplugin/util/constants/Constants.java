@@ -18,16 +18,14 @@ public class Constants {
 
   public static final String SCHEMA = "schema";
 
-  public static String getMandatoryErrorMessage(String property) {
+  private static final String message = "The property %s was %s in a variable assignment although the input does not provide this property%s";
 
-    return "The property " + property.toLowerCase()
-        + " was required in a variable assignment although the input does not provide this property. "
-        + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". ";
-  }
+  public static String getMandatoryMessage(boolean mandatory, String property) {
 
-  public static String getMandatoryWarning(String property) {
-
-    return "The property " + property.toLowerCase()
-        + " was requested in a variable assignment although the input does not provide this property. Setting it to empty";
+    if (mandatory) {
+      return String.format(message, property, "required",
+          "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\".");
+    }
+    return String.format(message, property, "requested", ".");
   }
 }
