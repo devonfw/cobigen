@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.utils.swtbot.SwtBotProjectActions;
 
 /**
  * Eclipse specific operations to make test setup easier.
@@ -72,11 +73,7 @@ public class EclipseUtils {
   public static void importExistingGeneralProject(SWTWorkbenchBot bot, String projectPath, boolean copyIntoWorkspace)
       throws CoreException {
 
-    SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
-    view.show();
-    view.setFocus();
-    SWTBotTree packageExplorerTree = view.bot().tree();
-    packageExplorerTree.contextMenu("Import...").click();
+    bot.menu("File").menu("Import...").click();
 
     SWTBotShell popup = bot.activeShell();
     bot.tree().expandNode("General").select("Existing Projects into Workspace");
@@ -162,44 +159,44 @@ public class EclipseUtils {
   /**
    * Cleanup workspace by deleting all projects
    *
+   * @param bot the {@link SWTWorkbenchBot} of the test
    * @param cleanCobiGenConfiguration if <code>true</code>, the cobigen configuration project will be removed as well
    * @throws Exception test fails
    */
-  public static void cleanWorkspace(boolean cleanCobiGenConfiguration) throws Exception {
+  public static void cleanWorkspace(SWTWorkbenchBot bot, boolean cleanCobiGenConfiguration) throws Exception {
 
     LOG.debug("Clean workspace {}", cleanCobiGenConfiguration ? "incl. CobiGen_Templates" : "");
 
     int maxRetries = 10;
+    String projectName = "";
 
     for (int i = 1; i <= maxRetries; i++) {
       IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
       try {
         LOG.debug("Found projects to be cleaned: {}", Arrays.toString(allProjects));
         for (IProject project : allProjects) {
-          if (cleanCobiGenConfiguration || !ResourceConstants.CONFIG_PROJECT_NAME.equals(project.getName())) {
+          projectName = project.getName();
+          if (cleanCobiGenConfiguration || !ResourceConstants.CONFIG_PROJECT_NAME.equals(projectName)) {
+
             project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
             project.close(new NullProgressMonitor());
-            // don't delete sources, which might be reused by other tests
-            if (project.getLocationURI().toString().contains("cobigen-eclipse-test/target")) {
-              project.delete(true, true, new NullProgressMonitor());
-            } else {
-              LOG.debug(
-                  "Project sources in '{}' will not be physically deleted as they are not physically imported into the test workspace '{}'",
-                  project.getLocationURI(), project.getWorkspace().getRoot().getLocationURI());
-              project.delete(false, true, new NullProgressMonitor());
-            }
+
+            LOG.debug("Deleting project: {}", projectName);
+            SwtBotProjectActions.deleteProject(bot, projectName, true);
           }
         }
         break;
       } catch (Exception e) {
+        LOG.debug("An error occured while trying to delete project: {}", projectName);
         Thread.sleep(500);
         if (i == maxRetries) {
-          LOG.debug("Not able to cleanup the workspace after " + maxRetries + " retries");
+          LOG.debug("Not able to cleanup the workspace after: {} retries", maxRetries);
           throw e;
         }
       }
     }
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+
   }
 
   /**

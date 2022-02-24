@@ -36,7 +36,7 @@ public class VelocityGenerationTest extends SystemTest {
   @BeforeClass
   public static void setupClass() throws Exception {
 
-    EclipseUtils.cleanWorkspace(true);
+    EclipseUtils.cleanWorkspace(bot, true);
     // import the configuration project for this test
     EclipseUtils.importExistingGeneralProject(bot, new File(resourcesRootPath + "templates").getAbsolutePath());
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
