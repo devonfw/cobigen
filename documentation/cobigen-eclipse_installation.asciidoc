@@ -18,7 +18,8 @@ menu bar -> _Help_ -> _Install new Software..._
 +
 image:images/howtos/installation/01-install-new-software.png[]
 . Open CobiGen's update site +
-Insert the update site of your interest into the filed _Work with_ and press _Add ..._
+Insert the update site of your interest into the filed _Work with_ and press _Add ..._ +
+Unless you know what you are doing we recommend you install every plugin as shown in the picture below.
     * Stable releases: https://devonfw.com/cobigen/updatesite/stable/ +
 image:images/howtos/installation/02-select-update-site.png[]
 . Follow the installation wizard +
