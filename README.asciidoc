@@ -39,8 +39,6 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 | `cobigen` | Containts the code implementation of CobiGen
 
 | `cobigen-plugins` | core plug-in implementations 
-
-| `ide-settings` | Contains the shared settings processed by the https://github.com/devonfw/ide[devonfw-ide]
 |===
 
 == Build
