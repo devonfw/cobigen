@@ -115,14 +115,14 @@ public class OpenAPIMatcherTest {
     vaOptionalXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", false));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaOptionalXRootPackage, report);
-    assertThat(report.getWarnings().get(0)).containsSequence(Constants.getMandatoryWarning("x-rootPackage"));
+    assertThat(report.getWarnings().get(0)).containsSequence(Constants.getMandatoryMessage(false, "x-rootPackage"));
 
     List<VariableAssignmentTo> vaMandatoryXRootPackage = new ArrayList<>();
     vaMandatoryXRootPackage.add(new VariableAssignmentTo("extension", "rootpackage", "x-rootpackage", true));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaMandatoryXRootPackage, report);
     assertThat(report.getErrors().get(0).getMessage())
-        .containsSequence(Constants.getMandatoryErrorMessage("x-rootpackage"));
+        .containsSequence(Constants.getMandatoryMessage(true, "x-rootpackage"));
   }
 
   /**

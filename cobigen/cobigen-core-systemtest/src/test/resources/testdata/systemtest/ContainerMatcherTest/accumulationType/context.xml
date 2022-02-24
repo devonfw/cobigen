@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+    <trigger id="entities" type="mockplugin" templateFolder="testTemplates">
+        <containerMatcher type="package" value="(.+\.)?\.testdata" retrieveObjectsRecursively="false"/>
+        <matcher type="fqn" value="((.+\.)?)\.testdata\.([^\.]+)Entity" accumulationType="NOT">
+            <variableAssignment type="regex" key="rootPackage" value="1"/>
+            <variableAssignment type="regex" key="entityName" value="3"/>
+        </matcher>
+    </trigger>
+    <trigger id="entities2" type="mockplugin" templateFolder="testTemplates">
+        <containerMatcher type="package" value="(.+\.)?\.testdata" retrieveObjectsRecursively="false"/>
+        <matcher type="fqn" value="((.+\.)?)\.testdata\.([^\.]+)Entity" accumulationType="AND">
+            <variableAssignment type="regex" key="rootPackage" value="1"/>
+            <variableAssignment type="regex" key="entityName" value="3"/>
+        </matcher>
+    </trigger>
+</contextConfiguration>

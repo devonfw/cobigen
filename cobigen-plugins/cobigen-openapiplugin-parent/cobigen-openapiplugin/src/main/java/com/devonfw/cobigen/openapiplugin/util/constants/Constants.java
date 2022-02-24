@@ -20,6 +20,13 @@ public class Constants {
 
   private static final String message = "The property %s was %s in a variable assignment although the input does not provide this property%s";
 
+  /**
+   * Generates a warning or error message for when the mandatory attribute was asked for but not set.
+   *
+   * @param mandatory true if required, false if not
+   * @param property the property that was not set
+   * @return the error or warning message
+   */
   public static String getMandatoryMessage(boolean mandatory, String property) {
 
     if (mandatory) {

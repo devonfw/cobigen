@@ -50,7 +50,7 @@ public class AdaptTemplatesTest extends SystemTest {
   @BeforeClass
   public static void setupClass() throws Exception {
 
-    EclipseUtils.cleanWorkspace(true);
+    EclipseUtils.cleanWorkspace(bot, true);
   }
 
   /**

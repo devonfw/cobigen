@@ -9,6 +9,7 @@ import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
@@ -69,12 +70,11 @@ public abstract class SystemTest {
    *
    * @throws Exception setup failed
    */
-  @Before
-  public void setupTest() throws Exception {
+  @BeforeClass
+  public static void setupTest() throws Exception {
 
     bot.resetWorkbench();
     bot.waitUntil(new AllJobsAreFinished());
-    EclipseUtils.cleanWorkspace(false);
 
     // this flag is set to be true and will suppress ErrorDialogs,
     // which is completely strange, so we enable them again.
@@ -90,5 +90,16 @@ public abstract class SystemTest {
       LOG.debug("Exception occured during test setup", e);
       throw e;
     }
+  }
+
+  /**
+   * Cleans up the workspace before each test
+   *
+   * @throws Exception cleanup failed
+   */
+  @Before
+  public void cleanUp() throws Exception {
+
+    EclipseUtils.cleanWorkspace(bot, false);
   }
 }
