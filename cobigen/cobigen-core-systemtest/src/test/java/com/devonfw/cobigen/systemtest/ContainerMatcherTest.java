@@ -186,6 +186,31 @@ public class ContainerMatcherTest extends AbstractApiTest {
   }
 
   /**
+   * Tests whether a single trigger will be activated if two triggers with different container matchers (different
+   * accumulationTypes) were provided <br/>
+   * <a href="https://github.com/devonfw/cobigen/issues/1299">(Bug #1299)</a>
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testMultipleTriggerWithDifferentContainerMatchersAccumulationType() throws Exception {
+
+    // Mocking
+    Object containerInput = createTestDataAndConfigureMock(true, false);
+
+    // pre-processing
+    File templatesFolder = new File(testFileRootPath + "accumulationType");
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+
+    // Execution
+    List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
+
+    // Verification
+    Assert.assertNotNull(triggerIds);
+    Assert.assertEquals(1, triggerIds.size());
+  }
+
+  /**
    * Create a new {@link ContainerMatcher}, which contains two children which do not match the same trigger.
    *
    * @throws Exception test fails
