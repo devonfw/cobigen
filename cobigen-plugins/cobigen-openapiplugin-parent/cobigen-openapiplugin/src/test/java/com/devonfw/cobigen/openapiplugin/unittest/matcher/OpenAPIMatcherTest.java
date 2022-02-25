@@ -115,14 +115,14 @@ public class OpenAPIMatcherTest {
     vaOptionalXRootPackage.add(new VariableAssignmentTo("extension", "rootPackage", "x-rootpackage", false));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaOptionalXRootPackage, report);
-    assertThat(report.getWarnings().get(0)).containsSequence(Constants.getMandatoryWarning("x-rootPackage"));
+    assertThat(report.getWarnings().get(0)).containsSequence(Constants.getMandatoryMessage(false, "x-rootpackage"));
 
     List<VariableAssignmentTo> vaMandatoryXRootPackage = new ArrayList<>();
     vaMandatoryXRootPackage.add(new VariableAssignmentTo("extension", "rootpackage", "x-rootpackage", true));
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaMandatoryXRootPackage, report);
     assertThat(report.getErrors().get(0).getMessage())
-        .containsSequence(Constants.getMandatoryErrorMessage("x-rootpackage"));
+        .containsSequence(Constants.getMandatoryMessage(true, "x-rootpackage"));
   }
 
   /**
@@ -141,8 +141,6 @@ public class OpenAPIMatcherTest {
 
     matcher.resolveVariables(new MatcherTo("element", "ComponentDef", componentDef), vaMandatoryXRootPackage, report);
     assertThat(report.getErrors().get(0).getMessage())
-        .containsSequence("The property x-rootpackage was required in a variable assignment "
-            + "although the input does not provide this property. "
-            + "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\". ");
+        .containsSequence(Constants.getMandatoryMessage(true, "x-rootpackage"));
   }
 }

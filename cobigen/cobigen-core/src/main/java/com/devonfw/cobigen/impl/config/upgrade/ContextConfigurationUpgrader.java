@@ -54,7 +54,7 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
                 "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
                 "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
             .byDefault().register();
-        
+
         mapper = mapperFactory.getMapperFacade();
 
         upgradedConfig = mapper.map(previousConfigurationRootNode,
