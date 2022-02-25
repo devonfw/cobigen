@@ -30,9 +30,9 @@ public class Constants {
   public static String getMandatoryMessage(boolean mandatory, String property) {
 
     if (mandatory) {
-      return String.format(message, property, "required",
+      return String.format(message, property.toLowerCase(), "required",
           "Please add the required attribute in your input file or set the \"mandatory\" attribute to \"false\".");
     }
-    return String.format(message, property, "requested", ".");
+    return String.format(message, property.toLowerCase(), "requested", ".");
   }
 }
