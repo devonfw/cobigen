@@ -517,4 +517,43 @@ public class JavaMergerTest {
     return getFirstJavaClass(new StringReader(mergedContents)).getSource();
   }
 
+  /**
+   * Tests merging the class annotation into the baseFile
+   *
+   * @throws IOException shouldn't happen
+   * @throws MergeException shouldn't happen either
+   */
+  @Test
+  public void testMergeClassAnnotation() throws IOException, MergeException {
+
+    File baseFile = new File(testFileRootPath + "BaseFile_ClassAnnotation.java");
+    File patchFile = new File(testFileRootPath + "PatchFile_ClassAnnotation.java");
+
+    String mergedContents = new JavaMerger("", true).merge(baseFile,
+        FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+
+    assertThat(mergedContents).contains("@Entity");
+    assertThat(mergedContents).contains("@javax.persistence.Table(name=\"Visitor\")");
+
+  }
+
+  /**
+   * Tests merging the property annotation into the baseFile
+   *
+   * @throws IOException shouldn't happen
+   * @throws MergeException shouldn't happen either
+   */
+  @Test
+  public void testMergePropertyAnnotation() throws IOException, MergeException {
+
+    File baseFile = new File(testFileRootPath + "BaseFile_PropertyAnnotation.java");
+    File patchFile = new File(testFileRootPath + "PatchFile_PropertyAnnotation.java");
+
+    String mergedContents = new JavaMerger("", true).merge(baseFile,
+        FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+
+    assertThat(mergedContents).contains("@Column(name=  \"USERNAME\")");
+    assertThat(mergedContents).contains("@Column(name=\"NAME\")");
+
+  }
 }

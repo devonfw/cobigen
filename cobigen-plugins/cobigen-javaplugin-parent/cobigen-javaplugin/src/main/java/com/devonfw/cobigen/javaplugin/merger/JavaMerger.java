@@ -112,12 +112,25 @@ public class JavaMerger implements Merger {
    */
   private ModifyableJavaClass merge(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
+    mergeClassAnnotation(baseClass, patchClass);
     mergeImports(baseClass, patchClass);
     mergeFields(baseClass, patchClass);
     mergeInnerClasses(baseClass, patchClass);
     mergeMethods(baseClass, patchClass);
     mergeSupertypes(baseClass, patchClass);
     return baseClass;
+  }
+
+  /**
+   * @param baseClass {@link JavaClass}
+   * @param patchClass {@link JavaClass}
+   */
+  private void mergeClassAnnotation(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
+
+    if (this.patchOverrides) {
+      baseClass.setAnnotations(patchClass.getAnnotations());
+    }
+
   }
 
   /**
