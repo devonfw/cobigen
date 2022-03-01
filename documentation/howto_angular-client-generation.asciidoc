@@ -23,7 +23,7 @@ The output location of the generation can be defined editing the `*__cobigen.pro
 
 image::images/howtos/angular4-gen/ng4gen_7.png[`cobigen.properties file`,width="450"link="images/howtos/angular4-gen/ng4gen_7.png"]
 
-By default, the output path would be into the __devon4ng-application-template__ folder at the root of the devon4j project parent folder: 
+By default, the output path would be the __devon4ng-application-template__ folder at the root of the devon4j project parent folder: 
 
 ----
 root/
@@ -33,7 +33,7 @@ root/
    |- server/
 ----
 
-However, this path can be changed, for example to `__src/main/client__` folder of the devon4j project:
+However, this path can be changed, for example to the `__src/main/client__` folder of the devon4j project:
 
 `relocate: ./src/main/client/${cwd}`
 
@@ -48,20 +48,21 @@ root/
 ```
 
 
-Once the output path is chosen, copy the files of link:https://github.com/devonfw/devon4ng-application-template[`DEVON4NG-APPLICATION-TEMPLATE`] repository into this output path. 
+Once the output path is chosen, copy the files of the link:https://github.com/devonfw/devon4ng-application-template[`DEVON4NG-APPLICATION-TEMPLATE`] repository into this output path. 
 
 == Install Node dependencies
 
-Open a terminal into devon4ng-application-template copied and just run the command:
+Open a terminal in the just copied `devon4ng-application-template` folder and run the command:
 
 [source, bash]
 yarn
 
-This will start the installation of all node packages needed by the project into the node_modules folder.
+This will start the installation of all node packages needed by the project into the `node_modules` folder.
 
 == Generating
 
-From an ETO object, right click, CobiGen -> Generate will show the CobiGen wizard relative to client generation:
+Choose an ETO object as an input file for CobiGen, right click on it and select CobiGen -> Generate from the context menu.
+CobiGen will then display a wizard showing you the resources to be generated which are related to your input file:
 
 image::images/howtos/angular4-gen/ng4gen_1.png[CobiGen Client Generation Wizard,width="450"link="images/howtos/angular4-gen/ng4gen_1.png"]
 
@@ -72,13 +73,13 @@ Check all the increments relative to Angular:
 The Angular devon4j URL increment is only needed for the first generations however, checking it again on next generation will not cause any problem.
 =======
 
-As we done on other generations, we click Next to choose which fields to include at the generation or simply clicking Finish will start the generation.
+As we have done on other generations, we click `Next` to choose which fields to include at the generation or simply clicking `Finish` will start the generation.
 
 image::images/howtos/angular4-gen/ng4gen_3.png[CobiGen Client Generation Wizard 3,width="450"link="images/howtos/angular4-gen/ng4gen_3.png"]
 
 == Routing
 
-Due to the nature of the TypeScript merger, currently is not possible to merge properly the array of paths objects of the routings at app.routing.ts file so, this modification should be done by hand on this file. However, the import related to the new component generated is added.
+Due to the nature of the TypeScript merger, currently it is not possible to merge the array of path objects of the routings at `app.routing.ts` file properly, so the modification should be done by hand on this file. However, the import related to the new component generated is added.
 
 This would be the generated `app-routing.module` file:
 [source, ts]
@@ -115,7 +116,7 @@ const appRoutes: Routes = [{
 export const routing = RouterModule.forRoot(appRoutes);
 ----
 
-Adding the following into the children object of `home`, will add into the side menu the entry for the component generated:
+Adding the following to the children object of `home` will add a new side menu entry to the component generated:
 
 [source, ts]
 ----
@@ -174,7 +175,7 @@ By default the variable is set to CSRF but you can change it to `JWT` by going t
 
 == Running
 
-First of all, run your devon4j java server by right clicking over `SpringBootApp.java` Run As -> Java Application. This will start to run the `SpringBoot` server. Once you see the Started `SpringBoot` in `XX` seconds, the backend is running.
+First of all, run your devon4j java server by right clicking on the `SpringBootApp.java` file and choose Run As -> Java Application from the context menu. This will start to run the `SpringBoot` server. Once you see the statement: `Started SpringBoot in XX seconds`, the backend is running.
 
 image::images/howtos/angular4-gen/ng4gen_4.png[Starting `SpringBoot`,width="450"link="images/howtos/angular4-gen/ng4gen_4.png"]
 
@@ -194,6 +195,4 @@ http://localhost:4200
 
 image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 8 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
 
-Once finished, the browser will open automatically at the previous localhost URL showing the Angular 8 application, using the credentials set at the devon4j java server you will be able to access.
-
-
+Once finished, the browser will open automatically at the previously stated localhost URL showing the Angular 8 application. You can use the credentials set at the devon4j java server to login.
