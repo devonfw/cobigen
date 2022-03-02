@@ -1,9 +1,9 @@
 :toc: macro
 toc::[]
 
-= Angular 8 Client Generation
+= Angular Client Generation
 
-The generation can create a full Angular 8 client using the devon4ng-application-template package located at `workspaces/examples` folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
+The generation can create a full Angular client (Angular 13, as of March 2022) using the devon4ng-application-template package located at `workspaces/examples` folder of the distribution. For more details about this package, please refer link:https://github.com/devonfw/devon4ng-application-template[here].
 
 Take into account that the TypeScript merging for CobiGen needs Node 6 or higher to be installed at your machine.
 
@@ -17,7 +17,7 @@ Install yarn globally:
 npm install -g yarn
 ```
 
-== Angular 8 workspace
+== Angular workspace
 
 The output location of the generation can be defined editing the `*__cobigen.properties__*` file located at *__crud_angular_client_app/templates__* folder of the *__CobiGen_Templates__* project.
 
@@ -48,7 +48,7 @@ root/
 ```
 
 
-Once the output path is chosen, copy the files of the link:https://github.com/devonfw/devon4ng-application-template[`DEVON4NG-APPLICATION-TEMPLATE`] repository into this output path. 
+Once the output path is chosen, copy the files of the link:https://github.com/devonfw/devon4ng-application-template[devon4ng-application-template] repository into this output path. 
 
 == Install Node dependencies
 
@@ -79,41 +79,58 @@ image::images/howtos/angular4-gen/ng4gen_3.png[CobiGen Client Generation Wizard 
 
 == Routing
 
-Due to the nature of the TypeScript merger, currently it is not possible to merge the array of path objects of the routings at `app.routing.ts` file properly, so the modification should be done by hand on this file. However, the import related to the new component generated is added.
+Due to the nature of the TypeScript merger, currently it is not possible to merge the array of path objects of the routings at `app-routing.module.ts` file properly, so the modification should be done by hand on this file. However, the import related to the new component generated is added.
 
-This would be the generated `app-routing.module` file:
+This would be the generated `app-routing.module.ts` file:
 [source, ts]
 ----
-import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { AuthGuard } from './shared/security/auth-guard.service';
-import { InitialPageComponent } from './initial-page/initial-page.component';
-import { HomeComponent } from './home/home.component';
-import { SampleDataGridComponent } from './sampledata/sampledata-grid/sampledata-grid.component';
-//Routing array
-const appRoutes: Routes = [{
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './core/security/auth-guard.service';
+import { NavBarComponent } from './layout/nav-bar/nav-bar.component';
+
+const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full',
+  },
+  {
     path: 'login',
-    component: LoginComponent
-}, {
+    loadChildren: () =>
+      import('./auth/auth.module').then(m => m.AuthDataModule),
+  },
+  {
     path: 'home',
-    component: HomeComponent,
-    canActivate: [AuthGuard],
-    children: [{
-        path: '',
-        redirectTo: '/home/initialPage',
-        pathMatch: 'full',
-        canActivate: [AuthGuard]
-    }, {
-        path: 'initialPage',
-        component: InitialPageComponent,
-        canActivate: [AuthGuard]
-    }]
-}, {
+    component: NavBarComponent,
+    canActivateChild: [AuthGuard],
+    children: [
+      {
+        path: 'initial',
+        loadChildren: () =>
+          import('./home/initial-page/initial-page.module').then(
+            m => m.InitialPageModule,
+          ),
+      },
+      {
+        path: 'sampleData',
+        loadChildren: () =>
+          import('./sampledata/sampledata.module').then(
+            m => m.SampleDataModule,
+          ),
+      },
+    ],
+  },
+  {
     path: '**',
     redirectTo: '/login',
-    pathMatch: 'full'
-}];
-export const routing = RouterModule.forRoot(appRoutes);
+  },
+];
+@NgModule({
+  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
+  exports: [RouterModule],
+})
+export class AppRoutingModule {}
 ----
 
 Adding the following to the children object of `home` will add a new side menu entry to the component generated:
@@ -121,57 +138,95 @@ Adding the following to the children object of `home` will add a new side menu e
 [source, ts]
 ----
 {
-    path: 'sampleData',
-    component: SampleDataGridComponent,
-    canActivate: [AuthGuard],
-} 
+    path: 'employee',
+    loadChildren: () =>
+        import('./employee/employee.module').then(
+            m => m.EmployeeModule,
+        )
+}
 ----
 
 [source, ts]
 ----
-import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { AuthGuard } from './shared/security/auth-guard.service';
-import { InitialPageComponent } from './initial-page/initial-page.component';
-import { HomeComponent } from './home/home.component';
-import { SampleDataGridComponent } from './sampledata/sampledata-grid/sampledata-grid.component';
-//Routing array
-const appRoutes: Routes = [{
-    path: 'login',
-    component: LoginComponent
-}, {
-    path: 'home',
-    component: HomeComponent,
-    canActivate: [AuthGuard],
-    children: [{
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './core/security/auth-guard.service';
+import { NavBarComponent } from './layout/nav-bar/nav-bar.component';
+
+
+const routes: Routes = [{
         path: '',
-        redirectTo: '/home/initialPage',
-        pathMatch: 'full',
-        canActivate: [AuthGuard]
-    }, {
-        path: 'initialPage',
-        component: InitialPageComponent,
-        canActivate: [AuthGuard]
-    }, {
-        path: 'sampleData',
-        component: SampleDataGridComponent,
-        canActivate: [AuthGuard],
-    }]
-}, {
-    path: '**',
-    redirectTo: '/login',
-    pathMatch: 'full'
-}];
-export const routing = RouterModule.forRoot(appRoutes);
+        redirectTo: '/login',
+        pathMatch: 'full'
+    },
+    {
+        path: 'login',
+        loadChildren: () =>
+            import('./auth/auth.module').then(m => m.AuthDataModule)
+    },
+    {
+        path: 'home',
+        component: NavBarComponent,
+        canActivateChild: [
+            AuthGuard
+        ],
+        children: [{
+                path: 'initial',
+                loadChildren: () =>
+                    import('./home/initial-page/initial-page.module').then(
+                        m => m.InitialPageModule,
+                    )
+            },
+            {
+                path: 'sampleData',
+                loadChildren: () =>
+                    import('./sampledata/sampledata.module').then(
+                        m => m.SampleDataModule,
+                    )
+            },
+            {
+                path: 'employee',
+                loadChildren: () =>
+                    import('./employee/employee.module').then(
+                        m => m.EmployeeModule,
+                    )
+            }
+        ]
+    },
+    {
+        path: '**',
+        redirectTo: '/login'
+    }
+];
+
+@NgModule({
+    imports: [
+        RouterModule.forRoot(routes)
+    ],
+    exports: [
+        RouterModule
+    ]
+})
+export class AppRoutingModule {
+
+}
 ----
 
 image::images/howtos/angular4-gen/ng4gen_6.png[`APP SideMenu`,width="450"link="images/howtos/angular4-gen/ng4gen_6.png"]
 
 == `JWT` Authentication
 
-If you are using a backend server with `JWT` Authentication (there is a sample in `workspaces/folder` called `*sampleJwt*`) you have to specify the Angular application to use this kind of authentication.
+If you are using a backend server with `JWT` authentication, you need to set the Angular application to use this type of authentication. By default, this is the case if you use the devon4ng template.
 
-By default the variable is set to CSRF but you can change it to `JWT` by going to the link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts#L10[Enviroment.ts] and setting `security: 'jwt'`.
+.link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts[environment.ts]
+```
+export const environment = {
+  ...,
+  security: 'jwt',
+};
+```
+
+An alternative would be to set `security: 'csrf'`. For more details, see the link:https://github.com/devonfw/devon4j/wiki/guide-csrf[devon4j CSRF guide].
 
 == Running
 
@@ -179,20 +234,20 @@ First of all, run your devon4j java server by right clicking on the `SpringBootA
 
 image::images/howtos/angular4-gen/ng4gen_4.png[Starting `SpringBoot`,width="450"link="images/howtos/angular4-gen/ng4gen_4.png"]
 
-Once the the server is running, open a Devon console at the output directory defined previously and run:
+Once the the server is running, open a devonfw console at the output directory defined previously and run:
 
 ```
 ng serve --open
 ```
 
 
-This will run the Angular 8 application at:
+This will run the Angular application at:
 
 [source, URL]
 ----
 http://localhost:4200
 ----
 
-image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular 8 app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
+image::images/howtos/angular4-gen/ng4gen_5.png[Running Angular app,width="450"link="images/howtos/angular4-gen/ng4gen_5.png"]
 
-Once finished, the browser will open automatically at the previously stated localhost URL showing the Angular 8 application. You can use the credentials set at the devon4j java server to login.
+Once finished, the browser will open automatically at the previously stated localhost URL showing the Angular application. You can use the credentials set at the devon4j java server to login.
