@@ -11,7 +11,7 @@ With our templates for link:https://github.com/devonfw/devon4j[devon4j], you can
 
 ===  CRUD server application for devon4j
 
-For the server, the required files for all architectural layers (data access, logic, and service layer) can be created based on your Entity class. After the generation, you have CRUD functionality for the entity from bottom to top which can be accessed via a RESTful web service. Details are provided in the link:https://github.com/devonfw/devon4j/wiki/architecture[devon4j wiki] or in our link:https://github.com/devonfw/jump-the-queue/wiki/devon4j-components#the-component-structure-using-cobigen[Jump the queue reference application].
+For the server, the required files for all architectural layers (data access, logic, and service layer) can be created based on your Entity class. After the generation, you have CRUD functionality for the entity from bottom to top which can be accessed via a RESTful web service. Details are provided in the link:https://github.com/devonfw/devon4j/wiki/architecture[devon4j wiki] or in our link:https://github.com/devonfw/jump-the-queue/wiki/devon4j-components#the-component-structure-using-cobigen['Jump the queue' reference application].
 
 === CRUD client application for devon4ng
 

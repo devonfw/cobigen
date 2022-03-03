@@ -216,7 +216,7 @@ image::images/howtos/angular4-gen/ng4gen_6.png[`APP SideMenu`,width="450"link="i
 
 == `JWT` Authentication
 
-If you are using a backend server with `JWT` authentication, you need to set the Angular application to use this type of authentication. By default, this is the case if you use the devon4ng template.
+If you are using a backend server with `JWT` authentication, you need to specify this type of authentication to be used by your Angular application (default when generating from the devon4ng template).
 
 .link:https://github.com/devonfw/devon4ng-application-template/blob/develop/src/environments/environment.ts[environment.ts]
 ```
