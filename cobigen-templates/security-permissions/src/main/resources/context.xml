@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
+
+
+  <trigger id="constants_security_permissions" type="xml">
+    <matcher type="nodename" value="access-control-schema">
+      <variableAssignment type="constant" key="rootPackage" value="com.devonfw.gastronomy.restaurant"/>
+    </matcher>
+  </trigger>
+
+</contextConfiguration>
