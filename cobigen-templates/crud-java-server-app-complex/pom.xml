@@ -9,7 +9,6 @@
 		<groupId>com.devonfw.cobigen.templates</groupId>
 		<artifactId>templates-parent</artifactId>
 		<version>${revision}</version>
-		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 </project>
