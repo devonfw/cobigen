@@ -2,6 +2,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+  <groupId>com.devonfw.cobigen.templates</groupId>
   <artifactId>templates-parent</artifactId>
   <name>CobiGen - Templates Parent</name>
   <packaging>pom</packaging>
@@ -10,10 +11,32 @@
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>master-parent</artifactId>
     <version>${revision}</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
+
+
   <modules>
-    <module>templates-devon4j</module>
+    <module>templates-devon4j-utils</module>
+    <module>templates-devon4j-tests</module>
+    <module>crud-angular-client-app</module>
+    <module>crud-ionic-client-app</module>
+    <module>crud-java-ea-uml</module>
+    <module>crud-java-server-app</module>
+    <module>crud-java-server-app-complex</module>
+    <module>crud-ngrx-client-app</module>
+    <module>crud-openapi-angular-client-app</module>
+    <module>crud-openapi-angular-service-based-app</module>
+    <module>crud-openapi-ionic-client-app</module>
+    <module>crud-openapi-java-server-app</module>
+    <module>crud-openapi-net</module>
+    <module>crud-typescript-angular-client-app</module>
+    <module>kafka-documentation</module>
+    <module>named-queries</module>
+    <module>openapi-documentation</module>
+    <module>rest-documentation</module>
+    <module>security-permissions</module>
+    <module>testdata-builder</module>
   </modules>
 
   <dependencies>
@@ -28,11 +51,8 @@
   <build>
     <resources>
       <resource>
-        <directory>src/main/templates</directory>
-        <targetPath>src/main/templates</targetPath>
-      </resource>
-      <resource>
         <directory>src/main/resources</directory>
+        <targetPath>src/main/templates</targetPath>
       </resource>
     </resources>
     <plugins>

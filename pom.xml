@@ -221,7 +221,7 @@
             <configuration>
               <property>master.basedir</property>
               <project>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.devonfw.cobigen</groupId>
                 <artifactId>master-parent</artifactId>
               </project>
             </configuration>
