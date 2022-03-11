@@ -33,6 +33,14 @@ public enum TemplatesConfigurationVersion {
   /**
    * ChangeLog:
    * <ul>
+   * <li>added option for detailed description for increments</li>
+   * <ul>
+   */
+  v2_3(2.3f, true),
+
+  /**
+   * ChangeLog:
+   * <ul>
    * <li>new attribute templateEngine (#293)</li>
    * </ul>
    */
