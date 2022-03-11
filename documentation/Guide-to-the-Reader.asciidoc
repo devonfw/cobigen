@@ -2,11 +2,12 @@
 
 Dependent on the intention you are reading this document, you might be most interested in the following chapters:
 
-* If this is *your first contact with CobiGen*, you will be interested in the link:home[general purpose] of CobiGen, in the link:mgmt_license-agreement[licensing of CobiGen], as well as in the link:mgmt_shared-service[Shared Service] provided for CobiGen. Additionally, there are some link:cobigen-usecases[general use cases], which are currently implemented and maintained to be used out of the box.
+* If this is *your first contact with CobiGen*, you will be interested in the link:home[general purpose] of CobiGen. Additionally, there are some link:cobigen-usecases[general use cases], which are currently implemented and maintained to be used out of the box.
 
-* As a **user of the CobiGen Eclipse integration**, you should focus on the link:cobigen-eclipse_installation[Installation] and link:cobigen-eclipse_usage[Usage] chapters to get a good introduction how to use CobiGen in eclipse.
-* As a **user of the Maven integration**, you should focus on the link:cobigen-maven_configuration[Maven configuration] chapter, which guides you through the integration if CobiGen into your build configuration.
+* As a **user of the CobiGen Eclipse integration**, you should focus on the link:cobigen-eclipse_installation[Installation] and link:cobigen-eclipse_usage[Usage] chapters to get a good introduction about how to use CobiGen in eclipse.
+
+* As a **user of the Maven integration**, you should focus on the link:cobigen-maven_configuration[Maven configuration] chapter, which guides you through the integration of CobiGen into your build configuration.
 
 * If you like to *adapt the configuration of CobiGen*, you have to step deeper into the link:cobigen-core_configuration[configuration guide] as well as into the plug-in configuration extensions for the link:cobigen-javaplugin[Java Plug-in], link:cobigen-xmlplugin[XML-Plugin], link:cobigen-propertyplugin[Java Property Plug-in], as well as for the link:cobigen-textmerger[Text-Merger Plug-in].
 
-* Finally, if want to *develop your own templates*, you will be thankful for link:cobigen-templates_helpful-links[helpful links] in addition to the plug-ins documentation as referenced in the previous point.
+* Finally, if you want to *develop your own templates*, you will be thankful for link:cobigen-templates_helpful-links[helpful links] in addition to the plug-ins documentation as referenced in the previous point.

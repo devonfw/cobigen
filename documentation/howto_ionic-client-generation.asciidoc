@@ -10,29 +10,29 @@ NOTE: This is a short introduction to the Ionic generation. For a deeper tutoria
 
 == Prerequisites
 
-Before starting, make sure you already have in your computer:
+Before starting, make sure you have the following things already installed on your machine:
 
-- link:https://ionicframework.com/docs/installation/cli[Ionic]: by following the steps defined on that page.
-It includes installing:
-** link:https://nodejs.org/en/[NodeJS]: We have to use "NPM" for downloading packages.
+- link:https://ionicframework.com/docs/installation/cli[Ionic]: follow the steps described on the Ionic page.
+It includes the installation of:
+** link:https://nodejs.org/en/[Node.js]: We have to use the `npm` package manager for downloading packages.
 ** Ionic CLI.
 
 - link:https://capacitor.ionicframework.com/docs/getting-started/[Capacitor]: Necessary to access to native device features.
 
 If _CobiGen_Templates_ are not already downloaded, follow the next steps:
 
-- Right click on any file of your workspace _CobiGen > Update Templates_ and now you are able to start the generation. 
+- Right click on any file in your Eclipse workspace. Select _CobiGen -> Update Templates..._ from the context menu and now you are able to start the generation. 
 
-- If you want to adapt them, click _Adapt Templates_ and you should have the _CobiGen_Templates_ as a new project in Eclipse's workspace.
+- If you want to adapt the templates, select _CobiGen -> Adapt Templates..._ from the menu and you should have the _CobiGen_Templates_ as a new project in your Eclipse's workspace.
 
 After following those steps correctly, you should have the latest version of the templates ready to use.
 
 == Generation
 
-We are going to generate the CRUD into a **sample application** that we have developed for 
-testing this functionality. It is present on your `workspaces/examples` folder (devon4ng-ionic-application-template). If you do not see it, you can clone or download it from link:https://github.com/devonfw/devon4ng-ionic-application-template[here].
+We are going to generate the CRUD functions into a **sample application**.
+First, clone or download the link:https://github.com/devonfw/devon4ng-ionic-application-template[devon4ng Ionic template] in your workspace.
 
-After having that sample app, please create an link:https://github.com/devonfw/devon4ng/wiki/tutorial-newapp[devon4j project] and then start implementing the ETO: You will find an example link:https://github.com/devonfw/devon4j/blob/develop/samples/core/src/main/java/io/devonfw/gastronomy/restaurant/tablemanagement/logic/api/to/TableEto.java[here].
+After that, please create a link:https://github.com/devonfw/devon4ng/wiki/tutorial-newapp[devon4j project] and then start implementing the ETO: you can find an example link:https://github.com/devonfw/devon4j/blob/develop/samples/core/src/main/java/io/devonfw/gastronomy/restaurant/tablemanagement/logic/api/to/TableEto.java[here].
 
 As you can see, `TableEto` contains 3 attributes: 2 of them are `Long` and the third one `TableState` is an enum that you will find 
 link:https://github.com/devonfw/devon4j/blob/develop/samples/core/src/main/java/io/devonfw/gastronomy/restaurant/tablemanagement/common/api/datatype/TableState.java[here]. 

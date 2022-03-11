@@ -105,11 +105,11 @@ public class OpenAPIMatcher implements MatcherInterpreter {
             resolvedVariables.put(va.getVarName(), attributeValue);
           } catch (NoSuchFieldException | SecurityException e) {
             if (va.isMandatory()) {
-              String errorMessage = Constants.getMandatoryErrorMessage(va.getValue());
+              String errorMessage = Constants.getMandatoryMessage(true, va.getValue());
               report.addError(new CobiGenRuntimeException(errorMessage));
               LOG.error(errorMessage);
             } else {
-              String warningMessage = Constants.getMandatoryWarning(va.getValue());
+              String warningMessage = Constants.getMandatoryMessage(false, va.getValue());
               report.addWarning(warningMessage);
               resolvedVariables.put(va.getVarName(), "");
               LOG.warn(warningMessage);
