@@ -47,7 +47,7 @@ public enum ContextConfigurationVersion {
    * <li>added options to add links, tags and a detailed description</li>
    * </ul>
    */
-  v2_3(2.3f, true);
+  v2_3(2.3f, false);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;
