@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
-  targetNamespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration" elementFormDefault="qualified" version="2.2">
+  targetNamespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration" elementFormDefault="qualified" version="2.3">
 
   <xs:element name="contextConfiguration">
     <xs:complexType>
       <xs:sequence minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="trigger" type="tns:trigger"/>
-    </xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="trigger" type="tns:trigger"/>
+          <xs:element name="tags" type="tns:tag"/>
+          <xs:element name="links" type="tns:link"/>
+        </xs:choice>
+      </xs:sequence>
       <xs:attribute name="version" use="required" type="xs:decimal"/>
     </xs:complexType>
   </xs:element>
@@ -52,20 +56,8 @@
     <xs:attribute name="mandatory" use="optional" type="xs:boolean" default="false"/>
   </xs:complexType>
 
-  <xs:complexType name="tags">
-    <xs:sequence maxOccurs="unbounded" minOccurs="1">
-      <xs:element name="tag" type="tns:tag"/>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="tag">
     <xs:attribute name="name" use="required" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="links">
-    <xs:sequence maxOccurs="unbounded" minOccurs="1">
-      <xs:element name="link" type="tns:link"/>
-    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="link">
