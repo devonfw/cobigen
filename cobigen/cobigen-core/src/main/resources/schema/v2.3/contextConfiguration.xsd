@@ -71,7 +71,7 @@
 
   <xs:complexType name="link">
     <xs:attribute name="url" use="required" type="xs:string" />
-    <xs:attribute name="description" use="required" type="xs:string" />
+    <xs:attribute name="description" use="optional" type="xs:string" />
   </xs:complexType>
 
 </xs:schema>

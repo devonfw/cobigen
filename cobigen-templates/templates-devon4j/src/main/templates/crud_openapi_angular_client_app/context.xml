@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
-
-
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.3">
   <trigger id="crud_openapi_angular_client_app" type="openapi">
-    <containerMatcher type="element" value="openAPIFile"/>
+    <containerMatcher type="element" value="openAPIFile" />
     <matcher type="element" value="EntityDef">
-      <variableAssignment type="constant" key="domain" value="demo"/>
-      <variableAssignment type="property" key="component" value="componentName"/>
-      <variableAssignment type="property" key="etoName" value="name"/>
+      <variableAssignment type="constant" key="domain" value="demo" />
+      <variableAssignment type="property" key="component" value="componentName" />
+      <variableAssignment type="property" key="etoName" value="name" />
     </matcher>
   </trigger>
-
-
 </contextConfiguration>

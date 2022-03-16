@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
-    <templates>
-        <template name="named_queries" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java" templateFile="NamedQueries.java.ftl"/>
-    </templates>
-    <increments>
-        <increment name="named_queries" description="Named Query Constants">
-            <templateRef ref="named_queries"/>
-        </increment>
-    </increments>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.3">
+  <templates>
+    <template name="named_queries" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java" templateFile="NamedQueries.java.ftl" />
+  </templates>
+  <increments>
+    <increment name="named_queries" description="Named Query Constants" explanation="Generates basic querey constants schema.">
+      <templateRef ref="named_queries" />
+    </increment>
+  </increments>
 </templatesConfiguration>
