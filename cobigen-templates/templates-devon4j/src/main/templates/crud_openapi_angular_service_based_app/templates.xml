@@ -13,7 +13,7 @@
   </templateScans>
 
   <increments>
-    <increment name="devon4ng-app" description="CRUD devon4ng Service Based Angular" explanation="Creates Angular stack CRUD Rest service for the (backends) server.">
+    <increment name="devon4ng-app" description="CRUD devon4ng Service Based Angular" explanation="Creates Angular stack CRUD REST service for the (backends) server.">
       <incrementRef ref="app_angular_env" />
       <incrementRef ref="app_angular_devon4j_component" />
     </increment>

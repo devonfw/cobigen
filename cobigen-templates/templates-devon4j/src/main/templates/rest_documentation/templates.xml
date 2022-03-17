@@ -10,7 +10,7 @@
   </templateScans>
 
   <increments>
-    <increment name="Rest_Docs" description="Documentation" explanation="Contains information about the operations of the rest application.">
+    <increment name="Rest_Docs" description="Documentation" explanation="Contains information about the operations of the REST application.">
       <templateRef ref="Documentation.adoc" />
     </increment>
   </increments>

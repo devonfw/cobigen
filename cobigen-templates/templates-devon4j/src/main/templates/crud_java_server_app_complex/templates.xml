@@ -26,7 +26,7 @@
   </templateScans>
 
   <increments>
-    <increment name="logic_impl_complex" description="CRUD UC logic" explanation="Creates (backends) server CRUD service for java application.">
+    <increment name="logic_impl_complex" description="CRUD UC logic" explanation="Creates the logic layer for java application.">
       <templateRef ref="crud_complex_AbstractBeanMapperSupport.java" />
       <templateRef ref="crud_complex_${variables.component#cap_first}.java" />
       <templateRef ref="crud_complex_Abstract${variables.entityName}Uc.java" />

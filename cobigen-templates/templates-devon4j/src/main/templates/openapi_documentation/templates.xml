@@ -10,7 +10,7 @@
   </templateScans>
 
   <increments>
-    <increment name="OpenAPI_Docs" description="Documentation" explanation="Contains information about the operations of the openapi application.">
+    <increment name="OpenAPI_Docs" description="Documentation" explanation="Contains information about the operations of the OpenAPI application.">
       <templateRef ref="Documentation.adoc" />
     </increment>
   </increments>

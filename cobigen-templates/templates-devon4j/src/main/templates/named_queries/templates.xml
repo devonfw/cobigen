@@ -4,7 +4,7 @@
     <template name="named_queries" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java" templateFile="NamedQueries.java.ftl" />
   </templates>
   <increments>
-    <increment name="named_queries" description="Named Query Constants" explanation="Generates basic querey constants schema.">
+    <increment name="named_queries" description="Named Query Constants" explanation="Generates basic query constants schema.">
       <templateRef ref="named_queries" />
     </increment>
   </increments>
