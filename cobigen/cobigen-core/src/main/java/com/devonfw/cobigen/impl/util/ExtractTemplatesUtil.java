@@ -47,8 +47,7 @@ public class ExtractTemplatesUtil {
     // files.
     URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
 
-    Path oldCobiGenTemplatesLocation = Paths
-        .get(findTemplatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES));
+    Path oldCobiGenTemplatesLocation = Paths.get(findTemplatesLocation);
 
     if (Files.exists(oldCobiGenTemplatesLocation)) {
       LOG.info(
