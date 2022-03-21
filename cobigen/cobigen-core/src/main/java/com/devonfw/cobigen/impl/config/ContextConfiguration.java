@@ -9,7 +9,9 @@ import java.util.Map;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
-import com.devonfw.cobigen.impl.config.reader.ContextConfigurationAnalyzer;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationSetReader;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -26,6 +28,11 @@ public class ContextConfiguration {
    * Path of the configuration. Might point to a folder or a jar or maybe even something different in future.
    */
   private Path configurationPath;
+
+  /**
+   * The reader to read the context.xml files
+   */
+  private AbstractContextConfigurationReader contextConfigurationReader;
 
   /**
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
@@ -47,10 +54,12 @@ public class ContextConfiguration {
    */
   private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
-    AbstractContextConfigurationReader reader = ContextConfigurationAnalyzer.getReader(configRoot);
+    if (this.contextConfigurationReader == null) {
+      this.contextConfigurationReader = ContextConfigurationReaderFactory.getReader(configRoot);
+    }
 
-    this.configurationPath = reader.getContextRoot();
-    this.triggers = reader.loadTriggers();
+    this.configurationPath = this.contextConfigurationReader.getContextRoot();
+    this.triggers = this.contextConfigurationReader.loadTriggers();
   }
 
   /**
@@ -94,6 +103,18 @@ public class ContextConfiguration {
   public Path getConfigurationPath() {
 
     return this.configurationPath;
+  }
+
+  /**
+   * @param triggerId the trigger id to get the config root directory for
+   * @return the {@link Path} of the config root directory of the trigger
+   */
+  public Path getConfigRootforTrigger(String triggerId) {
+
+    if (this.contextConfigurationReader instanceof ContextConfigurationReader) {
+      return this.contextConfigurationReader.getContextRoot();
+    }
+    return ((ContextConfigurationSetReader) this.contextConfigurationReader).getConfigRootForTrigger(triggerId);
   }
 
 }

@@ -257,9 +257,7 @@ public class TemplatesJarUtil {
    * @param templatesDirectory directory where the templates are located
    * @return file of the jar downloaded or null if it was not found
    *
-   * @deprecated use getJarFiles instead
    */
-  @Deprecated
   public static File getJarFile(boolean isSource, File templatesDirectory) {
 
     File[] jarFiles;

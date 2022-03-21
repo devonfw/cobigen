@@ -3,15 +3,12 @@ package com.devonfw.cobigen.impl.config.reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -21,13 +18,11 @@ import javax.xml.validation.SchemaFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
-import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
@@ -36,7 +31,6 @@ import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -44,10 +38,10 @@ import jakarta.xml.bind.UnmarshalException;
 import jakarta.xml.bind.Unmarshaller;
 
 /** The {@link ContextConfigurationReader} reads the context xml */
-public class AbstractContextConfigurationReader {
+public abstract class AbstractContextConfigurationReader {
 
   /** Map with XML Nodes 'context' of the context.xml files */
-  private Map<Path, ContextConfiguration> contextConfigurations;
+  protected Map<Path, ContextConfiguration> contextConfigurations;
 
   /** Paths of the context configuration files */
   protected List<Path> contextFiles;
@@ -66,73 +60,6 @@ public class AbstractContextConfigurationReader {
     if (configRoot == null) {
       throw new IllegalArgumentException("Configuration path cannot be null.");
     }
-
-    this.contextFiles = new ArrayList<>();
-
-    // use old context.xml in templates root
-    Path contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-
-    if (!Files.exists(contextFile)) {
-      // if no context.xml is found in the root folder search in src/main/templates
-      configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-      contextFile = configRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-      if (!Files.exists(contextFile)) {
-
-        this.contextFiles = loadContextFilesInSubfolder(configRoot);
-
-        if (this.contextFiles.isEmpty()) {
-          throw new InvalidConfigurationException(contextFile, "Could not find any context configuration file.");
-        }
-
-      } else {
-        this.contextFiles.add(contextFile);
-        // check if conflict with old and modular configuration exists
-
-        if (!loadContextFilesInSubfolder(configRoot).isEmpty())
-          throw new InvalidConfigurationException(contextFile,
-              "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
-                  + WikiConstants.WIKI_UPDATE_OLD_CONFIG);
-
-      }
-    } else {
-      this.contextFiles.add(contextFile);
-    }
-
-    this.contextRoot = configRoot;
-
-    readConfiguration();
-  }
-
-  /**
-   * search for configuration Files in the subfolders of configRoot
-   *
-   * @param configRoot root directory of the configuration
-   * @throws InvalidConfigurationException if the configuration is not valid against its xsd specification
-   */
-  protected List<Path> loadContextFilesInSubfolder(Path configRoot) {
-
-    List<Path> contextPaths = new ArrayList<>();
-
-    List<Path> templateDirectories = new ArrayList<>();
-
-    try (Stream<Path> files = Files.list(configRoot)) {
-      files.forEach(path -> {
-        if (Files.isDirectory(path)) {
-          templateDirectories.add(path);
-        }
-      });
-    } catch (IOException e) {
-      throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
-    }
-
-    for (Path file : templateDirectories) {
-      Path contextPath = file.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-      if (Files.exists(contextPath)) {
-        contextPaths.add(contextPath);
-      }
-    }
-
-    return contextPaths;
   }
 
   /**
@@ -215,23 +142,7 @@ public class AbstractContextConfigurationReader {
    *
    * @return a {@link List} containing all the {@link Trigger}s
    */
-  public Map<String, Trigger> loadTriggers() {
-
-    Map<String, Trigger> triggers = Maps.newHashMap();
-    for (Path contextFile : this.contextConfigurations.keySet()) {
-      ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
-      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
-        // templateFolder property is optional in schema version 2.2. If not set take the path of the context.xml file
-        String templateFolder = t.getTemplateFolder();
-        if (templateFolder.isEmpty() || templateFolder.equals("/")) {
-          templateFolder = contextFile.getParent().getFileName().toString();
-        }
-        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder,
-            Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
-      }
-    }
-    return triggers;
-  }
+  abstract public Map<String, Trigger> loadTriggers();
 
   /**
    * Loads all {@link Matcher}s of a given {@link com.devonfw.cobigen.impl.config.entity.io.Trigger}
@@ -239,7 +150,7 @@ public class AbstractContextConfigurationReader {
    * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
    * @return the {@link List} of {@link Matcher}s
    */
-  private List<Matcher> loadMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
+  protected List<Matcher> loadMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
 
     List<Matcher> matcher = new LinkedList<>();
     for (com.devonfw.cobigen.impl.config.entity.io.Matcher m : trigger.getMatcher()) {
@@ -254,7 +165,7 @@ public class AbstractContextConfigurationReader {
    * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
    * @return the {@link List} of {@link Matcher}s
    */
-  private List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
+  protected List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
 
     List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
     for (com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
@@ -270,7 +181,8 @@ public class AbstractContextConfigurationReader {
    *        from
    * @return the {@link List} of {@link Matcher}s
    */
-  private List<VariableAssignment> loadVariableAssignments(com.devonfw.cobigen.impl.config.entity.io.Matcher matcher) {
+  protected List<VariableAssignment> loadVariableAssignments(
+      com.devonfw.cobigen.impl.config.entity.io.Matcher matcher) {
 
     List<VariableAssignment> variableAssignments = new LinkedList<>();
     for (com.devonfw.cobigen.impl.config.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {

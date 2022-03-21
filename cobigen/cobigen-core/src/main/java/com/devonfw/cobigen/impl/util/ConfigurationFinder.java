@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -130,18 +131,24 @@ public class ConfigurationFinder {
       return templatesFolderPath.toUri();
     }
 
-    // 2 create/use new template sets folder
+    // 2. use template jar
+    File jarFile = TemplatesJarUtil.getJarFile(false, templatesFolderPath.getParent().toFile());
+    if (jarFile != null) {
+      return jarFile.toPath().toUri();
+    }
+
+    // 3. create/use new template sets folder
     Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home);
 
     Path templateSetsAdaptedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
-    // 3 check adapted and downloaded folder
+    // 4. check adapted and downloaded folder
     if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
       return templateSetsFolderPath.toUri();
     }
 
-    // 4 download template set jars
+    // 5. download template set jars
 
     LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
         CobiGenPaths.getCobiGenHomePath());

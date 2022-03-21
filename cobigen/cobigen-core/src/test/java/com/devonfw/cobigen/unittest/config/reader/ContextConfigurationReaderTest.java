@@ -8,11 +8,13 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 import junit.framework.TestCase;
@@ -35,7 +37,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
-    new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
+    ContextConfigurationReaderFactory.getReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
   }
 
   /**
@@ -51,7 +53,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   public void testConflictConfiguration() throws InvalidConfigurationException {
 
     Throwable bothPresent = assertThrows(InvalidConfigurationException.class, () -> {
-      new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "invalid_new").toURI()));
+      ContextConfigurationReaderFactory.getReader(Paths.get(new File(testFileRootPath + "invalid_new").toURI()));
     });
 
     assertThat(bothPresent instanceof InvalidConfigurationException);
@@ -66,7 +68,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testContextLoadedFromNewConfiguration() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid_new").toURI());
+    CobiGenFactory.create(new File(testFileRootPath + "valid_new").toURI().resolve("template-sets"));
   }
 
   /**
@@ -76,8 +78,8 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testNewConfiguration() {
 
-    AbstractContextConfigurationReader context = new ContextConfigurationReader(
-        Paths.get(new File(testFileRootPath + "valid_new").toURI()));
+    AbstractContextConfigurationReader context = ContextConfigurationReaderFactory.getReader(Paths
+        .get(new File(testFileRootPath + "valid_new").toURI()).resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
     assertThat(context.getContextFiles().size()).isEqualTo(2);
   }
 
