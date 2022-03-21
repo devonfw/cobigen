@@ -134,20 +134,14 @@ public class ConfigurationFinder {
     Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home);
 
     Path templateSetsAdaptedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-
-    // 3 check adapted folder
-    if (Files.exists(templateSetsAdaptedFolderPath)) {
-      return templateSetsFolderPath.toUri();
-    }
-
     Path templateSetsDownloadedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
-    // 4 check downloaded folder
-    if (Files.exists(templateSetsDownloadedFolderPath)) {
+    // 3 check adapted and downloaded folder
+    if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
       return templateSetsFolderPath.toUri();
     }
 
-    // 5 download template set jars
+    // 4 download template set jars
 
     LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
         CobiGenPaths.getCobiGenHomePath());

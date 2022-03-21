@@ -122,9 +122,7 @@ public class CobiGenPaths {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
 
-    createFolder(templatesPath);
-
-    return templatesPath;
+    return createFolder(templatesPath);
   }
 
   /**

@@ -47,16 +47,17 @@ public class ExtractTemplatesUtil {
     // files.
     URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
 
-    Path oldCobiGenTemplatesLocation = Paths.get(findTemplatesLocation);
+    Path templatesLocationFolder = Paths.get(findTemplatesLocation);
 
-    if (Files.exists(oldCobiGenTemplatesLocation)) {
+    if (Files.exists(templatesLocationFolder)
+        && templatesLocationFolder.endsWith(ConfigurationConstants.COBIGEN_TEMPLATES)) {
       LOG.info(
           "Your are using an old Templates project at {}. You can edit them in place to adapt your generation results.",
-          oldCobiGenTemplatesLocation);
+          templatesLocationFolder);
       return;
     }
 
-    if (Files.exists(Paths.get(findTemplatesLocation.resolve(ConfigurationConstants.ADAPTED_FOLDER)))) {
+    if (Files.exists(templatesLocationFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER))) {
       LOG.info("Templates already found at {}. You can edit them in place to adapt your generation results.",
           extractTo);
       return;
@@ -142,8 +143,8 @@ public class ExtractTemplatesUtil {
   }
 
   /**
-   * Unpacks the source CobiGen_Templates Jar and creates a new CobiGen_Templates folder structure at
-   * $destinationPath/CobiGen_Templates location
+   * Unpacks the template set jars located in downloaded folder and creates a new folder structure for each template set
+   * at $destinationPath/ location
    *
    * @param destinationPath path to be used as target directory
    * @throws IOException if no destination path could be set
