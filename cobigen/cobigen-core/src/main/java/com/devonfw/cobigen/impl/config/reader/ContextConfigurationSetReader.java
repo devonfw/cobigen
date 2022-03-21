@@ -4,8 +4,8 @@ import java.nio.file.Path;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 
-/** The {@link ContextConfigurationReader} reads the context xml */
-public class ContextConfigurationReader extends AbstractContextConfigurationReader {
+/** The {@link ContextConfigurationSetReader} reads the context xml */
+public class ContextConfigurationSetReader extends AbstractContextConfigurationReader {
 
   /**
    * The constructor.
@@ -13,7 +13,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
    * @param configRoot
    * @throws InvalidConfigurationException
    */
-  public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
+  public ContextConfigurationSetReader(Path configRoot) throws InvalidConfigurationException {
 
     super(configRoot);
   }

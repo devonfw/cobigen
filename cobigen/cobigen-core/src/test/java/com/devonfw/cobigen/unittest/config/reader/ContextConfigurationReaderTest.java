@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
+import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -75,7 +76,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testNewConfiguration() {
 
-    ContextConfigurationReader context = new ContextConfigurationReader(
+    AbstractContextConfigurationReader context = new ContextConfigurationReader(
         Paths.get(new File(testFileRootPath + "valid_new").toURI()));
     assertThat(context.getContextFiles().size()).isEqualTo(2);
   }
@@ -102,7 +103,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testOldConfiguration() {
 
-    ContextConfigurationReader context = new ContextConfigurationReader(
+    AbstractContextConfigurationReader context = new ContextConfigurationReader(
         Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
     assertThat(context.getContextFiles().size()).isEqualTo(1);
   }
