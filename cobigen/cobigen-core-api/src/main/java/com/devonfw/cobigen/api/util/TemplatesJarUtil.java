@@ -11,9 +11,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
@@ -219,12 +222,44 @@ public class TemplatesJarUtil {
   }
 
   /**
+   * Returns a list of the file paths of the template set jars
+   *
+   * @param templatesDirectory directory where the templates are located
+   *
+   * @return file of the jar downloaded or null if it was not found
+   */
+  public static List<Path> getJarFiles(Path templatesDirectory) {
+
+    ArrayList<Path> jarPaths = new ArrayList<>();
+
+    try (Stream<Path> files = Files.list(templatesDirectory)) {
+      files.forEach(path -> {
+        if (path.toString().endsWith(".jar")) {
+          jarPaths.add(path);
+        }
+      });
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Could not read configuration root directory.", e);
+    }
+
+    if (!jarPaths.isEmpty()) {
+      return jarPaths;
+    } else {
+      // There are no jars downloaded
+      return null;
+    }
+  }
+
+  /**
    * Returns the file path of the templates jar
    *
    * @param isSource true if we want to get source jar file path
    * @param templatesDirectory directory where the templates are located
    * @return file of the jar downloaded or null if it was not found
+   *
+   * @deprecated use getJarFiles instead
    */
+  @Deprecated
   public static File getJarFile(boolean isSource, File templatesDirectory) {
 
     File[] jarFiles;
@@ -242,4 +277,5 @@ public class TemplatesJarUtil {
       return null;
     }
   }
+
 }

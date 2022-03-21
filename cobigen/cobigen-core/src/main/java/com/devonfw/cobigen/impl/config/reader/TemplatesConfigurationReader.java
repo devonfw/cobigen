@@ -731,7 +731,7 @@ public class TemplatesConfigurationReader {
    */
   private Trigger getExternalTrigger(String triggerToSearch) {
 
-    ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
+    AbstractContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);
