@@ -42,13 +42,13 @@ public class ConfigurationUtilTest {
       Files.createDirectories(templatesFolder);
       String templatesArtifact = "templates-devon4j-1.0.jar";
 
-      Path adaptedTemplatesDirectory = templatesFolder.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-      Files.createDirectories(adaptedTemplatesDirectory);
+      Path downloadedTemplatesDirectory = templatesFolder.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+      Files.createDirectories(downloadedTemplatesDirectory);
       Path templatesJar = templatesFolder.resolve(templatesArtifact);
       Files.createFile(templatesJar);
       // found template-sets directory
       assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesFolder.toFile().toURI());
-      Files.delete(adaptedTemplatesDirectory);
+      Files.delete(downloadedTemplatesDirectory);
 
       // configuration file exists
       File randomDirectoryForConfigFile = this.tmpFolder.newFolder();
