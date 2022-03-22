@@ -33,18 +33,18 @@ public enum TemplatesConfigurationVersion {
   /**
    * ChangeLog:
    * <ul>
-   * <li>added option for detailed description for increments</li>
-   * <ul>
+   * <li>new attribute templateEngine (#293)</li>
+   * </ul>
    */
-  v2_3(2.3f, true),
+  v4_0(4.0f, true),
 
   /**
    * ChangeLog:
    * <ul>
-   * <li>new attribute templateEngine (#293)</li>
-   * </ul>
+   * <li>added option for detailed description for increments</li>
+   * <ul>
    */
-  v4_0(4.0f, true);
+  v5_0(5.0f, true);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;

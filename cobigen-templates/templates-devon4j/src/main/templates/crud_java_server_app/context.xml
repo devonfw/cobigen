@@ -12,5 +12,14 @@
     </matcher>
   </trigger>
 
+  <links>
+    <link url="bla" description="some guide"/>
+    <link url="blubb"/>
+  </links>
+
+  <tags>
+    <tag name="entity input"/>
+    <tag name="CRUD"/>
+  </tags>
 
 </contextConfiguration>
