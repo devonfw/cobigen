@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
@@ -85,12 +86,10 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
     }
 
     for (Path templateDirectory : templateDirectories) {
-      Path contextPath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+      Path contextFilePath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
           .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-      if (Files.exists(contextPath)) {
-        contextPaths.add(contextPath);
-        this.configRoots.put(contextPath, templateDirectory);
-      }
+
+      addConfigRoot(contextFilePath, templateDirectory, contextPaths);
     }
 
     return contextPaths;
@@ -105,26 +104,14 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
 
     List<Path> contextPaths = new ArrayList<>();
 
-    List<Path> templateJars = new ArrayList<>();
+    List<Path> templateJars = TemplatesJarUtil.getJarFiles(configRoot);
+    if (templateJars != null) {
+      for (Path jarPath : templateJars) {
+        Path configurationPath = FileSystemUtil.createFileSystemDependentPath(jarPath.toUri());
+        Path contextFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 
-    try (Stream<Path> files = Files.list(configRoot)) {
-      files.forEach(path -> {
-        if (path.toUri().toString().endsWith(".jar")) {
-          templateJars.add(path);
-        }
-      });
-    } catch (IOException e) {
-      throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
-    }
-
-    for (Path jarPath : templateJars) {
-      Path configurationPath = FileSystemUtil.createFileSystemDependentPath(jarPath.toUri());
-      Path contextPath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-          .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-
-      if (Files.exists(contextPath)) {
-        contextPaths.add(contextPath);
-        this.configRoots.put(contextPath, configurationPath);
+        addConfigRoot(contextFilePath, configurationPath, contextPaths);
       }
     }
 
@@ -141,7 +128,6 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
       boolean isJarConfig = (configRoot.getParent() == null);
 
       List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = contextConfiguration.getTrigger();
-      System.out.println(triggerList.size());
       if (!triggerList.isEmpty()) {
         // context configuration in template sets consists of only one trigger
         com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
@@ -166,11 +152,29 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
   }
 
   /**
+   * Get the configuration root directory for a given trigger
+   *
    * @param triggerId the trigger id to search the config root for
    * @return the {@link Path} of the config root for a trigger
    */
   public Path getConfigRootForTrigger(String triggerId) {
 
     return this.triggerConfigRoots.get(triggerId);
+  }
+
+  /**
+   * Adds the path to a context.xml file to the list of all config files. Also adds the path of the context.xml file and
+   * its root directory to the configRoots map
+   *
+   * @param contextFilePath the {@link Path} to the context.xml file
+   * @param configRootPath the {@link Path} containing the config root directory for a context.xml
+   * @param contextPaths a list containing all paths to context.xml files
+   */
+  private void addConfigRoot(Path contextFilePath, Path configRootPath, List<Path> contextPaths) {
+
+    if (Files.exists(contextFilePath)) {
+      contextPaths.add(contextFilePath);
+      this.configRoots.put(contextFilePath, configRootPath);
+    }
   }
 }
