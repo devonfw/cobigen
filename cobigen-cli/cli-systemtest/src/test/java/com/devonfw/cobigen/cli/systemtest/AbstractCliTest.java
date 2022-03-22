@@ -8,12 +8,15 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.util.Os;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
@@ -32,23 +35,60 @@ public class AbstractCliTest {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
+  /** Temporary directory for the templates project */
+  @ClassRule
+  public static TemporaryFolder tempFolderTemplates = new TemporaryFolder();
+
   /** Current home directory */
   protected Path currentHome;
 
-  /** The devon4j-templates development folder */
+  /** The templates development folder */
   protected static Path devTemplatesPath;
+
+  /** A temp directory containing the templates development folder */
+  protected static Path devTemplatesPathTemp;
 
   /**
    * Determine the devon4j-templates development folder
    *
    * @throws URISyntaxException if the path could not be created properly
+   * @throws IOException if accessing a template directory directory fails
    */
   @BeforeClass
-  public static void determineDevTemplatesPath() throws URISyntaxException {
+  public static void determineDevTemplatesPath() throws URISyntaxException, IOException {
 
     devTemplatesPath = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-        .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
-        .resolve("templates-devon4j");
+        .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates");
+
+    // create a temporary directory cobigen-templates/template-sets/adapted containing the template sets
+    Path tempFolderPath = tempFolderTemplates.getRoot().toPath();
+    Path cobigenTemplatePath = tempFolderPath.resolve("cobigen-templates");
+    if (!Files.exists(cobigenTemplatePath)) {
+      Files.createDirectory(cobigenTemplatePath);
+
+      devTemplatesPathTemp = cobigenTemplatePath.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      Path templateSetsAdaptedFolder = devTemplatesPathTemp.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      Files.createDirectory(devTemplatesPathTemp);
+      Files.createDirectory(templateSetsAdaptedFolder);
+
+      FileUtils.copyDirectory(devTemplatesPath.toFile(), templateSetsAdaptedFolder.toFile());
+
+      try (Stream<Path> files = Files.list(templateSetsAdaptedFolder)) {
+        files.forEach(path -> {
+          if (Files.isDirectory(path)) {
+            Path resourcesFolder = path.resolve("src/main/resources");
+            Path templatesFolder = path.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+            if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
+              try {
+                Files.move(resourcesFolder, templatesFolder);
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+        });
+      }
+    }
   }
 
   /**
@@ -71,7 +111,7 @@ public class AbstractCliTest {
 
     Path configFile = this.currentHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
     Files.write(configFile,
-        (ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + devTemplatesPath.toString()).getBytes());
+        (ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + devTemplatesPathTemp.toString()).getBytes());
   }
 
   /**
@@ -129,7 +169,7 @@ public class AbstractCliTest {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 3);
       debugArgs[debugArgs.length - 3] = "-v";
       debugArgs[debugArgs.length - 2] = "-tp";
-      debugArgs[debugArgs.length - 1] = devTemplatesPath.toString();
+      debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
     } else {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 1);
       debugArgs[debugArgs.length - 1] = "-v";
