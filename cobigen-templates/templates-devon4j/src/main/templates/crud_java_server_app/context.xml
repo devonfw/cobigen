@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
-
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.3">
   <trigger id="crud_java_server_app" type="java">
-    <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"
-      retrieveObjectsRecursively="false"/>
+    <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api" retrieveObjectsRecursively="false" />
     <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+)Entity">
-      <variableAssignment type="regex" key="rootPackage" value="1"/>
-      <variableAssignment type="regex" key="domain" value="3"/>
-      <variableAssignment type="regex" key="component" value="4"/>
-      <variableAssignment type="regex" key="entityName" value="5"/>
+      <variableAssignment type="regex" key="rootPackage" value="1" />
+      <variableAssignment type="regex" key="domain" value="3" />
+      <variableAssignment type="regex" key="component" value="4" />
+      <variableAssignment type="regex" key="entityName" value="5" />
     </matcher>
   </trigger>
-
   <links>
-    <link url="bla" description="some guide"/>
-    <link url="blubb"/>
+    <link url="https://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/reference/html/repositories.html"></link>
   </links>
-
-  <tags>
-    <tag name="entity input"/>
-    <tag name="CRUD"/>
-  </tags>
-
 </contextConfiguration>

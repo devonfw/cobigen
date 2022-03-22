@@ -1,37 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.3">
 
   <templates>
-    <templateExtension ref="${variables.etoName#lower_case}-dialog.component.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}-grid.component.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}-alert.component.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.service.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.service.spec.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.module.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}-routing.module.ts" mergeStrategy="override"/>
-    <templateExtension ref="es.json" mergeStrategy="jsonmerge"/>
-    <templateExtension ref="en.json" mergeStrategy="jsonmerge"/>
-    <templateExtension ref="environment.ts" mergeStrategy="override"/>
-    <templateExtension ref="environment.prod.ts" mergeStrategy="override"/>
-    <templateExtension ref="nav-bar.component.html" mergeStrategy="html-ng*"/>
-  	<templateExtension ref="header.component.ts" mergeStrategy="override"/>
-  	<templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
-  	<templateExtension ref="${variables.etoName#lower_case}.model.ts" mergeStrategy="override"/>
-    <templateExtension ref="datadetailstest.model.ts" mergeStrategy="override"/>
-    <templateExtension ref="httpresponse.model.ts" mergeStrategy="override"/>
-    <templateExtension ref="searchcriteriadata.model.ts" mergeStrategy="override"/>
-	  <templateExtension ref="${variables.etoName#lower_case}.actions.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.effects.spec.ts" mergeStrategy="override"/>
-	  <templateExtension ref="${variables.etoName#lower_case}.effects.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.reducers.spec.ts" mergeStrategy="override"/>
-	  <templateExtension ref="${variables.etoName#lower_case}.reducers.ts" mergeStrategy="override"/>
-    <templateExtension ref="${variables.etoName#lower_case}.selectors.ts" mergeStrategy="override"/>
-    <templateExtension ref="store_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/index.ts" mergeStrategy="override"/>
-    <templateExtension ref="actions_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/actions/index.ts" mergeStrategy="override"/>
-    <templateExtension ref="effects_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/effects/index.ts" mergeStrategy="override"/>
-    <templateExtension ref="reducers_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/reducers/index.ts" mergeStrategy="override"/>
-    <templateExtension ref="selectors_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/selectors/index.ts" mergeStrategy="override"/>
+    <templateExtension ref="${variables.etoName#lower_case}-dialog.component.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}-grid.component.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}-alert.component.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.service.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.service.spec.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.module.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}-routing.module.ts" mergeStrategy="override" />
+    <templateExtension ref="es.json" mergeStrategy="jsonmerge" />
+    <templateExtension ref="en.json" mergeStrategy="jsonmerge" />
+    <templateExtension ref="environment.ts" mergeStrategy="override" />
+    <templateExtension ref="environment.prod.ts" mergeStrategy="override" />
+    <templateExtension ref="nav-bar.component.html" mergeStrategy="html-ng*" />
+    <templateExtension ref="header.component.ts" mergeStrategy="override" />
+    <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override" />
+    <templateExtension ref="${variables.etoName#lower_case}.model.ts" mergeStrategy="override" />
+    <templateExtension ref="datadetailstest.model.ts" mergeStrategy="override" />
+    <templateExtension ref="httpresponse.model.ts" mergeStrategy="override" />
+    <templateExtension ref="searchcriteriadata.model.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.actions.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.effects.spec.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.effects.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.reducers.spec.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.reducers.ts" mergeStrategy="override" />
+    <templateExtension ref="${variables.etoName#lower_case}.selectors.ts" mergeStrategy="override" />
+    <templateExtension ref="store_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/index.ts" mergeStrategy="override" />
+    <templateExtension ref="actions_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/actions/index.ts" mergeStrategy="override" />
+    <templateExtension ref="effects_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/effects/index.ts" mergeStrategy="override" />
+    <templateExtension ref="reducers_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/reducers/index.ts" mergeStrategy="override" />
+    <templateExtension ref="selectors_index.ts" destinationPath="../../devon4ng-ngrx-template/src/app/${variables.etoName#lower_case}/store/selectors/index.ts" mergeStrategy="override" />
   </templates>
 
   <templateScans>
@@ -39,51 +38,51 @@
   </templateScans>
 
   <increments>
-    <increment name="devon4ng-rx-app" description="Angular CRUD rxjs App">
-      <incrementRef ref="devon4ng-rx-env"/>
-      <incrementRef ref="devon4ng-rx-i18n"/>
-      <incrementRef ref="devon4ng-rx-component"/>
+    <increment name="devon4ng-rx-app" description="Angular CRUD rxjs App" explanation="Creates Angular stack CRUD service for rxjs application.">
+      <incrementRef ref="devon4ng-rx-env" />
+      <incrementRef ref="devon4ng-rx-i18n" />
+      <incrementRef ref="devon4ng-rx-component" />
     </increment>
     <increment name="devon4ng-rx-env" description="Angular rxjs URL">
-        <templateRef ref="environment.ts"/>
-        <templateRef ref="environment.prod.ts"/>
+      <templateRef ref="environment.ts" />
+      <templateRef ref="environment.prod.ts" />
     </increment>
     <increment name="devon4ng-rx-i18n" description="Angular rxjs i18n">
-      <templateRef ref="es.json"/>
-      <templateRef ref="en.json"/>
+      <templateRef ref="es.json" />
+      <templateRef ref="en.json" />
     </increment>
     <increment name="devon4ng-rx-component" description="Angular rxjs component">
-      <templateRef ref="${variables.etoName#lower_case}-dialog.component.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-dialog.component.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-grid.component.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-grid.component.scss"/>
-      <templateRef ref="${variables.etoName#lower_case}-grid.component.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-alert.component.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-alert.component.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-alert.component.scss"/>
-      <templateRef ref="${variables.etoName#lower_case}-alert.component.spec.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.service.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.service.spec.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.module.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-routing.module.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.model.ts"/>
-      <templateRef ref="datadetailstest.model.ts"/>
-      <templateRef ref="httpresponse.model.ts"/>
-      <templateRef ref="searchcriteriadata.model.ts"/>
-      <templateRef ref="store_index.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.actions.ts"/>
-      <templateRef ref="actions_index.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.effects.ts"/>
-	    <templateRef ref="${variables.etoName#lower_case}.effects.spec.ts"/>
-      <templateRef ref="effects_index.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.reducers.ts"/>
-	    <templateRef ref="${variables.etoName#lower_case}.reducers.spec.ts"/>
-      <templateRef ref="reducers_index.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}.selectors.ts"/>
-      <templateRef ref="selectors_index.ts"/>
-      <templateRef ref="header.component.ts"/>
-      <templateRef ref="nav-bar.component.html"/>
-      <templateRef ref="app-routing.module.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}-dialog.component.html" />
+      <templateRef ref="${variables.etoName#lower_case}-dialog.component.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-grid.component.html" />
+      <templateRef ref="${variables.etoName#lower_case}-grid.component.scss" />
+      <templateRef ref="${variables.etoName#lower_case}-grid.component.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-alert.component.html" />
+      <templateRef ref="${variables.etoName#lower_case}-alert.component.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-alert.component.scss" />
+      <templateRef ref="${variables.etoName#lower_case}-alert.component.spec.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.service.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.service.spec.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.module.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-routing.module.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.model.ts" />
+      <templateRef ref="datadetailstest.model.ts" />
+      <templateRef ref="httpresponse.model.ts" />
+      <templateRef ref="searchcriteriadata.model.ts" />
+      <templateRef ref="store_index.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.actions.ts" />
+      <templateRef ref="actions_index.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.effects.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.effects.spec.ts" />
+      <templateRef ref="effects_index.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.reducers.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.reducers.spec.ts" />
+      <templateRef ref="reducers_index.ts" />
+      <templateRef ref="${variables.etoName#lower_case}.selectors.ts" />
+      <templateRef ref="selectors_index.ts" />
+      <templateRef ref="header.component.ts" />
+      <templateRef ref="nav-bar.component.html" />
+      <templateRef ref="app-routing.module.ts" />
     </increment>
   </increments>
 </templatesConfiguration>
