@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>core</artifactId>
   <name>CobiGen Core</name>
@@ -79,10 +80,10 @@
     <!-- END JDK 9 -->
 
     <dependency>
-      <groupId>ma.glasnost.orika</groupId>
-      <artifactId>orika-core</artifactId>
-      <version>1.5.4</version>
-    </dependency>
+    <groupId>ma.glasnost.orika</groupId>
+    <artifactId>orika-core</artifactId>
+    <version>1.5.4</version>
+</dependency>
   </dependencies>
 
   <build>
@@ -112,7 +113,6 @@
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_1</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_2</excludePackageNames>
-          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_3</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v4_0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io</excludePackageNames>
         </configuration>
@@ -217,20 +217,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>generate-v2.3-configuration</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <packageName>com.devonfw.cobigen.impl.config.entity.io.v3_0</packageName>
-              <outputDirectory>${project.build.directory}/generated-sources/config/v3.0</outputDirectory>
-              <sources>
-                <source>${basedir}/src/main/resources/schema/v3.0</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
             <id>generate-v4.0-configuration</id>
             <phase>generate-sources</phase>
             <goals>
@@ -241,20 +227,6 @@
               <outputDirectory>${project.build.directory}/generated-sources/config/v4.0</outputDirectory>
               <sources>
                 <source>${basedir}/src/main/resources/schema/v4.0</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>generate-v5.0-configuration</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <packageName>com.devonfw.cobigen.impl.config.entity.io.v5_0</packageName>
-              <outputDirectory>${project.build.directory}/generated-sources/config/v5.0</outputDirectory>
-              <sources>
-                <source>${basedir}/src/main/resources/schema/v5.0</source>
               </sources>
             </configuration>
           </execution>
@@ -269,8 +241,8 @@
               <packageName>com.devonfw.cobigen.impl.config.entity.io</packageName>
               <outputDirectory>${project.build.directory}/generated-sources/config/current</outputDirectory>
               <sources>
-                <source>${basedir}/src/main/resources/schema/v3.0/contextConfiguration.xsd</source>
-                <source>${basedir}/src/main/resources/schema/v5.0/templatesConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v2.2/contextConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v4.0/templatesConfiguration.xsd</source>
               </sources>
             </configuration>
           </execution>
