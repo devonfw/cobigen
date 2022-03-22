@@ -9,7 +9,6 @@ import java.util.Map;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
-import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationSetReader;
 
@@ -111,10 +110,10 @@ public class ContextConfiguration {
    */
   public Path getConfigRootforTrigger(String triggerId) {
 
-    if (this.contextConfigurationReader instanceof ContextConfigurationReader) {
-      return this.contextConfigurationReader.getContextRoot();
+    if (this.contextConfigurationReader instanceof ContextConfigurationSetReader) {
+      return ((ContextConfigurationSetReader) this.contextConfigurationReader).getConfigRootForTrigger(triggerId);
     }
-    return ((ContextConfigurationSetReader) this.contextConfigurationReader).getConfigRootForTrigger(triggerId);
+    return this.contextConfigurationReader.getContextRoot();
   }
 
 }

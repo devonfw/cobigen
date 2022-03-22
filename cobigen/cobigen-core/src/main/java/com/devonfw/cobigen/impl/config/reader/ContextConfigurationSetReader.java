@@ -139,7 +139,13 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
       Path configRoot = this.configRoots.get(contextFile);
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       boolean isJarConfig = (configRoot.getParent() == null);
-      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
+
+      List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = contextConfiguration.getTrigger();
+      System.out.println(triggerList.size());
+      if (!triggerList.isEmpty()) {
+        // context configuration in template sets consists of only one trigger
+        com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
+
         String templateFolder;
         if (isJarConfig) {
           templateFolder = contextFile.getParent().toString();
@@ -148,11 +154,11 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
           configRoot = configRoot.getParent();
         }
 
-        if (!this.triggerConfigRoots.containsKey(t.getId()) || !isJarConfig) {
+        if (!this.triggerConfigRoots.containsKey(trigger.getId()) || !isJarConfig) {
           // prefer the adapted templates
-          this.triggerConfigRoots.put(t.getId(), configRoot);
-          triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder,
-              Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
+          this.triggerConfigRoots.put(trigger.getId(), configRoot);
+          triggers.put(trigger.getId(), new Trigger(trigger.getId(), trigger.getType(), templateFolder,
+              Charset.forName(trigger.getInputCharset()), loadMatchers(trigger), loadContainerMatchers(trigger)));
         }
       }
     }

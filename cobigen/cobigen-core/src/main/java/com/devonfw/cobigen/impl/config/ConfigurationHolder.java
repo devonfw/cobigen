@@ -79,9 +79,9 @@ public class ConfigurationHolder {
     Path configRoot = readContextConfiguration().getConfigRootforTrigger(trigger.getId());
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
     if (!this.templatesConfigurations.containsKey(trigger.getId())) {
+      TemplatesConfiguration config = new TemplatesConfiguration(configRoot, trigger, this);
       this.templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
 
-      TemplatesConfiguration config = new TemplatesConfiguration(configRoot, trigger, this);
       this.templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
     }
 
