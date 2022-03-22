@@ -9,4 +9,7 @@
       <variableAssignment type="regex" key="entityName" value="5" />
     </matcher>
   </trigger>
+  <links>
+    <link url="https://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/reference/html/repositories.html"></link>
+  </links>
 </contextConfiguration>

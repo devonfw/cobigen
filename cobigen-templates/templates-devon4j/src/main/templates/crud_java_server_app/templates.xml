@@ -29,7 +29,7 @@
   </templateScans>
 
   <increments>
-    <increment name="springdata-repository" description="CRUD SpringData Repository" explanation="Creates (backends) spring server CRUD service for java application.">
+    <increment name="springdata-repository" description="CRUD SpringData Repository" explanation="Creates necessary interfaces and methods for the SpringData Repository to interact with the database.">
       <templateRef ref="${variables.entityName}Repository.java" />
     </increment>
     <increment name="tos" description="TO's">
