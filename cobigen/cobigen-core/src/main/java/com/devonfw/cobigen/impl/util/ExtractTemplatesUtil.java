@@ -157,14 +157,24 @@ public class ExtractTemplatesUtil {
 
     Path cobigenDownloadedTemplateSetsPath = CobiGenPaths.getTemplateSetsFolderPath()
         .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-    List<Path> templateJars = TemplatesJarUtil.getJarFiles(cobigenDownloadedTemplateSetsPath);
+    if (Files.exists(cobigenDownloadedTemplateSetsPath)) {
+      List<Path> templateJars = TemplatesJarUtil.getJarFiles(cobigenDownloadedTemplateSetsPath);
+      for (Path templateSetJar : templateJars) {
+        LOG.debug("Processing jar file @ {}", templateSetJar);
+        String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
+        Path destination = destinationPath.resolve(fileName);
+        extractArchive(templateSetJar, destination);
 
-    for (Path templateSetJar : templateJars) {
-      LOG.debug("Processing jar file @ {}", templateSetJar);
-      String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
-      extractArchive(templateSetJar, destinationPath.resolve(fileName));
+        if (Files.exists(destination.resolve("com"))) {
+          // move com folder to src/main/java/com
+          Files.createDirectories(destination.resolve("src/main/java"));
+          Files.move(destination.resolve("com"), destination.resolve("src/main/java/com"),
+              StandardCopyOption.REPLACE_EXISTING);
+        }
+      }
+    } else {
+      LOG.error("No downloaded templates found in {} to extract", cobigenDownloadedTemplateSetsPath);
     }
-
   }
 
   /**

@@ -36,8 +36,10 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
   protected static Path templatesProjectTemporary;
 
   /**
+   * Creates a copy of the templates project in the temp directory
+   *
    * @throws URISyntaxException if the path could not be created properly
-   * @throws IOException if accessing a template directory directory fails
+   * @throws IOException if accessing a directory or file fails
    */
   @BeforeClass
   public static void setupDevTemplates() throws URISyntaxException, IOException {
@@ -45,6 +47,9 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
     templatesProject = new File(
         TemplatesGenerationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
             .getParentFile().getParentFile().toPath();
+
+    Path utilsPom = new File(TemplatesGenerationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+        .getParentFile().getParentFile().toPath().resolve("src/test/resources/utils/pom.xml");
 
     // create a temporary directory cobigen-templates/template-sets/adapted containing the template sets
     Path tempFolderPath = tempFolder.getRoot().toPath();
@@ -70,6 +75,20 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
               } catch (IOException e) {
                 e.printStackTrace();
               }
+            }
+          }
+          if (path.getFileName().toString().equals("templates-devon4j-utils")) {
+            if (Files.exists(path.resolve("pom.xml"))) {
+              try {
+                Files.delete(path.resolve("pom.xml"));
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            }
+            try {
+              Files.copy(utilsPom, path.resolve("pom.xml"));
+            } catch (IOException e) {
+              e.printStackTrace();
             }
           }
         });

@@ -49,7 +49,7 @@ public class AbstractCliTest {
   protected static Path devTemplatesPathTemp;
 
   /**
-   * Determine the devon4j-templates development folder
+   * Determine the templates development folder and create a copy of it in the temp directory
    *
    * @throws URISyntaxException if the path could not be created properly
    * @throws IOException if accessing a template directory directory fails
@@ -59,6 +59,10 @@ public class AbstractCliTest {
 
     devTemplatesPath = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
         .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates");
+
+    Path utilsPom = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+        .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
+        .resolve("templates-devon4j-tests/src/test/resources/utils/pom.xml");
 
     // create a temporary directory cobigen-templates/template-sets/adapted containing the template sets
     Path tempFolderPath = tempFolderTemplates.getRoot().toPath();
@@ -84,6 +88,20 @@ public class AbstractCliTest {
               } catch (IOException e) {
                 e.printStackTrace();
               }
+            }
+          }
+          if (path.getFileName().toString().equals("templates-devon4j-utils")) {
+            if (Files.exists(path.resolve("pom.xml"))) {
+              try {
+                Files.delete(path.resolve("pom.xml"));
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+            }
+            try {
+              Files.copy(utilsPom, path.resolve("pom.xml"));
+            } catch (IOException e) {
+              e.printStackTrace();
             }
           }
         });
