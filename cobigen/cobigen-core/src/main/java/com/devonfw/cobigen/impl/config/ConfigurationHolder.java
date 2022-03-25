@@ -136,9 +136,9 @@ public class ConfigurationHolder {
   }
 
   /**
-   * f
+   * Search for the location of the Java utils
    *
-   * @return
+   * @return the {@link Path} of the location of the util classes or null if no location was found
    */
   public Path getUtilsLocation() {
 

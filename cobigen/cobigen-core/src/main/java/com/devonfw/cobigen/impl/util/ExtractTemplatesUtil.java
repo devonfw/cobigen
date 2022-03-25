@@ -166,14 +166,14 @@ public class ExtractTemplatesUtil {
         extractArchive(templateSetJar, destination);
 
         if (Files.exists(destination.resolve("com"))) {
-          // move com folder to src/main/java/com
+          // move com folder to src/main/java/com. Needed for the utils project
           Files.createDirectories(destination.resolve("src/main/java"));
           Files.move(destination.resolve("com"), destination.resolve("src/main/java/com"),
               StandardCopyOption.REPLACE_EXISTING);
         }
       }
     } else {
-      LOG.error("No downloaded templates found in {} to extract", cobigenDownloadedTemplateSetsPath);
+      LOG.info("No downloaded templates found in {} to extract", cobigenDownloadedTemplateSetsPath);
     }
   }
 

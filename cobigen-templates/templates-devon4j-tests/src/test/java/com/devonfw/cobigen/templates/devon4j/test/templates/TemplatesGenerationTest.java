@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.maven.config.constant.MavenMetadata;
 import com.devonfw.cobigen.maven.test.AbstractMavenTest;
-import com.devonfw.cobigen.templates.devon4j.config.constant.MavenMetadata;
 
 /**
  * Smoke tests of all templates.
@@ -77,6 +77,9 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
               }
             }
           }
+
+          // Replace the pom.xml in the utils project. Needed so that the utils project in the temp directory is build
+          // properly
           if (path.getFileName().toString().equals("templates-devon4j-utils")) {
             if (Files.exists(path.resolve("pom.xml"))) {
               try {
