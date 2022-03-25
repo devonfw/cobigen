@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.maven.config.constant.MavenMetadata;
 import com.devonfw.cobigen.maven.test.AbstractMavenTest;
+import com.devonfw.cobigen.templates.devon4j.config.constant.MavenMetadata;
 
 /**
  * Smoke tests of all templates.
