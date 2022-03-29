@@ -22,19 +22,24 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.1</version>
-    </dependency>
-    <!-- Mocking Library for developer tests -->
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>1.10.19</version>
-      <!-- Hamcrest wird ausgeschlossen, weil JUnit die Hamcrest-Klassen beinhaltet. -->
+      <!-- Hamcrest wird ausgeschlossen, weil aktuellere Hamcrest-Klassen benötigt werden. -->
       <exclusions>
         <exclusion>
           <groupId>org.hamcrest</groupId>
           <artifactId>hamcrest-core</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- Mocking Library for developer tests -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.4.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest</artifactId>
+        <version>2.2</version>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
