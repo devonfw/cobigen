@@ -132,13 +132,15 @@ public class ConfigurationFinder {
     }
 
     // 2. use template jar
-    File jarFile = TemplatesJarUtil.getJarFile(false, templatesFolderPath.getParent().toFile());
-    if (jarFile != null) {
-      return jarFile.toPath().toUri();
+    if (Files.exists(templatesPath)) {
+      File jarFile = TemplatesJarUtil.getJarFile(false, templatesPath.toFile());
+      if (jarFile != null) {
+        return jarFile.toPath().toUri();
+      }
     }
 
     // 3. create/use new template sets folder
-    Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home);
+    Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, true);
 
     Path templateSetsAdaptedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
