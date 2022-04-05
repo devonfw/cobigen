@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
@@ -64,37 +66,39 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
 
       FileUtils.copyDirectory(templatesProject.toFile(), templateSetsAdaptedFolder.toFile());
 
+      List<Path> devTemplateSets = new ArrayList<>();
       try (Stream<Path> files = Files.list(templateSetsAdaptedFolder)) {
         files.forEach(path -> {
-          if (Files.isDirectory(path)) {
-            Path resourcesFolder = path.resolve("src/main/resources");
-            Path templatesFolder = path.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-            if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
-              try {
-                Files.move(resourcesFolder, templatesFolder);
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
+          devTemplateSets.add(path);
+        });
+      }
+      for (Path path : devTemplateSets) {
+        if (Files.isDirectory(path)) {
+          Path resourcesFolder = path.resolve("src/main/resources");
+          Path templatesFolder = path.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+          if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
+            try {
+              Files.move(resourcesFolder, templatesFolder);
+            } catch (IOException e) {
+              throw new IOException("Error moving directory " + resourcesFolder, e);
             }
           }
 
-          // Replace the pom.xml in the utils project. Needed so that the utils project in the temp directory is build
+          // Replace the pom.xml in the template sets. Needed so that the project in the temp directory is build
           // properly
-          if (path.getFileName().toString().equals("templates-devon4j-utils")) {
-            if (Files.exists(path.resolve("pom.xml"))) {
-              try {
-                Files.delete(path.resolve("pom.xml"));
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
+          if (Files.exists(path.resolve("pom.xml"))) {
+            try {
+              Files.delete(path.resolve("pom.xml"));
+            } catch (IOException e) {
+              throw new IOException("Error deleting file " + path.resolve("pom.xml"), e);
             }
             try {
               Files.copy(utilsPom, path.resolve("pom.xml"));
             } catch (IOException e) {
-              e.printStackTrace();
+              throw new IOException("Error copying file " + utilsPom, e);
             }
           }
-        });
+        }
       }
     }
   }
