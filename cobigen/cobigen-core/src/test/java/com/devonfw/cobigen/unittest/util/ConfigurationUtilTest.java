@@ -17,13 +17,20 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
 /**
- *
+ * Test suite for Configuration Utility scenarios.
  */
 public class ConfigurationUtilTest {
 
+  /** Temporary files rule to create temporary folders or files */
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
+  /**
+   * Tests findTemplatesLocation logic Checks if a template jar is located inside the downloaded folder of template-sets
+   * Checks if a template jar can be loaded directly when being set from the .cobigen properties file
+   *
+   * @throws Exception
+   */
   @Test
   public void testFindTemplatesLocation() throws Exception {
 
@@ -31,19 +38,17 @@ public class ConfigurationUtilTest {
       File userHome = this.tmpFolder.newFolder("user-home");
       System.setProperty("user.home", userHome.getAbsolutePath());
       Path defaultCobigenHome = userHome.toPath().resolve(ConfigurationConstants.DEFAULT_HOME_DIR_NAME);
-      Path templatesFolder = defaultCobigenHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+      Path templatesFolder = defaultCobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       Files.createDirectories(templatesFolder);
       String templatesArtifact = "templates-devon4j-1.0.jar";
 
-      Path templatesProject = templatesFolder.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-      Files.createDirectories(templatesProject);
+      Path downloadedTemplatesDirectory = templatesFolder.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+      Files.createDirectories(downloadedTemplatesDirectory);
       Path templatesJar = templatesFolder.resolve(templatesArtifact);
       Files.createFile(templatesJar);
-      // found CobiGen_Templates project
-      assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesProject.toFile().toURI());
-      Files.delete(templatesProject);
-      // found templates artifact
-      assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesJar.toFile().toURI());
+      // found template-sets directory
+      assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesFolder.toFile().toURI());
+      Files.delete(downloadedTemplatesDirectory);
 
       // configuration file exists
       File randomDirectoryForConfigFile = this.tmpFolder.newFolder();

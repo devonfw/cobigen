@@ -43,6 +43,15 @@ public class ConfigurationConstants {
   /** Name of the templates folder */
   public static final String TEMPLATES_FOLDER = "templates";
 
+  /** Name of the template sets downloaded folder */
+  public static final String DOWNLOADED_FOLDER = "downloaded";
+
+  /** Name of the template sets adapted folder */
+  public static final String ADAPTED_FOLDER = "adapted";
+
+  /** Name of the template sets folder */
+  public static final String TEMPLATE_SETS_FOLDER = "template-sets";
+
   /** Name of the extracted templates project */
   public static final String COBIGEN_TEMPLATES = "CobiGen_Templates";
 
@@ -56,6 +65,11 @@ public class ConfigurationConstants {
    * dependency
    */
   public static final String CONFIG_PROPERTY_TEMPLATES_PATH = "templates";
+
+  /**
+   * Name of configuration key for location of template sets.
+   */
+  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_PATH = "template-sets";
 
   // cobigen configuration environment variables
 

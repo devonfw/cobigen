@@ -8,7 +8,8 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationAnalyzer;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -46,7 +47,8 @@ public class ContextConfiguration {
    */
   private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
-    ContextConfigurationReader reader = new ContextConfigurationReader(configRoot);
+    AbstractContextConfigurationReader reader = ContextConfigurationAnalyzer.getReader(configRoot);
+
     this.configurationPath = reader.getContextRoot();
     this.triggers = reader.loadTriggers();
   }
