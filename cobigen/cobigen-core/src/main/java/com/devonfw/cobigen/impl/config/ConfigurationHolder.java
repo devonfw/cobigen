@@ -1,14 +1,12 @@
 package com.devonfw.cobigen.impl.config;
 
-import java.io.File;
-import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -33,22 +31,6 @@ public class ConfigurationHolder {
 
   /** The OS filesystem path of the configuration */
   private URI configurationLocation;
-
-  public static String UTILS_REGEX_NAME = "templates-devon4j-utils.*";
-
-  /**
-   * Filters the files on a directory so that we can check whether the templates jar are already downloaded
-   */
-  static FilenameFilter utilsFilter = new FilenameFilter() {
-
-    @Override
-    public boolean accept(File dir, String name) {
-
-      Pattern p = Pattern.compile(UTILS_REGEX_NAME);
-      Matcher m = p.matcher(name);
-      return m.find();
-    }
-  };
 
   /**
    * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
@@ -97,7 +79,7 @@ public class ConfigurationHolder {
    */
   public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
-    Path configRoot = readContextConfiguration().getConfigRootforTrigger(trigger.getId());
+    Path configRoot = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), true);
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
     if (!this.templatesConfigurations.containsKey(trigger.getId())) {
       TemplatesConfiguration config = new TemplatesConfiguration(configRoot, trigger, this);
@@ -139,29 +121,22 @@ public class ConfigurationHolder {
    * Search for the location of the Java utils
    *
    * @return the {@link Path} of the location of the util classes or null if no location was found
+   * @throws IOException
    */
-  public Path getUtilsLocation() {
+  public List<Path> getUtilsLocation() {
 
+    List<Path> utilsLocationPaths = new ArrayList<>();
     if (isTemplateSetConfiguration()) {
-      Path adaptedFolder = this.configurationPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-      Path downloadedFolder = this.configurationPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+      List<Trigger> triggers = readContextConfiguration().getTriggers();
 
-      String[] utils;
-      if (Files.exists(adaptedFolder)) {
-        utils = adaptedFolder.toFile().list(utilsFilter);
-        if (utils.length > 0) {
-          return adaptedFolder.resolve(utils[0]);
-        }
+      for (Trigger trigger : triggers) {
+        Path configLocation = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), false);
+        utilsLocationPaths.add(configLocation);
       }
-
-      if (Files.exists(downloadedFolder)) {
-        utils = downloadedFolder.toFile().list(utilsFilter);
-        if (utils.length > 0) {
-          return downloadedFolder.resolve(utils[0]);
-        }
-      }
-      return null;
+    } else {
+      utilsLocationPaths.add(Paths.get(this.configurationLocation));
     }
-    return Paths.get(this.configurationLocation);
+
+    return utilsLocationPaths;
   }
 }
