@@ -91,14 +91,26 @@ public class AbstractCliTest {
           Path resourcesFolder = path.resolve("src/main/resources");
           Path templatesFolder = path.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
           if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
-            Files.move(resourcesFolder, templatesFolder);
+            try {
+              Files.move(resourcesFolder, templatesFolder);
+            } catch (IOException e) {
+              throw new IOException("Error moving directory " + resourcesFolder, e);
+            }
           }
 
           if (path.getFileName().toString().equals("templates-devon4j-utils")) {
             if (Files.exists(path.resolve("pom.xml"))) {
-              Files.delete(path.resolve("pom.xml"));
+              try {
+                Files.delete(path.resolve("pom.xml"));
+              } catch (IOException e) {
+                throw new IOException("Error deleting file " + path.resolve("pom.xml"), e);
+              }
             }
-            Files.copy(utilsPom, path.resolve("pom.xml"));
+            try {
+              Files.copy(utilsPom, path.resolve("pom.xml"));
+            } catch (IOException e) {
+              throw new IOException("Error copying file " + utilsPom, e);
+            }
           }
         }
       }
