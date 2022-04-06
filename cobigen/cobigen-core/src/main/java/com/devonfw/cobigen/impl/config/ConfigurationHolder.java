@@ -1,10 +1,16 @@
 package com.devonfw.cobigen.impl.config;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
@@ -16,8 +22,8 @@ import com.google.common.collect.Maps;
  */
 public class ConfigurationHolder {
 
-  /** Cached templates configurations. Configuration File URI -> Trigger ID -> configuration instance */
-  private Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
+  /** Cached templates configurations. Trigger ID -> Configuration File URI -> configuration instance */
+  private Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
 
   /** Cached context configuration */
   private ContextConfiguration contextConfiguration;
@@ -27,6 +33,22 @@ public class ConfigurationHolder {
 
   /** The OS filesystem path of the configuration */
   private URI configurationLocation;
+
+  public static String UTILS_REGEX_NAME = "templates-devon4j-utils.*";
+
+  /**
+   * Filters the files on a directory so that we can check whether the templates jar are already downloaded
+   */
+  static FilenameFilter utilsFilter = new FilenameFilter() {
+
+    @Override
+    public boolean accept(File dir, String name) {
+
+      Pattern p = Pattern.compile(UTILS_REGEX_NAME);
+      Matcher m = p.matcher(name);
+      return m.find();
+    }
+  };
 
   /**
    * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
@@ -75,15 +97,16 @@ public class ConfigurationHolder {
    */
   public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
+    Path configRoot = readContextConfiguration().getConfigRootforTrigger(trigger.getId());
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
-    if (!this.templatesConfigurations.containsKey(templateFolder)) {
-      this.templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
+    if (!this.templatesConfigurations.containsKey(trigger.getId())) {
+      TemplatesConfiguration config = new TemplatesConfiguration(configRoot, trigger, this);
+      this.templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
 
-      TemplatesConfiguration config = new TemplatesConfiguration(this.configurationPath, trigger, this);
-      this.templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
+      this.templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
     }
 
-    return this.templatesConfigurations.get(templateFolder).get(trigger.getId());
+    return this.templatesConfigurations.get(trigger.getId()).get(templateFolder);
   }
 
   /**
@@ -98,5 +121,47 @@ public class ConfigurationHolder {
       this.contextConfiguration = new ContextConfiguration(this.configurationPath);
     }
     return this.contextConfiguration;
+  }
+
+  /**
+   * @return return if the template folder structure consists of template sets or if the old structure is used
+   */
+  public boolean isTemplateSetConfiguration() {
+
+    if (this.configurationPath.toUri().getScheme().equals("jar")
+        || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Search for the location of the Java utils
+   *
+   * @return the {@link Path} of the location of the util classes or null if no location was found
+   */
+  public Path getUtilsLocation() {
+
+    if (isTemplateSetConfiguration()) {
+      Path adaptedFolder = this.configurationPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      Path downloadedFolder = this.configurationPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+
+      String[] utils;
+      if (Files.exists(adaptedFolder)) {
+        utils = adaptedFolder.toFile().list(utilsFilter);
+        if (utils.length > 0) {
+          return adaptedFolder.resolve(utils[0]);
+        }
+      }
+
+      if (Files.exists(downloadedFolder)) {
+        utils = downloadedFolder.toFile().list(utilsFilter);
+        if (utils.length > 0) {
+          return downloadedFolder.resolve(utils[0]);
+        }
+      }
+      return null;
+    }
+    return Paths.get(this.configurationLocation);
   }
 }

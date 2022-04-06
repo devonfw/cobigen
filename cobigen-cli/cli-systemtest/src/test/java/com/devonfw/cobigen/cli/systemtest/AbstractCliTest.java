@@ -7,13 +7,18 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.util.Os;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.LoggerFactory;
@@ -32,23 +37,84 @@ public class AbstractCliTest {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
+  /** Temporary directory for the templates project */
+  @ClassRule
+  public static TemporaryFolder tempFolderTemplates = new TemporaryFolder();
+
   /** Current home directory */
   protected Path currentHome;
 
-  /** The devon4j-templates development folder */
+  /** The templates development folder */
   protected static Path devTemplatesPath;
 
+  /** A temp directory containing the templates development folder */
+  protected static Path devTemplatesPathTemp;
+
   /**
-   * Determine the devon4j-templates development folder
+   * Determine the templates development folder and create a copy of it in the temp directory
    *
    * @throws URISyntaxException if the path could not be created properly
+   * @throws IOException if accessing a template directory directory fails
    */
   @BeforeClass
-  public static void determineDevTemplatesPath() throws URISyntaxException {
+  public static void determineDevTemplatesPath() throws URISyntaxException, IOException {
 
     devTemplatesPath = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+        .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates");
+
+    Path utilsPom = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
         .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
-        .resolve("templates-devon4j");
+        .resolve("templates-devon4j-tests/src/test/resources/utils/pom.xml");
+
+    // create a temporary directory cobigen-templates/template-sets/adapted containing the template sets
+    Path tempFolderPath = tempFolderTemplates.getRoot().toPath();
+    Path cobigenTemplatePath = tempFolderPath.resolve("cobigen-templates");
+    if (!Files.exists(cobigenTemplatePath)) {
+      Files.createDirectory(cobigenTemplatePath);
+
+      devTemplatesPathTemp = cobigenTemplatePath.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      Path templateSetsAdaptedFolder = devTemplatesPathTemp.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      Files.createDirectory(devTemplatesPathTemp);
+      Files.createDirectory(templateSetsAdaptedFolder);
+
+      FileUtils.copyDirectory(devTemplatesPath.toFile(), templateSetsAdaptedFolder.toFile());
+
+      List<Path> devTemplateSets = new ArrayList<>();
+      try (Stream<Path> files = Files.list(templateSetsAdaptedFolder)) {
+        files.forEach(path -> {
+          devTemplateSets.add(path);
+        });
+      }
+
+      for (Path path : devTemplateSets) {
+        if (Files.isDirectory(path)) {
+          Path resourcesFolder = path.resolve("src/main/resources");
+          Path templatesFolder = path.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+          if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
+            try {
+              Files.move(resourcesFolder, templatesFolder);
+            } catch (IOException e) {
+              throw new IOException("Error moving directory " + resourcesFolder, e);
+            }
+          }
+
+          if (path.getFileName().toString().equals("templates-devon4j-utils")) {
+            if (Files.exists(path.resolve("pom.xml"))) {
+              try {
+                Files.delete(path.resolve("pom.xml"));
+              } catch (IOException e) {
+                throw new IOException("Error deleting file " + path.resolve("pom.xml"), e);
+              }
+            }
+            try {
+              Files.copy(utilsPom, path.resolve("pom.xml"));
+            } catch (IOException e) {
+              throw new IOException("Error copying file " + utilsPom, e);
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -71,7 +137,7 @@ public class AbstractCliTest {
 
     Path configFile = this.currentHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
     Files.write(configFile,
-        (ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + devTemplatesPath.toString()).getBytes());
+        (ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + devTemplatesPathTemp.toString()).getBytes());
   }
 
   /**
@@ -129,7 +195,7 @@ public class AbstractCliTest {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 3);
       debugArgs[debugArgs.length - 3] = "-v";
       debugArgs[debugArgs.length - 2] = "-tp";
-      debugArgs[debugArgs.length - 1] = devTemplatesPath.toString();
+      debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
     } else {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 1);
       debugArgs[debugArgs.length - 1] = "-v";

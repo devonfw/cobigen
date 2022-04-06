@@ -106,10 +106,10 @@ public class ExtractTemplatesUtil {
       throw new IOException("Cobigen folder path not found!");
     }
 
-    File cobigenTemplatesPath = CobiGenPaths.getTemplatesFolderPath().toFile();
+    Path cobigenTemplatesPath = CobiGenPaths.getTemplatesFolderPath();
 
-    Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, cobigenTemplatesPath).toPath();
-    Path classesJarPath = TemplatesJarUtil.getJarFile(false, cobigenTemplatesPath).toPath();
+    Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, cobigenTemplatesPath);
+    Path classesJarPath = TemplatesJarUtil.getJarFile(false, cobigenTemplatesPath);
 
     LOG.debug("Processing jar file @ {}", sourcesJarPath);
 
@@ -157,14 +157,24 @@ public class ExtractTemplatesUtil {
 
     Path cobigenDownloadedTemplateSetsPath = CobiGenPaths.getTemplateSetsFolderPath()
         .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-    List<Path> templateJars = TemplatesJarUtil.getJarFiles(cobigenDownloadedTemplateSetsPath);
+    if (Files.exists(cobigenDownloadedTemplateSetsPath)) {
+      List<Path> templateJars = TemplatesJarUtil.getJarFiles(cobigenDownloadedTemplateSetsPath);
+      for (Path templateSetJar : templateJars) {
+        LOG.debug("Processing jar file @ {}", templateSetJar);
+        String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
+        Path destination = destinationPath.resolve(fileName);
+        extractArchive(templateSetJar, destination);
 
-    for (Path templateSetJar : templateJars) {
-      LOG.debug("Processing jar file @ {}", templateSetJar);
-      String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
-      extractArchive(templateSetJar, destinationPath.resolve(fileName));
+        if (Files.exists(destination.resolve("com"))) {
+          // move com folder to src/main/java/com. Needed for the utils project
+          Files.createDirectories(destination.resolve("src/main/java"));
+          Files.move(destination.resolve("com"), destination.resolve("src/main/java/com"),
+              StandardCopyOption.REPLACE_EXISTING);
+        }
+      }
+    } else {
+      LOG.info("No downloaded templates found in {} to extract", cobigenDownloadedTemplateSetsPath);
     }
-
   }
 
   /**
