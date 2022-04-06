@@ -59,28 +59,27 @@ public class TemplatesJarUtil {
     String fileName = "";
 
     Path jarFilePath = getJarFile(isDownloadSource, templatesDirectory.toPath());
-    if (jarFilePath != null && Files.exists(jarFilePath)) {
-      try {
-        if (isJarOutdated(jarFilePath.toFile(), mavenUrl, isDownloadSource, templatesDirectory)) {
+    try {
+      if (jarFilePath == null || !Files.exists(jarFilePath)
+          || isJarOutdated(jarFilePath.toFile(), mavenUrl, isDownloadSource, templatesDirectory)) {
 
-          HttpURLConnection conn = initializeConnection(mavenUrl);
-          try (InputStream inputStream = conn.getInputStream()) {
+        HttpURLConnection conn = initializeConnection(mavenUrl);
+        try (InputStream inputStream = conn.getInputStream()) {
 
-            fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
-            File file = new File(templatesDirectory.getPath() + File.separator + fileName);
-            Path targetPath = file.toPath();
-            if (!file.exists()) {
-              Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-            }
+          fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+          File file = new File(templatesDirectory.getPath() + File.separator + fileName);
+          Path targetPath = file.toPath();
+          if (!file.exists()) {
+            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
           }
-          conn.disconnect();
-        } else {
-          fileName = jarFilePath.toFile().getPath()
-              .substring(jarFilePath.toFile().getPath().lastIndexOf(File.separator) + 1);
         }
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException("Could not download file from " + mavenUrl, e);
+        conn.disconnect();
+      } else {
+        fileName = jarFilePath.toFile().getPath()
+            .substring(jarFilePath.toFile().getPath().lastIndexOf(File.separator) + 1);
       }
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Could not download file from " + mavenUrl, e);
     }
     return fileName;
   }
