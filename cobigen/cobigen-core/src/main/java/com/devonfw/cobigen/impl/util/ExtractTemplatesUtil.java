@@ -106,10 +106,10 @@ public class ExtractTemplatesUtil {
       throw new IOException("Cobigen folder path not found!");
     }
 
-    File cobigenTemplatesPath = CobiGenPaths.getTemplatesFolderPath().toFile();
+    Path cobigenTemplatesPath = CobiGenPaths.getTemplatesFolderPath();
 
-    Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, cobigenTemplatesPath).toPath();
-    Path classesJarPath = TemplatesJarUtil.getJarFile(false, cobigenTemplatesPath).toPath();
+    Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, cobigenTemplatesPath);
+    Path classesJarPath = TemplatesJarUtil.getJarFile(false, cobigenTemplatesPath);
 
     LOG.debug("Processing jar file @ {}", sourcesJarPath);
 
