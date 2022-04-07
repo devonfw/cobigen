@@ -72,6 +72,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
           devTemplateSets.add(path);
         });
       }
+
       for (Path path : devTemplateSets) {
         if (Files.isDirectory(path)) {
           Path resourcesFolder = path.resolve("src/main/resources");
