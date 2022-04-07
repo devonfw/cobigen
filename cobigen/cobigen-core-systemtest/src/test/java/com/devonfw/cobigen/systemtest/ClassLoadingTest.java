@@ -70,11 +70,9 @@ public class ClassLoadingTest extends AbstractApiTest {
     // Verification
     File expectedResult = new File(testFileRootPath, "expected/Test.java");
     File generatedFile = new File(generationRootFolder, "com/devonfw/Test.java");
-    report.isSuccessful();
     assertThat(report).isSuccessful();
     assertThat(generatedFile).exists();
     assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
-
   }
 
   @Test
