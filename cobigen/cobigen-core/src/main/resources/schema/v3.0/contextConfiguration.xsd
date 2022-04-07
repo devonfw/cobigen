@@ -4,18 +4,24 @@
   <xs:element name="contextConfiguration">
     <xs:complexType>
       <xs:sequence>
+        <xs:element name="trigger" type="tns:trigger" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="tags" type="tns:tags" minOccurs="0" maxOccurs="1" />
         <xs:element name="links" type="tns:links" minOccurs="0" maxOccurs="1" />
-        <xs:element name="containerMatcher" type="tns:containerMatcher" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="matcher" type="tns:matcher" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
-      <xs:attribute name="id" use="required" type="xs:NCName" />
-      <xs:attribute name="type" use="required" type="xs:string" />
-      <xs:attribute name="templateFolder" use="optional" type="xs:string" default="/" />
-      <xs:attribute name="inputCharset" use="optional" type="xs:string" default="UTF-8" />
       <xs:attribute name="version" use="required" type="xs:decimal" />
     </xs:complexType>
   </xs:element>
+
+  <xs:complexType name="trigger">
+    <xs:sequence>
+      <xs:element name="containerMatcher" type="tns:containerMatcher" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="matcher" type="tns:matcher" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="id" use="required" type="xs:NCName" />
+    <xs:attribute name="type" use="required" type="xs:string" />
+    <xs:attribute name="templateFolder" use="optional" type="xs:string" default="/" />
+    <xs:attribute name="inputCharset" use="optional" type="xs:string" default="UTF-8" />
+  </xs:complexType>
 
   <xs:complexType name="matcher">
     <xs:sequence>

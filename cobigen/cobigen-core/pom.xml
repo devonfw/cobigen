@@ -268,8 +268,8 @@
               <packageName>com.devonfw.cobigen.impl.config.entity.io</packageName>
               <outputDirectory>${project.build.directory}/generated-sources/config/current</outputDirectory>
               <sources>
-                <source>${basedir}/src/main/resources/schema/v2.2/contextConfiguration.xsd</source>
-                <source>${basedir}/src/main/resources/schema/v4.0/templatesConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v3.0/contextConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v5.0/templatesConfiguration.xsd</source>
               </sources>
             </configuration>
           </execution>
