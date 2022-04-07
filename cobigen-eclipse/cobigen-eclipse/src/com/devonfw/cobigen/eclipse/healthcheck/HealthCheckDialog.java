@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.eclipse.healthcheck;
 
-import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -79,9 +79,9 @@ public class HealthCheckDialog {
       if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
         CobiGenFactory.create(generatorConfProj.getLocationURI());
       } else {
-        File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
-        File jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectory);
-        boolean fileExists = jarPath.exists();
+        Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
+        Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
+        boolean fileExists = (jarPath != null && Files.exists(jarPath));
         if (!fileExists) {
           MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
               "Not Downloaded the CobiGen Template Jar");
@@ -226,7 +226,7 @@ public class HealthCheckDialog {
 
   /**
    * Performs a HealthCheckReport on CobiGen_Templates in workspace or on latest templates jar.
-   * 
+   *
    * @return HealthCheckReport the {@link HealthCheckReport} created by the HealthCheck
    * @throws GeneratorProjectNotExistentException if no generator configuration project called
    * @throws CoreException if an existing generator configuration project could not be opened

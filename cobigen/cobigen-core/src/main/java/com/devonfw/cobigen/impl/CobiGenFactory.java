@@ -92,7 +92,7 @@ public class CobiGenFactory {
    */
   public static Path extractTemplates() throws DirectoryNotEmptyException {
 
-    Path extractedFolderLocation = CobiGenPaths.getTemplateSetsFolderPath()
+    Path extractedFolderLocation = CobiGenPaths.getTemplateSetsFolderPath(true)
         .resolve(ConfigurationConstants.ADAPTED_FOLDER);
     ExtractTemplatesUtil.extractTemplates(extractedFolderLocation, false);
     return extractedFolderLocation;

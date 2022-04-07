@@ -1,29 +1,27 @@
 package com.devonfw.cobigen.impl.config.reader;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 
-/** The {@link ContextConfigurationAnalyzer} reads the context xml */
-public class ContextConfigurationAnalyzer {
+/** The {@link ContextConfigurationReaderFactory} creates a context configuration reader for reading the context.xml */
+public class ContextConfigurationReaderFactory {
 
   /**
-   * Gets ContextConfigurationReader based on templates type
+   * Create a configuration reader instance based on template configuration
    *
    * @param configRoot Path to configuration root directory
-   * @return ContextConfigurationReader to use
+   * @return AbstractContextConfigurationReader the context configuration reader
    * @throws InvalidConfigurationException if the configuration is not valid
    */
   public static AbstractContextConfigurationReader getReader(Path configRoot) throws InvalidConfigurationException {
 
-    // TODO: check for conflict between old and new configuration
-    if (Files.exists(configRoot.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH))) {
+    if (configRoot.toUri().getScheme().equals("jar")
+        || !configRoot.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return new ContextConfigurationReader(configRoot);
-    } else {
-      return new ContextConfigurationSetReader(configRoot);
     }
-  }
 
+    return new ContextConfigurationSetReader(configRoot);
+  }
 }

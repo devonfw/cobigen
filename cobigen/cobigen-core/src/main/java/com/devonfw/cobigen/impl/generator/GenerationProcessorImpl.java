@@ -61,6 +61,7 @@ import com.devonfw.cobigen.impl.generator.api.GenerationProcessor;
 import com.devonfw.cobigen.impl.generator.api.InputResolver;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
@@ -159,9 +160,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
       }
     }
 
-    Path templateConfigPath = Paths.get(this.configurationHolder.getConfigurationLocation());
     progressCallback.accept("Prepend Templates Classloader", 10);
-    inputProjectClassLoader = prependTemplatesClassloader(templateConfigPath, inputProjectClassLoader);
+    inputProjectClassLoader = prependTemplatesClassloader(inputProjectClassLoader);
     if (inputProjectClassLoader != null) {
       try {
         logicClasses = ConfigurationClassLoaderUtil.resolveUtilClasses(this.configurationHolder,
@@ -256,13 +256,23 @@ public class GenerationProcessorImpl implements GenerationProcessor {
    * @return the combined classloader for the templates with classLoader argument as parent or null if both arguments
    *         passed as null
    */
-  private ClassLoader prependTemplatesClassloader(Path configLocation, ClassLoader inputProjectClassLoader) {
+  private ClassLoader prependTemplatesClassloader(ClassLoader inputProjectClassLoader) {
 
+    Path configLocation = Paths.get(this.configurationHolder.getConfigurationLocation());
     ClassLoader combinedClassLoader = inputProjectClassLoader != null ? inputProjectClassLoader
         : Thread.currentThread().getContextClassLoader();
-    if (configLocation != null) {
 
-      Path pomFile = this.configurationHolder.getConfigurationPath().resolve("pom.xml");
+    if (configLocation != null && this.configurationHolder.getUtilsLocation() != null) {
+
+      Path utilsLocation = this.configurationHolder.getUtilsLocation();
+      Path pomFile;
+      if (FileSystemUtil.isZipFile(utilsLocation.toUri())) {
+        Path utilsPath = FileSystemUtil.createFileSystemDependentPath(utilsLocation.toUri());
+        pomFile = utilsPath.resolve("pom.xml");
+      } else {
+        pomFile = utilsLocation.resolve("pom.xml");
+      }
+
       Path cpCacheFile = null;
       try {
         if (Files.exists(pomFile)) {
@@ -282,12 +292,13 @@ public class GenerationProcessorImpl implements GenerationProcessor {
 
         // prepend jar/compiled resources as well
         URL[] urls;
-        if (Files.isDirectory(configLocation) && Files.exists(pomFile)) {
-          compileTemplateUtils(configLocation);
-          urls = new URL[] { configLocation.resolve("target").resolve("classes").toUri().toURL() };
+        if (Files.isDirectory(utilsLocation) && Files.exists(pomFile)) {
+          compileTemplateUtils(utilsLocation);
+          urls = new URL[] { utilsLocation.resolve("target").resolve("classes").toUri().toURL() };
         } else {
-          urls = new URL[] { configLocation.toUri().toURL() };
+          urls = new URL[] { utilsLocation.toUri().toURL() };
         }
+
         combinedClassLoader = new URLClassLoader(urls, combinedClassLoader);
         return combinedClassLoader;
       } catch (MalformedURLException e) {
@@ -410,8 +421,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     String templateEngineName = tConfig.getTemplateEngine();
     TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
 
-    templateEngine.setTemplateFolder(this.configurationHolder.readContextConfiguration().getConfigurationPath()
-        .resolve(trigger.getTemplateFolder()));
+    templateEngine.setTemplateFolder(this.configurationHolder.readContextConfiguration()
+        .getConfigRootforTrigger(trigger.getId()).resolve(trigger.getTemplateFolder()));
 
     Template templateEty = tConfig.getTemplate(template.getId());
     if (templateEty == null) {

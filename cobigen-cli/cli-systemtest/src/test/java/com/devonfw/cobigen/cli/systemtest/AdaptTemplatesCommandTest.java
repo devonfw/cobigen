@@ -3,9 +3,12 @@ package com.devonfw.cobigen.cli.systemtest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -15,6 +18,29 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
  * present among JVM startup arguments.
  */
 public class AdaptTemplatesCommandTest extends AbstractCliTest {
+
+  /**
+   * Simulate the download of the template set jars, as this not yet implemented. This method can be removed later
+   *
+   * @throws URISyntaxException if the path could not be created properly
+   * @throws IOException if accessing a directory or file fails
+   */
+  @Before
+  public void initAdaptTemplatesTest() throws URISyntaxException, IOException {
+
+    Path cliSystemTestPath = new File(
+        AdaptTemplatesCommandTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+            .getParentFile().toPath();
+    Path templateJar = cliSystemTestPath.resolve("src/test/resources/testdata/crud-java-server-app.jar");
+    if (Files.exists(templateJar)) {
+      Path downloadedTemplateSetsPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
+          .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+      if (!Files.exists(downloadedTemplateSetsPath)) {
+        Files.createDirectories(downloadedTemplateSetsPath);
+      }
+      Files.copy(templateJar, downloadedTemplateSetsPath.resolve(templateJar.getFileName()));
+    }
+  }
 
   /**
    * Checks if adapt-templates command successfully created cobigen templates folder and its sub folders
@@ -29,19 +55,21 @@ public class AdaptTemplatesCommandTest extends AbstractCliTest {
 
     execute(args, false);
 
-    Path cobigenTemplatesFolderPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
-        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-    assertThat(cobigenTemplatesFolderPath).exists();
-    // check if templates exist
-    assertThat(Paths
-        .get(cobigenTemplatesFolderPath.toString() + File.separator + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER))
-            .exists();
+    Path cobigenTemplateSetsFolderPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    Path downloadedTemplateSetsFolderPath = cobigenTemplateSetsFolderPath
+        .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    Path adaptedTemplateSetsFolderPath = cobigenTemplateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+
+    assertThat(cobigenTemplateSetsFolderPath).exists();
+    assertThat(downloadedTemplateSetsFolderPath).exists();
+    assertThat(adaptedTemplateSetsFolderPath).exists();
+
+    // check if adapted template set exists
+    Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app");
+    assertThat(templateSet).exists();
     // check if context configuration exists
-    assertThat(Paths
-        .get(cobigenTemplatesFolderPath.toString() + File.separator + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER
-            + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME)).exists();
-    // check if sources of utility classes exist
-    assertThat(Paths.get(cobigenTemplatesFolderPath.toString() + File.separator + "src" + File.separator + "main"
-        + File.separator + "java")).exists();
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)).exists();
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)).exists();
   }
 }
