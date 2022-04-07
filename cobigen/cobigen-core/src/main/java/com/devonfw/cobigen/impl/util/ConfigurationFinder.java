@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.impl.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -133,9 +132,9 @@ public class ConfigurationFinder {
 
     // 2. use template jar
     if (Files.exists(templatesPath)) {
-      File jarFile = TemplatesJarUtil.getJarFile(false, templatesPath.toFile());
-      if (jarFile != null) {
-        return jarFile.toPath().toUri();
+      Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesPath);
+      if (jarFilePath != null && Files.exists(jarFilePath)) {
+        return jarFilePath.toUri();
       }
     }
 
