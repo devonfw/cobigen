@@ -46,7 +46,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
   /**
    * temporary project to store CobiGen home
    */
-  File cobiGenHome;
+  Path cobiGenHome;
 
   /**
    * Creates a temporary CobiGen home directory for each test and create static mock for CobiGenPaths object
@@ -56,10 +56,10 @@ public class TemplateProcessingTest extends AbstractApiTest {
   @Before
   public void prepare() throws IOException {
 
-    this.cobiGenHome = this.tempFolder.newFolder("playground", "templatesHome");
+    this.cobiGenHome = this.tempFolder.newFolder("playground", "templatesHome").toPath();
 
     this.cobigenPaths = Mockito.mockStatic(CobiGenPaths.class, Mockito.CALLS_REAL_METHODS);
-    this.cobigenPaths.when(() -> CobiGenPaths.getCobiGenHomePath()).thenReturn(this.cobiGenHome.toPath());
+    this.cobigenPaths.when(() -> CobiGenPaths.getCobiGenHomePath()).thenReturn(this.cobiGenHome);
 
   }
 
@@ -73,35 +73,36 @@ public class TemplateProcessingTest extends AbstractApiTest {
   }
 
   /**
+   * Tests if template sets can be extracted properly
+   *
    * @throws IOException if an Exception occurs
    */
-  @Test
-  public void extractTemplateSetsTest() throws IOException {
+  private void extractTemplateSetsTest() throws IOException {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templates"),
-        this.cobiGenHome.toPath().resolve("template-sets/downloaded").toFile());
+        this.cobiGenHome.resolve("template-sets/downloaded").toFile());
     CobiGenFactory.extractTemplates();
-    Path adaptedFolder = this.cobiGenHome.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)
+    Path adaptedFolder = this.cobiGenHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)
         .resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1");
     Path extractedJar2 = adaptedFolder.resolve("template-test2-0.0.1");
-    assertThat(extractedJar1.toFile()).exists().isDirectory();
-    assertThat(extractedJar2.toFile()).exists().isDirectory();
+    assertThat(extractedJar1).exists().isDirectory();
+    assertThat(extractedJar2).exists().isDirectory();
   }
 
   /**
+   * Test of extract templates with old CobiGen_Templates project existing
+   *
    * @throws IOException if an Exception occurs
    */
-  @Test
-  public void extractTemplatesWithOldConfiguration() throws IOException {
+  private void extractTemplatesWithOldConfiguration() throws IOException {
 
-    Path cobigenTemplatesParent = this.cobiGenHome.toPath()
-        .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
+    Path cobigenTemplatesParent = this.cobiGenHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
     Files.createDirectories(cobigenTemplatesParent);
     Path cobigenTemplatesProject = cobigenTemplatesParent.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
     Files.createDirectories(cobigenTemplatesProject);
     CobiGenFactory.extractTemplates();
-    assertThat(cobigenTemplatesProject.toFile()).exists().isDirectory();
+    assertThat(cobigenTemplatesProject).exists().isDirectory();
   }
 
   /**
@@ -112,7 +113,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
   @Test
   public void testExtractTemplatesWithOldConfiguration() throws Exception {
 
-    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toPath().toString())
+    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toString())
         .execute(() -> extractTemplatesWithOldConfiguration());
   }
 
@@ -124,19 +125,19 @@ public class TemplateProcessingTest extends AbstractApiTest {
   @Test
   public void testExtractTemplateSets() throws Exception {
 
-    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toPath().toString())
-        .execute(() -> extractTemplateSetsTest());
+    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toString()).execute(() -> extractTemplateSetsTest());
   }
 
   /**
+   * Test of find template set downloaded folder to ensure backwards compatibility
+   *
    * @throws IOException if an Exception occurs
    */
   private void findTemplateSetJarsWithBackwardsCompatibilityTest() throws IOException {
 
     FileUtils.createParentDirectories(new File(testFileRootPath + "template-sets"));
     URI templatesLocationURI = ConfigurationFinder.findTemplatesLocation();
-    assertThat(templatesLocationURI.compareTo(this.cobiGenHome.toPath().resolve("template-sets").toUri()));
-
+    assertThat(templatesLocationURI.compareTo(this.cobiGenHome.resolve("template-sets").toUri()));
   }
 
   /**
@@ -148,7 +149,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
   @Test
   public void testfindTemplateSetDownloadedWithBackwardsCompatibility() throws Exception {
 
-    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toPath().toString())
+    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toString())
         .execute(() -> findTemplateSetJarsWithBackwardsCompatibilityTest());
   }
 
