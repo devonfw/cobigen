@@ -115,6 +115,9 @@ public class MavenUtil {
 
     Path cachedPomXml = outputPath.resolve("cached-pom.xml");
     try {
+      if (Files.exists(cachedPomXml)) {
+        Files.delete(cachedPomXml);
+      }
       Files.copy(pomFile, cachedPomXml);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to extract " + pomFile.toUri() + " from JAR to " + cachedPomXml, e);

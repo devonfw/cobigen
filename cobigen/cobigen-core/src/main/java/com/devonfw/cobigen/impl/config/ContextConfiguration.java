@@ -11,6 +11,7 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationSetReader;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -105,15 +106,21 @@ public class ContextConfiguration {
   }
 
   /**
-   * @param triggerId the trigger id to get the config root directory for
-   * @return the {@link Path} of the config root directory of the trigger
+   * @param triggerId the trigger id to get the config location for
+   * @param fileSystemDependentPath if true and the configuration is a jar file, the file system dependent path is
+   *        returned
+   * @return the {@link Path} of the config location of the trigger
    */
-  public Path getConfigRootforTrigger(String triggerId) {
+  public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
 
     if (this.contextConfigurationReader instanceof ContextConfigurationSetReader) {
-      return ((ContextConfigurationSetReader) this.contextConfigurationReader).getConfigRootForTrigger(triggerId);
+      Path configLocation = ((ContextConfigurationSetReader) this.contextConfigurationReader)
+          .getConfigLocationForTrigger(triggerId);
+      if (fileSystemDependentPath && FileSystemUtil.isZipFile(configLocation.toUri())) {
+        configLocation = FileSystemUtil.createFileSystemDependentPath(configLocation.toUri());
+      }
+      return configLocation;
     }
     return this.contextConfigurationReader.getContextRoot();
   }
-
 }

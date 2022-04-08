@@ -1,0 +1,4 @@
+  <properties>
+   <maven.compiler.source>{maven.compiler.source}</maven.compiler.source>
+   <maven.compiler.target>{maven.compiler.source}</maven.compiler.target>
+  </properties>

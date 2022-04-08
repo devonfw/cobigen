@@ -21,11 +21,11 @@ import com.google.common.collect.Maps;
 /** The {@link ContextConfigurationSetReader} reads the context xml */
 public class ContextConfigurationSetReader extends AbstractContextConfigurationReader {
 
-  /** Map with the paths of the config roots for a context.xml file */
-  private Map<Path, Path> configRoots = new HashMap<>();
+  /** Map with the paths of the config locations for a context.xml file */
+  private Map<Path, Path> configLocations = new HashMap<>();
 
-  /** Map with the paths of the config roots for a trigger */
-  private Map<String, Path> triggerConfigRoots = new HashMap<>();
+  /** Map with the paths of the config location for a trigger */
+  private Map<String, Path> triggerConfigLocations = new HashMap<>();
 
   /**
    * The constructor.
@@ -111,7 +111,7 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
         Path contextFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 
-        addConfigRoot(contextFilePath, configurationPath, contextPaths);
+        addConfigRoot(contextFilePath, jarPath, contextPaths);
       }
     }
 
@@ -123,28 +123,22 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
 
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.contextConfigurations.keySet()) {
-      Path configRoot = this.configRoots.get(contextFile);
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
-      boolean isJarConfig = (configRoot.getParent() == null);
+      Path configLocation = this.configLocations.get(contextFile);
+      boolean isJarFile = FileSystemUtil.isZipFile(configLocation.toUri());
 
       List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = contextConfiguration.getTrigger();
       if (!triggerList.isEmpty()) {
         // context configuration in template sets consists of only one trigger
         com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
 
-        String templateFolder;
-        if (isJarConfig) {
-          templateFolder = contextFile.getParent().toString();
-        } else {
-          templateFolder = configRoot.getFileName().resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toString();
-          configRoot = configRoot.getParent();
-        }
-
-        if (!this.triggerConfigRoots.containsKey(trigger.getId()) || !isJarConfig) {
+        if (!this.triggerConfigLocations.containsKey(trigger.getId()) || !isJarFile) {
           // prefer the adapted templates
-          this.triggerConfigRoots.put(trigger.getId(), configRoot);
-          triggers.put(trigger.getId(), new Trigger(trigger.getId(), trigger.getType(), templateFolder,
-              Charset.forName(trigger.getInputCharset()), loadMatchers(trigger), loadContainerMatchers(trigger)));
+          this.triggerConfigLocations.put(trigger.getId(), configLocation);
+
+          triggers.put(trigger.getId(),
+              new Trigger(trigger.getId(), trigger.getType(), ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER,
+                  Charset.forName(trigger.getInputCharset()), loadMatchers(trigger), loadContainerMatchers(trigger)));
         }
       }
     }
@@ -152,14 +146,14 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
   }
 
   /**
-   * Get the configuration root directory for a given trigger
+   * Get the configuration location for a given trigger. Either a jar file or a folder
    *
    * @param triggerId the trigger id to search the config root for
-   * @return the {@link Path} of the config root for a trigger
+   * @return the {@link Path} of the config location for a trigger
    */
-  public Path getConfigRootForTrigger(String triggerId) {
+  public Path getConfigLocationForTrigger(String triggerId) {
 
-    return this.triggerConfigRoots.get(triggerId);
+    return this.triggerConfigLocations.get(triggerId);
   }
 
   /**
@@ -174,7 +168,7 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
 
     if (Files.exists(contextFilePath)) {
       contextPaths.add(contextFilePath);
-      this.configRoots.put(contextFilePath, configRootPath);
+      this.configLocations.put(contextFilePath, configRootPath);
     }
   }
 }

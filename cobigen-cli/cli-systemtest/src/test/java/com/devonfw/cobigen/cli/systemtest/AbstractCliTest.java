@@ -98,13 +98,13 @@ public class AbstractCliTest {
             }
           }
 
-          if (path.getFileName().toString().equals("templates-devon4j-utils")) {
-            if (Files.exists(path.resolve("pom.xml"))) {
-              try {
-                Files.delete(path.resolve("pom.xml"));
-              } catch (IOException e) {
-                throw new IOException("Error deleting file " + path.resolve("pom.xml"), e);
-              }
+          // Replace the pom.xml in the template sets. Needed so that the project in the temp directory is build
+          // properly
+          if (Files.exists(path.resolve("pom.xml"))) {
+            try {
+              Files.delete(path.resolve("pom.xml"));
+            } catch (IOException e) {
+              throw new IOException("Error deleting file " + path.resolve("pom.xml"), e);
             }
             try {
               Files.copy(utilsPom, path.resolve("pom.xml"));
