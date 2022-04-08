@@ -77,7 +77,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
    *
    * @throws IOException if an Exception occurs
    */
-  public void extractTemplateSetsTest() throws IOException {
+  private void extractTemplateSetsTest() throws IOException {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templates"),
         this.cobiGenHome.resolve("template-sets/downloaded").toFile());
@@ -86,8 +86,8 @@ public class TemplateProcessingTest extends AbstractApiTest {
         .resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1");
     Path extractedJar2 = adaptedFolder.resolve("template-test2-0.0.1");
-    assertThat(Files.isDirectory(extractedJar1));
-    assertThat(Files.isDirectory(extractedJar2));
+    assertThat(extractedJar1).exists().isDirectory();
+    assertThat(extractedJar2).exists().isDirectory();
   }
 
   /**
@@ -95,14 +95,14 @@ public class TemplateProcessingTest extends AbstractApiTest {
    *
    * @throws IOException if an Exception occurs
    */
-  public void extractTemplatesWithOldConfiguration() throws IOException {
+  private void extractTemplatesWithOldConfiguration() throws IOException {
 
     Path cobigenTemplatesParent = this.cobiGenHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
     Files.createDirectories(cobigenTemplatesParent);
     Path cobigenTemplatesProject = cobigenTemplatesParent.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
     Files.createDirectories(cobigenTemplatesProject);
     CobiGenFactory.extractTemplates();
-    assertThat(Files.isDirectory(cobigenTemplatesProject));
+    assertThat(cobigenTemplatesProject).exists().isDirectory();
   }
 
   /**
@@ -138,7 +138,6 @@ public class TemplateProcessingTest extends AbstractApiTest {
     FileUtils.createParentDirectories(new File(testFileRootPath + "template-sets"));
     URI templatesLocationURI = ConfigurationFinder.findTemplatesLocation();
     assertThat(templatesLocationURI.compareTo(this.cobiGenHome.resolve("template-sets").toUri()));
-
   }
 
   /**
