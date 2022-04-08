@@ -10,16 +10,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
@@ -39,11 +35,6 @@ public class TemplateProcessingTest extends AbstractApiTest {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   /**
-   * mock the pathObject to use the temporary folder instead of the user folder
-   */
-  private MockedStatic<CobiGenPaths> cobigenPaths;
-
-  /**
    * temporary project to store CobiGen home
    */
   Path cobiGenHome;
@@ -58,18 +49,6 @@ public class TemplateProcessingTest extends AbstractApiTest {
 
     this.cobiGenHome = this.tempFolder.newFolder("playground", "templatesHome").toPath();
 
-    this.cobigenPaths = Mockito.mockStatic(CobiGenPaths.class, Mockito.CALLS_REAL_METHODS);
-    this.cobigenPaths.when(() -> CobiGenPaths.getCobiGenHomePath()).thenReturn(this.cobiGenHome);
-
-  }
-
-  /**
-   * cleanup mockito static mock
-   */
-  @After
-  public void cleanup() {
-
-    this.cobigenPaths.close();
   }
 
   /**
