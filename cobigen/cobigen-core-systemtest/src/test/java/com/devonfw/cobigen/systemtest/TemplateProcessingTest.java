@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.systemtest;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -76,8 +77,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
    *
    * @throws IOException if an Exception occurs
    */
-  @Test
-  public void extractTemplateSetsTest() throws IOException {
+  private void extractTemplateSetsTest() throws IOException {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templates"),
         this.cobiGenHome.resolve("template-sets/downloaded").toFile());
@@ -95,8 +95,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
    *
    * @throws IOException if an Exception occurs
    */
-  @Test
-  public void extractTemplatesWithOldConfiguration() throws IOException {
+  private void extractTemplatesWithOldConfiguration() throws IOException {
 
     Path cobigenTemplatesParent = this.cobiGenHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
     Files.createDirectories(cobigenTemplatesParent);
@@ -107,16 +106,51 @@ public class TemplateProcessingTest extends AbstractApiTest {
   }
 
   /**
+   * Test of extract templates with old CobiGen_Templates project existing with custom COBIGEN_HOME environment variable
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testExtractTemplatesWithOldConfiguration() throws Exception {
+
+    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toString())
+        .execute(() -> extractTemplatesWithOldConfiguration());
+  }
+
+  /**
+   * Test of extract template sets with custom COBIGEN_HOME environment variable
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testExtractTemplateSets() throws Exception {
+
+    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toString()).execute(() -> extractTemplateSetsTest());
+  }
+
+  /**
    * Test of find template set downloaded folder to ensure backwards compatibility
    *
    * @throws IOException if an Exception occurs
    */
-  @Test
-  public void findTemplateSetJarsWithBackwardsCompatibilityTest() throws IOException {
+  private void findTemplateSetJarsWithBackwardsCompatibilityTest() throws IOException {
 
     FileUtils.createParentDirectories(new File(testFileRootPath + "template-sets"));
     URI templatesLocationURI = ConfigurationFinder.findTemplatesLocation();
     assertThat(templatesLocationURI.compareTo(this.cobiGenHome.resolve("template-sets").toUri()));
+  }
+
+  /**
+   * Test of find template set downloaded folder to ensure backwards compatibility with custom COBIGEN_HOME environment
+   * variable
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testfindTemplateSetDownloadedWithBackwardsCompatibility() throws Exception {
+
+    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toString())
+        .execute(() -> findTemplateSetJarsWithBackwardsCompatibilityTest());
   }
 
 }
