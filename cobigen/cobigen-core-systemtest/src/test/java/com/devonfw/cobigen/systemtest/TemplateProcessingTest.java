@@ -114,7 +114,8 @@ public class TemplateProcessingTest extends AbstractApiTest {
    */
   private void findTemplateSetJarsWithBackwardsCompatibilityTest() throws IOException {
 
-    FileUtils.createParentDirectories(new File(testFileRootPath + "template-sets"));
+    Path downloadedFolder = this.cobiGenHome.toPath().resolve("template-sets").resolve("downloaded");
+    Files.createDirectories(downloadedFolder);
     URI templatesLocationURI = ConfigurationFinder.findTemplatesLocation();
     assertThat(templatesLocationURI.compareTo(this.cobiGenHome.resolve("template-sets").toUri()));
   }

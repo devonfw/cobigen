@@ -1,10 +1,14 @@
 package com.devonfw.cobigen.impl.config;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
@@ -16,8 +20,8 @@ import com.google.common.collect.Maps;
  */
 public class ConfigurationHolder {
 
-  /** Cached templates configurations. Configuration File URI -> Trigger ID -> configuration instance */
-  private Map<Path, Map<String, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
+  /** Cached templates configurations. Trigger ID -> Configuration File URI -> configuration instance */
+  private Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
 
   /** Cached context configuration */
   private ContextConfiguration contextConfiguration;
@@ -75,15 +79,16 @@ public class ConfigurationHolder {
    */
   public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
+    Path configRoot = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), true);
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
-    if (!this.templatesConfigurations.containsKey(templateFolder)) {
-      this.templatesConfigurations.put(templateFolder, Maps.<String, TemplatesConfiguration> newHashMap());
+    if (!this.templatesConfigurations.containsKey(trigger.getId())) {
+      TemplatesConfiguration config = new TemplatesConfiguration(configRoot, trigger, this);
+      this.templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
 
-      TemplatesConfiguration config = new TemplatesConfiguration(this.configurationPath, trigger, this);
-      this.templatesConfigurations.get(templateFolder).put(trigger.getId(), config);
+      this.templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
     }
 
-    return this.templatesConfigurations.get(templateFolder).get(trigger.getId());
+    return this.templatesConfigurations.get(trigger.getId()).get(templateFolder);
   }
 
   /**
@@ -98,5 +103,40 @@ public class ConfigurationHolder {
       this.contextConfiguration = new ContextConfiguration(this.configurationPath);
     }
     return this.contextConfiguration;
+  }
+
+  /**
+   * @return return if the template folder structure consists of template sets or if the old structure is used
+   */
+  public boolean isTemplateSetConfiguration() {
+
+    if (this.configurationPath.toUri().getScheme().equals("jar")
+        || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Search for the location of the Java utils
+   *
+   * @return the {@link Path} of the location of the util classes or null if no location was found
+   * @throws IOException
+   */
+  public List<Path> getUtilsLocation() {
+
+    List<Path> utilsLocationPaths = new ArrayList<>();
+    if (isTemplateSetConfiguration()) {
+      List<Trigger> triggers = readContextConfiguration().getTriggers();
+
+      for (Trigger trigger : triggers) {
+        Path configLocation = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), false);
+        utilsLocationPaths.add(configLocation);
+      }
+    } else {
+      utilsLocationPaths.add(Paths.get(this.configurationLocation));
+    }
+
+    return utilsLocationPaths;
   }
 }

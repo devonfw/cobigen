@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
@@ -88,9 +89,9 @@ public class ResourcesPluginUtil {
     if (!generatorProj.exists()) {
       if (!isUpdateDialogShown) {
         if (templatesDirectory.exists()) {
-          File jarFile = TemplatesJarUtil.getJarFile(false, templatesDirectory);
+          Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesDirectory.toPath());
           // If we don't find at least one jar, then we do need to download new templates
-          if (jarFile == null) {
+          if (jarFilePath == null || !Files.exists(jarFilePath)) {
             int result = createUpdateTemplatesDialog();
             isUpdateDialogShown = true;
             if (result == 1) {
@@ -168,14 +169,14 @@ public class ResourcesPluginUtil {
 
     File templatesDirectory = getTemplatesDirectory();
 
-    File jarFile = TemplatesJarUtil.getJarFile(isSource, templatesDirectory);
+    Path jarFilePath = TemplatesJarUtil.getJarFile(isSource, templatesDirectory.toPath());
 
-    if (jarFile == null) {
+    if (jarFilePath == null || !Files.exists(jarFilePath)) {
       return "";
     }
 
-    String fileName = jarFile.getPath().substring(jarFile.getPath().lastIndexOf(File.separator) + 1);
-
+    String fileName = jarFilePath.toFile().getPath()
+        .substring(jarFilePath.toFile().getPath().lastIndexOf(File.separator) + 1);
     return fileName;
   }
 

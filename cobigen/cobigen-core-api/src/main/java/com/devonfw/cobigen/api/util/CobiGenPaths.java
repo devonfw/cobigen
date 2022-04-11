@@ -54,8 +54,8 @@ public class CobiGenPaths {
   }
 
   /**
-   * Returns the templates home directory (which is located inside CobiGen home folder), or creates a new one if it does
-   * not exist
+   * Returns the templates home directory (which is located inside CobiGen home folder). The folder is no longer created
+   * if it does not exist. Instead CobiGen will switch to the template sets folder.
    *
    * @return {@link Path} of the templates home directory
    */
@@ -65,19 +65,8 @@ public class CobiGenPaths {
   }
 
   /**
-   * Returns the template set home directory (which is located inside CobiGen home folder), or creates a new one if it
-   * does not exist
-   *
-   * @return {@link Path} of the templates home directory
-   */
-  public static Path getTemplateSetsFolderPath() {
-
-    return getTemplateSetsFolderPath(getCobiGenHomePath());
-  }
-
-  /**
-   * Returns the templates home directory (which is located inside CobiGen home folder), or creates a new one if it does
-   * not exist
+   * Returns the templates home directory (which is located inside CobiGen home folder). The folder is no longer created
+   * if it does not exist. Instead CobiGen will switch to the template sets folder.
    *
    * @param home cobigen configuration home directory
    * @return {@link Path} of the templates home directory
@@ -85,8 +74,60 @@ public class CobiGenPaths {
   public static Path getTemplatesFolderPath(Path home) {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+    return templatesPath;
+  }
 
-    return createFolder(templatesPath);
+  /**
+   * Returns the template set home directory (which is located inside CobiGen home folder). The directory will not be
+   * created
+   *
+   * @return {@link Path} of the templates home directory
+   */
+  public static Path getTemplateSetsFolderPath() {
+
+    return getTemplateSetsFolderPath(getCobiGenHomePath(), false);
+  }
+
+  /**
+   * Returns the template set home directory (which is located inside CobiGen home folder). If createFolder is true, the
+   * directory will be created.
+   *
+   * @param createFolder if true, the directory is also created
+   *
+   * @return {@link Path} of the templates home directory
+   */
+  public static Path getTemplateSetsFolderPath(boolean createFolder) {
+
+    return getTemplateSetsFolderPath(getCobiGenHomePath(), createFolder);
+  }
+
+  /**
+   * Returns the template sets home directory (which is located inside CobiGen home folder). The directory will not be
+   * created
+   *
+   * @param home cobigen configuration home directory
+   * @return {@link Path} of the template sets home directory
+   */
+  public static Path getTemplateSetsFolderPath(Path home) {
+
+    return getTemplateSetsFolderPath(home, false);
+  }
+
+  /**
+   * Returns the template sets home directory (which is located inside CobiGen home folder). If createFolder is true,
+   * the directory will be created.
+   *
+   * @param home cobigen configuration home directory
+   * @param createFolder if true, the folder will be created if it does not already exists
+   * @return {@link Path} of the template sets home directory
+   */
+  public static Path getTemplateSetsFolderPath(Path home, boolean createFolder) {
+
+    Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    if (createFolder) {
+      createFolder(templatesPath);
+    }
+    return templatesPath;
   }
 
   /**
@@ -109,20 +150,6 @@ public class CobiGenPaths {
     }
 
     return folderPath;
-  }
-
-  /**
-   * Returns the template sets home directory (which is located inside CobiGen home folder), or creates a new one if it
-   * does not exist
-   *
-   * @param home cobigen configuration home directory
-   * @return {@link Path} of the template sets home directory
-   */
-  public static Path getTemplateSetsFolderPath(Path home) {
-
-    Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-
-    return createFolder(templatesPath);
   }
 
   /**
