@@ -2,16 +2,15 @@ package com.devonfw.cobigen.systemtest;
 
 import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
 import static com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers.hasItemsInList;
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.matchers.Any.ANY;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -20,6 +19,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
@@ -251,26 +251,34 @@ public class ContainerMatcherTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
 
     // Simulate container children resolution of any plug-in
-    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))), anyList(),
-        any())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
-    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))), anyList(),
-        any())).thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
-    when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(child1, child2));
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(child1))),
+        anyList(), Mockito.any()))
+            .thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(child2))),
+        anyList(), Mockito.any()))
+            .thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
+    when(inputReader.getInputObjects(Mockito.any(), Mockito.any(Charset.class)))
+        .thenReturn(Lists.newArrayList(child1, child2));
 
     // match container
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("container"), ANY, sameInstance(container)))))
-        .thenReturn(true);
+    when(matcher
+        .matches(argThat(new MatcherToMatcher(equalTo("container"), any(String.class), sameInstance(container)))))
+            .thenReturn(true);
 
     // do not match first child
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child1))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child1))))).thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(child1)))))
+        .thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(child1)))))
+        .thenReturn(true);
 
     // match second child
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(child2))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(child2))))).thenReturn(false);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(child2)))))
+        .thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(child2)))))
+        .thenReturn(false);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -346,10 +354,10 @@ public class ContainerMatcherTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(container)))))
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(container)))))
         .thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(container)))))
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), any(String.class), sameInstance(container)))))
         .thenReturn(true);
 
     // Simulate container children resolution of any plug-in
@@ -361,22 +369,25 @@ public class ContainerMatcherTest extends AbstractApiTest {
           return "child2";
         }
       };
-      when(inputReader.getInputObjects(any(), any(Charset.class)))
+      when(inputReader.getInputObjects(Mockito.any(), Mockito.any(Charset.class)))
           .thenReturn(Lists.newArrayList(firstChildResource, secondChildResource));
     } else {
-      when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(firstChildResource));
+      when(inputReader.getInputObjects(Mockito.any(), Mockito.any(Charset.class)))
+          .thenReturn(Lists.newArrayList(firstChildResource));
     }
 
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-        .thenReturn(containerChildMatchesTrigger);
+    when(matcher
+        .matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(firstChildResource)))))
+            .thenReturn(containerChildMatchesTrigger);
 
     // Simulate variable resolving of any plug-in
-    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
+    when(matcher.resolveVariables(
+        argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(firstChildResource))),
         argThat(hasItemsInList(
             //
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1"), equalTo(false)),
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"), equalTo(false)))),
-        any()))
+        Mockito.any()))
             .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
                 .put("entityName", "Test").build());
 

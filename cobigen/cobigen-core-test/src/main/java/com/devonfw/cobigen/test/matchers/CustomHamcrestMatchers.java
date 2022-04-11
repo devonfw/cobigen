@@ -5,9 +5,8 @@ import static org.hamcrest.core.AllOf.allOf;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
-import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsIterableContaining;
 
 /**
  * These functions have been ported from hamcrest, whereas the signature has been customized
@@ -30,7 +29,6 @@ public class CustomHamcrestMatchers {
    * @param itemMatchers the matchers to apply to items provided by the examined {@link List}
    * @return the matcher instance
    */
-  @Factory
   @SuppressWarnings("unchecked")
   public static <T> Matcher<List<T>> hasItemsInList(Matcher<? super T>... itemMatchers) {
 
@@ -38,7 +36,7 @@ public class CustomHamcrestMatchers {
 
     for (Matcher<? super T> elementMatcher : itemMatchers) {
       // Doesn't forward to hasItem() method so compiler can sort out generics.
-      all.add(new IsCollectionContaining<>(elementMatcher));
+      all.add(new IsIterableContaining<>(elementMatcher));
     }
 
     return allOf(all);

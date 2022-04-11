@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.systemtest;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -8,14 +7,19 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
@@ -35,97 +39,87 @@ public class TemplateProcessingTest extends AbstractApiTest {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   /**
-   * temporary project to store CobiGen home
+   * mock the pathObject to use the temporary folder instead of the user folder
    */
-  File cobiGenHome;
+  private MockedStatic<CobiGenPaths> cobigenPaths;
 
   /**
-   * Creates a temporary CobiGen home directory for each test
+   * temporary project to store CobiGen home
+   */
+  Path cobiGenHome;
+
+  /**
+   * Creates a temporary CobiGen home directory for each test and create static mock for CobiGenPaths object
    *
    * @throws IOException if an Exception occurs
    */
   @Before
   public void prepare() throws IOException {
 
-    this.cobiGenHome = this.tempFolder.newFolder("playground", "templatesHome");
+    this.cobiGenHome = this.tempFolder.newFolder("playground", "templatesHome").toPath();
+
+    this.cobigenPaths = Mockito.mockStatic(CobiGenPaths.class, Mockito.CALLS_REAL_METHODS);
+    this.cobigenPaths.when(() -> CobiGenPaths.getCobiGenHomePath()).thenReturn(this.cobiGenHome);
+
   }
 
   /**
+   * cleanup mockito static mock
+   */
+  @After
+  public void cleanup() {
+
+    this.cobigenPaths.close();
+  }
+
+  /**
+   * Tests if template sets can be extracted properly
+   *
    * @throws IOException if an Exception occurs
    */
+  @Test
   public void extractTemplateSetsTest() throws IOException {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templates"),
-        this.cobiGenHome.toPath().resolve("template-sets/downloaded").toFile());
+        this.cobiGenHome.resolve("template-sets/downloaded").toFile());
     CobiGenFactory.extractTemplates();
-    Path adaptedFolder = this.cobiGenHome.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)
+    Path adaptedFolder = this.cobiGenHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)
         .resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1");
     Path extractedJar2 = adaptedFolder.resolve("template-test2-0.0.1");
-    assertThat(Files.exists(extractedJar1));
-    assertThat(Files.exists(extractedJar2));
+    assertThat(extractedJar1).exists().isDirectory();
+    assertThat(extractedJar2).exists().isDirectory();
   }
 
   /**
+   * Test of extract templates with old CobiGen_Templates project existing
+   *
    * @throws IOException if an Exception occurs
    */
+  @Test
   public void extractTemplatesWithOldConfiguration() throws IOException {
 
-    Path cobigenTemplatesProject = this.cobiGenHome.toPath()
-        .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
-        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    Path cobigenTemplatesParent = this.cobiGenHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
+    Files.createDirectories(cobigenTemplatesParent);
+    Path cobigenTemplatesProject = cobigenTemplatesParent.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
     Files.createDirectories(cobigenTemplatesProject);
     CobiGenFactory.extractTemplates();
-    assertThat(Files.exists(cobigenTemplatesProject));
+    assertThat(cobigenTemplatesProject).exists().isDirectory();
   }
 
   /**
-   * Test of extract templates with old CobiGen_Templates project existing with custom COBIGEN_HOME environment variable
+   * Test of find template set downloaded folder to ensure backwards compatibility
    *
-   * @throws Exception test fails
-   */
-  @Test
-  public void testExtractTemplatesWithOldConfiguration() throws Exception {
-
-    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toPath().toString())
-        .execute(() -> extractTemplatesWithOldConfiguration());
-  }
-
-  /**
-   * Test of extract template sets with custom COBIGEN_HOME environment variable
-   *
-   * @throws Exception test fails
-   */
-  @Test
-  public void testExtractTemplateSets() throws Exception {
-
-    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toPath().toString())
-        .execute(() -> extractTemplateSetsTest());
-  }
-
-  /**
    * @throws IOException if an Exception occurs
    */
-  public void findTemplateSetJarsWithBackwardsCompatibilityTest() throws IOException {
+  @Test
+  public void findTemplateSetsDownloadedFolderTest() throws IOException {
 
-    Path downloadedFolder = this.cobiGenHome.toPath().resolve("template-sets").resolve("downloaded");
+    Path downloadedFolder = this.cobiGenHome.resolve("template-sets").resolve("downloaded");
     Files.createDirectories(downloadedFolder);
     URI templatesLocationURI = ConfigurationFinder.findTemplatesLocation();
-    assertThat(templatesLocationURI.compareTo(this.cobiGenHome.toPath().resolve("template-sets").toUri()));
-
-  }
-
-  /**
-   * Test of find template set downloaded folder to ensure backwards compatibility with custom COBIGEN_HOME environment
-   * variable
-   *
-   * @throws Exception test fails
-   */
-  @Test
-  public void testfindTemplateSetDownloadedWithBackwardsCompatibility() throws Exception {
-
-    withEnvironmentVariable("COBIGEN_HOME", this.cobiGenHome.toPath().toString())
-        .execute(() -> findTemplateSetJarsWithBackwardsCompatibilityTest());
+    Path expectedDownloadedFolder = Paths.get(templatesLocationURI).resolve("downloaded");
+    assertThat(expectedDownloadedFolder).exists().isDirectory();
   }
 
 }
