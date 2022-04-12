@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.api.util;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -11,9 +10,16 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
@@ -24,39 +30,8 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
  */
 public class TemplatesJarUtil {
 
-  /**
-   * Filters the files on a directory so that we can check whether the templates jar are already downloaded
-   */
-  static FilenameFilter fileNameFilterJar = new FilenameFilter() {
-
-    @Override
-    public boolean accept(File dir, String name) {
-
-      String lowercaseName = name.toLowerCase();
-      String regex = TemplatesJarConstants.JAR_FILE_REGEX_NAME;
-
-      Pattern p = Pattern.compile(regex);
-      Matcher m = p.matcher(lowercaseName);
-      return m.find();
-    }
-  };
-
-  /**
-   * Filters the files on a directory so that we can check whether the templates jar are already downloaded
-   */
-  static FilenameFilter fileNameFilterSources = new FilenameFilter() {
-
-    @Override
-    public boolean accept(File dir, String name) {
-
-      String lowercaseName = name.toLowerCase();
-      String regex = TemplatesJarConstants.SOURCES_FILE_REGEX_NAME;
-
-      Pattern p = Pattern.compile(regex);
-      Matcher m = p.matcher(lowercaseName);
-      return m.find();
-    }
-  };
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(TemplatesJarUtil.class);
 
   /**
    * @param groupId of the artifact to download
@@ -83,16 +58,10 @@ public class TemplatesJarUtil {
 
     String fileName = "";
 
-    File[] jarFiles;
-
-    if (isDownloadSource) {
-      jarFiles = templatesDirectory.listFiles(fileNameFilterSources);
-    } else {
-      jarFiles = templatesDirectory.listFiles(fileNameFilterJar);
-    }
-
+    Path jarFilePath = getJarFile(isDownloadSource, templatesDirectory.toPath());
     try {
-      if (jarFiles.length <= 0 || isJarOutdated(jarFiles[0], mavenUrl, isDownloadSource, templatesDirectory)) {
+      if (jarFilePath == null || !Files.exists(jarFilePath)
+          || isJarOutdated(jarFilePath.toFile(), mavenUrl, isDownloadSource, templatesDirectory)) {
 
         HttpURLConnection conn = initializeConnection(mavenUrl);
         try (InputStream inputStream = conn.getInputStream()) {
@@ -106,8 +75,8 @@ public class TemplatesJarUtil {
         }
         conn.disconnect();
       } else {
-        fileName = jarFiles[0].getPath().substring(jarFiles[0].getPath().lastIndexOf(File.separator) + 1);
-
+        fileName = jarFilePath.toFile().getPath()
+            .substring(jarFilePath.toFile().getPath().lastIndexOf(File.separator) + 1);
       }
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Could not download file from " + mavenUrl, e);
@@ -219,27 +188,60 @@ public class TemplatesJarUtil {
   }
 
   /**
+   * Returns a list of the file paths of the template set jars
+   *
+   * @param templatesDirectory directory where the templates are located
+   *
+   * @return file of the jar downloaded or null if it was not found
+   */
+  public static List<Path> getJarFiles(Path templatesDirectory) {
+
+    ArrayList<Path> jarPaths = new ArrayList<>();
+
+    try (Stream<Path> files = Files.list(templatesDirectory)) {
+      files.forEach(path -> {
+        if (path.toString().endsWith(".jar")) {
+          jarPaths.add(path);
+        }
+      });
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Could not read configuration root directory.", e);
+    }
+
+    if (!jarPaths.isEmpty()) {
+      return jarPaths;
+    } else {
+      // There are no jars downloaded
+      return null;
+    }
+  }
+
+  /**
    * Returns the file path of the templates jar
    *
    * @param isSource true if we want to get source jar file path
    * @param templatesDirectory directory where the templates are located
    * @return file of the jar downloaded or null if it was not found
+   *
    */
-  public static File getJarFile(boolean isSource, File templatesDirectory) {
+  public static Path getJarFile(boolean isSource, Path templatesDirectory) {
 
-    File[] jarFiles;
+    List<Path> jarPaths = null;
+    String regex = isSource ? TemplatesJarConstants.SOURCES_FILE_REGEX_NAME : TemplatesJarConstants.JAR_FILE_REGEX_NAME;
+    Pattern pattern = Pattern.compile(regex);
 
-    if (isSource) {
-      jarFiles = templatesDirectory.listFiles(fileNameFilterSources);
-    } else {
-      jarFiles = templatesDirectory.listFiles(fileNameFilterJar);
+    try (Stream<Path> stream = Files.list(templatesDirectory)) {
+      jarPaths = stream.filter(path -> pattern.matcher(path.toString()).find()).collect(Collectors.toList());
+    } catch (IOException e) {
+      LOG.error("Error while reading templates directory", e);
     }
 
-    if (jarFiles.length > 0) {
-      return jarFiles[0];
+    if (jarPaths != null && !jarPaths.isEmpty()) {
+      return jarPaths.get(0);
     } else {
       // There are no jars downlaoded
       return null;
     }
   }
+
 }

@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
@@ -61,6 +62,7 @@ import com.devonfw.cobigen.impl.generator.api.GenerationProcessor;
 import com.devonfw.cobigen.impl.generator.api.InputResolver;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
@@ -159,9 +161,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
       }
     }
 
-    Path templateConfigPath = Paths.get(this.configurationHolder.getConfigurationLocation());
     progressCallback.accept("Prepend Templates Classloader", 10);
-    inputProjectClassLoader = prependTemplatesClassloader(templateConfigPath, inputProjectClassLoader);
+    inputProjectClassLoader = prependTemplatesClassloader(inputProjectClassLoader);
     if (inputProjectClassLoader != null) {
       try {
         logicClasses = ConfigurationClassLoaderUtil.resolveUtilClasses(this.configurationHolder,
@@ -256,38 +257,54 @@ public class GenerationProcessorImpl implements GenerationProcessor {
    * @return the combined classloader for the templates with classLoader argument as parent or null if both arguments
    *         passed as null
    */
-  private ClassLoader prependTemplatesClassloader(Path configLocation, ClassLoader inputProjectClassLoader) {
+  private ClassLoader prependTemplatesClassloader(ClassLoader inputProjectClassLoader) {
 
+    Path configLocation = Paths.get(this.configurationHolder.getConfigurationLocation());
     ClassLoader combinedClassLoader = inputProjectClassLoader != null ? inputProjectClassLoader
         : Thread.currentThread().getContextClassLoader();
-    if (configLocation != null) {
 
-      Path pomFile = this.configurationHolder.getConfigurationPath().resolve("pom.xml");
+    if (configLocation != null && !this.configurationHolder.getUtilsLocation().isEmpty()) {
+      List<Path> utilsLocations = this.configurationHolder.getUtilsLocation();
       Path cpCacheFile = null;
       try {
-        if (Files.exists(pomFile)) {
-          LOG.debug("Found templates to be configured by maven.");
+        List<URL> urlList = new ArrayList<>();
+        for (Path utilsLocation : utilsLocations) {
 
-          String pomFileHash = MavenUtil.generatePomFileHash(pomFile);
-
-          if (this.configurationHolder.isJarConfig()) {
-            cpCacheFile = configLocation
-                .resolveSibling(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+          Path pomFile;
+          if (FileSystemUtil.isZipFile(utilsLocation.toUri())) {
+            Path utilsPath = FileSystemUtil.createFileSystemDependentPath(utilsLocation.toUri());
+            pomFile = utilsPath.resolve("pom.xml");
           } else {
-            cpCacheFile = configLocation.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+            pomFile = utilsLocation.resolve("pom.xml");
           }
 
-          combinedClassLoader = MavenUtil.addURLsFromCachedClassPathsFile(cpCacheFile, pomFile, combinedClassLoader);
+          if (Files.exists(pomFile)) {
+            String pomFileHash = MavenUtil.generatePomFileHash(pomFile);
+
+            if (!this.configurationHolder.isTemplateSetConfiguration()) {
+              if (this.configurationHolder.isJarConfig()) {
+                cpCacheFile = configLocation
+                    .resolveSibling(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+              } else {
+                cpCacheFile = configLocation.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+              }
+            } else {
+              cpCacheFile = configLocation.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+            }
+
+            combinedClassLoader = MavenUtil.addURLsFromCachedClassPathsFile(cpCacheFile, pomFile, combinedClassLoader);
+          }
+
+          if (Files.isDirectory(utilsLocation) && Files.exists(pomFile)) {
+            compileTemplateUtils(utilsLocation);
+            urlList.add(utilsLocation.resolve("target").resolve("classes").toUri().toURL());
+          } else {
+            urlList.add(utilsLocation.toUri().toURL());
+          }
         }
 
         // prepend jar/compiled resources as well
-        URL[] urls;
-        if (Files.isDirectory(configLocation) && Files.exists(pomFile)) {
-          compileTemplateUtils(configLocation);
-          urls = new URL[] { configLocation.resolve("target").resolve("classes").toUri().toURL() };
-        } else {
-          urls = new URL[] { configLocation.toUri().toURL() };
-        }
+        URL[] urls = urlList.toArray(new URL[urlList.size()]);
         combinedClassLoader = new URLClassLoader(urls, combinedClassLoader);
         return combinedClassLoader;
       } catch (MalformedURLException e) {
@@ -410,8 +427,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     String templateEngineName = tConfig.getTemplateEngine();
     TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
 
-    templateEngine.setTemplateFolder(this.configurationHolder.readContextConfiguration().getConfigurationPath()
-        .resolve(trigger.getTemplateFolder()));
+    templateEngine.setTemplateFolder(this.configurationHolder.readContextConfiguration()
+        .getConfigLocationforTrigger(trigger.getId(), true).resolve(trigger.getTemplateFolder()));
 
     Template templateEty = tConfig.getTemplate(template.getId());
     if (templateEty == null) {

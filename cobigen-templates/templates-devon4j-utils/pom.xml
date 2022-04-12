@@ -1,0 +1,97 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>templates-devon4j-utils</artifactId>
+  <name>CobiGen Devon4j Templates Utils</name>
+
+  <parent>
+    <groupId>com.devonfw.cobigen.templates</groupId>
+    <artifactId>templates-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+
+  <properties>
+    <skip.deployment>false</skip.deployment>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-rest-webmvc</artifactId>
+      <version>3.0.9.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.12.2</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>javax.persistence-api</artifactId>
+      <version>2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.10.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <!-- Patching the flattened-pom file -->
+                <!-- Removing the last </project> line -->
+                <replace file=".flattened-pom.xml" value="" token="&lt;/project>"></replace>
+                <!-- Updating the patch file -->
+                <replace file="./pom_patch.xml" value="${maven.compiler.source}" token="{maven.compiler.source}"></replace>
+                <replace file="./pom_patch.xml" value="${maven.compiler.target}" token="{maven.compiler.target}"></replace>
+                <!-- Adding content -->
+                <concat destfile=".flattened-pom.xml" append="true">
+                  <filelist dir="." files="pom_patch.xml"/>
+                </concat>
+                <!-- Restoring the patch file -->
+                <replace file="./pom_patch.xml" value="{maven.compiler.source}" token="${maven.compiler.source}"></replace>
+                <replace file="./pom_patch.xml" value="{maven.compiler.target}" token="${maven.compiler.target}"></replace>
+                <!-- Restoring the last </project> line -->
+                <concat destfile=".flattened-pom.xml" append="true">&lt;/project></concat>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

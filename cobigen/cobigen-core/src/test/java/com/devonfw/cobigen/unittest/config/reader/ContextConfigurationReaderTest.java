@@ -4,14 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.impl.config.constant.WikiConstants;
+import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 import junit.framework.TestCase;
@@ -34,50 +37,77 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
-    new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
+    ContextConfigurationReaderFactory.getReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
   }
 
   /**
-   * Tests whether an {@link InvalidConfigurationException} will be thrown when both a v2.1 and v2.2 context.xml are
-   * present (new templates with old custom templates). Also tests if the thrown error message contains a link to the
-   * wiki.
+   * Tests whether an {@link InvalidConfigurationException} will be thrown when no context configuration is found in the
+   * template-sets directory
    *
-   * Backward Compatibility test, remove when monolithic context.xml is deprecated.
-   *
-   * @throws InvalidConfigurationException if a conflict occurred
+   * @throws InvalidConfigurationException if no context configuration is found
    *
    */
-  public void testConflictConfiguration() throws InvalidConfigurationException {
+  @Test
+  public void testInvalidTemplateSets() throws InvalidConfigurationException {
 
-    Throwable bothPresent = assertThrows(InvalidConfigurationException.class, () -> {
-      new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "invalid_new").toURI()));
+    Path configurationPath = Paths.get(new File(testFileRootPath + "invalid_template_sets").toURI())
+        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    Throwable invalidException = assertThrows(InvalidConfigurationException.class, () -> {
+      ContextConfigurationReaderFactory.getReader(configurationPath);
     });
 
-    assertThat(bothPresent instanceof InvalidConfigurationException);
-    assertThat(bothPresent.getMessage()).contains(WikiConstants.WIKI_UPDATE_OLD_CONFIG);
+    assertThat(invalidException instanceof InvalidConfigurationException);
+    assertThat(invalidException.getMessage()).contains("Could not find any context configuration file.");
   }
 
   /**
-   * Tests whether a valid v2.2 configuration can be read from src/main/templates/templateSet folder
+   * Tests whether a valid configuration can be read from template-sets/adapted folder
    *
    * @throws Exception test fails
    */
   @Test
   public void testContextLoadedFromNewConfiguration() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid_new").toURI());
+    CobiGenFactory.create(new File(testFileRootPath + "valid_template_sets_adapted").toURI().resolve("template-sets"));
   }
 
   /**
-   * Tests if multiple (2) templates are found with v2.2 context configuration
+   * Tests if multiple (2) context configurations in the adapted template sets are found
    *
    */
   @Test
-  public void testNewConfiguration() {
+  public void testTemplateSetsAdapted() {
 
-    ContextConfigurationReader context = new ContextConfigurationReader(
-        Paths.get(new File(testFileRootPath + "valid_new").toURI()));
+    Path configurationPath = Paths.get(new File(testFileRootPath + "valid_template_sets_adapted").toURI())
+        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    AbstractContextConfigurationReader context = ContextConfigurationReaderFactory.getReader(configurationPath);
     assertThat(context.getContextFiles().size()).isEqualTo(2);
+  }
+
+  /**
+   * Tests if a context configuration can be found from a template set jar file
+   *
+   */
+  @Test
+  public void testTemplateSetsDownloaded() {
+
+    Path configurationPath = Paths.get(new File(testFileRootPath + "valid_template_sets_downloaded").toURI())
+        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    AbstractContextConfigurationReader context = ContextConfigurationReaderFactory.getReader(configurationPath);
+    assertThat(context.getContextFiles().size()).isEqualTo(1);
+  }
+
+  /**
+   * Tests if context configurations can be found in both adapted and downloaded folder of the template sets directory
+   *
+   */
+  @Test
+  public void testTemplateSetsAdaptedAndDownloaded() {
+
+    Path configurationPath = Paths.get(new File(testFileRootPath + "valid_template_sets").toURI())
+        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    AbstractContextConfigurationReader context = ContextConfigurationReaderFactory.getReader(configurationPath);
+    assertThat(context.getContextFiles().size()).isEqualTo(3);
   }
 
   /**
@@ -102,8 +132,8 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testOldConfiguration() {
 
-    ContextConfigurationReader context = new ContextConfigurationReader(
-        Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
+    AbstractContextConfigurationReader context = ContextConfigurationReaderFactory
+        .getReader(Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
     assertThat(context.getContextFiles().size()).isEqualTo(1);
   }
 

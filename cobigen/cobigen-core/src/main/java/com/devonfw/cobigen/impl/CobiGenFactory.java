@@ -85,16 +85,17 @@ public class CobiGenFactory {
   }
 
   /**
-   * Extracts templates project to the given path
+   * Extracts template set projects
    *
-   * @return path to have the templates extracted
+   * @return path to have the template sets extracted to
    * @throws DirectoryNotEmptyException if the directory is not empty
    */
   public static Path extractTemplates() throws DirectoryNotEmptyException {
 
-    Path templatesLocation = CobiGenPaths.getTemplatesFolderPath();
-    ExtractTemplatesUtil.extractTemplates(templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES), false);
-    return templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    Path extractedFolderLocation = CobiGenPaths.getTemplateSetsFolderPath(true)
+        .resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    ExtractTemplatesUtil.extractTemplates(extractedFolderLocation, false);
+    return extractedFolderLocation;
   }
 
   /**

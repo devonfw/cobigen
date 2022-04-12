@@ -15,8 +15,10 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +36,7 @@ public class ExtractTemplatesUtil {
   private static final Logger LOG = LoggerFactory.getLogger(ExtractTemplatesUtil.class);
 
   /**
-   * Extracts templates project to the given path
+   * Extracts template sets to the given path
    *
    * @param extractTo Path to extract the templates into
    * @param forceOverride force to overwrite the contents of the target folder
@@ -45,7 +47,18 @@ public class ExtractTemplatesUtil {
     // find templates will also download jars if needed as a side effect and will return the path to the
     // files.
     URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
-    if (Files.isDirectory(Paths.get(findTemplatesLocation))) {
+
+    Path templatesLocationFolder = Paths.get(findTemplatesLocation);
+
+    if (Files.exists(templatesLocationFolder)
+        && templatesLocationFolder.endsWith(ConfigurationConstants.COBIGEN_TEMPLATES)) {
+      LOG.info(
+          "Your are using an old Templates project at {}. You can edit them in place to adapt your generation results.",
+          templatesLocationFolder);
+      return;
+    }
+
+    if (Files.exists(templatesLocationFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER))) {
       LOG.info("Templates already found at {}. You can edit them in place to adapt your generation results.",
           extractTo);
       return;
@@ -66,12 +79,11 @@ public class ExtractTemplatesUtil {
       }
 
       LOG.info(
-          "CobiGen is attempting to download the latest CobiGen_Templates.jar and will extract it to cobigen home directory {}. please wait...",
-          ConfigurationConstants.DEFAULT_HOME);
-      File templatesDirectory = extractTo.toFile();
-      processJar(templatesDirectory.toPath());
-      LOG.info("Successfully downloaded and extracted templates to @ {}",
-          templatesDirectory.toPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES));
+          "CobiGen is attempting to download the latest template sets jars and will extract them to cobigen home directory {}. please wait...",
+          ConfigurationConstants.ADAPTED_FOLDER);
+      Path templatesDirectory = extractTo;
+      processJars(templatesDirectory);
+      LOG.info("Successfully downloaded and extracted templates to @ {}", templatesDirectory);
     } catch (DirectoryNotEmptyException e) {
       throw e;
     } catch (IOException e) {
@@ -85,17 +97,20 @@ public class ExtractTemplatesUtil {
    *
    * @param destinationPath path to be used as target directory
    * @throws IOException if no destination path could be set
+   *
+   * @deprecated use processJars instead
    */
+  @Deprecated
   private static void processJar(Path destinationPath) throws IOException {
 
     if (destinationPath == null) {
       throw new IOException("Cobigen folder path not found!");
     }
 
-    File cobigenTemplatesPath = CobiGenPaths.getTemplatesFolderPath().toFile();
+    Path cobigenTemplatesPath = CobiGenPaths.getTemplatesFolderPath();
 
-    Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, cobigenTemplatesPath).toPath();
-    Path classesJarPath = TemplatesJarUtil.getJarFile(false, cobigenTemplatesPath).toPath();
+    Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, cobigenTemplatesPath);
+    Path classesJarPath = TemplatesJarUtil.getJarFile(false, cobigenTemplatesPath);
 
     LOG.debug("Processing jar file @ {}", sourcesJarPath);
 
@@ -126,6 +141,38 @@ public class ExtractTemplatesUtil {
       Files.copy(fs.getPath("pom.xml"), destinationPath.resolve("pom.xml"), StandardCopyOption.REPLACE_EXISTING);
     }
 
+  }
+
+  /**
+   * Unpacks the template set jars located in downloaded folder and creates a new folder structure for each template set
+   * at $destinationPath/ location
+   *
+   * @param destinationPath path to be used as target directory
+   * @throws IOException if no destination path could be set
+   */
+  private static void processJars(Path destinationPath) throws IOException {
+
+    if (destinationPath == null) {
+      throw new IOException("Cobigen folder path not found!");
+    }
+
+    Path cobigenDownloadedTemplateSetsPath = CobiGenPaths.getTemplateSetsFolderPath()
+        .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    if (Files.exists(cobigenDownloadedTemplateSetsPath)) {
+      List<Path> templateJars = TemplatesJarUtil.getJarFiles(cobigenDownloadedTemplateSetsPath);
+      for (Path templateSetJar : templateJars) {
+        LOG.debug("Processing jar file @ {}", templateSetJar);
+        String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
+        Path destination = destinationPath.resolve(fileName);
+        extractArchive(templateSetJar, destination);
+
+        if (Files.exists(destination.resolve("com"))) {
+          FileUtils.deleteDirectory(destination.resolve("com").toFile());
+        }
+      }
+    } else {
+      LOG.info("No downloaded templates found in {} to extract", cobigenDownloadedTemplateSetsPath);
+    }
   }
 
   /**

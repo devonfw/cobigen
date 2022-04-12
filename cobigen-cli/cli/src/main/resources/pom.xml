@@ -56,11 +56,6 @@
       <artifactId>jsonplugin</artifactId>
       <version>${revision}</version>
     </dependency>
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>templates-devon4j</artifactId>
-      <version>${revision}</version>
-    </dependency>
   </dependencies>
 
 </project>

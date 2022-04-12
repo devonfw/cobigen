@@ -8,7 +8,10 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationSetReader;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -25,6 +28,11 @@ public class ContextConfiguration {
    * Path of the configuration. Might point to a folder or a jar or maybe even something different in future.
    */
   private Path configurationPath;
+
+  /**
+   * The reader to read the context.xml files
+   */
+  private AbstractContextConfigurationReader contextConfigurationReader;
 
   /**
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
@@ -46,9 +54,12 @@ public class ContextConfiguration {
    */
   private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
-    ContextConfigurationReader reader = new ContextConfigurationReader(configRoot);
-    this.configurationPath = reader.getContextRoot();
-    this.triggers = reader.loadTriggers();
+    if (this.contextConfigurationReader == null) {
+      this.contextConfigurationReader = ContextConfigurationReaderFactory.getReader(configRoot);
+    }
+
+    this.configurationPath = this.contextConfigurationReader.getContextRoot();
+    this.triggers = this.contextConfigurationReader.loadTriggers();
   }
 
   /**
@@ -94,4 +105,22 @@ public class ContextConfiguration {
     return this.configurationPath;
   }
 
+  /**
+   * @param triggerId the trigger id to get the config location for
+   * @param fileSystemDependentPath if true and the configuration is a jar file, the file system dependent path is
+   *        returned
+   * @return the {@link Path} of the config location of the trigger
+   */
+  public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
+
+    if (this.contextConfigurationReader instanceof ContextConfigurationSetReader) {
+      Path configLocation = ((ContextConfigurationSetReader) this.contextConfigurationReader)
+          .getConfigLocationForTrigger(triggerId);
+      if (fileSystemDependentPath && FileSystemUtil.isZipFile(configLocation.toUri())) {
+        configLocation = FileSystemUtil.createFileSystemDependentPath(configLocation.toUri());
+      }
+      return configLocation;
+    }
+    return this.contextConfigurationReader.getContextRoot();
+  }
 }

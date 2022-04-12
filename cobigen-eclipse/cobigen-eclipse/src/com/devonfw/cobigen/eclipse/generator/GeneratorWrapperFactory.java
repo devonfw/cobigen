@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.eclipse.generator;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 
@@ -219,14 +220,14 @@ public class GeneratorWrapperFactory {
 
       // If it is not valid, we should use the jar
       if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
-        File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
-        File jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectory);
-        boolean fileExists = jarPath.exists();
+        Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
+        Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
+        boolean fileExists = (jarPath != null && Files.exists(jarPath));
         if (!fileExists) {
           MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
               "Not Downloaded the CobiGen Template Jar");
         }
-        return CobiGenFactory.create(jarPath.toURI());
+        return CobiGenFactory.create(jarPath.toUri());
       } else {
         return CobiGenFactory.create(generatorProj.getLocationURI());
       }
