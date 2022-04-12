@@ -64,7 +64,7 @@
     </xs:choice>
     <xs:attribute name="name" use="required" type="xs:string" />
     <xs:attribute name="description" use="required" type="xs:string" />
-    <xs:attribute name="explanation" use="required" type="xs:string" />
+    <xs:attribute name="explanation" use="optional" type="xs:string" />
   </xs:complexType>
 
   <xs:complexType name="templateRef">

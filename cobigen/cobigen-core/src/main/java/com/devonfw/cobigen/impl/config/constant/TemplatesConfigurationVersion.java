@@ -41,10 +41,10 @@ public enum TemplatesConfigurationVersion {
   /**
    * ChangeLog:
    * <ul>
-   * <li>new attribute templateEngine (#293)</li>
+   * <li>added explanation attribute to increments</li>
    * </ul>
    */
-  v5_0(5.0f, false);
+  v5_0(5.0f, true);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;

@@ -42,8 +42,6 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
       case v2_0:
 
       case v2_1:
-
-      case v2_2:
         mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
         mapperFactory
             .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContextConfiguration.class,

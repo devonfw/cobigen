@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0" templateEngine="FreeMarker">
+	<templates>
+		<template name="resources_resources_spring_common" destinationPath="src/main/resources/resources/spring/common.xml"	templateFile="resources/resources/spring/common.xml.ftl" targetCharset="UTF-8"/>
+    <template name="prefix_Foo2Class.java" templateFile="foo/Foo2Class.java.ftl" destinationPath="src/main/java/foo/Foo2Class${variable}.java" mergeStrategy="javamerge" targetCharset="UTF-8"/>
+
+    <templateExtension ref="prefix2_FooClass.java" destinationPath="adapted/path/FooClass.java" mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
+    <templateExtension ref="prefix2_Foo2Class.java" />
+	</templates>
+
+  <templateScans>
+    <templateScan templatePath="foo" templateNamePrefix="prefix_" destinationPath="src/main/java/foo" targetCharset="UTF-8"/>
+    <templateScan templatePath="bar" templateNamePrefix="prefix2_" destinationPath="src/main/java/bar" targetCharset="UTF-8"/>
+  </templateScans>
+
+	<increments>
+		<increment name="gui_spring" description="Spring configuration" explanation="This does x">
+			<templateRef ref="resources_resources_spring_common" />
+		</increment>
+		<increment name="gui" description="GUI" explanation="this does y">
+			<incrementRef ref="gui_spring" />
+		</increment>
+	</increments>
+</templatesConfiguration>

@@ -174,20 +174,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>generate-v2.0-configuration</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <packageName>com.devonfw.cobigen.impl.config.entity.io.v2_0</packageName>
-              <outputDirectory>${project.build.directory}/generated-sources/config/v2.0</outputDirectory>
-              <sources>
-                <source>${basedir}/src/main/resources/schema/v2.0</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
             <id>generate-v2.1-configuration</id>
             <phase>generate-sources</phase>
             <goals>

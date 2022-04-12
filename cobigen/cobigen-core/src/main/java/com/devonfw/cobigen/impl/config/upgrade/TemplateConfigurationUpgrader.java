@@ -2,6 +2,9 @@ package com.devonfw.cobigen.impl.config.upgrade;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
@@ -36,6 +39,9 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
         ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
   }
 
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(TemplateConfigurationUpgrader.class);
+
   @Override
   protected ConfigurationUpgradeResult performNextUpgradeStep(TemplatesConfigurationVersion source,
       Object previousConfigurationRootNode) throws Exception {
@@ -43,8 +49,10 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
     ConfigurationUpgradeResult result = new ConfigurationUpgradeResult();
 
     switch (source) {
-      case v1_2: // to v5.0
+      case v1_2:
+      case v4_0:// to v5.0
       {
+        LOG.debug("!!!!!!!!!!!!!!!!!!!!!!" + source.toString() + "!!!!!!!!!!!!!!!!!!!!!!!");
         MapperFactory mapperFactory = new DefaultMapperFactory.Builder().mapNulls(true).useAutoMapping(true).build();
         mapperFactory.classMap(Template.class, com.devonfw.cobigen.impl.config.entity.io.v5_0.Template.class)
             .field("id", "name").byDefault().register();
