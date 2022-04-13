@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.3">
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="5.0">
   <templates>
     <template name="entityBuilder" destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.java.ftl" mergeStrategy="javamerge" />
     <template name="entityBuilder_customFunctions" destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_customFunctions.java.ftl" mergeStrategy="javamerge" />

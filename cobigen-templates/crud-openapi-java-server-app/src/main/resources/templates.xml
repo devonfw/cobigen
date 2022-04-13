@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.3">
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="5.0">
   <templates>
     <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge" />
     <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge" />

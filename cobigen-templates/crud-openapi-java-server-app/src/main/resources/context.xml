@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.3">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
   <trigger id="crud_openapi_java_server_app" type="openapi">
     <containerMatcher type="element" value="openAPIFile" />
     <matcher type="element" value="EntityDef">

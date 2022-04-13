@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.3">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
   <trigger id="crud_typescript_angular_client_app" type="typescript">
     <matcher type="fqn" value="([^\.]+).entity">
       <variableAssignment type="regex" key="entityName" value="1" />

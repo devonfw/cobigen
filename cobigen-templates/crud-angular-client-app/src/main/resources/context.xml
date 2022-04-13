@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.3">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
   <trigger id="crud_angular_client_app" type="java">
     <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
       <variableAssignment type="regex" key="rootPackage" value="1" />
