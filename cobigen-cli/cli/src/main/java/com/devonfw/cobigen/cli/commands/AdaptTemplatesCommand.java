@@ -15,6 +15,7 @@ import com.devonfw.cobigen.cli.utils.ValidationUtils;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * This class handles the user defined template directory e.g. determining and obtaining the latest templates jar,
@@ -23,6 +24,13 @@ import picocli.CommandLine.Command;
 @Command(description = MessagesConstants.ADAPT_TEMPLATES_DESCRIPTION, name = "adapt-templates", aliases = {
 "a" }, mixinStandardHelpOptions = true)
 public class AdaptTemplatesCommand extends CommandCommons {
+
+  /**
+   * List of template sets to adapt
+   */
+  @Option(names = { "--template-sets",
+  "-ts" }, split = ",", description = MessagesConstants.TEMPLATE_SETS_OPTION_DESCRIPTION)
+  List<String> templateSets = null;
 
   /**
    * Logger to output useful information to the user
@@ -67,13 +75,20 @@ public class AdaptTemplatesCommand extends CommandCommons {
     List<Path> jarsToAdapt = new ArrayList<>();
     if (templateJars != null && templateJars.size() > 0) {
       printJarsForSelection(templateJars);
-      String jarSelection = ValidationUtils.getUserInput();
 
-      if (jarSelection.equals("0")) {
+      List<String> userSelection = new ArrayList<>();
+      if (this.templateSets != null) {
+        userSelection = this.templateSets;
+      } else {
+        for (String templateSelection : ValidationUtils.getUserInput().split(",")) {
+          userSelection.add(templateSelection);
+        }
+      }
+
+      if (userSelection.contains("0")) {
         jarsToAdapt = templateJars;
       } else {
-        String[] userJarSelection = jarSelection.split(",");
-        for (String jarSelected : userJarSelection) {
+        for (String jarSelected : userSelection) {
           jarsToAdapt.add(templateJars.get(Integer.parseInt(jarSelected) - 1));
         }
       }
