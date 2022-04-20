@@ -36,7 +36,7 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
     ConfigurationUpgradeResult result = new ConfigurationUpgradeResult();
     MapperFactory mapperFactory;
     MapperFacade mapper;
-    com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration upgradedConfig;
+    com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration upgradedConfig;
 
     switch (source) {
       case v2_0:
@@ -45,11 +45,11 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
         mapperFactory
             .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContextConfiguration.class,
-                com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration.class)
+                com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class)
             .field("triggers.trigger", "trigger").byDefault().register();
         mapperFactory
             .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContainerMatcher.class,
-                com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class)
+                com.devonfw.cobigen.impl.config.entity.io.v2_2.ContainerMatcher.class)
             .field(
                 "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
                 "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
@@ -58,8 +58,8 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         mapper = mapperFactory.getMapperFacade();
 
         upgradedConfig = mapper.map(previousConfigurationRootNode,
-            com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration.class);
-        upgradedConfig.setVersion(new BigDecimal("3.0"));
+            com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class);
+        upgradedConfig.setVersion(new BigDecimal("2.2"));
 
         result.setResultConfigurationJaxbRootNode(upgradedConfig);
 
