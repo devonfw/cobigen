@@ -1,112 +1,77 @@
-package com.devonfw.cobigen.unittest.config.upgrade;
+package com.devonfw.cobigen.impl.config.upgrade;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.math.BigDecimal;
 
-import java.io.File;
-import java.io.FileReader;
-
-import org.custommonkey.xmlunit.XMLTestCase;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.NotYetSupportedException;
+import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
-import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
-import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
-import com.google.common.io.Files;
+import com.devonfw.cobigen.impl.config.upgrade.AbstractConfigurationUpgrader;
+import com.devonfw.cobigen.impl.config.upgrade.ConfigurationUpgradeResult;
+
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
- * Test suite for {@link ContextConfigurationUpgrader}
+ * This class encompasses all logic for legacy context configuration detection and upgrading these to the latest
+ * supported version.
+ *
+ * @author mbrunnli (Jun 22, 2015)
  */
-public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
-
-  /** Root path to all resources used in this test case */
-  private static String testFileRootPath = "src/test/resources/testdata/unittest/config/upgrade/ContextConfigurationUpgraderTest/";
-
-  /** JUnit Rule to create and automatically cleanup temporarily files/folders */
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
+public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<ContextConfigurationVersion> {
 
   /**
-   * Tests the valid upgrade of a context configuration from version v2.0 to the latest version. Please make sure that
-   * .../ContextConfigurationUpgraderTest/valid-latest_version exists
+   * Creates a new {@link ContextConfigurationUpgrader} instance.
    *
-   * @throws Exception test fails
+   * @author mbrunnli (Jun 23, 2015)
    */
-  // @Test
-  public void testCorrectUpgrade_v2_0_TO_LATEST() throws Exception {
+  public ContextConfigurationUpgrader() {
 
-    // preparation
-    File tmpTargetConfig = this.tempFolder.newFile(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-    File sourceTestdata = new File(testFileRootPath + "valid-v2.0/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-    Files.copy(sourceTestdata, tmpTargetConfig);
-
-    ContextConfigurationUpgrader sut = new ContextConfigurationUpgrader();
-
-    ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(this.tempFolder.getRoot().toPath());
-    assertThat(version).as("Source Version").isEqualTo(ContextConfigurationVersion.v2_0);
-
-    sut.upgradeConfigurationToLatestVersion(this.tempFolder.getRoot().toPath(), BackupPolicy.ENFORCE_BACKUP);
-    assertThat(tmpTargetConfig.toPath().resolveSibling("context.bak.xml").toFile()).exists()
-        .hasSameContentAs(sourceTestdata);
-
-    version = sut.resolveLatestCompatibleSchemaVersion(this.tempFolder.getRoot().toPath());
-    assertThat(version).as("Target version").isEqualTo(ContextConfigurationVersion.getLatest());
-
-    XMLUnit.setIgnoreWhitespace(true);
-    new XMLTestCase() {
-    }.assertXMLEqual(new FileReader(testFileRootPath + "valid-" + ContextConfigurationVersion.getLatest() + "/"
-        + ConfigurationConstants.CONTEXT_CONFIG_FILENAME), new FileReader(tmpTargetConfig));
+    super(ContextConfigurationVersion.v1_0, ContextConfiguration.class, ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
   }
 
-  /**
-   * Tests the valid upgrade of a context configuration from version v2.1 to the latest version. Please make sure that
-   * .../ContextConfigurationUpgraderTest/valid-latest_version exists
-   *
-   * @throws Exception test fails
-   */
-  // @Test
-  public void testCorrectUpgrade_v2_1_TO_LATEST() throws Exception {
+  @Override
+  protected ConfigurationUpgradeResult performNextUpgradeStep(ContextConfigurationVersion source,
+      Object previousConfigurationRootNode) throws Exception {
 
-    // preparation
-    File tmpTargetConfig = this.tempFolder.newFile(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-    File sourceTestdata = new File(testFileRootPath + "valid-v2.1/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-    Files.copy(sourceTestdata, tmpTargetConfig);
+    ConfigurationUpgradeResult result = new ConfigurationUpgradeResult();
+    MapperFactory mapperFactory;
+    MapperFacade mapper;
+    com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration upgradedConfig;
 
-    ContextConfigurationUpgrader sut = new ContextConfigurationUpgrader();
+    switch (source) {
+      case v2_0:
 
-    ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(this.tempFolder.getRoot().toPath());
-    assertThat(version).as("Source Version").isEqualTo(ContextConfigurationVersion.v2_1);
+      case v2_1:
+        mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
+        mapperFactory
+            .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContextConfiguration.class,
+                com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class)
+            .field("triggers.trigger", "trigger").byDefault().register();
+        mapperFactory
+            .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContainerMatcher.class,
+                com.devonfw.cobigen.impl.config.entity.io.v2_2.ContainerMatcher.class)
+            .field(
+                "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
+                "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
+            .byDefault().register();
 
-    sut.upgradeConfigurationToLatestVersion(this.tempFolder.getRoot().toPath(), BackupPolicy.ENFORCE_BACKUP);
-    assertThat(tmpTargetConfig.toPath().resolveSibling("context.bak.xml").toFile()).exists()
-        .hasSameContentAs(sourceTestdata);
+        mapper = mapperFactory.getMapperFacade();
 
-    version = sut.resolveLatestCompatibleSchemaVersion(this.tempFolder.getRoot().toPath());
-    assertThat(version).as("Target version").isEqualTo(ContextConfigurationVersion.getLatest());
+        upgradedConfig = mapper.map(previousConfigurationRootNode,
+            com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class);
+        upgradedConfig.setVersion(new BigDecimal("2.2"));
 
-    XMLUnit.setIgnoreWhitespace(true);
-    new XMLTestCase() {
-    }.assertXMLEqual(new FileReader(testFileRootPath + "valid-" + ContextConfigurationVersion.getLatest() + "/"
-        + ConfigurationConstants.CONTEXT_CONFIG_FILENAME), new FileReader(tmpTargetConfig));
+        result.setResultConfigurationJaxbRootNode(upgradedConfig);
+
+        break;
+      default:
+        throw new NotYetSupportedException(
+            "An upgrade of the context configuration from a version previous to v2.0 is not yet supported.");
+    }
+
+    return result;
   }
 
-  /**
-   * Tests if latest context configuration is compatible to latest schema version.
-   *
-   * @throws Exception test fails
-   */
-  @Test
-  public void testCorrectLatestSchemaDetection() throws Exception {
-
-    // preparation
-    File targetConfig = new File(testFileRootPath + "valid-" + ContextConfigurationVersion.getLatest());
-
-    ContextConfigurationVersion version = new ContextConfigurationUpgrader()
-        .resolveLatestCompatibleSchemaVersion(targetConfig.toPath());
-    assertThat(version).isEqualTo(ContextConfigurationVersion.getLatest());
-  }
 }
