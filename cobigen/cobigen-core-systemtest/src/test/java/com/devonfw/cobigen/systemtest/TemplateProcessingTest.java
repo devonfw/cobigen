@@ -76,7 +76,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
     Path adaptedFolder = templateSetsFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(downloadedFolder.getParent());
-    List<Path> templates = templateAdapter.getTemplateSetJarPaths();
+    List<Path> templates = templateAdapter.getTemplateSetJars();
     templateAdapter.adaptTemplateSets(templates, adaptedFolder, false);
 
     Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1/src/main/templates");

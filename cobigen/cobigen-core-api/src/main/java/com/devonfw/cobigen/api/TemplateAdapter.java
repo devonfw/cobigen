@@ -28,6 +28,14 @@ public interface TemplateAdapter {
       throws IOException;
 
   /**
+   * Adapt an old monolithic template jar structure.
+   *
+   * @param forceOverride Indicator whether an already adapted template set should be overridden
+   * @throws IOException If CobiGen is not able to extract the jar file to the destination folder
+   */
+  public void adaptMonolithicTemplates(boolean forceOverride) throws IOException;
+
+  /**
    * Adapt an old monolithic template jar structure to a given destination folder.
    *
    * @param destinationPath The folder where the jars should be extracted to
@@ -37,23 +45,36 @@ public interface TemplateAdapter {
   public void adaptMonolithicTemplates(Path destinationPath, boolean forceOverride) throws IOException;
 
   /**
-   * Get the list of template set jar files
+   * Get a list of available template set jars to adapt.
    *
    * @return A {@link List} of {@link Path} with all template set jar files found.
    */
-  public List<Path> getTemplateSetJarPaths();
+  public List<Path> getTemplateSetJars();
 
   /**
-   *
+   * Checks if the template configuration consists of an old monolithic template set or independent template sets.
    *
    * @return Returns {@code true} if the template structure consists of an old monolithic template set. Otherwise false.
    */
   public boolean isMonolithicTemplatesConfiguration();
 
   /**
-   * Get the location of the templates.
+   * Upgrade an adapted monolithic template structure to the new template structure consisting of template sets.
+   */
+  public void upgradeMonolithicTemplates();
+
+  /**
+   * Get the parent location of the templates.
    *
    * @return The {@link Path} of the templates location.
    */
   public Path getTemplatesLocation();
+
+  /**
+   * Checks if a given template set is already adapted
+   *
+   * @param templateSetJar The {@link Path} to the template set to check.
+   * @return Returns {@code true} if the template set is already adapted. Otherwise false.
+   */
+  public boolean isTemplateSetAlreadyAdapted(Path templateSetJar);
 }

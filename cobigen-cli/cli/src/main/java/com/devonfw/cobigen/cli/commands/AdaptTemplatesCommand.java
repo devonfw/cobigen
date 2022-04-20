@@ -15,7 +15,6 @@ import com.devonfw.cobigen.cli.utils.ValidationUtils;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 
 /**
  * This class handles the user defined template directory e.g. determining and obtaining the latest templates jar,
@@ -24,13 +23,6 @@ import picocli.CommandLine.Option;
 @Command(description = MessagesConstants.ADAPT_TEMPLATES_DESCRIPTION, name = "adapt-templates", aliases = {
 "a" }, mixinStandardHelpOptions = true)
 public class AdaptTemplatesCommand extends CommandCommons {
-
-  /**
-   * List of template sets to adapt
-   */
-  @Option(names = { "--template-sets",
-  "-ts" }, split = ",", description = MessagesConstants.TEMPLATE_SETS_OPTION_DESCRIPTION)
-  List<String> templateSets = null;
 
   /**
    * Logger to output useful information to the user
@@ -50,10 +42,15 @@ public class AdaptTemplatesCommand extends CommandCommons {
     if (templateAdapter.isMonolithicTemplatesConfiguration()) {
       Path destinationPath = templateAdapter.getTemplatesLocation().resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
       templateAdapter.adaptMonolithicTemplates(destinationPath, false);
+
+      LOG.info("Templates were adapted to {}", destinationPath);
+      if (askUserToContinueWithUpgrade()) {
+        templateAdapter.upgradeMonolithicTemplates();
+      }
     } else {
-      List<Path> templateJars = templateAdapter.getTemplateSetJarPaths();
+      List<Path> templateJars = templateAdapter.getTemplateSetJars();
       if (templateJars != null && !templateJars.isEmpty()) {
-        List<Path> templateJarsToAdapt = getJarsToAdapt(templateJars);
+        List<Path> templateJarsToAdapt = getJarsToAdapt(templateAdapter, templateJars);
         if (!templateJarsToAdapt.isEmpty()) {
           templateAdapter.adaptTemplateSets(templateJarsToAdapt, false);
         }
@@ -66,23 +63,20 @@ public class AdaptTemplatesCommand extends CommandCommons {
   }
 
   /**
+   * Gives the user a selection of available template set jars to adapt.
    *
-   * @param templateJars
-   * @return
+   * @param templateJars A {@link List} with all available template set jars.
+   * @return A {@link List} with the template set jars selected by the user to adapt.
    */
-  private List<Path> getJarsToAdapt(List<Path> templateJars) {
+  private List<Path> getJarsToAdapt(TemplateAdapter templateAdapter, List<Path> templateJars) {
 
     List<Path> jarsToAdapt = new ArrayList<>();
     if (templateJars != null && templateJars.size() > 0) {
-      printJarsForSelection(templateJars);
+      printJarsForSelection(templateAdapter, templateJars);
 
       List<String> userSelection = new ArrayList<>();
-      if (this.templateSets != null) {
-        userSelection = this.templateSets;
-      } else {
-        for (String templateSelection : ValidationUtils.getUserInput().split(",")) {
-          userSelection.add(templateSelection);
-        }
+      for (String templateSelection : ValidationUtils.getUserInput().split(",")) {
+        userSelection.add(templateSelection);
       }
 
       if (userSelection.contains("0")) {
@@ -102,13 +96,31 @@ public class AdaptTemplatesCommand extends CommandCommons {
    *
    * @param templateSetJarPaths List of {@link Path} to available template jar files
    */
-  private void printJarsForSelection(List<Path> templateSetJarPaths) {
+  private void printJarsForSelection(TemplateAdapter templateAdapter, List<Path> templateSetJarPaths) {
 
     LOG.info("(0) " + "All");
     for (Path templateSetJarPath : templateSetJarPaths) {
       LOG.info("(" + (templateSetJarPaths.indexOf(templateSetJarPath) + 1) + ") "
-          + templateSetJarPath.getFileName().toString().replace(".jar", ""));
+          + templateSetJarPath.getFileName().toString().replace(".jar", "")
+          + (templateAdapter.isTemplateSetAlreadyAdapted(templateSetJarPath) ? " (already adapted)" : ""));
     }
     LOG.info("Please enter the number(s) of jar(s) that you want to adapt separated by comma.");
+  }
+
+  /**
+   * Ask the user to continue with the upgrade of the templates.
+   *
+   * @return Returns {@code true} if the user want to continue with the uprade of the templates.
+   */
+  private boolean askUserToContinueWithUpgrade() {
+
+    LOG.info(
+        "Do you want to upgrade your monolithic template structure to the new template structure with independent template sets?");
+    LOG.info("Type 'y' or 'yes' to upgrade the configuration?");
+    String userInput = ValidationUtils.getUserInput();
+    if (userInput != null && (userInput.toLowerCase().equals("y") || userInput.toLowerCase().equals("yes"))) {
+      return true;
+    }
+    return false;
   }
 }

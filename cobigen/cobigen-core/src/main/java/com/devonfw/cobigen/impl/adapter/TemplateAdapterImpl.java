@@ -37,6 +37,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(TemplateAdapterImpl.class);
 
+  /** The parent location of the template. */
   private Path templatesLocation;
 
   /**
@@ -103,12 +104,13 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
       Path destination = destinationPath.resolve(fileName);
 
-      boolean extract = true;
+      boolean extract = false;
       try {
         extract = validatePaths(destination, forceOverride);
       } catch (IOException e) {
         LOG.info("Unable to extract template jar file to {}", destination);
       }
+
       if (extract) {
         if (Files.exists(destination) && forceOverride) {
           LOG.info("Override the existing destination folder {}", destination);
@@ -121,6 +123,13 @@ public class TemplateAdapterImpl implements TemplateAdapter {
         }
       }
     }
+  }
+
+  @Override
+  public void adaptMonolithicTemplates(boolean forceOverride) throws IOException {
+
+    Path destinationPath = this.templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    this.adaptMonolithicTemplates(destinationPath, forceOverride);
   }
 
   @Override
@@ -191,7 +200,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   }
 
   @Override
-  public List<Path> getTemplateSetJarPaths() {
+  public List<Path> getTemplateSetJars() {
 
     Path downloadedJarsFolder = this.templatesLocation.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     if (!Files.exists(downloadedJarsFolder)) {
@@ -222,6 +231,19 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     return this.templatesLocation;
   }
 
+  @Override
+  public boolean isTemplateSetAlreadyAdapted(Path templateSetJar) {
+
+    if (templateSetJar != null && Files.exists(templateSetJar)) {
+      Path adaptedFolder = this.templatesLocation.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      if (Files.exists(adaptedFolder)
+          && Files.exists(adaptedFolder.resolve(templateSetJar.getFileName().toString().replace(".jar", "")))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Extracts an archive as is to a target directory while keeping its folder structure
    *
@@ -231,33 +253,35 @@ public class TemplateAdapterImpl implements TemplateAdapter {
    */
   private void extractArchive(Path sourcePath, Path targetPath) throws IOException {
 
-    // TODO: janv_capgemini check if sourcePath is an archive and throw exception if not
-    FileSystem fs = FileSystems.newFileSystem(sourcePath, null);
+    if (FileSystemUtil.isZipFile(sourcePath.toUri())) {
+      FileSystem fs = FileSystems.newFileSystem(sourcePath, null);
 
-    Path path = fs.getPath("/");
-    Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-      @Override
-      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+      Path path = fs.getPath("/");
+      Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
-        Path relativePath = path.relativize(file);
-        Path targetPathResolved = targetPath.resolve(relativePath.toString());
-        Files.deleteIfExists(targetPathResolved);
-        Files.createDirectories(targetPathResolved.getParent());
-        Files.copy(file, targetPathResolved);
-        return FileVisitResult.CONTINUE;
-      }
+          Path relativePath = path.relativize(file);
+          Path targetPathResolved = targetPath.resolve(relativePath.toString());
+          Files.deleteIfExists(targetPathResolved);
+          Files.createDirectories(targetPathResolved.getParent());
+          Files.copy(file, targetPathResolved);
+          return FileVisitResult.CONTINUE;
+        }
 
-      @Override
-      public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+        @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
 
-        // Log errors but do not throw an exception
-        LOG.warn("An IOException occurred while reading a file on path {} with message: {}", file, exc.getMessage());
-        LOG.debug("An IOException occurred while reading a file on path {} with message: {}", file,
-            LOG.isDebugEnabled() ? exc : null);
-        return FileVisitResult.CONTINUE;
-      }
-    });
-
+          // Log errors but do not throw an exception
+          LOG.warn("An IOException occurred while reading a file on path {} with message: {}", file, exc.getMessage());
+          LOG.debug("An IOException occurred while reading a file on path {} with message: {}", file,
+              LOG.isDebugEnabled() ? exc : null);
+          return FileVisitResult.CONTINUE;
+        }
+      });
+    } else {
+      LOG.info("Source path is not a ZIP file {}", sourcePath);
+    }
   }
 
   /**
@@ -316,5 +340,14 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
       return !dirStream.iterator().hasNext();
     }
+  }
+
+  @Override
+  public void upgradeMonolithicTemplates() {
+
+    if (!isMonolithicTemplatesConfiguration()) {
+      return;
+    }
+    // TODO The upgrade needs to be implemented. Will be done in #1502
   }
 }

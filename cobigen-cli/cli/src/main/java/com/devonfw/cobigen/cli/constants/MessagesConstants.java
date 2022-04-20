@@ -53,11 +53,6 @@ public class MessagesConstants {
   public static final String INCREMENTS_OPTION_DESCRIPTION = "List of increments that will be generated. They need to be specified with numbers separated by comma.";
 
   /**
-   * Message constant: description of the increments option
-   */
-  public static final String TEMPLATE_SETS_OPTION_DESCRIPTION = "List of template sets that should be extracted. They need to be specified with numbers separated by comma.";
-
-  /**
    * Message constant: description of the templates option
    */
   public static final String TEMPLATES_OPTION_DESCRIPTION = "List of templates that will be generated. They need to be specified with numbers separated by comma.";
