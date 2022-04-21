@@ -38,12 +38,12 @@ public class TemplateProcessingTest extends AbstractApiTest {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   /**
-   * temporary project to store CobiGen home for a project with the new template structrue consisting of template sets.
+   * temporary project to store CobiGen home for a project with the new template structure consisting of template sets.
    */
   Path cobiGenHomeTemplateSets;
 
   /**
-   * temporary project to store CobiGen home for a project with the old template structrue consisting of a monolitihic
+   * temporary project to store CobiGen home for a project with the old template structure consisting of a monolitihic
    * template set
    */
   Path cobiGenHomeMonolithicTemplates;
@@ -79,8 +79,10 @@ public class TemplateProcessingTest extends AbstractApiTest {
     List<Path> templates = templateAdapter.getTemplateSetJars();
     templateAdapter.adaptTemplateSets(templates, adaptedFolder, false);
 
-    Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1/src/main/templates");
-    Path extractedJar2 = adaptedFolder.resolve("template-test2-0.0.1/src/main/templates");
+    Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1")
+        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    Path extractedJar2 = adaptedFolder.resolve("template-test2-0.0.1")
+        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
     assertThat(extractedJar1).exists().isDirectory();
     assertThat(extractedJar2).exists().isDirectory();
   }
@@ -105,7 +107,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
     templateAdapter.adaptMonolithicTemplates(cobigenTemplatesProject, false);
 
     assertThat(cobigenTemplatesProject).exists().isDirectory();
-    assertThat(cobigenTemplatesProject.resolve("src/main/templates")).exists().isDirectory();
+    assertThat(cobigenTemplatesProject.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)).exists().isDirectory();
     assertThat(cobigenTemplatesProject.resolve("src/main/java")).exists().isDirectory();
   }
 }
