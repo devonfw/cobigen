@@ -1,21 +1,20 @@
 package com.devonfw.cobigen.systemtest;
 
 import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
-import static com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.matchers.Any.ANY;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.CobiGen;
@@ -27,9 +26,11 @@ import com.devonfw.cobigen.api.matchers.MatcherToMatcher;
 import com.devonfw.cobigen.api.matchers.VariableAssignmentToMatcher;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
@@ -72,7 +73,6 @@ public class ClassLoadingTest extends AbstractApiTest {
     assertThat(report).isSuccessful();
     assertThat(generatedFile).exists();
     assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
-
   }
 
   @Test
@@ -140,24 +140,27 @@ public class ClassLoadingTest extends AbstractApiTest {
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
     when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(container)))))
-        .thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(container)))))
-        .thenReturn(true);
+    when(matcher.matches(argThat(
+        new MatcherToMatcher(equalTo("fqn"), org.hamcrest.CoreMatchers.any(String.class), sameInstance(container)))))
+            .thenReturn(false);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), org.hamcrest.CoreMatchers.any(String.class),
+        sameInstance(container))))).thenReturn(true);
 
     // Simulate container children resolution of any plug-in
     when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(firstChildResource));
 
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-        .thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), org.hamcrest.CoreMatchers.any(String.class),
+        sameInstance(firstChildResource))))).thenReturn(true);
 
     // Simulate variable resolving of any plug-in
-    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
-        argThat(hasItemsInList(
-            //
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1"), equalTo(false)),
-            new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"), equalTo(false)))),
-        any()))
+    Matcher<VariableAssignmentTo> m1 = new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"),
+        equalTo("1"), equalTo(false));
+    Matcher<VariableAssignmentTo> m2 = new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"),
+        equalTo("3"), equalTo(false));
+    Matcher<List<VariableAssignmentTo>> tmp = CustomHamcrestMatchers.hasItemsInList(m1, m2);
+    // IsIterableContaining<VariableAssignmentTo> t1 = new IsIterableContaining<>();
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"),
+        org.hamcrest.CoreMatchers.any(String.class), sameInstance(firstChildResource))), argThat(tmp), any()))
             .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
                 .put("entityName", "Test").build());
 

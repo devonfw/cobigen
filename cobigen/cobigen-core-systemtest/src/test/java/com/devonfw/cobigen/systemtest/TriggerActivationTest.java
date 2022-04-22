@@ -1,20 +1,21 @@
 package com.devonfw.cobigen.systemtest;
 
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.matchers.Any.ANY;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.hamcrest.MockitoHamcrest;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
@@ -45,7 +46,6 @@ public class TriggerActivationTest extends AbstractApiTest {
    * @author mbrunnli (22.02.2015)
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testNoActivation_1Of2AND_MatcherMatches() throws Exception {
 
     Object input = new Object();
@@ -60,11 +60,16 @@ public class TriggerActivationTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and1"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(false);
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and1"), any(String.class), sameInstance(input)))))
+        .thenReturn(false);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), any(String.class), sameInstance(input)))))
+        .thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(input)))))
+        .thenReturn(false);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(input)))))
+        .thenReturn(false);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -82,7 +87,6 @@ public class TriggerActivationTest extends AbstractApiTest {
    * @author mbrunnli (22.02.2015)
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testNoActivation_1Of2AND_1OR_MatcherMatches() throws Exception {
 
     Object input = new Object();
@@ -97,11 +101,19 @@ public class TriggerActivationTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and1"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(false);
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and1"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and2"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -119,7 +131,6 @@ public class TriggerActivationTest extends AbstractApiTest {
    * @author mbrunnli (22.02.2015)
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testActivation_2Of2AND_MatcherMatches() throws Exception {
 
     Object input = new Object();
@@ -130,15 +141,24 @@ public class TriggerActivationTest extends AbstractApiTest {
     MatcherInterpreter matcher = mock(MatcherInterpreter.class);
     InputReader inputReader = mock(InputReader.class);
 
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+
     when(triggerInterpreter.getType()).thenReturn("test");
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and1"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(false);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and1"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and2"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -156,7 +176,6 @@ public class TriggerActivationTest extends AbstractApiTest {
    * @author mbrunnli (22.02.2015)
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testNoActivation_2Of2AND_1NOT_MatcherMatches() throws Exception {
 
     Object input = new Object();
@@ -171,11 +190,19 @@ public class TriggerActivationTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and1"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(true);
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and1"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and2"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -193,7 +220,6 @@ public class TriggerActivationTest extends AbstractApiTest {
    * @author mbrunnli (22.02.2015)
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testNoActivation_1OR_0AND_MatcherMatches() throws Exception {
 
     Object input = new Object();
@@ -208,11 +234,19 @@ public class TriggerActivationTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and1"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(false);
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and1"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and2"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -230,7 +264,6 @@ public class TriggerActivationTest extends AbstractApiTest {
    * @author mbrunnli (22.02.2015)
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testNoActivation_1OR_1NOT_MatcherMatches() throws Exception {
 
     Object input = new Object();
@@ -245,11 +278,19 @@ public class TriggerActivationTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and1"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(true);
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and1"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
+    when(matcher.matches(
+        MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("and2"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -267,7 +308,6 @@ public class TriggerActivationTest extends AbstractApiTest {
    * @author mbrunnli (22.02.2015)
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testActivation_1OR_MatcherMatches() throws Exception {
 
     Object input = new Object();
@@ -282,9 +322,13 @@ public class TriggerActivationTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("or"), ANY, sameInstance(input))))).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("not"), ANY, sameInstance(input))))).thenReturn(false);
+    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(input)))))
+            .thenReturn(true);
+    when(matcher
+        .matches(MockitoHamcrest.argThat(new MatcherToMatcher(equalTo("not"), any(String.class), sameInstance(input)))))
+            .thenReturn(false);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 

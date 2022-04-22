@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,10 +167,7 @@ public class ExtractTemplatesUtil {
         extractArchive(templateSetJar, destination);
 
         if (Files.exists(destination.resolve("com"))) {
-          // move com folder to src/main/java/com. Needed for the utils project
-          Files.createDirectories(destination.resolve("src/main/java"));
-          Files.move(destination.resolve("com"), destination.resolve("src/main/java/com"),
-              StandardCopyOption.REPLACE_EXISTING);
+          FileUtils.deleteDirectory(destination.resolve("com").toFile());
         }
       }
     } else {
