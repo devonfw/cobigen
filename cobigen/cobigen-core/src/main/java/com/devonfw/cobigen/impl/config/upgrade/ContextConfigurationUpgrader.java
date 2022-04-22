@@ -36,20 +36,20 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
     ConfigurationUpgradeResult result = new ConfigurationUpgradeResult();
     MapperFactory mapperFactory;
     MapperFacade mapper;
-    com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration upgradedConfig;
+    com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration upgradedConfig_2_1;
+    com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration upgradedConfig_3_0;
 
     switch (source) {
       case v2_0:
 
-      case v2_1:
         mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
         mapperFactory
             .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContextConfiguration.class,
-                com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class)
+                com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class)
             .field("triggers.trigger", "trigger").byDefault().register();
         mapperFactory
             .classMap(com.devonfw.cobigen.impl.config.entity.io.v2_0.ContainerMatcher.class,
-                com.devonfw.cobigen.impl.config.entity.io.v2_2.ContainerMatcher.class)
+                com.devonfw.cobigen.impl.config.entity.io.v2_1.ContainerMatcher.class)
             .field(
                 "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
                 "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
@@ -57,12 +57,22 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
 
         mapper = mapperFactory.getMapperFacade();
 
-        upgradedConfig = mapper.map(previousConfigurationRootNode,
-            com.devonfw.cobigen.impl.config.entity.io.v2_2.ContextConfiguration.class);
-        upgradedConfig.setVersion(new BigDecimal("2.2"));
+        upgradedConfig_2_1 = mapper.map(previousConfigurationRootNode,
+            com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class);
+        upgradedConfig_2_1.setVersion(new BigDecimal("2.1"));
 
-        result.setResultConfigurationJaxbRootNode(upgradedConfig);
+        result.setResultConfigurationJaxbRootNode(upgradedConfig_2_1);
 
+        break;
+      case v2_1:
+        mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
+        mapper = mapperFactory.getMapperFacade();
+
+        upgradedConfig_3_0 = mapper.map(previousConfigurationRootNode,
+            com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration.class);
+        upgradedConfig_3_0.setVersion(new BigDecimal("3.0"));
+
+        result.setResultConfigurationJaxbRootNode(upgradedConfig_3_0);
         break;
       default:
         throw new NotYetSupportedException(

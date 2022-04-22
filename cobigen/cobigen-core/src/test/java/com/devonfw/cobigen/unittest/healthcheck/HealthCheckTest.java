@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -20,6 +21,7 @@ import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
 /**
  * Test suite for {@link HealthCheckImpl} class.
  */
+@Ignore
 public class HealthCheckTest {
 
   /**
