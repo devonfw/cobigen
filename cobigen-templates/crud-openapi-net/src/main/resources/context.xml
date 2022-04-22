@@ -9,7 +9,6 @@
     </matcher>
   </trigger>
   <links>
-<link url="https://github.com/devonfw/cobigen/wiki/howto_devon4net">
-</link>
+    <link url="https://github.com/devonfw/cobigen/wiki/howto_devon4net" />
   </links>
 </contextConfiguration>

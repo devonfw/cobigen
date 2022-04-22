@@ -111,6 +111,7 @@
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v1_2</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_1</excludePackageNames>
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v3.0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v4_0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io</excludePackageNames>
         </configuration>
