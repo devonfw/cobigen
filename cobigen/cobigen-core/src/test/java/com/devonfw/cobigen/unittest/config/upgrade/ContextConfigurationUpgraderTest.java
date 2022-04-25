@@ -7,6 +7,7 @@ import java.io.FileReader;
 
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -36,7 +37,8 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
    *
    * @throws Exception test fails
    */
-  // @Test
+  @Ignore
+  @Test
   public void testCorrectUpgrade_v2_0_TO_LATEST() throws Exception {
 
     // preparation
@@ -68,7 +70,8 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
    *
    * @throws Exception test fails
    */
-  // @Test
+  @Ignore
+  @Test
   public void testCorrectUpgrade_v2_1_TO_LATEST() throws Exception {
 
     // preparation

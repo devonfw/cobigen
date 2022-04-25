@@ -14,12 +14,12 @@
     <templateScan templatePath="bar" templateNamePrefix="prefix2_" destinationPath="src/main/java/bar" targetCharset="UTF-8"/>
   </templateScans>
 
-	<increments>
-		<increment name="gui_spring" description="Spring configuration">
-			<templateRef ref="resources_resources_spring_common" />
-		</increment>
-		<increment name="gui" description="GUI">
-			<incrementRef ref="gui_spring" />
-		</increment>
-	</increments>
+  <increments>
+    <increment name="gui_spring" description="Spring configuration">
+      <templateRef ref="resources_resources_spring_common" />
+    </increment>
+    <increment name="gui" description="GUI">
+      <incrementRef ref="gui_spring" />
+    </increment>
+  </increments>
 </templatesConfiguration>
