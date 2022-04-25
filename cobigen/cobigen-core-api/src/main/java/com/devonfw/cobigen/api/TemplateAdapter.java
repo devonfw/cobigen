@@ -4,8 +4,23 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
+import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
+
 /** The TemplateAdapter implements methods for adapting template jars */
 public interface TemplateAdapter {
+
+  /**
+   * Adapt the templates. Can either adapt an old monolithic template structure or independent template sets.
+   *
+   * @throws IOException If CobiGen is not able to extract the jar file to the destination folder
+   * @throws UpgradeTemplatesNotificationException If an old monolithic structure was adapted. Can be catched to ask the
+   *         user for an upgrade of the templates.
+   * @throws TemplateSelectionForAdaptionException If a new template structure is given. To ask the user to select the
+   *         template sets to adapt.
+   */
+  public void adaptTemplates()
+      throws IOException, UpgradeTemplatesNotificationException, TemplateSelectionForAdaptionException;
 
   /**
    * Adapt a given set of template set jars.

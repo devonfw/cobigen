@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.systemtest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
+import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 
@@ -76,8 +79,13 @@ public class TemplateProcessingTest extends AbstractApiTest {
     Path adaptedFolder = templateSetsFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(downloadedFolder.getParent());
-    List<Path> templates = templateAdapter.getTemplateSetJars();
-    templateAdapter.adaptTemplateSets(templates, adaptedFolder, false);
+
+    Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
+      templateAdapter.adaptTemplates();
+    });
+
+    List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
+    templateAdapter.adaptTemplateSets(templateSetJars, adaptedFolder, false);
 
     Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1")
         .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
@@ -104,7 +112,9 @@ public class TemplateProcessingTest extends AbstractApiTest {
     Path cobigenTemplatesProject = cobigenTemplatesParent.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenTemplatesParent);
-    templateAdapter.adaptMonolithicTemplates(cobigenTemplatesProject, false);
+    assertThrows(UpgradeTemplatesNotificationException.class, () -> {
+      templateAdapter.adaptTemplates();
+    });
 
     assertThat(cobigenTemplatesProject).exists().isDirectory();
     assertThat(cobigenTemplatesProject.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)).exists().isDirectory();

@@ -8,7 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.TemplateAdapter;
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
+import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
@@ -39,16 +40,14 @@ public class AdaptTemplatesCommand extends CommandCommons {
       templateAdapter = new TemplateAdapterImpl(this.templatesProject);
     }
 
-    if (templateAdapter.isMonolithicTemplatesConfiguration()) {
-      Path destinationPath = templateAdapter.getTemplatesLocation().resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-      templateAdapter.adaptMonolithicTemplates(destinationPath, false);
-
-      LOG.info("Templates were adapted to {}", destinationPath);
-      if (askUserToContinueWithUpgrade()) {
+    try {
+      templateAdapter.adaptTemplates();
+    } catch (UpgradeTemplatesNotificationException e) {
+      if (askUserToContinueWithUpgrade(e)) {
         templateAdapter.upgradeMonolithicTemplates();
       }
-    } else {
-      List<Path> templateJars = templateAdapter.getTemplateSetJars();
+    } catch (TemplateSelectionForAdaptionException e) {
+      List<Path> templateJars = e.getTemplateSets();
       if (templateJars != null && !templateJars.isEmpty()) {
         List<Path> templateJarsToAdapt = getJarsToAdapt(templateAdapter, templateJars);
         if (!templateJarsToAdapt.isEmpty()) {
@@ -112,10 +111,9 @@ public class AdaptTemplatesCommand extends CommandCommons {
    *
    * @return Returns {@code true} if the user want to continue with the uprade of the templates.
    */
-  private boolean askUserToContinueWithUpgrade() {
+  private boolean askUserToContinueWithUpgrade(UpgradeTemplatesNotificationException e) {
 
-    LOG.info(
-        "Do you want to upgrade your monolithic template structure to the new template structure with independent template sets?");
+    LOG.info(e.getMessage());
     LOG.info("Type 'y' or 'yes' to upgrade the configuration?");
     String userInput = ValidationUtils.getUserInput();
     if (userInput != null && (userInput.toLowerCase().equals("y") || userInput.toLowerCase().equals("yes"))) {

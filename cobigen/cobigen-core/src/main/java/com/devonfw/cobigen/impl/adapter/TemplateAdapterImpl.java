@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
+import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
@@ -54,6 +56,20 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       if (Files.exists(templatesLocationPath)) {
         this.templatesLocation = templatesLocationPath;
       }
+    }
+  }
+
+  @Override
+  public void adaptTemplates()
+      throws IOException, UpgradeTemplatesNotificationException, TemplateSelectionForAdaptionException {
+
+    if (isMonolithicTemplatesConfiguration()) {
+      Path destinationPath = this.templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+      adaptMonolithicTemplates(destinationPath, false);
+
+      throw new UpgradeTemplatesNotificationException();
+    } else {
+      throw new TemplateSelectionForAdaptionException(getTemplateSetJars());
     }
   }
 
