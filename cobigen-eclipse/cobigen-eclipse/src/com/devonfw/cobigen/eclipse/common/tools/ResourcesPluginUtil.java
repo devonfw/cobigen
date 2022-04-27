@@ -21,13 +21,14 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
-import com.devonfw.cobigen.impl.util.ExtractTemplatesUtil;
+import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 
 /** Util for NPE save access of {@link ResourcesPlugin} utils */
 public class ResourcesPluginUtil {
@@ -228,7 +229,9 @@ public class ResourcesPluginUtil {
     }
 
     try {
-      ExtractTemplatesUtil.extractTemplates(cobigenFolderPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES), false);
+      TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenFolderPath);
+      templateAdapter.adaptMonolithicTemplates(cobigenFolderPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES),
+          false);
     } catch (Exception e) {
       LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
       PlatformUIUtil
