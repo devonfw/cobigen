@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
-    <templates>
-        <template name="permission_constants" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/PermissionConstants.java" templateFile="PermissionConstants.java.ftl" mergeStrategy="override"/>
-    </templates>
-    <increments>
-        <increment name="permission_constants" description="Permission Constants">
-            <templateRef ref="permission_constants"/>
-        </increment>
-    </increments>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="5.0">
+  <templates>
+    <template name="permission_constants" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/PermissionConstants.java" templateFile="PermissionConstants.java.ftl" mergeStrategy="override" />
+  </templates>
+  <increments>
+    <increment name="permission_constants" description="Permission Constants" explanation="Creates the PermissionConstants that can be used to secure REST API methods.">
+      <templateRef ref="permission_constants" />
+    </increment>
+  </increments>
 </templatesConfiguration>

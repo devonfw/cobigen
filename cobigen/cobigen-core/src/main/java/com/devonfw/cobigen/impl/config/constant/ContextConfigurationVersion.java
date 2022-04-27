@@ -36,10 +36,10 @@ public enum ContextConfigurationVersion {
   /**
    * ChangeLog:
    * <ul>
-   * <li>made templateFolder optional</li>
+   * <li>added links and tags, made templateFolder optional</li>
    * </ul>
    */
-  v2_2(2.2f, true);
+  v3_0(3.0f, true);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;

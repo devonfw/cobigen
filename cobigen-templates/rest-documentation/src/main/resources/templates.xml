@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0">
 
   <templates>
-    <templateExtension ref="Documentation.adoc" mergeStrategy="textmerge_append"/>
+    <templateExtension ref="Documentation.adoc" mergeStrategy="textmerge_append" />
   </templates>
 
   <templateScans>
-    <templateScan templatePath="templates" destinationPath=""/>
+    <templateScan templatePath="templates" destinationPath="" />
   </templateScans>
 
   <increments>
-    <increment name="Rest_Docs" description="Documentation">
-      <templateRef ref="Documentation.adoc"/>
+    <increment name="Rest_Docs" description="Documentation" explanation="Contains information about the operations of the REST application.">
+      <templateRef ref="Documentation.adoc" />
     </increment>
   </increments>
 </templatesConfiguration>
