@@ -1,41 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0">
 
   <templates>
-    <templateExtension ref="${variables.etoName#lower_case}-detail.page.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="${variables.etoName#lower_case}-list.page.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName#lower_case}-rest.service.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="${variables.etoName#lower_case}-detail.page.ts" mergeStrategy="tsmerge" />
+    <templateExtension ref="${variables.etoName#lower_case}-list.page.ts" mergeStrategy="tsmerge_override" />
+    <templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override" />
+    <templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override" />
+    <templateExtension ref="${variables.etoName#lower_case}-rest.service.ts" mergeStrategy="tsmerge_override" />
     <templateExtension ref="${variables.etoName#lower_case}.ts" />
     <templateExtension ref="${variables.etoName#lower_case}-search-criteria.ts" />
     <templateExtension ref="paginated-list-to.ts" />
     <templateExtension ref="pageable.ts" />
     <templateExtension ref="sort.ts" />
-    <templateExtension ref="environment.android.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="${variables.etoName#lower_case}-detail.page.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="${variables.etoName#lower_case}-list.page.html" mergeStrategy="html-ng*"/>
-    <templateExtension ref="es.json" mergeStrategy="jsonmerge_override"/>
-    <templateExtension ref="en.json" mergeStrategy="jsonmerge_override"/>
-    <templateExtension ref="it.json" mergeStrategy="jsonmerge_override"/>
-    <templateExtension ref="business-operator.service.ts" mergeStrategy="tsmerge_override"/>
+    <templateExtension ref="environment.android.ts" mergeStrategy="tsmerge_override" />
+    <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override" />
+    <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override" />
+    <templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override" />
+    <templateExtension ref="${variables.etoName#lower_case}-detail.page.html" mergeStrategy="html-ng*" />
+    <templateExtension ref="${variables.etoName#lower_case}-list.page.html" mergeStrategy="html-ng*" />
+    <templateExtension ref="es.json" mergeStrategy="jsonmerge_override" />
+    <templateExtension ref="en.json" mergeStrategy="jsonmerge_override" />
+    <templateExtension ref="it.json" mergeStrategy="jsonmerge_override" />
+    <templateExtension ref="business-operator.service.ts" mergeStrategy="tsmerge_override" />
   </templates>
 
   <templateScans>
-    <templateScan name="ts_scan" templatePath="templates" destinationPath=""/>
+    <templateScan name="ts_scan" templatePath="templates" destinationPath="" />
   </templateScans>
 
   <increments>
-    <increment name="devon4ng-app" description="CRUD devon4ng Ionic App">
-      <incrementRef ref="app_ionic_structure"/>
-      <incrementRef ref="ionic_routing"/>
-      <incrementRef ref="ionic_i18n"/>
-      <incrementRef ref="ionic_component"/>
-      <incrementRef ref="ionic_theme"/>
+    <increment name="devon4ng-app" description="CRUD devon4ng Ionic App" explanation="Creates Ionic stack CRUD service.">
+      <incrementRef ref="app_ionic_structure" />
+      <incrementRef ref="ionic_routing" />
+      <incrementRef ref="ionic_i18n" />
+      <incrementRef ref="ionic_component" />
+      <incrementRef ref="ionic_theme" />
     </increment>
     <increment name="app_ionic_structure" description="Ionic devon4ng environments">
       <templateRef ref="environment.android.ts" />
@@ -43,32 +42,32 @@
       <templateRef ref="environment.ts" />
     </increment>
     <increment name="ionic_routing" description="Ionic routing">
-      <templateRef ref="app-routing.module.ts"/>
+      <templateRef ref="app-routing.module.ts" />
     </increment>
     <increment name="ionic_i18n" description="Ionic i18n">
-      <templateRef ref="es.json"/>
-      <templateRef ref="en.json"/>
-      <templateRef ref="it.json"/>
+      <templateRef ref="es.json" />
+      <templateRef ref="en.json" />
+      <templateRef ref="it.json" />
     </increment>
     <increment name="ionic_component" description="Ionic List">
-      <templateRef ref="${variables.etoName#lower_case}.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-search-criteria.ts"/>
-      <templateRef ref="paginated-list-to.ts"/>
-      <templateRef ref="app.component.ts"/>
-      <templateRef ref="app.module.ts"/>
-      <templateRef ref="pageable.ts"/>
-      <templateRef ref="sort.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-rest.service.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-list.page.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-list.page.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-list.page.scss"/>
-      <templateRef ref="${variables.etoName#lower_case}-detail.page.ts"/>
-      <templateRef ref="${variables.etoName#lower_case}-detail.page.html"/>
-      <templateRef ref="${variables.etoName#lower_case}-detail.page.scss"/>
-      <templateRef ref="business-operator.service.ts"/>
+      <templateRef ref="${variables.etoName#lower_case}.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-search-criteria.ts" />
+      <templateRef ref="paginated-list-to.ts" />
+      <templateRef ref="app.component.ts" />
+      <templateRef ref="app.module.ts" />
+      <templateRef ref="pageable.ts" />
+      <templateRef ref="sort.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-rest.service.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-list.page.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-list.page.html" />
+      <templateRef ref="${variables.etoName#lower_case}-list.page.scss" />
+      <templateRef ref="${variables.etoName#lower_case}-detail.page.ts" />
+      <templateRef ref="${variables.etoName#lower_case}-detail.page.html" />
+      <templateRef ref="${variables.etoName#lower_case}-detail.page.scss" />
+      <templateRef ref="business-operator.service.ts" />
     </increment>
     <increment name="ionic_theme" description="Ionic theme">
-      <templateRef ref="variables.scss"/>
+      <templateRef ref="variables.scss" />
     </increment>
   </increments>
 </templatesConfiguration>

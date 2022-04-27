@@ -7,6 +7,7 @@ import java.io.FileReader;
 
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -31,11 +32,12 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   /**
-   * Tests the valid upgrade of a context configuration from version v2.0 to latest version. Please make sure that
+   * Tests the valid upgrade of a context configuration from version v2.0 to the latest version. Please make sure that
    * .../ContextConfigurationUpgraderTest/valid-latest_version exists
    *
    * @throws Exception test fails
    */
+  @Ignore
   @Test
   public void testCorrectUpgrade_v2_0_TO_LATEST() throws Exception {
 
@@ -48,6 +50,39 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 
     ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(this.tempFolder.getRoot().toPath());
     assertThat(version).as("Source Version").isEqualTo(ContextConfigurationVersion.v2_0);
+
+    sut.upgradeConfigurationToLatestVersion(this.tempFolder.getRoot().toPath(), BackupPolicy.ENFORCE_BACKUP);
+    assertThat(tmpTargetConfig.toPath().resolveSibling("context.bak.xml").toFile()).exists()
+        .hasSameContentAs(sourceTestdata);
+
+    version = sut.resolveLatestCompatibleSchemaVersion(this.tempFolder.getRoot().toPath());
+    assertThat(version).as("Target version").isEqualTo(ContextConfigurationVersion.getLatest());
+
+    XMLUnit.setIgnoreWhitespace(true);
+    new XMLTestCase() {
+    }.assertXMLEqual(new FileReader(testFileRootPath + "valid-" + ContextConfigurationVersion.getLatest() + "/"
+        + ConfigurationConstants.CONTEXT_CONFIG_FILENAME), new FileReader(tmpTargetConfig));
+  }
+
+  /**
+   * Tests the valid upgrade of a context configuration from version v2.1 to the latest version. Please make sure that
+   * .../ContextConfigurationUpgraderTest/valid-latest_version exists
+   *
+   * @throws Exception test fails
+   */
+  @Ignore
+  @Test
+  public void testCorrectUpgrade_v2_1_TO_LATEST() throws Exception {
+
+    // preparation
+    File tmpTargetConfig = this.tempFolder.newFile(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    File sourceTestdata = new File(testFileRootPath + "valid-v2.1/" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    Files.copy(sourceTestdata, tmpTargetConfig);
+
+    ContextConfigurationUpgrader sut = new ContextConfigurationUpgrader();
+
+    ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(this.tempFolder.getRoot().toPath());
+    assertThat(version).as("Source Version").isEqualTo(ContextConfigurationVersion.v2_1);
 
     sut.upgradeConfigurationToLatestVersion(this.tempFolder.getRoot().toPath(), BackupPolicy.ENFORCE_BACKUP);
     assertThat(tmpTargetConfig.toPath().resolveSibling("context.bak.xml").toFile()).exists()
