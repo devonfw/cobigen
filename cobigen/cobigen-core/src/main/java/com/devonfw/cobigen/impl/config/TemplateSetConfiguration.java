@@ -3,7 +3,7 @@ package com.devonfw.cobigen.impl.config;
 import java.util.List;
 
 /**
- * TODO mdukhan This Class is used to save config.properties file inside .cobigen used
+ * TODO mdukhan This Class is used to save properties from config.properties file inside .cobigen
  * in @ConfigurationFinder @readTemplateSetConfiguration
  *
  */
@@ -14,6 +14,8 @@ public class TemplateSetConfiguration {
   private boolean allowSnapshots;
 
   private boolean disableLookup;
+
+  private String hideTemplates;
 
   /**
    * @return groupIds
@@ -61,6 +63,22 @@ public class TemplateSetConfiguration {
   public void setDisableLookup(boolean disableLookup) {
 
     this.disableLookup = disableLookup;
+  }
+
+  /**
+   * @return hideTemplates
+   */
+  public String getHideTemplates() {
+
+    return this.hideTemplates;
+  }
+
+  /**
+   * @param hideTemplates new value of {@link #gethideTemplates}.
+   */
+  public void setHideTemplates(String hideTemplates) {
+
+    this.hideTemplates = hideTemplates;
   }
 
 }

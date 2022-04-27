@@ -51,7 +51,7 @@ public class ConfigurationFinderTest {
   @Test
   @Ignore
   /**
-   * TODO Test readTemplateSetConfiguration Method inside ConfigurationFinder Class if config.properties exists.
+   * TODO Test readTemplateSetConfiguration Method inside ConfigurationFinder Class if config.properties found.
    */
   public void readTemplateSetConfigurationTest() {
 
@@ -61,8 +61,9 @@ public class ConfigurationFinderTest {
     // Path configFile = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
     // configFile
     // URI TestConfigLocation = configFile.toUri();
-    Path pomFile = cobigenHome.resolve("config.properties");
+    // Path pomFile = cobigenHome.resolve("config.properties");
     ConfigurationFinder cFinder = new ConfigurationFinder();
+    // instead of reaching .cobigen/.cobigen we need to go a up to the parent folder to reach ./cobigen
     Path ParentPath = cobigenHome.getParent();
     try {
       TemplateSetConfiguration TestProperties = cFinder.readTemplateSetConfiguration(ParentPath.toUri());
@@ -71,8 +72,9 @@ public class ConfigurationFinderTest {
       assertEquals(GroupIds.get(0), "devonfw-cobigen-bla");
       assertEquals(GroupIds.get(1), "abcd");
       assertEquals(GroupIds.get(2), "blablob");
-      assertEquals(TestProperties.isAllowSnapshots(), "true");
-      assertEquals(TestProperties.isDisableLookup(), "false");
+      assertEquals(TestProperties.isAllowSnapshots(), true);
+      assertEquals(TestProperties.isDisableLookup(), false);
+      assertEquals(TestProperties.getHideTemplates(), null);
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -82,21 +84,31 @@ public class ConfigurationFinderTest {
   }
 
   @Test
-  @Ignore
   /**
-   * TODO Test readTemplateSetConfiguration Method inside ConfigurationFinder Class if config.properties does not exist.
+   * Test readTemplateSetConfiguration Method inside ConfigurationFinder Class if config.properties not found.
    */
   public void readTemplateSetDefaultConfigurationTest() {
 
-    // URI TestConfigLocation = ConfigurationFinder.findTemplatesLocation();
-
     Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-    // Path configFile = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-    // configFile
-    // URI TestConfigLocation = configFile.toUri();
-    Path pomFile = cobigenHome.resolve("config.properties");
     ConfigurationFinder cFinder = new ConfigurationFinder();
     Path ParentPath = cobigenHome.getParent();
+    try {
+      TemplateSetConfiguration TestProperties = cFinder.readTemplateSetConfiguration(ParentPath.toUri());
+      List<String> GroupIds = TestProperties.getGroupIds();
+
+      // by default should be com.devonfw.cobigen
+      assertEquals(GroupIds.get(0), "com.devonfw.cobigen");
+      // by default should be false
+      assertEquals(TestProperties.isAllowSnapshots(), false);
+      // by default should be false
+      assertEquals(TestProperties.isDisableLookup(), false);
+      // by default should be null
+      assertEquals(TestProperties.getHideTemplates(), null);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
   }
 
