@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+  <trigger id="templateSet1" type="java" templateFolder="templateSet1">
+    <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data"
+      retrieveObjectsRecursively="false"/>
+    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data\.([^\.]+)To">
+      <variableAssignment type="regex" key="rootPackage" value="1"/>
+      <variableAssignment type="regex" key="domain" value="3"/>
+      <variableAssignment type="regex" key="component" value="4"/>
+      <variableAssignment type="regex" key="toName" value="5"/>
+    </matcher>
+  </trigger>
+  <trigger id="templateSet2" type="openapi" templateFolder="templateSet2">
+    <containerMatcher type="element" value="openAPIFile"/>
+    <matcher type="element" value="EntityDef">
+      <variableAssignment type="constant" key="rootPackage" value="com.devonfw"/>
+      <variableAssignment type="property" key="component" value="componentName"/>
+      <variableAssignment type="property" key="entityName" value="name"/>
+    </matcher>
+  </trigger>
+</contextConfiguration>
