@@ -75,10 +75,9 @@ public class TemplateProcessingTest extends AbstractApiTest {
 
     Path templateSetsFolder = this.cobiGenHomeTemplateSets
         .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH);
-    Path downloadedFolder = templateSetsFolder.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     Path adaptedFolder = templateSetsFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
-    TemplateAdapter templateAdapter = new TemplateAdapterImpl(downloadedFolder.getParent());
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateSetsFolder);
 
     Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
       templateAdapter.adaptTemplates();

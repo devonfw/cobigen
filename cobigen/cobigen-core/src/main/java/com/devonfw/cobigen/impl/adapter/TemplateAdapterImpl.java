@@ -134,6 +134,8 @@ public class TemplateAdapterImpl implements TemplateAdapter {
         }
 
         extractArchive(templateSetJar, destination);
+        // com folder with precompiled util classes is not needed. The utils compiled at first generation into the
+        // target folder
         if (Files.exists(destination.resolve("com"))) {
           FileUtils.deleteDirectory(destination.resolve("com").toFile());
         }
