@@ -76,8 +76,8 @@ public class GenerateJob implements IRunnableWithProgress {
       monitor.beginTask("Searching valid triggers...", 1);
       if (!generator.isValidInput(monitor)) {
         LOG.info("No matching Trigger. Exiting generate command.");
-        PlatformUIUtil.getWorkbench().getDisplay()
-            .syncExec(() -> MessageDialog.openInformation(HandlerUtil.getActiveShell(this.event), "No matching Trigger!",
+        PlatformUIUtil.getWorkbench().getDisplay().syncExec(
+            () -> MessageDialog.openInformation(HandlerUtil.getActiveShell(this.event), "No matching Trigger!",
                 "Your current selection is not valid as input for any generation purpose. "
                     + "Please find the specification of valid inputs in the context configuration ('"
                     + ResourceConstants.CONFIG_PROJECT_NAME + "/context.xml')."));
@@ -103,7 +103,10 @@ public class GenerateJob implements IRunnableWithProgress {
         }
       });
     } catch (Throwable e) {
-      ExceptionHandler.handle(e, HandlerUtil.getActiveShell(this.event));
+      PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
+        ExceptionHandler.handle(e, HandlerUtil.getActiveShell(this.event));
+      });
+
     }
 
     MDC.remove(InfrastructureConstants.CORRELATION_ID);
