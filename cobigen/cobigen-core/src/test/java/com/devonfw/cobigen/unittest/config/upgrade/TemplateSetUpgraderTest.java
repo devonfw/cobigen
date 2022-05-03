@@ -48,5 +48,11 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
     Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     assertThat(templateSetsPath).exists();
     assertThat(templateSetsAdapted).exists();
+    // context.xml ist am richtigen odrdner
+    // context.xml ist korrekt gesplitted
+    // testen ob die utils funktionieren
+    // dependencies testen, (ob alle vorhanden sind)
+    // Vorhandene generarte Update Test angucken.
+    
   }
 }
