@@ -1,10 +1,12 @@
 package com.devonfw.cobigen.impl.config.upgrade;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -14,10 +16,17 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Trigger;
+import com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher;
+import com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher;
 
 import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 public class TemplateSetUpgrader {
 
@@ -109,13 +118,39 @@ public class TemplateSetUpgrader {
     com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration = new com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration();
     contextConfiguration.setVersion(new BigDecimal(3.0));
 
+
+
+    // trigger in die contextconfiguration und dann marshall
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger> triggerList = contextConfiguration.getTrigger();
     com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger();
+    com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration config_test = new com.devonfw.cobigen.impl.config.entity.io.v3_0.ObjectFactory().createContextConfiguration();
     trigger3_0.setId(trigger.getId());
     trigger3_0.setInputCharset(trigger.getInputCharset());
     trigger3_0.setType(trigger.getType());
-    // TODO write trigger in new context.xml
+    trigger3_0.setTemplateFolder(trigger.getTemplateFolder());
+//    trigger3_0.getContainerMatcher().addAll((Collection<? extends ContainerMatcher>) trigger.getContainerMatcher());
+//    List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher> CMatcherList = trigger.getContainerMatcher();
+    MapperFactory mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
+    MapperFacade mapper = mapperFactory.getMapperFacade();
 
-    // TODO create pom.xml
+    //List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher> v3ListCM = mapper.mapAsList(trigger.getContainerMatcher(),
+        //com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class);
+    //List<Matcher> v3ListMatcher = mapper.mapAsList(trigger.getMatcher(), com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class);
+    //trigger3_0.getContainerMatcher().addAll(v3ListCM);
+    for(com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher cm: trigger.getContainerMatcher()) {
+    	 trigger3_0.getContainerMatcher().add(mapper.map(cm, com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class));
+    }
+    //trigger3_0.getMatcher().addAll(v3ListMatcher);
+    triggerList.add(trigger3_0);
+    //TODO ORIKA MApper
+    try{
+    	Marshaller marshaller = JAXBContext.newInstance("com.devonfw.cobigen.impl.config.entity.io.v3_0").createMarshaller();
+    	//marshaller.marshal(trigger3_0, System.out);
+    	marshaller.marshal(contextConfiguration, System.out);
+    }catch(JAXBException e) {
+    	e.printStackTrace();
+    }
+    // TODO write trigger in new context.xml
+    // TODO create pom.xml ... create POM class?
   }
 }
