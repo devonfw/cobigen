@@ -52,7 +52,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
     // context.xml ist korrekt gesplitted
     // testen ob die utils funktionieren
     // dependencies testen, (ob alle vorhanden sind)
-    // Vorhandene generarte Update Test angucken.
-    
+
+
   }
 }
