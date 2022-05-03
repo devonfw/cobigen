@@ -49,25 +49,6 @@ public class TemplateSetUpgrader {
   private MapperFactory mapperFactory;
   private MapperFacade mapper;
 
-  private String POM = "<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-  		+ "  xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n"
-  		+ "  <modelVersion>4.0.0</modelVersion>\n"
-  		+ "  <artifactId>crud-openapi-angular-client-app</artifactId>\n"
-  		+ "\n"
-  		+ "  <parent>\n"
-  		+ "    <groupId>com.devonfw.cobigen.templates</groupId>\n"
-  		+ "    <artifactId>templates-parent</artifactId>\n"
-  		+ "    <version>${revision}</version>\n"
-  		+ "  </parent>\n"
-  		+ "\n"
-  		+ "</project>";
-
-  private String POMdependencies = "	<dependencies>\n	</dependencies>\n";
-  private String POMdependency ="    <dependency>\n"
-	  		  		+ "      <groupId>org.apache.commons</groupId>\n"
-	  		  		+ "      <artifactId>commons-lang3</artifactId>\n"
-	  		  		+ "    </dependency>\n";
-
 
   public TemplateSetUpgrader(Path templatesLocation) {
     this.templatesLocation = templatesLocation;
@@ -205,7 +186,7 @@ public class TemplateSetUpgrader {
 		System.out.println(m.getArtifactId());
 		Parent p = new Parent();
 		p.setRelativePath(f.getPath());
-		m.setParent(p); // relative path am besten diff bilden
+		m.setParent(p); //
 		m.setArtifactId(pomArtifactID);
 		m.setGroupId(p.getGroupId());
 		m.setName("Hier sollt ein geeigneter Name stehen"); // TODO User Info geben oder Namen bestimmen lassen.
@@ -221,12 +202,7 @@ public class TemplateSetUpgrader {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    // stumpf dependencies aus der alten pom kopieren
-    // stumpf alte template sets kopieren
-    // alten .cobigen folder generieren lassen
-    // testprojekt mit cobigen und julian fragen wie man nochmal auf die alte version kommt.
 
-    System.out.println("Hallo");
-    //TODO eine description Meldung das eine neues Description ausgewählt gefundne soll wenn es keine Description gibt.
+
   }
 }
