@@ -47,6 +47,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
    * @throws InvalidConfigurationException if a conflict occurred
    *
    */
+  @Test
   public void testConflictConfiguration() throws InvalidConfigurationException {
 
     Throwable bothPresent = assertThrows(InvalidConfigurationException.class, () -> {

@@ -85,22 +85,35 @@ public class ContextConfigurationReader {
         }
 
       } else {
+        checkForConflict(configRoot, contextFile);
         this.contextFiles.add(contextFile);
-        // check if conflict with old and modular configuration exists
-
-        if (!loadContextFilesInSubfolder(configRoot).isEmpty())
-          throw new InvalidConfigurationException(contextFile,
-              "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
-                  + WikiConstants.WIKI_UPDATE_OLD_CONFIG);
 
       }
     } else {
+      Path subConfigRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+      if (Files.exists(subConfigRoot)) {
+        checkForConflict(subConfigRoot, contextFile);
+      }
       this.contextFiles.add(contextFile);
     }
 
     this.contextRoot = configRoot;
 
     readConfiguration();
+  }
+
+  /**
+   * Checks if conflict with old and modular configuration exists
+   *
+   * @param configRoot Path to root directory of the configuration
+   * @param contextFile Path to context file of the configuration
+   */
+  private void checkForConflict(Path configRoot, Path contextFile) {
+
+    if (!loadContextFilesInSubfolder(configRoot).isEmpty())
+      throw new InvalidConfigurationException(contextFile,
+          "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
+              + WikiConstants.WIKI_UPDATE_OLD_CONFIG);
   }
 
   /**
