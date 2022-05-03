@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
 /**
  * Reader for {@link ConfigurationConstants#COBIGEN_PROPERTIES} files.
@@ -50,6 +51,8 @@ public class CobiGenPropertiesReader {
     }
     try (Reader reader = Files.newBufferedReader(propertiesPath, UTF_8)) {
       properties.load(reader);
+      // Check New template-sets Configuration
+      properties = ConfigurationFinder.checkTemplateSetConfiguration(properties);
     } catch (IOException e) {
       throw new CobiGenRuntimeException(
           "Failed to read " + ConfigurationConstants.COBIGEN_PROPERTIES + " from " + folder, e);

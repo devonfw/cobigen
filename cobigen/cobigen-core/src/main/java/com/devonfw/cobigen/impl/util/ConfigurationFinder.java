@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.impl.util;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -8,8 +7,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -21,7 +18,6 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 
 /**
  * Utilities related to the cobigen configurations including:
@@ -33,101 +29,40 @@ public class ConfigurationFinder {
   /** Logger instance */
   private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFinder.class);
 
-  private TemplateSetConfiguration templateSetConfiguration;
-
   /**
-   * The Method finds config.properties related to GroupIds, Snapshotversion, etc.
+   * check New Properties from a given property
    *
-   * @param configurationLocation
-   *
-   * @return TemplateSetConfiguration class Object
-   * @throws IOException
+   * @param props
+   * @return prop
    */
-  public TemplateSetConfiguration readTemplateSetConfiguration(URI configurationLocation) throws IOException {
+  public static Properties checkTemplateSetConfiguration(Properties props) {
 
-    this.templateSetConfiguration = new TemplateSetConfiguration();
-
-    Path pomFile = null;
-    Path cobigenConfigFile = Paths.get(configurationLocation).resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-    Properties apptest = new Properties();
-
-    if (Files.exists(cobigenConfigFile)) {
-      // 1. Check if config.properties found
-      if (Files.exists(cobigenConfigFile.resolve("config.properties"))) {
-        // set the Path to .cobigen Home Folder + config.properties
-        pomFile = cobigenConfigFile.resolve("config.properties");
-
-        String newproperties = pomFile.toString();
-
-        // Read textfile
-        apptest.load(new FileInputStream(newproperties));
-
-        // Read GroupIds
-        if (apptest.getProperty("template-sets.groupIds") != null) {
-          String[] groupIds = apptest.getProperty("template-sets.groupIds").split(",");
-
-          List<String> groupIdslist = Arrays.asList(groupIds);
-
-          this.templateSetConfiguration.setGroupIds(groupIdslist);
-        } else {
-          // By default set only to (public) cobigen groupId
-          apptest.setProperty("template-sets.groupIds", "com.devonfw.cobigen");
-          this.templateSetConfiguration.setGroupIds(Arrays.asList("com.devonfw.cobigen"));
-        }
-
-        // Read Snapshot
-        if (apptest.getProperty("template-sets.allow-snapshots") != null) {
-
-          String snapshot = apptest.getProperty("template-sets.allow-snapshots");
-
-          if (snapshot.equals("true")) {
-            this.templateSetConfiguration.setAllowSnapshots(true);
-          }
-        } else {
-          // by default false
-          apptest.setProperty("template-sets.allow-snapshots", "false");
-          this.templateSetConfiguration.setAllowSnapshots(false);
-        }
-
-        // Read Lookup
-        if (apptest.getProperty("template-sets.disable-default-lookup") != null) {
-
-          String lookup = apptest.getProperty("template-sets.disable-default-lookup");
-
-          if (lookup.equals("true"))
-            this.templateSetConfiguration.setDisableLookup(true);
-        } else {
-          // by default false
-          apptest.setProperty("template-sets.disable-default-lookup", "false");
-          this.templateSetConfiguration.setDisableLookup(false);
-        }
-
-        if (apptest.getProperty("template-sets.hide") != null) {
-
-          String hide = apptest.getProperty("template-sets.hide");
-          this.templateSetConfiguration.setHideTemplates(hide);
-        } else {
-          // by default false
-          apptest.setProperty("template-sets.hide", "null");
-          this.templateSetConfiguration.setHideTemplates(null);
-        }
-
-      }
-      // 2. config.properties not Found
-      else {
-        // default values
-        apptest.setProperty("template-sets.groupIds", "com.devonfw.cobigen");
-        this.templateSetConfiguration.setGroupIds(Arrays.asList("com.devonfw.cobigen"));
-        apptest.setProperty("template-sets.allow-snapshots", "false");
-        this.templateSetConfiguration.setAllowSnapshots(false);
-        apptest.setProperty("template-sets.disable-default-lookup", "false");
-        this.templateSetConfiguration.setDisableLookup(false);
-        apptest.setProperty("template-sets.hide", "null");
-        this.templateSetConfiguration.setHideTemplates(null);
-      }
+    // 1. GroupIDs
+    String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
+    if (props.getProperty(groupId) == null) {
+      // By default set only to (public) cobigen groupId
+      String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
+      props.setProperty(groupId, defaultGroupId);
     }
-
-    return this.templateSetConfiguration;
+    // 2. Snapshots
+    String snapshot = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS;
+    if (props.getProperty(snapshot) == null) {
+      // by default false
+      props.setProperty(snapshot, "false");
+    }
+    // 3. Lookup
+    String lookup = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP;
+    if (props.getProperty(lookup) == null) {
+      // by default false
+      props.setProperty(lookup, "false");
+    }
+    // 4. Hide
+    String hide = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE;
+    if (props.getProperty(hide) == null) {
+      // by default null
+      props.setProperty(hide, "null");
+    }
+    return props;
 
   }
 

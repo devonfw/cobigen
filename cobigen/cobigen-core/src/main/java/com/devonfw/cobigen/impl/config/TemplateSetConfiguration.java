@@ -3,8 +3,7 @@ package com.devonfw.cobigen.impl.config;
 import java.util.List;
 
 /**
- * TODO mdukhan This Class is used to save properties from config.properties file inside .cobigen
- * in @ConfigurationFinder @readTemplateSetConfiguration
+ * mdukhan This Class is used to save specific properties
  *
  */
 public class TemplateSetConfiguration {

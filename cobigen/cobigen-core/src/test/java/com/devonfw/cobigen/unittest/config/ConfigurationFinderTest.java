@@ -5,15 +5,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
 import java.util.Properties;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
 /**
@@ -22,25 +18,27 @@ import com.devonfw.cobigen.impl.util.ConfigurationFinder;
  */
 public class ConfigurationFinderTest {
 
+  /**
+   * Test Constants and reading properties from example config.properties
+   */
   @Test
-
   public void TestNewPropertiesReader() {
 
     String testFileRootPath = "src/test/resources/testdata/unittest/config/config.properties";
-    // Path newproperties = cobigenConfigFile + "config.properties";
     Properties apptest = new Properties();
     try {
       apptest.load(new FileInputStream(testFileRootPath));
-
+      String templateSetsLocation = apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS);
+      System.out.println(templateSetsLocation);
       String[] groupIds = apptest.getProperty("template-sets.groupIds").split(",");
       assertEquals(groupIds[0], "devonfw-cobigen-bla");
       assertEquals(groupIds[1], "abcd");
       assertEquals(groupIds[2], "blablob");
 
-      String IsSnapshot = apptest.getProperty("template-sets.allow-snapshots");
+      String IsSnapshot = apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS);
       assertEquals(IsSnapshot, "true");
 
-      String IsDisableLookup = apptest.getProperty("template-sets.disable-default-lookup");
+      String IsDisableLookup = apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP);
       assertEquals(IsDisableLookup, "false");
 
     } catch (Exception e) {
@@ -48,67 +46,50 @@ public class ConfigurationFinderTest {
 
   }
 
-  @Test
-  @Ignore
   /**
-   * TODO Test readTemplateSetConfiguration Method inside ConfigurationFinder Class if config.properties found.
+   * Test CheckTemplateSetConfiguration Method inside ConfigurationFinder Class if valid properties found.
    */
+  @Test
   public void readTemplateSetConfigurationTest() {
 
-    // URI TestConfigLocation = ConfigurationFinder.findTemplatesLocation();
+    Properties apptest = new Properties();
 
-    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-    // Path configFile = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-    // configFile
-    // URI TestConfigLocation = configFile.toUri();
-    // Path pomFile = cobigenHome.resolve("config.properties");
-    ConfigurationFinder cFinder = new ConfigurationFinder();
-    // instead of reaching .cobigen/.cobigen we need to go a up to the parent folder to reach ./cobigen
-    Path ParentPath = cobigenHome.getParent();
-    try {
-      TemplateSetConfiguration TestProperties = cFinder.readTemplateSetConfiguration(ParentPath.toUri());
-      List<String> GroupIds = TestProperties.getGroupIds();
+    apptest.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS, "abcd");
+    apptest.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS, "true");
+    apptest.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP, "true");
+    apptest.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE, "templateblablob");
 
-      assertEquals(GroupIds.get(0), "devonfw-cobigen-bla");
-      assertEquals(GroupIds.get(1), "abcd");
-      assertEquals(GroupIds.get(2), "blablob");
-      assertEquals(TestProperties.isAllowSnapshots(), true);
-      assertEquals(TestProperties.isDisableLookup(), false);
-      assertEquals(TestProperties.getHideTemplates(), null);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    apptest = ConfigurationFinder.checkTemplateSetConfiguration(apptest);
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS), "abcd");
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS), "true");
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP), "true");
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE), "templateblablob");
 
   }
 
-  @Test
   /**
-   * Test readTemplateSetConfiguration Method inside ConfigurationFinder Class if config.properties not found.
+   * Test CheckTemplateSetConfiguration Method inside ConfigurationFinder Class if properties not correclty set by the
+   * user, to set to the default values
+   *
+   * @throws IOException
+   * @throws FileNotFoundException
    */
-  public void readTemplateSetDefaultConfigurationTest() {
+  @Test
+  public void readTemplateSetDefaultConfigurationTest() throws FileNotFoundException, IOException {
 
-    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-    ConfigurationFinder cFinder = new ConfigurationFinder();
-    Path ParentPath = cobigenHome.getParent();
-    try {
-      TemplateSetConfiguration TestProperties = cFinder.readTemplateSetConfiguration(ParentPath.toUri());
-      List<String> GroupIds = TestProperties.getGroupIds();
+    Properties apptest = new Properties();
 
-      // by default should be com.devonfw.cobigen
-      assertEquals(GroupIds.get(0), "com.devonfw.cobigen");
-      // by default should be false
-      assertEquals(TestProperties.isAllowSnapshots(), false);
-      // by default should be false
-      assertEquals(TestProperties.isDisableLookup(), false);
-      // by default should be null
-      assertEquals(TestProperties.getHideTemplates(), null);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    apptest = ConfigurationFinder.checkTemplateSetConfiguration(apptest);
+
+    // // by default should be com.devonfw.cobigen
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS),
+        "com.devonfw.cobigen");
+    // // by default should be false
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS), "false");
+    // // by default should be false
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP), "false");
+    // // by default should be null
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE), "null");
 
   }
 
