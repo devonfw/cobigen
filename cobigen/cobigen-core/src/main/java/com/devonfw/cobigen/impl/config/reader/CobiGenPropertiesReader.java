@@ -50,8 +50,6 @@ public class CobiGenPropertiesReader {
     }
     try (Reader reader = Files.newBufferedReader(propertiesPath, UTF_8)) {
       properties.load(reader);
-      // Check New template-sets Configuration
-      // properties = ConfigurationFinder.checkTemplateSetConfiguration(properties);
     } catch (IOException e) {
       throw new CobiGenRuntimeException(
           "Failed to read " + ConfigurationConstants.COBIGEN_PROPERTIES + " from " + folder, e);

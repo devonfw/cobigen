@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.junit.Test;
@@ -52,6 +54,7 @@ public class ConfigurationFinderTest {
   @Test
   public void readTemplateSetConfigurationTest() {
 
+    Path path = Paths.get("src/test/resources/testdata/unittest/config/config.properties");
     Properties apptest = new Properties();
 
     apptest.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS, "abcd");
@@ -59,11 +62,13 @@ public class ConfigurationFinderTest {
     apptest.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP, "true");
     apptest.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE, "templateblablob");
 
-    apptest = ConfigurationFinder.checkTemplateSetConfiguration(apptest);
-    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS), "abcd");
+    apptest = ConfigurationFinder.setDefaultTemplateSetConfigurations(path);
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS),
+        "devonfw-cobigen-bla,abcd,blablob");
     assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS), "true");
-    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP), "true");
-    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE), "templateblablob");
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP), "false");
+    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE),
+        "com.devonfw(:test-artifact(:3.2.1-SNAPSHOT))");
 
   }
 
@@ -77,19 +82,20 @@ public class ConfigurationFinderTest {
   @Test
   public void readTemplateSetDefaultConfigurationTest() throws FileNotFoundException, IOException {
 
-    Properties apptest = new Properties();
+    Path path = Paths.get("src/test/resources/testdata/unittest/config/entity/TemplatePathTest/tree/or/not/empty-file");
+    Properties propertiestest = new Properties();
 
-    apptest = ConfigurationFinder.checkTemplateSetConfiguration(apptest);
+    propertiestest = ConfigurationFinder.setDefaultTemplateSetConfigurations(path);
 
     // // by default should be com.devonfw.cobigen
-    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS),
+    assertEquals(propertiestest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS),
         "com.devonfw.cobigen");
     // // by default should be false
-    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS), "false");
+    assertEquals(propertiestest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS), "false");
     // // by default should be false
-    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP), "false");
+    assertEquals(propertiestest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP), "false");
     // // by default should be null
-    assertEquals(apptest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE), "null");
+    assertEquals(propertiestest.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE), "null");
 
   }
 

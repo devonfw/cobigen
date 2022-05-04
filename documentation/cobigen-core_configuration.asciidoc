@@ -12,7 +12,7 @@ The actual configuration of CobiGen is maintained by a single folder or jar. The
 
 1. A configuration jar or directory, which is passed to CobiGen by the Maven or Eclipse integration or any other program using the CobiGen programming interface:
 1.1. the Maven integration allows to configure a jar dependency to be included in the currently running classpath _(of interest for link:cobigen-maven_configuration#plugin-injection-since-v3[maven configuration]_
-1.2. the Eclipse integration allows to specify a `CobiGen_Templates` project in the eclipse workspace 
+1.2. the Eclipse integration allows to specify a `CobiGen_Templates` project in the eclipse workspace
 2. The file `$cghome/.cobigen` exists and the property `templates` is set to a valid configuration (e.g. `templates=C:\project\ide\conf\templates` or `templates=C:\project\ide\conf\templates.jar`) _Hint: Check for log entry like `Value of property templates in $cghome/.cobigen is invalid` to identify an invalid configuration which is not taken up as expected_
 3. The folder `$cghome/templates/CobiGen_Templates` exists
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
@@ -39,8 +39,8 @@ The context configuration (`context.xml`) always has the following root structur
 .Context Configuration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<contextConfiguration xmlns="http://capgemini.com" 
-                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<contextConfiguration xmlns="http://capgemini.com"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       version="1.0">
     <triggers>
         ...
@@ -68,7 +68,7 @@ As children of the `<triggers>` node you can define different triggers. By defin
 
 === Matcher Node
 
-A trigger will be activated if its matchers hold the following formula: 
+A trigger will be activated if its matchers hold the following formula:
 
 `!(NOT || ... || NOT) && AND && ... && AND && (OR || ... || OR)`
 
@@ -85,7 +85,7 @@ Whereas NOT/AND/OR describes the `accumulationType` of a _matcher_ (see below) a
 * The attribute `value` might contain any information necessary for processing the _matcher's_ functionality. Have a look at the relevant plug-in's documentation for more detail.
 * The attribute `accumulationType` _(optional)_ specifies how the matcher will influence the trigger activation. Valid values are:
 ** OR (default): if any matcher of accumulation type OR _matches_, the trigger will be activated as long as there are no further matchers with different accumulation types
-** AND: if any matcher with AND accumulation type does _not match_, the trigger will _not_ be activated 
+** AND: if any matcher with AND accumulation type does _not match_, the trigger will _not_ be activated
 ** NOT: if any matcher with NOT accumulation type _matches_, the trigger will _not_ be activated
 
 === Variable Assignment Node
@@ -96,8 +96,8 @@ Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as ch
 .Complete Configuration Pattern
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<contextConfiguration xmlns="http://capgemini.com" 
-                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<contextConfiguration xmlns="http://capgemini.com"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       version="1.0">
     <triggers>
         <trigger id="..." type="..." templateFolder="...">
@@ -121,8 +121,8 @@ Such a container might be a package, which encloses multiple types or---more gen
 .`ContainerMatcher` Declaration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<contextConfiguration xmlns="http://capgemini.com" 
-                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<contextConfiguration xmlns="http://capgemini.com"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       version="1.0">
     <triggers>
         <trigger id="..." type="..." templateFolder="..." >
@@ -161,8 +161,8 @@ To get an intuition of the idea, the following will initially describe the first
 .Extensive Templates Configuration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<templatesConfiguration xmlns="http://capgemini.com"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         version="1.0" templateEngine="FreeMarker">
     <templates>
             ...
@@ -214,18 +214,18 @@ The second configuration style for template meta-data is driven by initially sca
 .Example of Template-scan configuration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<templatesConfiguration xmlns="http://capgemini.com"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         version="1.2">
     <templateScans>
         <templateScan templatePath="templates" templateNamePrefix="prefix_" destinationPath="src/main/java"/>
     </templateScans>
 </templatesConfiguration>
 ```
-You can specify multiple `<templateScan ...>` nodes for different `templatePaths` and different `templateNamePrefixes`. 
+You can specify multiple `<templateScan ...>` nodes for different `templatePaths` and different `templateNamePrefixes`.
 
 * The `name` can be specified to later on reference the templates found by a template-scan within an xref:increment-node[increment]. _(since `cobigen-core-v2.1.`)_
-* The `templatePath` specifies the relative path from the `templates.xml` to the root folder from which the template scan should be performed. 
+* The `templatePath` specifies the relative path from the `templates.xml` to the root folder from which the template scan should be performed.
 * The `templateNamePrefix` _(optional)_ defines a common id prefix, which will be added to all found and automatically configured templates.
 * The `destinationPath` defines the root folder all found templates should be generated to, whereas the root folder will be a prefix for all found and automatically configured templates.
 
@@ -295,7 +295,7 @@ _(Since version 4.1.0)_  An special case of `<incrementRef ...>` is the external
 
 However, if we want to reference an increment that it is not defined inside our `templates.xml` (an increment defined for another trigger), then we can use external `incrementRef` as shown below:
 
-```xml 
+```xml
 <increment name="..." description="...">
     <incrementRef ref="trigger_id::increment_id"/>
 </increment>
@@ -306,7 +306,7 @@ The ref string is split using as delimiter `::`. The first part of the string, i
 == Java Template Logic
 
 _since `cobigen-core-3.0.0` which is included in the Eclipse and Maven Plugin since version 2.0.0_
-In addition, it is possible to implement more complex template logic by custom Java code. To enable this feature, you can simply import the the `CobiGen_Templates` by clicking on _Adapt Templates_, turn it into a simple maven project (if it is not already) and implement any Java logic in the common maven layout (e.g. in the source folder `src/main/java`). Each Java class will be instantiated by CobiGen for each generation process. Thus, you can even store any state within a Java class instance during generation. However, there is currently no guarantee according to the template processing order. 
+In addition, it is possible to implement more complex template logic by custom Java code. To enable this feature, you can simply import the the `CobiGen_Templates` by clicking on _Adapt Templates_, turn it into a simple maven project (if it is not already) and implement any Java logic in the common maven layout (e.g. in the source folder `src/main/java`). Each Java class will be instantiated by CobiGen for each generation process. Thus, you can even store any state within a Java class instance during generation. However, there is currently no guarantee according to the template processing order.
 
 As a consequence, you have to implement your Java classes with a public default (non-parameter) constructor to be used by any template. Methods of the implemented Java classes can be called within templates by the simple standard FreeMarker expression for calling Bean methods: `SimpleType.methodName(param1)`. Until now, CobiGen will shadow multiple types with the same simple name non-deterministically. So please prevent yourself from that situation.
 
@@ -334,6 +334,20 @@ folder
 
 Let the `cobigen.properties` file contain the line `relocate=../sub2/${cwd}`. Given that, the relative destination path of `Template.java.ftl` will be resolved to `folder/sub2/Template.java`. Compare `xref:templatescan-node[template scan]` configuration for more information about basic path resolution. The `relocate` property specifies a relative path from the location of the `cobigen.properties`. The `${cwd}` placeholder will contain the remaining relative path from the `cobigen.properties` location to the template file. In this basic example it just contains `Template.java.ftl`, but it may even be any relative path including sub-folders of sub1 and its templates.
 Given the `relocate` feature, you can even step out of the root path, which in general is the project/maven module the input is located in. This enables template designers to even address, e.g., maven modules located next to the module the input is coming from.
+
+=== Custom template-set groupIds for lookup
+
+You can specify template-sets so that it can provide custom template-sets and even restrict the teams to ask for default templates provided by cobigen. There are Four custom template-sets attibutes:
+
+*`template-sets.groupIds`: Search for template-set artifacts by that configuration key
+configure multiple (comma separated) groupIds. By default (public) cobigen groupId will be queried to allow public template-set lookup simultaneously.
+
+*`template-sets.allow-snapshots=true`: Allow snapshots of template-sets to be offered for template-set development purposes. By default no snapshots should be queried.
+
+*`template-sets.disable-default-lookup=false`: Disable by default querying of default public groupIds preconfigured in cobigen.
+
+*`template-sets.hide:` Hide very specific template sets or versions of template sets.
+
 
 == Basic Template Model
 

@@ -32,10 +32,12 @@ public class ConfigurationFinder {
   /**
    * check New Properties from a given property
    *
-   * @param props
+   * @param path
    * @return prop
    */
-  public static Properties checkTemplateSetConfiguration(Properties props) {
+  public static Properties setDefaultTemplateSetConfigurations(Path path) {
+
+    Properties props = readConfigurationFile(path);
 
     // 1. GroupIDs
     String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
