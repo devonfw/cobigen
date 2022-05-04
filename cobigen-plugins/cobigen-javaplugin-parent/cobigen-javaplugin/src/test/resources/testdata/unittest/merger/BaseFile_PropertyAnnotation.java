@@ -1,5 +1,6 @@
 package com.devonfw.application.jtqj.general.dataaccess.api;
 
+import javax.persistence.Entity;
 import com.devonfw.application.jtqj.general.common.api.Visitor;
 
 /**
@@ -9,10 +10,11 @@ import com.devonfw.application.jtqj.general.common.api.Visitor;
 @javax.persistence.Table(name = "Visitor")
 public class VisitorEntity extends ApplicationPersistenceEntity implements Visitor {
 
-    private String username;
+  @Column(name = "USER")
+  private String username;
 
-    private String name;
+  private String name;
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
 }

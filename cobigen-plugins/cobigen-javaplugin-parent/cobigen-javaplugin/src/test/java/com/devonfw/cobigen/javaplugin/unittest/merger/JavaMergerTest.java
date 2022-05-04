@@ -529,16 +529,23 @@ public class JavaMergerTest {
     File baseFile = new File(testFileRootPath + "BaseFile_ClassAnnotation.java");
     File patchFile = new File(testFileRootPath + "PatchFile_ClassAnnotation.java");
 
+    // with override
     String mergedContents = new JavaMerger("", true).merge(baseFile,
         FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
 
     assertThat(mergedContents).contains("@Entity");
     assertThat(mergedContents).contains("@javax.persistence.Table(name=\"Visitor\")");
 
+    // without override
+    mergedContents = new JavaMerger("", false).merge(baseFile,
+        FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+
+    assertThat(mergedContents).contains("@Entity");
+    assertThat(mergedContents).contains("@javax.persistence.Table(name=\"Visits\")");
   }
 
   /**
-   * Tests merging the property annotation into the baseFile
+   * Tests merging a property annotation into the baseFile
    *
    * @throws IOException shouldn't happen
    * @throws MergeException shouldn't happen either
@@ -549,11 +556,47 @@ public class JavaMergerTest {
     File baseFile = new File(testFileRootPath + "BaseFile_PropertyAnnotation.java");
     File patchFile = new File(testFileRootPath + "PatchFile_PropertyAnnotation.java");
 
-    String mergedContents = new JavaMerger("", true).merge(baseFile,
+    // with override
+    String mergedContents = new JavaMerger("", false).merge(baseFile,
+        FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+
+    assertThat(mergedContents).contains("@Column(name=\"USER\")");
+    assertThat(mergedContents).contains("@Column(name=\"NAME\")");
+
+    // without override
+
+    mergedContents = new JavaMerger("", true).merge(baseFile,
         FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
 
     assertThat(mergedContents).contains("@Column(name=  \"USERNAME\")");
     assertThat(mergedContents).contains("@Column(name=\"NAME\")");
 
+  }
+
+  /**
+   * Tests merging a Method annotation into the baseFile
+   *
+   * @throws IOException shouldn't happen
+   * @throws MergeException shouldn't happen either
+   */
+  @Test
+  public void testMergeMethodAnnotation() throws IOException, MergeException {
+
+    File baseFile = new File(testFileRootPath + "BaseFile_MethodAnnotation.java");
+    File patchFile = new File(testFileRootPath + "PatchFile_MethodAnnotation.java");
+
+    // with override
+    String mergedContents = new JavaMerger("", true).merge(baseFile,
+        FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+
+    assertThat(mergedContents).contains("@Column(name=\"USERNAME\")");
+    assertThat(mergedContents).contains("@Column(name=\"USER\")");
+
+    // without override
+    mergedContents = new JavaMerger("", false).merge(baseFile,
+        FileUtils.readFileToString(patchFile, StandardCharsets.UTF_8), "UTF-8");
+
+    assertThat(mergedContents).contains("@Column(name=\"NAME\")");
+    assertThat(mergedContents).contains("@Column(name=\"USER\")");
   }
 }
