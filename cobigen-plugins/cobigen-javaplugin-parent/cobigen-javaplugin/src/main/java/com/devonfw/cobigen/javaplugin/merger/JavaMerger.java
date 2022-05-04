@@ -10,6 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
@@ -17,6 +20,7 @@ import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
+import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
@@ -127,10 +131,24 @@ public class JavaMerger implements Merger {
    */
   private void mergeClassAnnotation(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
-    if (this.patchOverrides) {
-      baseClass.setAnnotations(patchClass.getAnnotations());
-    }
+    List<JavaAnnotation> baseAnnotations = this.patchOverrides ? patchClass.getAnnotations()
+        : baseClass.getAnnotations();
+    List<JavaAnnotation> patchAnnotations = this.patchOverrides ? baseClass.getAnnotations()
+        : patchClass.getAnnotations();
 
+    baseClass.setAnnotations(mergeAnnotation(baseAnnotations, patchAnnotations));
+
+  }
+
+  private List<JavaAnnotation> mergeAnnotation(List<JavaAnnotation> baseAnnotations,
+      List<JavaAnnotation> patchAnnotations) {
+
+    Set<String> annotationNames = baseAnnotations.stream().map(a -> a.getType().getName()).collect(Collectors.toSet());
+
+    List<JavaAnnotation> annotationsToMerge = patchAnnotations.stream()
+        .filter(a -> !annotationNames.contains(a.getType().getName())).collect(Collectors.toList());
+
+    return Stream.of(baseAnnotations, annotationsToMerge).flatMap(a -> a.stream()).collect(Collectors.toList());
   }
 
   /**
