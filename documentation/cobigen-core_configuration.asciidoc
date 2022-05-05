@@ -337,10 +337,10 @@ Given the `relocate` feature, you can even step out of the root path, which in g
 
 === Custom template-set groupIds for lookup
 
-You can specify template-sets so that it can provide custom template-sets and even restrict the teams to ask for default templates provided by CobiGen. There are Four custom template-sets attributes:
+You can specify template-sets so that it can provide custom template-sets and even restrict the teams to ask for default templates provided by CobiGen. There are `four` custom template-sets attributes:
 
 * `template-sets.groupIds`: Search for template-set artifacts by that configuration key
-configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `groupId` will be queried to allow public template-set lookup simultaneously.
+configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `groupId` will be used.
 
 * `template-sets.allow-snapshots=true`: Allow snapshots of template-sets to be offered for template-set development purposes. By default, no snapshots should be queried.
 

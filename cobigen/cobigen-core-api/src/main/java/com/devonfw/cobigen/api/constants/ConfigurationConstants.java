@@ -84,7 +84,7 @@ public class ConfigurationConstants {
   /**
    * Name of configuration key to disable by default querying of default public groupIds
    */
-  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP = "template-sets.disable-default-lookup";
+  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DISABLE_LOOKUP = "template-sets.disable-default-lookup";
 
   /**
    * Name of configuration key to hide very specific template sets

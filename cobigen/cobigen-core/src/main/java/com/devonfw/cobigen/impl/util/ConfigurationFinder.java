@@ -7,6 +7,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 
 /**
  * Utilities related to the cobigen configurations including:
@@ -30,41 +34,40 @@ public class ConfigurationFinder {
   private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFinder.class);
 
   /**
-   * check New Properties from a given property
+   * load properties from .properties file into TemplateSetConfiguration if found valid properties otherwise load
+   * default values
    *
-   * @param path
-   * @return prop
+   * @param path to a .properties file
+   * @return TemplateSetConfiguration instance
    */
-  public static Properties setDefaultTemplateSetConfigurations(Path path) {
+  public static TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
 
-    Properties props = readConfigurationFile(path);
+    Properties props = new Properties();
+    try {
+      props = readConfigurationFile(path);
+    } catch (CobiGenRuntimeException e) {
 
-    // 1. GroupIDs
+    }
+
     String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
-    if (props.getProperty(groupId) == null) {
-      // By default set only to (public) cobigen groupId
-      String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
-      props.setProperty(groupId, defaultGroupId);
-    }
-    // 2. Snapshots
     String snapshot = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS;
-    if (props.getProperty(snapshot) == null) {
-      // by default false
-      props.setProperty(snapshot, "false");
-    }
-    // 3. Lookup
-    String lookup = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_LOOKUP;
-    if (props.getProperty(lookup) == null) {
-      // by default false
-      props.setProperty(lookup, "false");
-    }
-    // 4. Hide
     String hide = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE;
-    if (props.getProperty(hide) == null) {
-      // by default null
-      props.setProperty(hide, "null");
-    }
-    return props;
+    String disableLookup = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DISABLE_LOOKUP;
+    String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
+
+    List<String> groupIdsList = (props.getProperty(groupId) != null)
+        ? Arrays.asList(props.getProperty(groupId).split(","))
+        : new ArrayList<>();
+    // Creating a new ArrayList object which can be modified
+    List<String> groupIds = new ArrayList<>(groupIdsList);
+    if (props.getProperty(disableLookup) == null || props.getProperty(disableLookup).equals("false"))
+      groupIds.add(defaultGroupId);
+
+    boolean useSnapshots = props.getProperty(snapshot) == null || props.getProperty(snapshot).equals("false") ? false
+        : true;
+    List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
+        : new ArrayList<>();
+    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
 
   }
 
@@ -135,6 +138,7 @@ public class ConfigurationFinder {
    * This is a helper method to read a given cobigen configuration file
    *
    * @param cobigenConfigFile cobigen configuration file
+   * @throws CobigenRuntimeException if the file isn't present
    * @return Properties containing configuration
    */
   private static Properties readConfigurationFile(Path cobigenConfigFile) {
