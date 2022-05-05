@@ -34,12 +34,14 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.OrikaSystemProperties;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-
+//import org.apache.maven.model.Model;
+//import org.apache.maven.model.Parent;
+//import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+//import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+//import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+/**
+ * Upgrader for the TemplateSets from v2_1 to v3_0 that splits the monolitic template structure
+ */
 public class TemplateSetUpgrader {
 
   private Path templatesLocation;
@@ -103,6 +105,8 @@ public class TemplateSetUpgrader {
     } else {
       LOG.info("The path {} is no valid templates location.", this.templatesLocation);
     }
+
+    // Backup of old Folder
   }
 
   /**
@@ -172,36 +176,36 @@ public class TemplateSetUpgrader {
     try{
     	Marshaller marshaller = JAXBContext.newInstance("com.devonfw.cobigen.impl.config.entity.io.v3_0").createMarshaller();
     	marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-    	marshaller.marshal(contextConfiguration, new File(newContextPath.toString()));
+    	marshaller.marshal(contextConfiguration, newContextPath.toFile());
     }catch(JAXBException e) {
     	e.printStackTrace();
     }
-    String pomArtifactID = trigger.getId();
-    MavenXpp3Reader reader = new MavenXpp3Reader();
-    MavenXpp3Writer writer = new MavenXpp3Writer();
-    File f = new File(cobigenTemplates.toString()+"/pom.xml");
-    try {
-		Model mParent = reader.read(new FileInputStream(f));
-		Model m = new Model();
-		System.out.println(m.getArtifactId());
-		Parent p = new Parent();
-		p.setRelativePath(f.getPath());
-		m.setParent(p); //
-		m.setArtifactId(pomArtifactID);
-		m.setGroupId(p.getGroupId());
-		m.setName("Hier sollt ein geeigneter Name stehen"); // TODO User Info geben oder Namen bestimmen lassen.
-		m.setPomFile(new File(cobigenTemplates.toString()+"/pom2.xml"));
-		writer.write(new FileOutputStream(new File(cobigenTemplates.toString()+"/pom2.xml")), m);
-	} catch (FileNotFoundException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (XmlPullParserException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+
+    // Pom.xml creation
+//    MavenXpp3Reader reader = new MavenXpp3Reader();
+//    MavenXpp3Writer writer = new MavenXpp3Writer();
+//    try {
+//		Model mMonolithicPom = reader.read(new FileInputStream(cobigenTemplates.resolve("/pom.xml").toFile()));
+//		Model m = new Model();
+//		Parent p = new Parent();
+//		p.setArtifactId(mMonolithicPom.getArtifactId());
+//		p.setGroupId(mMonolithicPom.getGroupId());
+//		p.setVersion(mMonolithicPom.getVersion());
+//		m.setParent(p);
+//		m.setDependencies(mMonolithicPom.getDependencies());
+//		m.setArtifactId(trigger.getId().replace('_', '-'));
+//		m.setName("Hier sollt ein geeigneter Name stehen"); // TODO User Info geben oder Namen bestimmen lassen.
+//		writer.write(new FileOutputStream(templateSetPath.resolve("/pom.xml").toFile()), m);
+//	} catch (FileNotFoundException e) {
+//		LOG.error("");
+//		e.printStackTrace();
+//	} catch (IOException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	} catch (XmlPullParserException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+	//}
 
 
   }

@@ -12,7 +12,8 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
- * This class encompasses all logic for legacy context configuration detection and upgrading these to the latest
+ * This class encompasses all logic for legacy context configuration detection
+ * and upgrading these to the latest
  * supported version.
  *
  * @author mbrunnli (Jun 22, 2015)
@@ -73,6 +74,9 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         upgradedConfig_3_0.setVersion(new BigDecimal("3.0"));
 
         result.setResultConfigurationJaxbRootNode(upgradedConfig_3_0);
+
+        // TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(ConfigurationConstants.DEFAULT_HOME);
+        // templateSetUpgrader.upradeTemplatesToTemplateSets();
         break;
       default:
         throw new NotYetSupportedException(
