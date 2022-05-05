@@ -128,8 +128,8 @@ public class JavaMerger implements Merger {
   }
 
   /**
-   * @param baseAnnotations {@link JavaClass}
-   * @param patchAnnotations {@link JavaClass}
+   * @param baseAnnotations {@link JavaClass} a List of annotations originate from the base class
+   * @param patchAnnotations {@link JavaClass} a List of annotations originate from the patch class
    */
   private List<JavaAnnotation> mergeAnnotation(List<JavaAnnotation> baseAnnotations,
       List<JavaAnnotation> patchAnnotations) {
