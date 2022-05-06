@@ -141,6 +141,10 @@ public class EclipseCobiGenUtils {
     input.contextMenu("CobiGen").menu("Generate...").click();
     bot.waitUntil(new AnyShellIsActive(expectedErrorTitle), defaultTimeout);
 
+    takeScreenshot(bot, "InvalidConfigurationDialog");
+
+    bot.waitUntil(new AllJobsAreFinished(), 10000);
+
     SWTBotButton finishButton = bot.button(IDialogConstants.OK_LABEL);
     bot.waitUntil(widgetIsEnabled(bot.button()));
     finishButton.click();

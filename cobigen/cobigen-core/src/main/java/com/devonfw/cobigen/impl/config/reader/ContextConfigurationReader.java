@@ -91,7 +91,7 @@ public class ContextConfigurationReader {
       }
     } else {
       Path subConfigRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-      if (Files.exists(subConfigRoot)) {
+      if (Files.isDirectory(subConfigRoot)) {
         checkForConflict(subConfigRoot, contextFile);
       }
       this.contextFiles.add(contextFile);
