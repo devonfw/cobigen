@@ -11,13 +11,11 @@ import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
-import com.devonfw.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
@@ -29,10 +27,6 @@ public class ExceptionHandlingTest extends SystemTest {
 
   /** Root path of the Test Resources */
   private static final String resourcesRootPath = "src/main/resources/ExceptionHandlingTest/";
-
-  /** Rule for creating temporary {@link IJavaProject}s per test. */
-  @Rule
-  public TmpMavenProjectRule tmpMavenProjectRule2 = new TmpMavenProjectRule();
 
   /**
    * Setup workbench appropriately for tests
