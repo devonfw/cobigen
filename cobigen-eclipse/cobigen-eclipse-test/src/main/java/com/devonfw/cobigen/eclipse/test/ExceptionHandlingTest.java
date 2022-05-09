@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
-import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
@@ -73,7 +72,6 @@ public class ExceptionHandlingTest extends SystemTest {
 
     // execute CobiGen
     EclipseCobiGenUtils.processCobiGenWithExpectedError(bot, javaClassItem, "Invalid context configuration!");
-    bot.waitUntil(new AllJobsAreFinished(), 10000);
   }
 
 }

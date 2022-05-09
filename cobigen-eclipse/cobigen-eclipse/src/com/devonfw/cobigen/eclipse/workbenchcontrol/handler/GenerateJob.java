@@ -103,10 +103,7 @@ public class GenerateJob implements IRunnableWithProgress {
         }
       });
     } catch (Throwable e) {
-      PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
-        ExceptionHandler.handle(e, HandlerUtil.getActiveShell(this.event));
-      });
-
+      ExceptionHandler.handle(e, HandlerUtil.getActiveShell(this.event));
     }
 
     MDC.remove(InfrastructureConstants.CORRELATION_ID);

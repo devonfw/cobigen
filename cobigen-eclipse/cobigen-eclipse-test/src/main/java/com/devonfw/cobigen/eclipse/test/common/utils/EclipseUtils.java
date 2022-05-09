@@ -187,7 +187,7 @@ public class EclipseUtils {
         }
         break;
       } catch (Exception e) {
-        LOG.debug("An error occured while trying to delete project: {} {}", projectName, e);
+        LOG.debug("An error occured while trying to delete project: {}", projectName, e);
         Thread.sleep(500);
         if (i == maxRetries) {
           LOG.debug("Not able to cleanup the workspace after: {} retries", maxRetries);

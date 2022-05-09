@@ -143,8 +143,6 @@ public class EclipseCobiGenUtils {
 
     takeScreenshot(bot, "InvalidConfigurationDialog");
 
-    bot.waitUntil(new AllJobsAreFinished(), 10000);
-
     SWTBotButton finishButton = bot.button(IDialogConstants.OK_LABEL);
     bot.waitUntil(widgetIsEnabled(bot.button()));
     finishButton.click();
