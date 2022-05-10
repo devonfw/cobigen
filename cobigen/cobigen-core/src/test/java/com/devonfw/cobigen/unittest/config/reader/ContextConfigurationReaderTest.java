@@ -3,7 +3,6 @@ package com.devonfw.cobigen.unittest.config.reader;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
-import java.io.File;
 import java.nio.file.Paths;
 
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
-    new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
+    new ContextConfigurationReader(Paths.get(testFileRootPath + "faulty"));
   }
 
   /**
@@ -52,7 +51,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   public void testConflictConfiguration() throws ConfigurationConflictException {
 
     Throwable bothPresent = assertThrows(ConfigurationConflictException.class, () -> {
-      new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "invalid_new").toURI()));
+      new ContextConfigurationReader(Paths.get(testFileRootPath + "invalid_new"));
     });
 
     assertThat(bothPresent instanceof ConfigurationConflictException);
@@ -67,7 +66,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testContextLoadedFromNewConfiguration() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid_new").toURI());
+    CobiGenFactory.create(Paths.get(testFileRootPath + "valid_new").toUri());
   }
 
   /**
@@ -77,8 +76,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testNewConfiguration() {
 
-    ContextConfigurationReader context = new ContextConfigurationReader(
-        Paths.get(new File(testFileRootPath + "valid_new").toURI()));
+    ContextConfigurationReader context = new ContextConfigurationReader(Paths.get(testFileRootPath + "valid_new"));
     assertThat(context.getContextFiles().size()).isEqualTo(2);
   }
 
@@ -92,7 +90,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testContextLoadedFromOldConfiguration() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI());
+    CobiGenFactory.create(Paths.get(testFileRootPath + "valid_source_folder").toUri());
   }
 
   /**
@@ -105,7 +103,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   public void testOldConfiguration() {
 
     ContextConfigurationReader context = new ContextConfigurationReader(
-        Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
+        Paths.get(testFileRootPath + "valid_source_folder"));
     assertThat(context.getContextFiles().size()).isEqualTo(1);
   }
 
@@ -117,7 +115,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testReadConfigurationFromZip() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
+    CobiGenFactory.create(Paths.get(testFileRootPath + "valid.zip").toUri());
   }
 
 }
