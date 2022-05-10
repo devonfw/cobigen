@@ -3,6 +3,7 @@ package com.devonfw.cobigen.unittest.config.upgrade;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +57,7 @@ import com.google.common.collect.Lists;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.SchemaOutputResolver;
 import jakarta.xml.bind.UnmarshalException;
 import jakarta.xml.bind.Unmarshaller;
 
@@ -64,91 +66,132 @@ import jakarta.xml.bind.Unmarshaller;
  */
 public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
-  /** Root path to all resources used in this test case */
-  private static String testFileRootPath = "src/test/resources/testdata/unittest/config/upgrade/TemplateSetUpgraderTest/";
+	/** Root path to all resources used in this test case */
+	private static String testFileRootPath = "src/test/resources/testdata/unittest/config/upgrade/TemplateSetUpgraderTest/";
 
-  private Path templateLocation;
+	/** Path to the template folder */
+	private Path templateLocation;
 
-  /** JUnit Rule to create and automatically cleanup temporarily files/folders */
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
+	/** JUnit Rule to create and automatically cleanup temporarily files/folders */
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  @Before
-  public void prepare() throws IOException {
+	@Before
+	public void prepare() throws IOException {
 
-    Path playground = this.tempFolder.newFolder("playground").toPath();
-    FileUtils.copyDirectory(new File(testFileRootPath), playground.toFile());
-    this.templateLocation = playground.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
-  }
-
-  @Test
-  public void testTemplateSetUpgrade() throws Exception {
-
-    TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
-    templateSetUpgrader.upradeTemplatesToTemplateSets();
-
-    Path templateSetsPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-    assertThat(templateSetsPath).exists();
-    assertThat(templateSetsAdapted).exists();
-    // hier noch besser testen
-
-  }
-
-  @Test
-  public void testTemplateSetUpgradeCopyOfTemplates() throws Exception {
-
-	  TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
-	  templateSetUpgrader.upradeTemplatesToTemplateSets();
-
-	  Path oldTemplatesPath = this.templateLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-	  oldTemplatesPath = oldTemplatesPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-	  Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-	  newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-	  assertEquals(oldTemplatesPath.toFile().list().length, newTemplatesPath.toFile().list().length +1);
-	  Set<String> OldPathFilesSet= new HashSet<>(Arrays.asList(oldTemplatesPath.toFile().list()));
-	  Set<String> NewPathFilesSet= new HashSet<>(Arrays.asList(newTemplatesPath.toFile().list()));
-	  OldPathFilesSet.remove("context.xml");
-	  for(String s: OldPathFilesSet) {
-		  assertTrue(NewPathFilesSet.contains(s));
-		  NewPathFilesSet.remove(s);
-	  }
-	  assertEquals(NewPathFilesSet.size(), 0);
-  }
-
-
-  public void testTemplateSetUpgradeContextLocation() throws Exception{
-	  TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
-	  templateSetUpgrader.upradeTemplatesToTemplateSets();
-
-	  Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-	  newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-	  for(String s: newTemplatesPath.toFile().list()) {
-		  Path newContextPath = newTemplatesPath.resolve(s+"/"+ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-		  Set<String> NewPathFilesSet= new HashSet<>(Arrays.asList(newContextPath.toFile().list()));
-		  assertTrue(NewPathFilesSet.contains(s));
+		Path playground = this.tempFolder.newFolder("playground").toPath();
+		FileUtils.copyDirectory(new File(testFileRootPath), playground.toFile());
+		this.templateLocation = playground.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
 	}
-  }
 
-  @Test
-  public void testTemplateSetUpgradeContextSplit() throws Exception{
-	  TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
-	  templateSetUpgrader.upradeTemplatesToTemplateSets();
+	/**
+	 * Test the correct folder creation //TODO
+	 * @throws Exception
+	 */
+	@Test
+	public void testTemplateSetUpgrade() throws Exception {
 
-	  Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-	  newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
+		templateSetUpgrader.upradeTemplatesToTemplateSets();
 
-	  SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-	  //ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest(); es wird ja immer version 3.0 gecheckt
-	  InputStream schemaStream = getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd");
-	  Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
-	  Validator validator = schema.newValidator();
+		Path templateSetsPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+		Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+		assertThat(templateSetsPath).exists();
+		assertThat(templateSetsAdapted).exists();
+		// hier noch besser testen //TODO
 
-	  for(String s: newTemplatesPath.toFile().list()) {
-		  Path newContextPath = newTemplatesPath.resolve(s+"/"+ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-		  newContextPath = newContextPath.resolve("context.xml");
-		  assertThat(newContextPath.toFile().exists());
-		  validator.validate(new StreamSource(newContextPath.toFile()));
-	  }
-  }
+	}
+
+	/**
+	 * Tests if the Template files are copied correct into the new template set and into the backup folder
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testTemplateSetUpgradeCopyOfTemplates() throws Exception {
+		// save the data from templates Folder
+		Path oldTemplatesPath = this.templateLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
+				.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+		int OldTemplatesFileCount = oldTemplatesPath.toFile().list().length;
+		Set<String> OldPathFilesSet = new HashSet<>(Arrays.asList(oldTemplatesPath.toFile().list()));
+
+		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
+		templateSetUpgrader.upradeTemplatesToTemplateSets();
+
+
+		Path backupPath = this.templateLocation.getParent().resolve("backup")
+				.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+				.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
+				.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+		Set<String> backupPathFilesSet = new HashSet<>(Arrays.asList(backupPath.toFile().list()));
+		Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
+				.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+		Set<String> NewPathFilesSet = new HashSet<>(Arrays.asList(newTemplatesPath.toFile().list()));
+
+		assertEquals(OldTemplatesFileCount -1, NewPathFilesSet.size());
+		assertEquals(OldTemplatesFileCount, backupPathFilesSet.size());
+
+		for (String s : OldPathFilesSet) {
+			if(! s.equals("context.xml"))
+			{
+				assertTrue(NewPathFilesSet.contains(s));
+				NewPathFilesSet.remove(s);
+			}
+			assertTrue(backupPathFilesSet.contains(s));
+			backupPathFilesSet.remove(s);
+
+		}
+		assertEquals(NewPathFilesSet.size(), 0);
+		assertEquals(backupPathFilesSet.size(), 0);
+	}
+
+//  @Test
+//  public void testTemplateSetUpgradeContextLocation() throws Exception{
+//	  TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
+//	  templateSetUpgrader.upradeTemplatesToTemplateSets();
+//
+//	  Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+//	  newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+//	  for(String s: newTemplatesPath.toFile().list()) {
+//		  Path newContextPath = newTemplatesPath.resolve(s+"/"+ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+//		  Set<String> NewPathFilesSet= new HashSet<>(Arrays.asList(newContextPath.toFile().list()));
+//		  assertTrue(NewPathFilesSet.contains(s));
+//	}
+//  }
+
+	/**
+	 * Tests the correct location for the created context.xml and if the files and whether the file corresponds to the v3.0 schema
+	 * @throws Exception
+	 */
+	@Test
+	public void testTemplateSetUpgradeContextSplit() throws Exception {
+		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
+		templateSetUpgrader.upradeTemplatesToTemplateSets();
+
+		Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+		newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+
+		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		InputStream schemaStream = getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd");
+		StreamSource schemaSourceStream = new StreamSource(schemaStream);
+		Schema schema = schemaFactory.newSchema(schemaSourceStream);
+		Validator validator = schema.newValidator();
+
+		for (String s : newTemplatesPath.toFile().list()) {
+			Path newContextPath = newTemplatesPath.resolve(s + "/" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+			newContextPath = newContextPath.resolve("context.xml");
+			assertThat(newContextPath.toFile().exists());
+			StreamSource contextStream = new StreamSource(newContextPath.toFile());
+			try {
+				validator.validate(contextStream);
+			} catch (SAXException e) {
+				fail("Exception show that validator has found an fault");
+				contextStream.getInputStream().close();
+				schemaStream.close();
+			}
+
+		}
+		schemaStream.close();
+	}
 }
+	// Teste ob alle Dependencies da sind, utils ressources da sind und pom muss da mit src main java

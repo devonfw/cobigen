@@ -201,7 +201,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
         }
         if (currentVersion == this.versions[i]) {
           LOG.info("Upgrading {} '{}' from version {} to {}...", this.configurationName, configurationFile.toUri(),
-              this.versions[i], this.versions[i + 1]);
+              this.versions[i], this.versions[i + 1]); // TODO
 
           Object rootNode;
           try {

@@ -75,8 +75,8 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
 
         result.setResultConfigurationJaxbRootNode(upgradedConfig_3_0);
 
-        // TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(ConfigurationConstants.DEFAULT_HOME);
-        // templateSetUpgrader.upradeTemplatesToTemplateSets();
+        TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(ConfigurationConstants.DEFAULT_HOME);
+        templateSetUpgrader.upradeTemplatesToTemplateSets();
         break;
       default:
         throw new NotYetSupportedException(
