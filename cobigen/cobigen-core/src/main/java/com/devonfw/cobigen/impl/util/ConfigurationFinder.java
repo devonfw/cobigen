@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
@@ -45,8 +45,8 @@ public class ConfigurationFinder {
     Properties props = new Properties();
     try {
       props = readConfigurationFile(path);
-    } catch (CobiGenRuntimeException e) {
-
+    } catch (InvalidConfigurationException e) {
+      LOG.info("This path {" + path + "} is invalid. The Default Config values will be loaded instead.", e.toString());
     }
 
     String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
@@ -58,7 +58,7 @@ public class ConfigurationFinder {
     List<String> groupIdsList = (props.getProperty(groupId) != null)
         ? Arrays.asList(props.getProperty(groupId).split(","))
         : new ArrayList<>();
-    // Creating a new ArrayList object which can be modified
+    // Creating a new ArrayList object which can be modified and prevents UnsupportedOperationException.
     List<String> groupIds = new ArrayList<>(groupIdsList);
     if (props.getProperty(disableLookup) == null || props.getProperty(disableLookup).equals("false"))
       groupIds.add(defaultGroupId);
@@ -67,8 +67,8 @@ public class ConfigurationFinder {
         : true;
     List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
         : new ArrayList<>();
-    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
 
+    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
   }
 
   /**
@@ -152,7 +152,7 @@ public class ConfigurationFinder {
         props.load(strReader);
       }
     } catch (IOException e) {
-      throw new CobiGenRuntimeException("An error occured while reading the config file " + cobigenConfigFile, e);
+      throw new InvalidConfigurationException("An error occured while reading the config file " + cobigenConfigFile, e);
     }
     return props;
   }
