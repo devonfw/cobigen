@@ -82,7 +82,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   }
 
   @Test
-  public void testTemplateSetUprade() throws Exception {
+  public void testTemplateSetUpgrade() throws Exception {
 
     TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
     templateSetUpgrader.upradeTemplatesToTemplateSets();
@@ -91,8 +91,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
     Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     assertThat(templateSetsPath).exists();
     assertThat(templateSetsAdapted).exists();
-    System.out.println("Test ist zuende");
-
+    // hier noch besser testen
 
   }
 
@@ -139,17 +138,17 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 	  Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
 	  newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
-//	  SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-//	  ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
-//	  InputStream schemaStream = getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd"); // hier vielleicht nicht immer auf 3.0 überprüfen
-//	  Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
-//	  Validator validator = schema.newValidator();
+	  SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+	  //ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest(); es wird ja immer version 3.0 gecheckt
+	  InputStream schemaStream = getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd");
+	  Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+	  Validator validator = schema.newValidator();
 
 	  for(String s: newTemplatesPath.toFile().list()) {
 		  Path newContextPath = newTemplatesPath.resolve(s+"/"+ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 		  newContextPath = newContextPath.resolve("context.xml");
 		  assertThat(newContextPath.toFile().exists());
-		  //validator.validate(new StreamSource(newContextPath.toFile()));
+		  validator.validate(new StreamSource(newContextPath.toFile()));
 	  }
   }
 }
