@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
@@ -38,23 +39,23 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests whether an {@link InvalidConfigurationException} will be thrown when both a v2.1 and v2.2 context.xml are
+   * Tests whether an {@link ConfigurationConflictException} will be thrown when both a v2.1 and v2.2 context.xml are
    * present (new templates with old custom templates). Also tests if the thrown error message contains a link to the
    * wiki.
    *
    * Backward Compatibility test, remove when monolithic context.xml is deprecated.
    *
-   * @throws InvalidConfigurationException if a conflict occurred
+   * @throws ConfigurationConflictException if a conflict occurred
    *
    */
   @Test
-  public void testConflictConfiguration() throws InvalidConfigurationException {
+  public void testConflictConfiguration() throws ConfigurationConflictException {
 
-    Throwable bothPresent = assertThrows(InvalidConfigurationException.class, () -> {
+    Throwable bothPresent = assertThrows(ConfigurationConflictException.class, () -> {
       new ContextConfigurationReader(Paths.get(new File(testFileRootPath + "invalid_new").toURI()));
     });
 
-    assertThat(bothPresent instanceof InvalidConfigurationException);
+    assertThat(bothPresent instanceof ConfigurationConflictException);
     assertThat(bothPresent.getMessage()).contains(WikiConstants.WIKI_UPDATE_OLD_CONFIG);
   }
 

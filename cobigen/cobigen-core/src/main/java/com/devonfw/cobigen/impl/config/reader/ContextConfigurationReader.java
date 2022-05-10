@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
@@ -111,7 +112,7 @@ public class ContextConfigurationReader {
   private void checkForConflict(Path configRoot, Path contextFile) {
 
     if (!loadContextFilesInSubfolder(configRoot).isEmpty())
-      throw new InvalidConfigurationException(contextFile,
+      throw new ConfigurationConflictException(contextFile,
           "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
               + WikiConstants.WIKI_UPDATE_OLD_CONFIG);
   }

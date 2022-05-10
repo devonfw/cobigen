@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.HealthCheck;
 import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
@@ -106,6 +107,11 @@ public class HealthCheckDialog {
           + "=> Please import the configuration project into your workspace as stated in the "
           + "documentation of CobiGen or in the one of your project.";
       PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
+    } catch (ConfigurationConflictException e) {
+      healthyCheckMessage = "An unexpected error occurred! Templates were in a conflicted state.";
+      healthyCheckMessage += "\n\nNo automatic upgrade of the context configuration possible.";
+      PlatformUIUtil.openErrorDialog(healthyCheckMessage, e);
+      LOG.error(healthyCheckMessage, e);
     } catch (InvalidConfigurationException e) {
       // Won't be reached anymore
       healthyCheckMessage = firstStep + "OK.";
@@ -226,7 +232,7 @@ public class HealthCheckDialog {
 
   /**
    * Performs a HealthCheckReport on CobiGen_Templates in workspace or on latest templates jar.
-   * 
+   *
    * @return HealthCheckReport the {@link HealthCheckReport} created by the HealthCheck
    * @throws GeneratorProjectNotExistentException if no generator configuration project called
    * @throws CoreException if an existing generator configuration project could not be opened
