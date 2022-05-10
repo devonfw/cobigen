@@ -75,17 +75,14 @@ public class PlatformUIUtil {
    */
   public static void openErrorDialog(final String message, final Throwable cause) {
 
-    getWorkbench().getDisplay().syncExec(new Runnable() {
-      @Override
-      public void run() {
+    getWorkbench().getDisplay().syncExec(() -> {
 
-        if (cause == null) {
-          MessageDialog.openError(Display.getDefault().getActiveShell(), CobiGenDialogConstants.DIALOG_TITLE_ERROR,
-              message);
-        } else {
-          LinkErrorDialog.openError(Display.getDefault().getActiveShell(), CobiGenDialogConstants.DIALOG_TITLE_ERROR,
-              message, createMultiStatus(cause));
-        }
+      if (cause == null) {
+        MessageDialog.openError(Display.getDefault().getActiveShell(), CobiGenDialogConstants.DIALOG_TITLE_ERROR,
+            message);
+      } else {
+        LinkErrorDialog.openError(Display.getDefault().getActiveShell(), CobiGenDialogConstants.DIALOG_TITLE_ERROR,
+            message, createMultiStatus(cause));
       }
     });
 
