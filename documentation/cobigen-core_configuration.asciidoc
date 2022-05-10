@@ -342,12 +342,20 @@ You can specify template-sets so that it can provide custom template-sets and ev
 * `template-sets.groupIds`: Search for template-set artifacts by that configuration key
 configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `groupId` will be used.
 
-* `template-sets.allow-snapshots=true`: Allow snapshots of template-sets to be offered for template-set development purposes. By default, no snapshots should be queried.
+* `template-sets.allow-snapshots`: Allow snapshots of template-sets to be offered for template-set development purposes. By default, no snapshots should be queried.
 
-* `template-sets.disable-default-lookup=false`: Disable by default querying of default public `groupIds` configured in CobiGen.
+* `template-sets.disable-default-lookup`: Disable by default querying of default public `groupIds` configured in CobiGen.
 
 * `template-sets.hide:` Hide very specific template sets or versions of template sets.
 
+* An example of how such a configuration should look like:
+
+```
+template-sets.groupIds=com.devonfw.cobigen,jaxen,jakarta.xml.bind
+template-sets.allow-snapshots=true
+template-sets.disable-default-lookup=false
+template-sets.hide=com.devonfw(:test-artifact(:3.2.1-SNAPSHOT))
+```
 
 == Basic Template Model
 

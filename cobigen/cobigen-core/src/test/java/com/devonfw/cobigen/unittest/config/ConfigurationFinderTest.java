@@ -21,12 +21,11 @@ public class ConfigurationFinderTest {
    * values.
    */
   @Test
-  public void invalidConfigurationTest() {
+  public void emptyConfigurationTest() {
 
-    Path path = Paths.get(
-        "src/test/resources/testdata/unittest/config/entity/TemplatePathTest/tree/having/properties/cobigen.properties");
-
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(path);
+    Path emptyConfiguration = Paths
+        .get("src/test/resources/testdata/unittest/config/properties/emptyConfigProperties/config.properties");
+    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(emptyConfiguration);
 
     assertThat(conf.getGroupIds()).contains("com.devonfw.cobigen");
     assertThat(conf.getHideTemplates()).isEmpty();
@@ -40,14 +39,13 @@ public class ConfigurationFinderTest {
   @Test
   public void validConfigurationTest() {
 
-    Path path = Paths.get("src/test/resources/testdata/unittest/config/config.properties");
-
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(path);
+    Path validConfiguration = Paths
+        .get("src/test/resources/testdata/unittest/config/properties/validConfigProperties/config.properties");
+    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration);
 
     assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob", "com.devonfw.cobigen");
     assertThat(conf.isAllowSnapshots()).isTrue();
     assertThat(conf.getHideTemplates()).contains("com.devonfw(:test-artifact(:3.2.1-SNAPSHOT))");
-
   }
 
   /**
@@ -56,15 +54,13 @@ public class ConfigurationFinderTest {
    *
    */
   @Test
-  public void noConfigurationTest() {
+  public void invalidPathTest() {
 
-    Path path = Paths.get("src/test/resources/testdata/unittest/config/fileWhichDoesNotExist");
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(path);
+    Path invalidPath = Paths.get("path/which/does/not/exist");
+    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath);
 
     assertThat(conf.getGroupIds()).contains("com.devonfw.cobigen");
     assertThat(conf.getHideTemplates()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
-
   }
-
 }
