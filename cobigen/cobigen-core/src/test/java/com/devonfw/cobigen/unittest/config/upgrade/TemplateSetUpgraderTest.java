@@ -109,7 +109,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 	 */
 	@Test
 	public void testTemplateSetUpgradeCopyOfTemplates() throws Exception {
-		// save the data from templates Folder
+
 		Path oldTemplatesPath = this.templateLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
 				.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 		int OldTemplatesFileCount = oldTemplatesPath.toFile().list().length;

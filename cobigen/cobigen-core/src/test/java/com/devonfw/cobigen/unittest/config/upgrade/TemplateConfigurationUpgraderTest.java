@@ -36,7 +36,7 @@ public class TemplateConfigurationUpgraderTest extends AbstractUnitTest {
    *
    * @throws Exception test fails
    */
-  @Ignore
+
   @Test
   public void testCorrectUpgrade_v1_2_TO_LATEST() throws Exception {
 
@@ -71,7 +71,6 @@ public class TemplateConfigurationUpgraderTest extends AbstractUnitTest {
    *
    * @throws Exception test fails
    */
-  @Ignore
   @Test
   public void testCorrectUpgrade_v2_1_TO_LATEST() throws Exception {
 
