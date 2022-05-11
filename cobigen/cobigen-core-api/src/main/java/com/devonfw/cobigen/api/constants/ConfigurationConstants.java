@@ -94,7 +94,7 @@ public class ConfigurationConstants {
   /**
    * Default (public) cobigen GroupId
    */
-  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID = "com.devonfw.cobigen";
+  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID = "com.devonfw.cobigen.templates";
 
   // cobigen configuration environment variables
 

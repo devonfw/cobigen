@@ -351,7 +351,7 @@ configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `g
 * An example of how such a configuration should look like:
 
 ```
-template-sets.groupIds=com.devonfw.cobigen,jaxen,jakarta.xml.bind
+template-sets.groupIds=com.devonfw.cobigen.templates,jaxen,jakarta.xml.bind
 template-sets.allow-snapshots=true
 template-sets.disable-default-lookup=false
 template-sets.hide=com.devonfw(:test-artifact(:3.2.1-SNAPSHOT))

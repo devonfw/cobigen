@@ -46,7 +46,7 @@ public class ConfigurationFinder {
     try {
       props = readConfigurationFile(path);
     } catch (InvalidConfigurationException e) {
-      LOG.info("This path {" + path + "} is invalid. The Default Config values will be loaded instead.", e.toString());
+      LOG.info("This path {} is invalid. The default Config values will be loaded instead.", path);
     }
 
     String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
@@ -138,7 +138,7 @@ public class ConfigurationFinder {
    * This is a helper method to read a given cobigen configuration file
    *
    * @param cobigenConfigFile cobigen configuration file
-   * @throws CobigenRuntimeException if the file isn't present
+   * @throws InvalidConfigurationException if the file isn't present or the path is invalid
    * @return Properties containing configuration
    */
   private static Properties readConfigurationFile(Path cobigenConfigFile) {

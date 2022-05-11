@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
@@ -27,7 +28,7 @@ public class ConfigurationFinderTest {
         .get("src/test/resources/testdata/unittest/config/properties/emptyConfigProperties/config.properties");
     TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(emptyConfiguration);
 
-    assertThat(conf.getGroupIds()).contains("com.devonfw.cobigen");
+    assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.getHideTemplates()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
   }
@@ -43,7 +44,8 @@ public class ConfigurationFinderTest {
         .get("src/test/resources/testdata/unittest/config/properties/validConfigProperties/config.properties");
     TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration);
 
-    assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob", "com.devonfw.cobigen");
+    assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob",
+        ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.isAllowSnapshots()).isTrue();
     assertThat(conf.getHideTemplates()).contains("com.devonfw(:test-artifact(:3.2.1-SNAPSHOT))");
   }
@@ -59,7 +61,7 @@ public class ConfigurationFinderTest {
     Path invalidPath = Paths.get("path/which/does/not/exist");
     TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath);
 
-    assertThat(conf.getGroupIds()).contains("com.devonfw.cobigen");
+    assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.getHideTemplates()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
   }
