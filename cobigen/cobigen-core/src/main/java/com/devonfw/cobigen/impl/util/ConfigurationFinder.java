@@ -61,7 +61,8 @@ public class ConfigurationFinder {
     // Creating a new ArrayList object which can be modified and prevents UnsupportedOperationException.
     List<String> groupIds = new ArrayList<>(groupIdsList);
     if (props.getProperty(disableLookup) == null || props.getProperty(disableLookup).equals("false"))
-      groupIds.add(defaultGroupId);
+      if (!groupIds.contains(defaultGroupId))
+        groupIds.add(defaultGroupId);
 
     boolean useSnapshots = props.getProperty(snapshot) == null || props.getProperty(snapshot).equals("false") ? false
         : true;
