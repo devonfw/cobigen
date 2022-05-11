@@ -38,7 +38,6 @@ public class ExceptionHandler {
       LOG.warn("Invalid configuration.", e);
       openInvalidConfigurationErrorDialog((InvalidConfigurationException) e);
     } else if (ConfigurationConflictException.class.isAssignableFrom(e.getClass())) {
-      LOG.warn("Conflicted configuration.", e);
       openInvalidConfigurationErrorDialog((ConfigurationConflictException) e);
     } else if (GeneratorProjectNotExistentException.class.isAssignableFrom(e.getClass())) {
       LOG.error(
