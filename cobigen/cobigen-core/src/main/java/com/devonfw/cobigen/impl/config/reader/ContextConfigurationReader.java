@@ -18,10 +18,13 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
@@ -54,6 +57,9 @@ public class ContextConfigurationReader {
 
   /** Root of the context configuration file, used for passing to ContextConfiguration */
   private Path contextRoot;
+
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
   /**
    * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given context file
@@ -103,17 +109,21 @@ public class ContextConfigurationReader {
   }
 
   /**
-   * Checks if conflict with old and modular configuration exists
+   * Checks if a conflict with the old and modular configuration exists
    *
    * @param configRoot Path to root directory of the configuration
    * @param contextFile Path to context file of the configuration
    */
   private void checkForConflict(Path configRoot, Path contextFile) {
 
-    if (!loadContextFilesInSubfolder(configRoot).isEmpty())
-      throw new InvalidConfigurationException(contextFile,
-          "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
-              + WikiConstants.WIKI_UPDATE_OLD_CONFIG);
+    if (!loadContextFilesInSubfolder(configRoot).isEmpty()) {
+      String message = "You are using an old configuration of the templates in addition to new ones. Please make sure this is not the case as both at the same time are not supported. For more details visit this wiki page: "
+          + WikiConstants.WIKI_UPDATE_OLD_CONFIG;
+      ConfigurationConflictException exception = new ConfigurationConflictException(contextFile, message);
+      LOG.error("A conflict with the old and modular configuration exists", exception);
+      throw exception;
+    }
+
   }
 
   /**
