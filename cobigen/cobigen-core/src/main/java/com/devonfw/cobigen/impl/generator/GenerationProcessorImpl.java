@@ -562,7 +562,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
   }
 
   /**
-   * Builds the model for the given input.
+   * Builds the model for he given input.
    *
    * @param triggerInterpreter {@link TriggerInterpreter} to be used
    * @param trigger activated {@link Trigger}

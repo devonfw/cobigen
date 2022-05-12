@@ -71,31 +71,6 @@ public class ConfigurationConstants {
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_PATH = "template-sets";
 
-  /**
-   * Name of configuration key to be able to configure multiple (comma separated) groupIds
-   */
-  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS = "template-sets.groupIds";
-
-  /**
-   * Name of configuration key to allow snapshots of template-sets to be offered
-   */
-  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS = "template-sets.allow-snapshots";
-
-  /**
-   * Name of configuration key to disable by default querying of default public groupIds
-   */
-  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DISABLE_LOOKUP = "template-sets.disable-default-lookup";
-
-  /**
-   * Name of configuration key to hide very specific template sets
-   */
-  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_HIDE = "template-sets.hide";
-
-  /**
-   * Default (public) cobigen GroupId
-   */
-  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID = "com.devonfw.cobigen.templates";
-
   // cobigen configuration environment variables
 
   /** Name of the environment variable pointing to cobigen configuration file */
