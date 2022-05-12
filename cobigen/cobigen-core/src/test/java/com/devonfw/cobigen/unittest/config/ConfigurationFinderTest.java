@@ -47,7 +47,7 @@ public class ConfigurationFinderTest {
     assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob",
         ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.isAllowSnapshots()).isTrue();
-    assertThat(conf.getHideTemplates()).contains("com.devonfw(:test-artifact(:3.2.1-SNAPSHOT))");
+    assertThat(conf.getHideTemplates()).contains("com.devonfw:test-artifact:3.2.1-SNAPSHOT");
   }
 
   /**
