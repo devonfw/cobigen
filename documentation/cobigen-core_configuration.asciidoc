@@ -354,7 +354,7 @@ configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `g
 template-sets.groupIds=com.devonfw.cobigen.templates,jaxen,jakarta.xml.bind
 template-sets.allow-snapshots=true
 template-sets.disable-default-lookup=false
-template-sets.hide=com.devonfw(:test-artifact(:3.2.1-SNAPSHOT))
+template-sets.hide=com.devonfw.cobigen.templates:crud-angular-client-app:2021.12.007-SNAPSHOT
 ```
 
 == Basic Template Model
