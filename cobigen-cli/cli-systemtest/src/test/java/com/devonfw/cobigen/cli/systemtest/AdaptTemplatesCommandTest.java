@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -48,7 +47,6 @@ public class AdaptTemplatesCommandTest extends AbstractCliTest {
    *
    * @throws Exception test fails
    */
-  @Ignore
   @Test
   public void adaptTemplatesTest() throws Exception {
 
