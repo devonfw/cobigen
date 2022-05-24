@@ -50,8 +50,9 @@ public class AdaptTemplatesCommandTest extends AbstractCliTest {
   @Test
   public void adaptTemplatesTest() throws Exception {
 
-    String args[] = new String[1];
+    String args[] = new String[2];
     args[0] = "adapt-templates";
+    args[1] = "--all";
 
     execute(args, false);
 
