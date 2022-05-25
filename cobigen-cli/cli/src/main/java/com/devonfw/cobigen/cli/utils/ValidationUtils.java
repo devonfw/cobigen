@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.InputMismatchException;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -131,14 +130,7 @@ public final class ValidationUtils {
   public static String getUserInput() {
 
     String userInput = "";
-    try {
       userInput = inputReader.nextLine();
-    } catch (NoSuchElementException e) {
-      // This Case is for the Adapt-templates Command to cover the next line in Test adaptTemplatesTest when no
-      // UserInput can be scanned
-      LOG.info("No User Input, By default All found templates will be adapted");
-      userInput = "0";
-    }
     return userInput;
   }
 
