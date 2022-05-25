@@ -8,10 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
 
@@ -19,6 +23,9 @@ import com.google.common.collect.Maps;
  * Cached in-memory CobiGen configuration.
  */
 public class ConfigurationHolder {
+
+  /** Logger instance */
+  private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFinder.class);
 
   /** Cached templates configurations. Trigger ID -> Configuration File URI -> configuration instance */
   private Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
@@ -112,6 +119,7 @@ public class ConfigurationHolder {
 
     if (this.configurationPath.toUri().getScheme().equals("jar")
         || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
+      LOG.warn("You are using an old templates version, please make sure to upgrade to the newest three!");
       return false;
     }
     return true;

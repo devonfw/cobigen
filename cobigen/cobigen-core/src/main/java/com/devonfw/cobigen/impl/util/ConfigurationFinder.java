@@ -91,6 +91,7 @@ public class ConfigurationFinder {
       // use old templates configuration
       Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
       if (templatesFolderLocation != null && Files.exists(templatesFolderLocation)) {
+        LOG.warn("You are using an old templates version, please make sure to upgrade to the newest two!");
         return templatesFolderLocation.toUri();
       }
 

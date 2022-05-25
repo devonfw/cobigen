@@ -74,6 +74,8 @@ public class CobiGenPaths {
   public static Path getTemplatesFolderPath(Path home) {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+    if (Files.exists(templatesPath))
+      LOG.warn("You are using an old templates version, please make sure to upgrade to the newest one!");
     return templatesPath;
   }
 
