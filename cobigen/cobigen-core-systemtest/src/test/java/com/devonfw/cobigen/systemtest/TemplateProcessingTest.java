@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -101,7 +100,6 @@ public class TemplateProcessingTest extends AbstractApiTest {
    * @throws IOException if an Exception occurs
    */
   @Test
-  @Ignore
   public void extractTemplatesWithOldConfiguration() throws IOException {
 
     FileUtils.copyDirectory(new File(testFileRootPathMonolithicTemplates),
