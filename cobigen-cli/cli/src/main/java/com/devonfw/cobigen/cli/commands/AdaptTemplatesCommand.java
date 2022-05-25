@@ -32,9 +32,9 @@ public class AdaptTemplatesCommand extends CommandCommons {
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
   /**
-   * If this options is enabled, all templates are unpacked.
+   * If this options is enabled, all templates are extracted.
    */
-  @Option(names = { "--all" }, negatable = true, description = MessagesConstants.UPDATE_ALL_DESCRIPTION)
+  @Option(names = { "--all" }, negatable = true, description = MessagesConstants.ADAPT_ALL_DESCRIPTION)
   boolean adaptAll;
 
   @Override
@@ -82,12 +82,13 @@ public class AdaptTemplatesCommand extends CommandCommons {
 
       List<String> userSelection = new ArrayList<>();
 
-      if (this.adaptAll)
+      if (this.adaptAll) {
         userSelection.add("0");
-      else
+      } else {
         for (String templateSelection : ValidationUtils.getUserInput().split(",")) {
           userSelection.add(templateSelection);
         }
+      }
 
       if (userSelection.contains("0")) {
         jarsToAdapt = templateJars;

@@ -130,7 +130,7 @@ public final class ValidationUtils {
   public static String getUserInput() {
 
     String userInput = "";
-      userInput = inputReader.nextLine();
+    userInput = inputReader.nextLine();
     return userInput;
   }
 
