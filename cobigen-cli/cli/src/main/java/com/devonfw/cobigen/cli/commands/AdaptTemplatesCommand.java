@@ -34,7 +34,7 @@ public class AdaptTemplatesCommand extends CommandCommons {
   /**
    * If this options is enabled, all templates are extracted.
    */
-  @Option(names = { "--all" }, negatable = true, description = MessagesConstants.ADAPT_ALL_DESCRIPTION)
+  @Option(names = { "--all" }, description = MessagesConstants.ADAPT_ALL_DESCRIPTION)
   boolean adaptAll;
 
   @Override
