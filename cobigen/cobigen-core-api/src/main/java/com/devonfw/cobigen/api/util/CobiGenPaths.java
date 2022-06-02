@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
 
 /**
  * Utilities related to the cobigen configurations including:
@@ -70,12 +71,13 @@ public class CobiGenPaths {
    *
    * @param home cobigen configuration home directory
    * @return {@link Path} of the templates home directory
+   * @throws DeprecatedMonolithicTemplatesException when old monolithic Templates found
    */
-  public static Path getTemplatesFolderPath(Path home) {
+  public static Path getTemplatesFolderPath(Path home) throws DeprecatedMonolithicTemplatesException {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
     if (Files.exists(templatesPath))
-      LOG.warn("You are using an old templates version, please make sure to upgrade to the newest one!");
+      throw new DeprecatedMonolithicTemplatesException();
     return templatesPath;
   }
 
