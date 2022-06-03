@@ -79,7 +79,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 	@Before
 	public void prepare() throws IOException {
 
-		Path playground = this.tempFolder.newFolder("playground").toPath();
+		Path playground = this.tempFolder.newFolder(".cobigen").toPath();
 		FileUtils.copyDirectory(new File(testFileRootPath), playground.toFile());
 		this.templateLocation = playground.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
 	}
@@ -91,14 +91,13 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 	@Test
 	public void testTemplateSetUpgrade() throws Exception {
 
-		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
-		templateSetUpgrader.upradeTemplatesToTemplateSets();
+		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
+		templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
 
 		Path templateSetsPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
 		Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 		assertThat(templateSetsPath).exists();
 		assertThat(templateSetsAdapted).exists();
-		// hier noch besser testen //TODO
 
 	}
 
@@ -115,8 +114,8 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 		int OldTemplatesFileCount = oldTemplatesPath.toFile().list().length;
 		Set<String> OldPathFilesSet = new HashSet<>(Arrays.asList(oldTemplatesPath.toFile().list()));
 
-		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
-		templateSetUpgrader.upradeTemplatesToTemplateSets();
+		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
+		templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
 
 
 		Path backupPath = this.templateLocation.getParent().resolve("backup")
@@ -145,19 +144,6 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 		assertEquals(backupPathFilesSet.size(), 0);
 	}
 
-//  @Test
-//  public void testTemplateSetUpgradeContextLocation() throws Exception{
-//	  TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
-//	  templateSetUpgrader.upradeTemplatesToTemplateSets();
-//
-//	  Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-//	  newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-//	  for(String s: newTemplatesPath.toFile().list()) {
-//		  Path newContextPath = newTemplatesPath.resolve(s+"/"+ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-//		  Set<String> NewPathFilesSet= new HashSet<>(Arrays.asList(newContextPath.toFile().list()));
-//		  assertTrue(NewPathFilesSet.contains(s));
-//	}
-//  }
 
 	/**
 	 * Tests the correct location for the created context.xml and if the files and whether the file corresponds to the v3.0 schema
@@ -165,8 +151,8 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 	 */
 	@Test
 	public void testTemplateSetUpgradeContextSplit() throws Exception {
-		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(this.templateLocation);
-		templateSetUpgrader.upradeTemplatesToTemplateSets();
+		TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
+		templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
 
 		Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
 		newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
@@ -178,7 +164,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 		Validator validator = schema.newValidator();
 
 		for (String s : newTemplatesPath.toFile().list()) {
-			Path newContextPath = newTemplatesPath.resolve(s + "/" + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+			Path newContextPath = newTemplatesPath.resolve(s + "/" + "src/main/resources");
 			newContextPath = newContextPath.resolve("context.xml");
 			assertThat(newContextPath.toFile().exists());
 			StreamSource contextStream = new StreamSource(newContextPath.toFile());
@@ -194,4 +180,4 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 		schemaStream.close();
 	}
 }
-	// Teste ob alle Dependencies da sind, utils ressources da sind und pom muss da mit src main java
+

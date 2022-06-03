@@ -38,7 +38,6 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
     MapperFactory mapperFactory;
     MapperFacade mapper;
     com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration upgradedConfig_2_1;
-    com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration upgradedConfig_3_0;
 
     switch (source) {
       case v2_0:
@@ -66,17 +65,7 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
 
         break;
       case v2_1:
-        mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
-        mapper = mapperFactory.getMapperFacade();
-
-        upgradedConfig_3_0 = mapper.map(previousConfigurationRootNode,
-            com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration.class);
-        upgradedConfig_3_0.setVersion(new BigDecimal("3.0"));
-
-        result.setResultConfigurationJaxbRootNode(upgradedConfig_3_0);
-
-        TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader(ConfigurationConstants.DEFAULT_HOME);
-        templateSetUpgrader.upradeTemplatesToTemplateSets();
+    	  // Upgrade Process from v2_1 to v3_0 will be done in TemplateSetUpgrader class from the upgradeConfigurationtoLatesVersion function
         break;
       default:
         throw new NotYetSupportedException(

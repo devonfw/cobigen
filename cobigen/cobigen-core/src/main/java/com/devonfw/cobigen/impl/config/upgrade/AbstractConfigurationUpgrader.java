@@ -28,6 +28,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
+import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
 
 import jakarta.xml.bind.JAXB;
@@ -201,7 +202,22 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
         }
         if (currentVersion == this.versions[i]) {
           LOG.info("Upgrading {} '{}' from version {} to {}...", this.configurationName, configurationFile.toUri(),
-              this.versions[i], this.versions[i + 1]); // TODO
+              this.versions[i], this.versions[i + 1]);
+
+          if(this.versions[i+1] == ContextConfigurationVersion.v3_0) {
+        	  TemplateSetUpgrader upgrader = new TemplateSetUpgrader();
+        	  try{
+        		  upgrader.upgradeTemplatesToTemplateSets(configurationRoot);
+        	  }catch(Exception e) {
+        		  throw new CobiGenRuntimeException("An unexpected exception occurred while upgrading the " + this.configurationName + " from version '"
+                          + this.versions[i] + "' to '" + this.versions[i + 1] + "'.",
+                          e);
+        	  }
+        	  // TODO hier muss der neue Pfad der gesplitteten Context benutzt werden
+        	  currentVersion= this.versions[i+1];
+        	  //currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
+          }
+          else {
 
           Object rootNode;
           try {
@@ -228,6 +244,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                 "An unexpected exception occurred while upgrading the " + this.configurationName + " from version '"
                     + this.versions[i] + "' to '" + this.versions[i + 1] + "'.",
                 e);
+          }
           }
 
           // if CobiGen does not understand the upgraded file... throw exception
