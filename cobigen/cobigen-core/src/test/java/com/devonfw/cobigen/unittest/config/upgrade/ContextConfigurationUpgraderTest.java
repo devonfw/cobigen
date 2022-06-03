@@ -100,10 +100,11 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 
 		sut.upgradeConfigurationToLatestVersion(templates, BackupPolicy.ENFORCE_BACKUP);
 		//copy resources again to check if backup was successful
+		String pom = "templates/CobiGen_Templates/pom.xml";
 		FileUtils.copyDirectory(new File(testFileRootPath), cobigen);
-		assertThat(cobigen.toPath().resolve("backup/templates").toFile()).exists();
-				//.hasSameContentAs(cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH).toFile());
-				//doesnt work cause of Directory
+		assertThat(cobigen.toPath().resolve("backup").resolve(pom).toFile()).exists()
+			.hasSameContentAs(cobigen.toPath().resolve(pom).toFile());
+
 
 
 		version = sut.resolveLatestCompatibleSchemaVersion(templatesFolder.getParent().resolve("template-sets/adapted/templateSet1/src/main/resources"));
