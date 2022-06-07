@@ -119,7 +119,6 @@ public class ConfigurationHolder {
 
     if (this.configurationPath.toUri().getScheme().equals("jar")
         || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
-      LOG.warn("You are using an old templates version, please make sure to upgrade to the newest three!");
       return false;
     }
     return true;
