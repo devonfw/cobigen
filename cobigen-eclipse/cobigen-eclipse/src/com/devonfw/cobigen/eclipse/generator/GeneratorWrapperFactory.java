@@ -25,12 +25,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
+import com.devonfw.cobigen.eclipse.common.tools.ExceptionHandler;
 import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.eclipse.generator.generic.FileInputConverter;
@@ -204,7 +206,8 @@ public class GeneratorWrapperFactory {
    * @throws InvalidConfigurationException if the context configuration is not valid
    * @throws GeneratorCreationException if the generator configuration project does not exist
    */
-  private static CobiGen initializeGenerator() throws InvalidConfigurationException, GeneratorCreationException {
+  private static CobiGen initializeGenerator()
+      throws InvalidConfigurationException, GeneratorCreationException, DeprecatedMonolithicTemplatesException {
 
     try {
       ResourcesPluginUtil.refreshConfigurationProject();
@@ -221,13 +224,25 @@ public class GeneratorWrapperFactory {
       // If it is not valid, we should use the jar
       if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
         Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
-        Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
-        boolean fileExists = (jarPath != null && Files.exists(jarPath));
-        if (!fileExists) {
-          MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-              "Not Downloaded the CobiGen Template Jar");
+
+        try {
+          CobiGenPaths.getTemplatesFolderPath(CobiGenPaths.getCobiGenHomePath(), true);
+        } catch (DeprecatedMonolithicTemplatesException e) {
+
+          ExceptionHandler.handle(e, null);
+
+          // TODO Add some information why is it a good idea to upgrade? Ticket #1516?
+          // TODO Add a link to the WIKI Page Ticket #1516?
+          // askUserToUpgradeTemplates();
+        } finally {
+          Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
+          boolean fileExists = (jarPath != null && Files.exists(jarPath));
+          if (!fileExists) {
+            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                "Not Downloaded the CobiGen Template Jar");
+          }
+          return CobiGenFactory.create(jarPath.toUri());
         }
-        return CobiGenFactory.create(jarPath.toUri());
       } else {
         return CobiGenFactory.create(generatorProj.getLocationURI());
       }
