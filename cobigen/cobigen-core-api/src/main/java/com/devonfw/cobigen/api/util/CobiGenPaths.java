@@ -74,10 +74,26 @@ public class CobiGenPaths {
    * @return {@link Path} of the templates home directory
    * @throws DeprecatedMonolithicTemplatesException when old monolithic Templates found
    */
-  public static Path getTemplatesFolderPath(Path home) throws DeprecatedMonolithicTemplatesException {
+  public static Path getTemplatesFolderPath(Path home) {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
-    if (Files.exists(templatesPath))
+    return templatesPath;
+  }
+
+  /**
+   * Returns the templates home directory (which is located inside CobiGen home folder). The folder is no longer created
+   * if it does not exist. Instead CobiGen will switch to the template sets folder.
+   *
+   * @param home cobigen configuration home directory
+   * @param throwException if true throws DeprecatedMonolithicTemplatesException
+   * @return {@link Path} of the templates home directory
+   * @throws DeprecatedMonolithicTemplatesException when old monolithic Templates found
+   */
+  public static Path getTemplatesFolderPath(Path home, boolean throwException)
+      throws DeprecatedMonolithicTemplatesException {
+
+    Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+    if (Files.exists(templatesPath) && throwException)
       throw new DeprecatedMonolithicTemplatesException();
     return templatesPath;
   }

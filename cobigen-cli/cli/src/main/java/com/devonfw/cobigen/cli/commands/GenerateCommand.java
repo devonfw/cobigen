@@ -23,11 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.Tuple;
 import com.devonfw.cobigen.cli.CobiGenCLI;
@@ -126,7 +128,7 @@ public class GenerateCommand extends CommandCommons {
    *
    * @throws IOException
    */
-  private void resolveTemplateDependencies() throws IOException {
+  private void resolveTemplateDependencies() throws IOException, DeprecatedMonolithicTemplatesException {
 
     Path templatesPath = null;
     Path pomFile = null;
@@ -135,14 +137,24 @@ public class GenerateCommand extends CommandCommons {
     } else {
       URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
       templatesPath = FileSystemUtil.createFileSystemDependentPath(findTemplatesLocation);
-    }
+      try {
+        CobiGenPaths.getTemplatesFolderPath(CobiGenPaths.getCobiGenHomePath(), true);
+      } catch (DeprecatedMonolithicTemplatesException e) {
+        LOG.warn("", e);
+        LOG.info("Would you like to upgrade your templates to the newest version? \n"
+            + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
+        // TODO Add some information why is it a good idea to upgrade? Ticket #1516?
+        // TODO Add a link to the WIKI Page Ticket #1516?
+        askUserToUpgradeTemplates();
+      } finally {
+        pomFile = templatesPath.resolve("pom.xml");
 
-    pomFile = templatesPath.resolve("pom.xml");
-
-    if (pomFile != null && Files.exists(pomFile)) {
-      Path temporaryDirectory = Files.createDirectory(CobiGenUtils.getCliHomePath().resolve("temp"));
-      temporaryDirectory.toFile().deleteOnExit();
-      MavenUtil.resolveDependencies(pomFile, temporaryDirectory);
+        if (pomFile != null && Files.exists(pomFile)) {
+          Path temporaryDirectory = Files.createDirectory(CobiGenUtils.getCliHomePath().resolve("temp"));
+          temporaryDirectory.toFile().deleteOnExit();
+          MavenUtil.resolveDependencies(pomFile, temporaryDirectory);
+        }
+      }
     }
   }
 
@@ -241,6 +253,25 @@ public class GenerateCommand extends CommandCommons {
       System.exit(255);
     }
 
+  }
+
+  /**
+   * Opens a looping prompt with a yes/no question and sets the root output directory to the current user directory.
+   *
+   */
+  private void askUserToUpgradeTemplates() {
+
+    Path outputDirectory = Paths.get(System.getProperty("user.dir"));
+
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("Set output directory to: " + outputDirectory.toString(),
+        "Invalid input. Please answer yes/n or no/n (or hit return for yes).",
+        "Continue generation with old templates...");
+
+    if (setToUserDir) {
+      // TODO UpgradeTemplatesMethod; Ticket #1502
+    } else {
+      // Do Nothing Continue with old templates generation
+    }
   }
 
   /**
