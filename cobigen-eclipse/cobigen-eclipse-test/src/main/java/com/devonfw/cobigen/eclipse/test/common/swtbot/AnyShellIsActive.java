@@ -7,6 +7,8 @@ import org.eclipse.swtbot.swt.finder.utils.internal.Assert;
 import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+
 /**
  * Checks whether any shell with one of the given dialog titles is displayed and having focus.
  */
@@ -34,7 +36,7 @@ public class AnyShellIsActive extends DefaultCondition {
   }
 
   @Override
-  public boolean test() throws Exception {
+  public boolean test() throws Exception, CobiGenRuntimeException {
 
     for (String title : this.titles) {
       try {

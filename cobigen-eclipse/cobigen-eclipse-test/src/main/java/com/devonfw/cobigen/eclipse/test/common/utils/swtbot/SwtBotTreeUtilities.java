@@ -40,6 +40,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 
@@ -213,7 +214,8 @@ public class SwtBotTreeUtilities {
    * @throws WidgetNotFoundException if the tree item could not be found
    * @see <a href="https://github.com/GoogleCloudPlatform/google-cloud-eclipse/issues/2569">issue 2569</a>
    */
-  public static SWTBotTreeItem select(SWTWorkbenchBot bot, SWTBotTree tree, String... nodeNames) {
+  public static SWTBotTreeItem select(SWTWorkbenchBot bot, SWTBotTree tree, String... nodeNames)
+      throws CobiGenRuntimeException {
 
     Preconditions.checkArgument(nodeNames.length > 0, "no children to navigate");
     int leafIndex = nodeNames.length - 1;

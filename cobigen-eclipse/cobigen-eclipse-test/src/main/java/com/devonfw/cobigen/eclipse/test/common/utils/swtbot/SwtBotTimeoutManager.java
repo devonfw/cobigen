@@ -22,6 +22,7 @@ package com.devonfw.cobigen.eclipse.test.common.utils.swtbot;
 
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.google.common.base.Preconditions;
 
 /**
@@ -63,7 +64,7 @@ public class SwtBotTimeoutManager {
    *
    * @param timeout the timeout value, in milliseconds
    */
-  public static void setTimeout(long timeout) {
+  public static void setTimeout(long timeout) throws CobiGenRuntimeException {
 
     Preconditions.checkArgument(timeout > 0);
     oldTimeoutSwtPrefs = getSwtBotPrefsTimeoutFieldValue();
