@@ -22,8 +22,6 @@ import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-
 /**
  * JUnit Rule for a temporary {@link IJavaProject}. Should be created in each test method by createProject when it
  * should be used.
@@ -39,7 +37,7 @@ public class TmpJavaProjectRule extends ExternalResource {
   private IJavaProject javaProject;
 
   @Override
-  protected void after() throws CobiGenRuntimeException {
+  protected void after() {
 
     try {
       if (this.javaProject != null && this.javaProject.getProject() != null) {

@@ -34,7 +34,6 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotStyledText;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.hamcrest.Matcher;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.google.common.collect.Iterables;
 
 /**
@@ -222,8 +221,7 @@ public class SwtBotTestingUtilities {
   }
 
   /** Wait until a menu contains a matching item. */
-  public static void waitUntilMenuHasItem(SWTBot bot, Supplier<SWTBotMenu> menuSupplier, Matcher<String> matcher)
-      throws CobiGenRuntimeException {
+  public static void waitUntilMenuHasItem(SWTBot bot, Supplier<SWTBotMenu> menuSupplier, Matcher<String> matcher) {
 
     bot.waitUntil(new DefaultCondition() {
       @Override

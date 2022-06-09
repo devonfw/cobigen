@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.UUID;
 
-import org.apache.log4j.MDC;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -26,8 +25,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.eclipse.common.constants.InfrastructureConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.tools.ExceptionHandler;
@@ -50,7 +49,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
   IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
 
   @Override
-  public Object execute(ExecutionEvent event) throws ExecutionException, CobiGenRuntimeException {
+  public Object execute(ExecutionEvent event) throws ExecutionException {
 
     MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
     IProject generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);

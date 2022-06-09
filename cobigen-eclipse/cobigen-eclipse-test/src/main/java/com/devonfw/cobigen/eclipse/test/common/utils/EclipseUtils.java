@@ -38,7 +38,6 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 import com.devonfw.cobigen.eclipse.test.common.utils.swtbot.SwtBotProjectActions;
@@ -205,7 +204,7 @@ public class EclipseUtils {
    *
    * @param bot the current workbench bot
    */
-  public static void openErrorsTreeInProblemsView(SWTWorkbenchBot bot) throws CobiGenRuntimeException {
+  public static void openErrorsTreeInProblemsView(SWTWorkbenchBot bot) {
 
     try {
       SWTBotView viewByTitle = bot.view(withTitle(containsString("Problems")));
