@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
@@ -60,6 +61,10 @@ public class CobiGenFactory {
     CobiGen createBean = beanFactory.createBean(CobiGen.class);
     // Notifies all plugins of new template root path
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
+
+    // Check old_templates and throw if found also in custom templates
+    if (!configurationHolder.isTemplateSetConfiguration())
+      throw new DeprecatedMonolithicTemplatesException();
     return createBean;
   }
 
