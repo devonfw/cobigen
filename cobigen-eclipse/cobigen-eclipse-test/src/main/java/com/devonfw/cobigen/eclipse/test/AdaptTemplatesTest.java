@@ -99,8 +99,8 @@ public class AdaptTemplatesTest extends SystemTest {
    *
    * @throws Exception test fails
    */
-  @Ignore
   @Test
+  @Ignore
   public void testAdaptTemplatesAndGenerate() throws Exception {
 
     File tmpProject = this.tempFolder.newFolder("playground", "project");
