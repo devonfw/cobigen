@@ -16,6 +16,7 @@ import com.devonfw.cobigen.cli.utils.ValidationUtils;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * This class handles the user defined template directory e.g. determining and obtaining the latest templates jar,
@@ -29,6 +30,12 @@ public class AdaptTemplatesCommand extends CommandCommons {
    * Logger to output useful information to the user
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
+
+  /**
+   * If this options is enabled, all templates are extracted.
+   */
+  @Option(names = { "--all" }, description = MessagesConstants.ADAPT_ALL_DESCRIPTION)
+  boolean adaptAll;
 
   @Override
   public Integer doAction() throws Exception {
@@ -74,8 +81,13 @@ public class AdaptTemplatesCommand extends CommandCommons {
       printJarsForSelection(templateAdapter, templateJars);
 
       List<String> userSelection = new ArrayList<>();
-      for (String templateSelection : ValidationUtils.getUserInput().split(",")) {
-        userSelection.add(templateSelection);
+
+      if (this.adaptAll) {
+        userSelection.add("0");
+      } else {
+        for (String templateSelection : ValidationUtils.getUserInput().split(",")) {
+          userSelection.add(templateSelection);
+        }
       }
 
       if (userSelection.contains("0")) {
