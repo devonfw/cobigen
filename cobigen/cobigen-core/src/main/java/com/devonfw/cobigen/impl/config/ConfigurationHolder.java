@@ -15,7 +15,6 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
-import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
 
@@ -25,7 +24,7 @@ import com.google.common.collect.Maps;
 public class ConfigurationHolder {
 
   /** Logger instance */
-  private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFinder.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ConfigurationHolder.class);
 
   /** Cached templates configurations. Trigger ID -> Configuration File URI -> configuration instance */
   private Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
