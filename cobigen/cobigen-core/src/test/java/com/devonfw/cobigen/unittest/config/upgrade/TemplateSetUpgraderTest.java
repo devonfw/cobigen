@@ -80,12 +80,12 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 	public void prepare() throws IOException {
 
 		Path playground = this.tempFolder.newFolder(".cobigen").toPath();
-		FileUtils.copyDirectory(new File(testFileRootPath), playground.toFile());
+		FileUtils.copyDirectory(new File(testFileRootPath+"valid-2.1"), playground.toFile());
 		this.templateLocation = playground.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
 	}
 
 	/**
-	 * Test the correct folder creation //TODO
+	 * Test the correct folder creation
 	 * @throws Exception
 	 */
 	@Test
