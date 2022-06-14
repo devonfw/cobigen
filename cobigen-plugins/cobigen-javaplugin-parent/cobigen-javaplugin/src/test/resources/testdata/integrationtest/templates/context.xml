@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
   <trigger id="testTemplates" type="java" templateFolder="testTemplates">
     <matcher type="fqn" value=".*">
-      <variableAssignment type="constant" key="abstractCollection" value="java.util.AbstractCollection"/>
-      <variableAssignment type="constant" key="stringFqn" value="java.lang.String"/>
-      <variableAssignment type="constant" key="objectFqn" value="java.lang.Object"/>
-      <variableAssignment type="constant" key="javaLang" value="java.lang"/>
+      <variableAssignment type="constant" key="abstractCollection" value="java.util.AbstractCollection" />
+      <variableAssignment type="constant" key="stringFqn" value="java.lang.String" />
+      <variableAssignment type="constant" key="objectFqn" value="java.lang.Object" />
+      <variableAssignment type="constant" key="javaLang" value="java.lang" />
     </matcher>
   </trigger>
   <trigger id="variable_resolution" type="java" templateFolder="variable_resolution">
     <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+\.)*([^\.]+)Entity">
-      <variableAssignment type="regex" key="rootPackage" value="1"/>
-      <variableAssignment type="regex" key="domain" value="3"/>
-      <variableAssignment type="regex" key="component" value="4"/>
-      <variableAssignment type="regex" key="detail" value="5"/>
-      <variableAssignment type="regex" key="entityName" value="6"/>
+      <variableAssignment type="regex" key="rootPackage" value="1" />
+      <variableAssignment type="regex" key="domain" value="3" />
+      <variableAssignment type="regex" key="component" value="4" />
+      <variableAssignment type="regex" key="detail" value="5" />
+      <variableAssignment type="regex" key="entityName" value="6" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="bla" />
+  </tags>
 </contextConfiguration>
