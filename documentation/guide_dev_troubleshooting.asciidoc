@@ -31,7 +31,7 @@ ic (https://devon.s2-eu.capgemini.com/nexus/content/groups/public/): Not authori
 
 ==== Solution
 
-Please note the message Not authorized , ReasonPhrase: Unauthorized. -> [Help 2]! 
+Please note the message Not authorized , ReasonPhrase: Unauthorized. -> [Help 2]!
 
 1. Please check, that you run the command by using the console.bat or a similar console initialized with the IDE environment variables.
 2. Please check your corporate login in the variables-customized.bat to be correct (`DEVON_NEXUS_USER` and `DEVON_NEXUS_PASSWD`). Make sure, that you restart the console.bat you are working in after changing the variables-customized.bat. Same holds for eclipse instances running. Please restart to make the new values accessible.
@@ -48,7 +48,7 @@ To test changes implemented on the `cobigen-core` you have to follow the next pr
 4. Open a console and step into `cobigen/cobigen-eclipse`. Run `mvn clean package -Pp2-build-photon,p2-build-stable,p2-build-experimental`.
 5. On Eclipse, go to `cobigen/cobigen-eclipse` and double-click 'plugins.xml'. On the bottom, click on 'runtime' tab. On 'classpath', add a new library and choose the jars you have just installed.
 6. Refresh on Eclipse, press F5 on the `cobigen-eclipse` inside Eclipse.
-5. If you still see compilation errors: On Eclipse, right-click `cobigen/cobigen-eclipse` -> Maven -> Update projects. 
+5. If you still see compilation errors: On Eclipse, right-click `cobigen/cobigen-eclipse` -> Maven -> Update projects.
 
 == Issues with workspace when Oomph automatic updates don't work (especially for Indian colleagues)
 Executing `eclipse-cobigen-development.bat` file will open Eclipse with all the projects automatically imported. Oomph creates 'Working Sets' and set 'Top Level Elements' pointing to that working set. For Countries where proxy restricts Oomph to execute, we see no projects imported into project explorer/Navigator. Rather than trying manual import which later can give build issues we should follow below solution.
@@ -65,7 +65,7 @@ Build Issues could be like:
 ==== Solution
 In Eclipse, you can click the small downward arrow in the upper right corner of the Navigator/Project Explorer view and go to 'Top Level Elements' and point them to 'Projects'. This should show all the projects inside Project Explorer View. Also, Each plugin should point to respective branch.
 
-== Issue when testing Eclipse plugin by Running as Eclipse Application. 
+== Issue when testing Eclipse plugin by Running as Eclipse Application.
 Error message will be like:
 [source]
 ----
@@ -83,4 +83,15 @@ Delete or rename the runtime-`EclipseApplication` inside workspaces folder. Re- 
 3) org.eclipse.core.runtime.CoreException: Plug-in com.devonfw.cobigen.eclipse was unable to load class com.devonfw.cobigen.eclipse.workbenchcontrol.handler.XXXXHandler.
 ```
 
- 
+== Issue when running Eclipse SWT bot tests via github actions with custom test projects
+Error message on github actions will be like:
+[source]
+----
+org.eclipse.swtbot.swt.finder.widgets.TimeoutException: Timeout after: 15000 ms.: The widget (of type 'Button' and with mnemonic 'Finish' and with style 'SWT.PUSH') was not enabled.
+...
+at com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils.importExistingGeneralProject(EclipseUtils.java:101)
+----
+But on the local system the build and test process works fine.
+
+==== Solution
+If you add an Eclipse test project, make sure that you git force add the .project file too. Otherwise the importExistingGeneralProject method will fail.
