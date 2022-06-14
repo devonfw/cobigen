@@ -60,7 +60,7 @@ public class ClassLoadingTest extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
     // Execution
@@ -86,7 +86,7 @@ public class ClassLoadingTest extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
     // Execution

@@ -13,12 +13,12 @@ import java.util.List;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
-import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
 
 /**
  * Test suite for template-scan related system tests
@@ -46,7 +46,7 @@ public class TemplateScanTest extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 
@@ -75,7 +75,7 @@ public class TemplateScanTest extends AbstractApiTest {
     Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
     // test processing
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
     // checking
@@ -100,7 +100,7 @@ public class TemplateScanTest extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 
@@ -133,7 +133,7 @@ public class TemplateScanTest extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 

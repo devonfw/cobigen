@@ -29,7 +29,6 @@ import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.Tuple;
 import com.devonfw.cobigen.cli.CobiGenCLI;
@@ -138,7 +137,7 @@ public class GenerateCommand extends CommandCommons {
       URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
       templatesPath = FileSystemUtil.createFileSystemDependentPath(findTemplatesLocation);
       try {
-        CobiGenPaths.getTemplatesFolderPath(CobiGenPaths.getCobiGenHomePath(), true);
+        // CobiGenPaths.getTemplatesFolderPath(CobiGenPaths.getCobiGenHomePath(), true);
       } catch (DeprecatedMonolithicTemplatesException e) {
         LOG.warn("", e);
         LOG.info("Would you like to upgrade your templates to the newest version? \n"
