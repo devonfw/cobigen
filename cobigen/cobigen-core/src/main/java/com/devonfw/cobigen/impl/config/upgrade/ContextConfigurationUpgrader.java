@@ -1,6 +1,15 @@
 package com.devonfw.cobigen.impl.config.upgrade;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
@@ -20,6 +29,9 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
  */
 public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<ContextConfigurationVersion> {
 
+	/** Logger instance. */
+	private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationUpgrader.class);
+
   /**
    * Creates a new {@link ContextConfigurationUpgrader} instance.
    *
@@ -31,14 +43,14 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
   }
 
   @Override
-  protected ConfigurationUpgradeResult performNextUpgradeStep(ContextConfigurationVersion source,
-      Object previousConfigurationRootNode) throws Exception {
+  protected List<ConfigurationUpgradeResult> performNextUpgradeStep(ContextConfigurationVersion source,
+      Object previousConfigurationRootNode, Path configurationRoot) throws Exception {
 
     ConfigurationUpgradeResult result = new ConfigurationUpgradeResult();
     MapperFactory mapperFactory;
     MapperFacade mapper;
     com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration upgradedConfig_2_1;
-
+    List<ConfigurationUpgradeResult> results = new ArrayList<>();
     switch (source) {
       case v2_0:
 
@@ -61,18 +73,38 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
             com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class);
         upgradedConfig_2_1.setVersion(new BigDecimal("2.1"));
 
-        result.setResultConfigurationJaxbRootNode(upgradedConfig_2_1);
+        result.setResultConfigurationJaxbRootNode(upgradedConfig_2_1, configurationRoot);
+        results.add(result);
 
         break;
       case v2_1:
     	  // Upgrade Process from v2_1 to v3_0 will be done in TemplateSetUpgrader class from the upgradeConfigurationtoLatesVersion function
+    	  TemplateSetUpgrader u = new TemplateSetUpgrader();
+    	  Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = u.upgradeTemplatesToTemplateSets(configurationRoot);
+    	  for(com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration context: contextMap.keySet()) {
+    		  ConfigurationUpgradeResult temp = new ConfigurationUpgradeResult();
+    		  temp.setResultConfigurationJaxbRootNode(context, contextMap.get(context));
+    		  results.add(temp);
+    	  }
+//    	  for(Path context: contexts) {
+//    		  List<ContextConfigurationVersion> list= Arrays.asList(this.resolveLatestCompatibleSchemaVersion(context));
+//    		  for(ContextConfigurationVersion version : list) {
+//    			  if ( version == null) {
+//    				  LOG.error("VERsion ist null");
+//    			  }else if( version != ContextConfigurationVersion.v3_0) {
+//    				 LOG.error("Version ist falsch");
+//    			  }else {
+//    				  LOG.info("Sucess");
+//    			  }
+//    		  }
+//    	  }
         break;
       default:
         throw new NotYetSupportedException(
             "An upgrade of the context configuration from a version previous to v2.0 is not yet supported.");
     }
 
-    return result;
+    return results;
   }
 
 }

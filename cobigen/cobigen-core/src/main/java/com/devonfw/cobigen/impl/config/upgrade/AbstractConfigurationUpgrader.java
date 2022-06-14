@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.BackupPolicy;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
@@ -39,335 +40,357 @@ import jakarta.xml.bind.UnmarshalException;
 import jakarta.xml.bind.Unmarshaller;
 
 /**
- * This class encompasses all logic for upgrading CobiGen configurations including
+ * This class encompasses all logic for upgrading CobiGen configurations
+ * including
  * <ul>
  * <li>detection of all released schema compatibilities</li>
  * <li>upgrading legacy configurations to the latest supported version</li>
  * </ul>
  *
- * @param <VERSIONS_TYPE> Type of the version enum listing all supported versions (increasing declaration).
+ * @param <VERSIONS_TYPE> Type of the version enum listing all supported
+ *                        versions (increasing declaration).
  */
 public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?>> {
 
-  /** Logger instance. */
-  private static final Logger LOG = LoggerFactory.getLogger(AbstractConfigurationUpgrader.class);
+	/** Logger instance. */
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractConfigurationUpgrader.class);
 
-  /** All enum values from the versions {@link Enum} */
-  private VERSIONS_TYPE[] versions;
+	/** All enum values from the versions {@link Enum} */
+	private VERSIONS_TYPE[] versions;
 
-  /** Name of the configuration (simple type of the {@link #configurationJaxbRootNode} with whitespaces) */
-  private String configurationName;
+	/**
+	 * Name of the configuration (simple type of the
+	 * {@link #configurationJaxbRootNode} with whitespaces)
+	 */
+	private String configurationName;
 
-  /** Standardized file name of the configuration */
-  private String configurationFilename;
+	/** Standardized file name of the configuration */
+	private String configurationFilename;
 
-  /** Name of the configuration (simple type of the {@link #configurationJaxbRootNode} appended by .xsd) */
-  private String configurationXsdFilename;
+	/**
+	 * Name of the configuration (simple type of the
+	 * {@link #configurationJaxbRootNode} appended by .xsd)
+	 */
+	private String configurationXsdFilename;
 
-  /** JAXB root object class of the configuration for (un-)marshalling */
-  private Class<?> configurationJaxbRootNode;
+	/** JAXB root object class of the configuration for (un-)marshalling */
+	private Class<?> configurationJaxbRootNode;
 
-  /**
-   * Package prefix generated JAXB classes of the configurations (analogous to the pom.xml specification)
-   */
-  private static final String JAXB_PACKAGE_PREFIX = "com.devonfw.cobigen.impl.config.entity.io";
+	/**
+	 * Package prefix generated JAXB classes of the configurations (analogous to the
+	 * pom.xml specification)
+	 */
+	private static final String JAXB_PACKAGE_PREFIX = "com.devonfw.cobigen.impl.config.entity.io";
 
-  /**
-   * Creates a new instance for the abstract implementation of an configuration upgrader.
-   *
-   * @param version an arbitrary instance to perform reflection on during upgrading.
-   * @param configurationJaxbRootNode JAXB root object class of the configuration for (un-)marshalling.
-   * @param configurationFilename standardized file name of the configuration
-   * @author mbrunnli (Jun 23, 2015)
-   */
-  @SuppressWarnings("unchecked")
-  AbstractConfigurationUpgrader(VERSIONS_TYPE version, Class<?> configurationJaxbRootNode,
-      String configurationFilename) {
+	/**
+	 * Creates a new instance for the abstract implementation of an configuration
+	 * upgrader.
+	 *
+	 * @param version                   an arbitrary instance to perform reflection
+	 *                                  on during upgrading.
+	 * @param configurationJaxbRootNode JAXB root object class of the configuration
+	 *                                  for (un-)marshalling.
+	 * @param configurationFilename     standardized file name of the configuration
+	 * @author mbrunnli (Jun 23, 2015)
+	 */
+	@SuppressWarnings("unchecked")
+	AbstractConfigurationUpgrader(VERSIONS_TYPE version, Class<?> configurationJaxbRootNode,
+			String configurationFilename) {
 
-    this.configurationJaxbRootNode = configurationJaxbRootNode;
-    this.configurationFilename = configurationFilename;
+		this.configurationJaxbRootNode = configurationJaxbRootNode;
+		this.configurationFilename = configurationFilename;
 
-    // split camel case
-    this.configurationName = StringUtils
-        .join(configurationJaxbRootNode.getSimpleName().split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=-Z][a-z])"), " ");
+		// split camel case
+		this.configurationName = StringUtils.join(
+				configurationJaxbRootNode.getSimpleName().split("(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=-Z][a-z])"), " ");
 
-    this.configurationXsdFilename = StringUtils.uncapitalize(configurationJaxbRootNode.getSimpleName()) + ".xsd";
+		this.configurationXsdFilename = StringUtils.uncapitalize(configurationJaxbRootNode.getSimpleName()) + ".xsd";
 
-    // determine all "version enum" values
-    try {
-      this.versions = (VERSIONS_TYPE[]) version.getClass().getMethod("values").invoke(version);
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-        | SecurityException e) {
-      throw new CobiGenRuntimeException("Unexpected happend! Could not determine values of the enum '" + version + "'.",
-          e);
-    }
-  }
+		// determine all "version enum" values
+		try {
+			this.versions = (VERSIONS_TYPE[]) version.getClass().getMethod("values").invoke(version);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
+			throw new CobiGenRuntimeException(
+					"Unexpected happend! Could not determine values of the enum '" + version + "'.", e);
+		}
+	}
 
-  /**
-   * Checks, whether the configuration is compliant to the latest supported version.
-   *
-   * @param configurationRoot the root folder containing the configuration
-   * @return <code>true</code> if the configuration is up-to-date, <br>
-   *         otherwise <code>false</code>
-   */
-  public boolean isCompliantToLatestSupportedVersion(Path configurationRoot) {
+	/**
+	 * Checks, whether the configuration is compliant to the latest supported
+	 * version.
+	 *
+	 * @param configurationRoot the root folder containing the configuration
+	 * @return <code>true</code> if the configuration is up-to-date, <br>
+	 *         otherwise <code>false</code>
+	 */
+	public boolean isCompliantToLatestSupportedVersion(Path configurationRoot) {
 
-    return resolveLatestCompatibleSchemaVersion(configurationRoot, true) != null;
-  }
+		return resolveLatestCompatibleSchemaVersion(configurationRoot, true) != null;
+	}
 
-  /**
-   * Checks, whether the configuration can be read with an old schema version.
-   *
-   * @param configurationRoot the root folder containing the configuration
-   * @return the newest schema version, the configuration is compliant with or <code>null</code> if the configuration is
-   *         not compliant to any.
-   */
-  public VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot) {
+	/**
+	 * Checks, whether the configuration can be read with an old schema version.
+	 *
+	 * @param configurationRoot the root folder containing the configuration
+	 * @return the newest schema version, the configuration is compliant with or
+	 *         <code>null</code> if the configuration is not compliant to any.
+	 */
+	public VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot) {
+		VERSIONS_TYPE result = resolveLatestCompatibleSchemaVersion(configurationRoot, false);
+		// if CobiGen does not understand the upgraded file... throw exception
+		return result;
+	}
 
-    return resolveLatestCompatibleSchemaVersion(configurationRoot, false);
-  }
+	/**
+	 * Checks, whether the configuration can be read with an old schema version.
+	 *
+	 * @param configurationRoot      the root folder containing the configuration
+	 * @param justCheckLatestVersion just checks latest supported version and
+	 *                               returns
+	 * @return the newest schema version, the configuration is compliant with or
+	 *         <code>null</code> if the configuration is not compliant to any.
+	 */
+	private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot, boolean justCheckLatestVersion) {
 
-  /**
-   * Checks, whether the configuration can be read with an old schema version.
-   *
-   * @param configurationRoot the root folder containing the configuration
-   * @param justCheckLatestVersion just checks latest supported version and returns
-   * @return the newest schema version, the configuration is compliant with or <code>null</code> if the configuration is
-   *         not compliant to any.
-   */
-  private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot, boolean justCheckLatestVersion) {
+		LOG.info("Try reading {} (including trails with legacy schema).", this.configurationName);
 
-    LOG.info("Try reading {} (including trails with legacy schema).", this.configurationName);
+		Path configurationFile = configurationRoot.resolve(this.configurationFilename);
 
-    Path configurationFile = configurationRoot.resolve(this.configurationFilename);
+		for (int i = this.versions.length - 1; i >= 0; i--) {
+			VERSIONS_TYPE lv = this.versions[i];
+			LOG.info("Try {} schema '{}'.", this.configurationName, lv.toString());
+			try {
+				Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(lv);
+				Object rootNode = unmarshallConfiguration(configurationFile, lv, jaxbConfigurationClass);
 
-    for (int i = this.versions.length - 1; i >= 0; i--) {
-      VERSIONS_TYPE lv = this.versions[i];
-      LOG.info("Try {} schema '{}'.", this.configurationName, lv.toString());
-      try {
-        Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(lv);
-        Object rootNode = unmarshallConfiguration(configurationFile, lv, jaxbConfigurationClass);
+				// check, whether the read node can be casted to the correct configuration root
+				// node object
+				if (!jaxbConfigurationClass.isAssignableFrom(rootNode.getClass())) {
+					LOG.info("It was not possible to read {} with schema '{}' .", this.configurationName,
+							lv.toString());
+				} else {
+					LOG.info("It was possible to read {} with schema '{}' .", this.configurationName, lv.toString());
+					return lv;
+				}
+			} catch (Throwable e) {
+				Throwable cause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+				if (cause != null && cause.getMessage() != null) {
+					LOG.info("Not able to read {} configuration with schema '{}': {}", this.configurationName,
+							lv.toString(), cause.getMessage());
+				} else {
+					LOG.warn("Not able to read {} configuration with schema '{}' .", this.configurationName,
+							lv.toString(), e);
+				}
+			}
 
-        // check, whether the read node can be casted to the correct configuration root node object
-        if (!jaxbConfigurationClass.isAssignableFrom(rootNode.getClass())) {
-          LOG.info("It was not possible to read {} with schema '{}' .", this.configurationName, lv.toString());
-        } else {
-          LOG.info("It was possible to read {} with schema '{}' .", this.configurationName, lv.toString());
-          return lv;
-        }
-      } catch (Throwable e) {
-        Throwable cause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
-        if (cause != null && cause.getMessage() != null) {
-          LOG.info("Not able to read {} configuration with schema '{}': {}", this.configurationName, lv.toString(),
-              cause.getMessage());
-        } else {
-          LOG.warn("Not able to read {} configuration with schema '{}' .", this.configurationName, lv.toString(), e);
-        }
-      }
+			if (justCheckLatestVersion) {
+				LOG.info("Could not read configuration {} with schema {} (latest).", this.configurationName,
+						this.versions[this.versions.length - 1]);
+				return null;
+			}
+		}
+		LOG.info("Could not read configuration {} (including trails with legacy schema).", this.configurationName);
+		return null;
+	}
 
-      if (justCheckLatestVersion) {
-        LOG.info("Could not read configuration {} with schema {} (latest).", this.configurationName,
-            this.versions[this.versions.length - 1]);
-        return null;
-      }
-    }
-    LOG.info("Could not read configuration {} (including trails with legacy schema).", this.configurationName);
-    return null;
-  }
+	/**
+	 * Upgrades the configuration to the latest supported version.
+	 *
+	 * @param configurationRoot the root folder containing the configuration with
+	 *                          the specified {@link #configurationFilename}. See
+	 *                          {@link #AbstractConfigurationUpgrader(Enum, Class, String)}
+	 *                          for more information.
+	 * @param backupPolicy      the {@link BackupPolicy} to choose if a backup is
+	 *                          necessary or not.
+	 * @return if manual adoptions has to be performed after upgrading
+	 * @throws BackupFailedException if the backup could not be created
+	 */
+	public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, BackupPolicy backupPolicy) {
 
-  /**
-   * Upgrades the configuration to the latest supported version.
-   *
-   * @param configurationRoot the root folder containing the configuration with the specified
-   *        {@link #configurationFilename}. See {@link #AbstractConfigurationUpgrader(Enum, Class, String)} for more
-   *        information.
-   * @param backupPolicy the {@link BackupPolicy} to choose if a backup is necessary or not.
-   * @return if manual adoptions has to be performed after upgrading
-   * @throws BackupFailedException if the backup could not be created
-   */
-  public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, BackupPolicy backupPolicy) {
+		boolean manualAdoptionsNecessary = false;
 
-    boolean manualAdoptionsNecessary = false;
+		VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
+		Path configurationFile = configurationRoot.resolve(this.configurationFilename);
+		if (currentVersion == null) {
+			throw new InvalidConfigurationException(configurationFile.toUri().toString(),
+					StringUtils.capitalize(this.configurationName)
+							+ " does not match any current or legacy schema definitions.");
+		} else {
+			VERSIONS_TYPE latestVersion = this.versions[this.versions.length - 1];
+			// increasing iteration of versions
+			for (int i = 0; i < this.versions.length; i++) {
+				if (currentVersion == latestVersion) {
+					break; // already up to date
+				}
+				if (currentVersion == this.versions[i]) {
+					LOG.info("Upgrading {} '{}' from version {} to {}...", this.configurationName,
+							configurationFile.toUri(), this.versions[i], this.versions[i + 1]);
 
-    VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
-    Path configurationFile = configurationRoot.resolve(this.configurationFilename);
-    if (currentVersion == null) {
-      throw new InvalidConfigurationException(configurationFile.toUri().toString(),
-          StringUtils.capitalize(this.configurationName) + " does not match any current or legacy schema definitions.");
-    } else {
-      VERSIONS_TYPE latestVersion = this.versions[this.versions.length - 1];
-      // increasing iteration of versions
-      for (int i = 0; i < this.versions.length; i++) {
-        if (currentVersion == latestVersion) {
-          break; // already up to date
-        }
-        if (currentVersion == this.versions[i]) {
-          LOG.info("Upgrading {} '{}' from version {} to {}...", this.configurationName, configurationFile.toUri(),
-              this.versions[i], this.versions[i + 1]);
-          List<Path> newContexts;
-          if(this.versions[i+1] == ContextConfigurationVersion.v3_0) {
-        	  TemplateSetUpgrader upgrader = new TemplateSetUpgrader();
-        	  try{
-        		  newContexts =upgrader.upgradeTemplatesToTemplateSets(configurationRoot);
-            	  for(Path p : newContexts) {
-            		  currentVersion = resolveLatestCompatibleSchemaVersion(p);
-            	  }
-        	  }catch(Exception e) {
-        		  throw new CobiGenRuntimeException("An unexpected exception occurred while upgrading the " + this.configurationName + " from version '"
-                          + this.versions[i] + "' to '" + this.versions[i + 1] + "'.",
-                          e);
-        	  }
 
-          }
-          else {
+					Object rootNode;
+					try {
+						Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(this.versions[i]);
+						rootNode = unmarshallConfiguration(configurationFile, this.versions[i], jaxbConfigurationClass);
 
-          Object rootNode;
-          try {
-            Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(this.versions[i]);
-            rootNode = unmarshallConfiguration(configurationFile, this.versions[i], jaxbConfigurationClass);
+						createBackup(configurationFile, backupPolicy);
 
-            createBackup(configurationFile, backupPolicy);
+						// NotYetSupportedException
+						List<ConfigurationUpgradeResult> results = performNextUpgradeStep(this.versions[i], rootNode,
+								configurationRoot);
+						for (ConfigurationUpgradeResult result : results) {
 
-            // NotYetSupportedException
-            ConfigurationUpgradeResult result = performNextUpgradeStep(this.versions[i], rootNode);
-            manualAdoptionsNecessary |= result.areManualAdoptionsNecessary();
+							manualAdoptionsNecessary |= result.areManualAdoptionsNecessary();
+							Path test = result.getConfigurationPath().resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+							try (OutputStream out = Files.newOutputStream(test)) {
+								JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
+							}
 
-            try (OutputStream out = Files.newOutputStream(configurationFile)) {
-              JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
-            }
+							// implicitly check upgrade step
+							currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath().resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
+							// if CobiGen does not understand the upgraded file... throw exception
+							if (currentVersion == null) {
+								throw new CobiGenRuntimeException("An error occurred while upgrading " + this.configurationName
+										+ " from version " + this.versions[i] + " to " + this.versions[i + 1] + ".");
+							}
+						}
+					} catch (NotYetSupportedException | BackupFailedException e) {
+						throw e;
+					} catch (Throwable e) {
+						throw new CobiGenRuntimeException(
+								"An unexpected exception occurred while upgrading the " + this.configurationName
+										+ " from version '" + this.versions[i] + "' to '" + this.versions[i + 1] + "'.",
+								e);
+					}
+					// }
 
-            // implicitly check upgrade step
-            currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
+				}
+			}
+		}
 
-          } catch (NotYetSupportedException | BackupFailedException e) {
-            throw e;
-          } catch (Throwable e) {
-            throw new CobiGenRuntimeException(
-                "An unexpected exception occurred while upgrading the " + this.configurationName + " from version '"
-                    + this.versions[i] + "' to '" + this.versions[i + 1] + "'.",
-                e);
-          }
-          }
+		return manualAdoptionsNecessary;
+	}
 
-          // if CobiGen does not understand the upgraded file... throw exception
-          if (currentVersion == null) {
-            throw new CobiGenRuntimeException("An error occurred while upgrading " + this.configurationName
-                + " from version " + this.versions[i] + " to " + this.versions[i + 1] + ".");
-          }
-        }
-      }
-    }
+	/**
+	 * Upgrades the given configuration to the latest supported version.
+	 *
+	 * @param source                        version from which to upgrade to the
+	 *                                      latest version.
+	 * @param previousConfigurationRootNode JAXB configuration root node of the
+	 *                                      configuration to be upgraded
+	 * @param configurationRoot             TODO
+	 * @return {@link ConfigurationUpgradeResult}, which contains the JAXB root node
+	 *         of the upgraded configuration. Further it contains a flag to indicate
+	 *         manual adoptions to be necessary after upgrading.
+	 * @throws Exception Any exception thrown during processing will be wrapped into
+	 *                   a {@link CobiGenRuntimeException} by the
+	 *                   {@link AbstractConfigurationUpgrader} with an appropriate
+	 *                   message. {@link NotYetSupportedException}s will be
+	 *                   forwarded untouched to the user.
+	 */
+	protected abstract List<ConfigurationUpgradeResult> performNextUpgradeStep(VERSIONS_TYPE source,
+			Object previousConfigurationRootNode, Path configurationRoot) throws Exception;
 
-    return manualAdoptionsNecessary;
-  }
+	/**
+	 * Creates a backup of the given file. If ignoreFailedBackup is set to
+	 * <code>true</code>, the backup will silently log a failed backup and return
+	 * successfully.
+	 *
+	 * @param file         to be backed up
+	 * @param backupPolicy the {@link BackupPolicy} to choose if a backup is
+	 *                     necessary or not. It will throw a
+	 *                     {@link CobiGenRuntimeException} if a backup was enforced
+	 *                     but the creation of the backup failed.
+	 * @throws BackupFailedException if the backup could not be created
+	 */
+	private void createBackup(Path file, BackupPolicy backupPolicy) {
 
-  /**
-   * Upgrades the given configuration to the latest supported version.
-   *
-   * @param source version from which to upgrade to the latest version.
-   * @param previousConfigurationRootNode JAXB configuration root node of the configuration to be upgraded
-   * @return {@link ConfigurationUpgradeResult}, which contains the JAXB root node of the upgraded configuration.
-   *         Further it contains a flag to indicate manual adoptions to be necessary after upgrading.
-   * @throws Exception Any exception thrown during processing will be wrapped into a {@link CobiGenRuntimeException} by
-   *         the {@link AbstractConfigurationUpgrader} with an appropriate message. {@link NotYetSupportedException}s
-   *         will be forwarded untouched to the user.
-   */
-  protected abstract ConfigurationUpgradeResult performNextUpgradeStep(VERSIONS_TYPE source,
-      Object previousConfigurationRootNode) throws Exception;
+		for (int i = 0;; i++) {
+			Pattern p = Pattern.compile("(.+\\.)([^\\.]+)");
+			Matcher matcher = p.matcher(file.getFileName().toString());
+			String backupFilename;
+			if (matcher.matches()) {
+				backupFilename = matcher.group(1) + "bak" + (i == 0 ? "" : i) + "." + matcher.group(2);
+			} else {
+				backupFilename = file.getFileName().toString().concat(".bak" + (i == 0 ? "" : i));
+			}
+			Path backupPath = file.resolveSibling(backupFilename);
+			try {
+				Files.copy(file, backupPath, StandardCopyOption.COPY_ATTRIBUTES);
+				LOG.info("Backup of templates configuration file created ('{}').", backupPath.toUri());
+				break;
+			} catch (FileAlreadyExistsException e) {
+				continue;
+			} catch (UnsupportedOperationException | IOException | SecurityException e) {
+				switch (backupPolicy) {
+				case NO_BACKUP:
+					// nothing to do because backup was not needed anyway
+					break;
+				case BACKUP_IF_POSSIBLE:
+					LOG.warn("Could not write backup of the configuration file ('{}').", backupPath.toUri());
+					break;
+				case ENFORCE_BACKUP:
+					throw new BackupFailedException("Upgrade failed. Not possible to create the backup in '"
+							+ backupPath.toUri() + "' before upgrading the configuration.", e);
+				}
+				break;
+			}
+		}
+	}
 
-  /**
-   * Creates a backup of the given file. If ignoreFailedBackup is set to <code>true</code>, the backup will silently log
-   * a failed backup and return successfully.
-   *
-   * @param file to be backed up
-   * @param backupPolicy the {@link BackupPolicy} to choose if a backup is necessary or not. It will throw a
-   *        {@link CobiGenRuntimeException} if a backup was enforced but the creation of the backup failed.
-   * @throws BackupFailedException if the backup could not be created
-   */
-  private void createBackup(Path file, BackupPolicy backupPolicy) {
+	/**
+	 * Determines and loads the class of the JAXB configuration root node with
+	 * respect to a specific schema version.
+	 *
+	 * @param lv version to load class of the JAXB configuration root node for
+	 * @return the class of the JAXB configuration root node with respect to the
+	 *         given schema version
+	 * @throws ClassNotFoundException if the determined JAXB configuration root node
+	 *                                class could not be found
+	 */
+	private Class<?> getJaxbConfigurationClass(VERSIONS_TYPE lv) throws ClassNotFoundException {
 
-    for (int i = 0;; i++) {
-      Pattern p = Pattern.compile("(.+\\.)([^\\.]+)");
-      Matcher matcher = p.matcher(file.getFileName().toString());
-      String backupFilename;
-      if (matcher.matches()) {
-        backupFilename = matcher.group(1) + "bak" + (i == 0 ? "" : i) + "." + matcher.group(2);
-      } else {
-        backupFilename = file.getFileName().toString().concat(".bak" + (i == 0 ? "" : i));
-      }
-      Path backupPath = file.resolveSibling(backupFilename);
-      try {
-        Files.copy(file, backupPath, StandardCopyOption.COPY_ATTRIBUTES);
-        LOG.info("Backup of templates configuration file created ('{}').", backupPath.toUri());
-        break;
-      } catch (FileAlreadyExistsException e) {
-        continue;
-      } catch (UnsupportedOperationException | IOException | SecurityException e) {
-        switch (backupPolicy) {
-          case NO_BACKUP:
-            // nothing to do because backup was not needed anyway
-            break;
-          case BACKUP_IF_POSSIBLE:
-            LOG.warn("Could not write backup of the configuration file ('{}').", backupPath.toUri());
-            break;
-          case ENFORCE_BACKUP:
-            throw new BackupFailedException("Upgrade failed. Not possible to create the backup in '"
-                + backupPath.toUri() + "' before upgrading the configuration.", e);
-        }
-        break;
-      }
-    }
-  }
+		Class<?> configurationClass = getClass().getClassLoader()
+				.loadClass(AbstractConfigurationUpgrader.JAXB_PACKAGE_PREFIX + "." + lv.name() + "."
+						+ this.configurationJaxbRootNode.getSimpleName());
+		return configurationClass;
+	}
 
-  /**
-   * Determines and loads the class of the JAXB configuration root node with respect to a specific schema version.
-   *
-   * @param lv version to load class of the JAXB configuration root node for
-   * @return the class of the JAXB configuration root node with respect to the given schema version
-   * @throws ClassNotFoundException if the determined JAXB configuration root node class could not be found
-   */
-  private Class<?> getJaxbConfigurationClass(VERSIONS_TYPE lv) throws ClassNotFoundException {
+	/**
+	 * Unmarschalls the given configuration file with respect to the correct schema
+	 * version.
+	 *
+	 * @param configurationFile      configuration file to be unmarshalled
+	 * @param lv                     schema version to be used for unmarschalling
+	 * @param jaxbConfigurationClass see {@link #getJaxbConfigurationClass(Enum)}
+	 * @return the unmarschalled JAXB object representation of the configuration
+	 * @throws JAXBException if anything JAXB related happened
+	 * @throws SAXException  if the parser could not parse the schema
+	 * @throws IOException   if the configuration file could not be read
+	 */
+	private Object unmarshallConfiguration(Path configurationFile, VERSIONS_TYPE lv, Class<?> jaxbConfigurationClass)
+			throws JAXBException, SAXException, IOException {
 
-    Class<?> configurationClass = getClass().getClassLoader()
-        .loadClass(AbstractConfigurationUpgrader.JAXB_PACKAGE_PREFIX + "." + lv.name() + "."
-            + this.configurationJaxbRootNode.getSimpleName());
-    return configurationClass;
-  }
+		// workaround to make JAXB work in OSGi context by
+		// https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
+		final ClassLoader orig = Thread.currentThread().getContextClassLoader();
+		if (JvmUtil.isRunningJava9OrLater()) {
+			Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
+		}
 
-  /**
-   * Unmarschalls the given configuration file with respect to the correct schema version.
-   *
-   * @param configurationFile configuration file to be unmarshalled
-   * @param lv schema version to be used for unmarschalling
-   * @param jaxbConfigurationClass see {@link #getJaxbConfigurationClass(Enum)}
-   * @return the unmarschalled JAXB object representation of the configuration
-   * @throws JAXBException if anything JAXB related happened
-   * @throws SAXException if the parser could not parse the schema
-   * @throws IOException if the configuration file could not be read
-   */
-  private Object unmarshallConfiguration(Path configurationFile, VERSIONS_TYPE lv, Class<?> jaxbConfigurationClass)
-      throws JAXBException, SAXException, IOException {
-
-    // workaround to make JAXB work in OSGi context by
-    // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
-    final ClassLoader orig = Thread.currentThread().getContextClassLoader();
-    if (JvmUtil.isRunningJava9OrLater()) {
-      Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
-    }
-
-    try {
-      Unmarshaller unmarschaller = JAXBContext.newInstance(jaxbConfigurationClass).createUnmarshaller();
-      SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      Schema schema = schemaFactory.newSchema(new StreamSource(
-          getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)));
-      unmarschaller.setSchema(schema);
-      Object rootNode;
-      try (InputStream in = Files.newInputStream(configurationFile)) {
-        rootNode = unmarschaller.unmarshal(in);
-      }
-      return rootNode;
-    } finally {
-      Thread.currentThread().setContextClassLoader(orig);
-    }
-  }
+		try {
+			Unmarshaller unmarschaller = JAXBContext.newInstance(jaxbConfigurationClass).createUnmarshaller();
+			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			Schema schema = schemaFactory.newSchema(new StreamSource(
+					getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)));
+			unmarschaller.setSchema(schema);
+			Object rootNode;
+			try (InputStream in = Files.newInputStream(configurationFile)) {
+				rootNode = unmarschaller.unmarshal(in);
+			}
+			return rootNode;
+		} finally {
+			Thread.currentThread().setContextClassLoader(orig);
+		}
+	}
 }

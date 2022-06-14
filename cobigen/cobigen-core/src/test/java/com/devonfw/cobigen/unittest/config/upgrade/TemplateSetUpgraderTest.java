@@ -158,26 +158,29 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 		newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		InputStream schemaStream = getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd");
-		StreamSource schemaSourceStream = new StreamSource(schemaStream);
-		Schema schema = schemaFactory.newSchema(schemaSourceStream);
-		Validator validator = schema.newValidator();
+		try(InputStream schemaStream = getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd"))
+		{
+			StreamSource schemaSourceStream = new StreamSource(schemaStream);
+			Schema schema = schemaFactory.newSchema(schemaSourceStream);
+			Validator validator = schema.newValidator();
 
-		for (String s : newTemplatesPath.toFile().list()) {
-			Path newContextPath = newTemplatesPath.resolve(s + "/" + "src/main/resources");
-			newContextPath = newContextPath.resolve("context.xml");
-			assertThat(newContextPath.toFile().exists());
-			StreamSource contextStream = new StreamSource(newContextPath.toFile());
-			try {
-				validator.validate(contextStream);
-			} catch (SAXException e) {
-				fail("Exception show that validator has found an fault");
-				contextStream.getInputStream().close();
-				schemaStream.close();
+			for (String s : newTemplatesPath.toFile().list()) {
+				Path newContextPath = newTemplatesPath.resolve(s + "/" + "src/main/resources");
+				newContextPath = newContextPath.resolve("context.xml");
+				assertThat(newContextPath.toFile().exists());
+				StreamSource contextStream = new StreamSource(newContextPath.toFile());
+				try {
+					validator.validate(contextStream);
+				} catch (SAXException e) {
+					fail("Exception show that validator has found an fault");
+					contextStream.getInputStream().close();
+					schemaStream.close();
+				}
+
 			}
-
+			schemaStream.close();
 		}
-		schemaStream.close();
+
 	}
 }
 

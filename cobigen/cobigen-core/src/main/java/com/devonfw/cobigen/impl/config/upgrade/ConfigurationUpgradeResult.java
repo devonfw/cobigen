@@ -1,5 +1,7 @@
 package com.devonfw.cobigen.impl.config.upgrade;
 
+import java.nio.file.Path;
+
 /**
  * Result object encompassing all results from a configuration upgrade step.
  *
@@ -10,7 +12,17 @@ public class ConfigurationUpgradeResult {
   /** The JAXB root node of the upgraded configuration */
   private Object resultConfigurationJaxbRootNode;
 
-  /** States, whether manual adoptions are necessary after the automatic upgrade to work properly */
+  private Path configurationPath;
+
+  public Path getConfigurationPath() {
+	return configurationPath;
+}
+
+public void setConfigurationPath(Path configurationPath) {
+	this.configurationPath = configurationPath;
+}
+
+/** States, whether manual adoptions are necessary after the automatic upgrade to work properly */
   private boolean manualAdoptionsNecessary;
 
   /**
@@ -28,11 +40,13 @@ public class ConfigurationUpgradeResult {
    * Sets the field 'resultConfigurationJaxbRootNode'.
    *
    * @param resultConfigurationJaxbRootNode new value of resultConfigurationJaxbRootNode
+   * @param configurationPath TODO
    * @author mbrunnli (Jun 23, 2015)
    */
-  public void setResultConfigurationJaxbRootNode(Object resultConfigurationJaxbRootNode) {
+  public void setResultConfigurationJaxbRootNode(Object resultConfigurationJaxbRootNode, Path configurationPath) {
 
     this.resultConfigurationJaxbRootNode = resultConfigurationJaxbRootNode;
+    this.configurationPath = configurationPath;
   }
 
   /**

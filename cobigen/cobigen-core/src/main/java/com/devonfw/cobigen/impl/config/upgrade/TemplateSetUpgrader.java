@@ -10,7 +10,9 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -85,7 +87,7 @@ public class TemplateSetUpgrader {
 	 * @param {@link Path} Path to the context.xml that will be upgraded
 	 * @throws Exception
 	 */
-	public List<Path> upgradeTemplatesToTemplateSets(Path contextLocation) throws Exception {
+	public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(Path contextLocation) throws Exception {
 		File context = analyseStructure(contextLocation);
 		List<Path> newContexts = new ArrayList<>();
 		ContextConfiguration contextConfiguration = getContextConfiguration(context.toPath());
@@ -103,6 +105,7 @@ public class TemplateSetUpgrader {
 
 		List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
 				contextConfiguration);
+		Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
 		for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration cc : contextFiles) {
 			for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
 				Path triggerFolder = templates.resolve(trigger.getTemplateFolder());
@@ -122,16 +125,16 @@ public class TemplateSetUpgrader {
 				// write context.xml
 				Path newContextPath = newTriggerFolder.resolve("src/main/resources")
 						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-				newContexts.add(newContextPath.getParent());
-				try {
-					Marshaller marshaller = JAXBContext.newInstance("com.devonfw.cobigen.impl.config.entity.io.v3_0")
-							.createMarshaller();
-					marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-					marshaller.marshal(cc, newContextPath.toFile());
-
-				} catch (JAXBException e) {
-					throw new InvalidConfigurationException("Parsing of the context file provided some XML errors", e);
-				}
+				contextMap.put(cc, newContextPath.getParent());
+//				try {
+//					Marshaller marshaller = JAXBContext.newInstance("com.devonfw.cobigen.impl.config.entity.io.v3_0")
+//							.createMarshaller();
+//					marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+//					marshaller.marshal(cc, newContextPath.toFile());
+//
+//				} catch (JAXBException e) {
+//					throw new InvalidConfigurationException("Parsing of the context file provided some XML errors", e);
+//				}
 
 				this.writeNewPomFile(cobigen_templates, newTriggerFolder, trigger);
 			}
@@ -149,7 +152,7 @@ public class TemplateSetUpgrader {
 			LOG.error("Error copying and deleting the old template files", e);
 			throw e;
 		}
-		return newContexts;
+		return contextMap;
 
 	}
 	/**
@@ -193,6 +196,7 @@ public class TemplateSetUpgrader {
 		m.setArtifactId(trigger.getId().replace('_', '-'));
 		m.setName("PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER");
 		FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());
+		//TODO try with ressources
 		try {
 			writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), m);
 		} catch (FileNotFoundException e) {
