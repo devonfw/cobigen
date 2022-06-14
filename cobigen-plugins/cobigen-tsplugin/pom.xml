@@ -12,7 +12,7 @@
   </parent>
 
   <properties>
-    <server.version>1.1.7</server.version>
+    <server.version>1.1.9</server.version>
     <download.url.win>https://registry.npmjs.org/@devonfw/cobigen-nestserver/-/cobigen-nestserver-${server.version}.tgz</download.url.win>
     <download.url.linux>https://registry.npmjs.org/@devonfw/cobigen-nestserver-linux/-/cobigen-nestserver-linux-${server.version}.tgz</download.url.linux>
     <download.url.macos>https://registry.npmjs.org/@devonfw/cobigen-nestserver-macos/-/cobigen-nestserver-macos-${server.version}.tgz</download.url.macos>
