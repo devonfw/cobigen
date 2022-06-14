@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
     <trigger id="testTemplates" type="xml" templateFolder="testTemplates">
         <matcher type="nodename" value="root">
             <variableAssignment type="constant" key="testConstantKey" value="testConstantValue"/>
         </matcher>
     </trigger>
+  <tags>
+    <tag name="bla" />
+  </tags>
 </contextConfiguration>

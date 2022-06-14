@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
   <trigger id="uml_test" type="xml" templateFolder="uml_test">
     <matcher type="nodename" value="xmi:XMI">
       <variableAssignment type="constant" key="className" value="Bill"/>
     </matcher>
   </trigger>
+  <tags>
+    <tag name="bla" />
+  </tags>
 </contextConfiguration>
