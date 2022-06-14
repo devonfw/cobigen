@@ -77,8 +77,6 @@ public class CobiGenPaths {
   public static Path getTemplatesFolderPath(Path home) throws DeprecatedMonolithicTemplatesException {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
-    if (Files.exists(templatesPath))
-      throw new DeprecatedMonolithicTemplatesException();
     return templatesPath;
   }
 
