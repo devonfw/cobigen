@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
+  <trigger id="templateSet2" type="someType" templateFolder="templateSet2">
+    <containerMatcher type="element" value="someValue" retrieveObjectsRecursively="true"/>
+    <matcher type="element" value="*">
+      <variableAssignment type="constant" key="foo" value="BlABLA1"/>
+    </matcher>
+  </trigger>
+  	<tags>
+		<tag name="PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER" />
+	</tags>
+	<links>
+		<link url="PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER" />
+	</links>
+</contextConfiguration>

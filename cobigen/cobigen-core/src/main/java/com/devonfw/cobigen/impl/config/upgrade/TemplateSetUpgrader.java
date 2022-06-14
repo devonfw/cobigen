@@ -85,8 +85,9 @@ public class TemplateSetUpgrader {
 	 * @param {@link Path} Path to the context.xml that will be upgraded
 	 * @throws Exception
 	 */
-	public void upgradeTemplatesToTemplateSets(Path contextLocation) throws Exception {
+	public List<Path> upgradeTemplatesToTemplateSets(Path contextLocation) throws Exception {
 		File context = analyseStructure(contextLocation);
+		List<Path> newContexts = new ArrayList<>();
 		ContextConfiguration contextConfiguration = getContextConfiguration(context.toPath());
 
 		Path cobigenDir = context.toPath();
@@ -121,6 +122,7 @@ public class TemplateSetUpgrader {
 				// write context.xml
 				Path newContextPath = newTriggerFolder.resolve("src/main/resources")
 						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+				newContexts.add(newContextPath.getParent());
 				try {
 					Marshaller marshaller = JAXBContext.newInstance("com.devonfw.cobigen.impl.config.entity.io.v3_0")
 							.createMarshaller();
@@ -147,6 +149,7 @@ public class TemplateSetUpgrader {
 			LOG.error("Error copying and deleting the old template files", e);
 			throw e;
 		}
+		return newContexts;
 
 	}
 	/**

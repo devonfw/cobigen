@@ -8,6 +8,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -203,19 +204,20 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
         if (currentVersion == this.versions[i]) {
           LOG.info("Upgrading {} '{}' from version {} to {}...", this.configurationName, configurationFile.toUri(),
               this.versions[i], this.versions[i + 1]);
-
+          List<Path> newContexts;
           if(this.versions[i+1] == ContextConfigurationVersion.v3_0) {
         	  TemplateSetUpgrader upgrader = new TemplateSetUpgrader();
         	  try{
-        		  upgrader.upgradeTemplatesToTemplateSets(configurationRoot);
+        		  newContexts =upgrader.upgradeTemplatesToTemplateSets(configurationRoot);
+            	  for(Path p : newContexts) {
+            		  currentVersion = resolveLatestCompatibleSchemaVersion(p);
+            	  }
         	  }catch(Exception e) {
         		  throw new CobiGenRuntimeException("An unexpected exception occurred while upgrading the " + this.configurationName + " from version '"
                           + this.versions[i] + "' to '" + this.versions[i + 1] + "'.",
                           e);
         	  }
-        	  // TODO hier muss der neue Pfad der gesplitteten Context benutzt werden
-        	  currentVersion= this.versions[i+1];
-        	  //currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
+
           }
           else {
 

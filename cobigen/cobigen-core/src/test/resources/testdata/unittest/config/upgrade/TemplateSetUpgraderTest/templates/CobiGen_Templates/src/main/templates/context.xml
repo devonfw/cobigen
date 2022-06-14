@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
   <trigger id="templateSet1" type="java" templateFolder="templateSet1">
-    <containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data"
+    <containerMatcher type="package" value="someValue"
       retrieveObjectsRecursively="false"/>
-    <matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.data\.([^\.]+)To">
-      <variableAssignment type="regex" key="rootPackage" value="1"/>
+    <matcher type="fqn" value="*" accumulationType="NOT">
+      <variableAssignment type="constant" key="foo" value="BLUBB1"/>
     </matcher>
   </trigger>
-  <trigger id="templateSet2" type="meinType" templateFolder="templateSet2">
-    <containerMatcher type="element" value="openAPIFile"/>
-    <matcher type="element" value="EntityDef">
-      <variableAssignment type="constant" key="rootPackage" value="com.devonfw"/>
+  <trigger id="templateSet2" type="someType" templateFolder="templateSet2">
+    <containerMatcher type="element" value="someValue" retrieveObjectsRecursively="true"/>
+    <matcher type="element" value="*">
+      <variableAssignment type="constant" key="foo" value="BlABLA1"/>
     </matcher>
   </trigger>
 </contextConfiguration>
