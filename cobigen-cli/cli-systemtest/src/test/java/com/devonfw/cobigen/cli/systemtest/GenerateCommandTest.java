@@ -50,6 +50,7 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void generateFromEntityTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
@@ -101,6 +102,7 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void generateFromEntityWithDownloadedTemplatesTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
@@ -151,6 +153,7 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void generateFromEntityWithOutputRootPathTest() throws Exception {
 
     File outputRootPath = this.tempFolder.newFolder("outputfolder");
@@ -204,6 +207,7 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void generateTemplatesFromEntityTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
@@ -225,6 +229,7 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void generateFromMultipleTypeInputTest() throws Exception {
 
     File outputRootFile = this.tempFolder.newFolder("playground2", "rootoutput");
