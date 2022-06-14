@@ -56,7 +56,7 @@ public class XmlPluginIntegrationTest {
     // arrange
     Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
     File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
-    CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+    CobiGen cobigen = CobiGenFactory.create(configFolder.toUri(), true);
     Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
     File targetFolder = this.tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
@@ -95,7 +95,7 @@ public class XmlPluginIntegrationTest {
     // arrange
     Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
     File xmlFile = configFolder.resolve("completeUmlXmi.xml").toFile();
-    CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+    CobiGen cobigen = CobiGenFactory.create(configFolder.toUri(), true);
     Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
     File targetFolder = this.tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
@@ -136,7 +136,7 @@ public class XmlPluginIntegrationTest {
     // arrange
     Path configFolder = new File(testFileRootPath + "uml-classdiag").toPath();
     File xmlFile = configFolder.resolve("nullMultiplicity.xml").toFile();
-    CobiGen cobigen = CobiGenFactory.create(configFolder.toUri());
+    CobiGen cobigen = CobiGenFactory.create(configFolder.toUri(), true);
     Object doc = cobigen.read(xmlFile.toPath(), UTF_8);
     File targetFolder = this.tmpFolder.newFolder("testSimpleUmlEntityExtraction");
 
@@ -406,7 +406,7 @@ public class XmlPluginIntegrationTest {
   private GenerationReportToAssert generateTemplateAndTestOutput(String templateId, String outputFileName,
       String expectedFileContents) throws Exception {
 
-    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
+    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI(), true);
 
     // wenn der temporäre Output Ordner breits existiert, dann wird dieser wiederverwendet.
     File tmpFolderCobiGen = new File(this.tmpFolder.getRoot().getAbsolutePath() + File.separator + "cobigen_output");

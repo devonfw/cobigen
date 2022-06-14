@@ -120,7 +120,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testContextLoadedFromOldConfiguration() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI());
+    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI(), true);
   }
 
   /**
@@ -145,7 +145,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testReadConfigurationFromZip() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
+    CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI(), true);
   }
 
 }
