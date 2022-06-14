@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
-  <trigger id="templateSet1" type="java" templateFolder="templateSet1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.0">
+  <trigger id="templateSet1" type="java" templateFolder="templateSet1" inputCharset="UTF-8">
     <containerMatcher type="package" value="someValue"
       retrieveObjectsRecursively="false"/>
     <matcher type="fqn" value="*" accumulationType="NOT">
       <variableAssignment type="constant" key="foo" value="BLUBB1"/>
     </matcher>
   </trigger>
-  <trigger id="templateSet2" type="someType" templateFolder="templateSet2">
+  <trigger id="templateSet2" type="someType" templateFolder="templateSet2" inputCharset="UTF-8">
     <containerMatcher type="element" value="someValue" retrieveObjectsRecursively="true"/>
-    <matcher type="element" value="*">
+    <matcher type="element" value="*" accumulationType="OR">
       <variableAssignment type="constant" key="foo" value="BlABLA1"/>
     </matcher>
   </trigger>
