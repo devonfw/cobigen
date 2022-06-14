@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
   <trigger id="uml_classdiag_test" type="xml" templateFolder="uml_test">
     <containerMatcher type="xpath" value="/xmi:XMI//packagedElement[@xmi:type='uml:Class']" />
     <matcher type="xpath" value="self::node()[@xmi:type='uml:Class']">
       <variableAssignment type="xpath" key="className" value="@name"/>
     </matcher>
   </trigger>
+  <tags>
+    <tag name="bla" />
+  </tags>
 </contextConfiguration>

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
     <trigger id="trigger1" type="test" templateFolder="templates">
         <containerMatcher type="container" value="?" retrieveObjectsRecursively="false"/>
         <matcher type="or" value="?"/>
         <matcher type="not" value="?" accumulationType="NOT"/>
     </trigger>
+  <tags>
+    <tag name="bla" />
+  </tags>
 </contextConfiguration>
