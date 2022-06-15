@@ -68,24 +68,33 @@ public class GeneratorWrapperFactory {
       throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
 
     List<Object> extractedInputs = extractValidEclipseInputs(selection);
+    try {
+      if (extractedInputs.size() > 0) {
+        monitor.subTask("Initialize CobiGen instance");
 
-    if (extractedInputs.size() > 0) {
-      monitor.subTask("Initialize CobiGen instance");
-      CobiGen cobigen = initializeGenerator();
+        CobiGen cobigen = initializeGenerator();
 
-      monitor.subTask("Reading inputs...");
-      monitor.worked(10);
-      Object firstElement = extractedInputs.get(0);
+        monitor.subTask("Reading inputs...");
+        monitor.worked(10);
+        Object firstElement = extractedInputs.get(0);
 
-      if (firstElement instanceof IJavaElement) {
-        LOG.info("Create new CobiGen instance for java inputs...");
-        return new JavaInputGeneratorWrapper(cobigen, ((IJavaElement) firstElement).getJavaProject().getProject(),
-            JavaInputConverter.convertInput(extractedInputs, cobigen), monitor);
-      } else if (firstElement instanceof IResource) {
-        LOG.info("Create new CobiGen instance for file inputs...");
-        return new FileInputGeneratorWrapper(cobigen, ((IResource) firstElement).getProject(),
-            FileInputConverter.convertInput(cobigen, extractedInputs), monitor);
+        if (firstElement instanceof IJavaElement) {
+          LOG.info("Create new CobiGen instance for java inputs...");
+          return new JavaInputGeneratorWrapper(cobigen, ((IJavaElement) firstElement).getJavaProject().getProject(),
+              JavaInputConverter.convertInput(extractedInputs, cobigen), monitor);
+        } else if (firstElement instanceof IResource) {
+          LOG.info("Create new CobiGen instance for file inputs...");
+          return new FileInputGeneratorWrapper(cobigen, ((IResource) firstElement).getProject(),
+              FileInputConverter.convertInput(cobigen, extractedInputs), monitor);
+        }
       }
+    } catch (DeprecatedMonolithicTemplatesException e) {
+
+      ExceptionHandler.handle(e, null);
+
+      // TODO Add some information why is it a good idea to upgrade? Ticket #1516?
+      // TODO Add a link to the WIKI Page Ticket #1516?
+      // UpgradeTemplatesDialog();
     }
     return null;
   }
@@ -225,24 +234,13 @@ public class GeneratorWrapperFactory {
       if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
         Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
 
-        try {
-          CobiGenPaths.getTemplatesFolderPath(CobiGenPaths.getCobiGenHomePath(), true);
-        } catch (DeprecatedMonolithicTemplatesException e) {
-
-          ExceptionHandler.handle(e, null);
-
-          // TODO Add some information why is it a good idea to upgrade? Ticket #1516?
-          // TODO Add a link to the WIKI Page Ticket #1516?
-          // askUserToUpgradeTemplates();
-        } finally {
-          Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
-          boolean fileExists = (jarPath != null && Files.exists(jarPath));
-          if (!fileExists) {
-            MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                "Not Downloaded the CobiGen Template Jar");
-          }
-          return CobiGenFactory.create(jarPath.toUri());
+        Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
+        boolean fileExists = (jarPath != null && Files.exists(jarPath));
+        if (!fileExists) {
+          MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+              "Not Downloaded the CobiGen Template Jar");
         }
+        return CobiGenFactory.create(jarPath.toUri());
       } else {
         return CobiGenFactory.create(generatorProj.getLocationURI());
       }

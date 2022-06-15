@@ -102,7 +102,8 @@ public class GenerateCommand extends CommandCommons {
     }
 
     LOG.debug("Input files and output root path confirmed to be valid.");
-    CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject);
+    checkOldTemplatesException();
+    CobiGen cg = CobiGenUtils.initializeCobiGenWithOldTemplates(this.templatesProject);
 
     resolveTemplateDependencies();
 
@@ -123,6 +124,28 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
+   * check if Old templates exists to handle the exception and let the user decides, if the templates should be upgraded
+   *
+   *
+   *
+   */
+  private void checkOldTemplatesException() {
+
+    try {
+      CobiGenUtils.initializeCobiGen(this.templatesProject);
+    } catch (DeprecatedMonolithicTemplatesException e) {
+      e.printStackTrace();
+      LOG.info("Would you like to upgrade your templates to the newest version? \n"
+          + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
+      // TODO Add some information why is it a good idea to upgrade? Ticket #1516?
+      // TODO Add a link to the WIKI Page Ticket #1516?
+      askUserToUpgradeTemplates();
+
+    }
+
+  }
+
+  /**
    * Resolves dependencies from templates
    *
    * @throws IOException
@@ -136,23 +159,13 @@ public class GenerateCommand extends CommandCommons {
     } else {
       URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
       templatesPath = FileSystemUtil.createFileSystemDependentPath(findTemplatesLocation);
-      try {
-        // CobiGenPaths.getTemplatesFolderPath(CobiGenPaths.getCobiGenHomePath(), true);
-      } catch (DeprecatedMonolithicTemplatesException e) {
-        LOG.warn("", e);
-        LOG.info("Would you like to upgrade your templates to the newest version? \n"
-            + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
-        // TODO Add some information why is it a good idea to upgrade? Ticket #1516?
-        // TODO Add a link to the WIKI Page Ticket #1516?
-        askUserToUpgradeTemplates();
-      } finally {
-        pomFile = templatesPath.resolve("pom.xml");
 
-        if (pomFile != null && Files.exists(pomFile)) {
-          Path temporaryDirectory = Files.createDirectory(CobiGenUtils.getCliHomePath().resolve("temp"));
-          temporaryDirectory.toFile().deleteOnExit();
-          MavenUtil.resolveDependencies(pomFile, temporaryDirectory);
-        }
+      pomFile = templatesPath.resolve("pom.xml");
+
+      if (pomFile != null && Files.exists(pomFile)) {
+        Path temporaryDirectory = Files.createDirectory(CobiGenUtils.getCliHomePath().resolve("temp"));
+        temporaryDirectory.toFile().deleteOnExit();
+        MavenUtil.resolveDependencies(pomFile, temporaryDirectory);
       }
     }
   }
@@ -255,14 +268,14 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
-   * Opens a looping prompt with a yes/no question and sets the root output directory to the current user directory.
+   * Opens a looping prompt with a yes/no question and upgrades the templates to the newest version.
    *
    */
   private void askUserToUpgradeTemplates() {
 
     Path outputDirectory = Paths.get(System.getProperty("user.dir"));
 
-    boolean setToUserDir = ValidationUtils.yesNoPrompt("Set output directory to: " + outputDirectory.toString(),
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("upgrading templates version...: " + outputDirectory.toString(),
         "Invalid input. Please answer yes/n or no/n (or hit return for yes).",
         "Continue generation with old templates...");
 
