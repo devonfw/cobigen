@@ -61,6 +61,22 @@ public class CobiGenUtils {
   }
 
   /**
+   * Registers CobiGen plug-ins and instantiates CobiGen, even if old templates found
+   *
+   * @param templatesProject the templates project or jar
+   * @return object of CobiGen
+   */
+  public static CobiGen initializeCobiGenWithOldTemplates(Path templatesProject) {
+
+    registerPlugins();
+    if (templatesProject != null) {
+      return CobiGenFactory.create(templatesProject.toUri(), true);
+    } else {
+      return CobiGenFactory.createWithOldTemplates();
+    }
+  }
+
+  /**
    * @return the home path of the CLI
    */
   public static Path getCliHomePath() {

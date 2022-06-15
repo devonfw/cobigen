@@ -304,4 +304,39 @@ public class GenerateCommandTest extends AbstractCliTest {
     assertThat(outputRootPath.resolve("docs")).exists();
   }
 
+  /**
+   * Test generate, when old templates found, if DeprecatedMonolithicTemplatesException gets thrown
+   */
+  @Test
+  public void generateWithOldTemplatesException() {
+
+  }
+
+  /**
+   * Test generate, when new templates found, if no Exception gets thrown
+   *
+   * @throws Exception
+   */
+  @Test
+  @Ignore
+  public void generateWithNewTemplatesNoException() throws Exception {
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    File templatesProject = this.tmpProject.resolve("template-sets/templates-devon4j-utils-2021.12.007-SNAPSHOT.jar")
+        .toFile();
+
+    String args[] = new String[6];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "tos";
+    args[4] = "-tp";
+    args[5] = templatesProject.getAbsolutePath();
+
+    execute(args, false);
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
+        .exists();
+  }
 }
