@@ -29,7 +29,6 @@ import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tags;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
@@ -47,7 +46,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  */
 public class TemplateSetUpgrader {
 
-
 	/** Logger instance. */
 	private static final Logger LOG = LoggerFactory.getLogger(TemplateSetUpgrader.class);
 	/** Mapper factory instance. */
@@ -56,7 +54,7 @@ public class TemplateSetUpgrader {
 	private MapperFacade mapper;
 
 	/**
-	 * Creates a new {@link TemplateSetUpgrader} instance
+	 * Creates a new {@link TemplateSetUpgrader} instance to upgrade v2.1 ContextConfigurations to v3.0
 	 */
 	public TemplateSetUpgrader() {
 
@@ -80,28 +78,32 @@ public class TemplateSetUpgrader {
 		this.mapper = mapperFactory.getMapperFacade();
 	}
 
+
 	/**
-	 * Upgrades the template structure from v2.1 to the new structure from v3.0. The
+	 * Upgrades the ContextConfiguration from v2.1 to the new structure from v3.0. The
 	 * monolithic pom and context files will be split into multiple files
 	 * corresponding to every template set that will be created.
+	 *
 	 * @param {@link Path} Path to the context.xml that will be upgraded
+	 * @return {@link Map} collection that contains the upgraded v3.0 {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration}
+	 * 			as key and a {@link Path} for the new location of the context.xml as value
 	 * @throws Exception
 	 */
-	public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(Path contextLocation) throws Exception {
-		File context = analyseStructure(contextLocation);
-		List<Path> newContexts = new ArrayList<>();
-		ContextConfiguration contextConfiguration = getContextConfiguration(context.toPath());
+	public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
+			Path contextLocation) throws Exception {
+		Path context = analyseStructure(contextLocation);
+		ContextConfiguration contextConfiguration = getContextConfiguration(context);
 
-		Path cobigenDir = context.toPath();
+		Path cobigenDir = context;
 		while (!cobigenDir.endsWith(ConfigurationConstants.COBIGEN_CONFIG_FILE)) {
 			cobigenDir = cobigenDir.getParent();
 		}
 
 		Path templateSets = Files.createDirectory(cobigenDir.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
 		Path adapted = Files.createDirectory(templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER));
-		Path cobigen_templates = cobigenDir.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+		Path cobigenTemplates = cobigenDir.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
 				.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-		Path templates = cobigen_templates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+		Path templates = cobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
 		List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
 				contextConfiguration);
@@ -110,33 +112,26 @@ public class TemplateSetUpgrader {
 			for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
 				Path triggerFolder = templates.resolve(trigger.getTemplateFolder());
 				Path newTriggerFolder = adapted.resolve(trigger.getTemplateFolder());
-				Path utilsPath = cobigen_templates.resolve("src/main/java");
+				Path utilsPath = cobigenTemplates.resolve("src/main/java");
 				try {
 					FileUtils.copyDirectory(triggerFolder.toFile(),
 							newTriggerFolder.resolve("src/main/resources").toFile());
 				} catch (Exception e) {
-					LOG.error("Could not copy template Folder");
+					LOG.error("Could not copy template Folder with the Error" + e);
+					throw e;
 				}
 				try {
 					FileUtils.copyDirectory(utilsPath.toFile(), newTriggerFolder.resolve("src/main/java").toFile());
 				} catch (Exception e) {
-					LOG.error("Could not copy utlis Folder");
+					LOG.error("Could not copy utlis Folder with the Error" + e);
+					throw e;
 				}
-				// write context.xml
+
 				Path newContextPath = newTriggerFolder.resolve("src/main/resources")
 						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-				contextMap.put(cc, newContextPath.getParent());
-//				try {
-//					Marshaller marshaller = JAXBContext.newInstance("com.devonfw.cobigen.impl.config.entity.io.v3_0")
-//							.createMarshaller();
-//					marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-//					marshaller.marshal(cc, newContextPath.toFile());
-//
-//				} catch (JAXBException e) {
-//					throw new InvalidConfigurationException("Parsing of the context file provided some XML errors", e);
-//				}
+				contextMap.put(cc, newContextPath);
 
-				this.writeNewPomFile(cobigen_templates, newTriggerFolder, trigger);
+				this.writeNewPomFile(cobigenTemplates, newTriggerFolder, trigger);
 			}
 		}
 
@@ -147,7 +142,7 @@ public class TemplateSetUpgrader {
 			f.mkdir();
 		}
 		try {
-			FileUtils.moveDirectoryToDirectory(cobigen_templates.getParent().toFile(), f, false);
+			FileUtils.moveDirectoryToDirectory(cobigenTemplates.getParent().toFile(), f, false);
 		} catch (IOException e) {
 			LOG.error("Error copying and deleting the old template files", e);
 			throw e;
@@ -155,12 +150,14 @@ public class TemplateSetUpgrader {
 		return contextMap;
 
 	}
+
 	/**
-	 * Writes a pom.xml files for the splitted context and template folder
+	 * Writes a pom.xml file for the splitted context and template folder
 	 *
 	 * @param {@link Path}cobigen_templates Path to the CobiGen_Templates folder
 	 * @param {@link Path}newTemplateFolder Path to the splitted template folder
-	 * @param {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }trigger to the related template folder
+	 * @param {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }trigger
+	 *               to the related template folder
 	 * @throws IOException
 	 * @throws XmlPullParserException
 	 */
@@ -170,20 +167,16 @@ public class TemplateSetUpgrader {
 		MavenXpp3Reader reader = new MavenXpp3Reader();
 		MavenXpp3Writer writer = new MavenXpp3Writer();
 		Model mMonolithicPom;
-		FileInputStream pomInputStream = new FileInputStream(cobigen_templates.resolve("pom.xml").toFile());
-		try {
+		try(FileInputStream pomInputStream = new FileInputStream(cobigen_templates.resolve("pom.xml").toFile());) {
 			mMonolithicPom = reader.read(pomInputStream);
 		} catch (FileNotFoundException e) {
 			LOG.error("Monolitic pom file could not be found", e);
-			pomInputStream.close();
 			throw e;
 		} catch (IOException e) {
 			LOG.error("IOError while reading the monolithic pom file", e);
-			pomInputStream.close();
 			throw e;
 		} catch (XmlPullParserException e) {
 			LOG.error("XMLError while parsing the monolitic pom file", e);
-			pomInputStream.close();
 			throw e;
 		}
 		Model m = new Model();
@@ -195,32 +188,26 @@ public class TemplateSetUpgrader {
 		m.setDependencies(mMonolithicPom.getDependencies());
 		m.setArtifactId(trigger.getId().replace('_', '-'));
 		m.setName("PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER");
-		FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());
-		//TODO try with ressources
-		try {
+		try(FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());) {
 			writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), m);
 		} catch (FileNotFoundException e) {
 			LOG.error("Error while creating the new v3_0 pom file", e);
-			pomInputStream.close();
-			pomOutputStream.close();
 			throw e;
 		} catch (IOException e) {
 			LOG.error("IOError while writing the new v3_0 pom file", e);
-			pomInputStream.close();
-			pomOutputStream.close();
 			throw e;
 		}
-		pomInputStream.close();
-		pomOutputStream.close();
 
 	}
 
-
 	/**
-	 * Splits a contextConfiguration and converts a {@link Trigger} and his data to a v3_0 Trigger
+	 * Splits a contextConfiguration and converts a {@link Trigger} and his data to
+	 * a v3_0 Trigger
 	 *
-	 * @param {@link ContextConfiguration}the monolithic context that will be splitted
-	 * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} List of the splitted contextConfiguration files
+	 * @param {@link ContextConfiguration}the monolithic context that will be
+	 *               splitted
+	 * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration}
+	 *         List of the splitted contextConfiguration files
 	 */
 	private List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContext(
 			ContextConfiguration monolitic) {
@@ -261,12 +248,12 @@ public class TemplateSetUpgrader {
 	}
 
 	/**
-	 * Locates the context file folder
+	 * Locates the context file
 	 *
 	 * @param {@link Path} to the contextFile
 	 * @return {@link File} of the contextFile
 	 */
-	private File analyseStructure(Path contextP) throws Exception {
+	private Path analyseStructure(Path contextP) throws Exception {
 
 		if (contextP == null) {
 			throw new Exception("Templates location cannot be null!");
@@ -296,7 +283,7 @@ public class TemplateSetUpgrader {
 		if (!context.exists()) {
 			throw new FileNotFoundException("Context.xml could not be found");
 		}
-		return context;
+		return context.toPath();
 	}
 
 	/**

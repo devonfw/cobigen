@@ -24,13 +24,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.BackupPolicy;
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
-import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
 
 import jakarta.xml.bind.JAXB;
@@ -137,9 +135,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 	 *         <code>null</code> if the configuration is not compliant to any.
 	 */
 	public VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot) {
-		VERSIONS_TYPE result = resolveLatestCompatibleSchemaVersion(configurationRoot, false);
-		// if CobiGen does not understand the upgraded file... throw exception
-		return result;
+
+		return resolveLatestCompatibleSchemaVersion(configurationRoot, false);
 	}
 
 	/**
@@ -155,7 +152,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 
 		LOG.info("Try reading {} (including trails with legacy schema).", this.configurationName);
 
-		Path configurationFile = configurationRoot.resolve(this.configurationFilename);
+		Path configurationFile = configurationRoot.endsWith(this.configurationFilename) ? configurationRoot
+				: configurationRoot.resolve(this.configurationFilename);
 
 		for (int i = this.versions.length - 1; i >= 0; i--) {
 			VERSIONS_TYPE lv = this.versions[i];
@@ -227,7 +225,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 					LOG.info("Upgrading {} '{}' from version {} to {}...", this.configurationName,
 							configurationFile.toUri(), this.versions[i], this.versions[i + 1]);
 
-
 					Object rootNode;
 					try {
 						Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(this.versions[i]);
@@ -235,23 +232,22 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 
 						createBackup(configurationFile, backupPolicy);
 
-						// NotYetSupportedException
 						List<ConfigurationUpgradeResult> results = performNextUpgradeStep(this.versions[i], rootNode,
 								configurationRoot);
 						for (ConfigurationUpgradeResult result : results) {
 
 							manualAdoptionsNecessary |= result.areManualAdoptionsNecessary();
-							Path test = result.getConfigurationPath().resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-							try (OutputStream out = Files.newOutputStream(test)) {
+							try (OutputStream out = Files.newOutputStream(result.getConfigurationPath())) {
 								JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
 							}
 
 							// implicitly check upgrade step
-							currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath().resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
+							currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
 							// if CobiGen does not understand the upgraded file... throw exception
 							if (currentVersion == null) {
-								throw new CobiGenRuntimeException("An error occurred while upgrading " + this.configurationName
-										+ " from version " + this.versions[i] + " to " + this.versions[i + 1] + ".");
+								throw new CobiGenRuntimeException(
+										"An error occurred while upgrading " + this.configurationName + " from version "
+												+ this.versions[i] + " to " + this.versions[i + 1] + ".");
 							}
 						}
 					} catch (NotYetSupportedException | BackupFailedException e) {
@@ -262,7 +258,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 										+ " from version '" + this.versions[i] + "' to '" + this.versions[i + 1] + "'.",
 								e);
 					}
-					// }
 
 				}
 			}

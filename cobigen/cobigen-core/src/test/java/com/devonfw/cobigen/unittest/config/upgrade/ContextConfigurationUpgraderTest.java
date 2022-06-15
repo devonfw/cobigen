@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -19,7 +18,6 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
-import com.google.common.io.Files;
 
 /**
  * Test suite for {@link ContextConfigurationUpgrader}
@@ -44,12 +42,8 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 	 */
 	@Test
 	public void testCorrectUpgrade_v2_0_TO_LATEST() throws Exception {
-
-
+		// preparation
 		File cobigen = this.tempFolder.newFolder(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-		Path templatesFolder = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
-		Path cobigen_templates = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
-				.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 		Path templates = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
 				.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
 				.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
@@ -105,13 +99,9 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 	 */
 	@Test
 	public void testCorrectUpgrade_v2_1_TO_LATEST() throws Exception {
-		// to version 3.0
-		// preparation
 
+		// preparation
 		File cobigen = this.tempFolder.newFolder(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-		Path templatesFolder = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
-		Path cobigen_templates = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
-				.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 		Path templates = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
 				.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
 				.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
