@@ -91,10 +91,9 @@ public class TemplateSetUpgrader {
 	 */
 	public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
 			Path contextLocation) throws Exception {
-		Path context = analyseStructure(contextLocation);
-		ContextConfiguration contextConfiguration = getContextConfiguration(context);
+		ContextConfiguration contextConfiguration = getContextConfiguration(contextLocation);
 
-		Path cobigenDir = context;
+		Path cobigenDir = contextLocation;
 		while (!cobigenDir.endsWith(ConfigurationConstants.COBIGEN_CONFIG_FILE)) {
 			cobigenDir = cobigenDir.getParent();
 		}
@@ -117,13 +116,13 @@ public class TemplateSetUpgrader {
 					FileUtils.copyDirectory(triggerFolder.toFile(),
 							newTriggerFolder.resolve("src/main/resources").toFile());
 				} catch (Exception e) {
-					LOG.error("Could not copy template Folder with the Error" + e);
+					LOG.error("An error occurred while copying the template Folder",e);
 					throw e;
 				}
 				try {
 					FileUtils.copyDirectory(utilsPath.toFile(), newTriggerFolder.resolve("src/main/java").toFile());
 				} catch (Exception e) {
-					LOG.error("Could not copy utlis Folder with the Error" + e);
+					LOG.error("An error occurred while copying the template utilities Folder", e);
 					throw e;
 				}
 
@@ -144,7 +143,7 @@ public class TemplateSetUpgrader {
 		try {
 			FileUtils.moveDirectoryToDirectory(cobigenTemplates.getParent().toFile(), f, false);
 		} catch (IOException e) {
-			LOG.error("Error copying and deleting the old template files", e);
+			LOG.error("An error occured while backing up the old template folder", e);
 			throw e;
 		}
 		return contextMap;
@@ -191,10 +190,10 @@ public class TemplateSetUpgrader {
 		try(FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());) {
 			writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), m);
 		} catch (FileNotFoundException e) {
-			LOG.error("Error while creating the new v3_0 pom file", e);
+			LOG.error("An error occured while creating the new v3_0 pom file", e);
 			throw e;
 		} catch (IOException e) {
-			LOG.error("IOError while writing the new v3_0 pom file", e);
+			LOG.error("An IOError occured while writing the new v3_0 pom file", e);
 			throw e;
 		}
 
@@ -247,28 +246,30 @@ public class TemplateSetUpgrader {
 		return splittedContexts;
 	}
 
+
 	/**
-	 * Locates the context file
+	 * Locates and returns the correct context file
 	 *
 	 * @param {@link Path} to the contextFile
-	 * @return {@link File} of the contextFile
+	 * @return {@link ContextConfiguration}
+	 * @throws Exception
 	 */
-	private Path analyseStructure(Path contextP) throws Exception {
+	private ContextConfiguration getContextConfiguration(Path contextFile) throws Exception {
 
-		if (contextP == null) {
+		if (contextFile == null) {
 			throw new Exception("Templates location cannot be null!");
 		}
 		// check if context exits here
-		File context = contextP.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME).toFile();
+		File context = contextFile.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME).toFile();
 		if (context.exists()) {
 			LOG.info("Found Context File");
 		} else {
-			if (contextP.endsWith(ConfigurationConstants.COBIGEN_TEMPLATES)) {
-				context = contextP.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+			if (contextFile.endsWith(ConfigurationConstants.COBIGEN_TEMPLATES)) {
+				context = contextFile.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
 						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME).toFile();
 				LOG.info("Found Context File");
-			} else if (contextP.endsWith(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)) {
-				context = contextP.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
+			} else if (contextFile.endsWith(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)) {
+				context = contextFile.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
 						.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
 						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME).toFile();
 				LOG.info("Found Context File");
@@ -283,16 +284,6 @@ public class TemplateSetUpgrader {
 		if (!context.exists()) {
 			throw new FileNotFoundException("Context.xml could not be found");
 		}
-		return context.toPath();
-	}
-
-	/**
-	 * Returns the correct context file
-	 *
-	 * @param {@link Path} to the contextFile
-	 * @return {@link ContextConfiguration}
-	 */
-	private ContextConfiguration getContextConfiguration(Path contextFile) {
 
 		try (InputStream in = Files.newInputStream(contextFile)) {
 			Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
