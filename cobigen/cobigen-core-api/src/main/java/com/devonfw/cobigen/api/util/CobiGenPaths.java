@@ -16,6 +16,7 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 /**
  * Utilities related to the cobigen configurations including:
  *
+ *
  * 1. templates location
  */
 public class CobiGenPaths {

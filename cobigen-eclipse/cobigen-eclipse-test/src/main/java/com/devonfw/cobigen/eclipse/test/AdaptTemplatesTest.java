@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -21,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
@@ -52,6 +52,7 @@ public class AdaptTemplatesTest extends SystemTest {
   public static void setupClass() throws Exception {
 
     EclipseUtils.cleanWorkspace(bot, true);
+
   }
 
   /**
@@ -80,18 +81,11 @@ public class AdaptTemplatesTest extends SystemTest {
     SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "adapt-templates.yml");
     javaClassItem.select();
 
-    // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, 25000, "CRUD devon4j Server>CRUD REST services");
     bot.waitUntil(new AllJobsAreFinished(), 10000);
-    // increase timeout as the openAPI parser is slow on initialization
-    EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
+    String Cobigen_templates = ConfigurationConstants.COBIGEN_TEMPLATES;
+    IProject adaptedTemplatesProj = ResourcesPlugin.getWorkspace().getRoot().getProject(Cobigen_templates);
 
-    bot.waitUntil(new AllJobsAreFinished(), 10000);
-    IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
-    IFile generationResult = proj.getFile(
-        "src/main/java/com/devonfw/test/sampledatamanagement/service/impl/rest/SampledatamanagementRestServiceImpl.java");
-
-    assertThat(generationResult.exists()).isTrue();
+    assertThat(adaptedTemplatesProj.exists()).isTrue();
   }
 
   /**
@@ -99,12 +93,12 @@ public class AdaptTemplatesTest extends SystemTest {
    *
    * @throws Exception test fails
    */
-  @Ignore
   @Test
-  public void testAdaptTemplatesAndGenerate() throws Exception {
+  @Ignore
+  public void testAdaptTemplates() throws Exception {
 
-    File tmpProject = this.tempFolder.newFolder("playground", "project");
-    withEnvironmentVariable("COBIGEN_HOME", tmpProject.toPath().toString())
+    File tmpProject = this.tempFolder.newFolder("playground", "project", "templates");
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, tmpProject.getParentFile().getAbsolutePath())
         .execute(() -> testBasicOpenAPIGenerationWithAdaptTemplates());
   }
 }

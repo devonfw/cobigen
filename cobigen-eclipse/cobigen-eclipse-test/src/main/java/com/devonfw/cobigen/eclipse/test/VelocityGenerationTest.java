@@ -14,6 +14,7 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
@@ -48,6 +49,7 @@ public class VelocityGenerationTest extends SystemTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void simpleVelocityBasedGeneration() throws Exception {
 
     // create a new temporary java project and copy java class used as an input for CobiGen

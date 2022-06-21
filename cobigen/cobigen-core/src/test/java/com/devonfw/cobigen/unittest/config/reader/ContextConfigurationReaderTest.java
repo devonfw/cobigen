@@ -10,8 +10,10 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
@@ -58,6 +60,25 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
 
     assertThat(invalidException instanceof InvalidConfigurationException);
     assertThat(invalidException.getMessage()).contains("Could not find any context configuration file.");
+  }
+
+  /**
+   * Tests whether an {@link ConfigurationConflictException} will be thrown when both a v2.1 and v2.2 context.xml are
+   * present (new templates with old custom templates). Also tests if the thrown error message contains a link to the
+   * wiki.
+   *
+   * @throws ConfigurationConflictException if a conflict occurred
+   *
+   */
+  @Test
+  public void testConflictConfiguration() throws ConfigurationConflictException {
+
+    Throwable bothPresent = assertThrows(ConfigurationConflictException.class, () -> {
+      new ContextConfigurationReader(Paths.get(testFileRootPath + "conflicted_old_templates"));
+    });
+
+    assertThat(bothPresent instanceof ConfigurationConflictException);
+    assertThat(bothPresent.getMessage()).contains(WikiConstants.WIKI_UPDATE_OLD_CONFIG);
   }
 
   /**
@@ -120,7 +141,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testContextLoadedFromOldConfiguration() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI());
+    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI(), true);
   }
 
   /**
@@ -145,7 +166,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testReadConfigurationFromZip() throws Exception {
 
-    CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
+    CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI(), true);
   }
 
 }

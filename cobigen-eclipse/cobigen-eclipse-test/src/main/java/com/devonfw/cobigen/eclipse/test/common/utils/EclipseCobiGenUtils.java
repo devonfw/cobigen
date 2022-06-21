@@ -47,6 +47,20 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Tries a Generate process with an expected error title.
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param expectedErrorTitle String of expected error title
+   * @throws Exception test fails
+   */
+  public static void processCobiGenWithExpectedError(SWTWorkbenchBot bot, SWTBotTreeItem input,
+      String expectedErrorTitle) throws Exception {
+
+    processCobiGenWithExpectedError(bot, input, DEFAULT_TIMEOUT, expectedErrorTitle);
+  }
+
+  /**
    * Expands multi layer nodes of following format: node1>node2>finalNode
    *
    * @param bot SWTWorkbenchBot to use
@@ -105,6 +119,31 @@ public class EclipseCobiGenUtils {
       }
     }
     SWTBotButton finishButton = bot.button(IDialogConstants.FINISH_LABEL);
+    bot.waitUntil(widgetIsEnabled(bot.button()));
+    finishButton.click();
+  }
+
+  /**
+   * Tries a Generate process with an expected error title.
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param defaultTimeout timeout to be overwritten
+   * @param expectedErrorTitle String of expected error title
+   * @throws Exception test fails
+   */
+  public static void processCobiGenWithExpectedError(SWTWorkbenchBot bot, SWTBotTreeItem input, int defaultTimeout,
+      String expectedErrorTitle) throws Exception {
+
+    // Open generation wizard with new file as Input
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
+    input.contextMenu("CobiGen").menu("Generate...").click();
+    bot.waitUntil(new AnyShellIsActive(expectedErrorTitle), defaultTimeout);
+
+    takeScreenshot(bot, "InvalidConfigurationDialog");
+
+    SWTBotButton finishButton = bot.button(IDialogConstants.OK_LABEL);
     bot.waitUntil(widgetIsEnabled(bot.button()));
     finishButton.click();
   }
@@ -176,8 +215,12 @@ public class EclipseCobiGenUtils {
 
     takeScreenshot(bot, "Adapt Templates Warning!");
     SWTBotShell warningDialog = bot.shell("Warning!");
-
     warningDialog.bot().button("Ok").click();
+
+    takeScreenshot(bot, "Create new POM!");
+    SWTBotShell finishDialog = bot.shell("Create new POM");
+    finishDialog.bot().button("Finish").click();
+
     SWTBotShell informationDialog = bot.shell("Information");
     bot.waitUntil(new AnyShellIsActive("Information"), DEFAULT_TIMEOUT);
     takeScreenshot(bot, "Adapt Templates Information");

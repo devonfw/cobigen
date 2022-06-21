@@ -236,7 +236,7 @@ public class GeneratorWrapperFactory {
     } catch (Throwable e) {
       throw new GeneratorCreationException(
           "Configuration source could not be read.\nIf you were updating templates, it may mean"
-              + " that you have no internet connection.",
+              + " that you have no internet connection," + " or you have an old monolithic Templates.",
           e);
     }
   }

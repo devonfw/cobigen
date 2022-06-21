@@ -34,7 +34,7 @@ public class VariablesResolutionTest extends AbstractIntegrationTest {
   @Test
   public void testSuccessfulPathResolution_variableEqNull() throws Exception {
 
-    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
+    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI(), true);
     File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
 
     Object input = cobiGen.read(

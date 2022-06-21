@@ -42,7 +42,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testBasicElementMatcher_oneComponent() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
     assertThat(openApiFile).isNotNull();
@@ -59,7 +59,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testBasicElementMatcher_twoComponents() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
     assertThat(openApiFile).isNotNull();
@@ -76,7 +76,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testBasicElementMatcher_twoComponents_matchRegex() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates-regex").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates-regex").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
     assertThat(openApiFile).isNotNull();
@@ -94,7 +94,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testBasicElementMatcher_oneComponent_matchRegex() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates-regex").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates-regex").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
     assertThat(openApiFile).isNotNull();
@@ -117,7 +117,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testVariableAssignment_propertyName() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "one-component.yaml"), TestConstants.UTF_8);
     List<Object> inputObjects = cobigen.resolveContainers(openApiFile);
@@ -142,7 +142,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testVariableAssignment_rootPackage() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
 
@@ -170,7 +170,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testVariableAssignment_rootComponent() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "root-package.yaml"), TestConstants.UTF_8);
 
@@ -201,7 +201,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testVariableAssignment_attribute() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "two-components.yaml"), TestConstants.UTF_8);
 
@@ -240,7 +240,7 @@ public class InputReaderMatcherTest {
   @Test
   public void testVariableAssignment_noAttributeFound() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri());
+    CobiGen cobigen = CobiGenFactory.create(Paths.get(testdataRoot, "templates").toUri(), true);
 
     Object openApiFile = cobigen.read(Paths.get(testdataRoot, "two-components-no-attribute.yaml"), TestConstants.UTF_8);
 
