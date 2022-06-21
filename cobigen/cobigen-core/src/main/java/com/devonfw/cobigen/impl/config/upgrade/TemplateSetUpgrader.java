@@ -260,32 +260,32 @@ public class TemplateSetUpgrader {
 			throw new Exception("Templates location cannot be null!");
 		}
 		// check if context exits here
-		File context = contextFile.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME).toFile();
-		if (context.exists()) {
+		Path context = contextFile.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+		if (Files.exists(context)) {
 			LOG.info("Found Context File");
 		} else {
 			if (contextFile.endsWith(ConfigurationConstants.COBIGEN_TEMPLATES)) {
 				context = contextFile.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME).toFile();
+						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 				LOG.info("Found Context File");
 			} else if (contextFile.endsWith(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)) {
 				context = contextFile.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
 						.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME).toFile();
+						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 				LOG.info("Found Context File");
 			} else {
 				context = ConfigurationConstants.DEFAULT_HOME.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
 						.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
 						.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME).toFile();
+						.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 				LOG.info("Found Context File");
 			}
 		}
-		if (!context.exists()) {
+		if (!Files.exists(context)) {
 			throw new FileNotFoundException("Context.xml could not be found");
 		}
 
-		try (InputStream in = Files.newInputStream(contextFile)) {
+		try (InputStream in = Files.newInputStream(context)) {
 			Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
 
 			Object rootNode = unmarschaller.unmarshal(in);
