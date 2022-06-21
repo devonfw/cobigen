@@ -96,7 +96,6 @@ public abstract class AbstractContextConfigurationReader {
             try{
             	validator.validate(configVersion.floatValue());
             }catch(NotYetSupportedException e) {
-            	Log.warn("Upgrade of Context should be done");
             }
           }
         } else {
