@@ -82,6 +82,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
+   * Tests whether a valid configuration can be read from template-sets/adapted folder
    *
    * @throws Exception test fails
    */
