@@ -35,8 +35,8 @@ public class TypeScriptMergerTest {
   public void testMergingNoOverrides() {
 
     // arrange
-    Merger tsMerger = this.activator.bindMerger().stream().filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE))
-        .findFirst().get();
+    Merger tsMerger = this.activator.bindMerger().stream()
+        .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE)).findFirst().get();
     File baseFile = new File(testFileRootPath + "baseFile.ts");
 
     // Should merge comments
@@ -74,7 +74,7 @@ public class TypeScriptMergerTest {
   }
 
   /**
-   * Checks if the ts-merger can be launched and if the iutput is correct with patchOverrides = true
+   * Checks if the ts-merger can be launched and if the output is correct with patchOverrides = true
    */
   @Test
   public void testMergingOverrides() {
@@ -118,14 +118,37 @@ public class TypeScriptMergerTest {
   }
 
   /**
+   * Checks if the ts-merger can merge an export const with patchOverrides = true correctly
+   *
+   * Check: https://github.com/devonfw/cobigen/issues/1291
+   */
+  @Test
+  public void testMergingOverridesExportConst() {
+
+    // arrange
+    Merger tsMerger = this.activator.bindMerger().stream()
+        .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE_OVERRIDE)).findFirst().get();
+    File baseFile = new File(testFileRootPath + "export_const_base.ts");
+
+    // act
+    String mergedContents = tsMerger.merge(baseFile, readTSFile("export_const_patch.ts"), "UTF-8");
+
+    // Should merge properly
+    assertThat(mergedContents).contains("export const test = {");
+    assertThat(mergedContents).contains("a: false");
+    assertThat(mergedContents).contains("b: true");
+
+  }
+
+  /**
    * We need to test whether we are able to send large amount of data to the server.
    */
   @Test
   public void testMergingMassiveFile() {
 
     // arrange
-    Merger tsMerger = this.activator.bindMerger().stream().filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE))
-        .findFirst().get();
+    Merger tsMerger = this.activator.bindMerger().stream()
+        .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE)).findFirst().get();
     File baseFile = new File(testFileRootPath + "massiveFile.ts");
 
     // act
@@ -143,8 +166,8 @@ public class TypeScriptMergerTest {
   public void testReadingEncoding() throws IOException {
 
     // Arrange
-    Merger tsMerger = this.activator.bindMerger().stream().filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE))
-        .findFirst().get();
+    Merger tsMerger = this.activator.bindMerger().stream()
+        .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE)).findFirst().get();
     File baseFile = new File(testFileRootPath + "baseFile_encoding_UTF-8.ts");
     File patchFile = new File(testFileRootPath + "patchFile.ts");
 
@@ -191,8 +214,8 @@ public class TypeScriptMergerTest {
   @Test
   public void testNullAndUndefinedTypes() {
 
-    Merger tsMerger = this.activator.bindMerger().stream().filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE))
-        .findFirst().get();
+    Merger tsMerger = this.activator.bindMerger().stream()
+        .filter(e -> e.getType().equals(TypeScriptPluginActivator.TSMERGE)).findFirst().get();
     File baseFile = new File(testFileRootPath + "nullBase.ts");
     String mergedContents = tsMerger.merge(baseFile, readTSFile("nullPatch.ts"), "UTF-8");
     assertEquals(false, mergedContents.contains("Not able to merge") || mergedContents.isEmpty());

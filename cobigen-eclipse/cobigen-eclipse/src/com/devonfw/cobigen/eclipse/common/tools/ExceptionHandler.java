@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
@@ -36,6 +37,8 @@ public class ExceptionHandler {
     } else if (InvalidConfigurationException.class.isAssignableFrom(e.getClass())) {
       LOG.warn("Invalid configuration.", e);
       openInvalidConfigurationErrorDialog((InvalidConfigurationException) e);
+    } else if (ConfigurationConflictException.class.isAssignableFrom(e.getClass())) {
+      openInvalidConfigurationErrorDialog((ConfigurationConflictException) e);
     } else if (GeneratorProjectNotExistentException.class.isAssignableFrom(e.getClass())) {
       LOG.error(
           "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
@@ -56,6 +59,7 @@ public class ExceptionHandler {
       LOG.error("An unexpected exception occurred!", e);
       PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
     }
+
   }
 
   /**
@@ -74,18 +78,21 @@ public class ExceptionHandler {
    */
   private static void openInvalidConfigurationErrorDialog(InvalidConfigurationException e) {
 
-    MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Invalid context configuration!",
-        null,
-        "Any context/templates configuration has been changed into an invalid state "
-            + "OR is simply outdated, if you recently updated CobiGen. "
-            + "For further investigation and automatic upgrade options start CobiGen's Health Check."
-            + "\n\nOriginal error message: " + e.getMessage(),
-        MessageDialog.ERROR, new String[] { "Health Check", "OK" }, 1);
-    dialog.setBlockOnOpen(true);
+    PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
+      MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Invalid context configuration!",
+          null,
+          "Any context/templates configuration has been changed into an invalid state "
+              + "OR is simply outdated, if you recently updated CobiGen. "
+              + "For further investigation and automatic upgrade options start CobiGen's Health Check."
+              + "\n\nOriginal error message: " + e.getMessage(),
+          MessageDialog.ERROR, new String[] { "Health Check", "OK" }, 1);
+      dialog.setBlockOnOpen(true);
 
-    int result = dialog.open();
-    if (result == 0) {
-      new HealthCheckDialog().execute();
-    }
+      int result = dialog.open();
+      if (result == 0) {
+        new HealthCheckDialog().execute();
+      }
+    });
   }
+
 }

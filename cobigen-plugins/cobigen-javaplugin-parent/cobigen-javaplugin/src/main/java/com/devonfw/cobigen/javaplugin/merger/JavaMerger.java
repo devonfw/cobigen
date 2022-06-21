@@ -10,6 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.api.extension.Merger;
@@ -17,11 +20,14 @@ import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
+import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaInitializer;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.impl.DefaultJavaField;
+import com.thoughtworks.qdox.model.impl.DefaultJavaMethod;
 import com.thoughtworks.qdox.parser.ParseException;
 
 /**
@@ -112,12 +118,31 @@ public class JavaMerger implements Merger {
    */
   private ModifyableJavaClass merge(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
+    baseClass.setAnnotations(mergeAnnotation(baseClass.getAnnotations(), patchClass.getAnnotations()));
     mergeImports(baseClass, patchClass);
     mergeFields(baseClass, patchClass);
     mergeInnerClasses(baseClass, patchClass);
     mergeMethods(baseClass, patchClass);
     mergeSupertypes(baseClass, patchClass);
     return baseClass;
+  }
+
+  /**
+   * @param baseAnnotations {@link JavaClass} a List of annotations originate from the base class
+   * @param patchAnnotations {@link JavaClass} a List of annotations originate from the patch class
+   */
+  private List<JavaAnnotation> mergeAnnotation(List<JavaAnnotation> baseAnnotations,
+      List<JavaAnnotation> patchAnnotations) {
+
+    List<JavaAnnotation> bAnnotations = this.patchOverrides ? patchAnnotations : baseAnnotations;
+    List<JavaAnnotation> pAnnotations = this.patchOverrides ? baseAnnotations : patchAnnotations;
+
+    Set<String> annotationNames = bAnnotations.stream().map(a -> a.getType().getName()).collect(Collectors.toSet());
+
+    List<JavaAnnotation> annotationsToMerge = pAnnotations.stream()
+        .filter(a -> !annotationNames.contains(a.getType().getName())).collect(Collectors.toList());
+
+    return Stream.of(bAnnotations, annotationsToMerge).flatMap(a -> a.stream()).collect(Collectors.toList());
   }
 
   /**
@@ -231,9 +256,11 @@ public class JavaMerger implements Merger {
       if (baseField == null) {
         baseClass.addField(patchField);
       } else {
+        ((DefaultJavaField) baseField)
+            .setAnnotations(new ArrayList<>(mergeAnnotation(baseField.getAnnotations(), patchField.getAnnotations())));
         if (this.patchOverrides) {
           baseClass.replace(baseField, patchField);
-        } // else do not override
+        }
       }
     }
   }
@@ -288,11 +315,14 @@ public class JavaMerger implements Merger {
       if (baseMethod == null) {
         baseClass.addMethod(patchMethod);
       } else {
+        ((DefaultJavaMethod) baseMethod)
+            .setAnnotations(mergeAnnotation(baseMethod.getAnnotations(), patchMethod.getAnnotations()));
         if (this.patchOverrides) {
           baseClass.replace(baseMethod, patchMethod);
-        } // else do not override
+        }
       }
     }
+
   }
 
   /**
