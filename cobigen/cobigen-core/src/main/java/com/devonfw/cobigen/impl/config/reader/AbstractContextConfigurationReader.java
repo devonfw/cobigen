@@ -37,7 +37,6 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.UnmarshalException;
 import jakarta.xml.bind.Unmarshaller;
-import jdk.internal.org.jline.utils.Log;
 
 /** The {@link ContextConfigurationReader} reads the context xml */
 public abstract class AbstractContextConfigurationReader {
