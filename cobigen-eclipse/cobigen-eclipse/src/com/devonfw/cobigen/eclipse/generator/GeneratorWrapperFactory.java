@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
@@ -66,24 +67,27 @@ public class GeneratorWrapperFactory {
       throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
 
     List<Object> extractedInputs = extractValidEclipseInputs(selection);
+    try {
+      if (extractedInputs.size() > 0) {
+        monitor.subTask("Initialize CobiGen instance");
+        CobiGen cobigen = initializeGenerator();
 
-    if (extractedInputs.size() > 0) {
-      monitor.subTask("Initialize CobiGen instance");
-      CobiGen cobigen = initializeGenerator();
+        monitor.subTask("Reading inputs...");
+        monitor.worked(10);
+        Object firstElement = extractedInputs.get(0);
 
-      monitor.subTask("Reading inputs...");
-      monitor.worked(10);
-      Object firstElement = extractedInputs.get(0);
-
-      if (firstElement instanceof IJavaElement) {
-        LOG.info("Create new CobiGen instance for java inputs...");
-        return new JavaInputGeneratorWrapper(cobigen, ((IJavaElement) firstElement).getJavaProject().getProject(),
-            JavaInputConverter.convertInput(extractedInputs, cobigen), monitor);
-      } else if (firstElement instanceof IResource) {
-        LOG.info("Create new CobiGen instance for file inputs...");
-        return new FileInputGeneratorWrapper(cobigen, ((IResource) firstElement).getProject(),
-            FileInputConverter.convertInput(cobigen, extractedInputs), monitor);
+        if (firstElement instanceof IJavaElement) {
+          LOG.info("Create new CobiGen instance for java inputs...");
+          return new JavaInputGeneratorWrapper(cobigen, ((IJavaElement) firstElement).getJavaProject().getProject(),
+              JavaInputConverter.convertInput(extractedInputs, cobigen), monitor);
+        } else if (firstElement instanceof IResource) {
+          LOG.info("Create new CobiGen instance for file inputs...");
+          return new FileInputGeneratorWrapper(cobigen, ((IResource) firstElement).getProject(),
+              FileInputConverter.convertInput(cobigen, extractedInputs), monitor);
+        }
       }
+    } catch (GeneratorCreationException e) {
+      throw new DeprecatedMonolithicTemplatesException();
     }
     return null;
   }

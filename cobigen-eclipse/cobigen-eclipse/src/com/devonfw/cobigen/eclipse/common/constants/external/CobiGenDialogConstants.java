@@ -55,4 +55,15 @@ public class CobiGenDialogConstants {
     public static final String INFORMATION_DIALOG_TITLE = "Information";
 
   }
+
+  /** Dialog constants of the Upgrade Templates */
+  public class UpgradeTemplatesDialogs {
+
+    /** Dialog title of the Upgrade Templates */
+    public static final String DIALOG_TITLE = "Warning!";
+
+    /** Dialog title of the Upgrade Templates */
+    public static final String INFORMATION_DIALOG_TITLE = "Information";
+
+  }
 }

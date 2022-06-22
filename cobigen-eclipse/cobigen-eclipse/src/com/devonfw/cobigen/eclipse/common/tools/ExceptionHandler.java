@@ -9,12 +9,15 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.healthcheck.HealthCheckDialog;
+import com.devonfw.cobigen.eclipse.upgradetemplates.UpgradeTemplatesDialog;
+import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 
 /**
  * Util class to handle exceptions
@@ -39,6 +42,9 @@ public class ExceptionHandler {
       openInvalidConfigurationErrorDialog((InvalidConfigurationException) e);
     } else if (ConfigurationConflictException.class.isAssignableFrom(e.getClass())) {
       openInvalidConfigurationErrorDialog((ConfigurationConflictException) e);
+    } else if (DeprecatedMonolithicTemplatesException.class.isAssignableFrom(e.getClass())) {
+      LOG.warn("OLD OLD OLD TEMPLATES !!! .", e);
+      openOldTemplatesErrorDialog((DeprecatedMonolithicTemplatesException) e);
     } else if (GeneratorProjectNotExistentException.class.isAssignableFrom(e.getClass())) {
       LOG.error(
           "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
@@ -91,6 +97,35 @@ public class ExceptionHandler {
       int result = dialog.open();
       if (result == 0) {
         new HealthCheckDialog().execute();
+      }
+    });
+  }
+
+  /**
+   * Opens up a message dialog for displaying further guidance on upgrading old templates.
+   *
+   * @param e {@link InvalidConfigurationException} occurred
+   */
+  private static void openOldTemplatesErrorDialog(DeprecatedMonolithicTemplatesException e) {
+
+    PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
+      MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Warning!", null,
+          "You are using an old templates version. Do you want to upgrade your templates to the newest version? "
+              + "For more informations please visit:" + WikiConstants.WIKI_UPGRADE_OLD_TEMPLATES
+              + "\n\nOriginal error message: " + e.getMessage(),
+          MessageDialog.ERROR, new String[] { "Upgrade", "Postpone", "Cancel" }, 2);
+      dialog.setBlockOnOpen(true);
+
+      int result = dialog.open();
+      if (result == 0) {
+        new UpgradeTemplatesDialog().execute();
+      }
+      if (result == 1) {
+        // Continoue without upgrading the templates
+        new UpgradeTemplatesDialog().postponeAndGenerate();
+      }
+      if (result == 2) {
+        // Cancel Thread
       }
     });
   }
