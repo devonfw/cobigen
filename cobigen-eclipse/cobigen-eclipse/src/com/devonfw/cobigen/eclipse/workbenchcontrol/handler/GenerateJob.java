@@ -65,7 +65,8 @@ public class GenerateJob implements IRunnableWithProgress {
     try {
       LOG.info("Initiating CobiGen...");
       monitor.beginTask("Initiating CobiGen...", 1);
-      CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(this.selection, monitor);
+      checkOldTemplatesException(this.selection, monitor);
+      CobiGenWrapper generator = GeneratorWrapperFactory.createGeneratorWithOldTemplates(this.selection, monitor);
       monitor.worked(1);
       if (generator == null) {
         LOG.error("Invalid selection. No CobiGen instance created. Exiting generate command.");
@@ -107,6 +108,20 @@ public class GenerateJob implements IRunnableWithProgress {
     }
 
     MDC.remove(InfrastructureConstants.CORRELATION_ID);
+  }
+
+  /**
+   * @param selection2
+   * @param monitor
+   */
+  private void checkOldTemplatesException(ISelection selection2, IProgressMonitor monitor) {
+
+    try {
+      GeneratorWrapperFactory.createGenerator(this.selection, monitor);
+    } catch (Throwable e) {
+      ExceptionHandler.handle(e, HandlerUtil.getActiveShell(this.event));
+    }
+
   }
 
 }

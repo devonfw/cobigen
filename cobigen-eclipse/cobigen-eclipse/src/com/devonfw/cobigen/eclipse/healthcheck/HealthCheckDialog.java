@@ -78,7 +78,7 @@ public class HealthCheckDialog {
       this.report = performHealthCheckReport();
 
       if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
-        CobiGenFactory.create(generatorConfProj.getLocationURI());
+        CobiGenFactory.create(generatorConfProj.getLocationURI(), true);
       } else {
         Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
         Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);

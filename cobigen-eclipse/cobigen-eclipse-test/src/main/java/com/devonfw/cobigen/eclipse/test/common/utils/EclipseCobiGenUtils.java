@@ -101,6 +101,9 @@ public class EclipseCobiGenUtils {
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
+    takeScreenshot(bot, "Warning!");
+    SWTBotShell finishDialog = bot.shell("Warning!");
+    finishDialog.bot().button("Postpone").click();
     bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE,
         CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), defaultTimeout);
 
@@ -139,6 +142,9 @@ public class EclipseCobiGenUtils {
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
+    takeScreenshot(bot, "Warning!");
+    SWTBotShell finishDialog = bot.shell("Warning!");
+    finishDialog.bot().button("Postpone").click();
     bot.waitUntil(new AnyShellIsActive(expectedErrorTitle), defaultTimeout);
 
     takeScreenshot(bot, "InvalidConfigurationDialog");

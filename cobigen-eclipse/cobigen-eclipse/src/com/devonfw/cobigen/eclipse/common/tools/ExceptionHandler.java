@@ -16,7 +16,6 @@ import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.healthcheck.HealthCheckDialog;
-import com.devonfw.cobigen.eclipse.upgradetemplates.UpgradeTemplatesDialog;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 
 /**
@@ -43,7 +42,7 @@ public class ExceptionHandler {
     } else if (ConfigurationConflictException.class.isAssignableFrom(e.getClass())) {
       openInvalidConfigurationErrorDialog((ConfigurationConflictException) e);
     } else if (DeprecatedMonolithicTemplatesException.class.isAssignableFrom(e.getClass())) {
-      LOG.warn("OLD OLD OLD TEMPLATES !!! .", e);
+      LOG.warn("Old Templates found !!! .", e);
       openOldTemplatesErrorDialog((DeprecatedMonolithicTemplatesException) e);
     } else if (GeneratorProjectNotExistentException.class.isAssignableFrom(e.getClass())) {
       LOG.error(
@@ -118,11 +117,11 @@ public class ExceptionHandler {
 
       int result = dialog.open();
       if (result == 0) {
-        new UpgradeTemplatesDialog().execute();
+        new HealthCheckDialog().execute();
+        // new UpgradeTemplatesDialog().execute();
       }
       if (result == 1) {
-        // Continoue without upgrading the templates
-        new UpgradeTemplatesDialog().postponeAndGenerate();
+
       }
       if (result == 2) {
         // Cancel Thread

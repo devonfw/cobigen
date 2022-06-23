@@ -81,4 +81,9 @@ public class MessagesConstants {
    * Message constant: description of the custom-location option
    */
   public static final String CUSTOM_LOCATION_OPTION_DESCRIPTION = "Custom location where the unpacked templates will be stored.";
+
+  /**
+   * Message constant: description of the generate command with --enforce-old-templates option
+   */
+  public static final String FORCE_OLD_TEMPLATES = "If this option is enabled, old templates can be used.";
 }

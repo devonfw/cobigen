@@ -93,6 +93,42 @@ public class GeneratorWrapperFactory {
   }
 
   /**
+   * Creates a generator dependent on the input of the selection
+   *
+   * @param selection current {@link IStructuredSelection} treated as input for generation
+   * @param monitor tracking progress
+   * @return a specific {@link CobiGenWrapper} instance
+   * @throws GeneratorCreationException if any exception occurred during converting the inputs or creating the generator
+   * @throws GeneratorProjectNotExistentException if the generator configuration project does not exist
+   * @throws InvalidInputException if the selection includes non supported input types or is composed in a non supported
+   *         combination of inputs.
+   */
+  public static CobiGenWrapper createGeneratorWithOldTemplates(ISelection selection, IProgressMonitor monitor)
+      throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
+
+    List<Object> extractedInputs = extractValidEclipseInputs(selection);
+    if (extractedInputs.size() > 0) {
+      monitor.subTask("Initialize CobiGen instance");
+      CobiGen cobigen = initializeGeneratorWithOldTemplates();
+
+      monitor.subTask("Reading inputs...");
+      monitor.worked(10);
+      Object firstElement = extractedInputs.get(0);
+
+      if (firstElement instanceof IJavaElement) {
+        LOG.info("Create new CobiGen instance for java inputs...");
+        return new JavaInputGeneratorWrapper(cobigen, ((IJavaElement) firstElement).getJavaProject().getProject(),
+            JavaInputConverter.convertInput(extractedInputs, cobigen), monitor);
+      } else if (firstElement instanceof IResource) {
+        LOG.info("Create new CobiGen instance for file inputs...");
+        return new FileInputGeneratorWrapper(cobigen, ((IResource) firstElement).getProject(),
+            FileInputConverter.convertInput(cobigen, extractedInputs), monitor);
+      }
+    }
+    return null;
+  }
+
+  /**
    * Extracts a list of valid eclipse inputs. Therefore this method will throw an
    * {@link InvalidInputException},whenever<br>
    * <ul>
@@ -241,6 +277,52 @@ public class GeneratorWrapperFactory {
       throw new GeneratorCreationException(
           "Configuration source could not be read.\nIf you were updating templates, it may mean"
               + " that you have no internet connection," + " or you have an old monolithic Templates.",
+          e);
+    }
+  }
+
+  /**
+   * Initializes the {@link CobiGen} with the correct configuration, even if old templates exists
+   *
+   * @return the configured{@link CobiGen}
+   * @throws GeneratorProjectNotExistentException if the generator configuration folder does not exist
+   * @throws InvalidConfigurationException if the context configuration is not valid
+   * @throws GeneratorCreationException if the generator configuration project does not exist
+   */
+  private static CobiGen initializeGeneratorWithOldTemplates()
+      throws InvalidConfigurationException, GeneratorCreationException {
+
+    try {
+      ResourcesPluginUtil.refreshConfigurationProject();
+      IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+
+      if (generatorProj == null) {
+        throw new GeneratorCreationException(
+            "Configuration source could not be read. Have you downloaded the templates?");
+      }
+
+      // We need to check whether it is a valid Java Project
+      IJavaProject configJavaProject = JavaCore.create(generatorProj);
+
+      // If it is not valid, we should use the jar
+      if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
+        Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
+        Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
+        boolean fileExists = (jarPath != null && Files.exists(jarPath));
+        if (!fileExists) {
+          MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+              "Not Downloaded the CobiGen Template Jar");
+        }
+        return CobiGenFactory.create(jarPath.toUri(), true);
+      } else {
+        return CobiGenFactory.create(generatorProj.getLocationURI(), true);
+      }
+    } catch (CoreException e) {
+      throw new GeneratorCreationException("An eclipse internal exception occurred", e);
+    } catch (Throwable e) {
+      throw new GeneratorCreationException(
+          "Configuration source could not be read.\nIf you were updating templates, it may mean"
+              + " that you have no internet connection,",
           e);
     }
   }

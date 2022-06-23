@@ -8,7 +8,6 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -50,16 +49,16 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromEntityTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
 
-    String args[] = new String[4];
+    String args[] = new String[5];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();
     args[2] = "--increments";
     args[3] = "springdata-repository";
+    args[4] = "--force-old-templates";
 
     execute(args, true);
 
@@ -74,7 +73,6 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromTemplatesJarWithUtilClassDependencyTest() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
@@ -82,14 +80,14 @@ public class GenerateCommandTest extends AbstractCliTest {
     File templatesProject = this.tmpProject.resolve("templates-devon4j/target/templates-devon4j-dev-SNAPSHOT.jar")
         .toFile();
 
-    String args[] = new String[6];
+    String args[] = new String[7];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();
     args[2] = "--increments";
     args[3] = "tos";
     args[4] = "-tp";
     args[5] = templatesProject.getAbsolutePath();
-
+    args[6] = "--force-old-templates";
     execute(args, false);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
@@ -102,17 +100,16 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromEntityWithDownloadedTemplatesTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
 
-    String args[] = new String[4];
+    String args[] = new String[5];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();
     args[2] = "--increments";
     args[3] = "8";
-
+    args[4] = "--force-old-templates";
     execute(args, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
@@ -132,12 +129,12 @@ public class GenerateCommandTest extends AbstractCliTest {
             "maven.project/api/src/main/java/com/maven/project/sampledatamanagement/logic/api/to/SampleDataEto.java")
         .toFile();
 
-    String args[] = new String[4];
+    String args[] = new String[5];
     args[0] = "generate";
     args[1] = inputFile.getAbsolutePath();
     args[2] = "--increments";
     args[3] = "app_angular_devon4ng_component";
-
+    args[4] = "--force-old-templates";
     execute(args, true);
 
     Thread.sleep(1000);
@@ -153,20 +150,19 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromEntityWithOutputRootPathTest() throws Exception {
 
     File outputRootPath = this.tempFolder.newFolder("outputfolder");
     outputRootPath.deleteOnExit();
 
-    String args[] = new String[6];
+    String args[] = new String[7];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();
     args[2] = "--out";
     args[3] = outputRootPath.getAbsolutePath();
     args[4] = "--increments";
     args[5] = "all";
-
+    args[6] = "--force-old-templates";
     execute(args, true);
 
     assertThat(
@@ -207,16 +203,16 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateTemplatesFromEntityTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
 
-    String args[] = new String[4];
+    String args[] = new String[5];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();
     args[2] = "-t";
     args[3] = "crud_complex_AbstractBeanMapperSupport";
+    args[4] = "--force-old-templates";
 
     execute(args, true);
 
@@ -229,20 +225,19 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromMultipleTypeInputTest() throws Exception {
 
     File outputRootFile = this.tempFolder.newFolder("playground2", "rootoutput");
     outputRootFile.deleteOnExit();
     File openApiFile = new File(testFileRootPath + "openAPI.yml");
-    String args[] = new String[6];
+    String args[] = new String[7];
     args[0] = "generate";
     args[1] = openApiFile.getAbsolutePath() + "," + this.entityInputFile.getAbsolutePath();
-
     args[2] = "--out";
     args[3] = outputRootFile.getAbsolutePath();
     args[4] = "--increments";
     args[5] = "rest_service_impl";
+    args[6] = "--force-old-templates";
 
     execute(args, true, true);
   }

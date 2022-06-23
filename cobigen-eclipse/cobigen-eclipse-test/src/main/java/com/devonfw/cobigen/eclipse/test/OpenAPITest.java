@@ -18,7 +18,6 @@ import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -60,7 +59,6 @@ public class OpenAPITest extends SystemTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void testBasicOpenAPIGeneration() throws Exception {
 
     // copy sample project to external location and import it into the workspace
@@ -141,7 +139,6 @@ public class OpenAPITest extends SystemTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void testServiceBasedOpenAPIGeneration() throws Exception {
 
     // copy sample project to external location and import it into the workspace
@@ -211,7 +208,6 @@ public class OpenAPITest extends SystemTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void testRegexBasedOpenAPIGeneration() throws Exception {
 
     // copy sample project to external location and import it into the workspace

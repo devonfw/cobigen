@@ -83,6 +83,12 @@ public class GenerateCommand extends CommandCommons {
   List<String> templates = null;
 
   /**
+   * If this options is enabled, all templates are extracted.
+   */
+  @Option(names = { "--force-old-templates" }, description = MessagesConstants.FORCE_OLD_TEMPLATES)
+  boolean forceOldTemplates;
+
+  /**
    * Logger to output useful information to the user
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
@@ -103,7 +109,9 @@ public class GenerateCommand extends CommandCommons {
     }
 
     LOG.debug("Input files and output root path confirmed to be valid.");
-    checkOldTemplatesException();
+    if (!this.forceOldTemplates) {
+      checkOldTemplatesException();
+    }
     CobiGen cg = CobiGenUtils.initializeCobiGenWithOldTemplates(this.templatesProject);
 
     resolveTemplateDependencies();
