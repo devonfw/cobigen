@@ -3,6 +3,8 @@ toc::[]
 
 = Configuration
 
+== CobiGen HOME directory
+
 CobiGen is maintaining a home directory further referenced in this documentation as `$cghome`, which is used to maintain temporary or transient data. The home folder is determined with the following location fall-back:
 
 1. System environment variable `COBIGEN_HOME` (e.g. `C:\project\ide\conf\cobigen-home`)
@@ -18,19 +20,74 @@ The actual configuration of CobiGen is maintained by a single folder or jar. The
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
 5. CobiGen will automatically download the latest jar configuration from maven central with `groupId` `com.devonfw.cobigen` and `artifactId` `templates-devon4j` and take it like described in 4.
 
-
 Within the configuration jar or directory you will find the following structure:
 
 ```
 CobiGen_Templates
  |- templateFolder1
-    |- templates.xml
+	|- src
+		|- main
+			|- templates
+				|- template1
+					|- templates
+					|- templates.xml
  |- templateFolder2
-    |- templates.xml
  |- context.xml
 ```
 
+Since: CobiGen 2021.12.007:
+
+```
+template-sets
+ |- downloaded
+    |- template-set1.jar
+	|- template-set2.jar
+	|- template-set-utilities.jar
+ |- adapted
+    |- template-set1
+		|- src
+			|- main
+				|- templates
+					|- templates
+					|- context.xml
+					|- templates.xml
+	|- template-set2
+```
+
 Find some examples https://github.com/devonfw/cobigen/tree/master/cobigen-templates[here].
+
+== CobiGen Configuration File
+
+The CobiGen configuration file located at: `$home/.cobigen` can be used to set the path to the `templates` as well as the `template sets` project.
+
+=== Templates
+
+For a templates folder simply set the `templates` parameter like this:
+
+```
+templates=C:\\project\\ide\\conf\\templates
+```
+
+For a templates jar simply set the `templates` parameter like this:
+
+```
+templates=C:\\project\\ide\\conf\\templates\\my-custom-templates-devon4j-2021.06.001.jar
+```
+
+=== Template Sets
+Since: CobiGen 2021.12.006
+
+For a template-sets folder simply set the `template-sets` parameter like this:
+
+```
+template-sets=C:\\project\\ide\\conf\\template-sets
+```
+
+For a template-sets jar simply set the `template-sets` parameter like this:
+
+```
+template-sets=C:\\project\\ide\\conf\\template-sets\\my-custom-template-sets-devon4j-2021.06.001.jar
+```
 
 == Context Configuration
 
