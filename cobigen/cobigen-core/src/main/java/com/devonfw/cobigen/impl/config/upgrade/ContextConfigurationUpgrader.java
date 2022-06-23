@@ -16,14 +16,12 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
- * This class encompasses all logic for legacy context configuration detection
- * and upgrading these to the latest
+ * This class encompasses all logic for legacy context configuration detection and upgrading these to the latest
  * supported version.
  *
  * @author mbrunnli (Jun 22, 2015)
  */
 public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<ContextConfigurationVersion> {
-
 
   /**
    * Creates a new {@link ContextConfigurationUpgrader} instance.
@@ -71,13 +69,14 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
 
         break;
       case v2_1:
-    	  TemplateSetUpgrader u = new TemplateSetUpgrader();
-    	  Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = u.upgradeTemplatesToTemplateSets(configurationRoot);
-    	  for(com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration context: contextMap.keySet()) {
-    		  ConfigurationUpgradeResult temp = new ConfigurationUpgradeResult();
-    		  temp.setResultConfigurationJaxbRootNodeAndPath(context, contextMap.get(context));
-    		  results.add(temp);
-    	  }
+        TemplateSetUpgrader templatesSetUpgrader = new TemplateSetUpgrader();
+        Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = templatesSetUpgrader
+            .upgradeTemplatesToTemplateSets(configurationRoot);
+        for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration context : contextMap.keySet()) {
+          ConfigurationUpgradeResult tempResult = new ConfigurationUpgradeResult();
+          tempResult.setResultConfigurationJaxbRootNodeAndPath(context, contextMap.get(context));
+          results.add(tempResult);
+        }
         break;
       default:
         throw new NotYetSupportedException(
