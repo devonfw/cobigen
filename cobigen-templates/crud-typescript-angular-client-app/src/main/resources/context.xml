@@ -7,4 +7,11 @@
       <variableAssignment type="constant" key="domain" value="demo" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="Angular"></tag>
+    <tag name="TypeScript"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Client"></tag>
+    <tag name="App"></tag>
+  </tags>
 </contextConfiguration>

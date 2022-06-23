@@ -8,6 +8,12 @@
       <variableAssignment type="property" key="entityName" value="name"/>
     </matcher>
   </trigger>
+  <tags>
+    <tag name="OpenAPI"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Client"></tag>
+    <tag name="devon4net"></tag>
+  </tags>
   <links>
     <link url="https://github.com/devonfw/cobigen/wiki/howto_devon4net" />
   </links>

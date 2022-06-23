@@ -8,4 +8,8 @@
       <variableAssignment type="regex" key="component" value="4" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="REST"></tag>
+    <tag name="Documentation"></tag>
+  </tags>
 </contextConfiguration>

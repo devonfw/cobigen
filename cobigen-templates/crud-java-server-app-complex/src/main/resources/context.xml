@@ -9,4 +9,10 @@
       <variableAssignment type="regex" key="entityName" value="5" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="Java"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Server"></tag>
+    <tag name="App"></tag>
+  </tags>
 </contextConfiguration>

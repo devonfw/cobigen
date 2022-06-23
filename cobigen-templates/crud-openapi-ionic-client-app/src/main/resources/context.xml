@@ -8,6 +8,13 @@
       <variableAssignment type="property" key="etoName" value="name" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="Ionic"></tag>
+    <tag name="OpenAPI"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Client"></tag>
+    <tag name="App"></tag>
+  </tags>
   <links>
     <link url="https://github.com/devonfw/cobigen/wiki/howto-devonfw-CobiGen-OpenAPI"></link>
   </links>

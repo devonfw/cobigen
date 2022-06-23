@@ -8,6 +8,13 @@
       <variableAssignment type="property" key="entityName" value="name" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="Java"></tag>
+    <tag name="OpenAPI"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Server"></tag>
+    <tag name="App"></tag>
+  </tags>
   <links>
     <link url="https://github.com/devonfw/cobigen/wiki/howto-devonfw-ide-CobiGen-PoC-E2E"></link>
   </links>

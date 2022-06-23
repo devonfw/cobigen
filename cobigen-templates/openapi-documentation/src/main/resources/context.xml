@@ -8,6 +8,10 @@
       <variableAssignment type="property" key="entityName" value="name" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="OpenAPI"></tag>
+    <tag name="Documentation"></tag>
+  </tags>
   <links>
     <link url="https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin"></link>
   </links>
