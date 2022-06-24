@@ -3,6 +3,8 @@ toc::[]
 
 = Configuration
 
+== CobiGen HOME directory
+
 CobiGen is maintaining a home directory further referenced in this documentation as `$cghome`, which is used to maintain temporary or transient data. The home folder is determined with the following location fall-back:
 
 1. System environment variable `COBIGEN_HOME` (e.g. `C:\project\ide\conf\cobigen-home`)
@@ -18,19 +20,92 @@ The actual configuration of CobiGen is maintained by a single folder or jar. The
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
 5. CobiGen will automatically download the latest jar configuration from maven central with `groupId` `com.devonfw.cobigen` and `artifactId` `templates-devon4j` and take it like described in 4.
 
-
 Within the configuration jar or directory you will find the following structure:
 
 ```
 CobiGen_Templates
  |- templateFolder1
-    |- templates.xml
+  |- src
+    |- main
+      |- templates
+        |- template1
+          |- templates
+          |- templates.xml
  |- templateFolder2
-    |- templates.xml
  |- context.xml
 ```
 
+Since: CobiGen 2021.12.007:
+
+```
+template-sets
+ |- downloaded
+   |- template-set1.jar
+   |- template-set2.jar
+   |- template-set-utilities.jar
+ |- adapted
+   |- template-set1
+     |- src
+       |- main
+         |- templates
+           |- templates
+             |- context.xml
+             |- templates.xml
+   |- template-set2
+```
+
 Find some examples https://github.com/devonfw/cobigen/tree/master/cobigen-templates[here].
+
+== CobiGen Configuration File
+
+The CobiGen configuration file located at: `$home/.cobigen` can be used to set the path to the custom `templates` as well as the `template sets` project.
+You can also specify attributes to control the behaviour of your template sets.
+
+=== Templates
+
+For a custom templates folder simply set the `templates` parameter like this:
+
+```
+templates=C:\\project\\ide\\conf\\templates
+```
+
+For a custom templates jar simply set the `templates` parameter like this:
+
+```
+templates=C:\\project\\ide\\conf\\templates\\my-custom-templates-devon4j-2021.06.001.jar
+```
+
+=== Template Sets
+Since: CobiGen 2021.12.006
+
+For a custom template-sets folder simply set the `template-sets` parameter like this:
+
+```
+template-sets=C:\\project\\ide\\conf\\template-sets
+```
+
+=== Template set attributes
+Since: CobiGen 2021.12.006
+
+You can specify `template-sets` attributes f.e. to restrict the teams to ask for default templates provided by CobiGen. There are `four` custom template-sets attributes:
+
+* `template-sets.groupIds`: Search for template-set artifacts by that configuration key
+configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `groupId` will be used.
+
+* `template-sets.allow-snapshots`: Allow snapshots of template-sets to be offered for template-set development purposes. By default, no snapshots should be queried.
+
+* `template-sets.disable-default-lookup`: Disable by default querying of default public `groupIds` configured in CobiGen.
+
+* `template-sets.hide:` Hide very specific template sets or versions of template sets.
+
+* An example of how such a configuration should look like:
+
+```
+template-sets.groupIds=com.devonfw.cobigen.templates,jaxen,jakarta.xml.bind
+template-sets.allow-snapshots=true
+template-sets.disable-default-lookup=false
+template-sets.hide=com.devonfw.cobigen.templates:crud-angular-client-app:2021.12.007-SNAPSHOT
+```
 
 == Context Configuration
 
@@ -334,28 +409,6 @@ folder
 
 Let the `cobigen.properties` file contain the line `relocate=../sub2/${cwd}`. Given that, the relative destination path of `Template.java.ftl` will be resolved to `folder/sub2/Template.java`. Compare `xref:templatescan-node[template scan]` configuration for more information about basic path resolution. The `relocate` property specifies a relative path from the location of the `cobigen.properties`. The `${cwd}` placeholder will contain the remaining relative path from the `cobigen.properties` location to the template file. In this basic example it just contains `Template.java.ftl`, but it may even be any relative path including sub-folders of sub1 and its templates.
 Given the `relocate` feature, you can even step out of the root path, which in general is the project/maven module the input is located in. This enables template designers to even address, e.g., maven modules located next to the module the input is coming from.
-
-=== Custom template-set groupIds for lookup
-
-You can specify template-sets so that it can provide custom template-sets and even restrict the teams to ask for default templates provided by CobiGen. There are `four` custom template-sets attributes:
-
-* `template-sets.groupIds`: Search for template-set artifacts by that configuration key
-configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `groupId` will be used.
-
-* `template-sets.allow-snapshots`: Allow snapshots of template-sets to be offered for template-set development purposes. By default, no snapshots should be queried.
-
-* `template-sets.disable-default-lookup`: Disable by default querying of default public `groupIds` configured in CobiGen.
-
-* `template-sets.hide:` Hide very specific template sets or versions of template sets.
-
-* An example of how such a configuration should look like:
-
-```
-template-sets.groupIds=com.devonfw.cobigen.templates,jaxen,jakarta.xml.bind
-template-sets.allow-snapshots=true
-template-sets.disable-default-lookup=false
-template-sets.hide=com.devonfw.cobigen.templates:crud-angular-client-app:2021.12.007-SNAPSHOT
-```
 
 == Basic Template Model
 
