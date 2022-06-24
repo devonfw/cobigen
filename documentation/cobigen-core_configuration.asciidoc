@@ -25,12 +25,12 @@ Within the configuration jar or directory you will find the following structure:
 ```
 CobiGen_Templates
  |- templateFolder1
-	|- src
-		|- main
-			|- templates
-				|- template1
-					|- templates
-					|- templates.xml
+  |- src
+    |- main
+      |- templates
+        |- template1
+          |- templates
+          |- templates.xml
  |- templateFolder2
  |- context.xml
 ```
@@ -40,18 +40,18 @@ Since: CobiGen 2021.12.007:
 ```
 template-sets
  |- downloaded
-    |- template-set1.jar
-	|- template-set2.jar
-	|- template-set-utilities.jar
+   |- template-set1.jar
+   |- template-set2.jar
+   |- template-set-utilities.jar
  |- adapted
-    |- template-set1
-		|- src
-			|- main
-				|- templates
-					|- templates
-					|- context.xml
-					|- templates.xml
-	|- template-set2
+   |- template-set1
+     |- src
+       |- main
+         |- templates
+           |- templates
+             |- context.xml
+             |- templates.xml
+   |- template-set2
 ```
 
 Find some examples https://github.com/devonfw/cobigen/tree/master/cobigen-templates[here].
@@ -82,12 +82,6 @@ For a custom template-sets folder simply set the `template-sets` parameter like 
 
 ```
 template-sets=C:\\project\\ide\\conf\\template-sets
-```
-
-For a custom template-sets jar simply set the `template-sets` parameter like this:
-
-```
-template-sets=C:\\project\\ide\\conf\\template-sets\\my-custom-template-sets-devon4j-2021.06.001.jar
 ```
 
 === Template set attributes
