@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
@@ -124,14 +125,14 @@ public class TemplateSetUpgrader {
               newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER).toFile());
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template Folder", e);
-          throw e;
+          throw new CobiGenRuntimeException(e.getMessage(), e);
         }
         try {
           FileUtils.copyDirectory(utilsPath.toFile(),
               newTriggerFolder.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER).toFile());
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template utilities Folder", e);
-          throw e;
+          throw new CobiGenRuntimeException(e.getMessage(), e);
         }
 
         Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER)
@@ -152,7 +153,7 @@ public class TemplateSetUpgrader {
       FileUtils.moveDirectoryToDirectory(cobigenTemplates.getParent().toFile(), f, false);
     } catch (IOException e) {
       LOG.error("An error occured while backing up the old template folder", e);
-      throw e;
+      throw new CobiGenRuntimeException(e.getMessage(), e);
     }
     return contextMap;
 
@@ -178,13 +179,13 @@ public class TemplateSetUpgrader {
       monolithicPomModel = reader.read(pomInputStream);
     } catch (FileNotFoundException e) {
       LOG.error("Monolitic pom file could not be found", e);
-      throw e;
+      throw new CobiGenRuntimeException(e.getMessage(), e);
     } catch (IOException e) {
       LOG.error("IOError while reading the monolithic pom file", e);
-      throw e;
+      throw new CobiGenRuntimeException(e.getMessage(), e);
     } catch (XmlPullParserException e) {
       LOG.error("XMLError while parsing the monolitic pom file", e);
-      throw e;
+      throw new CobiGenRuntimeException(e.getMessage(), e);
     }
     Model splitPomModel = new Model();
     Parent pomParent = new Parent();
@@ -199,10 +200,10 @@ public class TemplateSetUpgrader {
       writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), splitPomModel);
     } catch (FileNotFoundException e) {
       LOG.error("An error occured while creating the new v3_0 pom file", e);
-      throw e;
+      throw new CobiGenRuntimeException(e.getMessage(), e);
     } catch (IOException e) {
       LOG.error("An IOError occured while writing the new v3_0 pom file", e);
-      throw e;
+      throw new CobiGenRuntimeException(e.getMessage(), e);
     }
 
   }
