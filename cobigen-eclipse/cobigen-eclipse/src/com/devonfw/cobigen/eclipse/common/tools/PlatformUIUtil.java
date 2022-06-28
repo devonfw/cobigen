@@ -71,7 +71,7 @@ public class PlatformUIUtil {
    */
   public static IWorkbenchWindow getActiveWorkbenchWindow() {
 
-    getWorkbench().getDisplay().asyncExec(() -> {
+    getWorkbench().getDisplay().syncExec(() -> {
       setWorkbenchWindow(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
     });
 
