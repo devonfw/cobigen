@@ -2,7 +2,6 @@ package com.devonfw.cobigen.unittest.config.upgrade;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -74,7 +73,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests if the Template files are copied correct into the new template set and into the backup folder
+   * Tests if the Template files have been correctly copied into both the new template set and the backup folder
    *
    * @throws Exception
    */
@@ -102,20 +101,20 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
     for (String s : OldPathFilesSet) {
       if (!s.equals("context.xml")) {
-        assertTrue(NewPathFilesSet.contains(s));
+        assertThat(NewPathFilesSet).contains(s);
         NewPathFilesSet.remove(s);
       }
-      assertTrue(backupPathFilesSet.contains(s));
+      assertThat(backupPathFilesSet).contains(s);
       backupPathFilesSet.remove(s);
 
     }
-    assertEquals(NewPathFilesSet.size(), 0);
-    assertEquals(backupPathFilesSet.size(), 0);
+    assertThat(NewPathFilesSet).hasSize(0);
+    assertThat(backupPathFilesSet).hasSize(0);
   }
 
   /**
-   * Tests the correct location for the created context.xml and if the files and whether the file corresponds to the
-   * v3.0 schema
+   * Tests if the context.xml has been created in the correct location and that it was correctly created as a v3.0
+   * schema
    *
    * @throws Exception
    */
@@ -139,7 +138,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
       for (String s : newTemplatesPath.toFile().list()) {
         Path newContextPath = newTemplatesPath.resolve(s + "/" + "src/main/resources");
         newContextPath = newContextPath.resolve("context.xml");
-        assertTrue(newContextPath.toFile().exists());
+        assertThat(newContextPath.toFile()).exists();
         StreamSource contextStream = new StreamSource(newContextPath.toFile());
         try {
           validator.validate(contextStream);

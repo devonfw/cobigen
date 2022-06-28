@@ -118,21 +118,23 @@ public class TemplateSetUpgrader {
       for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
         Path triggerFolder = templates.resolve(trigger.getTemplateFolder());
         Path newTriggerFolder = adapted.resolve(trigger.getTemplateFolder());
-        Path utilsPath = cobigenTemplates.resolve("src/main/java");
+        Path utilsPath = cobigenTemplates.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER);
         try {
-          FileUtils.copyDirectory(triggerFolder.toFile(), newTriggerFolder.resolve("src/main/resources").toFile());
+          FileUtils.copyDirectory(triggerFolder.toFile(),
+              newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER).toFile());
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template Folder", e);
           throw e;
         }
         try {
-          FileUtils.copyDirectory(utilsPath.toFile(), newTriggerFolder.resolve("src/main/java").toFile());
+          FileUtils.copyDirectory(utilsPath.toFile(),
+              newTriggerFolder.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER).toFile());
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template utilities Folder", e);
           throw e;
         }
 
-        Path newContextPath = newTriggerFolder.resolve("src/main/resources")
+        Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         contextMap.put(cc, newContextPath);
 
@@ -157,10 +159,10 @@ public class TemplateSetUpgrader {
   }
 
   /**
-   * Writes a pom.xml file for the splitted context and template folder
+   * Writes a pom.xml file for the split context and template folder
    *
    * @param {@link Path}cobigen_templates Path to the CobiGen_Templates folder
-   * @param {@link Path}newTemplateFolder Path to the splitted template folder
+   * @param {@link Path}newTemplateFolder Path to the split template folder
    * @param {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }trigger to the related template folder
    * @throws IOException
    * @throws XmlPullParserException
@@ -184,17 +186,17 @@ public class TemplateSetUpgrader {
       LOG.error("XMLError while parsing the monolitic pom file", e);
       throw e;
     }
-    Model SplittedPomModel = new Model();
-    Parent p = new Parent();
-    p.setArtifactId(monolithicPomModel.getArtifactId());
-    p.setGroupId(monolithicPomModel.getGroupId());
-    p.setVersion(monolithicPomModel.getVersion());
-    SplittedPomModel.setParent(p);
-    SplittedPomModel.setDependencies(monolithicPomModel.getDependencies());
-    SplittedPomModel.setArtifactId(trigger.getId().replace('_', '-'));
-    SplittedPomModel.setName("PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER");
+    Model splitPomModel = new Model();
+    Parent pomParent = new Parent();
+    pomParent.setArtifactId(monolithicPomModel.getArtifactId());
+    pomParent.setGroupId(monolithicPomModel.getGroupId());
+    pomParent.setVersion(monolithicPomModel.getVersion());
+    splitPomModel.setParent(pomParent);
+    splitPomModel.setDependencies(monolithicPomModel.getDependencies());
+    splitPomModel.setArtifactId(trigger.getId().replace('_', '-'));
+    splitPomModel.setName("PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER");
     try (FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());) {
-      writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), SplittedPomModel);
+      writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), splitPomModel);
     } catch (FileNotFoundException e) {
       LOG.error("An error occured while creating the new v3_0 pom file", e);
       throw e;
@@ -208,14 +210,14 @@ public class TemplateSetUpgrader {
   /**
    * Splits a contextConfiguration and converts a {@link Trigger} and his data to a v3_0 Trigger
    *
-   * @param {@link ContextConfiguration}the monolithic context that will be splitted
-   * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} List of the splitted
+   * @param {@link ContextConfiguration}the monolithic context that will be split
+   * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} List of the split
    *         contextConfiguration files
    */
   private List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContext(
       ContextConfiguration monolitic) {
 
-    List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splittedContexts = new ArrayList<>();
+    List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContexts = new ArrayList<>();
     List<Trigger> triggerList = monolitic.getTrigger();
     for (Trigger trigger : triggerList) {
       com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration();
@@ -245,9 +247,9 @@ public class TemplateSetUpgrader {
       links.getLink().add(link);
       contextConfiguration3_0.setLinks(links);
       contextConfiguration3_0.setVersion(new BigDecimal("3.0"));
-      splittedContexts.add(contextConfiguration3_0);
+      splitContexts.add(contextConfiguration3_0);
     }
-    return splittedContexts;
+    return splitContexts;
   }
 
   /**

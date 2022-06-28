@@ -92,9 +92,10 @@ public abstract class AbstractContextConfigurationReader {
                 "The required 'version' attribute of node \"contextConfiguration\" has not been set");
           } else {
             VersionValidator validator = new VersionValidator(Type.CONTEXT_CONFIGURATION, MavenMetadata.VERSION);
-            try{
-            	validator.validate(configVersion.floatValue());
-            }catch(NotYetSupportedException e) {
+            try {
+              validator.validate(configVersion.floatValue());
+            } catch (NotYetSupportedException e) {
+              // TODO
             }
           }
         } else {
@@ -106,10 +107,9 @@ public abstract class AbstractContextConfigurationReader {
         // Unmarshal with schema checks for checking the correctness and give the user more hints to
         // correct his failures
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        ContextConfigurationVersion value =ContextConfigurationVersion.values()[configVersion.intValue()];
+        ContextConfigurationVersion contextVersion = ContextConfigurationVersion.values()[configVersion.intValue()];
         try (
-            InputStream schemaStream = getClass()
-                .getResourceAsStream("/schema/" + value + "/contextConfiguration.xsd");
+            InputStream schemaStream = getClass().getResourceAsStream("/schema/" + contextVersion + "/contextConfiguration.xsd");
             InputStream configInputStream = Files.newInputStream(contextFile)) {
 
           Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
