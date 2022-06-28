@@ -103,13 +103,13 @@ public class GeneratorWrapperFactory {
    * @throws InvalidInputException if the selection includes non supported input types or is composed in a non supported
    *         combination of inputs.
    */
-  public static CobiGenWrapper createGeneratorWithOldTemplates(ISelection selection, IProgressMonitor monitor)
+  public static CobiGenWrapper createGeneratorWithMonolithicTemplates(ISelection selection, IProgressMonitor monitor)
       throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
 
     List<Object> extractedInputs = extractValidEclipseInputs(selection);
     if (extractedInputs.size() > 0) {
       monitor.subTask("Initialize CobiGen instance");
-      CobiGen cobigen = initializeGeneratorWithOldTemplates();
+      CobiGen cobigen = initializeGeneratorWithMonolithicTemplates();
 
       monitor.subTask("Reading inputs...");
       monitor.worked(10);
@@ -282,14 +282,14 @@ public class GeneratorWrapperFactory {
   }
 
   /**
-   * Initializes the {@link CobiGen} with the correct configuration, even if old templates exists
+   * Initializes the {@link CobiGen} with the correct configuration, even if monolithic templates exists
    *
    * @return the configured{@link CobiGen}
    * @throws GeneratorProjectNotExistentException if the generator configuration folder does not exist
    * @throws InvalidConfigurationException if the context configuration is not valid
    * @throws GeneratorCreationException if the generator configuration project does not exist
    */
-  private static CobiGen initializeGeneratorWithOldTemplates()
+  private static CobiGen initializeGeneratorWithMonolithicTemplates()
       throws InvalidConfigurationException, GeneratorCreationException {
 
     try {

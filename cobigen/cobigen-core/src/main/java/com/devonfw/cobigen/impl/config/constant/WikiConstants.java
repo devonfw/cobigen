@@ -7,6 +7,6 @@ public class WikiConstants {
   /**
    * Link to the WIKI page, describing the upgrade process TODO Ticket #1516
    */
-  public static final String WIKI_UPGRADE_OLD_TEMPLATES = "...";
+  public static final String WIKI_UPGRADE_MONOLITHIC_TEMPLATES = "...";
 
 }

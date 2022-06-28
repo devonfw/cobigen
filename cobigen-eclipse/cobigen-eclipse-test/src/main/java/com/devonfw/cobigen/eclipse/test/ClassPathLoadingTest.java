@@ -81,7 +81,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+    EclipseCobiGenUtils.processCobiGenAndPostpone(bot, javaClassItem, "increment1");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions
@@ -129,7 +129,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+    EclipseCobiGenUtils.processCobiGenAndPostpone(bot, javaClassItem, "increment1");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions
@@ -173,7 +173,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+    EclipseCobiGenUtils.processCobiGenAndPostpone(bot, javaClassItem, "increment1");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions
@@ -205,7 +205,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment2");
+    EclipseCobiGenUtils.processCobiGenAndPostpone(bot, javaClassItem, "increment2");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions
@@ -246,7 +246,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment3");
+    EclipseCobiGenUtils.processCobiGenAndPostpone(bot, javaClassItem, "increment3");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions

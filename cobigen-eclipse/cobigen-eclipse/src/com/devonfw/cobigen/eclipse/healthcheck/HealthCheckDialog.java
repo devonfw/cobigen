@@ -16,6 +16,7 @@ import com.devonfw.cobigen.api.HealthCheck;
 import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
@@ -78,7 +79,7 @@ public class HealthCheckDialog {
       this.report = performHealthCheckReport();
 
       if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
-        CobiGenFactory.create(generatorConfProj.getLocationURI(), true);
+        CobiGenFactory.create(generatorConfProj.getLocationURI());
       } else {
         Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
         Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
@@ -149,6 +150,8 @@ public class HealthCheckDialog {
         PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
       }
       LOG.warn(healthyCheckMessage, e);
+    } catch (DeprecatedMonolithicTemplatesException e) {
+      throw e;
     } catch (Throwable e) {
       healthyCheckMessage = "An unexpected error occurred! Templates were not found.";
       if (this.report != null && healthyCheckMessage != null) {
@@ -248,6 +251,111 @@ public class HealthCheckDialog {
       String healthProj = ws.toPortableString();
       Path healthcheckFile = Paths.get(healthProj);
       return this.healthCheck.perform(healthcheckFile);
+    }
+  }
+
+  /**
+   * Executes the simple health check, checking configuration project existence, validity of context configuration, as
+   * well as validity of the current workbench selection as generation input.
+   */
+  public void executeWithMonolithicTemplates() {
+
+    String firstStep = "1. CobiGen configuration project '" + ResourceConstants.CONFIG_PROJECT_NAME + "'... ";
+    String secondStep = "\n2. CobiGen context configuration '" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
+        + "'... ";
+
+    String healthyCheckMessage = "";
+    IProject generatorConfProj = null;
+
+    try {
+
+      // refresh and check context configuration
+      ResourcesPluginUtil.refreshConfigurationProject();
+
+      // check configuration project existence in workspace
+      generatorConfProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+
+      this.report = performHealthCheckReport();
+
+      if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
+        CobiGenFactory.create(generatorConfProj.getLocationURI(), true);
+      } else {
+        Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
+        Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
+        boolean fileExists = (jarPath != null && Files.exists(jarPath));
+        if (!fileExists) {
+          MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+              "Not Downloaded the CobiGen Template Jar");
+        }
+      }
+
+      healthyCheckMessage = firstStep + "OK.";
+      healthyCheckMessage += secondStep;
+      boolean healthyCheckWarning = false;
+
+      if (this.report.getNumberOfErrors() == 0) {
+        healthyCheckMessage += "OK.";
+      } else {
+        healthyCheckMessage += "INVALID.";
+        healthyCheckWarning = true;
+      }
+
+      openSuccessDialog(healthyCheckMessage, healthyCheckWarning);
+    } catch (GeneratorProjectNotExistentException e) {
+      LOG.warn("Configuration project not found!", e);
+      healthyCheckMessage = firstStep + "NOT FOUND!\n"
+          + "=> Please import the configuration project into your workspace as stated in the "
+          + "documentation of CobiGen or in the one of your project.";
+      PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
+    } catch (ConfigurationConflictException e) {
+      healthyCheckMessage = "An unexpected error occurred! Templates were in a conflicted state.";
+      healthyCheckMessage += "\n\nNo automatic upgrade of the context configuration possible.";
+      PlatformUIUtil.openErrorDialog(healthyCheckMessage, e);
+      LOG.error(healthyCheckMessage, e);
+    } catch (InvalidConfigurationException e) {
+      // Won't be reached anymore
+      healthyCheckMessage = firstStep + "OK.";
+      healthyCheckMessage += secondStep + "INVALID!";
+      if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
+        Path configurationProject = Paths.get(generatorConfProj.getLocationURI());
+        ContextConfigurationVersion currentVersion = new ContextConfigurationUpgrader()
+            .resolveLatestCompatibleSchemaVersion(configurationProject);
+        if (currentVersion != null) {
+          // upgrade possible
+          healthyCheckMessage += "\n\nAutomatic upgrade of the context configuration available.\n" + "Detected: "
+              + currentVersion + " / Currently Supported: " + ContextConfigurationVersion.getLatest();
+          this.report = openErrorDialogWithContextUpgrade(healthyCheckMessage, configurationProject,
+              BackupPolicy.ENFORCE_BACKUP);
+          healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, this.report);
+          if (!this.report.containsError(RuntimeException.class)) {
+            // re-run Health Check
+            Display.getCurrent().asyncExec(new Runnable() {
+              @Override
+              public void run() {
+
+                execute();
+              }
+            });
+          }
+        } else {
+          healthyCheckMessage += "\n\nNo automatic upgrade of the context configuration possible. "
+              + "Maybe just a mistake in the context configuration?";
+          healthyCheckMessage += "\n\n=> " + e.getMessage();
+          healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, this.report);
+          PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
+        }
+      } else {
+        healthyCheckMessage += "\n\nCould not find configuration.";
+        PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
+      }
+      LOG.warn(healthyCheckMessage, e);
+    } catch (Throwable e) {
+      healthyCheckMessage = "An unexpected error occurred! Templates were not found.";
+      if (this.report != null && healthyCheckMessage != null) {
+        healthyCheckMessage = MessageUtil.enrichMsgIfMultiError(healthyCheckMessage, this.report);
+      }
+      PlatformUIUtil.openErrorDialog(healthyCheckMessage, e);
+      LOG.error(healthyCheckMessage, e);
     }
   }
 }

@@ -83,10 +83,10 @@ public class GenerateCommand extends CommandCommons {
   List<String> templates = null;
 
   /**
-   * If this options is enabled, all templates are extracted.
+   * Enforces usage of the old monolithic template structure instead of the new template sets structure.
    */
-  @Option(names = { "--force-old-templates" }, description = MessagesConstants.FORCE_OLD_TEMPLATES)
-  boolean forceOldTemplates;
+  @Option(names = { "--force-monolithic-templates" }, description = MessagesConstants.FORCE_MONOLITHIC_TEMPLATES)
+  boolean forceMonolithicTemplates;
 
   /**
    * Logger to output useful information to the user
@@ -109,10 +109,10 @@ public class GenerateCommand extends CommandCommons {
     }
 
     LOG.debug("Input files and output root path confirmed to be valid.");
-    if (!this.forceOldTemplates) {
-      checkOldTemplatesException();
+    if (!this.forceMonolithicTemplates) {
+      checkMonolithicTemplatesException();
     }
-    CobiGen cg = CobiGenUtils.initializeCobiGenWithOldTemplates(this.templatesProject);
+    CobiGen cg = CobiGenUtils.initializeCobiGenWithMonolithicTemplates(this.templatesProject);
 
     resolveTemplateDependencies();
 
@@ -133,18 +133,18 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
-   * Uses default initialization, checks if old templates exist, handles the exception and lets the user decide if the
-   * templates should be upgraded.
+   * Uses default initialization, checks if monolithic templates exist, handles the exception and lets the user decide
+   * if the templates should be upgraded.
    */
-  private void checkOldTemplatesException() {
+  private void checkMonolithicTemplatesException() {
 
     try {
       CobiGenUtils.initializeCobiGen(this.templatesProject);
     } catch (DeprecatedMonolithicTemplatesException e) {
-      LOG.warn("", e);
+      LOG.warn(e.getMessage());
       LOG.info("Would you like to upgrade your templates to the newest version? \n"
           + "type yes/y to continue or no/n to Ignore (or hit return for yes).", System.getProperty("user.dir"));
-      LOG.info("For more Informations, please visit:", WikiConstants.WIKI_UPGRADE_OLD_TEMPLATES);
+      LOG.info("For more Informations, please visit:", WikiConstants.WIKI_UPGRADE_MONOLITHIC_TEMPLATES);
       askUserToUpgradeTemplates();
 
     }

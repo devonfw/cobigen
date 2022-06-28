@@ -83,7 +83,7 @@ public class MessagesConstants {
   public static final String CUSTOM_LOCATION_OPTION_DESCRIPTION = "Custom location where the unpacked templates will be stored.";
 
   /**
-   * Message constant: description of the generate command with --enforce-old-templates option
+   * Message constant: description of the generate command with --force-monolithic-templates option
    */
-  public static final String FORCE_OLD_TEMPLATES = "If this option is enabled, old templates can be used.";
+  public static final String FORCE_MONOLITHIC_TEMPLATES = "If this option is enabled, the old monolithic template structure will be used instead of the new template sets structure..";
 }

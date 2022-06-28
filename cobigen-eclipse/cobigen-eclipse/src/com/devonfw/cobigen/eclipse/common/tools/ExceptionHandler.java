@@ -42,8 +42,8 @@ public class ExceptionHandler {
     } else if (ConfigurationConflictException.class.isAssignableFrom(e.getClass())) {
       openInvalidConfigurationErrorDialog((ConfigurationConflictException) e);
     } else if (DeprecatedMonolithicTemplatesException.class.isAssignableFrom(e.getClass())) {
-      LOG.warn("Old Templates found !!! .", e);
-      openOldTemplatesErrorDialog((DeprecatedMonolithicTemplatesException) e);
+      LOG.warn("Monolithic Templates found.", e);
+      openMonolithicTemplatesErrorDialog((DeprecatedMonolithicTemplatesException) e);
     } else if (GeneratorProjectNotExistentException.class.isAssignableFrom(e.getClass())) {
       LOG.error(
           "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
@@ -105,26 +105,28 @@ public class ExceptionHandler {
    *
    * @param e {@link InvalidConfigurationException} occurred
    */
-  private static void openOldTemplatesErrorDialog(DeprecatedMonolithicTemplatesException e) {
+  private static void openMonolithicTemplatesErrorDialog(DeprecatedMonolithicTemplatesException e) {
 
     PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
       MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Warning!", null,
-          "You are using an old templates version. Do you want to upgrade your templates to the newest version? "
-              + "For more informations please visit:" + WikiConstants.WIKI_UPGRADE_OLD_TEMPLATES
-              + "\n\nOriginal error message: " + e.getMessage(),
+          e.getMessage() + " Further Information can be found at:" + WikiConstants.WIKI_UPGRADE_MONOLITHIC_TEMPLATES,
           MessageDialog.ERROR, new String[] { "Upgrade", "Postpone", "Cancel" }, 2);
       dialog.setBlockOnOpen(true);
 
       int result = dialog.open();
       if (result == 0) {
-        new HealthCheckDialog().execute();
+        // TODO Integrate the Upgrader from #1502
+        // For now Call HealthCheck
+        // new HealthCheckDialog().execute();
         // new UpgradeTemplatesDialog().execute();
       }
       if (result == 1) {
-
+        // Do nothing (Postpone and Continue)
       }
       if (result == 2) {
-        // Cancel Thread
+        // Cancel
+        // TODO Throw new CancellationException or delete this button
+
       }
     });
   }

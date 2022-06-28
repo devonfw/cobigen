@@ -60,12 +60,13 @@ public class CobiGenFactory {
    * Creates a new {@link CobiGen} while searching a valid configuration at the given path
    *
    * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
-   * @param allowOldTemplates ignores deprecated template folder structure and if found does not throw a
-   *        DeprecatedMonolithicTemplatesException
+   * @param allowMonolithicTemplates ignores deprecated monolithic template folder structure and if found does not throw
+   *        a DeprecatedMonolithicTemplatesException
    * @return a new instance of {@link CobiGen}
    * @throws InvalidConfigurationException if the context configuration could not be read properly.
    */
-  public static CobiGen create(URI configFileOrFolder, boolean allowOldTemplates) throws InvalidConfigurationException {
+  public static CobiGen create(URI configFileOrFolder, boolean allowMonolithicTemplates)
+      throws InvalidConfigurationException {
 
     Objects.requireNonNull(configFileOrFolder, "The URI pointing to the configuration could not be null.");
 
@@ -76,8 +77,7 @@ public class CobiGenFactory {
     // Notifies all plugins of new template root path
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
 
-    // Check old_templates and throw if found also in custom templates
-    if (!allowOldTemplates && !configurationHolder.isTemplateSetConfiguration())
+    if (!allowMonolithicTemplates && !configurationHolder.isTemplateSetConfiguration())
       throw new DeprecatedMonolithicTemplatesException();
     return createBean;
   }

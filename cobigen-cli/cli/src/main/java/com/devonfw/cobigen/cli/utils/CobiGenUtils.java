@@ -61,12 +61,12 @@ public class CobiGenUtils {
   }
 
   /**
-   * Registers CobiGen plug-ins and instantiates CobiGen, even if old templates found
+   * Registers CobiGen plug-ins and instantiates CobiGen, even if monolithic templates were found
    *
    * @param templatesProject the templates project or jar
    * @return object of CobiGen
    */
-  public static CobiGen initializeCobiGenWithOldTemplates(Path templatesProject) {
+  public static CobiGen initializeCobiGenWithMonolithicTemplates(Path templatesProject) {
 
     registerPlugins();
     if (templatesProject != null) {
