@@ -173,22 +173,6 @@ public class HealthCheckDialog {
   }
 
   /**
-   * create and check DeprecatedMonolithicConfigurationException
-   *
-   * @param generatorConfProj from Healthcheck.execute
-   *
-   */
-  // private void createAndCheckMonolithicConfigurationException(IProject generatorConfProj) {
-  //
-  // try {
-  // CobiGenFactory.create(generatorConfProj.getLocationURI());
-  // } catch (DeprecatedMonolithicConfigurationException e) {
-  // throw e;
-  // }
-  //
-  // }
-
-  /**
    * Open up an error dialog, which encompasses the ability to upgrade the context configuration.
    *
    * @param healthyCheckMessage message to be shown to the user
