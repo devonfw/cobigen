@@ -67,7 +67,9 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
    * present (new templates with old custom templates). Also tests if the thrown error message contains a link to the
    * wiki.
    *
-   * @throws ConfigurationConflictException if a conflict occurred
+   * Backward Compatibility test, remove when monolithic context.xml is deprecated.
+   *
+   * @throws ConfigurationConflictException expected exception
    *
    */
   @Test

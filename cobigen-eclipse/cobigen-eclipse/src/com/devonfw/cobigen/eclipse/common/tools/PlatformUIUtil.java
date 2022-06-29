@@ -27,6 +27,31 @@ import com.google.common.collect.Lists;
 public class PlatformUIUtil {
 
   /**
+   * The active {@link IWorkbenchWindow}
+   */
+  private static IWorkbenchWindow workbenchWindow;
+
+  /**
+   * Returns the active {@link IWorkbenchWindow}
+   *
+   * @return {@link IWorkbenchWindow}
+   */
+  private static IWorkbenchWindow getWorkbenchWindow() {
+
+    return workbenchWindow;
+  }
+
+  /**
+   * Sets the active {@link IWorkbenchWindow}
+   *
+   * @param workbenchWindow new value of {@link #getworkbenchWindow}.
+   */
+  private static void setWorkbenchWindow(IWorkbenchWindow workbenchWindow) {
+
+    PlatformUIUtil.workbenchWindow = workbenchWindow;
+  }
+
+  /**
    * Waits for the {@link IWorkbench} to appear and returns it
    *
    * @return {@link IWorkbench} of the IDE
@@ -46,11 +71,13 @@ public class PlatformUIUtil {
    */
   public static IWorkbenchWindow getActiveWorkbenchWindow() {
 
-    IWorkbench workbench = getWorkbench();
-    IWorkbenchWindow workbenchWindow;
-    while ((workbenchWindow = workbench.getActiveWorkbenchWindow()) == null) {
+    getWorkbench().getDisplay().syncExec(() -> {
+      setWorkbenchWindow(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+    });
+
+    while (getWorkbenchWindow() == null) {
     }
-    return workbenchWindow;
+    return getWorkbenchWindow();
   }
 
   /**
@@ -60,9 +87,9 @@ public class PlatformUIUtil {
    */
   public static IWorkbenchPage getActiveWorkbenchPage() {
 
-    IWorkbenchWindow workbenchWindow = getActiveWorkbenchWindow();
+    IWorkbenchWindow activeWorkbenchWindow = getActiveWorkbenchWindow();
     IWorkbenchPage page;
-    while ((page = workbenchWindow.getActivePage()) == null) {
+    while ((page = activeWorkbenchWindow.getActivePage()) == null) {
     }
     return page;
   }
