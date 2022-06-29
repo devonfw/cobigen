@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
-import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
@@ -83,10 +83,11 @@ public class GenerateCommand extends CommandCommons {
   List<String> templates = null;
 
   /**
-   * Enforces usage of the old monolithic template structure instead of the new template sets structure.
+   * allows usage of the old monolithic template structure instead of the new template sets structure.
    */
-  @Option(names = { "--force-monolithic-templates" }, description = MessagesConstants.FORCE_MONOLITHIC_TEMPLATES)
-  boolean forceMonolithicTemplates;
+  @Option(names = {
+  "--force-monolithic-configuration" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
+  boolean forceMonolithicConfiguration;
 
   /**
    * Logger to output useful information to the user
@@ -109,10 +110,10 @@ public class GenerateCommand extends CommandCommons {
     }
 
     LOG.debug("Input files and output root path confirmed to be valid.");
-    if (!this.forceMonolithicTemplates) {
-      checkMonolithicTemplatesException();
+    if (!this.forceMonolithicConfiguration) {
+      checkMonolithicConfigurationException();
     }
-    CobiGen cg = CobiGenUtils.initializeCobiGenWithMonolithicTemplates(this.templatesProject);
+    CobiGen cg = CobiGenUtils.initializeCobiGenWithMonolithicConfiguration(this.templatesProject);
 
     resolveTemplateDependencies();
 
@@ -136,15 +137,12 @@ public class GenerateCommand extends CommandCommons {
    * Uses default initialization, checks if monolithic templates exist, handles the exception and lets the user decide
    * if the templates should be upgraded.
    */
-  private void checkMonolithicTemplatesException() {
+  private void checkMonolithicConfigurationException() {
 
     try {
       CobiGenUtils.initializeCobiGen(this.templatesProject);
-    } catch (DeprecatedMonolithicTemplatesException e) {
+    } catch (DeprecatedMonolithicConfigurationException e) {
       LOG.warn(e.getMessage());
-      LOG.info("Would you like to upgrade your templates to the newest version? \n"
-          + "type yes/y to continue or no/n to Ignore (or hit return for yes).", System.getProperty("user.dir"));
-      LOG.info("For more Informations, please visit:", WikiConstants.WIKI_UPGRADE_MONOLITHIC_TEMPLATES);
       askUserToUpgradeTemplates();
 
     }
@@ -279,6 +277,9 @@ public class GenerateCommand extends CommandCommons {
    */
   private void askUserToUpgradeTemplates() {
 
+    LOG.info("Would you like to upgrade your templates to the newest version? \n"
+        + "type yes/y to continue or no/n to Ignore (or hit return for yes).", System.getProperty("user.dir"));
+    LOG.info("For more Informations, please visit: ", WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION);
     Path outputDirectory = Paths.get(System.getProperty("user.dir"));
 
     boolean setToUserDir = ValidationUtils.yesNoPrompt("upgrading templates version...: " + outputDirectory.toString(),
@@ -286,7 +287,7 @@ public class GenerateCommand extends CommandCommons {
         "Continue generation with old templates...");
 
     if (setToUserDir) {
-      // TODO UpgradeTemplatesMethod; TODO Use the upgrader from Ticket #1502
+      // TemplateAdapter.upgradeMonolithicTemplates();
     } else {
       // Do Nothing, continue with old templates generation
     }

@@ -63,7 +63,7 @@ public class VelocityGenerationTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGenAndPostpone(bot, javaClassItem, "Velocity Test");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "Velocity Test");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions

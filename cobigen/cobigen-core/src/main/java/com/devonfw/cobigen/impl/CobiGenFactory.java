@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
-import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
@@ -60,12 +60,12 @@ public class CobiGenFactory {
    * Creates a new {@link CobiGen} while searching a valid configuration at the given path
    *
    * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
-   * @param allowMonolithicTemplates ignores deprecated monolithic template folder structure and if found does not throw
-   *        a DeprecatedMonolithicTemplatesException
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @return a new instance of {@link CobiGen}
    * @throws InvalidConfigurationException if the context configuration could not be read properly.
    */
-  public static CobiGen create(URI configFileOrFolder, boolean allowMonolithicTemplates)
+  public static CobiGen create(URI configFileOrFolder, boolean allowMonolithicConfiguration)
       throws InvalidConfigurationException {
 
     Objects.requireNonNull(configFileOrFolder, "The URI pointing to the configuration could not be null.");
@@ -77,8 +77,8 @@ public class CobiGenFactory {
     // Notifies all plugins of new template root path
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
 
-    if (!allowMonolithicTemplates && !configurationHolder.isTemplateSetConfiguration())
-      throw new DeprecatedMonolithicTemplatesException();
+    if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration())
+      throw new DeprecatedMonolithicConfigurationException();
     return createBean;
   }
 

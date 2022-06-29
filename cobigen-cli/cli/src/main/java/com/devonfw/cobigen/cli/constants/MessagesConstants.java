@@ -1,5 +1,7 @@
 package com.devonfw.cobigen.cli.constants;
 
+import com.devonfw.cobigen.impl.config.constant.WikiConstants;
+
 /**
  * Messages constants printed to the user
  */
@@ -85,5 +87,6 @@ public class MessagesConstants {
   /**
    * Message constant: description of the generate command with --force-monolithic-templates option
    */
-  public static final String FORCE_MONOLITHIC_TEMPLATES = "If this option is enabled, the old monolithic template structure will be used instead of the new template sets structure..";
+  public static final String FORCE_MONOLITHIC_CONFIGURATION = "If this option is enabled, the old monolithic template structure will be used instead of the new template sets structure..Further Information can be found at: "
+      + WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION;
 }

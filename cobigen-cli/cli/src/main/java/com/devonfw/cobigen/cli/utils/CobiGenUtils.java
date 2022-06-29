@@ -66,7 +66,7 @@ public class CobiGenUtils {
    * @param templatesProject the templates project or jar
    * @return object of CobiGen
    */
-  public static CobiGen initializeCobiGenWithMonolithicTemplates(Path templatesProject) {
+  public static CobiGen initializeCobiGenWithMonolithicConfiguration(Path templatesProject) {
 
     registerPlugins();
     if (templatesProject != null) {

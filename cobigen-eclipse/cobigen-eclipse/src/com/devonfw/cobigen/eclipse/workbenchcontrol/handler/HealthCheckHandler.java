@@ -28,9 +28,9 @@ public class HealthCheckHandler extends AbstractHandler {
 
     MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
 
-    checkMonolithicTemplatesException(event);
+    checkMonolithicConfigurationException(event);
     try {
-      new HealthCheckDialog().executeWithMonolithicTemplates();
+      new HealthCheckDialog().execute(true);
     } catch (Throwable e) {
       ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
     }
@@ -39,13 +39,13 @@ public class HealthCheckHandler extends AbstractHandler {
   }
 
   /**
-   * checks if monolithic templates exist, handles the exception and lets the user decide if the templates should be
+   * checks if monolithic configuration exist, handles the exception and lets the user decide if the templates should be
    * upgraded.
    *
    * @param event from the healthCheck
    *
    */
-  private void checkMonolithicTemplatesException(ExecutionEvent event) {
+  private void checkMonolithicConfigurationException(ExecutionEvent event) {
 
     try {
       new HealthCheckDialog().execute();
