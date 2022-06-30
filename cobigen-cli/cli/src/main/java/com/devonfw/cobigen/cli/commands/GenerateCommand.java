@@ -205,7 +205,7 @@ public class GenerateCommand extends CommandCommons {
             "Did not detect the input as part of a maven project, the root directory of the maven project was not found.");
 
         LOG.info("Would you like to take '{}' as a root directory for output generation? \n"
-            + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
+            + MessagesConstants.YES_NO_ANSWER_DESCRIPTION, System.getProperty("user.dir"));
 
         setRootOutputDirectoryWithPrompt();
 
@@ -277,14 +277,14 @@ public class GenerateCommand extends CommandCommons {
    */
   private void askUserToUpgradeTemplates() {
 
-    LOG.info("Would you like to upgrade your templates to the newest version? \n"
-        + "type yes/y to continue or no/n to Ignore (or hit return for yes).", System.getProperty("user.dir"));
-    LOG.info("For more Informations, please visit: ", WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION);
+    LOG.info(
+        "Would you like to upgrade your templates to the newest version? \n"
+            + MessagesConstants.YES_NO_ANSWER_DESCRIPTION + "For more Informations, please visit: ",
+        WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION, System.getProperty("user.dir"));
     Path outputDirectory = Paths.get(System.getProperty("user.dir"));
 
     boolean setToUserDir = ValidationUtils.yesNoPrompt("upgrading templates version...: " + outputDirectory.toString(),
-        "Invalid input. Please answer yes/n or no/n (or hit return for yes).",
-        "Continue generation with old templates...");
+        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
 
     if (setToUserDir) {
       // TemplateAdapter.upgradeMonolithicTemplates();
