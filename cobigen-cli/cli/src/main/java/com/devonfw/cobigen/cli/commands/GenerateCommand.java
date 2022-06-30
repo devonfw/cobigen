@@ -113,7 +113,7 @@ public class GenerateCommand extends CommandCommons {
     if (!this.forceMonolithicConfiguration) {
       checkMonolithicConfigurationException();
     }
-    CobiGen cg = CobiGenUtils.initializeCobiGenWithMonolithicConfiguration(this.templatesProject);
+    CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject, true);
 
     resolveTemplateDependencies();
 
@@ -140,7 +140,7 @@ public class GenerateCommand extends CommandCommons {
   private void checkMonolithicConfigurationException() {
 
     try {
-      CobiGenUtils.initializeCobiGen(this.templatesProject);
+      CobiGenUtils.initializeCobiGen(this.templatesProject, false);
     } catch (DeprecatedMonolithicConfigurationException e) {
       LOG.warn(e.getMessage());
       askUserToUpgradeTemplates();

@@ -60,6 +60,18 @@ public class CobiGenFactory {
    * Creates a new {@link CobiGen} while searching a valid configuration at the given path
    *
    * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
+   * @return a new instance of {@link CobiGen}
+   * @throws InvalidConfigurationException if the context configuration could not be read properly.
+   */
+  public static CobiGen create() throws InvalidConfigurationException {
+
+    return create(false);
+  }
+
+  /**
+   * Creates a new {@link CobiGen} while searching a valid configuration at the given path
+   *
+   * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
    * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
    *        throw a DeprecatedMonolithicConfigurationException
    * @return a new instance of {@link CobiGen}
@@ -85,33 +97,19 @@ public class CobiGenFactory {
   /**
    * Creates a new {@link CobiGen}
    *
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @return a new instance of {@link CobiGen}
    * @throws InvalidConfigurationException if the context configuration could not be read properly.
    */
-  public static CobiGen create() throws InvalidConfigurationException {
+  public static CobiGen create(boolean allowMonolithicConfiguration) throws InvalidConfigurationException {
 
     URI configFileOrFolder = ConfigurationFinder.findTemplatesLocation();
     if (configFileOrFolder == null) {
       throw new InvalidConfigurationException(
           "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
     }
-    return create(configFileOrFolder);
-  }
-
-  /**
-   * Creates a new {@link CobiGen} even if old monolithic templates found
-   *
-   * @return a new instance of {@link CobiGen}
-   * @throws InvalidConfigurationException if the context configuration could not be read properly.
-   */
-  public static CobiGen createWithOldTemplates() throws InvalidConfigurationException {
-
-    URI configFileOrFolder = ConfigurationFinder.findTemplatesLocation();
-    if (configFileOrFolder == null) {
-      throw new InvalidConfigurationException(
-          "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
-    }
-    return create(configFileOrFolder, true);
+    return create(configFileOrFolder, allowMonolithicConfiguration);
   }
 
   /**

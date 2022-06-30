@@ -164,11 +164,12 @@ public class AbstractCliTest {
    * @param args execution arguments
    * @param useDevTemplates use development devon4j-templates
    * @param assureFailure assure failure instead of success of the command execution
-   * @param allowMonolithicTemplates
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @throws Exception error
    */
   protected void execute(String[] args, boolean useDevTemplates, boolean assureFailure,
-      boolean allowMonolithicTemplates) throws Exception {
+      boolean allowMonolithicConfiguration) throws Exception {
 
     if (useDevTemplates) {
       runWithLatestTemplates();
@@ -202,18 +203,18 @@ public class AbstractCliTest {
       i++;
     }
 
-    if (useDevTemplates && !allowMonolithicTemplates) {
+    if (useDevTemplates && !allowMonolithicConfiguration) {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 3);
       debugArgs[debugArgs.length - 3] = "-v";
       debugArgs[debugArgs.length - 2] = "-tp";
       debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
-    } else if (useDevTemplates && allowMonolithicTemplates) {
+    } else if (useDevTemplates && allowMonolithicConfiguration) {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 4);
       debugArgs[debugArgs.length - 4] = "--force-monolithic-configuration";
       debugArgs[debugArgs.length - 3] = "-v";
       debugArgs[debugArgs.length - 2] = "-tp";
       debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
-    } else if (allowMonolithicTemplates) {
+    } else if (allowMonolithicConfiguration) {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 2);
       debugArgs[debugArgs.length - 2] = "--force-monolithic-configuration";
       debugArgs[debugArgs.length - 1] = "-v";

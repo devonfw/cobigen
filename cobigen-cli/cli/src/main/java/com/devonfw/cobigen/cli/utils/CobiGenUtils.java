@@ -48,31 +48,16 @@ public class CobiGenUtils {
    * Registers CobiGen plug-ins and instantiates CobiGen
    *
    * @param templatesProject the templates project or jar
+   * @param allowMonolithicConfiguration
    * @return object of CobiGen
    */
-  public static CobiGen initializeCobiGen(Path templatesProject) {
+  public static CobiGen initializeCobiGen(Path templatesProject, boolean allowMonolithicConfiguration) {
 
     registerPlugins();
     if (templatesProject != null) {
-      return CobiGenFactory.create(templatesProject.toUri());
+      return CobiGenFactory.create(templatesProject.toUri(), allowMonolithicConfiguration);
     } else {
-      return CobiGenFactory.create();
-    }
-  }
-
-  /**
-   * Registers CobiGen plug-ins and instantiates CobiGen, even if monolithic templates were found
-   *
-   * @param templatesProject the templates project or jar
-   * @return object of CobiGen
-   */
-  public static CobiGen initializeCobiGenWithMonolithicConfiguration(Path templatesProject) {
-
-    registerPlugins();
-    if (templatesProject != null) {
-      return CobiGenFactory.create(templatesProject.toUri(), true);
-    } else {
-      return CobiGenFactory.createWithOldTemplates();
+      return CobiGenFactory.create(allowMonolithicConfiguration);
     }
   }
 
