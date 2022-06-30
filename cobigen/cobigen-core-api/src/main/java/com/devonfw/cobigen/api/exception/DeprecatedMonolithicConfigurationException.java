@@ -29,7 +29,7 @@ public class DeprecatedMonolithicConfigurationException extends CobiGenRuntimeEx
    */
   public DeprecatedMonolithicConfigurationException() {
 
-    super("You Are using an old Templates Configuration, please consider to upgrade your templates! Thank You!");
+    super("You are using an old templates configuration. Please consider upgrading your templates! Thank you!");
   }
 
 }

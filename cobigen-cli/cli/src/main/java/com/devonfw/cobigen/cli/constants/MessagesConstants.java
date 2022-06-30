@@ -89,4 +89,15 @@ public class MessagesConstants {
    */
   public static final String FORCE_MONOLITHIC_CONFIGURATION = "If this option is enabled, the old monolithic template structure will be used instead of the new template sets structure..Further Information can be found at: "
       + WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION;
+
+  /**
+   * Message constant: description of the CLI Yes or No answer
+   */
+  public static final String YES_NO_ANSWER_DESCRIPTION = "Type yes/y to continue or no/n to cancel (or hit return for yes). ";
+
+  /**
+   * Message constant: description of the CLI Invalid Yes or No answer
+   */
+  public static final String INVALID_YES_NO_ANSWER_DESCRIPTION = "Invalid input. Please answer yes/n or no/n (or hit return for yes).";
+
 }

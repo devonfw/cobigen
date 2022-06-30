@@ -111,7 +111,7 @@ public class ExceptionHandler {
       MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Warning!", null,
           e.getMessage() + " Further Information can be found at:"
               + WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION,
-          MessageDialog.ERROR, new String[] { "Upgrade", "Postpone" }, 1);
+          MessageDialog.WARNING, new String[] { "Upgrade", "Postpone" }, 1);
       dialog.setBlockOnOpen(true);
 
       int result = dialog.open();
