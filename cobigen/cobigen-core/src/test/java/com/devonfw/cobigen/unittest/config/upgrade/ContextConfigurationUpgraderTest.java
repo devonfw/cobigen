@@ -72,12 +72,12 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
     assertThat(backupContextPath.toFile()).exists().hasSameContentAs(context.toFile());
 
     for (String s : newTemplatesLocation.toFile().list()) {
-      Path newContextPath = newTemplatesLocation.resolve(s + "/" + "src/main/resources");
+      Path newContextPath = newTemplatesLocation.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
       version = sut.resolveLatestCompatibleSchemaVersion(newContextPath);
       assertThat(version).as("Target version").isEqualTo(ContextConfigurationVersion.getLatest());
 
-      newContextPath = newContextPath.resolve("context.xml");
+      newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
       XMLUnit.setIgnoreWhitespace(true);
       new XMLTestCase() {
       }.assertXMLEqual(new FileReader(contextTestFileRootPath + "/valid-" + ContextConfigurationVersion.getLatest()
@@ -125,12 +125,12 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
     assertThat(backupContextPath.toFile()).exists().hasSameContentAs(context.toFile());
 
     for (String s : newTemplatesLocation.toFile().list()) {
-      Path newContextPath = newTemplatesLocation.resolve(s + "/" + "src/main/resources");
+      Path newContextPath = newTemplatesLocation.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
       version = sut.resolveLatestCompatibleSchemaVersion(newContextPath);
       assertThat(version).as("Target version").isEqualTo(ContextConfigurationVersion.getLatest());
 
-      newContextPath = newContextPath.resolve("context.xml");
+      newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
       XMLUnit.setIgnoreWhitespace(true);
       new XMLTestCase() {
       }.assertXMLEqual(new FileReader(contextTestFileRootPath + "/valid-" + ContextConfigurationVersion.getLatest()
