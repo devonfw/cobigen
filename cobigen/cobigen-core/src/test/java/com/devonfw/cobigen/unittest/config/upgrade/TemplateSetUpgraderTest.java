@@ -142,7 +142,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
       try {
         validator.validate(contextStream);
       } catch (SAXException e) {
-        fail("Exception shows that validator has found an error with the context configuration file");
+        fail("Exception shows that validator has found an error with the context configuration file \n" + e);
         contextStream.getInputStream().close();
         schemaStream.close();
       }
