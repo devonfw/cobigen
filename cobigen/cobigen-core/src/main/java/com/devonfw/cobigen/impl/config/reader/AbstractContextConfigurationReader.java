@@ -109,7 +109,8 @@ public abstract class AbstractContextConfigurationReader {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         ContextConfigurationVersion contextVersion = ContextConfigurationVersion.values()[configVersion.intValue()];
         try (
-            InputStream schemaStream = getClass().getResourceAsStream("/schema/" + contextVersion + "/contextConfiguration.xsd");
+            InputStream schemaStream = getClass()
+                .getResourceAsStream("/schema/" + contextVersion + "/contextConfiguration.xsd");
             InputStream configInputStream = Files.newInputStream(contextFile)) {
 
           Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
