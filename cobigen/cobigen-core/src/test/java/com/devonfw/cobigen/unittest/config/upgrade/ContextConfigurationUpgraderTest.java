@@ -33,7 +33,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  /*
+  /**
    * Tests the valid upgrade of a context configuration from version v2.0 to the latest version. Please make sure that
    * .../ContextConfigurationUpgraderTest/valid-latest_version exists
    *

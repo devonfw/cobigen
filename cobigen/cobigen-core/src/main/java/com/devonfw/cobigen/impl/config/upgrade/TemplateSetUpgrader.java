@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +35,7 @@ import com.devonfw.cobigen.impl.config.entity.io.v3_0.Links;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tag;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tags;
 
+import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -87,11 +89,13 @@ public class TemplateSetUpgrader {
    * Upgrades the ContextConfiguration from v2.1 to the new structure from v3.0. The monolithic pom and context files
    * will be split into multiple files corresponding to every template set that will be created.
    *
+   * @param contextLocation the location of the context configuration file
+   *
    * @param {@link Path} Path to the context.xml that will be upgraded
    * @return {@link Map} collection that contains the upgraded v3.0
    *         {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} as key and a {@link Path} for
    *         the new location of the context.xml as value
-   * @throws Exception
+   * @throws Exception if an issue occurred in directory copy operations
    */
   public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
       Path contextLocation) throws Exception {
@@ -122,7 +126,7 @@ public class TemplateSetUpgrader {
         Path utilsPath = cobigenTemplates.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER);
         try {
           FileUtils.copyDirectory(triggerFolder.toFile(),
-              newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER).toFile());
+              newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toFile());
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template Folder", e);
           throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -135,10 +139,13 @@ public class TemplateSetUpgrader {
           throw new CobiGenRuntimeException(e.getMessage(), e);
         }
 
-        Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER)
+        Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         contextMap.put(cc, newContextPath);
-
+        // creates actual context configuration file
+        try (OutputStream out = Files.newOutputStream(newContextPath)) {
+          JAXB.marshal(cc, out);
+        }
         writeNewPomFile(cobigenTemplates, newTriggerFolder, trigger);
       }
     }

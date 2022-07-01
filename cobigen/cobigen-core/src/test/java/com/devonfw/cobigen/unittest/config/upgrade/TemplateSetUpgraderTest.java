@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
@@ -86,7 +87,8 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
     Set<String> OldPathFilesSet = new HashSet<>(Arrays.asList(oldTemplatesPath.toFile().list()));
 
     TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-    templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
+    Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
+        .upgradeTemplatesToTemplateSets(this.templateLocation);
 
     Path backupPath = this.templateLocation.getParent().resolve("backup")
         .resolve(ConfigurationConstants.TEMPLATES_FOLDER).resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
@@ -99,6 +101,13 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
     assertEquals(OldTemplatesFileCount - 1, NewPathFilesSet.size());
     assertEquals(OldTemplatesFileCount, backupPathFilesSet.size());
 
+    for (Path contextpath : newContextConfigurations.values()) {
+      assertThat(contextpath).exists();
+
+      validateContextConfigurationFile(contextpath, "v3.0");
+
+    }
+
     for (String s : OldPathFilesSet) {
       if (!s.equals("context.xml")) {
         assertThat(NewPathFilesSet).contains(s);
@@ -110,6 +119,36 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
     }
     assertThat(NewPathFilesSet).hasSize(0);
     assertThat(backupPathFilesSet).hasSize(0);
+  }
+
+  /**
+   * Validates a context configuration file with given xsd schema version and fails the test if the validation failed.
+   *
+   * @param contextpath Path to context configuration file.
+   * @param schemaVersion String version to validate against f.e. : v2.2.
+   * @throws SAXException if a fatal error is found.
+   * @throws IOException if the underlying reader throws an IOException.
+   */
+  private void validateContextConfigurationFile(Path contextpath, String schemaVersion)
+      throws SAXException, IOException {
+
+    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    try (InputStream schemaStream = getClass()
+        .getResourceAsStream("/schema/" + schemaVersion + "/contextConfiguration.xsd")) {
+      StreamSource schemaSourceStream = new StreamSource(schemaStream);
+      Schema schema = schemaFactory.newSchema(schemaSourceStream);
+      Validator validator = schema.newValidator();
+      StreamSource contextStream = new StreamSource(contextpath.toFile());
+      try {
+        validator.validate(contextStream);
+      } catch (SAXException e) {
+        fail("Exception shows that validator has found an error with the context configuration file");
+        contextStream.getInputStream().close();
+        schemaStream.close();
+      }
+      schemaStream.close();
+    }
+
   }
 
   /**
@@ -129,27 +168,12 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
     Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
-    SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    try (InputStream schemaStream = getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd")) {
-      StreamSource schemaSourceStream = new StreamSource(schemaStream);
-      Schema schema = schemaFactory.newSchema(schemaSourceStream);
-      Validator validator = schema.newValidator();
+    for (String s : newTemplatesPath.toFile().list()) {
+      Path newContextPath = newTemplatesPath.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+      newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+      assertThat(newContextPath.toFile()).exists();
 
-      for (String s : newTemplatesPath.toFile().list()) {
-        Path newContextPath = newTemplatesPath.resolve(s + "/" + "src/main/resources");
-        newContextPath = newContextPath.resolve("context.xml");
-        assertThat(newContextPath.toFile()).exists();
-        StreamSource contextStream = new StreamSource(newContextPath.toFile());
-        try {
-          validator.validate(contextStream);
-        } catch (SAXException e) {
-          fail("Exception show that validator has found an fault");
-          contextStream.getInputStream().close();
-          schemaStream.close();
-        }
-
-      }
-      schemaStream.close();
+      validateContextConfigurationFile(newContextPath, "v3.0");
     }
 
   }
