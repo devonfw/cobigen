@@ -9,6 +9,10 @@
       <variableAssignment type="regex" key="toName" value="5" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="Kafka"></tag>
+    <tag name="Documentation"></tag>
+  </tags>
   <links>
     <link url="https://kafka.apache.org/documentation/"></link>
   </links>

@@ -1,6 +1,9 @@
 package com.devonfw.cobigen.impl.config.upgrade;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
@@ -37,9 +40,9 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
   }
 
   @Override
-  protected ConfigurationUpgradeResult performNextUpgradeStep(TemplatesConfigurationVersion source,
-      Object previousConfigurationRootNode) throws Exception {
-
+  protected List<ConfigurationUpgradeResult> performNextUpgradeStep(TemplatesConfigurationVersion source,
+      Object previousConfigurationRootNode, Path configurationRoot) throws Exception {
+	List<ConfigurationUpgradeResult> results = new ArrayList<>();
     ConfigurationUpgradeResult result = new ConfigurationUpgradeResult();
 
     switch (source) {
@@ -65,7 +68,8 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
             previousConfigurationRootNode, com.devonfw.cobigen.impl.config.entity.io.v2_1.TemplatesConfiguration.class);
         upgradedConfig.setVersion(new BigDecimal("2.1"));
 
-        result.setResultConfigurationJaxbRootNode(upgradedConfig);
+        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig, null);
+        results.add(result);
       }
         break;
       default:
@@ -73,7 +77,7 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
             + " to a newer one is currently not supported.");
     }
 
-    return result;
+    return results;
   }
 
 }

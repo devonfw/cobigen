@@ -8,4 +8,11 @@
       <variableAssignment type="property" key="etoName" value="name" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="Angular"></tag>
+    <tag name="OpenAPI"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Client"></tag>
+    <tag name="App"></tag>
+  </tags>
 </contextConfiguration>

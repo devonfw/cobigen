@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
     <trigger id="entities" type="mockplugin" templateFolder="testTemplates">
         <matcher type="fqn" value=".+">
         </matcher>
     </trigger>
+  <tags>
+    <tag name="bla" />
+  </tags>
 </contextConfiguration>

@@ -92,7 +92,7 @@ public class VersionValidator {
             && !versionStep.getValue()) {
           LOG.warn("{} version too old for current CobiGen version. CobiGen: {} / {}: {}", this.configName,
               currentCobiGenVersionStr, this.configName, configVersion);
-          throw new InvalidConfigurationException("The " + this.configName + " with version '" + configVersion
+          throw new NotYetSupportedException("The " + this.configName + " with version '" + configVersion
               + "' has to be upgraded to a compatible " + this.configName + " version.");
         }
       }

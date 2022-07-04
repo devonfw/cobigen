@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
@@ -83,14 +84,19 @@ public abstract class AbstractContextConfigurationReader {
         // Unmarshal without schema checks for getting the version attribute of the root node.
         // This is necessary to provide an automatic upgrade client later on
         Object rootNode = unmarschaller.unmarshal(in);
+        BigDecimal configVersion;
         if (rootNode instanceof ContextConfiguration) {
-          BigDecimal configVersion = ((ContextConfiguration) rootNode).getVersion();
+          configVersion = ((ContextConfiguration) rootNode).getVersion();
           if (configVersion == null) {
             throw new InvalidConfigurationException(contextFile,
                 "The required 'version' attribute of node \"contextConfiguration\" has not been set");
           } else {
             VersionValidator validator = new VersionValidator(Type.CONTEXT_CONFIGURATION, MavenMetadata.VERSION);
-            validator.validate(configVersion.floatValue());
+            try {
+              validator.validate(configVersion.floatValue());
+            } catch (NotYetSupportedException e) {
+              // TODO
+            }
           }
         } else {
           throw new InvalidConfigurationException(contextFile,
@@ -101,10 +107,10 @@ public abstract class AbstractContextConfigurationReader {
         // Unmarshal with schema checks for checking the correctness and give the user more hints to
         // correct his failures
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        ContextConfigurationVersion latestConfigurationVersion = ContextConfigurationVersion.getLatest();
+        ContextConfigurationVersion contextVersion = ContextConfigurationVersion.values()[configVersion.intValue()];
         try (
             InputStream schemaStream = getClass()
-                .getResourceAsStream("/schema/" + latestConfigurationVersion + "/contextConfiguration.xsd");
+                .getResourceAsStream("/schema/" + contextVersion + "/contextConfiguration.xsd");
             InputStream configInputStream = Files.newInputStream(contextFile)) {
 
           Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));

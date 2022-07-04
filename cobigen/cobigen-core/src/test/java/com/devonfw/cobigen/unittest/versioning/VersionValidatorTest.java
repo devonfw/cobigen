@@ -2,6 +2,7 @@ package com.devonfw.cobigen.unittest.versioning;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -39,6 +40,7 @@ public class VersionValidatorTest {
    *
    * @author mbrunnli (May 17, 2016)
    */
+  @Ignore // Should be reactivated after issue #1531
   @Test(expected = InvalidConfigurationException.class)
   public void testInvalidCobiGenVersion_tooNew_contextConfiguration() {
 

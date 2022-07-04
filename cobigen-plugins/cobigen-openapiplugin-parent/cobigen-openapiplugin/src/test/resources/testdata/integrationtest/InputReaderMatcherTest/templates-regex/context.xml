@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
-  version="2.1">
+  version="3.0">
 
   <trigger id="sales_only" type="openapi" templateFolder="salesTemplates">
     <containerMatcher type="element" value="OpenAPIFile"/>
@@ -12,4 +12,7 @@
     <matcher type="EntityNameRegex" value="Ta.*">
     </matcher>
   </trigger>
+  <tags>
+    <tag name="bla" />
+  </tags>
 </contextConfiguration>

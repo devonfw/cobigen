@@ -5,7 +5,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="trigger" type="tns:trigger" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="tags" type="tns:tags" minOccurs="0" maxOccurs="1" />
+        <xs:element name="tags" type="tns:tags" minOccurs="1" maxOccurs="1" />
         <xs:element name="links" type="tns:links" minOccurs="0" maxOccurs="1" />
       </xs:sequence>
       <xs:attribute name="version" use="required" type="xs:decimal" />

@@ -17,6 +17,10 @@
     <matcher type="expression" value="instanceof java.lang.Enum" accumulationType="NOT" />
     <matcher type="expression" value="isAbstract" accumulationType="NOT" />
   </trigger>
+  <tags>
+    <tag name="TestData"></tag>
+    <tag name="Builder"></tag>
+  </tags>
   <links>
     <link url="https://github.com/devonfw/cobigen/wiki/cobigen-usecases#test-data-builder-for-devon4j"></link>
   </links>

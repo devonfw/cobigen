@@ -8,6 +8,12 @@
       <variableAssignment type="regex" key="etoName" value="5" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="Angular"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Client"></tag>
+    <tag name="App"></tag>
+  </tags>
   <links>
     <link url="https://github.com/devonfw/cobigen/wiki/howto_angular-client-generation"></link>
   </links>

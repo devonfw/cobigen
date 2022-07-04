@@ -8,4 +8,10 @@
       <variableAssignment type="xpath" key="className" value="self::node()/@name" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="EA"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Client"></tag>
+    <tag name="UML"></tag>
+  </tags>
 </contextConfiguration>

@@ -9,6 +9,12 @@
       <variableAssignment type="regex" key="entityName" value="5" />
     </matcher>
   </trigger>
+  <tags>
+    <tag name="Java"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Server"></tag>
+    <tag name="App"></tag>
+  </tags>
   <links>
     <link url="https://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/reference/html/repositories.html"></link>
   </links>

@@ -8,6 +8,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,13 +54,17 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
   /** All enum values from the versions {@link Enum} */
   private VERSIONS_TYPE[] versions;
 
-  /** Name of the configuration (simple type of the {@link #configurationJaxbRootNode} with whitespaces) */
+  /**
+   * Name of the configuration (simple type of the {@link #configurationJaxbRootNode} with whitespaces)
+   */
   private String configurationName;
 
   /** Standardized file name of the configuration */
   private String configurationFilename;
 
-  /** Name of the configuration (simple type of the {@link #configurationJaxbRootNode} appended by .xsd) */
+  /**
+   * Name of the configuration (simple type of the {@link #configurationJaxbRootNode} appended by .xsd)
+   */
   private String configurationXsdFilename;
 
   /** JAXB root object class of the configuration for (un-)marshalling */
@@ -137,7 +142,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 
     LOG.info("Try reading {} (including trails with legacy schema).", this.configurationName);
 
-    Path configurationFile = configurationRoot.resolve(this.configurationFilename);
+    Path configurationFile = configurationRoot.endsWith(this.configurationFilename) ? configurationRoot
+        : configurationRoot.resolve(this.configurationFilename);
 
     for (int i = this.versions.length - 1; i >= 0; i--) {
       VERSIONS_TYPE lv = this.versions[i];
@@ -146,7 +152,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
         Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(lv);
         Object rootNode = unmarshallConfiguration(configurationFile, lv, jaxbConfigurationClass);
 
-        // check, whether the read node can be casted to the correct configuration root node object
+        // check, whether the read node can be casted to the correct configuration root
+        // node object
         if (!jaxbConfigurationClass.isAssignableFrom(rootNode.getClass())) {
           LOG.info("It was not possible to read {} with schema '{}' .", this.configurationName, lv.toString());
         } else {
@@ -210,17 +217,23 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
 
             createBackup(configurationFile, backupPolicy);
 
-            // NotYetSupportedException
-            ConfigurationUpgradeResult result = performNextUpgradeStep(this.versions[i], rootNode);
-            manualAdoptionsNecessary |= result.areManualAdoptionsNecessary();
+            List<ConfigurationUpgradeResult> results = performNextUpgradeStep(this.versions[i], rootNode,
+                configurationRoot);
+            for (ConfigurationUpgradeResult result : results) {
 
-            try (OutputStream out = Files.newOutputStream(configurationFile)) {
-              JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
+              manualAdoptionsNecessary |= result.areManualAdoptionsNecessary();
+              try (OutputStream out = Files.newOutputStream(result.getConfigurationPath())) {
+                JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
+              }
+
+              // implicitly check upgrade step
+              currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
+              // if CobiGen does not understand the upgraded file... throw exception
+              if (currentVersion == null) {
+                throw new CobiGenRuntimeException("An error occurred while upgrading " + this.configurationName
+                    + " from version " + this.versions[i] + " to " + this.versions[i + 1] + ".");
+              }
             }
-
-            // implicitly check upgrade step
-            currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
-
           } catch (NotYetSupportedException | BackupFailedException e) {
             throw e;
           } catch (Throwable e) {
@@ -230,11 +243,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                 e);
           }
 
-          // if CobiGen does not understand the upgraded file... throw exception
-          if (currentVersion == null) {
-            throw new CobiGenRuntimeException("An error occurred while upgrading " + this.configurationName
-                + " from version " + this.versions[i] + " to " + this.versions[i + 1] + ".");
-          }
         }
       }
     }
@@ -247,14 +255,15 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    *
    * @param source version from which to upgrade to the latest version.
    * @param previousConfigurationRootNode JAXB configuration root node of the configuration to be upgraded
+   * @param configurationRoot TODO
    * @return {@link ConfigurationUpgradeResult}, which contains the JAXB root node of the upgraded configuration.
    *         Further it contains a flag to indicate manual adoptions to be necessary after upgrading.
    * @throws Exception Any exception thrown during processing will be wrapped into a {@link CobiGenRuntimeException} by
    *         the {@link AbstractConfigurationUpgrader} with an appropriate message. {@link NotYetSupportedException}s
    *         will be forwarded untouched to the user.
    */
-  protected abstract ConfigurationUpgradeResult performNextUpgradeStep(VERSIONS_TYPE source,
-      Object previousConfigurationRootNode) throws Exception;
+  protected abstract List<ConfigurationUpgradeResult> performNextUpgradeStep(VERSIONS_TYPE source,
+      Object previousConfigurationRootNode, Path configurationRoot) throws Exception;
 
   /**
    * Creates a backup of the given file. If ignoreFailedBackup is set to <code>true</code>, the backup will silently log
