@@ -48,7 +48,8 @@ public class CobiGenUtils {
    * Registers CobiGen plug-ins and instantiates CobiGen
    *
    * @param templatesProject the templates project or jar
-   * @param allowMonolithicConfiguration
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @return object of CobiGen
    */
   public static CobiGen initializeCobiGen(Path templatesProject, boolean allowMonolithicConfiguration) {

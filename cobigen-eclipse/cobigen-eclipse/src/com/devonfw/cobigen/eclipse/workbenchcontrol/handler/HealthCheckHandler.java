@@ -42,7 +42,7 @@ public class HealthCheckHandler extends AbstractHandler {
    * checks if monolithic configuration exist, handles the exception and lets the user decide if the templates should be
    * upgraded.
    *
-   * @param event from the healthCheck
+   * @param event handler event executing this job.
    *
    */
   private void checkMonolithicConfigurationException(ExecutionEvent event) {

@@ -55,6 +55,10 @@ public class HealthCheckDialog {
     this.healthCheck = CobiGenFactory.createHealthCheck();
   }
 
+  /**
+   * @see #execute(boolean)
+   */
+  @SuppressWarnings("javadoc")
   public void execute() {
 
     execute(false);
