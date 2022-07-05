@@ -20,7 +20,8 @@ import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,15 +112,18 @@ public class GeneratorWrapperFactory {
 
     // When the user is selecting text from the text editor
     if (selection instanceof ITextSelection) {
-      IFileEditorInput iEditorInput = (IFileEditorInput) PlatformUIUtil.getActiveWorkbenchPage().getActiveEditor()
-          .getEditorInput();
 
-      IFile iFile = iEditorInput.getFile();
-      iJavaElem = JavaCore.create(iFile);
-      if (iJavaElem instanceof ICompilationUnit) {
-        inputObjects.add(iJavaElem);
-      } else {
-        inputObjects.add(iFile);
+      IEditorInput iEditorInput = PlatformUIUtil.getActiveWorkbenchPage().getActiveEditor().getEditorInput();
+
+      if (iEditorInput instanceof FileEditorInput) {
+
+        IFile iFile = ((FileEditorInput) iEditorInput).getFile();
+        iJavaElem = JavaCore.create(iFile);
+        if (iJavaElem instanceof ICompilationUnit) {
+          inputObjects.add(iJavaElem);
+        } else {
+          inputObjects.add(iFile);
+        }
       }
     }
 
