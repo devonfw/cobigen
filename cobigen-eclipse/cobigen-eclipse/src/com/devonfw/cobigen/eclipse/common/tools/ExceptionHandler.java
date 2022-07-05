@@ -116,7 +116,7 @@ public class ExceptionHandler {
 
       int result = dialog.open();
       if (result == 0) {
-        // TemplateAdapter.upgradeMonolithicTemplates();
+        // TODO Use the Upgrader from Ticket #1502
       }
       if (result == 1) {
         // Do nothing (Postpone and Continue)

@@ -210,13 +210,13 @@ public class AbstractCliTest {
       debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
     } else if (useDevTemplates && allowMonolithicConfiguration) {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 4);
-      debugArgs[debugArgs.length - 4] = "--force-monolithic-configuration";
+      debugArgs[debugArgs.length - 4] = "--force-mc";
       debugArgs[debugArgs.length - 3] = "-v";
       debugArgs[debugArgs.length - 2] = "-tp";
       debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
     } else if (allowMonolithicConfiguration) {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 2);
-      debugArgs[debugArgs.length - 2] = "--force-monolithic-configuration";
+      debugArgs[debugArgs.length - 2] = "--force-mc";
       debugArgs[debugArgs.length - 1] = "-v";
     } else {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 1);

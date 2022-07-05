@@ -205,6 +205,8 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Skips the Upgrade Warning message with the "Postpone" button
+   *
    * @param bot the {@link SWTWorkbenchBot} of the test
    *
    */
@@ -228,17 +230,7 @@ public class EclipseCobiGenUtils {
 
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     view.bot().tree().expandNode("CobiGen_Templates").select().contextMenu("CobiGen").menu("Health Check...").click();
-    bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.HealthCheckDialogs.DIALOG_TITLE), DEFAULT_TIMEOUT);
-
-    takeScreenshot(bot, "healthCheck");
-    SWTBotShell healthCheckDialog = bot.shell(CobiGenDialogConstants.HealthCheckDialogs.DIALOG_TITLE);
-    healthCheckDialog.bot().button(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE).click();
-    bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE),
-        DEFAULT_TIMEOUT);
-    takeScreenshot(bot, "advancedHealthCheck");
-    SWTBotShell advancedHealthCheckDialog = bot.shell(CobiGenDialogConstants.HealthCheckDialogs.ADVANCED_DIALOG_TITLE);
-    advancedHealthCheckDialog.bot().button("OK");
-    advancedHealthCheckDialog.bot().button("OK");
+    captureAdvancedHealthCheck(bot);
   }
 
   /**
@@ -255,6 +247,16 @@ public class EclipseCobiGenUtils {
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     view.bot().tree().expandNode("CobiGen_Templates").select().contextMenu("CobiGen").menu("Health Check...").click();
     postponeUpgradeAndContinue(bot);
+    captureAdvancedHealthCheck(bot);
+  }
+
+  /**
+   * Checks the CobiGen HealthCheck and takes screenshots of it.
+   *
+   * @param bot to process the health check
+   */
+  private static void captureAdvancedHealthCheck(SWTWorkbenchBot bot) {
+
     bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.HealthCheckDialogs.DIALOG_TITLE), DEFAULT_TIMEOUT);
 
     takeScreenshot(bot, "healthCheck");

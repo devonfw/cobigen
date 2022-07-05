@@ -85,8 +85,7 @@ public class GenerateCommand extends CommandCommons {
   /**
    * allows usage of the old monolithic template structure instead of the new template sets structure.
    */
-  @Option(names = {
-  "--force-monolithic-configuration" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
+  @Option(names = { "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
   boolean forceMonolithicConfiguration;
 
   /**
@@ -287,7 +286,7 @@ public class GenerateCommand extends CommandCommons {
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
 
     if (setToUserDir) {
-      // TemplateAdapter.upgradeMonolithicTemplates();
+      // TODO Use the Upgrader from Ticket #1502
     } else {
       // Do Nothing, continue with old templates generation
     }
