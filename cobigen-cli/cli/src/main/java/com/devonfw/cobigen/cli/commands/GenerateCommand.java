@@ -37,6 +37,7 @@ import com.devonfw.cobigen.cli.exceptions.UserAbortException;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
+import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
@@ -287,7 +288,8 @@ public class GenerateCommand extends CommandCommons {
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
 
     if (setToUserDir) {
-      // TODO Use the Upgrader from Ticket #1502
+      TemplateAdapterImpl templateAdapterImpl = new TemplateAdapterImpl();
+      templateAdapterImpl.upgradeMonolithicTemplates(this.templatesProject);
     } else {
       // Do Nothing, continue with old templates generation
     }

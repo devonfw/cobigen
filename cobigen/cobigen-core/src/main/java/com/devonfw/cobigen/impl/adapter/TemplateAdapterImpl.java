@@ -10,6 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -22,12 +23,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.TemplateAdapter;
+import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
+import com.devonfw.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
@@ -361,11 +367,32 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   }
 
   @Override
-  public void upgradeMonolithicTemplates() {
+  public void upgradeMonolithicTemplates(Path templatesProject) {
 
-    if (!isMonolithicTemplatesConfiguration()) {
-      return;
-    }
     // TODO The upgrade needs to be implemented. Will be done in #1502
+
+    templatesProject = Paths.get(".cobigen\\templates");
+
+    URI configFileOrFolder = ConfigurationFinder.findTemplatesLocation();
+    Path templatesProject1 = Paths.get(configFileOrFolder);
+    if (configFileOrFolder == null) {
+      throw new InvalidConfigurationException(
+          "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
+    }
+    // resolve(ConfigurationConstants.COBIGEN_TEMPLATES).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+
+    // Path context_xml = templates.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    // Path templates_xml = templates.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+    // ConfigurationHolder configHolder = new ConfigurationHolder(templates.toUri());
+    ContextConfigurationUpgrader contextUpgraderObject = new ContextConfigurationUpgrader();
+    TemplateConfigurationUpgrader templateUpgraderObject = new TemplateConfigurationUpgrader();
+
+    // ContextConfigurationVersion contextVersion =
+    // contextUpgraderObject.resolveLatestCompatibleSchemaVersion(templates);
+    // TemplatesConfigurationVersion templatesVersion = templateUpgraderObject
+    // .resolveLatestCompatibleSchemaVersion(templates);
+
+    contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesProject, BackupPolicy.ENFORCE_BACKUP);
+    // templateUpgraderObject.upgradeConfigurationToLatestVersion(templatesProject, BackupPolicy.ENFORCE_BACKUP);
   }
 }
