@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
+import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
@@ -76,6 +77,20 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Tries a Generate process from a selected text as input
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws Exception test fails
+   */
+  public static void processCobiGenWithTextInput(SWTWorkbenchBot bot, SWTBotEclipseEditor input, String... increments)
+      throws Exception {
+
+    processCobiGenWithTextInput(bot, input, DEFAULT_TIMEOUT, increments);
+  }
+
+  /**
    * Expands multi layer nodes of following format: node1>node2>finalNode
    *
    * @param bot SWTWorkbenchBot to use
@@ -116,6 +131,37 @@ public class EclipseCobiGenUtils {
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
+    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+  }
+
+  /**
+   * Tries a Generate process from a selected text as input
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input {@link SWTBotEclipseEditor} input of CobiGen to be selected
+   * @param defaultTimeout timeout to be overwritten
+   * @param increments increments to be generated.
+   * @throws Exception test fails
+   */
+  public static void processCobiGenWithTextInput(SWTWorkbenchBot bot, SWTBotEclipseEditor input, int defaultTimeout,
+      String... increments) throws Exception {
+
+    // Open generation wizard with new file as Input
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
+    input.contextMenu("CobiGen").menu("Generate...").click();
+    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+  }
+
+  /**
+   * Selects provided increments and clicks on finish button afterwards
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param defaultTimeout timeout to be overwritten
+   * @param increments increments to be generated.
+   */
+  private static void generateWithSelectedIncrements(SWTWorkbenchBot bot, int defaultTimeout, String... increments) {
+
     bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE,
         CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), defaultTimeout);
 
