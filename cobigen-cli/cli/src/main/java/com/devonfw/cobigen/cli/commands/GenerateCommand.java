@@ -85,7 +85,8 @@ public class GenerateCommand extends CommandCommons {
   /**
    * allows usage of the old monolithic template structure instead of the new template sets structure.
    */
-  @Option(names = { "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
+  @Option(names = { "--force-monolithic-configuration",
+  "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
   boolean forceMonolithicConfiguration;
 
   /**
