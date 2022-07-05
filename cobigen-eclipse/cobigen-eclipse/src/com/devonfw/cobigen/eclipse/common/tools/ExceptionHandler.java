@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.healthcheck.HealthCheckDialog;
+import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 
 /**
  * Util class to handle exceptions
@@ -39,6 +41,9 @@ public class ExceptionHandler {
       openInvalidConfigurationErrorDialog((InvalidConfigurationException) e);
     } else if (ConfigurationConflictException.class.isAssignableFrom(e.getClass())) {
       openInvalidConfigurationErrorDialog((ConfigurationConflictException) e);
+    } else if (DeprecatedMonolithicConfigurationException.class.isAssignableFrom(e.getClass())) {
+      LOG.warn("Monolithic Templates found.", e);
+      openMonolithicConfigurationErrorDialog((DeprecatedMonolithicConfigurationException) e);
     } else if (GeneratorProjectNotExistentException.class.isAssignableFrom(e.getClass())) {
       LOG.error(
           "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
@@ -91,6 +96,30 @@ public class ExceptionHandler {
       int result = dialog.open();
       if (result == 0) {
         new HealthCheckDialog().execute();
+      }
+    });
+  }
+
+  /**
+   * Opens up a message dialog for displaying further guidance on upgrading old templates.
+   *
+   * @param e {@link DeprecatedMonolithicConfigurationException} occurred
+   */
+  private static void openMonolithicConfigurationErrorDialog(DeprecatedMonolithicConfigurationException e) {
+
+    PlatformUIUtil.getWorkbench().getDisplay().syncExec(() -> {
+      MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Warning!", null,
+          e.getMessage() + " Further Information can be found at:"
+              + WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION,
+          MessageDialog.WARNING, new String[] { "Upgrade", "Postpone" }, 1);
+      dialog.setBlockOnOpen(true);
+
+      int result = dialog.open();
+      if (result == 0) {
+        // TODO Use the Upgrader from Ticket #1502
+      }
+      if (result == 1) {
+        // Do nothing (Postpone and Continue)
       }
     });
   }

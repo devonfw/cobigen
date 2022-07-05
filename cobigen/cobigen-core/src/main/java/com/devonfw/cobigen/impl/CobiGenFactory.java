@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
-import com.devonfw.cobigen.api.exception.DeprecatedMonolithicTemplatesException;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
@@ -60,11 +60,25 @@ public class CobiGenFactory {
    * Creates a new {@link CobiGen} while searching a valid configuration at the given path
    *
    * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
-   * @param force ignores deprecated template folder structure
    * @return a new instance of {@link CobiGen}
    * @throws InvalidConfigurationException if the context configuration could not be read properly.
    */
-  public static CobiGen create(URI configFileOrFolder, boolean force) throws InvalidConfigurationException {
+  public static CobiGen create() throws InvalidConfigurationException {
+
+    return create(false);
+  }
+
+  /**
+   * Creates a new {@link CobiGen} while searching a valid configuration at the given path
+   *
+   * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
+   * @return a new instance of {@link CobiGen}
+   * @throws InvalidConfigurationException if the context configuration could not be read properly.
+   */
+  public static CobiGen create(URI configFileOrFolder, boolean allowMonolithicConfiguration)
+      throws InvalidConfigurationException {
 
     Objects.requireNonNull(configFileOrFolder, "The URI pointing to the configuration could not be null.");
 
@@ -75,26 +89,27 @@ public class CobiGenFactory {
     // Notifies all plugins of new template root path
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
 
-    // Check old_templates and throw if found also in custom templates
-    if (!force && !configurationHolder.isTemplateSetConfiguration())
-      throw new DeprecatedMonolithicTemplatesException();
+    if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration())
+      throw new DeprecatedMonolithicConfigurationException();
     return createBean;
   }
 
   /**
    * Creates a new {@link CobiGen}
    *
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @return a new instance of {@link CobiGen}
    * @throws InvalidConfigurationException if the context configuration could not be read properly.
    */
-  public static CobiGen create() throws InvalidConfigurationException {
+  public static CobiGen create(boolean allowMonolithicConfiguration) throws InvalidConfigurationException {
 
     URI configFileOrFolder = ConfigurationFinder.findTemplatesLocation();
     if (configFileOrFolder == null) {
       throw new InvalidConfigurationException(
           "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
     }
-    return create(configFileOrFolder);
+    return create(configFileOrFolder, allowMonolithicConfiguration);
   }
 
   /**

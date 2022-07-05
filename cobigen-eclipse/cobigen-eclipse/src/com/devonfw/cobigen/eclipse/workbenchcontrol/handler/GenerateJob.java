@@ -65,7 +65,8 @@ public class GenerateJob implements IRunnableWithProgress {
     try {
       LOG.info("Initiating CobiGen...");
       monitor.beginTask("Initiating CobiGen...", 1);
-      CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(this.selection, monitor);
+      checkMonolithicConfigurationException(monitor);
+      CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(this.selection, monitor, true);
       monitor.worked(1);
       if (generator == null) {
         LOG.error("Invalid selection. No CobiGen instance created. Exiting generate command.");
@@ -107,6 +108,22 @@ public class GenerateJob implements IRunnableWithProgress {
     }
 
     MDC.remove(InfrastructureConstants.CORRELATION_ID);
+  }
+
+  /**
+   * checks if monolithic configuration exist, handles the exception and lets the user decide if the templates should be
+   * upgraded.
+   *
+   * @param monitor of run method
+   */
+  private void checkMonolithicConfigurationException(IProgressMonitor monitor) {
+
+    try {
+      GeneratorWrapperFactory.createGenerator(this.selection, monitor, false);
+    } catch (Throwable e) {
+      ExceptionHandler.handle(e, HandlerUtil.getActiveShell(this.event));
+    }
+
   }
 
 }

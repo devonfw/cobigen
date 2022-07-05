@@ -11,7 +11,6 @@ import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -49,7 +48,6 @@ public class ExceptionHandlingTest extends SystemTest {
    * @throws Exception Test fails
    */
   @Test
-  @Ignore
   public void testConflictWithTemplateTypesDisplaysErrorDialog() throws Exception {
 
     // create a new temporary java project and copy java class used as an input for CobiGen

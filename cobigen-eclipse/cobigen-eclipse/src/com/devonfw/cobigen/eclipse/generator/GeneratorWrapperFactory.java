@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
@@ -56,20 +57,22 @@ public class GeneratorWrapperFactory {
    *
    * @param selection current {@link IStructuredSelection} treated as input for generation
    * @param monitor tracking progress
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @return a specific {@link CobiGenWrapper} instance
    * @throws GeneratorCreationException if any exception occurred during converting the inputs or creating the generator
    * @throws GeneratorProjectNotExistentException if the generator configuration project does not exist
    * @throws InvalidInputException if the selection includes non supported input types or is composed in a non supported
    *         combination of inputs.
    */
-  public static CobiGenWrapper createGenerator(ISelection selection, IProgressMonitor monitor)
+  public static CobiGenWrapper createGenerator(ISelection selection, IProgressMonitor monitor,
+      boolean allowMonolithicConfiguration)
       throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
 
     List<Object> extractedInputs = extractValidEclipseInputs(selection);
-
     if (extractedInputs.size() > 0) {
       monitor.subTask("Initialize CobiGen instance");
-      CobiGen cobigen = initializeGenerator();
+      CobiGen cobigen = initializeGenerator(allowMonolithicConfiguration);
 
       monitor.subTask("Reading inputs...");
       monitor.worked(10);
@@ -204,7 +207,8 @@ public class GeneratorWrapperFactory {
    * @throws InvalidConfigurationException if the context configuration is not valid
    * @throws GeneratorCreationException if the generator configuration project does not exist
    */
-  private static CobiGen initializeGenerator() throws InvalidConfigurationException, GeneratorCreationException {
+  private static CobiGen initializeGenerator(boolean allowMonolithicConfiguration)
+      throws InvalidConfigurationException, GeneratorCreationException {
 
     try {
       ResourcesPluginUtil.refreshConfigurationProject();
@@ -227,16 +231,18 @@ public class GeneratorWrapperFactory {
           MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
               "Not Downloaded the CobiGen Template Jar");
         }
-        return CobiGenFactory.create(jarPath.toUri());
+        return CobiGenFactory.create(jarPath.toUri(), allowMonolithicConfiguration);
       } else {
-        return CobiGenFactory.create(generatorProj.getLocationURI());
+        return CobiGenFactory.create(generatorProj.getLocationURI(), allowMonolithicConfiguration);
       }
     } catch (CoreException e) {
       throw new GeneratorCreationException("An eclipse internal exception occurred", e);
+    } catch (DeprecatedMonolithicConfigurationException e) {
+      throw e;
     } catch (Throwable e) {
       throw new GeneratorCreationException(
           "Configuration source could not be read.\nIf you were updating templates, it may mean"
-              + " that you have no internet connection," + " or you have an old monolithic Templates.",
+              + " that you have no internet connection,",
           e);
     }
   }

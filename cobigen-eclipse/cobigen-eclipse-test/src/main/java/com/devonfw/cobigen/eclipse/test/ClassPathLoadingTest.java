@@ -15,7 +15,6 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -59,7 +58,6 @@ public class ClassPathLoadingTest extends SystemTest {
    * @throws Exception Test fails
    */
   @Test
-  @Ignore
   public void testPreventClassPathShading() throws Exception {
 
     // create a new temporary java project and copy java class used as an input for CobiGen
@@ -83,7 +81,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "increment1");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions
@@ -108,7 +106,6 @@ public class ClassPathLoadingTest extends SystemTest {
    * @throws Exception Test fails
    */
   @Test
-  @Ignore
   public void testClassPathResolutionOnInput_dependsOnMavenDependency() throws Exception {
 
     // create a new temporary java project and copy java class used as an input for CobiGen
@@ -132,7 +129,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "increment1");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions
@@ -148,7 +145,6 @@ public class ClassPathLoadingTest extends SystemTest {
    * @throws Exception Test fails
    */
   @Test
-  @Ignore
   public void testClassPathResolutionOnInput_dependsOnMavenProject() throws Exception {
 
     // create a new temporary java project and copy java class used as an input for CobiGen
@@ -177,7 +173,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "increment1");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions
@@ -192,7 +188,6 @@ public class ClassPathLoadingTest extends SystemTest {
    * @throws Exception Test fails
    */
   @Test
-  @Ignore
   public void testClassloadingOfTemplateDependencies() throws Exception {
 
     // create a new temporary java project and copy java class used as an input for CobiGen
@@ -210,7 +205,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment2");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "increment2");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions
@@ -227,7 +222,6 @@ public class ClassPathLoadingTest extends SystemTest {
    * @throws Exception Test fails
    */
   @Test
-  @Ignore
   public void testDotPathAcception() throws Exception {
 
     // create a new temporary java project and copy java class used as an input for CobiGen
@@ -252,7 +246,7 @@ public class ClassPathLoadingTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment3");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "increment3");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions

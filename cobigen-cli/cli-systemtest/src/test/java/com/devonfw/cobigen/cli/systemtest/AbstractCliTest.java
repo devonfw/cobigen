@@ -150,14 +150,26 @@ public class AbstractCliTest {
   }
 
   /**
+   * @see #execute(String[], boolean, boolean)
+   */
+  @SuppressWarnings("javadoc")
+  protected void execute(String[] args, boolean useDevTemplates, boolean assureFailure) throws Exception {
+
+    execute(args, useDevTemplates, assureFailure, false);
+  }
+
+  /**
    * This method check the return code from picocli
    *
    * @param args execution arguments
    * @param useDevTemplates use development devon4j-templates
    * @param assureFailure assure failure instead of success of the command execution
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @throws Exception error
    */
-  protected void execute(String[] args, boolean useDevTemplates, boolean assureFailure) throws Exception {
+  protected void execute(String[] args, boolean useDevTemplates, boolean assureFailure,
+      boolean allowMonolithicConfiguration) throws Exception {
 
     if (useDevTemplates) {
       runWithLatestTemplates();
@@ -191,11 +203,21 @@ public class AbstractCliTest {
       i++;
     }
 
-    if (useDevTemplates) {
+    if (useDevTemplates && !allowMonolithicConfiguration) {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 3);
       debugArgs[debugArgs.length - 3] = "-v";
       debugArgs[debugArgs.length - 2] = "-tp";
       debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
+    } else if (useDevTemplates && allowMonolithicConfiguration) {
+      debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 4);
+      debugArgs[debugArgs.length - 4] = "--force-mc";
+      debugArgs[debugArgs.length - 3] = "-v";
+      debugArgs[debugArgs.length - 2] = "-tp";
+      debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
+    } else if (allowMonolithicConfiguration) {
+      debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 2);
+      debugArgs[debugArgs.length - 2] = "--force-mc";
+      debugArgs[debugArgs.length - 1] = "-v";
     } else {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 1);
       debugArgs[debugArgs.length - 1] = "-v";

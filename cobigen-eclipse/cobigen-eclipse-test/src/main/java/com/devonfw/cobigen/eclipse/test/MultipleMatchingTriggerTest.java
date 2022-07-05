@@ -15,7 +15,6 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
@@ -52,7 +51,6 @@ public class MultipleMatchingTriggerTest extends SystemTest {
    * @throws Exception Test fails
    */
   @Test
-  @Ignore
   public void testMutlipleTemplates_differentTrigger_samePath() throws Exception {
 
     // create a new temporary java project and copy java class used as an input for CobiGen
@@ -69,7 +67,7 @@ public class MultipleMatchingTriggerTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1", "increment2");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "increment1", "increment2");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions

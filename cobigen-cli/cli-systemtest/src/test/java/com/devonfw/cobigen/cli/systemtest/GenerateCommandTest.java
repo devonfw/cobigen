@@ -8,7 +8,6 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -50,7 +49,6 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromEntityTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
@@ -61,7 +59,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "springdata-repository";
 
-    execute(args, true);
+    execute(args, true, false, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
         .exists();
@@ -74,7 +72,6 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromTemplatesJarWithUtilClassDependencyTest() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
@@ -90,7 +87,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[4] = "-tp";
     args[5] = templatesProject.getAbsolutePath();
 
-    execute(args, false);
+    execute(args, false, false, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
         .exists();
@@ -102,7 +99,6 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromEntityWithDownloadedTemplatesTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
@@ -113,7 +109,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "8";
 
-    execute(args, true);
+    execute(args, true, false, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
         .exists();
@@ -138,7 +134,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "app_angular_devon4ng_component";
 
-    execute(args, true);
+    execute(args, true, false, true);
 
     Thread.sleep(1000);
 
@@ -153,7 +149,6 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromEntityWithOutputRootPathTest() throws Exception {
 
     File outputRootPath = this.tempFolder.newFolder("outputfolder");
@@ -167,7 +162,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[4] = "--increments";
     args[5] = "all";
 
-    execute(args, true);
+    execute(args, true, false, true);
 
     assertThat(
         outputRootPath.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
@@ -207,7 +202,6 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateTemplatesFromEntityTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
@@ -218,7 +212,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "-t";
     args[3] = "crud_complex_AbstractBeanMapperSupport";
 
-    execute(args, true);
+    execute(args, true, false, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/general/")).exists();
   }
@@ -229,7 +223,6 @@ public class GenerateCommandTest extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void generateFromMultipleTypeInputTest() throws Exception {
 
     File outputRootFile = this.tempFolder.newFolder("playground2", "rootoutput");
@@ -238,13 +231,12 @@ public class GenerateCommandTest extends AbstractCliTest {
     String args[] = new String[6];
     args[0] = "generate";
     args[1] = openApiFile.getAbsolutePath() + "," + this.entityInputFile.getAbsolutePath();
-
     args[2] = "--out";
     args[3] = outputRootFile.getAbsolutePath();
     args[4] = "--increments";
     args[5] = "rest_service_impl";
 
-    execute(args, true, true);
+    execute(args, true, true, true);
   }
 
   /**

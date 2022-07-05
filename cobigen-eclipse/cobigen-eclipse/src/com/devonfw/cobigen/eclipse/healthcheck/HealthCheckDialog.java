@@ -16,6 +16,7 @@ import com.devonfw.cobigen.api.HealthCheck;
 import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
@@ -55,10 +56,22 @@ public class HealthCheckDialog {
   }
 
   /**
+   * @see #execute(boolean)
+   */
+  @SuppressWarnings("javadoc")
+  public void execute() {
+
+    execute(false);
+  }
+
+  /**
    * Executes the simple health check, checking configuration project existence, validity of context configuration, as
    * well as validity of the current workbench selection as generation input.
+   *
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    */
-  public void execute() {
+  public void execute(boolean allowMonolithicConfiguration) {
 
     String firstStep = "1. CobiGen configuration project '" + ResourceConstants.CONFIG_PROJECT_NAME + "'... ";
     String secondStep = "\n2. CobiGen context configuration '" + ConfigurationConstants.CONTEXT_CONFIG_FILENAME
@@ -78,7 +91,9 @@ public class HealthCheckDialog {
       this.report = performHealthCheckReport();
 
       if (generatorConfProj != null && generatorConfProj.getLocationURI() != null) {
-        CobiGenFactory.create(generatorConfProj.getLocationURI());
+
+        CobiGenFactory.create(generatorConfProj.getLocationURI(), allowMonolithicConfiguration);
+
       } else {
         Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
         Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
@@ -133,7 +148,7 @@ public class HealthCheckDialog {
               @Override
               public void run() {
 
-                execute();
+                execute(allowMonolithicConfiguration);
               }
             });
           }
@@ -149,6 +164,8 @@ public class HealthCheckDialog {
         PlatformUIUtil.openErrorDialog(healthyCheckMessage, null);
       }
       LOG.warn(healthyCheckMessage, e);
+    } catch (DeprecatedMonolithicConfigurationException e) {
+      throw e;
     } catch (Throwable e) {
       healthyCheckMessage = "An unexpected error occurred! Templates were not found.";
       if (this.report != null && healthyCheckMessage != null) {
