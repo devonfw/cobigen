@@ -150,6 +150,7 @@ public class EclipseCobiGenUtils {
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
+    postponeUpgradeAndContinue(bot);
     generateWithSelectedIncrements(bot, defaultTimeout, increments);
   }
 
@@ -201,27 +202,7 @@ public class EclipseCobiGenUtils {
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
     postponeUpgradeAndContinue(bot);
-    bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE,
-        CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), defaultTimeout);
-
-    // select increment and generate
-    for (String increment : increments) {
-      // check for multi layer nodes
-      if (increment.contains(">")) {
-        SWTBotTreeItem treeItem = expandNodes(bot, increment);
-        bot.waitUntil(widgetIsEnabled(treeItem));
-        treeItem.check();
-      } else {
-        // select single increment
-        SWTBotTreeItem treeItem = bot.tree().getTreeItem(increment);
-        bot.waitUntil(widgetIsEnabled(treeItem));
-        treeItem.check();
-      }
-    }
-    SWTBotButton finishButton = bot.button(IDialogConstants.FINISH_LABEL);
-    bot.waitUntil(widgetIsEnabled(bot.button()));
-    finishButton.click();
-
+    generateWithSelectedIncrements(bot, defaultTimeout, increments);
   }
 
   /**
