@@ -116,6 +116,12 @@ public class TemplateSetUpgrader {
         .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
     Path templates = cobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
+    try {
+      FileUtils.copyFileToDirectory(cobigenTemplates.resolve("pom.xml").toFile(), adapted.toFile());
+    } catch (Exception e) {
+      LOG.error("An error occurred while copying the parent pom", e);
+      throw new CobiGenRuntimeException(e.getMessage(), e);
+    }
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
     Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
@@ -200,7 +206,9 @@ public class TemplateSetUpgrader {
     pomParent.setGroupId(monolithicPomModel.getGroupId());
     pomParent.setVersion(monolithicPomModel.getVersion());
     splitPomModel.setParent(pomParent);
+    splitPomModel.setModelVersion(monolithicPomModel.getModelVersion());
     splitPomModel.setDependencies(monolithicPomModel.getDependencies());
+    splitPomModel.setPackaging(monolithicPomModel.getPackaging());
     splitPomModel.setArtifactId(trigger.getId().replace('_', '-'));
     splitPomModel.setName("PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER");
     try (FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());) {

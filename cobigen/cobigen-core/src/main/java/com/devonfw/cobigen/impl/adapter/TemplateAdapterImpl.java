@@ -10,7 +10,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -32,7 +31,6 @@ import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
-import com.devonfw.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
@@ -367,32 +365,24 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   }
 
   @Override
-  public void upgradeMonolithicTemplates(Path templatesProject) {
+  public Path upgradeMonolithicTemplates(Path templatesProject) {
 
     // TODO The upgrade needs to be implemented. Will be done in #1502
 
-    templatesProject = Paths.get(".cobigen\\templates");
-
     URI configFileOrFolder = ConfigurationFinder.findTemplatesLocation();
-    Path templatesProject1 = Paths.get(configFileOrFolder);
+
     if (configFileOrFolder == null) {
       throw new InvalidConfigurationException(
           "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
     }
-    // resolve(ConfigurationConstants.COBIGEN_TEMPLATES).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
-    // Path context_xml = templates.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-    // Path templates_xml = templates.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
-    // ConfigurationHolder configHolder = new ConfigurationHolder(templates.toUri());
     ContextConfigurationUpgrader contextUpgraderObject = new ContextConfigurationUpgrader();
-    TemplateConfigurationUpgrader templateUpgraderObject = new TemplateConfigurationUpgrader();
 
-    // ContextConfigurationVersion contextVersion =
-    // contextUpgraderObject.resolveLatestCompatibleSchemaVersion(templates);
-    // TemplatesConfigurationVersion templatesVersion = templateUpgraderObject
-    // .resolveLatestCompatibleSchemaVersion(templates);
-
+    contextUpgraderObject.resolveLatestCompatibleSchemaVersion(templatesProject);
     contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesProject, BackupPolicy.ENFORCE_BACKUP);
-    // templateUpgraderObject.upgradeConfigurationToLatestVersion(templatesProject, BackupPolicy.ENFORCE_BACKUP);
+    Path cobiGenPath = ConfigurationConstants.DEFAULT_HOME;
+    return cobiGenPath.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+
   }
+
 }

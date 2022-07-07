@@ -118,6 +118,21 @@ public class ConfigurationHolder {
 
     if (this.configurationPath.toUri().getScheme().equals("jar")
         || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
+      return checkParentFolder(this.configurationPath);
+    }
+    return true;
+  }
+
+  /**
+   * checks if the parent folder structure consists of template sets or if the old structure is used
+   *
+   * @param configurationPath path of the templates
+   * @return
+   */
+  private boolean checkParentFolder(Path configurationPath) {
+
+    if (this.configurationPath.toUri().getScheme().equals("jar") || !this.configurationPath.getParent().getFileName()
+        .toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return false;
     }
     return true;

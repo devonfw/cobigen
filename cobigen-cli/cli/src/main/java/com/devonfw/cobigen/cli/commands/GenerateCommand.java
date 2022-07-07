@@ -91,6 +91,11 @@ public class GenerateCommand extends CommandCommons {
   boolean forceMonolithicConfiguration;
 
   /**
+   * boolean which indicates whether the templates got upgraded or not
+   */
+  private boolean upgradedTemplates;
+
+  /**
    * Logger to output useful information to the user
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
@@ -289,9 +294,23 @@ public class GenerateCommand extends CommandCommons {
 
     if (setToUserDir) {
       TemplateAdapterImpl templateAdapterImpl = new TemplateAdapterImpl();
-      templateAdapterImpl.upgradeMonolithicTemplates(this.templatesProject);
+      Path templatesPath = null;
+      if (this.templatesProject != null) {
+        templatesPath = FileSystemUtil.createFileSystemDependentPath(this.templatesProject.toUri());
+        this.templatesProject = templateAdapterImpl.upgradeMonolithicTemplates(templatesPath);
+      } else {
+        URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
+        templatesPath = FileSystemUtil.createFileSystemDependentPath(findTemplatesLocation);
+        this.templatesProject = templateAdapterImpl.upgradeMonolithicTemplates(templatesPath);
+        LOG.info("");
+      }
+      Path newTemplatesProject = this.templatesProject;
+      LOG.info("New templates folder: {} ", newTemplatesProject);
+      LOG.info("Templates successfully upgraded. \n ");
+      this.upgradedTemplates = true;
     } else {
       // Do Nothing, continue with old templates generation
+      this.upgradedTemplates = false;
     }
   }
 

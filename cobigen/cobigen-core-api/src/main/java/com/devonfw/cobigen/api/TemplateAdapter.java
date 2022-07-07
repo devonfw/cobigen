@@ -100,6 +100,7 @@ public interface TemplateAdapter {
    * Upgrade an adapted monolithic template structure to the new template structure consisting of template sets.
    *
    * @param templatesProject path to the templates which should be upgraded.
+   * @return the new path to the new template-sets
    */
-  void upgradeMonolithicTemplates(Path templatesProject);
+  Path upgradeMonolithicTemplates(Path templatesProject);
 }
