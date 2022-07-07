@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -54,6 +55,7 @@ public class ConfigurationFinder {
     String hide = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE;
     String disableLookup = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DISABLE_LOOKUP;
     String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
+    String templateSetsInstalled = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_INSTALLED;
 
     List<String> groupIdsList = (props.getProperty(groupId) != null)
         ? Arrays.asList(props.getProperty(groupId).split(","))
@@ -69,7 +71,12 @@ public class ConfigurationFinder {
     List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
         : new ArrayList<>();
 
-    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
+    List<String> mavenCoordinates = (props.getProperty(templateSetsInstalled) != null)
+        ? Arrays.asList(props.getProperty(templateSetsInstalled).split(","))
+        : new ArrayList<>();
+    checkMavenCoordinates(mavenCoordinates);
+
+    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds, mavenCoordinates);
   }
 
   /**
@@ -198,9 +205,41 @@ public class ConfigurationFinder {
     LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
         CobiGenPaths.getCobiGenHomePath());
 
+    // TODO
     TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesPath.toFile());
     TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesPath.toFile());
     return templateSetsFolderPath.toUri();
+  }
+
+  private static void checkMavenCoordinates(List<String> mavenCoordinates) {
+
+    LOG.info("Hallo"); // TODO
+  }
+
+  public static boolean installTemplateSets() {
+
+    File TemplatesPath = CobiGenPaths.getTemplatesFolderPath() == null ? CobiGenPaths.getTemplatesFolderPath().toFile()
+        : CobiGenPaths.getTemplateSetsFolderPath().toFile();
+    Properties props = readConfigurationFile(
+        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
+    Object templateSets = props.get(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_INSTALLED);
+    String templateSetss = templateSets.toString();
+    for (String mavenCoordinatesString : templateSetss.split(",")) {
+      String[] mavenCoordinatesArr = mavenCoordinatesString.split(":");
+      for (int i = 0; i < mavenCoordinatesArr.length; i++)
+        mavenCoordinatesArr[i] = mavenCoordinatesArr[i].trim();
+      int mavenLength = mavenCoordinatesArr.length;
+      if (mavenLength < 2 || mavenLength > 3) {
+        LOG.error("Wrong Maven Coordinates"); // TODO
+      } else if (mavenLength == 2) {
+        LOG.info("Missing Version for the specified Template Set using LATEST");
+        // TemplatesJarUtil.downloadJar(mavenCoordinatesArr[0], mavenCoordinatesArr[1], null, true, TemplatesPath);
+      } else {
+        // TemplatesJarUtil.downloadJar(mavenCoordinatesArr[0], mavenCoordinatesArr[1], mavenCoordinatesArr[2], false,
+        // TemplatesPath);
+      }
+    }
+    return false;
   }
 
 }

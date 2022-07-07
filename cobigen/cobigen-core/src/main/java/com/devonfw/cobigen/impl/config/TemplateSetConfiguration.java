@@ -17,19 +17,25 @@ public class TemplateSetConfiguration {
   /** variable to hide very specific template sets or versions of template sets */
   private List<String> hideTemplates;
 
+  /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
+  private List<String> mavenCoordinates;
+
   /**
    * The constructor. load properties from a given source
    *
    * @param groupIds
    * @param allowSnapshots
    * @param hideTemplates
+   * @param maven Coordinates
    */
-  public TemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates) {
+  public TemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates,
+      List<String> mavenCoordinates) {
 
     super();
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
     this.hideTemplates = hideTemplates;
+    this.mavenCoordinates = mavenCoordinates;
   }
 
   /**
@@ -90,6 +96,11 @@ public class TemplateSetConfiguration {
   public void setHideTemplates(List<String> hideTemplates) {
 
     this.hideTemplates = hideTemplates;
+  }
+
+  public List<String> getMavenCoordinates() {
+
+    return this.mavenCoordinates;
   }
 
 }

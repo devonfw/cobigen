@@ -45,7 +45,8 @@ public class TemplatesJarUtil {
       File templatesDirectory) {
 
     // By default the version should be latest
-    if (version.isEmpty() || version == null) {
+    if (version == null || version.isEmpty()) {
+
       version = "LATEST";
     }
 
@@ -90,6 +91,18 @@ public class TemplatesJarUtil {
    * @return fileName Name of the file downloaded
    */
   public static String downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory) {
+
+    return downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
+        TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
+  }
+
+  /**
+   * @param isDownloadSource true if downloading source jar file
+   * @param templatesDirectory directory where the templates jar are located
+   * @return fileName Name of the file downloaded
+   */
+  public static String downloadTemplates(boolean isDownloadSource, File templatesDirectory,
+      List<String> mavenCoordinates) {
 
     return downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
         TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);

@@ -199,6 +199,7 @@ public class TemplateSetUpgrader {
     pomParent.setArtifactId(monolithicPomModel.getArtifactId());
     pomParent.setGroupId(monolithicPomModel.getGroupId());
     pomParent.setVersion(monolithicPomModel.getVersion());
+    splitPomModel.setModelVersion(monolithicPomModel.getModelVersion());
     splitPomModel.setParent(pomParent);
     splitPomModel.setDependencies(monolithicPomModel.getDependencies());
     splitPomModel.setArtifactId(trigger.getId().replace('_', '-'));

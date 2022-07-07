@@ -9,11 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
+import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
@@ -88,9 +91,23 @@ public class CobiGenFactory {
     CobiGen createBean = beanFactory.createBean(CobiGen.class);
     // Notifies all plugins of new template root path
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
-
-    if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration())
+    // Path templates = config
+    System.out.println(configurationHolder.isTemplateSetConfiguration());
+    // configurationHolder.
+    if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration()) {
       throw new DeprecatedMonolithicConfigurationException();
+    }
+    TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
+        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
+    if (config.getMavenCoordinates() != null && !config.getMavenCoordinates().isEmpty()) {
+      LOG.info("Templates specified in the properties file will be loaded");
+      if (configurationHolder.getConfigurationPath().endsWith("adapted")) {
+        System.out.println("Adapted");
+      }
+      // checkIFTemplates exists already
+      // TemplatesJarUtil.downloadTemplates(false, configurationHolder.ge)
+    }
+
     return createBean;
   }
 
@@ -109,6 +126,7 @@ public class CobiGenFactory {
       throw new InvalidConfigurationException(
           "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
     }
+
     return create(configFileOrFolder, allowMonolithicConfiguration);
   }
 
