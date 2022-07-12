@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
@@ -148,7 +149,12 @@ public class GenerateCommand extends CommandCommons {
     try {
       CobiGenUtils.initializeCobiGen(this.templatesProject, false);
     } catch (DeprecatedMonolithicConfigurationException e) {
+      if (this.templatesProject == null)
+        LOG.warn("Found old configuration at: {} ", ConfigurationFinder.findTemplatesLocation());
+      else
+        LOG.warn("Found old configuration at: {} ", this.templatesProject);
       LOG.warn(e.getMessage());
+
       askUserToUpgradeTemplates();
 
     }
@@ -289,23 +295,24 @@ public class GenerateCommand extends CommandCommons {
         WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION, System.getProperty("user.dir"));
     Path outputDirectory = Paths.get(System.getProperty("user.dir"));
 
-    boolean setToUserDir = ValidationUtils.yesNoPrompt("upgrading templates version...: " + outputDirectory.toString(),
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("upgrading templates configuration...: ",
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
 
     if (setToUserDir) {
-      TemplateAdapterImpl templateAdapterImpl = new TemplateAdapterImpl();
-      Path templatesPath = null;
-      if (this.templatesProject != null) {
-        templatesPath = FileSystemUtil.createFileSystemDependentPath(this.templatesProject.toUri());
-        this.templatesProject = templateAdapterImpl.upgradeMonolithicTemplates(templatesPath);
-      } else {
-        URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
-        templatesPath = FileSystemUtil.createFileSystemDependentPath(findTemplatesLocation);
-        this.templatesProject = templateAdapterImpl.upgradeMonolithicTemplates(templatesPath);
-        LOG.info("");
+      try {
+
+        TemplateAdapter templateAdapter;
+        if (this.templatesProject == null) {
+          templateAdapter = new TemplateAdapterImpl();
+        } else {
+          templateAdapter = new TemplateAdapterImpl(this.templatesProject);
+        }
+        this.templatesProject = templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
+      } catch (Throwable e) {
+        LOG.error("An error occurred while upgrading the templates.");
+        throw e;
       }
-      Path newTemplatesProject = this.templatesProject;
-      LOG.info("New templates folder: {} ", newTemplatesProject);
+      LOG.info("New templates folder: {} ", this.templatesProject);
       LOG.info("Templates successfully upgraded. \n ");
       this.upgradedTemplates = true;
     } else {

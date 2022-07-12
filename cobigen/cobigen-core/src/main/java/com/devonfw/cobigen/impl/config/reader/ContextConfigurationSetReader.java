@@ -86,7 +86,7 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
     }
 
     for (Path templateDirectory : templateDirectories) {
-      Path contextFilePath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+      Path contextFilePath = templateDirectory.resolve(ConfigurationConstants.RESOURCE_FOLDER)
           .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 
       addConfigRoot(contextFilePath, templateDirectory, contextPaths);
@@ -137,7 +137,7 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
           this.triggerConfigLocations.put(trigger.getId(), configLocation);
 
           triggers.put(trigger.getId(),
-              new Trigger(trigger.getId(), trigger.getType(), ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER,
+              new Trigger(trigger.getId(), trigger.getType(), ConfigurationConstants.RESOURCE_FOLDER,
                   Charset.forName(trigger.getInputCharset()), loadMatchers(trigger), loadContainerMatchers(trigger)));
         }
       }

@@ -125,7 +125,7 @@ public class TemplatesConfigurationReader {
     this.configFilePath = rootTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
 
     if (!Files.exists(this.configFilePath)) {
-      Path sourceTemplatePath = projectRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+      Path sourceTemplatePath = projectRoot.resolve(ConfigurationConstants.RESOURCE_FOLDER);
       sourceTemplatePath = sourceTemplatePath.resolve(templateFolder);
       this.configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
       templateLocation = sourceTemplatePath;

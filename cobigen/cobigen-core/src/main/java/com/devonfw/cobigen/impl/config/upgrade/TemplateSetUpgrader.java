@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -100,24 +99,22 @@ public class TemplateSetUpgrader {
   public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
       Path contextLocation) throws Exception {
 
+    boolean customTemplates = false;
     Path cobigenDir = contextLocation;
-    while (!cobigenDir.endsWith(ConfigurationConstants.COBIGEN_CONFIG_FILE)) {
-      cobigenDir = cobigenDir.getParent();
-      if (cobigenDir == null) {
-        cobigenDir = CobiGenPaths.getCobiGenHomePath();
-        cobigenDir.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-      }
-    }
+    Path pom_xml = contextLocation.getParent().getParent().getParent().resolve("pom.xml");
+    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+
     ContextConfiguration contextConfiguration = getContextConfiguration(contextLocation);
 
-    Path templateSets = Files.createDirectory(cobigenDir.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
+    Path templateSets = Files.createDirectory(cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
     Path adapted = Files.createDirectory(templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER));
-    Path cobigenTemplates = cobigenDir.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
-        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    Path cobigenTemplates = pom_xml.getParent();
     Path templates = cobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
     try {
-      FileUtils.copyFileToDirectory(cobigenTemplates.resolve("pom.xml").toFile(), adapted.toFile());
+
+      FileUtils.copyFileToDirectory(pom_xml.toFile(), adapted.toFile());
+
     } catch (Exception e) {
       LOG.error("An error occurred while copying the parent pom", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -132,7 +129,7 @@ public class TemplateSetUpgrader {
         Path utilsPath = cobigenTemplates.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER);
         try {
           FileUtils.copyDirectory(triggerFolder.toFile(),
-              newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toFile());
+              newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER).toFile());
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template Folder", e);
           throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -145,7 +142,7 @@ public class TemplateSetUpgrader {
           throw new CobiGenRuntimeException(e.getMessage(), e);
         }
 
-        Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         contextMap.put(cc, newContextPath);
         // creates actual context configuration file
@@ -157,13 +154,13 @@ public class TemplateSetUpgrader {
     }
 
     // backup of old files
-    Path backupFolder = cobigenDir.resolve("backup");
-    File f = backupFolder.toFile();
-    if (!f.exists()) {
-      f.mkdir();
+    Path backupFolder = cobigenHome.resolve("backup");
+    File backupTemplatesLocation = backupFolder.toFile();
+    if (!backupTemplatesLocation.exists()) {
+      backupTemplatesLocation.mkdir();
     }
     try {
-      FileUtils.moveDirectoryToDirectory(cobigenTemplates.getParent().toFile(), f, false);
+      FileUtils.moveDirectoryToDirectory(cobigenTemplates.getParent().toFile(), backupTemplatesLocation, false);
     } catch (IOException e) {
       LOG.error("An error occured while backing up the old template folder", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -201,16 +198,14 @@ public class TemplateSetUpgrader {
       throw new CobiGenRuntimeException(e.getMessage(), e);
     }
     Model splitPomModel = new Model();
-    Parent pomParent = new Parent();
-    pomParent.setArtifactId(monolithicPomModel.getArtifactId());
-    pomParent.setGroupId(monolithicPomModel.getGroupId());
-    pomParent.setVersion(monolithicPomModel.getVersion());
-    splitPomModel.setParent(pomParent);
+    splitPomModel.setGroupId(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     splitPomModel.setModelVersion(monolithicPomModel.getModelVersion());
     splitPomModel.setDependencies(monolithicPomModel.getDependencies());
     splitPomModel.setPackaging(monolithicPomModel.getPackaging());
     splitPomModel.setArtifactId(trigger.getId().replace('_', '-'));
     splitPomModel.setName("PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER");
+    splitPomModel.setProperties(monolithicPomModel.getProperties());
+    splitPomModel.setBuild(monolithicPomModel.getBuild());
     try (FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());) {
       writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), splitPomModel);
     } catch (FileNotFoundException e) {
