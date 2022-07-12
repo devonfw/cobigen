@@ -42,7 +42,8 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
   @Override
   protected List<ConfigurationUpgradeResult> performNextUpgradeStep(TemplatesConfigurationVersion source,
       Object previousConfigurationRootNode, Path configurationRoot) throws Exception {
-	List<ConfigurationUpgradeResult> results = new ArrayList<>();
+
+    List<ConfigurationUpgradeResult> results = new ArrayList<>();
     ConfigurationUpgradeResult result = new ConfigurationUpgradeResult();
 
     switch (source) {
@@ -68,7 +69,32 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
             previousConfigurationRootNode, com.devonfw.cobigen.impl.config.entity.io.v2_1.TemplatesConfiguration.class);
         upgradedConfig.setVersion(new BigDecimal("2.1"));
 
-        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig, null);
+        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig,
+            configurationRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME));
+        results.add(result);
+      }
+        break;
+      case v2_1: { // to 4.0
+        MapperFactory mapperFactory = new DefaultMapperFactory.Builder().mapNulls(true).useAutoMapping(true).build();
+        MapperFacade mapper = mapperFactory.getMapperFacade();
+        com.devonfw.cobigen.impl.config.entity.io.v4_0.TemplatesConfiguration upgradedConfig = mapper.map(
+            previousConfigurationRootNode, com.devonfw.cobigen.impl.config.entity.io.v4_0.TemplatesConfiguration.class);
+        upgradedConfig.setVersion(new BigDecimal("4.0"));
+
+        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig,
+            configurationRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME));
+        results.add(result);
+      }
+        break;
+      case v4_0: { // to 5.0
+        MapperFactory mapperFactory = new DefaultMapperFactory.Builder().mapNulls(true).useAutoMapping(true).build();
+        MapperFacade mapper = mapperFactory.getMapperFacade();
+        com.devonfw.cobigen.impl.config.entity.io.v5_0.TemplatesConfiguration upgradedConfig = mapper.map(
+            previousConfigurationRootNode, com.devonfw.cobigen.impl.config.entity.io.v5_0.TemplatesConfiguration.class);
+        upgradedConfig.setVersion(new BigDecimal("5.0"));
+
+        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig,
+            configurationRoot.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME));
         results.add(result);
       }
         break;

@@ -8,6 +8,8 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +19,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,7 @@ import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
+import com.google.common.collect.Lists;
 
 import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBContext;
@@ -115,7 +119,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    */
   public boolean isCompliantToLatestSupportedVersion(Path configurationRoot) {
 
-    return resolveLatestCompatibleSchemaVersion(configurationRoot, true) != null;
+    return resolveLatestCompatibleSchemaVersion(configurationRoot, true, null) != null;
   }
 
   /**
@@ -127,7 +131,21 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    */
   public VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot) {
 
-    return resolveLatestCompatibleSchemaVersion(configurationRoot, false);
+    return resolveLatestCompatibleSchemaVersion(configurationRoot, false, null);
+  }
+
+  /**
+   * Checks, whether the configuration can be read with an old schema version and a maximum version to be used for the
+   * resolver (mainly used for tests)
+   *
+   * @param configurationRoot the root folder containing the configuration
+   * @param maxVersionToUse the latest version to be used for the resolver
+   * @return the newest schema version, the configuration is compliant with or <code>null</code> if the configuration is
+   *         not compliant to any.
+   */
+  public VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot, VERSIONS_TYPE maxVersionToUse) {
+
+    return resolveLatestCompatibleSchemaVersion(configurationRoot, false, maxVersionToUse);
   }
 
   /**
@@ -135,39 +153,36 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    *
    * @param configurationRoot the root folder containing the configuration
    * @param justCheckLatestVersion just checks latest supported version and returns
+   * @param maxVersion the latest version to be used for the resolver
    * @return the newest schema version, the configuration is compliant with or <code>null</code> if the configuration is
    *         not compliant to any.
    */
-  private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot, boolean justCheckLatestVersion) {
+  private VERSIONS_TYPE resolveLatestCompatibleSchemaVersion(Path configurationRoot, boolean justCheckLatestVersion,
+      VERSIONS_TYPE maxVersion) {
 
     LOG.info("Try reading {} (including trails with legacy schema).", this.configurationName);
 
     Path configurationFile = configurationRoot.endsWith(this.configurationFilename) ? configurationRoot
         : configurationRoot.resolve(this.configurationFilename);
 
-    for (int i = this.versions.length - 1; i >= 0; i--) {
-      VERSIONS_TYPE lv = this.versions[i];
-      LOG.info("Try {} schema '{}'.", this.configurationName, lv.toString());
-      try {
-        Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(lv);
-        Object rootNode = unmarshallConfiguration(configurationFile, lv, jaxbConfigurationClass);
+    if (maxVersion != null) {
+      List<VERSIONS_TYPE> reducedVersionsList = limitVersions(maxVersion);
 
-        // check, whether the read node can be casted to the correct configuration root
-        // node object
-        if (!jaxbConfigurationClass.isAssignableFrom(rootNode.getClass())) {
-          LOG.info("It was not possible to read {} with schema '{}' .", this.configurationName, lv.toString());
-        } else {
-          LOG.info("It was possible to read {} with schema '{}' .", this.configurationName, lv.toString());
-          return lv;
+      for (VERSIONS_TYPE version : Lists.reverse(reducedVersionsList)) {
+        if (isConfgurationFileCompatibleToSchemaVersion(version, configurationFile)) {
+          return version;
         }
-      } catch (Throwable e) {
-        Throwable cause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
-        if (cause != null && cause.getMessage() != null) {
-          LOG.info("Not able to read {} configuration with schema '{}': {}", this.configurationName, lv.toString(),
-              cause.getMessage());
-        } else {
-          LOG.warn("Not able to read {} configuration with schema '{}' .", this.configurationName, lv.toString(), e);
-        }
+      }
+      LOG.info("Could not read configuration {} (with versions limited to: {}).", this.configurationName, maxVersion);
+      return null;
+    }
+
+    VERSIONS_TYPE[] reversedVersions = this.versions;
+    ArrayUtils.reverse(reversedVersions);
+
+    for (VERSIONS_TYPE version : Arrays.asList(reversedVersions)) {
+      if (isConfgurationFileCompatibleToSchemaVersion(version, configurationFile)) {
+        return version;
       }
 
       if (justCheckLatestVersion) {
@@ -178,6 +193,59 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
     }
     LOG.info("Could not read configuration {} (including trails with legacy schema).", this.configurationName);
     return null;
+  }
+
+  /**
+   * Limits the version list to the maximum version provided
+   *
+   * @param maxVersion maximum version to set
+   * @return List of new versions reduced by maximum version
+   */
+  private List<VERSIONS_TYPE> limitVersions(VERSIONS_TYPE maxVersion) {
+
+    List<VERSIONS_TYPE> versionsList = new ArrayList<>(Arrays.asList(this.versions));
+    List<VERSIONS_TYPE> reducedVersionsList = new ArrayList<>();
+    for (VERSIONS_TYPE version : versionsList) {
+      if (version.ordinal() <= maxVersion.ordinal()) {
+        reducedVersionsList.add(version);
+      }
+    }
+    return reducedVersionsList;
+  }
+
+  /**
+   * Checks if the provided version is compatible to the provided configuration file and returns the
+   *
+   * @param version current version to validate against
+   * @param configurationFile current configuration file to validate with version
+   * @return true if the version is compatible to the configuration file and false if not
+   */
+  private boolean isConfgurationFileCompatibleToSchemaVersion(VERSIONS_TYPE version, Path configurationFile) {
+
+    LOG.info("Try {} schema '{}'.", this.configurationName, version.toString());
+    try {
+      Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(version);
+      Object rootNode = unmarshallConfiguration(configurationFile, version, jaxbConfigurationClass);
+
+      // check, whether the read node can be casted to the correct configuration root
+      // node object
+      if (!jaxbConfigurationClass.isAssignableFrom(rootNode.getClass())) {
+        LOG.info("It was not possible to read {} with schema '{}' .", this.configurationName, version.toString());
+      } else {
+        LOG.info("It was possible to read {} with schema '{}' .", this.configurationName, version.toString());
+        return true;
+      }
+    } catch (Throwable e) {
+      Throwable cause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+      if (cause != null && cause.getMessage() != null) {
+        LOG.info("Not able to read {} configuration with schema '{}': {}", this.configurationName, version.toString(),
+            cause.getMessage());
+      } else {
+        LOG.warn("Not able to read {} configuration with schema '{}' .", this.configurationName, version.toString(), e);
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -192,32 +260,60 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    */
   public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, BackupPolicy backupPolicy) {
 
+    return upgradeConfigurationToLatestVersion(configurationRoot, backupPolicy, null);
+  }
+
+  /**
+   * Upgrades the configuration to the latest supported version with option to limit lookup of the maximum version.
+   *
+   * @param configurationRoot the root folder containing the configuration with the specified
+   *        {@link #configurationFilename}. See {@link #AbstractConfigurationUpgrader(Enum, Class, String)} for more
+   *        information.
+   * @param backupPolicy the {@link BackupPolicy} to choose if a backup is necessary or not.
+   * @param maxVersion the latest version to be used for the upgrade (limits the versions to choose from)
+   * @return if manual adoptions has to be performed after upgrading
+   * @throws BackupFailedException if the backup could not be created
+   */
+  public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, BackupPolicy backupPolicy,
+      VERSIONS_TYPE maxVersion) {
+
     boolean manualAdoptionsNecessary = false;
 
-    VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
+    VERSIONS_TYPE validatedVersion;
+    List<VERSIONS_TYPE> versionsList = new ArrayList<>();
+
+    // check if versions need to be limited
+    if (maxVersion != null) {
+      versionsList = limitVersions(maxVersion);
+      validatedVersion = resolveLatestCompatibleSchemaVersion(configurationRoot, maxVersion);
+    } else {
+      versionsList = Arrays.asList(this.versions);
+      validatedVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
+    }
+
     Path configurationFile = configurationRoot.resolve(this.configurationFilename);
-    if (currentVersion == null) {
+    if (validatedVersion == null) {
       throw new InvalidConfigurationException(configurationFile.toUri().toString(),
           StringUtils.capitalize(this.configurationName) + " does not match any current or legacy schema definitions.");
     } else {
-      VERSIONS_TYPE latestVersion = this.versions[this.versions.length - 1];
+      VERSIONS_TYPE latestVersion = versionsList.get(versionsList.size() - 1);
       // increasing iteration of versions
-      for (int i = 0; i < this.versions.length; i++) {
-        if (currentVersion == latestVersion) {
+      for (int i = 0; i < versionsList.size(); i++) {
+        if (validatedVersion == latestVersion) {
           break; // already up to date
         }
-        if (currentVersion == this.versions[i]) {
+        if (validatedVersion == versionsList.get(i)) {
           LOG.info("Upgrading {} '{}' from version {} to {}...", this.configurationName, configurationFile.toUri(),
-              this.versions[i], this.versions[i + 1]);
+              versionsList.get(i), versionsList.get(i + 1));
 
           Object rootNode;
           try {
-            Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(this.versions[i]);
-            rootNode = unmarshallConfiguration(configurationFile, this.versions[i], jaxbConfigurationClass);
+            Class<?> jaxbConfigurationClass = getJaxbConfigurationClass(versionsList.get(i));
+            rootNode = unmarshallConfiguration(configurationFile, versionsList.get(i), jaxbConfigurationClass);
 
             createBackup(configurationFile, backupPolicy);
 
-            List<ConfigurationUpgradeResult> results = performNextUpgradeStep(this.versions[i], rootNode,
+            List<ConfigurationUpgradeResult> results = performNextUpgradeStep(versionsList.get(i), rootNode,
                 configurationRoot);
             for (ConfigurationUpgradeResult result : results) {
 
@@ -227,11 +323,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
               }
 
               // implicitly check upgrade step
-              currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
+              VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
               // if CobiGen does not understand the upgraded file... throw exception
               if (currentVersion == null) {
                 throw new CobiGenRuntimeException("An error occurred while upgrading " + this.configurationName
-                    + " from version " + this.versions[i] + " to " + this.versions[i + 1] + ".");
+                    + " from version " + versionsList.get(i) + " to " + versionsList.get(i + 1) + ".");
               }
             }
           } catch (NotYetSupportedException | BackupFailedException e) {
@@ -239,7 +335,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
           } catch (Throwable e) {
             throw new CobiGenRuntimeException(
                 "An unexpected exception occurred while upgrading the " + this.configurationName + " from version '"
-                    + this.versions[i] + "' to '" + this.versions[i + 1] + "'.",
+                    + versionsList.get(i) + "' to '" + versionsList.get(i + 1) + "'.",
                 e);
           }
 
@@ -255,7 +351,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    *
    * @param source version from which to upgrade to the latest version.
    * @param previousConfigurationRootNode JAXB configuration root node of the configuration to be upgraded
-   * @param configurationRoot TODO
+   * @param configurationRoot the directory where the configuration is located
    * @return {@link ConfigurationUpgradeResult}, which contains the JAXB root node of the upgraded configuration.
    *         Further it contains a flag to indicate manual adoptions to be necessary after upgrading.
    * @throws Exception Any exception thrown during processing will be wrapped into a {@link CobiGenRuntimeException} by

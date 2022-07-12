@@ -64,7 +64,8 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
             com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class);
         upgradedConfig_2_1.setVersion(new BigDecimal("2.1"));
 
-        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig_2_1, configurationRoot);
+        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig_2_1,
+            configurationRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
         results.add(result);
 
         break;
