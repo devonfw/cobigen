@@ -99,6 +99,11 @@ public class ConfigurationConstants {
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_HIDE = "template-sets.hide";
 
   /**
+   * Name of configuration key to hide very specific template sets
+   */
+  public static final String CONFIG_PROPERTY_TIME_STAMP = "time-stamp";
+
+  /**
    * Default (public) cobigen GroupId
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID = "com.devonfw.cobigen.templates";
@@ -107,5 +112,8 @@ public class ConfigurationConstants {
 
   /** Name of the environment variable pointing to cobigen configuration file */
   public static final String CONFIG_ENV_HOME = "COBIGEN_HOME";
+
+  /** Name of the backup folder containing the old configuration */
+  public static final String BACKUP_FOLDER = "backup";
 
 }

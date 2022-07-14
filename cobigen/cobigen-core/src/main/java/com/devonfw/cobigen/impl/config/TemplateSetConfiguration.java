@@ -3,8 +3,8 @@ package com.devonfw.cobigen.impl.config;
 import java.util.List;
 
 /**
- * mdukhan This Class is used to set specific properties if not found, or save them if correctly found. These properties
- * are groupIds, allowSnapshots and hideTemplates.
+ * mdukhan This Class is used to set specific properties. These properties are groupIds, allowSnapshots and
+ * hideTemplates.
  */
 public class TemplateSetConfiguration {
 

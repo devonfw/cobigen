@@ -142,7 +142,7 @@ public class ConfigurationFinder {
    * @throws InvalidConfigurationException if the file isn't present or the path is invalid
    * @return Properties containing configuration
    */
-  private static Properties readConfigurationFile(Path cobigenConfigFile) {
+  public static Properties readConfigurationFile(Path cobigenConfigFile) {
 
     Properties props = new Properties();
     try {

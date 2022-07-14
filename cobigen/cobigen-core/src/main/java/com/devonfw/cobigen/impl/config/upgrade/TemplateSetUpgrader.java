@@ -197,6 +197,8 @@ public class TemplateSetUpgrader {
       LOG.error("XMLError while parsing the monolitic pom file", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
     }
+    // TODO One can check if one can properly generate after upgrading the POM files. These
+    // next lines need to be investigated.
     Model splitPomModel = new Model();
     splitPomModel.setGroupId(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     splitPomModel.setModelVersion(monolithicPomModel.getModelVersion());

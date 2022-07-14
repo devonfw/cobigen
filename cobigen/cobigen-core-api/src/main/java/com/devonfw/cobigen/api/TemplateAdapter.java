@@ -74,14 +74,6 @@ public interface TemplateAdapter {
   public boolean isMonolithicTemplatesConfiguration();
 
   /**
-   * Upgrade an adapted monolithic template structure to the new template structure consisting of template sets.
-   */
-  public static void upgradeMonolithicTemplates() {
-    // TODO Auto-generated method stub
-
-  }
-
-  /**
    * Get the parent location of the templates.
    *
    * @return The {@link Path} of the templates location.

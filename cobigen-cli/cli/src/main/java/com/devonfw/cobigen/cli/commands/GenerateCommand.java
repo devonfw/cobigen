@@ -9,7 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
@@ -24,12 +26,14 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.TemplateAdapter;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.Tuple;
 import com.devonfw.cobigen.cli.CobiGenCLI;
@@ -42,6 +46,7 @@ import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
+import com.devonfw.cobigen.impl.util.TimeStampUtil;
 import com.google.googlejavaformat.java.FormatterException;
 
 import picocli.CommandLine.Command;
@@ -92,14 +97,13 @@ public class GenerateCommand extends CommandCommons {
   boolean forceMonolithicConfiguration;
 
   /**
-   * boolean which indicates whether the templates got upgraded or not
-   */
-  private boolean upgradedTemplates;
-
-  /**
    * Logger to output useful information to the user
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
+
+  Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+
+  Path configFile = this.cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
   /**
    * Constructor needed for Picocli
@@ -117,9 +121,13 @@ public class GenerateCommand extends CommandCommons {
     }
 
     LOG.debug("Input files and output root path confirmed to be valid.");
-    if (!this.forceMonolithicConfiguration) {
-      checkMonolithicConfigurationException();
-    }
+
+    if (!Files.exists(this.configFile) || Files.exists(this.configFile) && TimeStampUtil.getTimeStamp() == null)
+      if (!this.forceMonolithicConfiguration) {
+        askUserToPostponeForaMonth();
+        checkMonolithicConfigurationException();
+      }
+
     CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject, true);
 
     resolveTemplateDependencies();
@@ -138,6 +146,27 @@ public class GenerateCommand extends CommandCommons {
       }
     }
     return 0;
+  }
+
+  /**
+   * ask the user if he wants to postpone the upgrade message for 30 days.
+   */
+  private void askUserToPostponeForaMonth() {
+
+    LOG.info("An old configuration found! Would you like to postpone the upgrade warning for 30 days?"
+        + MessagesConstants.YES_NO_ANSWER_DESCRIPTION, System.getProperty("user.dir"));
+    Path outputDirectory = Paths.get(System.getProperty("user.dir"));
+
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("Upgrading templates configuration...: ",
+        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
+
+    if (setToUserDir) {
+      Date date = new Date();
+      TimeStampUtil.TimeStampWriter(this.configFile, new Timestamp(date.getTime()));
+      // TODO Check for 30 days
+    } else {
+
+    }
   }
 
   /**
@@ -295,7 +324,7 @@ public class GenerateCommand extends CommandCommons {
         WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION, System.getProperty("user.dir"));
     Path outputDirectory = Paths.get(System.getProperty("user.dir"));
 
-    boolean setToUserDir = ValidationUtils.yesNoPrompt("upgrading templates configuration...: ",
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("Upgrading templates configuration...: ",
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
 
     if (setToUserDir) {
@@ -314,10 +343,10 @@ public class GenerateCommand extends CommandCommons {
       }
       LOG.info("New templates folder: {} ", this.templatesProject);
       LOG.info("Templates successfully upgraded. \n ");
-      this.upgradedTemplates = true;
+
     } else {
       // Do Nothing, continue with old templates generation
-      this.upgradedTemplates = false;
+
     }
   }
 
