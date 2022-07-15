@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 
 /**
  * Utilities related to the templates jar. Includes the downloading, retrieval of the jar and the checkup of the
@@ -101,11 +102,36 @@ public class TemplatesJarUtil {
    * @param templatesDirectory directory where the templates jar are located
    * @return fileName Name of the file downloaded
    */
-  public static String downloadTemplates(boolean isDownloadSource, File templatesDirectory,
+  public static void downloadTemplates(boolean isDownloadSource, File templatesDirectory,
       List<String> mavenCoordinates) {
 
-    return downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
-        TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
+    if (mavenCoordinates != null && !mavenCoordinates.isEmpty()) {
+      for (String mcoordinate : mavenCoordinates) {
+        // simple check for maven naming conventions
+        mcoordinate = mcoordinate.trim();
+        if (!mcoordinate.matches("([a-zA-Z0-9_\\-\\.]+):([a-zA-Z0-9_-]+)(:([0-9]+(\\.[0-9]+)*(-SNAPSHOT)?))?")) {
+          throw new InvalidConfigurationException("configuration key:" + mcoordinate + " in .cobigen for "
+              + "template-sets.installed doesnt match the specification and could not be used");
+        }
+        String[] splited = mcoordinate.split(":");
+        String groupID = splited[0];
+        String artifactID = splited[1];
+        String version = splited.length > 2 ? splited[2] : null;
+        for (File fileOrDirectory : templatesDirectory.listFiles()) {
+          if (fileOrDirectory.isDirectory()) {
+            LOG.warn("Templates Folder already exists");
+            return;
+          } else if (fileOrDirectory.getName().contains(artifactID)) {
+            LOG.info("Template specified in the properties with the ArtifactID: " + artifactID + " already exits");
+            // Should we check for a update?
+          } else {
+            LOG.info("Template specified in the properties file with ArtifactID: " + artifactID + " GroupID:" + groupID
+                + " will be loaded");
+            downloadJar(groupID, artifactID, version, isDownloadSource, templatesDirectory);
+          }
+        }
+      }
+    }
   }
 
   /**

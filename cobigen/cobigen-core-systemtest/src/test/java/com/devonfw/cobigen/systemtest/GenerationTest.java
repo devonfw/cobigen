@@ -35,7 +35,6 @@ import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
@@ -53,12 +52,10 @@ public class GenerationTest extends AbstractApiTest {
   private static String testFileRootPath = apiTestsRootPath + "GenerationTest/";
 
   @Test
-  public void testEduard() throws Exception {
+  public void testinstallOfTemplateSets() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(CobiGenPaths.getCobiGenHomePath().toUri().resolve("template-sets"), true);
-    // System.out.println(CobiGenPaths.getCobiGenHomePath());
-    // ConfigurationFinder.findTemplatesLocation();
-    // ConfigurationFinder.installTemplateSets();
+    // Teste install of templateSets
+    CobiGen cobigen = CobiGenFactory.create(Paths.get("C:\\Users\\ekrieger\\Desktop\\Templates-Test").toUri(), true);
   }
 
   /**

@@ -2,6 +2,7 @@ package com.devonfw.cobigen.impl;
 
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
@@ -91,23 +93,15 @@ public class CobiGenFactory {
     CobiGen createBean = beanFactory.createBean(CobiGen.class);
     // Notifies all plugins of new template root path
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
-    // Path templates = config
-    System.out.println(configurationHolder.isTemplateSetConfiguration());
-    // configurationHolder.
+
     if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration()) {
       throw new DeprecatedMonolithicConfigurationException();
     }
+    // install Template Sets defined in .properties file
     TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
         CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
-    if (config.getMavenCoordinates() != null && !config.getMavenCoordinates().isEmpty()) {
-      LOG.info("Templates specified in the properties file will be loaded");
-      if (configurationHolder.getConfigurationPath().endsWith("adapted")) {
-        System.out.println("Adapted");
-      }
-      // checkIFTemplates exists already
-      // TemplatesJarUtil.downloadTemplates(false, configurationHolder.ge)
-    }
-
+    URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
+    TemplatesJarUtil.downloadTemplates(false, Paths.get(templatesLocation).toFile(), config.getMavenCoordinates());
     return createBean;
   }
 
