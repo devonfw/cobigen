@@ -51,13 +51,6 @@ public class GenerationTest extends AbstractApiTest {
    */
   private static String testFileRootPath = apiTestsRootPath + "GenerationTest/";
 
-  @Test
-  public void testinstallOfTemplateSets() throws Exception {
-
-    // Teste install of templateSets
-    CobiGen cobigen = CobiGenFactory.create(Paths.get("C:\\Users\\ekrieger\\Desktop\\Templates-Test").toUri(), true);
-  }
-
   /**
    * Tests that sources get overwritten if merge strategy override is configured.
    *
