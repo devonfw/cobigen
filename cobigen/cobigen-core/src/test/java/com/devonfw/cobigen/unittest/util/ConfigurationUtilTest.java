@@ -25,6 +25,8 @@ public class ConfigurationUtilTest {
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
+  // TODO Test for the template-sets-installed properties
+
   /**
    * Tests findTemplatesLocation logic Checks if a template jar is located inside the downloaded folder of template-sets
    * Checks if a template jar can be loaded directly when being set from the .cobigen properties file

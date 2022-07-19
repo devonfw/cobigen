@@ -109,7 +109,7 @@ public class TemplatesJarUtil {
       for (String mcoordinate : mavenCoordinates) {
         // simple check for maven naming conventions
         mcoordinate = mcoordinate.trim();
-        if (!mcoordinate.matches("([a-zA-Z0-9_\\-\\.]+):([a-zA-Z0-9_-]+)(:([0-9]+(\\.[0-9]+)*(-SNAPSHOT)?))?")) {
+        if (!mcoordinate.matches("([a-zA-Z0-9_\\-\\.]+):([a-zA-Z0-9_-]+)(:([0-9]+(\\.[0-9]+)*(-SNAPSHOT)?|LATEST))?")) {
           throw new InvalidConfigurationException("configuration key:" + mcoordinate + " in .cobigen for "
               + "template-sets.installed doesnt match the specification and could not be used");
         }
@@ -117,17 +117,24 @@ public class TemplatesJarUtil {
         String groupID = splited[0];
         String artifactID = splited[1];
         String version = splited.length > 2 ? splited[2] : null;
-        for (File fileOrDirectory : templatesDirectory.listFiles()) {
-          if (fileOrDirectory.isDirectory()) {
-            LOG.warn("Templates Folder already exists");
-            return;
-          } else if (fileOrDirectory.getName().contains(artifactID)) {
-            LOG.info("Template specified in the properties with the ArtifactID: " + artifactID + " already exits");
-            // Should we check for a update?
-          } else {
-            LOG.info("Template specified in the properties file with ArtifactID: " + artifactID + " GroupID:" + groupID
-                + " will be loaded");
-            downloadJar(groupID, artifactID, version, isDownloadSource, templatesDirectory);
+        if (templatesDirectory.listFiles().length == 0) {
+          LOG.info("Template specified in the properties file with ArtifactID: " + artifactID + " GroupID:" + groupID
+              + " will be loaded");
+          downloadJar(groupID, artifactID, version, isDownloadSource, templatesDirectory);
+        } else {
+          for (File fileOrDirectory : templatesDirectory.listFiles()) {
+            if (fileOrDirectory.isDirectory()) {
+              LOG.warn("Templates Folder already exists");
+              return;
+            } else if (fileOrDirectory.getName().contains(artifactID)) {
+              LOG.info("Template specified in the properties with the ArtifactID: " + artifactID + " already exits");
+              break;
+              // Should we check for a update?
+            } else {
+              LOG.info("Template specified in the properties file with ArtifactID: " + artifactID + " GroupID:"
+                  + groupID + " will be loaded");
+              downloadJar(groupID, artifactID, version, isDownloadSource, templatesDirectory);
+            }
           }
         }
       }
