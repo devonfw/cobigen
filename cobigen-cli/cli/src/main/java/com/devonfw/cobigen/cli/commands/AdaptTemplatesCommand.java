@@ -51,7 +51,7 @@ public class AdaptTemplatesCommand extends CommandCommons {
       templateAdapter.adaptTemplates();
     } catch (UpgradeTemplatesNotificationException e) {
       if (askUserToContinueWithUpgrade(e)) {
-        TemplateAdapter.upgradeMonolithicTemplates();
+        // TemplateAdapter.upgradeMonolithicTemplates();
       }
     } catch (TemplateSelectionForAdaptionException e) {
       List<Path> templateJars = e.getTemplateSets();

@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
@@ -93,7 +92,7 @@ public class VersionValidator {
             && !versionStep.getValue()) {
           LOG.warn("{} version too old for current CobiGen version. CobiGen: {} / {}: {}", this.configName,
               currentCobiGenVersionStr, this.configName, configVersion);
-          throw new DeprecatedMonolithicConfigurationException();
+          // throw new DeprecatedMonolithicConfigurationException();
         }
       }
       LOG.debug("Compatible {} as no breaking changes found. CobiGen: {} / {}: {}", this.configName,

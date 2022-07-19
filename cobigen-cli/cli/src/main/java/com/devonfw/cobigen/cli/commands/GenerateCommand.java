@@ -105,6 +105,8 @@ public class GenerateCommand extends CommandCommons {
 
   Path configFile = this.cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
+  private boolean askedForUpgrade;
+
   /**
    * Constructor needed for Picocli
    */
@@ -124,26 +126,31 @@ public class GenerateCommand extends CommandCommons {
 
     if (!Files.exists(this.configFile) || Files.exists(this.configFile) && TimeStampUtil.getTimeStamp() == null)
       if (!this.forceMonolithicConfiguration) {
-        askUserToPostponeForaMonth();
         checkMonolithicConfigurationException();
       }
 
     CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject, true);
 
     resolveTemplateDependencies();
-
-    if (this.increments == null && this.templates != null) {
-      Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);
-      for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
-        generate(this.inputFiles.get(i), inputsAndArtifacts.getA().get(i),
-            MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg, TemplateTo.class);
+    try {
+      if (this.increments == null && this.templates != null) {
+        Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);
+        for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
+          generate(this.inputFiles.get(i), inputsAndArtifacts.getA().get(i),
+              MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg, TemplateTo.class);
+        }
+      } else {
+        Tuple<List<Object>, List<IncrementTo>> inputsAndArtifacts = preprocess(cg, IncrementTo.class);
+        for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
+          generate(this.inputFiles.get(i), inputsAndArtifacts.getA().get(i),
+              MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg,
+              IncrementTo.class);
+        }
       }
-    } else {
-      Tuple<List<Object>, List<IncrementTo>> inputsAndArtifacts = preprocess(cg, IncrementTo.class);
-      for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
-        generate(this.inputFiles.get(i), inputsAndArtifacts.getA().get(i),
-            MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg, IncrementTo.class);
-      }
+    } catch (DeprecatedMonolithicConfigurationException e) {
+      LOG.warn(e.getMessage());
+      if (!this.askedForUpgrade)
+        askUserToUpgradeTemplates();
     }
     return 0;
   }
@@ -178,12 +185,13 @@ public class GenerateCommand extends CommandCommons {
     try {
       CobiGenUtils.initializeCobiGen(this.templatesProject, false);
     } catch (DeprecatedMonolithicConfigurationException e) {
+      askUserToPostponeForaMonth();
       if (this.templatesProject == null)
         LOG.warn("Found old configuration at: {} ", ConfigurationFinder.findTemplatesLocation());
       else
         LOG.warn("Found old configuration at: {} ", this.templatesProject);
       LOG.warn(e.getMessage());
-
+      this.askedForUpgrade = true;
       askUserToUpgradeTemplates();
 
     }

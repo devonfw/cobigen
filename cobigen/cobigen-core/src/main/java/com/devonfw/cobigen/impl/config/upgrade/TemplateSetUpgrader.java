@@ -111,14 +111,6 @@ public class TemplateSetUpgrader {
     Path cobigenTemplates = pom_xml.getParent();
     Path templates = cobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
-    try {
-
-      FileUtils.copyFileToDirectory(pom_xml.toFile(), adapted.toFile());
-
-    } catch (Exception e) {
-      LOG.error("An error occurred while copying the parent pom", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    }
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
     Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
@@ -129,7 +121,7 @@ public class TemplateSetUpgrader {
         Path utilsPath = cobigenTemplates.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER);
         try {
           FileUtils.copyDirectory(triggerFolder.toFile(),
-              newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER).toFile());
+              newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toFile());
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template Folder", e);
           throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -142,7 +134,7 @@ public class TemplateSetUpgrader {
           throw new CobiGenRuntimeException(e.getMessage(), e);
         }
 
-        Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.RESOURCE_FOLDER)
+        Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         contextMap.put(cc, newContextPath);
         // creates actual context configuration file
@@ -202,6 +194,7 @@ public class TemplateSetUpgrader {
     Model splitPomModel = new Model();
     splitPomModel.setGroupId(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     splitPomModel.setModelVersion(monolithicPomModel.getModelVersion());
+    splitPomModel.setVersion("2021.12.007");
     splitPomModel.setDependencies(monolithicPomModel.getDependencies());
     splitPomModel.setPackaging(monolithicPomModel.getPackaging());
     splitPomModel.setArtifactId(trigger.getId().replace('_', '-'));
