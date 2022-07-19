@@ -128,11 +128,6 @@ public class TemplatesJarUtilTest {
   @Test
   public void testDownloadTemplatesWrongMavenCoordinates() {
 
-    // teste maven coordinaten
-    // teste existens of jar
-    // teste Folder
-    // teste maven download with wrong coodrinaten
-    // CobiGen cobigen = CobiGenFactory.create(Paths.get("C:\\Users\\ekrieger\\Desktop\\Templates-Test").toUri(), true);
     fail("Not yet implemented");
   }
 
