@@ -1,5 +1,9 @@
 package com.devonfw.cobigen.impl.util;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.Properties;
@@ -8,10 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 
 /**
- * TODO mdukhan This Class is used to set the timestamp property
+ * This Class is used to set the timestamp property
  *
  */
 public class TimeStampUtil {
@@ -32,31 +35,12 @@ public class TimeStampUtil {
   private static Timestamp timeStamp;
 
   /**
-   * getter of the timestamp.
-   *
-   * @return timeStamp
-   */
-  public static Timestamp getTimeStamp() {
-
-    return timeStamp;
-  }
-
-  /**
-   * Setter of the timestamps.
-   *
-   * @param timeStamp new value of {@link #gettimeStamp}.
-   */
-  public static void setTimeStamp(Timestamp timeStamp) {
-
-    TimeStampUtil.timeStamp = timeStamp;
-  }
-
-  /**
    * Writes the timestamp in a config file.
    *
    * @param configFile the config file or .cobigen file containing the properties.
+   * @throws IOException
    */
-  public static void TimeStampWriter(Path configFile) {
+  public static void TimeStampWriter(Path configFile) throws IOException {
 
     TimeStampWriter(configFile, null);
   }
@@ -66,9 +50,20 @@ public class TimeStampUtil {
    *
    * @param configFile the config file or .cobigen file containing the properties.
    * @param timestamp to be added to the config file
+   * @throws Exception
    */
-  public static void TimeStampWriter(Path configFile, Timestamp timestamp) {
+  public static void TimeStampWriter(Path configFile, Timestamp timestamp) throws IOException {
 
+    Properties props = new Properties();
+    try {
+      if (!Files.exists(configFile))
+        Files.createFile(configFile);
+
+      props.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TIME_STAMP, timestamp.toString());
+      props.store(new FileOutputStream(configFile.toFile()), null);
+    } catch (IOException e) {
+      LOG.error("An error occurd while writing the timestamp to the config file.");
+    }
   }
 
   /**
@@ -76,31 +71,36 @@ public class TimeStampUtil {
    *
    * @param configFile the config file or .cobigen file containing the properties.
    */
-  public static void TimeStampReader(Path configFile) {
+  public static Timestamp TimeStampReader(Path configFile) {
 
     Properties props = new Properties();
     try {
-      props = ConfigurationFinder.readConfigurationFile(configFile);
-    } catch (InvalidConfigurationException e) {
-      LOG.info("This path {} is invalid. Please provide a proper path with the config file. ", configFile);
+      props.load(new FileInputStream(configFile.toFile()));
+    } catch (IOException e) {
+      LOG.error("An error occurd while loading the timestamp from the config file.");
     }
 
     String strTimeStamp = ConfigurationConstants.CONFIG_PROPERTY_TIME_STAMP;
-
-    if (props.getProperty(strTimeStamp) != null) {
+    String stampprop = props.getProperty(strTimeStamp);
+    if (stampprop != null) {
       Timestamp timeStamp1 = Timestamp.valueOf(props.getProperty(strTimeStamp));
-      setTimeStamp(timeStamp1);
+      return timeStamp1;
     }
+    return null;
   }
 
   /**
-   * Delete a timestamp from a config file.
+   * Delete all timestamps from a config file.
    *
    * @param configFile the config file or .cobigen file containing the properties.
    */
-  public static void TimeStampDeleter(Path configFile, Timestamp timestamp) {
+  public static void TimeStampDeleter(Path configFile) {
 
-    // TODO Implement this method
+    try {
+      TimeStampWriter(configFile, null);
+    } catch (IOException e) {
+      LOG.error("An error occurd while deleting the timestamps from the config file.");
+    }
   }
 
 }

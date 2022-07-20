@@ -45,7 +45,7 @@ public class VersionValidatorTest {
 
     try {
       VersionValidator validator = new VersionValidator(Type.CONTEXT_CONFIGURATION, "2.1.0");
-      validator.validate(1.2f);
+      validator.validate(1.2f, false);
     } catch (DeprecatedMonolithicConfigurationException e) {
       assertThat(e.getMessage()).matches(
           "You are using an old templates configuration. Please consider upgrading your templates! Thank you!");
