@@ -13,6 +13,8 @@ import org.junit.Test;
  */
 public class FileSystemUtilTest {
 
+  private static final String W = null;
+
   /**
    * Test methods collectAllContextXML and collectAllTemplatesXML
    */
@@ -26,12 +28,8 @@ public class FileSystemUtilTest {
 
     Assert.assertEquals(allContexts.get(0),
         Paths.get("src/test/resources/testdata/unittest/config/util/collectors/contextXMLs/context.xml"));
-    Assert.assertEquals(allContexts.get(1),
-        Paths.get("src/test/resources/testdata/unittest/config/util/collectors/contextXMLs/others/context.xml"));
-    Assert.assertEquals(alltemplates.get(1),
-        Paths.get("src/test/resources/testdata/unittest/config/util/collectors/templatesXMLs/templates.xml"));
     Assert.assertEquals(alltemplates.get(0),
-        Paths.get("src/test/resources/testdata/unittest/config/util/collectors/templatesXMLs/others/templates.xml"));
+        Paths.get("src/test/resources/testdata/unittest/config/util/collectors/templatesXMLs/templates.xml"));
 
   }
 }
