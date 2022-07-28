@@ -54,7 +54,7 @@ public class JfrogSearchResponse implements AbstractRESTSearchResponse {
   @JsonIgnore
   public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + "solrsearch/select?q=g:" + groupId + "&wt=json";
+    String targetLink = repositoryUrl + "/" + "api/search/gavc?g=" + groupId;
     LOG.info("Starting Jfrog Search REST API request with URL: {}.", targetLink);
 
     String jsonResponse;
