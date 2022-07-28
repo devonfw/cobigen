@@ -16,7 +16,7 @@ import java.util.Iterator;
 
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import com.devonfw.module.jpa.dataaccess.api.QueryUtil;
 import com.devonfw.module.jpa.dataaccess.api.data.DefaultRepository;
 
@@ -49,20 +49,20 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
               if(${propName} != null) {
                   query.where($(alias.get${property.type}().getId()).eq(${propName}));
               }
-              
+
           <#elseif propType="String">
               String ${propName} = criteria.get${fieldCapName}();
               if (${propName} != null && !${propName}.isEmpty()) {
                 QueryUtil.get().whereString(query, $(alias.get${fieldCapName}()), ${propName}, criteria.get${fieldCapName}Option());
               }
-              
+
           <#else>
               ${propType?cap_first} ${propName} = criteria.get${fieldCapName}();
               if (${propName} != null) {
                 query.where($(alias.<#if propType=='boolean'>is${fieldCapName}()<#else>get${fieldCapName}()</#if>).eq(${propName}));
               }
-              
-          </#if> 
+
+          </#if>
       </#compress>
     </#if>
     </#list>
@@ -71,13 +71,13 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
     } else {
       addOrderBy(query, alias, criteria.getPageable().getSort());
     }
-    
+
     return QueryUtil.get().findPaginated(criteria.getPageable(), query, true);
   }
-  
+
   /**
    * Add sorting to the given query on the given alias
-   * 
+   *
    * @param query to add sorting to
    * @param alias to retrieve columns from for sorting
    * @param sort specification of sorting
@@ -97,7 +97,7 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
                 query.orderBy($(alias.get${property.name?cap_first}().getId()).asc());
             } else {
                 query.orderBy($(alias.get${property.name?cap_first}().getId()).desc());
-            }   
+            }
           break;
 	     <#else>
 	  case "${propName}":
@@ -105,7 +105,7 @@ public interface ${variables.entityName}Repository extends DefaultRepository<${v
                 query.orderBy($(alias.<#if propType=='boolean'>is${fieldCapName}()<#else>get${propName?cap_first}()</#if>).asc());
             } else {
                 query.orderBy($(alias.<#if propType=='boolean'>is${fieldCapName}()<#else>get${propName?cap_first}()</#if><#if property.sameComponent && property.isEntity>.getId()</#if>).desc());
-            }   
+            }
           break;
 	      </#if>
           </#if>
