@@ -10,7 +10,7 @@ import javax.ws.rs.POST;
 
 import ${variables.rootPackage}.general.common.api.to.PaginatedListToWrapper;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 
 import com.devonfw.module.jpa.common.api.to.PaginatedListTo;
 

@@ -5,7 +5,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.base.usecase.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -50,13 +50,13 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
       cto.set${field.name?cap_first}(getBeanMapper().mapList(entity.get${field.name?cap_first}(), ${DevonfwUtil.getListArgumentType(field, classObject)}Eto.class));
         </#if>
       </#list>
-   
+
       return cto;
     }
-  
+
     @Override
     public Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
-  
+
       Page<${variables.entityName}Entity> ${variables.entityName?lower_case}s = get${variables.entityName}Repository().findByCriteria(criteria);
       List<${variables.entityName}Cto> ctos = new ArrayList<>();
       for (${variables.entityName}Entity entity : ${variables.entityName?lower_case}s.getContent()) {
@@ -72,7 +72,7 @@ public class UcFind${variables.entityName}Impl extends Abstract${variables.entit
         ctos.add(cto);
       }
       Pageable pagResultTo = PageRequest.of(criteria.getPageable().getPageNumber(), criteria.getPageable().getPageSize());
-      
+
       return new PageImpl<>(ctos, pagResultTo, ${variables.entityName?lower_case}s.getTotalElements());
     }
 }

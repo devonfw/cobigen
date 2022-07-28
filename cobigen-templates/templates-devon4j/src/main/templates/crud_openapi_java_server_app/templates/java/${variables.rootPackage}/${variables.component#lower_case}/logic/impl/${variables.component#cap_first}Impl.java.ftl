@@ -6,7 +6,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.${variables.com
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcManage${variables.entityName};
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 
@@ -49,7 +49,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 
       return this.ucManage${variables.entityName}.delete${variables.entityName}(id);
     }
-    
+
         <#list model.component.paths as path>
   	<#list path.operations as operation>
   		<#if !DevonfwUtil.isCrudOperation(operation.operationId, variables.entityName?cap_first)>
@@ -61,7 +61,7 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 	  			<#if hasEntity>
   	public Page<${getReturnType(operation,false)}Eto> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				<#else>
-  	public Page<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}( 
+  	public Page<${getReturnType(operation,false)}> ${OpenApiUtil.printServiceOperationName(operation, path.pathURI)}(
   				</#if>
   			<#elseif hasResponseOfType(response,"Array")>
   				<#if hasEntity>
@@ -111,11 +111,11 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
   				<#else>
   		return null;
   				</#if>
-  			</#if>		
+  			</#if>
   	}		</#compress>
   	  		</#list>
   		</#if>
-  		
+
   	</#list>
   </#list>
 }
