@@ -2,7 +2,6 @@ package com.devonfw.cobigen.impl;
 
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -100,8 +99,10 @@ public class CobiGenFactory {
     // install Template Sets defined in .properties file
     TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
         CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(false, CobiGenPaths.getCobiGenHomePath().toFile(),
+        config.getMavenCoordinates());
     URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
-    TemplatesJarUtil.downloadTemplates(false, Paths.get(templatesLocation).toFile(), config.getMavenCoordinates());
+
     return createBean;
   }
 

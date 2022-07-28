@@ -1,12 +1,22 @@
 package com.devonfw.cobigen.impl.config;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 
 /**
  * mdukhan This Class is used to set specific properties if not found, or save them if correctly found. These properties
  * are groupIds, allowSnapshots and hideTemplates.
  */
 public class TemplateSetConfiguration {
+
+  /** Logger instance */
+  private static final Logger LOG = LoggerFactory.getLogger(TemplateSetConfiguration.class);
 
   /** variable for template-set artifacts */
   private List<String> groupIds;
@@ -18,7 +28,7 @@ public class TemplateSetConfiguration {
   private List<String> hideTemplates;
 
   /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
-  private List<String> mavenCoordinates;
+  private List<MavenCoordinate> mavenCoordinates;
 
   /**
    * The constructor. load properties from a given source
@@ -35,7 +45,26 @@ public class TemplateSetConfiguration {
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
     this.hideTemplates = hideTemplates;
-    this.mavenCoordinates = mavenCoordinates;
+    this.mavenCoordinates = checkandCovertToMavenCoordinates(mavenCoordinates);
+  }
+
+  private List<MavenCoordinate> checkandCovertToMavenCoordinates(List<String> mavenCoordinates) {
+
+    List<MavenCoordinate> result = new ArrayList<>();
+    for (String mcoordinate : mavenCoordinates) {
+      mcoordinate = mcoordinate.trim();
+      if (!mcoordinate.matches(TemplatesJarConstants.MAVEN_COORDINATES_CHECK)) {
+        LOG.warn("configuration key:" + mcoordinate + " in .cobigen for "
+            + "template-sets.installed doesnt match the specification and could not be used");
+      } else {
+        String[] split = mcoordinate.split(":");
+        String groupID = split[0];
+        String artifactID = split[1];
+        String version = split.length > 2 ? split[2] : null;
+        result.add(new MavenCoordinate(groupID, artifactID, version));
+      }
+    }
+    return result;
   }
 
   /**
@@ -98,7 +127,12 @@ public class TemplateSetConfiguration {
     this.hideTemplates = hideTemplates;
   }
 
-  public List<String> getMavenCoordinates() {
+  /**
+   * returns a list of maven coordinates for the download of template sets
+   *
+   * @return maven coordinates
+   */
+  public List<MavenCoordinate> getMavenCoordinates() {
 
     return this.mavenCoordinates;
   }
