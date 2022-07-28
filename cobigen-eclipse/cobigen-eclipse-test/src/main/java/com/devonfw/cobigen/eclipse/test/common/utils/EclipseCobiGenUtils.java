@@ -63,6 +63,20 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Selects the increment with the given name, upgrades the monolithic templates and generates,
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws Exception test fails
+   */
+  public static void processCobiGenAndUpgrade(SWTWorkbenchBot bot, SWTBotTreeItem input, String... increments)
+      throws Exception {
+
+    processCobiGenAndUpgrade(bot, input, DEFAULT_TIMEOUT, increments);
+  }
+
+  /**
    * Tries a Generate process with an expected error title.
    *
    * @param bot the {@link SWTWorkbenchBot} of the test
@@ -206,6 +220,26 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Selects the increment with the given name and generates it, upgrade if monolithic templates found
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws CoreException
+   * @throws Exception test fails
+   */
+  private static void processCobiGenAndUpgrade(SWTWorkbenchBot bot, SWTBotTreeItem input, int defaultTimeout,
+      String[] increments) throws Exception {
+
+    // Open generation wizard with new file as Input
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
+    input.contextMenu("CobiGen").menu("Generate...").click();
+    UpgradeAndContinue(bot);
+    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+  }
+
+  /**
    * Tries a Generate process with an expected error title.
    *
    * @param bot the {@link SWTWorkbenchBot} of the test
@@ -242,6 +276,19 @@ public class EclipseCobiGenUtils {
     takeScreenshot(bot, "Warning!");
     SWTBotShell finishDialog = bot.shell("Warning!");
     finishDialog.bot().button("Postpone").click();
+  }
+
+  /**
+   * Starts the upgrade process with the "Upgrade" button
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   *
+   */
+  private static void UpgradeAndContinue(SWTWorkbenchBot bot) {
+
+    takeScreenshot(bot, "Warning!");
+    SWTBotShell finishDialog = bot.shell("Warning!");
+    finishDialog.bot().button("Upgrade").click();
   }
 
   /**

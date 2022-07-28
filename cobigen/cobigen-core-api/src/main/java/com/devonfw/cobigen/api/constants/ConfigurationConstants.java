@@ -99,9 +99,9 @@ public class ConfigurationConstants {
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_HIDE = "template-sets.hide";
 
   /**
-   * Name of configuration key to hide very specific template sets
+   * Name of configuration key to save specific time
    */
-  public static final String CONFIG_PROPERTY_TIME_STAMP = "time-stamp";
+  public static final String CONFIG_PROPERTY_TIME_STAMP = "timestamp";
 
   /**
    * Default (public) cobigen GroupId

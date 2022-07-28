@@ -88,21 +88,17 @@ public class ConfigurationFinder {
       String templatesLocation = props.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
       String templateSetsLocation = props.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH);
 
-      // use old templates configuration
-      Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
-      if (templatesFolderLocation != null && Files.exists(templatesFolderLocation)) {
-        return templatesFolderLocation.toUri();
-      }
-
       // use new template set configuration
       Path templateSetsFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templateSetsLocation);
       if (templateSetsFolderLocation != null && Files.exists(templateSetsFolderLocation)) {
         return templateSetsFolderLocation.toUri();
       }
 
-    } else {
-      LOG.info("No custom templates configuration found. Getting templates from {}",
-          CobiGenPaths.getTemplateSetsFolderPath(cobigenHome));
+      // use old templates configuration
+      Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
+      if (templatesFolderLocation != null && Files.exists(templatesFolderLocation)) {
+        return templatesFolderLocation.toUri();
+      }
     }
     return findTemplates(cobigenHome);
   }
@@ -142,7 +138,7 @@ public class ConfigurationFinder {
    * @throws InvalidConfigurationException if the file isn't present or the path is invalid
    * @return Properties containing configuration
    */
-  public static Properties readConfigurationFile(Path cobigenConfigFile) {
+  private static Properties readConfigurationFile(Path cobigenConfigFile) {
 
     Properties props = new Properties();
     try {
@@ -169,28 +165,28 @@ public class ConfigurationFinder {
     Path templatesPath = CobiGenPaths.getTemplatesFolderPath(home);
     Path templatesFolderPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
-    // 1. use old Cobigen_Templates folder
-    if (Files.exists(templatesFolderPath)) {
-      return templatesFolderPath.toUri();
-    }
-
-    // 2. use template jar
-    if (Files.exists(templatesPath)) {
-      Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesPath);
-      if (jarFilePath != null && Files.exists(jarFilePath)) {
-        return jarFilePath.toUri();
-      }
-    }
-
-    // 3. create/use new template sets folder
+    // 1. create/use new template sets folder
     Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, true);
 
     Path templateSetsAdaptedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
-    // 4. check adapted and downloaded folder
+    // 2. check adapted and downloaded folder
     if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
       return templateSetsFolderPath.toUri();
+    }
+
+    // 3. use old Cobigen_Templates folder
+    if (Files.exists(templatesFolderPath)) {
+      return templatesFolderPath.toUri();
+    }
+
+    // 4. use template jar
+    if (Files.exists(templatesPath)) {
+      Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesPath);
+      if (jarFilePath != null && Files.exists(jarFilePath)) {
+        return jarFilePath.toUri();
+      }
     }
 
     // 5. download template set jars

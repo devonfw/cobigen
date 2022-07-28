@@ -17,6 +17,7 @@ import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistent
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.healthcheck.HealthCheckDialog;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
+import com.devonfw.cobigen.impl.util.TimestampUtil;
 
 /**
  * Util class to handle exceptions
@@ -104,6 +105,8 @@ public class ExceptionHandler {
    * Opens up a message dialog for displaying further guidance on upgrading old templates.
    *
    * @param e {@link DeprecatedMonolithicConfigurationException} occurred
+   * @return
+   * @return
    */
   private static void openMonolithicConfigurationErrorDialog(DeprecatedMonolithicConfigurationException e) {
 
@@ -111,15 +114,23 @@ public class ExceptionHandler {
       MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Warning!", null,
           e.getMessage() + " Further Information can be found at:"
               + WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION,
-          MessageDialog.WARNING, new String[] { "Upgrade", "Postpone" }, 1);
-      dialog.setBlockOnOpen(true);
+          MessageDialog.WARNING, new String[] { "Upgrade", "Postpone", "Postpone for 30 days" }, 2);
 
+      MessageDialog successUpgrade = new MessageDialog(Display.getDefault().getActiveShell(), "Success!", null,
+          "Templates were successfully upgraded. ", MessageDialog.INFORMATION, new String[] { "Ok" }, 1);
+      dialog.setBlockOnOpen(true);
+      successUpgrade.setBlockOnOpen(true);
       int result = dialog.open();
       if (result == 0) {
-        // TODO Use the Upgrader from Ticket #1502
+        ResourcesPluginUtil.upgradeConfiguration();
+        successUpgrade.open();
       }
       if (result == 1) {
         // Do nothing (Postpone and Continue)
+      }
+      if (result == 2) {
+        TimestampUtil.addATimestampForOneMonth();
+
       }
     });
   }

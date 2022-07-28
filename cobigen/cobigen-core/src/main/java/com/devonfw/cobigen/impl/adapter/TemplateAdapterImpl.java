@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.TemplateAdapter;
+import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
@@ -29,10 +30,8 @@ import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
-import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.AbstractConfigurationUpgrader;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
-import com.devonfw.cobigen.impl.config.upgrade.TemplateConfigurationUpgrader;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
@@ -372,23 +371,24 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     if (templatesProject != null) {
       templatesPath = FileSystemUtil.createFileSystemDependentPath(templatesProject.toUri());
     } else {
-
       templatesPath = FileSystemUtil.createFileSystemDependentPath(
           CobiGenPaths.getTemplatesFolderPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
               .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toUri());
     }
 
     AbstractConfigurationUpgrader<ContextConfigurationVersion> contextUpgraderObject = new ContextConfigurationUpgrader();
-    AbstractConfigurationUpgrader<TemplatesConfigurationVersion> templatesUpgraderObject = new TemplateConfigurationUpgrader();
 
+    // Upgrade the context.xml to the new template-set with latest version
     contextUpgraderObject.resolveLatestCompatibleSchemaVersion(templatesPath);
-    contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, null);
+    contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.ENFORCE_BACKUP);
 
-    LOG.info("context.xml upgraded succsessfully {}", templatesPath);
+    LOG.info("context.xml upgraded succsessfully. {}", templatesPath);
 
-    // TODO Upgrade all templates.xml to the newest version
+    Path cobigenHome = CobiGenPaths.checkCustomHomePath(templatesPath);
+    if (cobigenHome == null) {
+      cobigenHome = CobiGenPaths.getCobiGenHomePath();
+    }
 
-    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
     return cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
 
   }

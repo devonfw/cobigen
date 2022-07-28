@@ -11,9 +11,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
+import com.devonfw.cobigen.impl.config.upgrade.AbstractConfigurationUpgrader;
+import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
@@ -116,26 +118,11 @@ public class ConfigurationHolder {
    */
   public boolean isTemplateSetConfiguration() {
 
-    if (this.configurationPath.toUri().getScheme().equals("jar")
-        || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
-      return checkParentFolder(this.configurationPath);
-    }
-    return true;
-  }
-
-  /**
-   * checks if the parent folder structure consists of template sets or if the old structure is used
-   *
-   * @param configurationPath path of the templates
-   * @return
-   */
-  private boolean checkParentFolder(Path configurationPath) {
-
-    if (this.configurationPath.toUri().getScheme().equals("jar") || !this.configurationPath.getParent().getFileName()
-        .toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
+    if (this.configurationPath.toUri().getScheme().equals("jar"))
       return false;
-    }
-    return true;
+    List<Path> result = FileSystemUtil.collectAllContextXML(this.configurationPath);
+    AbstractConfigurationUpgrader<ContextConfigurationVersion> contextConfigurationObject = new ContextConfigurationUpgrader();
+    return contextConfigurationObject.isCompliantToLatestSupportedVersion(result.get(0).getParent());
   }
 
   /**

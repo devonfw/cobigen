@@ -33,6 +33,7 @@ import com.devonfw.cobigen.impl.config.entity.io.v3_0.Link;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Links;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tag;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tags;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBContext;
@@ -99,26 +100,28 @@ public class TemplateSetUpgrader {
   public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
       Path contextLocation) throws Exception {
 
-    boolean customTemplates = false;
-    Path cobigenDir = contextLocation;
-    Path pom_xml = contextLocation.getParent().getParent().getParent().resolve("pom.xml");
-    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+    Path cobigenHome = CobiGenPaths.checkCustomHomePath(contextLocation);
+    if (cobigenHome == null)
+      cobigenHome = CobiGenPaths.getCobiGenHomePath();
 
-    ContextConfiguration contextConfiguration = getContextConfiguration(contextLocation);
-
-    Path templateSets = Files.createDirectory(cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
+    List<Path> newContextLocation = FileSystemUtil.collectAllContextXML(contextLocation);
+    Path folderOfContextLocation = newContextLocation.get(0).getParent();
+    ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
+    Path templateSets = cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    if (!Files.exists(templateSets))
+      Files.createDirectory(templateSets);
     Path adapted = Files.createDirectory(templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER));
-    Path cobigenTemplates = pom_xml.getParent();
-    Path templates = cobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    Path cobigenTemplates = folderOfContextLocation.getParent().getParent().getParent().getParent()
+        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
     Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
     for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration cc : contextFiles) {
       for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
-        Path triggerFolder = templates.resolve(trigger.getTemplateFolder());
+        Path triggerFolder = folderOfContextLocation.resolve(trigger.getTemplateFolder());
         Path newTriggerFolder = adapted.resolve(trigger.getTemplateFolder());
-        Path utilsPath = cobigenTemplates.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER);
+        Path utilsPath = folderOfContextLocation.getParent().resolve("java");
         try {
           FileUtils.copyDirectory(triggerFolder.toFile(),
               newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toFile());
@@ -152,7 +155,7 @@ public class TemplateSetUpgrader {
       backupTemplatesLocation.mkdir();
     }
     try {
-      FileUtils.moveDirectoryToDirectory(cobigenTemplates.getParent().toFile(), backupTemplatesLocation, false);
+      FileUtils.copyDirectoryToDirectory(cobigenTemplates.getParent().toFile(), backupTemplatesLocation);
     } catch (IOException e) {
       LOG.error("An error occured while backing up the old template folder", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -169,11 +172,19 @@ public class TemplateSetUpgrader {
    * @param {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }trigger to the related template folder
    * @throws IOException
    * @throws XmlPullParserException
+   * @throws ClassNotFoundException
    */
   private void writeNewPomFile(Path cobigen_templates, Path newTemplateFolder,
-      com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) throws IOException, XmlPullParserException {
+      com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger)
+      throws IOException, XmlPullParserException, ClassNotFoundException {
 
     // Pom.xml creation
+    /**
+     * TODO Because Eclipse application cannot load these classes we need to look for other solutions:
+     *
+     * 1-copy files 2-replace by regex
+     *
+     */
     MavenXpp3Reader reader = new MavenXpp3Reader();
     MavenXpp3Writer writer = new MavenXpp3Writer();
     Model monolithicPomModel;
@@ -189,8 +200,7 @@ public class TemplateSetUpgrader {
       LOG.error("XMLError while parsing the monolitic pom file", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
     }
-    // TODO One can check if one can properly generate after upgrading the POM files. These
-    // next lines need to be investigated.
+
     Model splitPomModel = new Model();
     splitPomModel.setGroupId(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     splitPomModel.setModelVersion(monolithicPomModel.getModelVersion());

@@ -3,6 +3,7 @@ package com.devonfw.cobigen.eclipse.common.tools;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -29,6 +30,8 @@ import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /** Util for NPE save access of {@link ResourcesPlugin} utils */
 public class ResourcesPluginUtil {
@@ -52,6 +55,16 @@ public class ResourcesPluginUtil {
    * them. Strange case but could happen.
    */
   static boolean userWantsToDownloadTemplates = true;
+
+  /**
+   * This variable is used to know if the templates got upgraded or not
+   */
+  static boolean isTemplatesUpgraded = false;
+
+  /**
+   * The path to the new template-set after the upgrade
+   */
+  static Path newTemplatesPath = null;
 
   /**
    * Refreshes the configuration project from the file system.
@@ -83,16 +96,34 @@ public class ResourcesPluginUtil {
    */
   public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException, CoreException {
 
-    File templatesDirectory = getTemplatesDirectory();
+    if (isTemplatesUpgraded) {
 
-    generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
+      File templatesDirectory = getTemplateSetDirectory();
+      generatorProj = ResourcesPlugin.getWorkspace().getRoot()
+          .getProject(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH);
+      return generatorProj;
+    } else {
+      File templatesDirectory = getTemplatesDirectory();
 
-    if (!generatorProj.exists()) {
-      if (!isUpdateDialogShown) {
-        if (templatesDirectory.exists()) {
-          Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesDirectory.toPath());
-          // If we don't find at least one jar, then we do need to download new templates
-          if (jarFilePath == null || !Files.exists(jarFilePath)) {
+      generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
+
+      if (!generatorProj.exists()) {
+        if (!isUpdateDialogShown) {
+          if (templatesDirectory.exists()) {
+            Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesDirectory.toPath());
+            // If we don't find at least one jar, then we do need to download new templates
+            if (jarFilePath == null || !Files.exists(jarFilePath)) {
+              int result = createUpdateTemplatesDialog();
+              isUpdateDialogShown = true;
+              if (result == 1) {
+                // User does not want to download templates.
+                userWantsToDownloadTemplates = false;
+              } else {
+                userWantsToDownloadTemplates = true;
+              }
+            }
+
+          } else {
             int result = createUpdateTemplatesDialog();
             isUpdateDialogShown = true;
             if (result == 1) {
@@ -102,24 +133,14 @@ public class ResourcesPluginUtil {
               userWantsToDownloadTemplates = true;
             }
           }
-
-        } else {
-          int result = createUpdateTemplatesDialog();
-          isUpdateDialogShown = true;
-          if (result == 1) {
-            // User does not want to download templates.
-            userWantsToDownloadTemplates = false;
-          } else {
-            userWantsToDownloadTemplates = true;
-          }
         }
       }
-    }
 
-    if (userWantsToDownloadTemplates) {
-      return generatorProj;
-    } else {
-      return null;
+      if (userWantsToDownloadTemplates) {
+        return generatorProj;
+      } else {
+        return null;
+      }
     }
   }
 
@@ -182,14 +203,35 @@ public class ResourcesPluginUtil {
   }
 
   /**
-   * Gets or creates a new templates directory
+   * Gets or creates a new templates directory from the monolithic structure
    *
    * @return the templateDirectory
    */
   private static File getTemplatesDirectory() {
 
-    File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
-    return templatesDirectory;
+    return CobiGenPaths.getTemplatesFolderPath().toFile();
+  }
+
+  /**
+   * The method finds location of templates. It could be CobiGen_Templates folder or a template artifact
+   *
+   * @return the templateDirectory
+   */
+  private static File findTemplatesLocation() {
+
+    URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
+    Path templatesPath = FileSystemUtil.createFileSystemDependentPath(findTemplatesLocation);
+    return templatesPath.toFile();
+  }
+
+  /**
+   * Gets or creates a new templates directory from the template-set structure
+   *
+   * @return the templateDirectory
+   */
+  private static File getTemplateSetDirectory() {
+
+    return CobiGenPaths.getTemplateSetsFolderPath().toFile();
   }
 
   /**
@@ -244,8 +286,7 @@ public class ResourcesPluginUtil {
    */
   public static IPath getWorkspaceLocation() {
 
-    IPath ws = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-    return ws;
+    return ResourcesPlugin.getWorkspace().getRoot().getLocation();
   }
 
   /**
@@ -256,6 +297,20 @@ public class ResourcesPluginUtil {
   public static void setUserWantsToDownloadTemplates(boolean userWantsToDownloadTemplates) {
 
     ResourcesPluginUtil.userWantsToDownloadTemplates = userWantsToDownloadTemplates;
+  }
+
+  /**
+   * start the Upgrader to upgrade the monolithic templates to the new template-set structure
+   *
+   * @return
+   *
+   */
+  public static void upgradeConfiguration() {
+
+    File templatesDirectory = findTemplatesLocation();
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl();
+    newTemplatesPath = templateAdapter.upgradeMonolithicTemplates(templatesDirectory.toPath());
+    isTemplatesUpgraded = true;
   }
 
 }

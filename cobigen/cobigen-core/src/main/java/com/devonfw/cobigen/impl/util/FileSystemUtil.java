@@ -9,10 +9,15 @@ import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
@@ -101,5 +106,48 @@ public class FileSystemUtil {
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read file " + file.getAbsolutePath(), e);
     }
+  }
+
+  /**
+   * collect all context.xml from a given path
+   *
+   * @param templatesPath the path to a templates location or any given path to search for
+   * @return a path list of all found context.xml
+   */
+  public static List<Path> collectAllContextXML(Path templatesPath) {
+
+    if (templatesPath == null)
+      throw new CobiGenRuntimeException(
+          "The templatespath cannot be null. Please try again with a proper templatespath!");
+    List<Path> result = null;
+    try (Stream<Path> pathStream = Files.find(templatesPath, Integer.MAX_VALUE, (p, basicFileAttributes) -> p
+        .getFileName().toString().equalsIgnoreCase(ConfigurationConstants.CONTEXT_CONFIG_FILENAME))) {
+      result = pathStream.collect(Collectors.toList());
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("An error occured while collecing the context.xml files!");
+    }
+    return result;
+  }
+
+  /**
+   * collect all templates.xml from a given path
+   *
+   * @param templatesPath the path to a templates location or any given path to search for
+   * @return a path list of all found templates.xml
+   */
+  public static List<Path> collectAllTemplatesXML(Path templatesPath) {
+
+    if (templatesPath == null)
+      throw new CobiGenRuntimeException(
+          "The templatespath cannot be null. Please try again with a proper templatespath!");
+    List<Path> result = null;
+    try (Stream<Path> pathStream = Files.find(templatesPath, Integer.MAX_VALUE, (p, basicFileAttributes) -> p
+        .getFileName().toString().equalsIgnoreCase(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME))) {
+      result = pathStream.collect(Collectors.toList());
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("An error occured while collecing the templates.xml files");
+    }
+    return result;
+
   }
 }

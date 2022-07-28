@@ -9,9 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
@@ -20,21 +18,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.text.similarity.JaccardDistance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.TemplateAdapter;
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.Tuple;
 import com.devonfw.cobigen.cli.CobiGenCLI;
@@ -47,7 +42,7 @@ import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
-import com.devonfw.cobigen.impl.util.TimeStampUtil;
+import com.devonfw.cobigen.impl.util.TimestampUtil;
 import com.google.googlejavaformat.java.FormatterException;
 
 import picocli.CommandLine.Command;
@@ -102,12 +97,6 @@ public class GenerateCommand extends CommandCommons {
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
 
-  Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-
-  Path configFile = this.cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-
-  private boolean askedForUpgrade;
-
   /**
    * Constructor needed for Picocli
    */
@@ -124,12 +113,8 @@ public class GenerateCommand extends CommandCommons {
     }
 
     LOG.debug("Input files and output root path confirmed to be valid.");
-    Date mytime = new Date();
-    new Timestamp(mytime.getTime());
 
-    if (!Files.exists(this.configFile)
-        || Files.exists(this.configFile) && TimeStampUtil.TimeStampReader(this.configFile) == null
-        || mytime.after(TimeStampUtil.TimeStampReader(this.configFile)))
+    if (TimestampUtil.isaMonthPassed())
       if (!this.forceMonolithicConfiguration) {
         checkMonolithicConfigurationException();
       }
@@ -137,7 +122,7 @@ public class GenerateCommand extends CommandCommons {
     CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject, true);
 
     resolveTemplateDependencies();
-    // try {
+
     if (this.increments == null && this.templates != null) {
       Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);
       for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
@@ -151,61 +136,8 @@ public class GenerateCommand extends CommandCommons {
             MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg, IncrementTo.class);
       }
     }
-    // } catch (DeprecatedMonolithicConfigurationException e) {
-    // LOG.warn(e.getMessage());
-    // if (!this.askedForUpgrade)
-    // askUserToUpgradeTemplates();
-    // }
+
     return 0;
-
-  }
-
-  /**
-   * ask the user if he wants to postpone the upgrade message for 30 days.
-   *
-   * @throws IOException
-   */
-  private void askUserToPostponeUpgrade() {
-
-    LOG.info(
-        "Would you like to postpone the upgrade warning for 30 days?" + MessagesConstants.YES_NO_ANSWER_DESCRIPTION,
-        System.getProperty("user.dir"));
-    Path outputDirectory = Paths.get(System.getProperty("user.dir"));
-
-    boolean setToUserDir = ValidationUtils.yesNoPrompt("A timer is set for 30 days...: ",
-        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Allright...");
-
-    if (setToUserDir) {
-      Date afterMonthDate = DateUtils.addMonths(new Date(), 1);
-      try {
-        TimeStampUtil.TimeStampWriter(this.configFile, new Timestamp(afterMonthDate.getTime()));
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-      // TODO Check for 30 days
-    } else {
-
-    }
-  }
-
-  /**
-   * Uses default initialization, checks if monolithic templates exist, handles the exception and lets the user decide
-   * if the templates should be upgraded.
-   */
-  private void checkMonolithicConfigurationException() {
-
-    try {
-      CobiGenUtils.initializeCobiGen(this.templatesProject, false);
-    } catch (DeprecatedMonolithicConfigurationException e) {
-      if (this.templatesProject == null)
-        LOG.warn("Found old configuration at: {} ", ConfigurationFinder.findTemplatesLocation());
-      else
-        LOG.warn("Found old configuration at: {} ", this.templatesProject);
-      LOG.warn(e.getMessage());
-      this.askedForUpgrade = true;
-      askUserToUpgradeTemplates();
-
-    }
 
   }
 
@@ -332,6 +264,29 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
+   * Uses default initialization, checks if monolithic templates exist, handles the exception and lets the user decide
+   * if the templates should be upgraded.
+   */
+  private void checkMonolithicConfigurationException() {
+
+    try {
+      CobiGenUtils.initializeCobiGen(this.templatesProject, false);
+    } catch (DeprecatedMonolithicConfigurationException e) {
+      if (this.templatesProject == null)
+        LOG.warn("Found old configuration at: {} ", ConfigurationFinder.findTemplatesLocation());
+      else
+        LOG.warn("Found old configuration at: {} ", this.templatesProject);
+      LOG.warn(e.getMessage());
+      if (this.upgradeConfiguration) {
+        startTemplatesUpgrader();
+      } else {
+        askUserToUpgradeTemplates();
+      }
+    }
+
+  }
+
+  /**
    * Opens a looping prompt with a yes/no question and upgrades the templates to the newest version.
    *
    */
@@ -341,30 +296,57 @@ public class GenerateCommand extends CommandCommons {
         "Would you like to upgrade your templates to the newest version? \n"
             + MessagesConstants.YES_NO_ANSWER_DESCRIPTION + "For more Informations, please visit: ",
         WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION, System.getProperty("user.dir"));
-    Path outputDirectory = Paths.get(System.getProperty("user.dir"));
 
     boolean setToUserDir = ValidationUtils.yesNoPrompt("Upgrading templates configuration...: ",
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
 
     if (setToUserDir) {
-      try {
-
-        TemplateAdapter templateAdapter;
-        if (this.templatesProject == null) {
-          templateAdapter = new TemplateAdapterImpl();
-        } else {
-          templateAdapter = new TemplateAdapterImpl(this.templatesProject);
-        }
-        this.templatesProject = templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
-      } catch (Throwable e) {
-        LOG.error("An error occurred while upgrading the templates.");
-        throw e;
-      }
-      LOG.info("New templates folder: {} ", this.templatesProject);
-      LOG.info("Templates successfully upgraded. \n ");
-
+      startTemplatesUpgrader();
     } else {
       askUserToPostponeUpgrade();
+    }
+  }
+
+  /**
+   * creates an instance of templatesAdapter and then upgrades the templates.
+   */
+  private void startTemplatesUpgrader() {
+
+    try {
+
+      TemplateAdapter templateAdapter;
+      if (this.templatesProject == null) {
+        templateAdapter = new TemplateAdapterImpl();
+      } else {
+        templateAdapter = new TemplateAdapterImpl(this.templatesProject);
+      }
+      // set the new template-set as the templatesProject after the upgrade
+      this.templatesProject = templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
+    } catch (Throwable e) {
+      LOG.error("An error occurred while upgrading the templates.");
+      throw e;
+    }
+    LOG.info("New templates folder: {} ", this.templatesProject);
+    LOG.info("Templates successfully upgraded. \n ");
+
+  }
+
+  /**
+   * ask the user if he wants to postpone the upgrade message for 30 days.
+   *
+   * @throws IOException
+   */
+  private void askUserToPostponeUpgrade() {
+
+    LOG.info("Would you like to postpone the upgrade warning message for 30 days?"
+        + MessagesConstants.YES_NO_ANSWER_DESCRIPTION, System.getProperty("user.dir"));
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("A timer is set for 30 days...: ",
+        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Allright...");
+
+    if (setToUserDir) {
+      TimestampUtil.addATimestampForOneMonth();
+    } else {
+      // Do nothing, the user will be asked again.
     }
   }
 

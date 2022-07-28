@@ -16,7 +16,6 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 /**
  * Utilities related to the cobigen configurations including:
  *
- *
  * 1. templates location
  */
 public class CobiGenPaths {
@@ -175,6 +174,28 @@ public class CobiGenPaths {
       // Folder has not been created
       return null;
     }
+
+  }
+
+  /**
+   * checks the path for any root .cobigen Folder and returns its path
+   *
+   * @param templates path to the templates location
+   * @return path to the root .cobigen Folder
+   */
+  public static Path checkCustomHomePath(Path templates) {
+
+    String cobigenHome = ConfigurationConstants.DEFAULT_HOME_DIR_NAME;
+
+    while (!templates.endsWith(cobigenHome)) {
+      templates = templates.getParent();
+      if (templates == null) {
+
+        return null;
+      }
+
+    }
+    return templates;
 
   }
 

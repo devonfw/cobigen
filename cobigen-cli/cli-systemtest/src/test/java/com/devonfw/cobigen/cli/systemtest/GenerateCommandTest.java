@@ -5,10 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 
 /**
  * Tests the usage of the generate command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be present
@@ -59,9 +62,38 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "springdata-repository";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
+        .exists();
+  }
+
+  /**
+   *
+   * Test the upgrade process from templates in a given path and generates from the new template-sets structure
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void upgradeAndGenerateFromEntityTest() throws Exception {
+
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    Path monolithicConfiguration = Paths
+        .get("src/test/resources/testdata/templatesProject/templates/CobiGen_Templates/src/main/templates");
+    String args[] = new String[7];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "0";
+    args[4] = "--upgrade";
+    args[5] = "-tp";
+    args[6] = monolithicConfiguration.toString();
+
+    execute(args, false);
+
+    assertThat(this.currentHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)).exists();
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/impl/usecase/"))
         .exists();
   }
 
@@ -109,7 +141,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "8";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
         .exists();
@@ -134,7 +166,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "app_angular_devon4ng_component";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     Thread.sleep(1000);
 
@@ -162,7 +194,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[4] = "--increments";
     args[5] = "all";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     assertThat(
         outputRootPath.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
@@ -212,7 +244,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[2] = "-t";
     args[3] = "crud_complex_AbstractBeanMapperSupport";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/general/")).exists();
   }
@@ -236,7 +268,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[4] = "--increments";
     args[5] = "rest_service_impl";
 
-    execute(args, true, true, true);
+    execute(args, true, true);
   }
 
   /**
