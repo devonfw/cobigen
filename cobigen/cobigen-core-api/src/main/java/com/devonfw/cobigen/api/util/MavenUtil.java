@@ -8,7 +8,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +27,9 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.devonfw.cobigen.api.util.to.AbstractRESTSearchResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
@@ -353,12 +354,9 @@ public class MavenUtil {
    */
   public static List<URL> getMavenArtifactsByGroupId(String repositoryType, String groupId) {
 
-    List<URL> artifactList = new ArrayList<>();
-
     try {
-      artifactList = AbstractRESTSearchResponse.getArtifactDownloadLinks(repositoryType, groupId);
-      return artifactList;
-    } catch (IOException e) {
+      return AbstractRESTSearchResponse.getArtifactDownloadLinks(repositoryType, groupId);
+    } catch (RESTSearchResponseException | JsonProcessingException | MalformedURLException e) {
       throw new CobiGenRuntimeException("Unable to get artifacts from " + repositoryType + " by groupId " + groupId, e);
     }
 

@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.api.util.to;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -52,19 +52,14 @@ public class JfrogSearchResponse implements AbstractRESTSearchResponse {
 
   @Override
   @JsonIgnore
-  public String getJsonResponse(String repositoryUrl, String groupId) throws IOException {
+  public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
 
     String targetLink = repositoryUrl + "/" + "solrsearch/select?q=g:" + groupId + "&wt=json";
     LOG.info("Starting Jfrog Search REST API request with URL: {}.", targetLink);
 
     String jsonResponse;
 
-    try {
-      jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink);
-    } catch (IOException e) {
-      LOG.error("Jfrog Search REST API request was not successful, status code was: {}!", e.getMessage());
-      throw new IOException();
-    }
+    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink);
 
     return jsonResponse;
   }

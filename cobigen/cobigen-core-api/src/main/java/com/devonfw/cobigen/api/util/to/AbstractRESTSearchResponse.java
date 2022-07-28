@@ -1,11 +1,13 @@
 package com.devonfw.cobigen.api.util.to;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.client.Client;
@@ -35,9 +37,9 @@ public interface AbstractRESTSearchResponse {
    * @param repositoryUrl URL of the repository
    * @param groupId to search for
    * @return String of json response
-   * @throws IOException if the request did not return status 200
+   * @throws RESTSearchResponseException if the request did not return status 200
    */
-  public String getJsonResponse(String repositoryUrl, String groupId) throws IOException;
+  public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException;
 
   /**
    * Gets the download links by given repository type
@@ -46,10 +48,14 @@ public interface AbstractRESTSearchResponse {
    * @param groupId the groupId to search for
    *
    * @return List of download links
-   * @throws IOException if an error occurred
+   * @throws RESTSearchResponseException if an error occurred
+   * @throws JsonProcessingException
+   * @throws JsonMappingException
+   * @throws MalformedURLException
    *
    */
-  public static List<URL> getArtifactDownloadLinks(String repositoryType, String groupId) throws IOException {
+  public static List<URL> getArtifactDownloadLinks(String repositoryType, String groupId)
+      throws RESTSearchResponseException, JsonMappingException, JsonProcessingException, MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
     ObjectMapper mapper = new ObjectMapper();
@@ -90,9 +96,9 @@ public interface AbstractRESTSearchResponse {
    *
    * @param targetLink link to get response from
    * @return String of json response
-   * @throws IOException if the returned status code was not 200 OK
+   * @throws RESTSearchResponseException if the returned status code was not 200 OK
    */
-  public static String getJsonResponseStringByTargetLink(String targetLink) throws IOException {
+  public static String getJsonResponseStringByTargetLink(String targetLink) throws RESTSearchResponseException {
 
     Client client = ClientBuilder.newClient();
     WebTarget target = client.target(targetLink);
@@ -103,7 +109,8 @@ public interface AbstractRESTSearchResponse {
     if (status == 200) {
       jsonResponse = response.readEntity(String.class);
     } else {
-      throw new IOException(String.valueOf(status));
+      throw new RESTSearchResponseException("The search REST API returned the unexpected status code",
+          String.valueOf(status));
     }
     return jsonResponse;
   }
