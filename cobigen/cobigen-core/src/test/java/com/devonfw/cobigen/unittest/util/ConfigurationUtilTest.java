@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -34,7 +33,6 @@ public class ConfigurationUtilTest {
    * @throws Exception
    */
   @Test
-  @Ignore
   public void testFindTemplatesLocation() throws Exception {
 
     restoreSystemProperties(() -> {

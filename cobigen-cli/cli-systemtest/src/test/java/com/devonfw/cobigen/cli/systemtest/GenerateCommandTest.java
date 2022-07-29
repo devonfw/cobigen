@@ -87,7 +87,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[3] = "0";
     args[4] = "--upgrade";
     args[5] = "-tp";
-    args[6] = monolithicConfiguration.toFile().getAbsolutePath();
+    args[6] = monolithicConfiguration.toAbsolutePath().toString();
 
     execute(args, false);
 
