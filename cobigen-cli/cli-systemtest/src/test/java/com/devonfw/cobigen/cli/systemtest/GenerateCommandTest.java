@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -77,9 +76,9 @@ public class GenerateCommandTest extends AbstractCliTest {
   @Test
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates"), this.tmpProject.toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
-    Path monolithicConfiguration = Paths
-        .get("src/test/resources/testdata/templatesProject/templates/CobiGen_Templates/src/main/templates");
+    File monolithicConfiguration = this.tmpProject.resolve("CobiGen_Templates/src/main/templates").toFile();
     String args[] = new String[7];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();
@@ -87,7 +86,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     args[3] = "0";
     args[4] = "--upgrade";
     args[5] = "-tp";
-    args[6] = monolithicConfiguration.toAbsolutePath().toString();
+    args[6] = monolithicConfiguration.getAbsolutePath();
 
     execute(args, false);
 
@@ -106,10 +105,10 @@ public class GenerateCommandTest extends AbstractCliTest {
   @Test
   public void generateFromTemplatesJarWithUtilClassDependencyTest() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates-devon4j"),
+        this.tmpProject.toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
-    File templatesProject = this.tmpProject.resolve("templates-devon4j/target/templates-devon4j-dev-SNAPSHOT.jar")
-        .toFile();
+    File templatesProject = this.tmpProject.resolve("target/templates-devon4j-dev-SNAPSHOT.jar").toFile();
 
     String args[] = new String[6];
     args[0] = "generate";
