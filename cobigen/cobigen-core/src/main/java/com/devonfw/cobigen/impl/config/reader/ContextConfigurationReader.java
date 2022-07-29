@@ -17,7 +17,7 @@ import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.google.common.collect.Maps;
 
 /** The {@link ContextConfigurationReader} reads the context xml */
@@ -126,7 +126,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
 
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.contextConfigurations.keySet()) {
-      ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
+      TemplateSetConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
         // templateFolder property is optional in schema version 2.2. If not set take the path of the context.xml file
         String templateFolder = t.getTemplateFolder();

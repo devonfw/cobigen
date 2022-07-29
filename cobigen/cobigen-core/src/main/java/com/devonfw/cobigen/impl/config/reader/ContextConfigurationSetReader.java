@@ -14,7 +14,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
 
@@ -123,7 +123,7 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
 
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.contextConfigurations.keySet()) {
-      ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
+      TemplateSetConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       Path configLocation = this.configLocations.get(contextFile);
       boolean isJarFile = FileSystemUtil.isZipFile(configLocation.toUri());
 

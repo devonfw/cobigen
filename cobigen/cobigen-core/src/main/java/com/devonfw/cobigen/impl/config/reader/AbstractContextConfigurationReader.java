@@ -28,7 +28,7 @@ import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.google.common.collect.Lists;
@@ -42,7 +42,7 @@ import jakarta.xml.bind.Unmarshaller;
 public abstract class AbstractContextConfigurationReader {
 
   /** Map with XML Nodes 'context' of the context.xml files */
-  protected Map<Path, ContextConfiguration> contextConfigurations;
+  protected Map<Path, TemplateSetConfiguration> contextConfigurations;
 
   /** Paths of the context configuration files */
   protected List<Path> contextFiles;
@@ -79,14 +79,14 @@ public abstract class AbstractContextConfigurationReader {
 
     for (Path contextFile : this.contextFiles) {
       try (InputStream in = Files.newInputStream(contextFile)) {
-        Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+        Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
 
         // Unmarshal without schema checks for getting the version attribute of the root node.
         // This is necessary to provide an automatic upgrade client later on
         Object rootNode = unmarschaller.unmarshal(in);
         BigDecimal configVersion;
-        if (rootNode instanceof ContextConfiguration) {
-          configVersion = ((ContextConfiguration) rootNode).getVersion();
+        if (rootNode instanceof TemplateSetConfiguration) {
+          configVersion = ((TemplateSetConfiguration) rootNode).getVersion();
           if (configVersion == null) {
             throw new InvalidConfigurationException(contextFile,
                 "The required 'version' attribute of node \"contextConfiguration\" has not been set");
@@ -116,7 +116,7 @@ public abstract class AbstractContextConfigurationReader {
           Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
           unmarschaller.setSchema(schema);
           rootNode = unmarschaller.unmarshal(configInputStream);
-          this.contextConfigurations.put(contextFile, (ContextConfiguration) rootNode);
+          this.contextConfigurations.put(contextFile, (TemplateSetConfiguration) rootNode);
         }
       } catch (JAXBException e) {
         // try getting SAXParseException for better error handling and user support

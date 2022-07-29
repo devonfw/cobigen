@@ -48,8 +48,8 @@ import com.devonfw.cobigen.impl.config.entity.io.TemplateRef;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScan;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScanRef;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScans;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Templates;
-import com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
@@ -77,7 +77,7 @@ public class TemplatesConfigurationReader {
   private static final String VARIABLE_CWD = "${cwd}";
 
   /** JAXB root node of the configuration */
-  private TemplatesConfiguration configNode;
+  private TemplateSetConfiguration configNode;
 
   /** Configuration file */
   private Path configFilePath;
@@ -165,13 +165,13 @@ public class TemplatesConfigurationReader {
     }
 
     try (InputStream in = Files.newInputStream(this.configFilePath)) {
-      Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
+      Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
 
       // Unmarshal without schema checks for getting the version attribute of the root node.
       // This is necessary to provide an automatic upgrade client later on
       Object rootNode = unmarschaller.unmarshal(in);
-      if (rootNode instanceof TemplatesConfiguration) {
-        BigDecimal configVersion = ((TemplatesConfiguration) rootNode).getVersion();
+      if (rootNode instanceof TemplateSetConfiguration) {
+        BigDecimal configVersion = ((TemplateSetConfiguration) rootNode).getVersion();
         if (configVersion == null) {
           throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
               "The required 'version' attribute of node \"templatesConfiguration\" has not been set");
@@ -197,7 +197,7 @@ public class TemplatesConfigurationReader {
         Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
         unmarschaller.setSchema(schema);
         rootNode = unmarschaller.unmarshal(configInputStream);
-        this.configNode = (TemplatesConfiguration) rootNode;
+        this.configNode = (TemplateSetConfiguration) rootNode;
       }
     } catch (JAXBException e) {
       // try getting SAXParseException for better error handling and user support

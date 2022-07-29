@@ -28,7 +28,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Link;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Links;
@@ -108,7 +108,7 @@ public class TemplateSetUpgrader {
         cobigenDir.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
       }
     }
-    ContextConfiguration contextConfiguration = getContextConfiguration(contextLocation);
+    TemplateSetConfiguration contextConfiguration = getContextConfiguration(contextLocation);
 
     Path templateSets = Files.createDirectory(cobigenDir.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
     Path adapted = Files.createDirectory(templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER));
@@ -223,7 +223,7 @@ public class TemplateSetUpgrader {
    *         contextConfiguration files
    */
   private List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContext(
-      ContextConfiguration monolitic) {
+      TemplateSetConfiguration monolitic) {
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContexts = new ArrayList<>();
     List<Trigger> triggerList = monolitic.getTrigger();
@@ -267,7 +267,7 @@ public class TemplateSetUpgrader {
    * @return {@link ContextConfiguration}
    * @throws Exception
    */
-  private ContextConfiguration getContextConfiguration(Path contextFile) throws Exception {
+  private TemplateSetConfiguration getContextConfiguration(Path contextFile) throws Exception {
 
     if (contextFile == null) {
       throw new Exception("Templates location cannot be null!");
@@ -293,11 +293,11 @@ public class TemplateSetUpgrader {
     }
 
     try (InputStream in = Files.newInputStream(context)) {
-      Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+      Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
 
       Object rootNode = unmarschaller.unmarshal(in);
-      if (rootNode instanceof ContextConfiguration) {
-        return (ContextConfiguration) rootNode;
+      if (rootNode instanceof TemplateSetConfiguration) {
+        return (TemplateSetConfiguration) rootNode;
       }
     } catch (IOException e) {
       throw new InvalidConfigurationException("Context file could not be found", e);
