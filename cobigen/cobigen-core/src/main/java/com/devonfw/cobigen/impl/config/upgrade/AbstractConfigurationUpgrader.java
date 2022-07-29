@@ -383,7 +383,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
       }
       Path backupPath = file.resolveSibling(backupFilename);
       try {
-        Files.copy(file, backupPath, StandardCopyOption.COPY_ATTRIBUTES);
+        if (!Files.exists(backupPath))
+          Files.copy(file, backupPath, StandardCopyOption.COPY_ATTRIBUTES);
         LOG.info("Backup of templates configuration file created ('{}').", backupPath.toUri());
         break;
       } catch (FileAlreadyExistsException e) {

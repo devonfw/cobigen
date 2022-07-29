@@ -13,8 +13,6 @@ import org.junit.Test;
  */
 public class FileSystemUtilTest {
 
-  private static final String W = null;
-
   /**
    * Test methods collectAllContextXML and collectAllTemplatesXML
    */

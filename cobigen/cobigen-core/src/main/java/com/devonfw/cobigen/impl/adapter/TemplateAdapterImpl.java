@@ -380,7 +380,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
 
     // Upgrade the context.xml to the new template-set with latest version
     contextUpgraderObject.resolveLatestCompatibleSchemaVersion(templatesPath);
-    contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.ENFORCE_BACKUP);
+    contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.NO_BACKUP);
 
     LOG.info("context.xml upgraded succsessfully. {}", templatesPath);
 
