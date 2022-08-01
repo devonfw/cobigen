@@ -5,7 +5,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.${variables.com
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -28,13 +28,13 @@ public class ${variables.component?cap_first}Impl extends AbstractComponentFacad
 
     @Override
     public ${variables.entityName}Cto find${variables.entityName}Cto(<#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if> id) {
-    
+
       return ucFind${variables.entityName}.find${variables.entityName}Cto(id);
     }
-    
+
     @Override
     public Page<${variables.entityName}Cto> find${variables.entityName}Ctos(${variables.entityName}SearchCriteriaTo criteria) {
-    
+
       return ucFind${variables.entityName}.find${variables.entityName}Ctos(criteria);
     }
 }
