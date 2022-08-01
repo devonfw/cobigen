@@ -1,5 +1,5 @@
 <#include '/functions.ftl'>
-package ${variables.rootPackage}.${variables.component}.common.api;
+package ${variables.rootPackage}.${variables.component}.common.api; //
 
 import com.devonfw.module.basic.common.api.query.StringSearchConfigTo;
 import ${variables.rootPackage}.general.common.api.to.AbstractSearchCriteriaTo;
