@@ -10,7 +10,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,7 +22,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import com.devonfw.cobigen.api.CobiGen;
@@ -37,7 +35,6 @@ import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
@@ -76,38 +73,6 @@ public class GenerationTest extends AbstractApiTest {
 
     assertThat(report).isSuccessful();
     assertThat(target).hasContent("overwritten");
-  }
-
-  /**
-   * Tests that sources get overwritten if merge strategy override is configured.
-   *
-   * @throws Exception test fails.
-   */
-  @Test
-  public void testInstallTemplatesAtStartup() throws Exception {
-
-    File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
-    File templates = this.tmpFolder.newFolder("TemplateSetsInstalledTest", "templates");
-    System.out.println(templates.toString());
-    File target = new File(folder, ".cobigen");
-    // Path templates = Files.createDirectory(folder.toPath().resolve("templates-sets"), null);
-    // Files.copy(new File(testFileRootPath + "templateSetsInstalled/.cobigen").toPath(), target.toPath(), null);
-    // Files.createFile(target.toPath(), null);
-    BufferedWriter writer = new BufferedWriter(new FileWriter(target));
-    writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.006");
-    writer.close();
-    MockedStatic<CobiGenPaths> paths = Mockito.mockStatic(CobiGenPaths.class);
-    paths.when(CobiGenPaths::getCobiGenHomePath).thenReturn(templates.toPath());
-    paths.when(CobiGenPaths::getTemplatesFolderPath).thenReturn(templates.toPath());
-    CobiGen cobigen = CobiGenFactory.create(folder.toURI(), true);
-
-    // List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
-    // assertThat(templates).hasSize(1);
-    //
-    // GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
-    //
-    // assertThat(report).isSuccessful();
-    // assertThat(target).hasContent("overwritten");
   }
 
   /**

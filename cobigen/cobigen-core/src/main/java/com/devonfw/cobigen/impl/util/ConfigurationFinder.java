@@ -202,8 +202,13 @@ public class ConfigurationFinder {
     LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
         CobiGenPaths.getCobiGenHomePath());
 
-    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesPath.toFile());
-    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesPath.toFile());
+    if (loadTemplateSetConfigurations(home).getMavenCoordinates().isEmpty()) {
+      TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesPath.toFile());
+      TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesPath.toFile());
+    } else {
+      // hier der DOnwload
+    }
+
     return templateSetsFolderPath.toUri();
   }
 

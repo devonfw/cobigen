@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.Objects;
@@ -99,9 +100,15 @@ public class CobiGenFactory {
     // install Template Sets defined in .properties file
     TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
         CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(false, CobiGenPaths.getCobiGenHomePath().toFile(),
-        config.getMavenCoordinates());
     URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
+    // hier ist was falsch
+    // if( config has field install ))
+    // install templates
+    // else
+    // install devon4j templates
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(false, new File(templatesLocation.getPath()),
+        config.getMavenCoordinates());
+    // Errror check for template Sets or templates and get the right Folder
 
     return createBean;
   }
