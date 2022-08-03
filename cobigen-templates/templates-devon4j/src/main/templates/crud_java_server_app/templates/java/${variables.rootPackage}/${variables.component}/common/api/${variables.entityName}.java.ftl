@@ -1,5 +1,6 @@
 <#include '/functions.ftl'>
 package ${variables.rootPackage}.${variables.component}.common.api;
+//test
 
 import ${variables.rootPackage}.general.common.api.ApplicationEntity;
 <#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
