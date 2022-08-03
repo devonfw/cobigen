@@ -1,6 +1,6 @@
 :toc: right
 
-= CobiGen (Code-based incremental Generator)
+= CobiGen (Code-based incremental Generator):
 
 image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/cobigen-maven-plugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/cobigen-maven-plugin] image:https://github.com/devonfw/cobigen/actions/workflows/maven-build-test.yml/badge.svg?branch=master&event=push["Build Status", link="https://github.com/devonfw/cobigen/actions/workflows/maven-build-test.yml"]
 
