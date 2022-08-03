@@ -199,4 +199,26 @@ public class CobiGenPaths {
 
   }
 
+  /**
+   * checks the path for any parent CobiGen_Templates Folder and returns its path
+   *
+   * @param childPath path of the templates
+   * @return path to the parent CobiGen_Templates Folder
+   */
+  public static Path checkCobiGen_TemplatesFolder(Path childPath) {
+
+    String CobiGen_TemplatesFolder = ConfigurationConstants.COBIGEN_TEMPLATES;
+
+    while (!childPath.endsWith(CobiGen_TemplatesFolder)) {
+      childPath = childPath.getParent();
+      if (childPath == null) {
+
+        return null;
+      }
+
+    }
+    return childPath;
+
+  }
+
 }

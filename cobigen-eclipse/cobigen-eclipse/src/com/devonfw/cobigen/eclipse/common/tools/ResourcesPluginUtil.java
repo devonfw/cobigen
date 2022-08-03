@@ -59,12 +59,7 @@ public class ResourcesPluginUtil {
   /**
    * This variable is used to know if the templates got upgraded or not
    */
-  static boolean isTemplatesUpgraded = false;
-
-  /**
-   * The path to the new template-set after the upgrade
-   */
-  static Path newTemplatesPath = null;
+  public static boolean isTemplatesUpgraded = false;
 
   /**
    * Refreshes the configuration project from the file system.
@@ -96,34 +91,21 @@ public class ResourcesPluginUtil {
    */
   public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException, CoreException {
 
-    if (isTemplatesUpgraded) {
+    generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
+    File templatesDirectory = getTemplateSetDirectory();
+    if (Files.exists(templatesDirectory.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER))) {
 
-      File templatesDirectory = getTemplateSetDirectory();
-      generatorProj = ResourcesPlugin.getWorkspace().getRoot()
-          .getProject(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH);
+      if (!generatorProj.exists())
+        return null;
       return generatorProj;
-    } else {
-      File templatesDirectory = getTemplatesDirectory();
-
-      generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
-
-      if (!generatorProj.exists()) {
-        if (!isUpdateDialogShown) {
-          if (templatesDirectory.exists()) {
-            Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesDirectory.toPath());
-            // If we don't find at least one jar, then we do need to download new templates
-            if (jarFilePath == null || !Files.exists(jarFilePath)) {
-              int result = createUpdateTemplatesDialog();
-              isUpdateDialogShown = true;
-              if (result == 1) {
-                // User does not want to download templates.
-                userWantsToDownloadTemplates = false;
-              } else {
-                userWantsToDownloadTemplates = true;
-              }
-            }
-
-          } else {
+    }
+    templatesDirectory = getTemplatesDirectory();
+    if (!generatorProj.exists()) {
+      if (!isUpdateDialogShown) {
+        if (templatesDirectory.exists()) {
+          Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesDirectory.toPath());
+          // If we don't find at least one jar, then we do need to download new templates
+          if (jarFilePath == null || !Files.exists(jarFilePath)) {
             int result = createUpdateTemplatesDialog();
             isUpdateDialogShown = true;
             if (result == 1) {
@@ -133,14 +115,23 @@ public class ResourcesPluginUtil {
               userWantsToDownloadTemplates = true;
             }
           }
+
+        } else {
+          int result = createUpdateTemplatesDialog();
+          isUpdateDialogShown = true;
+          if (result == 1) {
+            // User does not want to download templates.
+            userWantsToDownloadTemplates = false;
+          } else {
+            userWantsToDownloadTemplates = true;
+          }
         }
       }
-
-      if (userWantsToDownloadTemplates) {
-        return generatorProj;
-      } else {
-        return null;
-      }
+    }
+    if (userWantsToDownloadTemplates) {
+      return generatorProj;
+    } else {
+      return null;
     }
   }
 
@@ -305,11 +296,15 @@ public class ResourcesPluginUtil {
    * @return
    *
    */
-  public static void upgradeConfiguration() {
+  public static void upgradeConfiguration(Path oldConfiguration) {
 
-    File templatesDirectory = findTemplatesLocation();
-    TemplateAdapter templateAdapter = new TemplateAdapterImpl();
-    newTemplatesPath = templateAdapter.upgradeMonolithicTemplates(templatesDirectory.toPath());
+    TemplateAdapter templateAdapter;
+    if (oldConfiguration == null) {
+      templateAdapter = new TemplateAdapterImpl();
+    } else {
+      templateAdapter = new TemplateAdapterImpl(oldConfiguration);
+    }
+    templateAdapter.upgradeMonolithicTemplates(oldConfiguration);
     isTemplatesUpgraded = true;
   }
 

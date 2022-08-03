@@ -2,6 +2,7 @@ package com.devonfw.cobigen.eclipse.generator;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,7 +13,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
@@ -52,6 +53,8 @@ public class GeneratorWrapperFactory {
 
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(GeneratorWrapperFactory.class);
+
+  private static IProject generatorProj = null;
 
   /**
    * Creates a generator dependent on the input of the selection
@@ -216,18 +219,24 @@ public class GeneratorWrapperFactory {
 
     try {
       ResourcesPluginUtil.refreshConfigurationProject();
-      IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+      generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
       initializeCobiGen(generatorProj, allowMonolithicConfiguration);
 
-      // we need to check if templates got upgraded then initialize cobigen again
-      generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+      // we need to check if templates got upgraded then initialize cobigen again. Now with the new template-set
+      // structure
+      if (ResourcesPluginUtil.isTemplatesUpgraded)
+        return initializeCobiGen(null, true);
 
       return initializeCobiGen(generatorProj, true);
     } catch (CoreException e) {
       throw new GeneratorCreationException("An eclipse internal exception occurred", e);
     } catch (DeprecatedMonolithicConfigurationException e) {
-      throw e;
+      if (null == generatorProj.getLocationURI())
+        throw e;
+      else {
+        throw new DeprecatedMonolithicConfigurationException(Paths.get(generatorProj.getLocationURI()));
+      }
     } catch (Throwable e) {
       throw new GeneratorCreationException(
           "Configuration source could not be read.\nIf you were updating templates, it may mean"
@@ -248,15 +257,19 @@ public class GeneratorWrapperFactory {
   private static CobiGen initializeCobiGen(IProject generatorProj, boolean allowMonolithicConfiguration)
       throws GeneratorCreationException {
 
-    if (generatorProj == null) {
-      throw new GeneratorCreationException(
-          "Configuration source could not be read. Have you downloaded the templates?");
+    Path templatesDirectoryPath = CobiGenPaths.getTemplateSetsFolderPath();
+    Path templateSetsAdaptedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path templateSetsDownloadedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+
+    // check adapted and downloaded folder
+    if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)
+        || ResourcesPluginUtil.isTemplatesUpgraded) {
+      return CobiGenFactory.create(templatesDirectoryPath.toUri(), allowMonolithicConfiguration);
     }
-    // We need to check whether it is a valid Java Project
-    IJavaProject configJavaProject = JavaCore.create(generatorProj);
-    // If it is not valid, we should use the jar
-    if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
-      Path templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
+
+    templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
+    if (Files.exists(templatesDirectoryPath)) {
+      // If it is not valid, we should use the jar
       Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
       boolean fileExists = (jarPath != null && Files.exists(jarPath));
       if (!fileExists) {
@@ -266,6 +279,11 @@ public class GeneratorWrapperFactory {
 
       return CobiGenFactory.create(jarPath.toUri(), allowMonolithicConfiguration);
     } else {
+      if (generatorProj == null) {
+        throw new GeneratorCreationException(
+            "Configuration source could not be read. Have you downloaded the templates?");
+      }
+
       return CobiGenFactory.create(generatorProj.getLocationURI(), allowMonolithicConfiguration);
     }
   }

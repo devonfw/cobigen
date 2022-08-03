@@ -1,13 +1,13 @@
 package com.devonfw.cobigen.impl.config.upgrade;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,9 +107,10 @@ public class TemplateSetUpgrader {
     Path templateSets = cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     if (!Files.exists(templateSets))
       Files.createDirectory(templateSets);
-    Path adapted = Files.createDirectory(templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER));
-    Path cobigenTemplates = folderOfContextLocation.getParent().getParent().getParent().getParent()
-        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    Path adapted = templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    if (!Files.exists(adapted))
+      Files.createDirectory(adapted.resolve(ConfigurationConstants.ADAPTED_FOLDER));
+    Path cobigenTemplates = CobiGenPaths.checkCobiGen_TemplatesFolder(folderOfContextLocation);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
@@ -175,49 +173,33 @@ public class TemplateSetUpgrader {
    * @throws ClassNotFoundException
    */
   private void writeNewPomFile(Path cobigen_templates, Path newTemplateFolder,
-      com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger)
-      throws IOException, XmlPullParserException, ClassNotFoundException {
+      com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) throws IOException, FileNotFoundException {
 
     // Pom.xml creation
-    /**
-     * TODO Because Eclipse application cannot load these classes we need to look for other solutions:
-     *
-     * 1-copy files 2-replace by regex
-     *
-     */
-    MavenXpp3Reader reader = new MavenXpp3Reader();
-    MavenXpp3Writer writer = new MavenXpp3Writer();
-    Model monolithicPomModel;
-    try (FileInputStream pomInputStream = new FileInputStream(cobigen_templates.resolve("pom.xml").toFile());) {
-      monolithicPomModel = reader.read(pomInputStream);
+    try {
+      Path oldPom = cobigen_templates.resolve("pom.xml");
+      Path newPom = newTemplateFolder.resolve("pom.xml");
+      Files.createFile(newPom);
+
+      // read the content of the pom.xml then replace it
+      Charset charset = StandardCharsets.UTF_8;
+      String content = new String(Files.readAllBytes(oldPom), charset);
+      content = content.replaceAll("</modelVersion>\n" + "  <groupId>([a-zA-Z]+(\\.[a-zA-Z]+)+)</groupId>",
+          "</modelVersion>\n" + "  <groupId>" + ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID
+              + "</groupId>");
+      content = content.replaceAll("</groupId>\n" + "  <artifactId>.*</artifactId>", "</groupId>\n" + "  <artifactId>"
+          + newTemplateFolder.getFileName().toString().replace('_', '-') + "</artifactId>");
+      content = content.replaceAll("</artifactId>\n" + "  <version>([0-9]+(\\.[0-9]+)+)</version>",
+          "</artifactId>\n" + "  <version>2021.12.007</version>");
+      content = content.replaceAll("</version>\n" + "  <name>.*</name>",
+          "</version>\n" + "  <name>" + newTemplateFolder.getFileName().toString() + "</name>");
+      Files.write(newPom, content.getBytes(charset));
+
     } catch (FileNotFoundException e) {
       LOG.error("Monolitic pom file could not be found", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
     } catch (IOException e) {
       LOG.error("IOError while reading the monolithic pom file", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    } catch (XmlPullParserException e) {
-      LOG.error("XMLError while parsing the monolitic pom file", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    }
-
-    Model splitPomModel = new Model();
-    splitPomModel.setGroupId(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    splitPomModel.setModelVersion(monolithicPomModel.getModelVersion());
-    splitPomModel.setVersion("2021.12.007");
-    splitPomModel.setDependencies(monolithicPomModel.getDependencies());
-    splitPomModel.setPackaging(monolithicPomModel.getPackaging());
-    splitPomModel.setArtifactId(trigger.getId().replace('_', '-'));
-    splitPomModel.setName("PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER");
-    splitPomModel.setProperties(monolithicPomModel.getProperties());
-    splitPomModel.setBuild(monolithicPomModel.getBuild());
-    try (FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());) {
-      writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), splitPomModel);
-    } catch (FileNotFoundException e) {
-      LOG.error("An error occured while creating the new v3_0 pom file", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    } catch (IOException e) {
-      LOG.error("An IOError occured while writing the new v3_0 pom file", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
     }
 

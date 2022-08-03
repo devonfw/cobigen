@@ -118,12 +118,19 @@ public class ExceptionHandler {
 
       MessageDialog successUpgrade = new MessageDialog(Display.getDefault().getActiveShell(), "Success!", null,
           "Templates were successfully upgraded. ", MessageDialog.INFORMATION, new String[] { "Ok" }, 1);
+
       dialog.setBlockOnOpen(true);
       successUpgrade.setBlockOnOpen(true);
       int result = dialog.open();
       if (result == 0) {
-        ResourcesPluginUtil.upgradeConfiguration();
-        successUpgrade.open();
+        try {
+          ResourcesPluginUtil
+              .upgradeConfiguration(DeprecatedMonolithicConfigurationException.getMonolithicConfiguration());
+          successUpgrade.open();
+        } catch (Throwable a) {
+          LOG.error("An error occurred while upgrading the templates!.", a);
+          PlatformUIUtil.openErrorDialog("An error occurred while upgrading the templates! " + a.getMessage(), a);
+        }
       }
       if (result == 1) {
         // Do nothing (Postpone and Continue)

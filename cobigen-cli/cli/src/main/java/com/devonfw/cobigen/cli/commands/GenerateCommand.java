@@ -326,9 +326,6 @@ public class GenerateCommand extends CommandCommons {
       LOG.error("An error occurred while upgrading the templates.");
       throw e;
     }
-    LOG.info("New templates folder: {} ", this.templatesProject);
-    LOG.info("Templates successfully upgraded. \n ");
-
   }
 
   /**

@@ -235,7 +235,8 @@ public class EclipseCobiGenUtils {
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
-    UpgradeAndContinue(bot);
+    upgradeAndContinue(bot, defaultTimeout);
+
     generateWithSelectedIncrements(bot, defaultTimeout, increments);
   }
 
@@ -282,13 +283,19 @@ public class EclipseCobiGenUtils {
    * Starts the upgrade process with the "Upgrade" button
    *
    * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param defaultTimeout
    *
    */
-  private static void UpgradeAndContinue(SWTWorkbenchBot bot) {
+  private static void upgradeAndContinue(SWTWorkbenchBot bot, int defaultTimeout) {
 
     takeScreenshot(bot, "Warning!");
     SWTBotShell finishDialog = bot.shell("Warning!");
     finishDialog.bot().button("Upgrade").click();
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout);
+    takeScreenshot(bot, "Success!");
+    SWTBotShell successDialog = bot.shell("Success!");
+    successDialog.bot().button("Ok").click();
+
   }
 
   /**
