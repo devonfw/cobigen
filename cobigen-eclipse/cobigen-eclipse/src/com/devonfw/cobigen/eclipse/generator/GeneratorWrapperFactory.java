@@ -225,7 +225,7 @@ public class GeneratorWrapperFactory {
 
       // we need to check if templates got upgraded then initialize cobigen again. Now with the new template-set
       // structure
-      if (ResourcesPluginUtil.isTemplatesUpgraded)
+      if (ResourcesPluginUtil.TemplatesUpgraded)
         return initializeCobiGen(null, true);
 
       return initializeCobiGen(generatorProj, true);
@@ -261,31 +261,30 @@ public class GeneratorWrapperFactory {
     Path templateSetsAdaptedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
-    // check adapted and downloaded folder
-    if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)
-        || ResourcesPluginUtil.isTemplatesUpgraded) {
-      return CobiGenFactory.create(templatesDirectoryPath.toUri(), allowMonolithicConfiguration);
-    }
-
-    templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
-    if (Files.exists(templatesDirectoryPath)) {
-      // If it is not valid, we should use the jar
-      Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
-      boolean fileExists = (jarPath != null && Files.exists(jarPath));
-      if (!fileExists) {
-        MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-            "Not Downloaded the CobiGen Template Jar");
+    if (!ResourcesPluginUtil.generatorProjExists || ResourcesPluginUtil.TemplatesUpgraded) {
+      // check adapted and downloaded folder
+      if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
+        return CobiGenFactory.create(templatesDirectoryPath.toUri(), allowMonolithicConfiguration);
       }
 
-      return CobiGenFactory.create(jarPath.toUri(), allowMonolithicConfiguration);
-    } else {
-      if (generatorProj == null) {
-        throw new GeneratorCreationException(
-            "Configuration source could not be read. Have you downloaded the templates?");
-      }
+      templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
+      if (Files.exists(templatesDirectoryPath)) {
+        // If it is not valid, we should use the jar
+        Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
+        boolean fileExists = (jarPath != null && Files.exists(jarPath));
+        if (!fileExists) {
+          MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+              "Not Downloaded the CobiGen Template Jar");
+        }
 
-      return CobiGenFactory.create(generatorProj.getLocationURI(), allowMonolithicConfiguration);
+        return CobiGenFactory.create(jarPath.toUri(), allowMonolithicConfiguration);
+      }
     }
+    if (generatorProj == null) {
+      throw new GeneratorCreationException(
+          "Configuration source could not be read. Have you downloaded the templates?");
+    }
+    return CobiGenFactory.create(generatorProj.getLocationURI(), allowMonolithicConfiguration);
   }
 
 }

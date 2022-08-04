@@ -109,7 +109,7 @@ public class TemplateSetUpgrader {
       Files.createDirectory(templateSets);
     Path adapted = templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     if (!Files.exists(adapted))
-      Files.createDirectory(adapted.resolve(ConfigurationConstants.ADAPTED_FOLDER));
+      Files.createDirectory(adapted);
     Path cobigenTemplates = CobiGenPaths.checkCobiGen_TemplatesFolder(folderOfContextLocation);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(

@@ -59,7 +59,12 @@ public class ResourcesPluginUtil {
   /**
    * This variable is used to know if the templates got upgraded or not
    */
-  public static boolean isTemplatesUpgraded = false;
+  public static boolean TemplatesUpgraded = false;
+
+  /**
+   * This variable is used to know if we have a custom generator project
+   */
+  public static boolean generatorProjExists = false;
 
   /**
    * Refreshes the configuration project from the file system.
@@ -97,6 +102,7 @@ public class ResourcesPluginUtil {
 
       if (!generatorProj.exists())
         return null;
+      generatorProjExists = true;
       return generatorProj;
     }
     templatesDirectory = getTemplatesDirectory();
@@ -129,6 +135,7 @@ public class ResourcesPluginUtil {
       }
     }
     if (userWantsToDownloadTemplates) {
+      generatorProjExists = true;
       return generatorProj;
     } else {
       return null;
@@ -305,7 +312,7 @@ public class ResourcesPluginUtil {
       templateAdapter = new TemplateAdapterImpl(oldConfiguration);
     }
     templateAdapter.upgradeMonolithicTemplates(oldConfiguration);
-    isTemplatesUpgraded = true;
+    TemplatesUpgraded = true;
   }
 
 }
