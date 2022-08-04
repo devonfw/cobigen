@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.unittest.util;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.restoreSystemProperties;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,11 +35,10 @@ public class ConfigurationUtilTest {
   @Test
   public void testFindTemplatesLocation() throws Exception {
 
-    restoreSystemProperties(() -> {
-      File userHome = this.tmpFolder.newFolder("user-home");
+    File userHome = this.tmpFolder.newFolder("user-home");
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
       System.setProperty("user.home", userHome.getAbsolutePath());
-      Path defaultCobigenHome = userHome.toPath().resolve(ConfigurationConstants.DEFAULT_HOME_DIR_NAME);
-      Path templatesFolder = defaultCobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      Path templatesFolder = userHome.toPath().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       Files.createDirectories(templatesFolder);
       String templatesArtifact = "templates-devon4j-1.0.jar";
 
@@ -70,7 +68,7 @@ public class ConfigurationUtilTest {
             assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templates.toURI());
           });
 
-      Path configFileInCobigenHome = defaultCobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+      Path configFileInCobigenHome = userHome.toPath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
       FileUtils.copyFile(configFile, configFileInCobigenHome.toFile());
       // configuration file found in cobigen home directory
       assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templates.toURI());

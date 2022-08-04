@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
@@ -100,38 +101,40 @@ public class TemplatesJarUtil {
 
   // TODO
   /**
-   * @param isDownloadSource true if downloading source jar file
    * @param templatesDirectory directory where the templates jar are located
    * @return fileName Name of the file downloaded
    */
-  public static void downloadTemplatesByMavenCoordinates(boolean isDownloadSource, File templatesDirectory,
+  public static void downloadTemplatesByMavenCoordinates(File templatesDirectory,
       List<MavenCoordinate> mavenCoordinates) {
 
-    if (mavenCoordinates != null && !mavenCoordinates.isEmpty()) {
+    if (mavenCoordinates == null || mavenCoordinates.isEmpty()) {
+      return;
+      // no templates specified
+    }
+    File adapted = new File(templatesDirectory, ConfigurationConstants.ADAPTED_FOLDER);
+    File downloaded = new File(templatesDirectory, ConfigurationConstants.DOWNLOADED_FOLDER);
+    if (adapted.exists()) {
+      LOG.info("Found adapted folder no download of templates needed");
+      return;
+    } else {
+
+      // check if templates already exist
       for (MavenCoordinate mcoordinate : mavenCoordinates) {
-        if (templatesDirectory.listFiles().length == 0) {
-          LOG.info("Template specified in the properties file with ArtifactID: " + mcoordinate.getArtifactID()
-              + " GroupID:" + mcoordinate.getGroupID() + " will be loaded");
-          downloadJar(mcoordinate.getGroupID(), mcoordinate.getArtifactID(), mcoordinate.getVersion(), isDownloadSource,
-              templatesDirectory);
-        } else {
-          for (File fileOrDirectory : templatesDirectory.listFiles()) {
-            if (fileOrDirectory.isDirectory()) {
-              LOG.warn("Templates Folder already exists");
-              return;
-            } else if (fileOrDirectory.getName().contains(mcoordinate.getArtifactID())) {
-              LOG.info("Template specified in the properties with the ArtifactID: " + mcoordinate.getArtifactID()
-                  + " already exits");
-              break;
-            } else {
-              LOG.info("Template specified in the properties file with ArtifactID: " + mcoordinate.getArtifactID()
-                  + " GroupID:" + mcoordinate.getGroupID() + " will be loaded");
-              downloadJar(mcoordinate.getGroupID(), mcoordinate.getArtifactID(), mcoordinate.getVersion(),
-                  isDownloadSource, templatesDirectory);
-            }
+        for (File downloadedFile : downloaded.listFiles()) {
+          if (downloadedFile.getName().contains(mcoordinate.getArtifactID())) {
+            mavenCoordinates.remove(mcoordinate);
+            LOG.info("Template specified in the properties file with ArtifactID: " + mcoordinate.getArtifactID()
+                + " GroupID:" + mcoordinate.getGroupID() + " will be loaded");
           }
         }
       }
+    }
+    // download templates
+    for (MavenCoordinate mcoordinate : mavenCoordinates) {
+      downloadJar(mcoordinate.getGroupID(), mcoordinate.getArtifactID(), mcoordinate.getVersion(), false, downloaded);
+      downloadJar(mcoordinate.getGroupID(), mcoordinate.getArtifactID(), mcoordinate.getVersion(), true, downloaded);
+      LOG.info("Template specified in the properties file with ArtifactID: " + mcoordinate.getArtifactID() + " GroupID:"
+          + mcoordinate.getGroupID() + " will be loaded");
     }
   }
 

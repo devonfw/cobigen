@@ -101,15 +101,9 @@ public class CobiGenFactory {
     TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
         CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
     URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
-    // hier ist was falsch
-    // if( config has field install ))
-    // install templates
-    // else
-    // install devon4j templates
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(false, new File(templatesLocation.getPath()),
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(new File(templatesLocation.getPath()),
         config.getMavenCoordinates());
-    // Errror check for template Sets or templates and get the right Folder
-
+    // is templateSet config und daraus dann 2 funktion oder weiß der geier was
     return createBean;
   }
 
