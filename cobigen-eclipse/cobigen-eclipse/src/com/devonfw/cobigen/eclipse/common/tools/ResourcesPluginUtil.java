@@ -96,16 +96,10 @@ public class ResourcesPluginUtil {
    */
   public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException, CoreException {
 
-    generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
-    File templatesDirectory = getTemplateSetDirectory();
-    if (Files.exists(templatesDirectory.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER))) {
+    File templatesDirectory = getTemplatesDirectory();
 
-      if (!generatorProj.exists())
-        return null;
-      generatorProjExists = true;
-      return generatorProj;
-    }
-    templatesDirectory = getTemplatesDirectory();
+    generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
+
     if (!generatorProj.exists()) {
       if (!isUpdateDialogShown) {
         if (templatesDirectory.exists()) {
