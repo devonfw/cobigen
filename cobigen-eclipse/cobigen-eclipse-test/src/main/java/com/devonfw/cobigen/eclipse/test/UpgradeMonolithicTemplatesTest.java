@@ -13,7 +13,6 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,12 +48,6 @@ public class UpgradeMonolithicTemplatesTest extends SystemTest {
    *
    * @throws Exception
    */
-  @Before
-  public void setupTestIsolation() throws Exception {
-
-    this.currentHome = this.tempFolder.newFolder("cobigen-test-home").toPath();
-
-  }
 
   /**
    * Setup workbench appropriately for tests
@@ -81,6 +74,7 @@ public class UpgradeMonolithicTemplatesTest extends SystemTest {
   @Test
   public void testUpgradeAndGenerateFromTextInput() throws Exception {
 
+    this.currentHome = this.tempFolder.newFolder("cobigen-test-home").toPath();
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
 
       // create a new temporary java project and copy java class used as an input for CobiGen

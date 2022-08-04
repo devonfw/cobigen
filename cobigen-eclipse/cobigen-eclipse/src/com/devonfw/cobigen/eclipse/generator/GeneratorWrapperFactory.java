@@ -262,6 +262,13 @@ public class GeneratorWrapperFactory {
     Path templateSetsDownloadedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
     if (!ResourcesPluginUtil.generatorProjExists || ResourcesPluginUtil.TemplatesUpgraded) {
+
+      /*
+       * After the upgrade the new template-sets will be used. Only once! Then the old configuration has to be deleted
+       * or the upgrader will start again. This time the upgrader cannot start again because template-sets already
+       * exists.
+       */
+      ResourcesPluginUtil.TemplatesUpgraded = false;
       // check adapted and downloaded folder
       if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
         return CobiGenFactory.create(templatesDirectoryPath.toUri(), allowMonolithicConfiguration);
