@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,7 +65,7 @@ public interface AbstractRESTSearchResponse {
 
     if (repositoryType == MavenSearchRepositoryType.maven) {
       MavenSearchResponse response = new MavenSearchResponse();
-      String mavenRepositoryURL = "https://search.maven.org";
+      String mavenRepositoryURL = MavenSearchRepositoryConstants.mavenRepositoryURL;
       jsonResponse = response.getJsonResponse(mavenRepositoryURL, groupId);
       response = mapper.readValue(jsonResponse, MavenSearchResponse.class);
       downloadLinks = response.getDownloadURLs();
@@ -73,7 +74,7 @@ public interface AbstractRESTSearchResponse {
 
     if (repositoryType == MavenSearchRepositoryType.jfrog) {
       JfrogSearchResponse response = new JfrogSearchResponse();
-      String jfrogRepositoryURL = "";
+      String jfrogRepositoryURL = MavenSearchRepositoryConstants.jfrogRepositoryURL;
       jsonResponse = response.getJsonResponse(jfrogRepositoryURL, groupId);
       response = mapper.readValue(jsonResponse, JfrogSearchResponse.class);
       downloadLinks = response.getDownloadURLs();
@@ -82,7 +83,7 @@ public interface AbstractRESTSearchResponse {
 
     if (repositoryType == MavenSearchRepositoryType.nexus) {
       NexusSearchResponse response = new NexusSearchResponse();
-      String nexusRepositoryURL = "";
+      String nexusRepositoryURL = MavenSearchRepositoryConstants.nexusRepositoryURL;
       jsonResponse = response.getJsonResponse(nexusRepositoryURL, groupId);
       response = mapper.readValue(jsonResponse, NexusSearchResponse.class);
       downloadLinks = response.getDownloadURLs();
