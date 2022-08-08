@@ -12,7 +12,6 @@ import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
-import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
@@ -70,20 +69,6 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   public void testContextLoadedFromOldConfiguration() throws Exception {
 
     CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI(), true);
-  }
-
-  /**
-   * Tests that exactly one v2.1 context configuration is read
-   *
-   * Backward Compatibility test, remove when monolithic context.xml is deprecated.
-   *
-   */
-  @Test
-  public void testOldConfiguration() {
-
-    AbstractContextConfigurationReader context = ContextConfigurationReaderFactory
-        .getReader(Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
-    assertThat(context.getContextFiles().size()).isEqualTo(1);
   }
 
   /**

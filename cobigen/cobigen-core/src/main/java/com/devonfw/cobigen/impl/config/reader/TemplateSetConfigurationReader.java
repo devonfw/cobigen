@@ -47,19 +47,19 @@ import jakarta.xml.bind.Unmarshaller;
 
 public class TemplateSetConfigurationReader {
 
-  /** Map with the paths of the config locations for a context.xml file */
-  private Map<Path, Path> configLocations = new HashMap<>();
+  /** Map with the paths of the template set locations for a template-set.xml file */
+  private Map<Path, Path> templateSetLocations = new HashMap<>();
 
-  /** Map with the paths of the config location for a trigger */
-  private Map<String, Path> triggerConfigLocations = new HashMap<>();
+  /** Map with the paths of the template set location for a trigger */
+  private Map<String, Path> triggerTemplateSetLocations = new HashMap<>();
 
   /** Map with XML Nodes 'context' of the context.xml files */
   protected Map<Path, TemplateSetConfiguration> templateSetConfigurations;
 
-  /** Paths of the context configuration files */
+  /** Paths of the template set configuration files */
   protected List<Path> templateSetFiles;
 
-  /** Root of the context configuration file, used for passing to ContextConfiguration */
+  /** Root of the template set configuration file, used for passing to TemplateSetConfiguration */
   protected Path templateSetRoot;
 
   /**
@@ -243,7 +243,7 @@ public class TemplateSetConfigurationReader {
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.templateSetConfigurations.keySet()) {
       TemplateSetConfiguration contextConfiguration = this.templateSetConfigurations.get(contextFile);
-      Path configLocation = this.configLocations.get(contextFile);
+      Path configLocation = this.templateSetLocations.get(contextFile);
       boolean isJarFile = FileSystemUtil.isZipFile(configLocation.toUri());
 
       List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = contextConfiguration.getTrigger();
@@ -251,9 +251,9 @@ public class TemplateSetConfigurationReader {
         // context configuration in template sets consists of only one trigger
         com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
 
-        if (!this.triggerConfigLocations.containsKey(trigger.getId()) || !isJarFile) {
+        if (!this.triggerTemplateSetLocations.containsKey(trigger.getId()) || !isJarFile) {
           // prefer the adapted templates
-          this.triggerConfigLocations.put(trigger.getId(), configLocation);
+          this.triggerTemplateSetLocations.put(trigger.getId(), configLocation);
 
           triggers.put(trigger.getId(),
               new Trigger(trigger.getId(), trigger.getType(), ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER,
@@ -319,7 +319,7 @@ public class TemplateSetConfigurationReader {
    */
   public Path getConfigLocationForTrigger(String triggerId) {
 
-    return this.triggerConfigLocations.get(triggerId);
+    return this.triggerTemplateSetLocations.get(triggerId);
   }
 
   /**
@@ -334,7 +334,7 @@ public class TemplateSetConfigurationReader {
 
     if (Files.exists(contextFilePath)) {
       contextPaths.add(contextFilePath);
-      this.configLocations.put(contextFilePath, configRootPath);
+      this.templateSetLocations.put(contextFilePath, configRootPath);
     }
   }
 
