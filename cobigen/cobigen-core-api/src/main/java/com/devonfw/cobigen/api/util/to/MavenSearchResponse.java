@@ -8,25 +8,107 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Json model for maven Search REST API response
+ *
+ */
+@JsonIgnoreProperties(value = { "responseHeader", "spellcheck" })
+public class MavenSearchResponse implements AbstractRESTSearchResponse {
+
+  /** Logger instance. */
+  @JsonIgnore
+  private static final Logger LOG = LoggerFactory.getLogger(MavenSearchResponse.class);
+
+  @JsonProperty("response")
+  private MavenSearchResponseResponse response;
+
+  /**
+   * @return response
+   */
+  @JsonIgnore
+  public MavenSearchResponseResponse getResponse() {
+
+    return this.response;
+  }
+
+  @Override
+  @JsonIgnore
+  public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
+
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_TARGET_LINK + "?q=g:" + groupId
+        + "&wt=json";
+    LOG.info("Starting Maven Search REST API request with URL: {}.", targetLink);
+
+    int limitRows = MavenSearchRepositoryConstants.MAVEN_MAX_RESPONSE_ROWS;
+    if (limitRows > 0) {
+      targetLink += "&rows=" + limitRows;
+      LOG.info("Limiting Maven Search REST API request to: {} rows.", limitRows);
+    }
+
+    String jsonResponse;
+
+    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink);
+
+    return jsonResponse;
+
+  }
+
+  @Override
+  @JsonIgnore
+  public List<URL> getDownloadURLs() throws MalformedURLException {
+
+    List<URL> downloadLinks = new ArrayList<>();
+    List<MavenSearchResponseDoc> docs = getResponse().getDocs();
+
+    for (MavenSearchResponseDoc doc : docs) {
+      downloadLinks.add(doc.createDownloadLink("https://repo1.maven.org/maven2"));
+    }
+
+    return downloadLinks;
+  }
+
+}
+
+/**
+ *
+ * Maven search response doc model
+ *
+ */
 @JsonIgnoreProperties(value = { "p", "timestamp", "versionCount", "text", "ec" })
-class Doc {
+class MavenSearchResponseDoc {
+  /**
+   * id
+   */
   @JsonProperty("id")
   private String id;
 
+  /**
+   * group
+   */
   @JsonProperty("g")
   private String group;
 
+  /**
+   * artifact
+   */
   @JsonProperty("a")
   private String artifact;
 
+  /**
+   * latest version
+   */
   @JsonProperty("latestVersion")
   private String latestVersion;
 
+  /**
+   * repository ID
+   */
   @JsonProperty("repositoryId")
   private String repositoryId;
 
@@ -95,14 +177,25 @@ class Doc {
 
 }
 
+/**
+ *
+ * Maven search response model
+ *
+ */
 @JsonIgnoreProperties(value = { "start" })
-class MavenResponse {
+class MavenSearchResponseResponse {
 
+  /**
+   * found results
+   */
   @JsonProperty("numFound")
   private int numFound;
 
+  /**
+   * docs
+   */
   @JsonProperty("docs")
-  private List<Doc> docs;
+  private List<MavenSearchResponseDoc> docs;
 
   /**
    * @return numFound
@@ -117,69 +210,9 @@ class MavenResponse {
    * @return docs
    */
   @JsonIgnore
-  public List<Doc> getDocs() {
+  public List<MavenSearchResponseDoc> getDocs() {
 
     return this.docs;
-  }
-
-}
-
-/**
- * Json model for maven Search REST API response
- *
- */
-@JsonIgnoreProperties(value = { "responseHeader", "spellcheck" })
-public class MavenSearchResponse implements AbstractRESTSearchResponse {
-
-  /** Logger instance. */
-  @JsonIgnore
-  private static final Logger LOG = LoggerFactory.getLogger(MavenSearchResponse.class);
-
-  @JsonProperty("response")
-  private MavenResponse response;
-
-  /**
-   * @return response
-   */
-  @JsonIgnore
-  public MavenResponse getResponse() {
-
-    return this.response;
-  }
-
-  @Override
-  @JsonIgnore
-  public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
-
-    String targetLink = repositoryUrl + "/" + "solrsearch/select?q=g:" + groupId + "&wt=json";
-    LOG.info("Starting Maven Search REST API request with URL: {}.", targetLink);
-
-    int limitRows = 20;
-    if (limitRows > 0) {
-      targetLink += "&rows=" + limitRows;
-      LOG.info("Limiting Maven Search REST API request to: {} rows.", limitRows);
-    }
-
-    String jsonResponse;
-
-    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink);
-
-    return jsonResponse;
-
-  }
-
-  @Override
-  @JsonIgnore
-  public List<URL> getDownloadURLs() throws MalformedURLException {
-
-    List<URL> downloadLinks = new ArrayList<>();
-    List<Doc> docs = getResponse().getDocs();
-
-    for (Doc doc : docs) {
-      downloadLinks.add(doc.createDownloadLink("https://repo1.maven.org/maven2"));
-    }
-
-    return downloadLinks;
   }
 
 }

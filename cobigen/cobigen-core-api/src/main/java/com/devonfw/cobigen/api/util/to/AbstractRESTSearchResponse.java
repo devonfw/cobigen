@@ -65,7 +65,7 @@ public interface AbstractRESTSearchResponse {
 
     if (repositoryType == MavenSearchRepositoryType.maven) {
       MavenSearchResponse response = new MavenSearchResponse();
-      String mavenRepositoryURL = MavenSearchRepositoryConstants.mavenRepositoryURL;
+      String mavenRepositoryURL = MavenSearchRepositoryConstants.MAVEN_REPOSITORY_URL;
       jsonResponse = response.getJsonResponse(mavenRepositoryURL, groupId);
       response = mapper.readValue(jsonResponse, MavenSearchResponse.class);
       downloadLinks = response.getDownloadURLs();
@@ -74,7 +74,7 @@ public interface AbstractRESTSearchResponse {
 
     if (repositoryType == MavenSearchRepositoryType.jfrog) {
       JfrogSearchResponse response = new JfrogSearchResponse();
-      String jfrogRepositoryURL = MavenSearchRepositoryConstants.jfrogRepositoryURL;
+      String jfrogRepositoryURL = MavenSearchRepositoryConstants.JFROG_REPOSITORY_URL;
       jsonResponse = response.getJsonResponse(jfrogRepositoryURL, groupId);
       response = mapper.readValue(jsonResponse, JfrogSearchResponse.class);
       downloadLinks = response.getDownloadURLs();
@@ -83,7 +83,7 @@ public interface AbstractRESTSearchResponse {
 
     if (repositoryType == MavenSearchRepositoryType.nexus) {
       NexusSearchResponse response = new NexusSearchResponse();
-      String nexusRepositoryURL = MavenSearchRepositoryConstants.nexusRepositoryURL;
+      String nexusRepositoryURL = MavenSearchRepositoryConstants.NEXUS_REPOSITORY_URL;
       jsonResponse = response.getJsonResponse(nexusRepositoryURL, groupId);
       response = mapper.readValue(jsonResponse, NexusSearchResponse.class);
       downloadLinks = response.getDownloadURLs();

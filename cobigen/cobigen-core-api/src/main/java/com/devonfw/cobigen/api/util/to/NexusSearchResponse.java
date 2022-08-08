@@ -8,47 +8,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-@JsonIgnoreProperties(value = { "id", "format", "checksum" })
-class Asset {
-  @JsonProperty("downloadUrl")
-  public String downloadUrl;
-
-  @JsonProperty("path")
-  public String path;
-
-  @JsonProperty("repository")
-  public String repository;
-
-  @JsonProperty("latestVersion")
-  public String latestVersion;
-
-  @JsonProperty("repositoryId")
-  public String repositoryId;
-}
-
-@JsonIgnoreProperties(value = { "id", "format" })
-class Item {
-
-  @JsonProperty("repository")
-  private String repository;
-
-  @JsonProperty("group")
-  private String group;
-
-  @JsonProperty("name")
-  private String name;
-
-  @JsonProperty("version")
-  private String version;
-
-  @JsonProperty("assets")
-  public List<Asset> assets;
-}
 
 /**
  * Json model for nexus Search REST API response
@@ -62,7 +26,7 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
   private static final Logger LOG = LoggerFactory.getLogger(NexusSearchResponse.class);
 
   @JsonProperty("items")
-  private List<Item> items;
+  private List<NexusSearchResponseItem> items;
 
   @Override
   @JsonIgnore
@@ -70,8 +34,8 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
 
     List<URL> downloadLinks = new ArrayList<>();
 
-    for (Item item : this.items) {
-      for (Asset asset : item.assets) {
+    for (NexusSearchResponseItem item : this.items) {
+      for (NexusSearchResponseAsset asset : item.assets) {
         downloadLinks.add(new URL(asset.downloadUrl));
       }
 
@@ -84,7 +48,8 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
   @JsonIgnore
   public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + "service/rest/v1/search?repository=maven-central&group=" + groupId;
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS_TARGET_LINK
+        + "?repository=maven-central" + "&group=" + groupId;
     LOG.info("Starting Nexus Search REST API request with URL: {}.", targetLink);
 
     String jsonResponse;
@@ -93,4 +58,82 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
 
     return jsonResponse;
   }
+}
+
+/**
+ *
+ * Nexus search response asset model
+ *
+ */
+@JsonIgnoreProperties(value = { "id", "format", "checksum" })
+class NexusSearchResponseAsset {
+
+  /**
+   * downloadUrl
+   */
+  @JsonProperty("downloadUrl")
+  public String downloadUrl;
+
+  /**
+   * path
+   */
+  @JsonProperty("path")
+  public String path;
+
+  /**
+   * repository
+   */
+  @JsonProperty("repository")
+  public String repository;
+
+  /**
+   * latest version
+   */
+  @JsonProperty("latestVersion")
+  public String latestVersion;
+
+  /**
+   * repositoryId
+   */
+  @JsonProperty("repositoryId")
+  public String repositoryId;
+}
+
+/**
+ *
+ * Nexus search response item model
+ *
+ */
+@JsonIgnoreProperties(value = { "id", "format" })
+class NexusSearchResponseItem {
+
+  /**
+   * repository
+   */
+  @JsonProperty("repository")
+  private String repository;
+
+  /**
+   * group
+   */
+  @JsonProperty("group")
+  private String group;
+
+  /**
+   * name
+   */
+  @JsonProperty("name")
+  private String name;
+
+  /**
+   * version
+   */
+  @JsonProperty("version")
+  private String version;
+
+  /**
+   * assets
+   */
+  @JsonProperty("assets")
+  public List<NexusSearchResponseAsset> assets;
 }
