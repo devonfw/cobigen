@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.to.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.MavenSearchResponse;
@@ -98,7 +99,7 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId("maven", "com.google.inject");
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.maven, "com.google.inject");
 
     assertThat(downloadList).contains(
         new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
@@ -117,7 +118,7 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId("nexus", "com.google.inject");
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.nexus, "com.google.inject");
 
     assertThat(downloadList).contains(
         new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
@@ -136,7 +137,7 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId("jfrog", "com.google.inject");
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.jfrog, "com.google.inject");
 
     assertThat(downloadList).contains(
         new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),

@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -54,14 +55,14 @@ public interface AbstractRESTSearchResponse {
    * @throws MalformedURLException
    *
    */
-  public static List<URL> getArtifactDownloadLinks(String repositoryType, String groupId)
+  public static List<URL> getArtifactDownloadLinks(MavenSearchRepositoryType repositoryType, String groupId)
       throws RESTSearchResponseException, JsonMappingException, JsonProcessingException, MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
     ObjectMapper mapper = new ObjectMapper();
     String jsonResponse = "";
 
-    if (repositoryType.equals("maven")) {
+    if (repositoryType == MavenSearchRepositoryType.maven) {
       MavenSearchResponse response = new MavenSearchResponse();
       String mavenRepositoryURL = "https://search.maven.org";
       jsonResponse = response.getJsonResponse(mavenRepositoryURL, groupId);
@@ -70,7 +71,7 @@ public interface AbstractRESTSearchResponse {
       return downloadLinks;
     }
 
-    if (repositoryType.equals("jfrog")) {
+    if (repositoryType == MavenSearchRepositoryType.jfrog) {
       JfrogSearchResponse response = new JfrogSearchResponse();
       String jfrogRepositoryURL = "";
       jsonResponse = response.getJsonResponse(jfrogRepositoryURL, groupId);
@@ -79,7 +80,7 @@ public interface AbstractRESTSearchResponse {
       return downloadLinks;
     }
 
-    if (repositoryType.equals("nexus")) {
+    if (repositoryType == MavenSearchRepositoryType.nexus) {
       NexusSearchResponse response = new NexusSearchResponse();
       String nexusRepositoryURL = "";
       jsonResponse = response.getJsonResponse(nexusRepositoryURL, groupId);

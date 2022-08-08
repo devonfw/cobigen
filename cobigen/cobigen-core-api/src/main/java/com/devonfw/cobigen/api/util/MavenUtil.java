@@ -26,6 +26,7 @@ import org.zeroturnaround.exec.StartedProcess;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.devonfw.cobigen.api.util.to.AbstractRESTSearchResponse;
@@ -352,7 +353,7 @@ public class MavenUtil {
    *
    * @return List of artifact URLS
    */
-  public static List<URL> getMavenArtifactsByGroupId(String repositoryType, String groupId) {
+  public static List<URL> getMavenArtifactsByGroupId(MavenSearchRepositoryType repositoryType, String groupId) {
 
     try {
       return AbstractRESTSearchResponse.getArtifactDownloadLinks(repositoryType, groupId);
