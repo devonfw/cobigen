@@ -105,8 +105,6 @@ public class ExceptionHandler {
    * Opens up a message dialog for displaying further guidance on upgrading old templates.
    *
    * @param e {@link DeprecatedMonolithicConfigurationException} occurred
-   * @return
-   * @return
    */
   private static void openMonolithicConfigurationErrorDialog(DeprecatedMonolithicConfigurationException e) {
 

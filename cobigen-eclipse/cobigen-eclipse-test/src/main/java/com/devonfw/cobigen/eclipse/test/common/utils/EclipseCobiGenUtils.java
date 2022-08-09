@@ -63,7 +63,7 @@ public class EclipseCobiGenUtils {
   }
 
   /**
-   * Selects the increment with the given name, upgrades the monolithic templates and generates,
+   * Selects the increment with the given name, upgrades the monolithic templates and generates.
    *
    * @param bot the {@link SWTWorkbenchBot} of the test
    * @param input input of CobiGen to be selected

@@ -3,10 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="${variables.component#lower_case}RestController.service.ts" mergeStrategy="tsmerge"/>
-    <templateExtension ref="api.ts" mergeStrategy="tsmerge"/>
     <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
-    <templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override"/> 
   </templates>
 
   <templateScans>
@@ -14,17 +11,8 @@
   </templateScans>
 
   <increments>
-    <increment name="devon4ng-app" description="CRUD devon4ng Service Based Angular">
-      <incrementRef ref="app_angular_env"/>
-      <incrementRef ref="app_angular_devon4j_component"/>
-    </increment>
     <increment name="app_angular_env" description="Server URL Registration">
       <templateRef ref="environment.ts"/>
-      <templateRef ref="environment.prod.ts"/>
-    </increment>
-    <increment name="app_angular_devon4j_component" description="API">
-      <templateRef ref="${variables.component#lower_case}RestController.service.ts"/>
-      <templateRef ref="api.ts"/>
     </increment>
   </increments>
 </templatesConfiguration>

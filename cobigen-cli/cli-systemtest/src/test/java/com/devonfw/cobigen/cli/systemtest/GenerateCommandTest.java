@@ -76,9 +76,10 @@ public class GenerateCommandTest extends AbstractCliTest {
   @Test
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates"), this.tmpProject.toFile());
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates-devon4j"),
+        this.tmpProject.toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
-    File monolithicConfiguration = this.tmpProject.resolve("CobiGen_Templates/src/main/templates").toFile();
+    File monolithicConfiguration = this.tmpProject.resolve("src/main/templates").toFile();
     String args[] = new String[7];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();
@@ -92,7 +93,7 @@ public class GenerateCommandTest extends AbstractCliTest {
 
     assertThat(this.currentHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)).exists();
 
-    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/impl/usecase/"))
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
         .exists();
   }
 

@@ -72,7 +72,7 @@ public class UpgradeMonolithicTemplatesTest extends SystemTest {
    * @throws Exception Test fails
    */
   @Test
-  public void testUpgradeAndGenerateFromTextInput() throws Exception {
+  public void testUpgradeAndGenerateFromTemplateSet() throws Exception {
 
     this.currentHome = this.tempFolder.newFolder("cobigen-test-home").toPath();
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {

@@ -214,7 +214,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
   }
 
   /**
-   * Checks if the provided version is compatible to the provided configuration file and returns the
+   * Checks if the provided version is compatible to the provided configuration file
    *
    * @param version current version to validate against
    * @param configurationFile current configuration file to validate with version

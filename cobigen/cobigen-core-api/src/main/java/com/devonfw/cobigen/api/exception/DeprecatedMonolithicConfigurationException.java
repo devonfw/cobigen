@@ -19,9 +19,9 @@ public class DeprecatedMonolithicConfigurationException extends CobiGenRuntimeEx
   private static Path monolithicConfiguration = null;
 
   /**
-   * Getter the path to the monolithicConfiguration
+   * Gets the path to the monolithic configuration.
    *
-   * @return oldTemplatesPath path to the monolithicConfiguration
+   * @return path to the monolithic configuration
    */
   public static Path getMonolithicConfiguration() {
 

@@ -370,7 +370,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     Path templatesPath = null;
     if (templatesProject != null) {
       List<Path> contextXml = FileSystemUtil.collectAllContextXML(templatesProject);
-      templatesPath = FileSystemUtil.createFileSystemDependentPath(contextXml.get(0).getParent().toUri());
+      templatesPath = contextXml.get(0).getParent();
     } else {
       templatesPath = FileSystemUtil.createFileSystemDependentPath(
           CobiGenPaths.getTemplatesFolderPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES)

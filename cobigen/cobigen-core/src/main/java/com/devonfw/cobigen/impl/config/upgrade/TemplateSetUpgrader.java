@@ -110,7 +110,7 @@ public class TemplateSetUpgrader {
     Path adapted = templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     if (!Files.exists(adapted))
       Files.createDirectory(adapted);
-    Path cobigenTemplates = CobiGenPaths.checkCobiGen_TemplatesFolder(folderOfContextLocation);
+    Path cobigenTemplatesFolder = CobiGenPaths.getTemplatesPomFileLocation(newContextLocation.get(0));
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
@@ -142,7 +142,7 @@ public class TemplateSetUpgrader {
         try (OutputStream out = Files.newOutputStream(newContextPath)) {
           JAXB.marshal(cc, out);
         }
-        writeNewPomFile(cobigenTemplates, newTriggerFolder, trigger);
+        writeNewPomFile(cobigenTemplatesFolder, newTriggerFolder, trigger);
       }
     }
 
@@ -153,7 +153,7 @@ public class TemplateSetUpgrader {
       backupTemplatesLocation.mkdir();
     }
     try {
-      FileUtils.copyDirectoryToDirectory(cobigenTemplates.getParent().toFile(), backupTemplatesLocation);
+      FileUtils.copyDirectoryToDirectory(cobigenTemplatesFolder.getParent().toFile(), backupTemplatesLocation);
     } catch (IOException e) {
       LOG.error("An error occured while backing up the old template folder", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -172,12 +172,12 @@ public class TemplateSetUpgrader {
    * @throws XmlPullParserException
    * @throws ClassNotFoundException
    */
-  private void writeNewPomFile(Path cobigen_templates, Path newTemplateFolder,
+  private void writeNewPomFile(Path cobigenTemplates, Path newTemplateFolder,
       com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) throws IOException, FileNotFoundException {
 
     // Pom.xml creation
     try {
-      Path oldPom = cobigen_templates.resolve("pom.xml");
+      Path oldPom = cobigenTemplates.resolve("pom.xml");
       Path newPom = newTemplateFolder.resolve("pom.xml");
       Files.createFile(newPom);
 
@@ -189,8 +189,8 @@ public class TemplateSetUpgrader {
               + "</groupId>");
       content = content.replaceAll("</groupId>\n" + "  <artifactId>.*</artifactId>", "</groupId>\n" + "  <artifactId>"
           + newTemplateFolder.getFileName().toString().replace('_', '-') + "</artifactId>");
-      content = content.replaceAll("</artifactId>\n" + "  <version>([0-9]+(\\.[0-9]+)+)</version>",
-          "</artifactId>\n" + "  <version>2021.12.007</version>");
+      content = content.replaceAll("</artifactId>\n" + "  <version>([0-9]+(\\.[0-9]+)+)</version>", "</artifactId>\n"
+          + "  <version>" + ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_VERSION + "</version>");
       content = content.replaceAll("</version>\n" + "  <name>.*</name>",
           "</version>\n" + "  <name>" + newTemplateFolder.getFileName().toString() + "</name>");
       Files.write(newPom, content.getBytes(charset));

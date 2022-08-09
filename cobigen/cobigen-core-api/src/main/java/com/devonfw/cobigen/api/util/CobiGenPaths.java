@@ -200,16 +200,16 @@ public class CobiGenPaths {
   }
 
   /**
-   * checks the path for any parent CobiGen_Templates Folder and returns its path
+   * checks the path for any pom.xml in a parent Folder and returns its path
    *
    * @param childPath path of the templates
-   * @return path to the parent CobiGen_Templates Folder
+   * @return path to the pom.xml
    */
-  public static Path checkCobiGen_TemplatesFolder(Path childPath) {
+  public static Path getTemplatesPomFileLocation(Path childPath) {
 
-    String CobiGen_TemplatesFolder = ConfigurationConstants.COBIGEN_TEMPLATES;
+    String pomFile = ConfigurationConstants.POM_CONFIG_FILENAME;
 
-    while (!childPath.endsWith(CobiGen_TemplatesFolder)) {
+    while (!Files.exists(childPath.resolve(pomFile))) {
       childPath = childPath.getParent();
       if (childPath == null) {
 
