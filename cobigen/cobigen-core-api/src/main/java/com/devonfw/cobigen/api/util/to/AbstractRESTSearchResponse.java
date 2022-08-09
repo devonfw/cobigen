@@ -51,9 +51,9 @@ public interface AbstractRESTSearchResponse {
    *
    * @return List of download links
    * @throws RESTSearchResponseException if an error occurred
-   * @throws JsonProcessingException
-   * @throws JsonMappingException
-   * @throws MalformedURLException
+   * @throws JsonProcessingException if the json processing was not possible
+   * @throws JsonMappingException if the json mapping was not possible
+   * @throws MalformedURLException if an URL was malformed
    *
    */
   public static List<URL> getArtifactDownloadLinks(MavenSearchRepositoryType repositoryType, String groupId)
@@ -115,6 +115,27 @@ public interface AbstractRESTSearchResponse {
           String.valueOf(status));
     }
     return jsonResponse;
+  }
+
+  /**
+   * Creates a download link (concatenates maven repository link with groupId, artifact and version)
+   *
+   * @param mavenRepo link to the maven repository to use
+   * @param groupId for the download link
+   * @param artifactId for the download link
+   * @param version for the download link
+   * @param fileEnding file ending for the download link
+   * @return concatenated download link
+   * @throws MalformedURLException if the URL was not valid
+   */
+  public static URL createDownloadLink(String mavenRepo, String groupId, String artifactId, String version,
+      String fileEnding) throws MalformedURLException {
+
+    String parsedGroupId = groupId.replace(".", "/");
+    String downloadFile = artifactId + "-" + version + fileEnding;
+    String downloadLink = mavenRepo + "/" + parsedGroupId + "/" + artifactId + "/" + version + "/" + downloadFile;
+    URL url = new URL(downloadLink);
+    return url;
   }
 
 }

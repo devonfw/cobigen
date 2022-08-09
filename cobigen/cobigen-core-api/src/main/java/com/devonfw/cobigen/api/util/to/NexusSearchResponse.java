@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,15 +19,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Json model for nexus Search REST API response
  *
  */
-@JsonIgnoreProperties(value = { "continuationToken" })
+@JsonIgnoreProperties(value = { "totalCount", "from", "count", "tooManyResults", "collapsed", "repoDetails" })
 public class NexusSearchResponse implements AbstractRESTSearchResponse {
 
   /** Logger instance. */
   @JsonIgnore
   private static final Logger LOG = LoggerFactory.getLogger(NexusSearchResponse.class);
 
-  @JsonProperty("items")
-  private List<NexusSearchResponseItem> items;
+  @JsonProperty("data")
+  private List<NexusSearchResponseData> data;
 
   @Override
   @JsonIgnore
@@ -34,22 +35,30 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
 
     List<URL> downloadLinks = new ArrayList<>();
 
-    for (NexusSearchResponseItem item : this.items) {
-      for (NexusSearchResponseAsset asset : item.assets) {
-        downloadLinks.add(new URL(asset.downloadUrl));
-      }
+    for (NexusSearchResponseData item : this.data) {
+      for (NexusSearchResponseArtifactHits artifactHit : item.artifactHits) {
+        for (NexusSearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
+          downloadLinks.add(AbstractRESTSearchResponse.createDownloadLink(
+              MavenSearchRepositoryConstants.NEXUS_REPOSITORY_URL + "/"
+                  + MavenSearchRepositoryConstants.NEXUS_REPOSITORY_LINK,
+              item.getGroupId(), item.getArtifactId(), item.getVersion(), "." + artifactLink.getExtension()));
 
+        }
+      }
     }
 
-    return downloadLinks;
+    // removes duplicates
+    List<URL> newDownloadList = downloadLinks.stream().distinct().collect(Collectors.toList());
+
+    return newDownloadList;
   }
 
   @Override
   @JsonIgnore
   public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS_TARGET_LINK
-        + "?repository=maven-central" + "&group=" + groupId;
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS_TARGET_LINK + "?_dc="
+        + MavenSearchRepositoryConstants.NEXUS_DC_ID + "&q=" + groupId;
     LOG.info("Starting Nexus Search REST API request with URL: {}.", targetLink);
 
     String jsonResponse;
@@ -65,38 +74,32 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
  * Nexus search response asset model
  *
  */
-@JsonIgnoreProperties(value = { "id", "format", "checksum" })
-class NexusSearchResponseAsset {
+@JsonIgnoreProperties(value = { "repositoryId" })
+class NexusSearchResponseArtifactHits {
 
   /**
-   * downloadUrl
+   * artifactLinks
    */
-  @JsonProperty("downloadUrl")
-  public String downloadUrl;
+  @JsonProperty("artifactLinks")
+  public List<NexusSearchResponeArtifactLinks> artifactLinks;
+
+}
+
+class NexusSearchResponeArtifactLinks {
+
+  @JsonProperty("extension")
+  private String extension;
 
   /**
-   * path
+   * @return extension
    */
-  @JsonProperty("path")
-  public String path;
+  public String getExtension() {
 
-  /**
-   * repository
-   */
-  @JsonProperty("repository")
-  public String repository;
+    return this.extension;
+  }
 
-  /**
-   * latest version
-   */
-  @JsonProperty("latestVersion")
-  public String latestVersion;
-
-  /**
-   * repositoryId
-   */
-  @JsonProperty("repositoryId")
-  public String repositoryId;
+  @JsonProperty("classifier")
+  private String classifier;
 }
 
 /**
@@ -104,26 +107,44 @@ class NexusSearchResponseAsset {
  * Nexus search response item model
  *
  */
-@JsonIgnoreProperties(value = { "id", "format" })
-class NexusSearchResponseItem {
+@JsonIgnoreProperties(value = { "latestRelease", "latestReleaseRepositoryId", "highlightedFragment" })
+class NexusSearchResponseData {
 
   /**
-   * repository
+   * groupId
    */
-  @JsonProperty("repository")
-  private String repository;
+  @JsonProperty("groupId")
+  private String groupId;
 
   /**
-   * group
+   * @return groupId
    */
-  @JsonProperty("group")
-  private String group;
+  public String getGroupId() {
+
+    return this.groupId;
+  }
 
   /**
-   * name
+   * @return artifactId
    */
-  @JsonProperty("name")
-  private String name;
+  public String getArtifactId() {
+
+    return this.artifactId;
+  }
+
+  /**
+   * @return version
+   */
+  public String getVersion() {
+
+    return this.version;
+  }
+
+  /**
+   * artifactId
+   */
+  @JsonProperty("artifactId")
+  private String artifactId;
 
   /**
    * version
@@ -132,8 +153,9 @@ class NexusSearchResponseItem {
   private String version;
 
   /**
-   * assets
+   * artifactHits
    */
-  @JsonProperty("assets")
-  public List<NexusSearchResponseAsset> assets;
+  @JsonProperty("artifactHits")
+  public List<NexusSearchResponseArtifactHits> artifactHits;
+
 }

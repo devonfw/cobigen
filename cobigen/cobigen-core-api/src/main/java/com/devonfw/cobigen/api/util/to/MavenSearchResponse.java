@@ -67,7 +67,13 @@ public class MavenSearchResponse implements AbstractRESTSearchResponse {
     List<MavenSearchResponseDoc> docs = getResponse().getDocs();
 
     for (MavenSearchResponseDoc doc : docs) {
-      downloadLinks.add(doc.createDownloadLink("https://repo1.maven.org/maven2"));
+      for (String fileEnding : doc.getEc()) {
+        String newFileEnding = fileEnding;
+        downloadLinks.add(
+            AbstractRESTSearchResponse.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
+                doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), newFileEnding));
+      }
+
     }
 
     return downloadLinks;
@@ -80,7 +86,7 @@ public class MavenSearchResponse implements AbstractRESTSearchResponse {
  * Maven search response doc model
  *
  */
-@JsonIgnoreProperties(value = { "p", "timestamp", "versionCount", "text", "ec" })
+@JsonIgnoreProperties(value = { "p", "timestamp", "versionCount", "text" })
 class MavenSearchResponseDoc {
   /**
    * id
@@ -111,6 +117,21 @@ class MavenSearchResponseDoc {
    */
   @JsonProperty("repositoryId")
   private String repositoryId;
+
+  /**
+   * ec (file ending)
+   */
+  @JsonProperty("ec")
+  private List<String> ec;
+
+  /**
+   * @return ec
+   */
+  @JsonIgnore
+  public List<String> getEc() {
+
+    return this.ec;
+  }
 
   /**
    * @return id
@@ -155,24 +176,6 @@ class MavenSearchResponseDoc {
   public String getRepositoryId() {
 
     return this.repositoryId;
-  }
-
-  /**
-   * Creates a download link (concatenates maven repository link with groupId, artifact and version)
-   *
-   * @param mavenRepo link to the maven repository to use
-   * @return concatenated download link
-   * @throws MalformedURLException if the URL was not valid
-   */
-  @JsonIgnore
-  public URL createDownloadLink(String mavenRepo) throws MalformedURLException {
-
-    String parsedGroupId = getGroup().replace(".", "/");
-    String downloadFile = getArtifact() + "-" + getLatestVersion() + ".jar";
-    String downloadLink = mavenRepo + "/" + parsedGroupId + "/" + getArtifact() + "/" + getLatestVersion() + "/"
-        + downloadFile;
-    URL url = new URL(downloadLink);
-    return url;
   }
 
 }
