@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
@@ -137,11 +138,12 @@ public class MavenUtilTest {
   }
 
   /**
-   * Tests if a request to nexus search REST API returns a list of download URLs
+   * Tests if a request to jfrog search REST API returns a list of download URLs
    *
    * @throws IOException
    */
   @Test
+  @Ignore // TODO: remove when jfrog URLs are clear
   public void testJfrogSearchRequestGetsValidDownloadLinks() throws IOException {
 
     List<URL> downloadList;
