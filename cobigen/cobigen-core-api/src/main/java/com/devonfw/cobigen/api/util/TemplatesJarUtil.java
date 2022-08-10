@@ -12,7 +12,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -111,30 +113,38 @@ public class TemplatesJarUtil {
       return;
       // no templates specified
     }
-    File adapted = new File(templatesDirectory, ConfigurationConstants.ADAPTED_FOLDER);
-    File downloaded = new File(templatesDirectory, ConfigurationConstants.DOWNLOADED_FOLDER);
-    if (adapted.exists()) {
+    Set<MavenCoordinate> afterExistanceCheckList = new HashSet();
+    // File adapted = new File(templatesDirectory, ConfigurationConstants.ADAPTED_FOLDER);
+    // File downloaded = new File(templatesDirectory, ConfigurationConstants.DOWNLOADED_FOLDER);
+    if (templatesDirectory.getName().equals(ConfigurationConstants.ADAPTED_FOLDER)) {
       LOG.info("Found adapted folder no download of templates needed");
       return;
-    } else {
+    }
+    // check if templates already exist
+    for (
 
-      // check if templates already exist
-      for (MavenCoordinate mcoordinate : mavenCoordinates) {
-        for (File downloadedFile : downloaded.listFiles()) {
-          if (downloadedFile.getName().contains(mcoordinate.getArtifactID())) {
-            mavenCoordinates.remove(mcoordinate);
+    MavenCoordinate mcoordinate : mavenCoordinates) {
+      if (templatesDirectory.listFiles().length > 0) {
+        for (File downloadedFile : templatesDirectory.listFiles()) {
+          if (!(downloadedFile.getName().contains(mcoordinate.getArtifactID()))) {
+            afterExistanceCheckList.add(mcoordinate);
             LOG.info("Template specified in the properties file with ArtifactID: " + mcoordinate.getArtifactID()
                 + " GroupID:" + mcoordinate.getGroupID() + " will be loaded");
           }
         }
+      } else {
+        afterExistanceCheckList.add(mcoordinate);
       }
     }
     // download templates
-    for (MavenCoordinate mcoordinate : mavenCoordinates) {
-      downloadJar(mcoordinate.getGroupID(), mcoordinate.getArtifactID(), mcoordinate.getVersion(), false, downloaded);
-      downloadJar(mcoordinate.getGroupID(), mcoordinate.getArtifactID(), mcoordinate.getVersion(), true, downloaded);
-      LOG.info("Template specified in the properties file with ArtifactID: " + mcoordinate.getArtifactID() + " GroupID:"
-          + mcoordinate.getGroupID() + " will be loaded");
+    afterExistanceCheckList.toArray();
+    for (
+
+    MavenCoordinate mavenCoordinate : afterExistanceCheckList) {
+      downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), false,
+          templatesDirectory);
+      downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), true,
+          templatesDirectory);
     }
   }
 

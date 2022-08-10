@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
@@ -197,15 +196,18 @@ public class ConfigurationFinder {
     // 4. check adapted and downloaded folder and create Downloaded
     if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
       return templateSetsFolderPath.toUri();
-    } else {
-      try {
-        Files.createFile(templateSetsDownloadedFolderPath);
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException("Could not create Download Folder", e);
-      }
     }
 
+    // 5. download template set jars
+
+    LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
+
+        CobiGenPaths.getCobiGenHomePath());
+
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesPath.toFile());
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesPath.toFile());
     return templateSetsFolderPath.toUri();
+
   }
 
 }
