@@ -4,14 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.Map;
 
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
+import com.devonfw.cobigen.impl.config.entity.Matcher;
+import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -39,8 +45,8 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests whether an {@link InvalidConfigurationException} will be thrown when no template set configuration is found in the
-   * template-sets directory
+   * Tests whether an {@link InvalidConfigurationException} will be thrown when no template set configuration is found
+   * in the template-sets directory
    *
    * @throws InvalidConfigurationException if no template set configuration is found
    *
@@ -105,6 +111,31 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   public void testReadConfigurationFromZip() throws Exception {
 
     CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI(), true);
+  }
+
+  /**
+   * Tests if loadTriggers actually loads all (and the right) triggers
+   */
+  @Test
+  public void testLoadTriggersShouldLoadAllTriggers() {
+
+    // given
+    Path configurationPath = Paths.get(new File(testFileRootPath + "valid_template_sets").toURI())
+        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(configurationPath);
+
+    // when
+    Trigger trigger = new Trigger("valid", "java", "src/main/templates", Charset.forName("UTF-8"),
+        new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+    Map<String, Trigger> testMap = templateSet.loadTriggers();
+
+    // then
+    Trigger loadedTrigger = testMap.values().iterator().next();
+    assertThat(testMap.size()).isEqualTo(1);
+    assertThat(trigger.getId()).isEqualTo(loadedTrigger.getId());
+    assertThat(trigger.getType()).isEqualTo(loadedTrigger.getType());
+    assertThat(trigger.getTemplateFolder()).isEqualTo(loadedTrigger.getTemplateFolder());
+    assertThat(trigger.getInputCharset()).isEqualTo(loadedTrigger.getInputCharset());
   }
 
 }
