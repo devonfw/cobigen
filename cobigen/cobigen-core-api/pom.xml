@@ -64,6 +64,12 @@
       <artifactId>jersey-hk2</artifactId>
       <version>3.0.5</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.jersey.security</groupId>
+      <artifactId>oauth2-client</artifactId>
+      <version>3.0.5</version>
+    </dependency>
   </dependencies>
 
   <build>

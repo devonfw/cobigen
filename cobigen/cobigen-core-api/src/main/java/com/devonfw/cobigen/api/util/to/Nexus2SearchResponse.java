@@ -16,18 +16,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Json model for nexus Search REST API response
+ * Json model for nexus2 Search REST API response
  *
  */
 @JsonIgnoreProperties(value = { "totalCount", "from", "count", "tooManyResults", "collapsed", "repoDetails" })
-public class NexusSearchResponse implements AbstractRESTSearchResponse {
+public class Nexus2SearchResponse implements AbstractRESTSearchResponse {
 
   /** Logger instance. */
   @JsonIgnore
-  private static final Logger LOG = LoggerFactory.getLogger(NexusSearchResponse.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Nexus2SearchResponse.class);
 
   @JsonProperty("data")
-  private List<NexusSearchResponseData> data;
+  private List<Nexus2SearchResponseData> data;
 
   @Override
   @JsonIgnore
@@ -35,12 +35,12 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
 
     List<URL> downloadLinks = new ArrayList<>();
 
-    for (NexusSearchResponseData item : this.data) {
-      for (NexusSearchResponseArtifactHits artifactHit : item.artifactHits) {
-        for (NexusSearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
+    for (Nexus2SearchResponseData item : this.data) {
+      for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
+        for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
           downloadLinks.add(AbstractRESTSearchResponse.createDownloadLink(
-              MavenSearchRepositoryConstants.NEXUS_REPOSITORY_URL + "/"
-                  + MavenSearchRepositoryConstants.NEXUS_REPOSITORY_LINK,
+              MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
+                  + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
               item.getGroupId(), item.getArtifactId(), item.getVersion(), "." + artifactLink.getExtension()));
 
         }
@@ -57,13 +57,21 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
   @JsonIgnore
   public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS_TARGET_LINK + "?_dc="
-        + MavenSearchRepositoryConstants.NEXUS_DC_ID + "&q=" + groupId;
+    return getJsonResponse(repositoryUrl, groupId, null);
+  }
+
+  @Override
+  @JsonIgnore
+  public String getJsonResponse(String repositoryUrl, String groupId, String authToken)
+      throws RESTSearchResponseException {
+
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_TARGET_LINK + "?_dc="
+        + MavenSearchRepositoryConstants.NEXUS2_DC_ID + "&q=" + groupId;
     LOG.info("Starting Nexus Search REST API request with URL: {}.", targetLink);
 
     String jsonResponse;
 
-    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink);
+    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
   }
@@ -75,17 +83,17 @@ public class NexusSearchResponse implements AbstractRESTSearchResponse {
  *
  */
 @JsonIgnoreProperties(value = { "repositoryId" })
-class NexusSearchResponseArtifactHits {
+class Nexus2SearchResponseArtifactHits {
 
   /**
    * artifactLinks
    */
   @JsonProperty("artifactLinks")
-  public List<NexusSearchResponeArtifactLinks> artifactLinks;
+  public List<Nexus2SearchResponeArtifactLinks> artifactLinks;
 
 }
 
-class NexusSearchResponeArtifactLinks {
+class Nexus2SearchResponeArtifactLinks {
 
   @JsonProperty("extension")
   private String extension;
@@ -104,11 +112,11 @@ class NexusSearchResponeArtifactLinks {
 
 /**
  *
- * Nexus search response item model
+ * Nexus2 search response item model
  *
  */
 @JsonIgnoreProperties(value = { "latestRelease", "latestReleaseRepositoryId", "highlightedFragment" })
-class NexusSearchResponseData {
+class Nexus2SearchResponseData {
 
   /**
    * groupId
@@ -156,6 +164,6 @@ class NexusSearchResponseData {
    * artifactHits
    */
   @JsonProperty("artifactHits")
-  public List<NexusSearchResponseArtifactHits> artifactHits;
+  public List<Nexus2SearchResponseArtifactHits> artifactHits;
 
 }

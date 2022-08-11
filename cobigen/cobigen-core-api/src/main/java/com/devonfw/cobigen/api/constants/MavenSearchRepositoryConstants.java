@@ -27,29 +27,39 @@ public class MavenSearchRepositoryConstants {
   public static int MAVEN_MAX_RESPONSE_ROWS = 20;
 
   /**
-   * Nexus repository URL
+   * Nexus2 repository URL
    */
-  public static String NEXUS_REPOSITORY_URL = "https://s01.oss.sonatype.org";
+  public static String NEXUS2_REPOSITORY_URL = "https://s01.oss.sonatype.org";
 
   /**
-   * Nexus repository link
+   * Nexus2 repository link
    */
-  public static String NEXUS_REPOSITORY_LINK = "service/local/repositories/releases/content";
+  public static String NEXUS2_REPOSITORY_LINK = "service/local/repositories/releases/content";
 
   /**
-   * Nexus target link
+   * Nexus2 target link
    */
-  public static String NEXUS_TARGET_LINK = "service/local/lucene/search";
+  public static String NEXUS2_TARGET_LINK = "service/local/lucene/search";
 
   /**
-   * Nexus connect ID
+   * Nexus2 connect ID
    */
-  public static String NEXUS_DC_ID = "1660043999867";
+  public static String NEXUS2_DC_ID = "1660043999867";
+
+  /**
+   * Nexus3 target link
+   */
+  public static String NEXUS3_TARGET_LINK = "service/rest/v1/search";
+
+  /**
+   * Nexus3 repository URL
+   */
+  public static String NEXUS3_REPOSITORY_URL = "";
 
   /**
    * Jfrog repository URL
    */
-  public static String JFROG_REPOSITORY_URL = "";
+  public static String JFROG_REPOSITORY_URL = "http://localhost:8082/artifactory";
 
   /**
    * Jfrog target link

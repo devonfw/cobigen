@@ -7,9 +7,14 @@ package com.devonfw.cobigen.api.constants;
 public enum MavenSearchRepositoryType {
 
   /**
-   * Nexus search repository type
+   * Nexus2 search repository type
    */
-  nexus,
+  nexus2,
+
+  /**
+   * Nexus3 search repository type
+   */
+  nexus3,
 
   /**
    * Maven search repository type

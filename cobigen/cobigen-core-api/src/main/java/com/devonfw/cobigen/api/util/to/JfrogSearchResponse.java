@@ -42,12 +42,20 @@ public class JfrogSearchResponse implements AbstractRESTSearchResponse {
   @JsonIgnore
   public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
 
+    return getJsonResponse(repositoryUrl, groupId, null);
+  }
+
+  @Override
+  @JsonIgnore
+  public String getJsonResponse(String repositoryUrl, String groupId, String authToken)
+      throws RESTSearchResponseException {
+
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.JFROG_TARGET_LINK + "?g=" + groupId;
     LOG.info("Starting Jfrog Search REST API request with URL: {}.", targetLink);
 
     String jsonResponse;
 
-    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink);
+    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
   }

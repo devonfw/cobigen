@@ -12,10 +12,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
+import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
+import com.devonfw.cobigen.api.util.to.AbstractRESTSearchResponse;
 import com.devonfw.cobigen.api.util.to.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.MavenSearchResponse;
-import com.devonfw.cobigen.api.util.to.NexusSearchResponse;
+import com.devonfw.cobigen.api.util.to.Nexus2SearchResponse;
+import com.devonfw.cobigen.api.util.to.Nexus3SearchResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -25,6 +28,43 @@ public class MavenUtilTest {
 
   /** Testdata root path */
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenUtilTest";
+
+  /**
+   * Tests if a wrong repository type returns null
+   */
+  @Test
+  public void testWrongRepositoryTypeReturnsNull() {
+
+    assertThat(MavenUtil.getMavenArtifactsByGroupId(null, testdataRoot)).isNull();
+  }
+
+  /**
+   * Tests if an exception gets thrown when a faulty target link without a token was used
+   */
+  @Test(expected = RESTSearchResponseException.class)
+  public void testWrongTargetLinkThrowsException() {
+
+    AbstractRESTSearchResponse.getJsonResponseStringByTargetLink("this/is/not/a/link", null);
+  }
+
+  /**
+   * Tests if an exception gets thrown when a faulty target link and a token was used
+   */
+  @Test(expected = RESTSearchResponseException.class)
+  public void testWrongTargetLinkAndTokenThrowsException() {
+
+    AbstractRESTSearchResponse.getJsonResponseStringByTargetLink("this/is/not/a/link", "thisisabadtoken");
+  }
+
+  /**
+   * Tests if an exception gets thrown when a status code was not 200
+   */
+  @Test(expected = RESTSearchResponseException.class)
+  public void testWrongResponseStatusCodeThrowsException() {
+
+    AbstractRESTSearchResponse.getJsonResponseStringByTargetLink("https://search.maven.org/solrsearch/select?test",
+        null);
+  }
 
   /**
    * Tests if maven json response can properly be parsed and converted to a list of download URLs
@@ -49,19 +89,19 @@ public class MavenUtilTest {
   }
 
   /**
-   * Tests if nexus json response can properly be parsed and converted to a list of download URLs
+   * Tests if nexus2 json response can properly be parsed and converted to a list of download URLs
    *
    * @throws IOException
    */
   @Test
-  public void testNexusParseDownloadLinks() throws IOException {
+  public void testNexus2ParseDownloadLinks() throws IOException {
 
     ObjectMapper mapper = new ObjectMapper();
-    NexusSearchResponse response = new NexusSearchResponse();
+    Nexus2SearchResponse response = new Nexus2SearchResponse();
 
-    String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexusJsonTest.json")));
+    String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus2JsonTest.json")));
 
-    response = mapper.readValue(jsonResponse, NexusSearchResponse.class);
+    response = mapper.readValue(jsonResponse, Nexus2SearchResponse.class);
     List<URL> downloadLinks = response.getDownloadURLs();
     assertThat(downloadLinks).contains(new URL(
         "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.pom"),
@@ -79,6 +119,27 @@ public class MavenUtilTest {
             "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.005/jsonplugin-2021.12.005.pom"),
         new URL(
             "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.005/jsonplugin-2021.12.005.jar"));
+  }
+
+  /**
+   * Tests if nexus3 json response can properly be parsed and converted to a list of download URLs
+   *
+   * @throws IOException
+   */
+  @Test
+  public void testNexus3ParseDownloadLinks() throws IOException {
+
+    ObjectMapper mapper = new ObjectMapper();
+    Nexus3SearchResponse response = new Nexus3SearchResponse();
+
+    String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")));
+
+    response = mapper.readValue(jsonResponse, Nexus3SearchResponse.class);
+    List<URL> downloadLinks = response.getDownloadURLs();
+    assertThat(downloadLinks).contains(new URL(
+        "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
+        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
+        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom"));
   }
 
   /**
@@ -112,7 +173,7 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.maven, "com.google.inject");
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.maven, "com.google.inject", null);
 
     assertThat(downloadList).contains(
         new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
@@ -122,19 +183,38 @@ public class MavenUtilTest {
   }
 
   /**
-   * Tests if a request to nexus search REST API returns a list of download URLs
+   * Tests if a request to nexus2 search REST API returns a list of download URLs
    *
    * @throws IOException
    */
   @Test
-  public void testNexusSearchRequestGetsValidDownloadLinks() throws IOException {
+  public void testNexus2SearchRequestGetsValidDownloadLinks() throws IOException {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.nexus, "com.devonfw.cobigen");
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.nexus2, "com.devonfw.cobigen");
 
     assertThat(downloadList).contains(new URL(
         "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.jar"));
+  }
+
+  /**
+   * Tests if a request to nexus3 search REST API returns a list of download URLs
+   *
+   * @throws IOException
+   */
+  @Test
+  @Ignore // TODO: remove when nexus3 URLs are testable
+  public void testNexus3SearchRequestGetsValidDownloadLinks() throws IOException {
+
+    List<URL> downloadList;
+
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.nexus3, "com.devonfw.cobigen");
+
+    assertThat(downloadList).contains(new URL(
+        "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
+        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
+        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom"));
   }
 
   /**
@@ -143,18 +223,16 @@ public class MavenUtilTest {
    * @throws IOException
    */
   @Test
-  @Ignore // TODO: remove when jfrog URLs are clear
+  @Ignore // TODO: remove when jfrog URLs are testable
   public void testJfrogSearchRequestGetsValidDownloadLinks() throws IOException {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.jfrog, "com.google.inject");
-
-    assertThat(downloadList).contains(
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-bom/5.1.0/guice-bom-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-parent/5.1.0/guice-parent-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/jdk8-tests/5.0.1/jdk8-tests-5.0.1.jar"));
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.jfrog, "com.devonfw.cobigen", null);
+    assertThat(downloadList).contains(new URL(
+        "https://localjfrog.com/artifactory/api/storage/maven-remote-cache/com/devonfw/cobigen/cli-parent/2021.04.001-SNAPSHOT/cli-parent-2021.04.001-SNAPSHOT.pom"),
+        new URL(
+            "https://localjfrog.com/artifactory/api/storage/maven-remote-cache/com/devonfw/cobigen/cli-parent/2021.08.002-SNAPSHOT/cli-parent-2021.08.002-SNAPSHOT.pom"));
   }
 
 }

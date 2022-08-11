@@ -348,15 +348,30 @@ public class MavenUtil {
   /**
    * Gets a list of download URLs by groupId from the specified repository search REST API
    *
-   * @param repositoryType String of the type of the repository e.g. maven, jfrog, nexus
+   * @param repositoryType String of the type of the repository e.g. maven, jfrog, nexus2, nexus3
    * @param groupId the groupId to search for
-   *
-   * @return List of artifact URLS
+   * @return List of artifact download URLS
    */
   public static List<URL> getMavenArtifactsByGroupId(MavenSearchRepositoryType repositoryType, String groupId) {
 
+    return getMavenArtifactsByGroupId(repositoryType, groupId, null);
+
+  }
+
+  /**
+   * Gets a list of download URLs by groupId from the specified repository search REST API using authentication with
+   * bearer token
+   *
+   * @param repositoryType String of the type of the repository e.g. maven, jfrog, nexus2, nexus3
+   * @param groupId the groupId to search for
+   * @param authToken bearer token to use for authentication
+   * @return List of artifact download URLS
+   */
+  public static List<URL> getMavenArtifactsByGroupId(MavenSearchRepositoryType repositoryType, String groupId,
+      String authToken) {
+
     try {
-      return AbstractRESTSearchResponse.getArtifactDownloadLinks(repositoryType, groupId);
+      return AbstractRESTSearchResponse.getArtifactDownloadLinks(repositoryType, groupId, authToken);
     } catch (RESTSearchResponseException | JsonProcessingException | MalformedURLException e) {
       throw new CobiGenRuntimeException("Unable to get artifacts from " + repositoryType + " by groupId " + groupId, e);
     }

@@ -41,6 +41,14 @@ public class MavenSearchResponse implements AbstractRESTSearchResponse {
   @JsonIgnore
   public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
 
+    return getJsonResponse(repositoryUrl, groupId, null);
+  }
+
+  @Override
+  @JsonIgnore
+  public String getJsonResponse(String repositoryUrl, String groupId, String authToken)
+      throws RESTSearchResponseException {
+
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_TARGET_LINK + "?q=g:" + groupId
         + "&wt=json";
     LOG.info("Starting Maven Search REST API request with URL: {}.", targetLink);
@@ -53,7 +61,7 @@ public class MavenSearchResponse implements AbstractRESTSearchResponse {
 
     String jsonResponse;
 
-    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink);
+    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
 
