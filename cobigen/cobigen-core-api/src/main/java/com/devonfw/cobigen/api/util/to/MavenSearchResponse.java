@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 @JsonIgnoreProperties(value = { "responseHeader", "spellcheck" })
-public class MavenSearchResponse implements AbstractRESTSearchResponse {
+public class MavenSearchResponse implements SearchResponse {
 
   /** Logger instance. */
   @JsonIgnore
@@ -51,17 +52,17 @@ public class MavenSearchResponse implements AbstractRESTSearchResponse {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_TARGET_LINK + "?q=g:" + groupId
         + "&wt=json";
-    LOG.info("Starting Maven Search REST API request with URL: {}.", targetLink);
+    LOG.info("Starting {} search REST API request with URL: {}.", getRepositoryType(), targetLink);
 
     int limitRows = MavenSearchRepositoryConstants.MAVEN_MAX_RESPONSE_ROWS;
     if (limitRows > 0) {
       targetLink += "&rows=" + limitRows;
-      LOG.info("Limiting Maven Search REST API request to: {} rows.", limitRows);
+      LOG.info("Limiting {} search REST API request to: {} rows.", getRepositoryType(), limitRows);
     }
 
     String jsonResponse;
 
-    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink, authToken);
+    jsonResponse = SearchResponseFactory.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
 
@@ -77,14 +78,20 @@ public class MavenSearchResponse implements AbstractRESTSearchResponse {
     for (MavenSearchResponseDoc doc : docs) {
       for (String fileEnding : doc.getEc()) {
         String newFileEnding = fileEnding;
-        downloadLinks.add(
-            AbstractRESTSearchResponse.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
+        downloadLinks
+            .add(SearchResponseFactory.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
                 doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), newFileEnding));
       }
 
     }
 
     return downloadLinks;
+  }
+
+  @Override
+  public MavenSearchRepositoryType getRepositoryType() {
+
+    return MavenSearchRepositoryType.maven;
   }
 
 }

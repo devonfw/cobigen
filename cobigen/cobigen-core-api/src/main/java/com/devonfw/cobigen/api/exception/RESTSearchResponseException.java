@@ -29,12 +29,12 @@ public class RESTSearchResponseException extends CobiGenRuntimeException {
   /**
    * Creates a new {@link RESTSearchResponseException} with the specified message and the causing {@link Throwable}
    *
-   * @param statusCode status code causing the {@link RESTSearchResponseException} or null if not available
    * @param message describing the exception
+   * @param statusCode status code causing the {@link RESTSearchResponseException} or null if not available
    */
   public RESTSearchResponseException(String message, String statusCode) {
 
-    super((statusCode != null ? statusCode + ":\n" : "") + message);
+    super(message + statusCode);
   }
 
 }

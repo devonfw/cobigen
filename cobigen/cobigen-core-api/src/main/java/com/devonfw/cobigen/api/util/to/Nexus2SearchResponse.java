@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 @JsonIgnoreProperties(value = { "totalCount", "from", "count", "tooManyResults", "collapsed", "repoDetails" })
-public class Nexus2SearchResponse implements AbstractRESTSearchResponse {
+public class Nexus2SearchResponse implements SearchResponse {
 
   /** Logger instance. */
   @JsonIgnore
@@ -38,7 +39,7 @@ public class Nexus2SearchResponse implements AbstractRESTSearchResponse {
     for (Nexus2SearchResponseData item : this.data) {
       for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
         for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
-          downloadLinks.add(AbstractRESTSearchResponse.createDownloadLink(
+          downloadLinks.add(SearchResponseFactory.createDownloadLink(
               MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
                   + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
               item.getGroupId(), item.getArtifactId(), item.getVersion(), "." + artifactLink.getExtension()));
@@ -67,13 +68,19 @@ public class Nexus2SearchResponse implements AbstractRESTSearchResponse {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_TARGET_LINK + "?_dc="
         + MavenSearchRepositoryConstants.NEXUS2_DC_ID + "&q=" + groupId;
-    LOG.info("Starting Nexus Search REST API request with URL: {}.", targetLink);
+    LOG.info("Starting {} search REST API request with URL: {}.", getRepositoryType(), targetLink);
 
     String jsonResponse;
 
-    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink, authToken);
+    jsonResponse = SearchResponseFactory.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
+  }
+
+  @Override
+  public MavenSearchRepositoryType getRepositoryType() {
+
+    return MavenSearchRepositoryType.nexus2;
   }
 }
 

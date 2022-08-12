@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 @JsonIgnoreProperties(value = { "continuationToken" })
-public class Nexus3SearchResponse implements AbstractRESTSearchResponse {
+public class Nexus3SearchResponse implements SearchResponse {
 
   /** Logger instance. */
   @JsonIgnore
@@ -61,13 +62,19 @@ public class Nexus3SearchResponse implements AbstractRESTSearchResponse {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS3_TARGET_LINK
         + "?repository=maven-central" + "&group=" + groupId;
-    LOG.info("Starting Nexus Search REST API request with URL: {}.", targetLink);
+    LOG.info("Starting {} search REST API request with URL: {}.", getRepositoryType(), targetLink);
 
     String jsonResponse;
 
-    jsonResponse = AbstractRESTSearchResponse.getJsonResponseStringByTargetLink(targetLink, authToken);
+    jsonResponse = SearchResponseFactory.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
+  }
+
+  @Override
+  public MavenSearchRepositoryType getRepositoryType() {
+
+    return MavenSearchRepositoryType.nexus3;
   }
 }
 

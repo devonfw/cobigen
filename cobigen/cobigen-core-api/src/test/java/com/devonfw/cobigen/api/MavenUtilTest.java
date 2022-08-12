@@ -11,15 +11,18 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
-import com.devonfw.cobigen.api.util.to.AbstractRESTSearchResponse;
 import com.devonfw.cobigen.api.util.to.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.MavenSearchResponse;
 import com.devonfw.cobigen.api.util.to.Nexus2SearchResponse;
 import com.devonfw.cobigen.api.util.to.Nexus3SearchResponse;
+import com.devonfw.cobigen.api.util.to.SearchResponseFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.ws.rs.ProcessingException;
 
 /**
  * Test class for maven utilities
@@ -30,30 +33,30 @@ public class MavenUtilTest {
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenUtilTest";
 
   /**
-   * Tests if a wrong repository type returns null
+   * Tests if a wrong repository type throws {@link CobiGenRuntimeException}
    */
-  @Test
-  public void testWrongRepositoryTypeReturnsNull() {
+  @Test(expected = CobiGenRuntimeException.class)
+  public void testWrongRepositoryTypeThrowsException() {
 
-    assertThat(MavenUtil.getMavenArtifactsByGroupId(null, testdataRoot)).isNull();
+    assertThat(MavenUtil.getMavenArtifactsByGroupId("this/is/not/a/link", "test", null));
   }
 
   /**
    * Tests if an exception gets thrown when a faulty target link without a token was used
    */
-  @Test(expected = RESTSearchResponseException.class)
+  @Test(expected = ProcessingException.class)
   public void testWrongTargetLinkThrowsException() {
 
-    AbstractRESTSearchResponse.getJsonResponseStringByTargetLink("this/is/not/a/link", null);
+    SearchResponseFactory.getJsonResponseStringByTargetLink("this/is/not/a/link", null);
   }
 
   /**
-   * Tests if an exception gets thrown when a faulty target link and a token was used
+   * Tests if an exception gets thrown when a faulty target link and token was used
    */
-  @Test(expected = RESTSearchResponseException.class)
+  @Test(expected = ProcessingException.class)
   public void testWrongTargetLinkAndTokenThrowsException() {
 
-    AbstractRESTSearchResponse.getJsonResponseStringByTargetLink("this/is/not/a/link", "thisisabadtoken");
+    SearchResponseFactory.getJsonResponseStringByTargetLink("this/is/not/a/link", "thisisabadtoken");
   }
 
   /**
@@ -62,8 +65,7 @@ public class MavenUtilTest {
   @Test(expected = RESTSearchResponseException.class)
   public void testWrongResponseStatusCodeThrowsException() {
 
-    AbstractRESTSearchResponse.getJsonResponseStringByTargetLink("https://search.maven.org/solrsearch/select?test",
-        null);
+    SearchResponseFactory.getJsonResponseStringByTargetLink("https://search.maven.org/solrsearch/select?test", null);
   }
 
   /**
@@ -173,7 +175,8 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.maven, "com.google.inject", null);
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_URL,
+        "com.google.inject", null);
 
     assertThat(downloadList).contains(
         new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
@@ -192,7 +195,8 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.nexus2, "com.devonfw.cobigen");
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL,
+        "com.devonfw.cobigen", null);
 
     assertThat(downloadList).contains(new URL(
         "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.jar"));
@@ -209,7 +213,8 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.nexus3, "com.devonfw.cobigen");
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryConstants.NEXUS3_REPOSITORY_URL,
+        "com.devonfw.cobigen", null);
 
     assertThat(downloadList).contains(new URL(
         "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
@@ -228,7 +233,8 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryType.jfrog, "com.devonfw.cobigen", null);
+    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryConstants.JFROG_REPOSITORY_URL,
+        "com.devonfw.cobigen", null);
     assertThat(downloadList).contains(new URL(
         "https://localjfrog.com/artifactory/api/storage/maven-remote-cache/com/devonfw/cobigen/cli-parent/2021.04.001-SNAPSHOT/cli-parent-2021.04.001-SNAPSHOT.pom"),
         new URL(

@@ -2,12 +2,14 @@ package com.devonfw.cobigen.api.util.to;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.glassfish.jersey.client.oauth2.OAuth2ClientSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
-import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,42 +28,30 @@ import jakarta.ws.rs.core.Response;
  * Handles the responses from various search REST API's
  *
  */
-public interface AbstractRESTSearchResponse {
+public class SearchResponseFactory {
+
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(SearchResponseFactory.class);
 
   /**
-   * Creates a list of download links
+   * Gets a list of available search REST APIs (register a new search interface type here)
    *
-   * @return List of download links
-   * @throws MalformedURLException if an URL was not valid
+   * @return list of available {@link SearchResponse}
    */
-  public List<URL> getDownloadURLs() throws MalformedURLException;
+  private static List<SearchResponse> getAvailableSearchInterfaces() {
 
-  /**
-   * Gets the json response
-   *
-   * @param repositoryUrl URL of the repository
-   * @param groupId to search for
-   * @return String of json response
-   * @throws RESTSearchResponseException if the request did not return status 200
-   */
-  public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException;
-
-  /**
-   * Gets the json response using bearer authentication token
-   *
-   * @param repositoryUrl URL of the repository
-   * @param groupId to search for
-   * @param authToken bearer token to use for authentication
-   * @return String of json response
-   * @throws RESTSearchResponseException if the request did not return status 200
-   */
-  public String getJsonResponse(String repositoryUrl, String groupId, String authToken)
-      throws RESTSearchResponseException;
+    List<SearchResponse> availableSearchInterfaces = new ArrayList<>();
+    availableSearchInterfaces.add(new MavenSearchResponse());
+    availableSearchInterfaces.add(new JfrogSearchResponse());
+    availableSearchInterfaces.add(new Nexus2SearchResponse());
+    availableSearchInterfaces.add(new Nexus3SearchResponse());
+    return availableSearchInterfaces;
+  }
 
   /**
    * Gets the download links by given repository type
    *
-   * @param repositoryType String of the type of the repository e.g. maven, jfrog, nexus
+   * @param baseURL String of the repository server URL
    * @param groupId the groupId to search for
    * @param authToken bearer token to use for authentication
    * @return List of download links
@@ -71,46 +61,31 @@ public interface AbstractRESTSearchResponse {
    * @throws MalformedURLException if an URL was malformed
    *
    */
-  public static List<URL> getArtifactDownloadLinks(MavenSearchRepositoryType repositoryType, String groupId,
-      String authToken)
+  public static List<URL> getArtifactDownloadLinks(String baseURL, String groupId, String authToken)
       throws RESTSearchResponseException, JsonMappingException, JsonProcessingException, MalformedURLException {
 
     ObjectMapper mapper = new ObjectMapper();
-    String jsonResponse = "";
+    List<URL> downloadLinks = null;
+    List<SearchResponse> availableSearchInterfaces = getAvailableSearchInterfaces();
 
-    if (repositoryType == MavenSearchRepositoryType.maven) {
-      MavenSearchResponse response = new MavenSearchResponse();
-      String mavenRepositoryURL = MavenSearchRepositoryConstants.MAVEN_REPOSITORY_URL;
-      jsonResponse = response.getJsonResponse(mavenRepositoryURL, groupId, null);
-      response = mapper.readValue(jsonResponse, MavenSearchResponse.class);
-      return response.getDownloadURLs();
+    for (SearchResponse searchResponse : availableSearchInterfaces) {
+      try {
+        LOG.debug("Trying to get a response from {} with server URL: {} ...", searchResponse.getRepositoryType(),
+            baseURL);
+        String jsonResponse = searchResponse.getJsonResponse(baseURL, groupId, authToken);
+        SearchResponse response = mapper.readValue(jsonResponse, searchResponse.getClass());
+        return response.getDownloadURLs();
+      } catch (RESTSearchResponseException e) {
+        LOG.debug("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
+            searchResponse.getRepositoryType(), baseURL, e.getMessage());
+      } catch (ProcessingException e) {
+        String errorMsg = "The search REST API was not able to process the URL: " + baseURL;
+        LOG.error(errorMsg, e);
+        throw new CobiGenRuntimeException(errorMsg, e);
+      }
     }
 
-    if (repositoryType == MavenSearchRepositoryType.jfrog) {
-      JfrogSearchResponse response = new JfrogSearchResponse();
-      String jfrogRepositoryURL = MavenSearchRepositoryConstants.JFROG_REPOSITORY_URL;
-      jsonResponse = response.getJsonResponse(jfrogRepositoryURL, groupId, authToken);
-      response = mapper.readValue(jsonResponse, JfrogSearchResponse.class);
-      return response.getDownloadURLs();
-    }
-
-    if (repositoryType == MavenSearchRepositoryType.nexus2) {
-      Nexus2SearchResponse response = new Nexus2SearchResponse();
-      String nexusRepositoryURL = MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL;
-      jsonResponse = response.getJsonResponse(nexusRepositoryURL, groupId, null);
-      response = mapper.readValue(jsonResponse, Nexus2SearchResponse.class);
-      return response.getDownloadURLs();
-    }
-
-    if (repositoryType == MavenSearchRepositoryType.nexus3) {
-      Nexus3SearchResponse response = new Nexus3SearchResponse();
-      String nexusRepositoryURL = MavenSearchRepositoryConstants.NEXUS3_REPOSITORY_URL;
-      jsonResponse = response.getJsonResponse(nexusRepositoryURL, groupId, null);
-      response = mapper.readValue(jsonResponse, Nexus3SearchResponse.class);
-      return response.getDownloadURLs();
-    }
-
-    return null;
+    return downloadLinks;
   }
 
   /**
@@ -151,12 +126,7 @@ public interface AbstractRESTSearchResponse {
 
     Response response = null;
     Invocation.Builder request = target.request(MediaType.APPLICATION_JSON);
-    try {
-      response = request.get();
-    } catch (ProcessingException e) {
-      throw new RESTSearchResponseException("The search REST API was not able to process the target URL: " + targetLink,
-          e);
-    }
+    response = request.get();
 
     int status = response.getStatus();
     String jsonResponse = "";

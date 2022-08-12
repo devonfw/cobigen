@@ -26,10 +26,9 @@ import org.zeroturnaround.exec.StartedProcess;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
-import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
-import com.devonfw.cobigen.api.util.to.AbstractRESTSearchResponse;
+import com.devonfw.cobigen.api.util.to.SearchResponseFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
@@ -346,34 +345,20 @@ public class MavenUtil {
   }
 
   /**
-   * Gets a list of download URLs by groupId from the specified repository search REST API
-   *
-   * @param repositoryType String of the type of the repository e.g. maven, jfrog, nexus2, nexus3
-   * @param groupId the groupId to search for
-   * @return List of artifact download URLS
-   */
-  public static List<URL> getMavenArtifactsByGroupId(MavenSearchRepositoryType repositoryType, String groupId) {
-
-    return getMavenArtifactsByGroupId(repositoryType, groupId, null);
-
-  }
-
-  /**
    * Gets a list of download URLs by groupId from the specified repository search REST API using authentication with
    * bearer token
    *
-   * @param repositoryType String of the type of the repository e.g. maven, jfrog, nexus2, nexus3
+   * @param baseURL String of the repository server URL
    * @param groupId the groupId to search for
    * @param authToken bearer token to use for authentication
    * @return List of artifact download URLS
    */
-  public static List<URL> getMavenArtifactsByGroupId(MavenSearchRepositoryType repositoryType, String groupId,
-      String authToken) {
+  public static List<URL> getMavenArtifactsByGroupId(String baseURL, String groupId, String authToken) {
 
     try {
-      return AbstractRESTSearchResponse.getArtifactDownloadLinks(repositoryType, groupId, authToken);
+      return SearchResponseFactory.getArtifactDownloadLinks(baseURL, groupId, authToken);
     } catch (RESTSearchResponseException | JsonProcessingException | MalformedURLException e) {
-      throw new CobiGenRuntimeException("Unable to get artifacts from " + repositoryType + " by groupId " + groupId, e);
+      throw new CobiGenRuntimeException("Unable to get artifacts from " + baseURL + " by groupId " + groupId, e);
     }
 
   }
