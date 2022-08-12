@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      version="3.0">
+    <trigger id="sql_openapi_app" type="openapi">
+
+    </trigger>
+    <tags>
+      <tag name="OpenAPI"></tag>
+      <tag name="SQL"></tag>
+      <tag name="App"></tag>
+    </tags>
+</contextConfiguration>
