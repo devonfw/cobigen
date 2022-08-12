@@ -3,7 +3,6 @@ package com.devonfw.cobigen.templates.devon4j.utils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * Provides type operations, mainly checks and casts for Java Primitives, to be used in the templates
  *
  */
-public class JavaUtil {
+public class JavaUtil extends CommonUtil {
 
   /**
    * Logger for this class
@@ -31,7 +30,7 @@ public class JavaUtil {
 
   /**
    * Returns the Object version of a Java primitive or the input if the input isn't a java primitive
-   * 
+   *
    * @param simpleType String
    * @return the corresponding object wrapper type simple name of the input if the input is the name of a primitive java
    *         type. The input itself if not. (e.g. "int" results in "Integer")
@@ -213,31 +212,6 @@ public class JavaUtil {
     } else {
       return "";
     }
-  }
-
-  /**
-   * @param pojoClass {@link Class} the class object of the pojo
-   * @param fieldName {@link String} the name of the field
-   * @return true if the field is an instance of java.utils.Collections
-   * @throws NoSuchFieldException indicating something awefully wrong in the used model
-   * @throws SecurityException if the field cannot be accessed.
-   */
-  public boolean isCollection(Class<?> pojoClass, String fieldName) throws NoSuchFieldException, SecurityException {
-
-    if (pojoClass == null) {
-      return false;
-    }
-
-    Field field = pojoClass.getDeclaredField(fieldName);
-    if (field == null) {
-      field = pojoClass.getField(fieldName);
-    }
-    if (field == null) {
-      return false;
-    } else {
-      return Collection.class.isAssignableFrom(field.getType());
-    }
-
   }
 
   /**
