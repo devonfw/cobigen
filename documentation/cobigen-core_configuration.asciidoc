@@ -378,6 +378,113 @@ However, if we want to reference an increment that it is not defined inside our 
 
 The ref string is split using as delimiter `::`. The first part of the string, is the `trigger_id` to reference. That trigger contains an `increment_id`. Currently, this functionality only works when both templates use the same kind of input file.
 
+== Configuration Upgrade
+
+`CobiGen 2021.12.007` introduces an updated configuration folder structure:
+
+```
+template-sets
+ |- downloaded
+   |- template-set1.jar
+   |- template-set2.jar
+   |- template-set-utilities.jar
+ |- adapted
+   |- template-set1
+     |- src
+       |- main
+         |- templates
+           |- templates
+             |- context.xml
+             |- templates.xml
+   |- template-set2
+```
+
+The updated structure splits the old structure, which consisted of multiple pom and context files,
+into multiple files corresponding to every template set that will be created.
+
+=== Manual Upgrade Steps
+If you wish to manually split your templates into smaller parts as specified in version 3.0 Please follow the following instruction.
+Navigate to your CobiGen directory e.g. `$cghome/.cobigen`. If the `template-sets` folder is missing,
+please create one. Navigate into the folder and create a `downloaded` and an `adapted` folder.
+
+1. Navigate to the newly created `adapted` folder and create a new folder named after the template you want to upgrade
+e. g. `template-set1`
+
+2. In the newly created folder, create the following folder-structure:
+```
+ |- adapted
+   |- template-set1
+     |- src
+       |- main
+         |- templates
+```
+Whereas`template-set1` is the name of the template you want to upgrade.
+[start=3]
+3. Navigate to `CobiGen_Templates\src\main\java` and copy the `java` folder into your newly created `main` folder.
+The structure of the `adapted` folder should now look like this:
+```
+ |- adapted
+   |- template-set1
+     |- src
+       |- main
+         |- java
+         |- templates
+```
+[start=4]
+4. Navigate to `CobiGen_Templates\src\main\templates\template-set1` and copy all of it's contents
+into your newly generated templates folder (`template-sets\adapted\templateSet1\src\main\templates`).
+
+6. Switch to `template-sets\adapted\templateSet1\src\main\templates` and create a new 'context.xml' file, with the following (to your needs adapted) content:
+```
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
+    <trigger id="templateSet1" type="java" templateFolder="templateSet1" inputCharset="UTF-8">
+        <containerMatcher type="package" value="someValue" retrieveObjectsRecursively="false"/>
+        <matcher type="fqn" value="*" accumulationType="NOT">
+            <variableAssignment type="constant" key="foo" value="BLUBB1"/>
+        </matcher>
+    </trigger>
+    <tags>
+        <tag name="PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER"/>
+    </tags>
+    <links>
+        <link url="PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER"/>
+    </links>
+</contextConfiguration>
+```
+[start=7]
+7. Switch to `template-sets\adapted\templateSet1` and create a new `pom.xml`. With the following (to your needs adapted) content:
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>templates-devon4j</artifactId>
+    <version>2021.12.006</version>
+  </parent>
+  <artifactId>templateSet1</artifactId>
+  <name>PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER</name>
+  <dependencies>
+    <dependency>
+
+    //Your first dependency
+
+    </dependency>
+
+    <dependency>
+
+    //Your second dependency
+
+    </dependency>
+  </dependencies>
+</project>
+
+```
+[start=8]
+8. Congratulations, you have upgraded your first template!
+
 == Java Template Logic
 
 _since `cobigen-core-3.0.0` which is included in the Eclipse and Maven Plugin since version 2.0.0_
