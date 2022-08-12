@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
@@ -22,6 +25,9 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
  * @author mbrunnli (Jun 22, 2015)
  */
 public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<ContextConfigurationVersion> {
+
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationUpgrader.class);
 
   /**
    * Creates a new {@link ContextConfigurationUpgrader} instance.
@@ -77,6 +83,11 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
           tempResult.setResultConfigurationJaxbRootNodeAndPath(context, contextMap.get(context));
           results.add(tempResult);
         }
+
+        // TODO: Reference to wiki, wiki entry, dialog element.
+        LOG.info("The update of the configuration to version 3.0 was successful. Refer the wiki for more information: "
+            + "https://github.com/devonfw/cobigen/blob/template-set-deployables/documentation/cobigen-core_configuration.asciidoc#configuration-upgrade");
+
         break;
       default:
         throw new NotYetSupportedException(

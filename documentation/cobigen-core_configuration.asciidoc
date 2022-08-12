@@ -378,6 +378,82 @@ However, if we want to reference an increment that it is not defined inside our 
 
 The ref string is split using as delimiter `::`. The first part of the string, is the `trigger_id` to reference. That trigger contains an `increment_id`. Currently, this functionality only works when both templates use the same kind of input file.
 
+== Configuration Upgrade
+
+`CobiGen 2021.12.007` introduces an updated configuration folder structure:
+
+```
+template-sets
+ |- downloaded
+   |- template-set1.jar
+   |- template-set2.jar
+   |- template-set-utilities.jar
+ |- adapted
+   |- template-set1
+     |- src
+       |- main
+         |- templates
+           |- templates
+             |- context.xml
+             |- templates.xml
+   |- template-set2
+```
+
+The updated structure splits the old structure, which consisted of multiple pom and context files,
+into multiple files corresponding to every template set that will be created.
+In order too manually upgrade
+
+=== Manual Upgrade Steps
+If you wish to manually split your templates into smaller parts as specified in version 3.0). Please follow the following instruction.
+Naviagte to your CobGen directory e.g. `$cghome/.cobigen`. If the `template-sets` folder is missing,
+please create one. Navigate into the folder and create a `downloaded` and an `adapted` folder.
+
+In order to manually upgrade your configuration file, the monolithic pom and context files
+   * will be split into multiple files corresponding to every template set that will be created.
+
+The example below should you give a brief overview of the differences between the new and the old configuration structure:
+
+(OLD)
+
+```
+CobiGen_Templates
+ |- templateFolder1
+  |- src
+    |- main
+      |- templates
+        |- template1
+          |- templates
+          |- templates.xml
+ |- templateFolder2
+ |- context.xml
+```
+
+Since: CobiGen 2021.12.007:
+
+```
+template-sets
+ |- downloaded
+   |- template-set1.jar
+   |- template-set2.jar
+   |- template-set-utilities.jar
+ |- adapted
+   |- template-set1
+     |- src
+       |- main
+         |- templates
+           |- templates
+             |- context.xml
+             |- templates.xml
+   |- template-set2
+```
+The new strucutre holds a download folder for downloaded templates which are stored as JAR-Files.
+
+Before you manually adapt existing templates, it is advised, to backup your files first.
+
+To perform the upgrade change to `$cghome/.cobigen` and navigate to this path: templates\CobiGen_Templates\src\main\templates
+and copy the template-folder you want to upgrade. Place them in the newly `generated adapted`-Folder. Done!
+
+
 == Java Template Logic
 
 _since `cobigen-core-3.0.0` which is included in the Eclipse and Maven Plugin since version 2.0.0_
