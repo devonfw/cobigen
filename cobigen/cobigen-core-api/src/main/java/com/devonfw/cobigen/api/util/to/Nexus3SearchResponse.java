@@ -66,7 +66,7 @@ public class Nexus3SearchResponse implements SearchResponse {
 
     String jsonResponse;
 
-    jsonResponse = SearchResponseFactory.getJsonResponseStringByTargetLink(targetLink, authToken);
+    jsonResponse = SearchResponseUtil.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
   }

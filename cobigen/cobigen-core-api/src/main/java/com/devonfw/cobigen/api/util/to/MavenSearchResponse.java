@@ -62,7 +62,7 @@ public class MavenSearchResponse implements SearchResponse {
 
     String jsonResponse;
 
-    jsonResponse = SearchResponseFactory.getJsonResponseStringByTargetLink(targetLink, authToken);
+    jsonResponse = SearchResponseUtil.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
 
@@ -79,7 +79,7 @@ public class MavenSearchResponse implements SearchResponse {
       for (String fileEnding : doc.getEc()) {
         String newFileEnding = fileEnding;
         downloadLinks
-            .add(SearchResponseFactory.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
+            .add(SearchResponseUtil.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
                 doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), newFileEnding));
       }
 

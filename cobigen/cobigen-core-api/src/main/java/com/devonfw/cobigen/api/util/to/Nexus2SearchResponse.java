@@ -39,7 +39,7 @@ public class Nexus2SearchResponse implements SearchResponse {
     for (Nexus2SearchResponseData item : this.data) {
       for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
         for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
-          downloadLinks.add(SearchResponseFactory.createDownloadLink(
+          downloadLinks.add(SearchResponseUtil.createDownloadLink(
               MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
                   + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
               item.getGroupId(), item.getArtifactId(), item.getVersion(), "." + artifactLink.getExtension()));
@@ -72,7 +72,7 @@ public class Nexus2SearchResponse implements SearchResponse {
 
     String jsonResponse;
 
-    jsonResponse = SearchResponseFactory.getJsonResponseStringByTargetLink(targetLink, authToken);
+    jsonResponse = SearchResponseUtil.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
   }

@@ -56,7 +56,7 @@ public class JfrogSearchResponse implements SearchResponse {
 
     String jsonResponse;
 
-    jsonResponse = SearchResponseFactory.getJsonResponseStringByTargetLink(targetLink, authToken);
+    jsonResponse = SearchResponseUtil.getJsonResponseStringByTargetLink(targetLink, authToken);
 
     return jsonResponse;
   }
