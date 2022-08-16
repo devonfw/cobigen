@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
@@ -97,9 +97,7 @@ public class TemplateSetUpgrader {
   public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
       Path contextLocation) throws Exception {
 
-    Path cobigenHome = CobiGenPaths.checkCustomHomePath(contextLocation);
-    if (cobigenHome == null)
-      cobigenHome = CobiGenPaths.getCobiGenHomePath();
+    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
 
     List<Path> newContextLocation = FileSystemUtil.collectAllContextXML(contextLocation);
     Path folderOfContextLocation = newContextLocation.get(0).getParent();
@@ -128,8 +126,10 @@ public class TemplateSetUpgrader {
           throw new CobiGenRuntimeException(e.getMessage(), e);
         }
         try {
-          FileUtils.copyDirectory(utilsPath.toFile(),
-              newTriggerFolder.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER).toFile());
+          if (Files.exists(utilsPath)) {
+            FileUtils.copyDirectory(utilsPath.toFile(),
+                newTriggerFolder.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER).toFile());
+          }
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template utilities Folder", e);
           throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -169,16 +169,15 @@ public class TemplateSetUpgrader {
    * @param {@link Path}newTemplateFolder Path to the split template folder
    * @param {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }trigger to the related template folder
    * @throws IOException
-   * @throws XmlPullParserException
-   * @throws ClassNotFoundException
+   * @throws FileNotFoundException
    */
   private void writeNewPomFile(Path cobigenTemplates, Path newTemplateFolder,
       com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) throws IOException, FileNotFoundException {
 
     // Pom.xml creation
     try {
-      Path oldPom = cobigenTemplates.resolve("pom.xml");
-      Path newPom = newTemplateFolder.resolve("pom.xml");
+      Path oldPom = cobigenTemplates.resolve(MavenConstants.POM);
+      Path newPom = newTemplateFolder.resolve(MavenConstants.POM);
       Files.createFile(newPom);
 
       // read the content of the pom.xml then replace it

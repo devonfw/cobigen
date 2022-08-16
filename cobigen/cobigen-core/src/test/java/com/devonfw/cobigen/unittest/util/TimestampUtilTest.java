@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 
+import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,6 +34,8 @@ public class TimestampUtilTest {
     Timestamp InstantTimestampCopy = TimestampUtil.readTimestamp(configFile);
 
     Assert.assertEquals(InstantTimestamp, InstantTimestampCopy);
+
+    Files.delete(configFile.toFile());
 
   }
 

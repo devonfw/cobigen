@@ -261,7 +261,8 @@ public class GeneratorWrapperFactory {
     Path templateSetsAdaptedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
-    if (!ResourcesPluginUtil.generatorProjExists || ResourcesPluginUtil.TemplatesUpgraded) {
+    if (!ResourcesPluginUtil.generatorProjExists || ResourcesPluginUtil.TemplatesUpgraded
+        || generatorProj.getLocationURI() == null) {
 
       /*
        * After the upgrade the new template-sets will be used. Only once! Then the old configuration has to be deleted
@@ -287,11 +288,12 @@ public class GeneratorWrapperFactory {
         return CobiGenFactory.create(jarPath.toUri(), allowMonolithicConfiguration);
       }
     }
-    if (generatorProj == null) {
+    if (generatorProj.getLocationURI() == null) {
       throw new GeneratorCreationException(
           "Configuration source could not be read. Have you downloaded the templates?");
+    } else {
+      return CobiGenFactory.create(generatorProj.getLocationURI(), allowMonolithicConfiguration);
     }
-    return CobiGenFactory.create(generatorProj.getLocationURI(), allowMonolithicConfiguration);
   }
 
 }

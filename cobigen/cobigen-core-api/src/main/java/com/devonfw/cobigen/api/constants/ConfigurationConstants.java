@@ -117,11 +117,6 @@ public class ConfigurationConstants {
   public static final String BACKUP_FOLDER = "backup";
 
   /**
-   * pom.xml file name
-   */
-  public static final String POM_CONFIG_FILENAME = "pom.xml";
-
-  /**
    * Default cobigen version
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_VERSION = "2021.12.007";

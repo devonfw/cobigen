@@ -370,7 +370,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     Path templatesPath = null;
     if (templatesProject != null) {
       List<Path> contextXml = FileSystemUtil.collectAllContextXML(templatesProject);
-      templatesPath = contextXml.get(0).getParent();
+      templatesPath = FileSystemUtil.createFileSystemDependentPath(contextXml.get(0).getParent().toUri());
     } else {
       templatesPath = FileSystemUtil.createFileSystemDependentPath(
           CobiGenPaths.getTemplatesFolderPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
@@ -383,13 +383,11 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     contextUpgraderObject.resolveLatestCompatibleSchemaVersion(templatesPath);
     contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.NO_BACKUP);
 
-    LOG.info("context.xml upgraded succsessfully. {}", templatesPath);
+    LOG.info("context.xml upgraded successfully. {}", templatesPath);
     LOG.info("Templates successfully upgraded. \n ");
 
-    Path cobigenHome = CobiGenPaths.checkCustomHomePath(templatesPath);
-    if (cobigenHome == null) {
-      cobigenHome = CobiGenPaths.getCobiGenHomePath();
-    }
+    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+
     Path newTemplates = cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     LOG.info("New templates location: {} ", newTemplates);
     return newTemplates;

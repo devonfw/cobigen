@@ -273,9 +273,9 @@ public class GenerateCommand extends CommandCommons {
       CobiGenUtils.initializeCobiGen(this.templatesProject, false);
     } catch (DeprecatedMonolithicConfigurationException e) {
       if (this.templatesProject == null)
-        LOG.warn("Found old configuration at: {} ", ConfigurationFinder.findTemplatesLocation());
+        LOG.warn("Found monolithic configuration at: {} ", ConfigurationFinder.findTemplatesLocation());
       else
-        LOG.warn("Found old configuration at: {} ", this.templatesProject);
+        LOG.warn("Found monolithic configuration at: {} ", this.templatesProject);
       LOG.warn(e.getMessage());
       if (this.upgradeConfiguration) {
         startTemplatesUpgrader();
@@ -298,7 +298,7 @@ public class GenerateCommand extends CommandCommons {
         WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION, System.getProperty("user.dir"));
 
     boolean setToUserDir = ValidationUtils.yesNoPrompt("Upgrading templates configuration...: ",
-        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
+        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with monolithic templates...");
 
     if (setToUserDir) {
       startTemplatesUpgrader();

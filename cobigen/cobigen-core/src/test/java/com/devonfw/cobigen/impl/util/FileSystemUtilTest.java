@@ -14,15 +14,15 @@ import org.junit.Test;
 public class FileSystemUtilTest {
 
   /**
-   * Test methods collectAllContextXML and collectAllTemplatesXML
+   * Test method testCollectAllFilesByName
    */
   @Test
-  public void testCollectAllContextAndTemplatesXMLs() {
+  public void testCollectAllFilesByName() {
 
     Path xmlsPath = Paths.get("src/test/resources/testdata/unittest/config/util/collectors");
 
-    List<Path> allContexts = FileSystemUtil.collectAllContextXML(xmlsPath);
-    List<Path> alltemplates = FileSystemUtil.collectAllTemplatesXML(xmlsPath);
+    List<Path> allContexts = FileSystemUtil.collectAllFilesByName(xmlsPath, "context.xml");
+    List<Path> alltemplates = FileSystemUtil.collectAllFilesByName(xmlsPath, "templates.xml");
 
     Assert.assertEquals(allContexts.get(0),
         Paths.get("src/test/resources/testdata/unittest/config/util/collectors/contextXMLs/context.xml"));

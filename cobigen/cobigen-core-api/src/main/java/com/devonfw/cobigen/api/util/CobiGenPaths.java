@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
@@ -178,28 +179,6 @@ public class CobiGenPaths {
   }
 
   /**
-   * checks the path for any root .cobigen Folder and returns its path
-   *
-   * @param templates path to the templates location
-   * @return path to the root .cobigen Folder
-   */
-  public static Path checkCustomHomePath(Path templates) {
-
-    String cobigenHome = ConfigurationConstants.DEFAULT_HOME_DIR_NAME;
-
-    while (!templates.endsWith(cobigenHome)) {
-      templates = templates.getParent();
-      if (templates == null) {
-
-        return null;
-      }
-
-    }
-    return templates;
-
-  }
-
-  /**
    * checks the path for any pom.xml in a parent Folder and returns its path
    *
    * @param childPath path of the templates
@@ -207,15 +186,18 @@ public class CobiGenPaths {
    */
   public static Path getTemplatesPomFileLocation(Path childPath) {
 
-    String pomFile = ConfigurationConstants.POM_CONFIG_FILENAME;
-
-    while (!Files.exists(childPath.resolve(pomFile))) {
+    String pomFile = MavenConstants.POM;
+    int i = 0;
+    while (!Files.exists(childPath.resolve(pomFile)) && i <= 4) {
       childPath = childPath.getParent();
       if (childPath == null) {
 
         return null;
       }
-
+      i++;
+    }
+    if (!Files.exists(childPath.resolve(pomFile))) {
+      throw new CobiGenRuntimeException("Could not find any pom file in the given Path!");
     }
     return childPath;
 

@@ -292,20 +292,21 @@ public class ResourcesPluginUtil {
   }
 
   /**
-   * start the Upgrader to upgrade the monolithic templates to the new template-set structure
+   * creates an instance of templatesAdapter and then upgrades the templates.
    *
-   * @return
+   * @param monolithicConfiguration path to the monolithic Configuration
+   *
    *
    */
-  public static void upgradeConfiguration(Path oldConfiguration) {
+  public static void upgradeConfiguration(Path monolithicConfiguration) {
 
     TemplateAdapter templateAdapter;
-    if (oldConfiguration == null) {
+    if (monolithicConfiguration == null) {
       templateAdapter = new TemplateAdapterImpl();
     } else {
-      templateAdapter = new TemplateAdapterImpl(oldConfiguration);
+      templateAdapter = new TemplateAdapterImpl(monolithicConfiguration);
     }
-    templateAdapter.upgradeMonolithicTemplates(oldConfiguration);
+    templateAdapter.upgradeMonolithicTemplates(monolithicConfiguration);
     TemplatesUpgraded = true;
   }
 
