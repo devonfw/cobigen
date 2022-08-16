@@ -137,14 +137,16 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testCorrectTemplatesUpgrade() throws Exception {
 
     // preparation
+    this.downloadedFolder.delete();
+    this.templateLocation.delete();
     this.tempFolder.newFile("templates-devon4j-3.0.0.jar");
     File tmpJarFolder = this.tempFolder.getRoot();
 
     // Perform download
-    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, tmpJarFolder);
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, tmpJarFolder);
 
     // Assert
-    assertThat(tmpJarFolder.list().length).isEqualTo(3); // It should download also the sources
+    assertThat(tmpJarFolder.list().length).isEqualTo(2); // It should download also the sources
     assertThat(tmpJarFolder.list()[0].contains("templates-devon4j-3.0.0")).isFalse();
     assertThat(tmpJarFolder.list()[1].contains("templates-devon4j-3.0.0")).isFalse();
 
