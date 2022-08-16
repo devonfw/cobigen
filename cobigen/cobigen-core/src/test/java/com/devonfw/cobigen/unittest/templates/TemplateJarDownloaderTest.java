@@ -72,14 +72,14 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testDownloadTemplatesAlreadyExisting() {
 
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("2021.12.006"));
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.downloadedFolder, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
     assertEquals(this.downloadedFolder.listFiles().length, 2);
     for (File f : FilesList) {
       assertThat(f.getName(), Matchers.either(Matchers.is("templates-devon4j-2021.12.006.jar"))
           .or(Matchers.is("templates-devon4j-2021.12.006-sources.jar")));
     }
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.downloadedFolder, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
     assertEquals(this.downloadedFolder.listFiles().length, 2);
   }
 
@@ -87,7 +87,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testDownloadTemplatesWithoutVersion() {
 
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(""));
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.downloadedFolder, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
     assertEquals(this.downloadedFolder.listFiles().length, 2);
     for (File f : FilesList) {
@@ -95,7 +95,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     }
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("LATEST"));
     this.mavenCoordinatesList.remove(0);
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.downloadedFolder, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
 
   }
 
@@ -103,7 +103,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testDownloadTemplatesWithLATEST() {
 
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("LATEST"));
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.downloadedFolder, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
     assertEquals(this.downloadedFolder.listFiles().length, 2);
     for (File f : FilesList) {

@@ -1,11 +1,8 @@
 package com.devonfw.cobigen.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -14,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
@@ -107,16 +103,9 @@ public class CobiGenFactory {
     URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
     File downloadPath = new File(templatesLocation);
     if (configurationHolder.isTemplateSetConfiguration()) {
-      downloadPath = Paths.get(templatesLocation).resolve(ConfigurationConstants.DOWNLOADED_FOLDER).toFile();
-      if (!downloadPath.exists()) {
-        try {
-          Files.createDirectory(downloadPath.toPath());
-        } catch (IOException e) {
-          throw new CobiGenRuntimeException("Could not create Download Folder", e);
-        }
-      }
       TemplatesJarUtil.downloadTemplatesByMavenCoordinates(downloadPath, config.getMavenCoordinates());
     }
+    // error oder so für die alte config if(config.getMavenCoordinates())
     return createBean;
   }
 

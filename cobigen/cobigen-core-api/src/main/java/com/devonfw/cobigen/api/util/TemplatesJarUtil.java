@@ -113,19 +113,30 @@ public class TemplatesJarUtil {
       return;
       // no templates specified
     }
-    Set<MavenCoordinate> afterExistanceCheckList = new HashSet();
-    // File adapted = new File(templatesDirectory, ConfigurationConstants.ADAPTED_FOLDER);
-    // File downloaded = new File(templatesDirectory, ConfigurationConstants.DOWNLOADED_FOLDER);
-    if (templatesDirectory.getName().equals(ConfigurationConstants.ADAPTED_FOLDER)) {
-      LOG.info("Found adapted folder no download of templates needed");
-      return;
+    boolean downloadedExists = false;
+    for (File f : templatesDirectory.listFiles()) {
+      if (f.getName().equals(ConfigurationConstants.ADAPTED_FOLDER)) {
+        LOG.debug("Found adapted folder no download of templates needed");
+        return;
+      } else if (f.getName().equals(ConfigurationConstants.DOWNLOADED_FOLDER)) {
+        downloadedExists = true;
+      }
     }
-    // check if templates already exist
-    for (
+    File downloadedDirectory = templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER).toFile();
+    if (!downloadedExists) {
+      LOG.info("downloaded folder could not be found and will be created ");
+      try {
+        Files.createDirectory(templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
+      } catch (IOException e) {
+        throw new CobiGenRuntimeException("Could not create Download Folder", e);
+      }
+    }
 
-    MavenCoordinate mcoordinate : mavenCoordinates) {
-      if (templatesDirectory.listFiles().length > 0) {
-        for (File downloadedFile : templatesDirectory.listFiles()) {
+    Set<MavenCoordinate> afterExistanceCheckList = new HashSet();
+    // check if templates already exist
+    for (MavenCoordinate mcoordinate : mavenCoordinates) {
+      if (downloadedDirectory.listFiles().length > 0) {
+        for (File downloadedFile : downloadedDirectory.listFiles()) {
           if (!(downloadedFile.getName().contains(mcoordinate.getArtifactID()))) {
             afterExistanceCheckList.add(mcoordinate);
             LOG.info("Template specified in the properties file with ArtifactID: " + mcoordinate.getArtifactID()
@@ -142,9 +153,9 @@ public class TemplatesJarUtil {
 
     MavenCoordinate mavenCoordinate : afterExistanceCheckList) {
       downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), false,
-          templatesDirectory);
+          downloadedDirectory);
       downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), true,
-          templatesDirectory);
+          downloadedDirectory);
     }
   }
 
