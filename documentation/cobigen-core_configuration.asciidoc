@@ -378,6 +378,129 @@ However, if we want to reference an increment that it is not defined inside our 
 
 The ref string is split using as delimiter `::`. The first part of the string, is the `trigger_id` to reference. That trigger contains an `increment_id`. Currently, this functionality only works when both templates use the same kind of input file.
 
+== Configuration Upgrade
+
+`CobiGen 2021.12.007` introduces an updated configuration folder structure:
+
+```
+template-sets
+ |- downloaded
+   |- template-set1.jar
+   |- template-set2.jar
+   |- template-set-utilities.jar
+ |- adapted
+   |- template-set1
+     |- src
+       |- main
+         |- templates
+           |- templates
+             |- template-set.xml
+   |- template-set2
+```
+
+The updated structure splits the context.xml and the pom.xml files into multiple directories - one for each template set
+ - each with their own atomized/small/more understandable version so you can download them individually instead of all
+at once.
+
+If the configuration needs to be upgraded, the user will be asked whether he wants to perform an automatic upgrade. The
+upgrade can also be performed manually, but it is highly recommended to perform it automatically.
+
+=== Manual Upgrade Steps
+If you wish to manually split your templates into smaller parts, as specified in version 3.0, please follow the following instruction.
+Navigate to your CobiGen directory e.g. `$cghome/.cobigen`. If the `template-sets` folder is missing,
+please create one. Navigate into the folder and create a `downloaded` and an `adapted` folder.
+
+1. Navigate to the newly created `adapted` folder and create a new folder named after the template you want to upgrade
+e. g. `template1`
+
+2. In the newly created folder, create the following folder-structure:
+```
+ |- adapted
+   |- template1
+     |- src
+       |- main
+         |- templates
+```
+Whereas `template1` is the name of the template you want to upgrade.
+[start=3]
+3. Within the old templates directory, navigate to `CobiGen_Templates\src\main\java` and copy the `java` folder, which contains the template utility source files, into your newly created `main` folder.
+The structure of the `adapted` folder should now look like this:
+```
+ |- adapted
+   |- template1
+     |- src
+       |- main
+         |- java
+         |- templates
+```
+[start=4]
+4. Navigate to the template you want to upgrade e.g. `CobiGen_Templates\src\main\templates\template-set1` and copy all of it's contents
+into your newly generated templates folder (`template-sets\adapted\templateSet1\src\main\templates`).
+
+6. Switch to `template-sets\adapted\templateSet1\src\main\templates` and create a new 'template-set.xml' file (which combines the context.xml and templates.xml), with the following content (adapted to your needs):
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.0">
+  <trigger id="valid" type="java">
+    <matcher type="fqn" value="*">
+    </matcher>
+  </trigger>
+
+  <tags>
+    <tag name="bla"/>
+  </tags>
+
+  <templates>
+    <template name="prefix_Foo2Class.java" destinationPath="src/main/java/foo/Foo2Class${variable}.java"
+      templateFile="foo/Foo2Class.java.ftl" mergeStrategy="javamerge"/>
+    <templateExtension ref="prefix2_FooClass.java" destinationPath="adapted/path/FooClass.java"
+      mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
+    <templateExtension ref="prefix2_Foo2Class.java"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templateNamePrefix="prefix_" templatePath="foo" destinationPath="src/main/java/foo"/>
+    <templateScan templateNamePrefix="prefix2_" templatePath="bar" destinationPath="src/main/java/bar"/>
+  </templateScans>
+
+</templateSetConfiguration>
+```
+The newly generated 'template-set.xml' file contains information for just one template-set. You can copy this information for
+your template from the old 'context.xml' (located here: `CobiGen_Templates\src\main\templates`) and 'templates.xml' file (located here: `CobiGen_Templates\src\main\templates\template1`) (e.g. crud-java-server-app).
+[start=7]
+7. Switch to `template-sets\adapted\templateSet1` and create a new `pom.xml`. With the following content (adapted to your needs):
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>templates-devon4j</artifactId>
+    <version>2021.12.007</version>
+  </parent>
+  <artifactId>templateSet1</artifactId>
+  <name>PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER</name>
+  <dependencies>
+    <dependency>
+
+    //Your first dependency
+
+    </dependency>
+
+    <dependency>
+
+    //Your second dependency
+
+    </dependency>
+  </dependencies>
+</project>
+
+```
+[start=8]
+8. Congratulations, you have upgraded your first template!
+
 == Java Template Logic
 
 _since `cobigen-core-3.0.0` which is included in the Eclipse and Maven Plugin since version 2.0.0_
