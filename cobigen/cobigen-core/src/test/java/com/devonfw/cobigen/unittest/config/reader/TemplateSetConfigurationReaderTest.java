@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -17,7 +18,10 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
+import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
+import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
+import com.devonfw.cobigen.impl.config.entity.io.AccumulationType;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -32,6 +36,12 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
    * Root path to all resources used in this test case
    */
   private static String testFileRootPath = "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/";
+
+  private static Path invalidConfigurationPath = Paths.get(new File(testFileRootPath + "invalid_template_sets").toURI())
+      .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+
+  private static Path validConfigurationPath = Paths.get(new File(testFileRootPath + "valid_template_sets").toURI())
+      .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
 
   /**
    * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
@@ -54,10 +64,8 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testInvalidTemplateSets() throws InvalidConfigurationException {
 
-    Path configurationPath = Paths.get(new File(testFileRootPath + "invalid_template_sets").toURI())
-        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     Throwable invalidException = assertThrows(InvalidConfigurationException.class, () -> {
-      new TemplateSetConfigurationReader(configurationPath);
+      new TemplateSetConfigurationReader(invalidConfigurationPath);
     });
 
     assertThat(invalidException instanceof InvalidConfigurationException);
@@ -70,7 +78,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
    * @throws Exception test fails
    */
   @Test
-  public void testContextLoadedFromNewConfiguration() throws Exception {
+  public void testTemplateSetLoadedFromNewConfiguration() throws Exception {
 
     CobiGenFactory.create(new File(testFileRootPath + "valid_template_sets_adapted").toURI().resolve("template-sets"));
   }
@@ -82,10 +90,10 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testTemplateSetsDownloaded() {
 
-    Path configurationPath = Paths.get(new File(testFileRootPath + "valid_template_sets_downloaded").toURI())
+    Path templateSetPath = Paths.get(new File(testFileRootPath + "valid_template_sets_downloaded").toURI())
         .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    TemplateSetConfigurationReader context = new TemplateSetConfigurationReader(configurationPath);
-    assertThat(context.getTemplateSetFiles().size()).isEqualTo(1);
+    TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(templateSetPath);
+    assertThat(templateSet.getTemplateSetFiles().size()).isEqualTo(1);
   }
 
   /**
@@ -96,10 +104,9 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testTemplateSetsAdaptedAndDownloaded() {
 
-    Path configurationPath = Paths.get(new File(testFileRootPath + "valid_template_sets").toURI())
-        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    TemplateSetConfigurationReader context = new TemplateSetConfigurationReader(configurationPath);
-    assertThat(context.getTemplateSetFiles().size()).isEqualTo(3);
+    TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(validConfigurationPath);
+
+    assertThat(templateSet.getTemplateSetFiles().size()).isEqualTo(3);
   }
 
   /**
@@ -120,13 +127,15 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   public void testLoadTriggersShouldLoadAllTriggers() {
 
     // given
-    Path configurationPath = Paths.get(new File(testFileRootPath + "valid_template_sets").toURI())
-        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(configurationPath);
+    TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(validConfigurationPath);
 
     // when
-    Trigger trigger = new Trigger("valid", "java", "src/main/templates", Charset.forName("UTF-8"),
-        new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+    LinkedList<Matcher> matchers = new LinkedList<>();
+    List<VariableAssignment> variableAssignments = new LinkedList<>();
+    Matcher testMatcher = new Matcher("fqn", "*", variableAssignments, AccumulationType.OR);
+    matchers.add(testMatcher);
+    Trigger trigger = new Trigger("valid", "java", "src/main/templates", Charset.forName("UTF-8"), matchers,
+        new LinkedList<ContainerMatcher>());
     Map<String, Trigger> testMap = templateSet.loadTriggers();
 
     // then
@@ -136,6 +145,57 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     assertThat(trigger.getType()).isEqualTo(loadedTrigger.getType());
     assertThat(trigger.getTemplateFolder()).isEqualTo(loadedTrigger.getTemplateFolder());
     assertThat(trigger.getInputCharset()).isEqualTo(loadedTrigger.getInputCharset());
+    assertThat(trigger.getMatcher() == loadedTrigger.getMatcher());
+    assertThat(trigger.getContainerMatchers()).isEqualTo(loadedTrigger.getContainerMatchers());
+  }
+
+  /**
+   * Tests if getConfigLocationForTrigger returns the right location
+   */
+  @Test
+  public void testGetConfigLocationForTrigger() {
+
+    TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(validConfigurationPath);
+    templateSet.loadTriggers();
+
+    Trigger trigger = new Trigger("valid", "java", "src/main/templates", Charset.forName("UTF-8"),
+        new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+    Path configPath = Paths.get(System.getProperty("user.dir"),
+        "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets/template-sets/adapted/test_template");
+
+    assertThat(templateSet.getConfigLocationForTrigger(trigger.getId())).isEqualTo(configPath);
+  }
+
+  /**
+   * Tests that templates will be correctly resolved by the template-scan mechanism.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testTemplateScan() throws Exception {
+
+    // given
+    TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(validConfigurationPath);
+    // TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(new
+    // File(testFileRootPath).toPath(),
+    // "valid_template_sets/template-sets/adapted/test_template/src/main/templates");
+
+    Trigger trigger = new Trigger("valid", "java", "src/main/templates", Charset.forName("UTF-8"),
+        new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
+
+    // when
+    Map<String, Template> templates = templateSet.loadTemplates(trigger);
+
+    // then
+    assertThat(templates).isNotNull().hasSize(6);
+
+    String templateIdFooClass = "prefix_FooClass.java";
+    Template templateFooClass = templates.get(templateIdFooClass);
+    assertThat(templateFooClass).isNotNull();
+    assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
+    assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("foo/FooClass.java.ftl");
+    assertThat(templateFooClass.getUnresolvedTargetPath()).isEqualTo("src/main/java/foo/FooClass.java");
+    assertThat(templateFooClass.getMergeStrategy()).isNull();
   }
 
 }
