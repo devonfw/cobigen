@@ -6,10 +6,11 @@ import java.util.List;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
- *
+ * This interface should be inherited for all maven REST search API responses to properly convert {@link JsonProperty}
+ * from responses to valid download URLs
  */
 public interface SearchResponse {
 
