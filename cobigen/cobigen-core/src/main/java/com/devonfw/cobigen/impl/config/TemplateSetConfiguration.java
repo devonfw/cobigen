@@ -25,7 +25,7 @@ public class TemplateSetConfiguration {
   private boolean allowSnapshots;
 
   /** variable to hide very specific template sets or versions of template sets */
-  private List<String> hideTemplates;
+  private List<MavenCoordinate> hideTemplates;
 
   /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
   private List<MavenCoordinate> mavenCoordinates;
@@ -33,10 +33,10 @@ public class TemplateSetConfiguration {
   /**
    * The constructor. load properties from a given source
    *
-   * @param groupIds
-   * @param allowSnapshots
-   * @param hideTemplates
-   * @param maven Coordinates
+   * @param groupIds groupID from key template-sets.groupIds
+   * @param allowSnapshots from key template-sets.allow-snapshot
+   * @param hideTemplates from key template-set.hide
+   * @param mavenCoordinates list of mavenCoordinate that define the templates that should be installed
    */
   public TemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates,
       List<String> mavenCoordinates) {
@@ -44,7 +44,7 @@ public class TemplateSetConfiguration {
     super();
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
-    this.hideTemplates = hideTemplates;
+    this.hideTemplates = checkandCovertToMavenCoordinates(hideTemplates);
     this.mavenCoordinates = checkandCovertToMavenCoordinates(mavenCoordinates);
   }
 
@@ -55,7 +55,7 @@ public class TemplateSetConfiguration {
       mcoordinate = mcoordinate.trim();
       if (!mcoordinate.matches(TemplatesJarConstants.MAVEN_COORDINATES_CHECK)) {
         LOG.warn("configuration key:" + mcoordinate + " in .cobigen for "
-            + "template-sets.installed doesnt match the specification and could not be used");
+            + "template-sets.installed or template-sets.hide doesnt match the specification and could not be used");
       } else {
         String[] split = mcoordinate.split(":");
         String groupID = split[0];
@@ -112,7 +112,7 @@ public class TemplateSetConfiguration {
    *
    * @return hideTemplates
    */
-  public List<String> getHideTemplates() {
+  public List<MavenCoordinate> getHideTemplates() {
 
     return this.hideTemplates;
   }
@@ -122,7 +122,7 @@ public class TemplateSetConfiguration {
    *
    * @param hideTemplates new value of {@link #gethideTemplates}.
    */
-  public void setHideTemplates(List<String> hideTemplates) {
+  public void setHideTemplates(List<MavenCoordinate> hideTemplates) {
 
     this.hideTemplates = hideTemplates;
   }

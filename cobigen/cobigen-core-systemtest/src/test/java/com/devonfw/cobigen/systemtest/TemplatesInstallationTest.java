@@ -18,13 +18,13 @@ import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 
 /**
- * TODO
+ * Test suite for template installation with the cobigen startup
  *
  */
 public class TemplatesInstallationTest extends AbstractApiTest {
 
   /**
-   * Tests that sources get overwritten if merge strategy override is configured.
+   * Tests if the templates specified in the .cobigen file won´t be loaded with the old structure.
    *
    * @throws Exception test fails.
    */
@@ -46,7 +46,8 @@ public class TemplatesInstallationTest extends AbstractApiTest {
   }
 
   /**
-   * Tests that sources get overwritten if merge strategy override is configured.
+   * Tests if the templates specified in the .cobigen file will be loaded at startup with the new structure and an
+   * existing downloaded folder.
    *
    * @throws Exception test fails.
    */
@@ -74,7 +75,7 @@ public class TemplatesInstallationTest extends AbstractApiTest {
   }
 
   /**
-   * Tests that sources get overwritten if merge strategy override is configured.
+   * Tests if the templates specified in the .cobigen file won´t be loaded when a adapted folder already exists.
    *
    * @throws Exception test fails.
    */
@@ -98,7 +99,8 @@ public class TemplatesInstallationTest extends AbstractApiTest {
   }
 
   /**
-   * Tests that sources get overwritten if merge strategy override is configured.
+   * Tests if the templates specified in the .cobigen file will be loaded at startup with the new structure without an
+   * existing downloaded folder.
    *
    * @throws Exception test fails.
    */
@@ -124,7 +126,8 @@ public class TemplatesInstallationTest extends AbstractApiTest {
   }
 
   /**
-   * Tests that sources get overwritten if merge strategy override is configured.
+   * Tests if the templates specified in the .cobigen file will checked for the correct format defined in the
+   * documentation.
    *
    * @throws Exception test fails.
    */

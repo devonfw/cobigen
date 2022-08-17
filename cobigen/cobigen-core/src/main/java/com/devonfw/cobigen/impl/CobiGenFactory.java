@@ -74,7 +74,8 @@ public class CobiGenFactory {
   }
 
   /**
-   * Creates a new {@link CobiGen} while searching a valid configuration at the given path
+   * Creates a new {@link CobiGen} while searching a valid configuration at the given path and also start downloading
+   * templates defined in the properties
    *
    * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
    * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
@@ -98,14 +99,13 @@ public class CobiGenFactory {
       throw new DeprecatedMonolithicConfigurationException();
     }
     // install Template Sets defined in .properties file
-    TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
-        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
-    URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
-    File downloadPath = new File(templatesLocation);
     if (configurationHolder.isTemplateSetConfiguration()) {
+      TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
+          CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
+      URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
+      File downloadPath = new File(templatesLocation);
       TemplatesJarUtil.downloadTemplatesByMavenCoordinates(downloadPath, config.getMavenCoordinates());
     }
-    // error oder so für die alte config if(config.getMavenCoordinates())
     return createBean;
   }
 

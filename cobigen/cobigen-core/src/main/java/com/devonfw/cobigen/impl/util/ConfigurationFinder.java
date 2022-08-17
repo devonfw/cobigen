@@ -86,7 +86,6 @@ public class ConfigurationFinder {
     Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
     Path configFile = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
-    // TODO entscheiden ob nötig oder nicht
     if (configFile != null && Files.exists(configFile) && configFile.toFile().isFile()) {
       LOG.debug("Custom cobigen configuration found at {}", configFile);
       Properties props = readConfigurationFile(configFile);
@@ -193,19 +192,11 @@ public class ConfigurationFinder {
     Path templateSetsAdaptedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
-    // 4. check adapted and downloaded folder and create Downloaded
+    // 4. check adapted and downloaded folder
     if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
       return templateSetsFolderPath.toUri();
     }
 
-    // 5. download template set jars
-
-    LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
-
-        CobiGenPaths.getCobiGenHomePath());
-
-    // TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesPath.toFile());
-    // TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesPath.toFile());
     return templateSetsFolderPath.toUri();
 
   }

@@ -88,8 +88,8 @@ public class TemplatesJarUtil {
     return fileName;
   }
 
-  // TODO
   /**
+   * Downloads the latest devon4j templates
    *
    * @param isDownloadSource true if downloading source jar file
    * @param templatesDirectory directory where the templates jar are located
@@ -101,10 +101,12 @@ public class TemplatesJarUtil {
         TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
   }
 
-  // TODO
   /**
+   * Downloads multiple jar files defined by the maven coordinates. Only downloads if files are not present or adapted
+   * folder does not exist.
+   *
    * @param templatesDirectory directory where the templates jar are located
-   * @return fileName Name of the file downloaded
+   * @param mavenCoordinates list with {@link MavenCoordinate} that will be loaded
    */
   public static void downloadTemplatesByMavenCoordinates(File templatesDirectory,
       List<MavenCoordinate> mavenCoordinates) {

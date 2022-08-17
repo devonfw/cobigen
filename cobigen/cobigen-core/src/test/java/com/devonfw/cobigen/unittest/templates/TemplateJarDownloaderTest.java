@@ -26,24 +26,26 @@ import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
  */
 public class TemplateJarDownloaderTest extends AbstractUnitTest {
 
-  /** Root path to all resources used in this test case */
-  private static String testFileRootPath = "src/test/resources/testdata/unittest/config/templatesJar/";
-
   /** JUnit Rule to create and automatically cleanup temporarily files/folders */
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  /** List with maven coordinates for template downloader */
+  /** List with MavenCoordinates for template downloader */
   public List<MavenCoordinate> mavenCoordinatesList;
 
   /**
-   *
+   * Location of the templates sets.
    */
   public File templateLocation;
 
+  /**
+   * Downloaded folder for template jars.
+   */
   public File downloadedFolder;
 
   /**
+   * Creation of folder structure for the tests
+   *
    * @throws Exception
    */
   @Before
@@ -54,6 +56,9 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     this.mavenCoordinatesList = new ArrayList<>();
   }
 
+  /**
+   * Cleanup after test
+   */
   @After
   public void cleanup() {
 
@@ -61,6 +66,13 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     this.tempFolder.delete();
   }
 
+  /**
+   * Helper function in this test suite to create maven coordinates for cobigen devon4j templates. If the version is
+   * null LATEST is used
+   *
+   * @param version version of the cobigen templates jar. If null LATES will be used.
+   * @return returns a {@link MavenCoordinate} object for cobigen devon4j templates.
+   */
   private MavenCoordinate createMavenCoordinateForDevon4jTemplates(String version) {
 
     String versionNotNull = version == null ? "LATEST" : version;
@@ -68,6 +80,9 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
         TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, versionNotNull);
   }
 
+  /**
+   * Tests if already existing jar will prevent the download of templates
+   */
   @Test
   public void testDownloadTemplatesAlreadyExisting() {
 
@@ -83,6 +98,9 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     assertEquals(this.downloadedFolder.listFiles().length, 2);
   }
 
+  /**
+   * Tests if templates can be loaded without providing a version
+   */
   @Test
   public void testDownloadTemplatesWithoutVersion() {
 
@@ -99,6 +117,9 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
 
   }
 
+  /**
+   * Test if LATEST templates can be loaded
+   */
   @Test
   public void testDownloadTemplatesWithLATEST() {
 
@@ -114,6 +135,8 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   }
 
   /**
+   * Test if no download occurs if a adapted folder exits
+   *
    * @throws Exception
    */
   @Test
