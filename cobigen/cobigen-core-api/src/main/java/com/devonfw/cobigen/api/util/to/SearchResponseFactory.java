@@ -2,7 +2,6 @@ package com.devonfw.cobigen.api.util.to;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,12 +12,12 @@ import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 
 import jakarta.ws.rs.ProcessingException;
 
 /**
- * Handles the responses from various search REST API's
- *
+ * Factory to create new instances of {@link SearchResponse} which handles the responses from various search REST APIs.
  */
 public class SearchResponseFactory {
 
@@ -26,19 +25,10 @@ public class SearchResponseFactory {
   static final Logger LOG = LoggerFactory.getLogger(SearchResponseFactory.class);
 
   /**
-   * Gets a list of available search REST APIs (register a new search interface type here)
-   *
-   * @return list of available {@link SearchResponse}
+   * List of available {@link SearchResponse} implementations (add new search REST API responses here)
    */
-  static List<SearchResponse> getAvailableSearchInterfaces() {
-
-    List<SearchResponse> availableSearchInterfaces = new ArrayList<>();
-    availableSearchInterfaces.add(new MavenSearchResponse());
-    availableSearchInterfaces.add(new JfrogSearchResponse());
-    availableSearchInterfaces.add(new Nexus2SearchResponse());
-    availableSearchInterfaces.add(new Nexus3SearchResponse());
-    return availableSearchInterfaces;
-  }
+  private static final List<SearchResponse> SEARCH_RESPONSES = Lists.newArrayList(new MavenSearchResponse(),
+      new JfrogSearchResponse(), new Nexus2SearchResponse(), new Nexus3SearchResponse());
 
   /**
    * Gets the maven artifact download links by given base URL, groupId and optional authentication token
@@ -46,8 +36,8 @@ public class SearchResponseFactory {
    * @param baseURL String of the repository server URL
    * @param groupId the groupId to search for
    * @param authToken bearer token to use for authentication
-   * @return List of download links
-   * @throws RESTSearchResponseException if an error occurred
+   * @return List of download URLs
+   * @throws RESTSearchResponseException if an error occurred while accessing the server
    * @throws JsonProcessingException if the json processing was not possible
    * @throws JsonMappingException if the json mapping was not possible
    * @throws MalformedURLException if an URL was malformed
@@ -58,9 +48,8 @@ public class SearchResponseFactory {
 
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
-    List<SearchResponse> availableSearchInterfaces = getAvailableSearchInterfaces();
 
-    for (SearchResponse searchResponse : availableSearchInterfaces) {
+    for (SearchResponse searchResponse : SEARCH_RESPONSES) {
       try {
         LOG.debug("Trying to get a response from {} with server URL: {} ...", searchResponse.getRepositoryType(),
             baseURL);
