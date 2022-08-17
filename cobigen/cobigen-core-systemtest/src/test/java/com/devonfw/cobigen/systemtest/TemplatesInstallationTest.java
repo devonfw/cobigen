@@ -29,7 +29,7 @@ public class TemplatesInstallationTest extends AbstractApiTest {
    * @throws Exception test fails.
    */
   @Test
-  public void testInstallTemplatesAtStartupOLD() throws Exception {
+  public void testInstallTemplatesAtStartupMonolithicStructure() throws Exception {
 
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
@@ -40,7 +40,7 @@ public class TemplatesInstallationTest extends AbstractApiTest {
       BufferedWriter writer = new BufferedWriter(new FileWriter(target));
       writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.005");
       writer.close();
-      CobiGen cobigen = CobiGenFactory.create(templates.toURI(), true);
+      CobiGenFactory.create(templates.toURI(), true);
       assertEquals(0, cobigenDir.listFiles().length);
     });
   }
