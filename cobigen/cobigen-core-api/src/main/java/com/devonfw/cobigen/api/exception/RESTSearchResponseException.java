@@ -8,11 +8,11 @@ public class RESTSearchResponseException extends CobiGenRuntimeException {
   /**
    * Creates a new {@link RESTSearchResponseException} with the given message
    *
-   * @param msg error message of the exception
+   * @param message error message of the exception
    */
-  public RESTSearchResponseException(String msg) {
+  public RESTSearchResponseException(String message) {
 
-    super(msg);
+    super(message);
   }
 
   /**
