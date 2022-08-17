@@ -44,20 +44,20 @@ public class TemplateSetConfiguration {
     super();
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
-    this.hideTemplates = checkandCovertToMavenCoordinates(hideTemplates);
-    this.mavenCoordinates = checkandCovertToMavenCoordinates(mavenCoordinates);
+    this.hideTemplates = checkAndCovertToMavenCoordinates(hideTemplates);
+    this.mavenCoordinates = checkAndCovertToMavenCoordinates(mavenCoordinates);
   }
 
-  private List<MavenCoordinate> checkandCovertToMavenCoordinates(List<String> mavenCoordinates) {
+  private List<MavenCoordinate> checkAndCovertToMavenCoordinates(List<String> mavenCoordinatesString) {
 
     List<MavenCoordinate> result = new ArrayList<>();
-    for (String mcoordinate : mavenCoordinates) {
-      mcoordinate = mcoordinate.trim();
-      if (!mcoordinate.matches(TemplatesJarConstants.MAVEN_COORDINATES_CHECK)) {
-        LOG.warn("configuration key:" + mcoordinate + " in .cobigen for "
+    for (String mavenCoordinate : mavenCoordinatesString) {
+      mavenCoordinate = mavenCoordinate.trim();
+      if (!mavenCoordinate.matches(TemplatesJarConstants.MAVEN_COORDINATES_CHECK)) {
+        LOG.warn("configuration key:" + mavenCoordinate + " in .cobigen for "
             + "template-sets.installed or template-sets.hide doesnt match the specification and could not be used");
       } else {
-        String[] split = mcoordinate.split(":");
+        String[] split = mavenCoordinate.split(":");
         String groupID = split[0];
         String artifactID = split[1];
         String version = split.length > 2 ? split[2] : null;
