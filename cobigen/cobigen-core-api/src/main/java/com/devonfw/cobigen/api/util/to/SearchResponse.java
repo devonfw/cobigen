@@ -19,7 +19,7 @@ public interface SearchResponse {
   public MavenSearchRepositoryType getRepositoryType();
 
   /**
-   * Creates a list of download links
+   * Creates a list of download URLs
    *
    * @return List of download links
    * @throws MalformedURLException if an URL was not valid
