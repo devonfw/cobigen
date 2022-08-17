@@ -54,12 +54,6 @@ public class MavenSearchResponse implements SearchResponse {
         + "&wt=json";
     LOG.info("Starting {} search REST API request with URL: {}.", getRepositoryType(), targetLink);
 
-    int limitRows = MavenSearchRepositoryConstants.MAVEN_MAX_RESPONSE_ROWS;
-    if (limitRows > 0) {
-      targetLink += "&rows=" + limitRows;
-      LOG.info("Limiting {} search REST API request to: {} rows.", getRepositoryType(), limitRows);
-    }
-
     String jsonResponse;
 
     jsonResponse = SearchResponseUtil.getJsonResponseStringByTargetLink(targetLink, authToken);

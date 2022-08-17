@@ -1,8 +1,7 @@
 package com.devonfw.cobigen.api.constants;
 
 /**
- * Maven search repository URLs
- *
+ * Constants needed for handling the maven search REST APIs
  */
 public class MavenSearchRepositoryConstants {
 
@@ -22,11 +21,6 @@ public class MavenSearchRepositoryConstants {
   public static String MAVEN_TARGET_LINK = "solrsearch/select";
 
   /**
-   * Maven maximum response rows
-   */
-  public static int MAVEN_MAX_RESPONSE_ROWS = 20;
-
-  /**
    * Nexus2 repository URL
    */
   public static String NEXUS2_REPOSITORY_URL = "https://s01.oss.sonatype.org";
@@ -40,11 +34,6 @@ public class MavenSearchRepositoryConstants {
    * Nexus2 target link
    */
   public static String NEXUS2_TARGET_LINK = "service/local/lucene/search";
-
-  /**
-   * Nexus2 connect ID
-   */
-  public static String NEXUS2_DC_ID = "1660043999867";
 
   /**
    * Nexus3 target link

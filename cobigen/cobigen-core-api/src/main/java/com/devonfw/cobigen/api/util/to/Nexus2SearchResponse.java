@@ -66,8 +66,7 @@ public class Nexus2SearchResponse implements SearchResponse {
   public String getJsonResponse(String repositoryUrl, String groupId, String authToken)
       throws RESTSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_TARGET_LINK + "?_dc="
-        + MavenSearchRepositoryConstants.NEXUS2_DC_ID + "&q=" + groupId;
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_TARGET_LINK + "?q=" + groupId;
     LOG.info("Starting {} search REST API request with URL: {}.", getRepositoryType(), targetLink);
 
     String jsonResponse;
