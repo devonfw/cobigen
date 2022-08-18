@@ -109,7 +109,7 @@ template-sets.groupIds=com.devonfw.cobigen.templates,jaxen,jakarta.xml.bind
 template-sets.allow-snapshots=true
 template-sets.disable-default-lookup=false
 template-sets.hide=com.devonfw.cobigen.templates:crud-angular-client-app:2021.12.007-SNAPSHOT
-template-sets.installed=com.devonfw.cobigen.templates:crud-angular-client-app:2021.12.007-SNAPSHOT, com.devonfw.cobigen.templates:crud_java_server_app:
+template-sets.installed=com.devonfw.cobigen.templates:crud-angular-client-app:2021.12.007-SNAPSHOT, com.devonfw.cobigen.templates:crud-java-server-app:
 ```
 
 == Context Configuration

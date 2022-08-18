@@ -118,9 +118,10 @@ public class TemplatesJarUtil {
     boolean downloadedExists = false;
     for (File f : templatesDirectory.listFiles()) {
       if (f.getName().equals(ConfigurationConstants.ADAPTED_FOLDER)) {
-        LOG.debug("Found adapted folder no download of templates needed");
+        LOG.debug("Found adapted folder no download of templates needed"); // check for adapetet templates
         return;
       } else if (f.getName().equals(ConfigurationConstants.DOWNLOADED_FOLDER)) {
+        // check for downloaded templates
         downloadedExists = true;
       }
     }
@@ -134,30 +135,30 @@ public class TemplatesJarUtil {
       }
     }
 
-    Set<MavenCoordinate> afterExistanceCheckList = new HashSet();
+    Set<MavenCoordinate> checkExistenceSet = new HashSet<>();
     // check if templates already exist
-    for (MavenCoordinate mcoordinate : mavenCoordinates) {
+
+    for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
       if (downloadedDirectory.listFiles().length > 0) {
         for (File downloadedFile : downloadedDirectory.listFiles()) {
-          if (!(downloadedFile.getName().contains(mcoordinate.getArtifactID()))) {
-            afterExistanceCheckList.add(mcoordinate);
-            LOG.info("Template specified in the properties file with ArtifactID: " + mcoordinate.getArtifactID()
-                + " GroupID:" + mcoordinate.getGroupID() + " will be loaded");
+          if (!(downloadedFile.getName().contains(mavenCoordinate.getArtifactID()))) {
+            checkExistenceSet.add(mavenCoordinate);
+            LOG.info("Template specified in the properties file with ArtifactID: " + mavenCoordinate.getArtifactID()
+                + " GroupID:" + mavenCoordinate.getGroupID() + " will be loaded");
           }
         }
       } else {
-        afterExistanceCheckList.add(mcoordinate);
+        checkExistenceSet.add(mavenCoordinate);
       }
     }
     // download templates
-    afterExistanceCheckList.toArray();
-    for (
-
-    MavenCoordinate mavenCoordinate : afterExistanceCheckList) {
+    checkExistenceSet.toArray();
+    for (MavenCoordinate mavenCoordinate : checkExistenceSet) {
       downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), false,
           downloadedDirectory);
       downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), true,
           downloadedDirectory);
+      System.out.println(TemplatesJarUtil.getJarFiles(downloadedDirectory.toPath()));
     }
   }
 

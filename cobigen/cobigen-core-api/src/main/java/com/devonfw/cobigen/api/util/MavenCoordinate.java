@@ -64,4 +64,28 @@ public class MavenCoordinate {
     return this.version;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+
+    if (obj == null || obj.getClass() != this.getClass()) {
+      return false;
+    }
+    MavenCoordinate mavenCoordinate = (MavenCoordinate) obj;
+
+    if (this.artifactID != mavenCoordinate.getArtifactID()) {
+      return false;
+    } else if (this.groupID != mavenCoordinate.getGroupID()) {
+      return false;
+    } else if (this.version != mavenCoordinate.getVersion()) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+
+    return this.artifactID.hashCode() + this.groupID.hashCode() + this.version.hashCode();
+  }
+
 }

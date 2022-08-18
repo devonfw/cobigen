@@ -24,7 +24,7 @@ import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 public class TemplatesInstallationTest extends AbstractApiTest {
 
   /**
-   * Tests if the templates specified in the .cobigen file won´t be loaded with the old structure.
+   * Tests if the templates specified in the .cobigen file won´t be loaded with the monolithic structure.
    *
    * @throws Exception test fails.
    */
@@ -46,13 +46,13 @@ public class TemplatesInstallationTest extends AbstractApiTest {
   }
 
   /**
-   * Tests if the templates specified in the .cobigen file will be loaded at startup with the new structure and an
-   * existing downloaded folder.
+   * Tests if the templates specified in the .cobigen file will be loaded at startup with the template-set structure and
+   * an existing downloaded folder.
    *
    * @throws Exception test fails.
    */
   @Test
-  public void testInstallTemplatesAtStartupNEW() throws Exception {
+  public void testInstallTemplatesAtStartup() throws Exception {
 
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
@@ -99,8 +99,8 @@ public class TemplatesInstallationTest extends AbstractApiTest {
   }
 
   /**
-   * Tests if the templates specified in the .cobigen file will be loaded at startup with the new structure without an
-   * existing downloaded folder.
+   * Tests if the templates specified in the .cobigen file will be loaded at startup with the template-set structure
+   * without an existing downloaded folder.
    *
    * @throws Exception test fails.
    */
@@ -148,5 +148,4 @@ public class TemplatesInstallationTest extends AbstractApiTest {
       assertEquals(0, downloaded.listFiles().length);
     });
   }
-
 }
