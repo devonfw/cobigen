@@ -10,6 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -32,6 +33,7 @@ import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.AbstractConfigurationUpgrader;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
@@ -52,15 +54,11 @@ public class TemplateAdapterImpl implements TemplateAdapter {
    */
   public TemplateAdapterImpl() {
 
-    Path templatesLocationPath = CobiGenPaths.getTemplateSetsFolderPath(false);
-    if (Files.exists(templatesLocationPath)) {
-      this.templatesLocation = templatesLocationPath;
-    } else {
-      templatesLocationPath = CobiGenPaths.getTemplatesFolderPath();
-      if (Files.exists(templatesLocationPath)) {
-        this.templatesLocation = templatesLocationPath;
-      }
+    URI templatesLocationPath = ConfigurationFinder.findTemplatesLocation();
+    if (Files.exists(Paths.get(templatesLocationPath))) {
+      this.templatesLocation = Paths.get(templatesLocationPath);
     }
+
   }
 
   @Override
@@ -369,18 +367,13 @@ public class TemplateAdapterImpl implements TemplateAdapter {
 
     Path templatesPath = null;
     if (templatesProject != null) {
-      List<Path> contextXml = FileSystemUtil.collectAllContextXML(templatesProject);
-      templatesPath = FileSystemUtil.createFileSystemDependentPath(contextXml.get(0).getParent().toUri());
+      templatesPath = FileSystemUtil.createFileSystemDependentPath(templatesProject.toUri());
     } else {
-      templatesPath = FileSystemUtil.createFileSystemDependentPath(
-          CobiGenPaths.getTemplatesFolderPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
-              .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toUri());
+      templatesPath = FileSystemUtil.createFileSystemDependentPath(ConfigurationFinder.findTemplatesLocation());
     }
-
     AbstractConfigurationUpgrader<ContextConfigurationVersion> contextUpgraderObject = new ContextConfigurationUpgrader();
 
     // Upgrade the context.xml to the new template-set with latest version
-    contextUpgraderObject.resolveLatestCompatibleSchemaVersion(templatesPath);
     contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.NO_BACKUP);
 
     LOG.info("context.xml upgraded successfully. {}", templatesPath);
@@ -391,7 +384,5 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     Path newTemplates = cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     LOG.info("New templates location: {} ", newTemplates);
     return newTemplates;
-
   }
-
 }

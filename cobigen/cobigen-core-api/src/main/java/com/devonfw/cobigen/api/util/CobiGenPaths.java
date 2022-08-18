@@ -179,28 +179,44 @@ public class CobiGenPaths {
   }
 
   /**
-   * checks the path for any pom.xml in a parent Folder and returns its path
+   * return the path for the context.xml in a monolithic structure
    *
-   * @param childPath path of the templates
-   * @return path to the pom.xml
+   * @param templatesLocation the path to the Cobigen templates project
+   * @return the parent path to the context.xml
    */
-  public static Path getTemplatesPomFileLocation(Path childPath) {
+  public static Path getContextLocation(Path templatesLocation) {
 
-    String pomFile = MavenConstants.POM;
-    int i = 0;
-    while (!Files.exists(childPath.resolve(pomFile)) && i <= 4) {
-      childPath = childPath.getParent();
-      if (childPath == null) {
-
-        return null;
-      }
-      i++;
+    if (Files.exists(templatesLocation.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME))) {
+      return templatesLocation;
+    } else if (Files.exists(templatesLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME))) {
+      return templatesLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    } else if (Files.exists(templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
+        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME))) {
+      return templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
+          .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    } else {
+      throw new CobiGenRuntimeException("Could not find any context.xml !" + templatesLocation);
     }
-    if (!Files.exists(childPath.resolve(pomFile))) {
-      throw new CobiGenRuntimeException("Could not find any pom file in the given Path!");
-    }
-    return childPath;
+  }
 
+  /**
+   * return the path of the found pom.xml in a monolithic structure
+   *
+   * @param templatesLocation the path to the Cobigen templates project
+   * @return parent path to the found pom.xml
+   */
+  public static Path getPomLocation(Path templatesLocation) {
+
+    if (Files.exists(templatesLocation.resolve(MavenConstants.POM))) {
+      return templatesLocation;
+    } else if (Files
+        .exists(templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES).resolve(MavenConstants.POM))) {
+      return templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    } else {
+      throw new CobiGenRuntimeException("Could not find any pom.xml !" + templatesLocation);
+    }
   }
 
 }

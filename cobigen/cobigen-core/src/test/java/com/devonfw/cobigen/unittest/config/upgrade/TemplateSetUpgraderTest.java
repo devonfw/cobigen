@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.unittest.config.upgrade;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -47,12 +48,16 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
+  private Path currentHome;
+
   @Before
   public void prepare() throws IOException {
 
-    Path playground = this.tempFolder.newFolder(".cobigen").toPath();
-    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), playground.toFile());
-    this.templateLocation = playground.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+    this.currentHome = this.tempFolder.newFolder(".cobigen").toPath();
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
+    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+
   }
 
   /**
@@ -63,14 +68,16 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   @Test
   public void testTemplateSetUpgrade() throws Exception {
 
-    TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-    templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
+      TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
+      templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
 
-    Path templateSetsPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-    assertThat(templateSetsPath).exists();
-    assertThat(templateSetsAdapted).exists();
-
+      Path templateSetsPath = this.templateLocation.getParent().getParent()
+          .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      assertThat(templateSetsPath).exists();
+      assertThat(templateSetsAdapted).exists();
+    });
   }
 
   /**
@@ -81,44 +88,46 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   @Test
   public void testTemplateSetUpgradeCopyOfTemplates() throws Exception {
 
-    Path oldTemplatesPath = this.templateLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
-        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-    int OldTemplatesFileCount = oldTemplatesPath.toFile().list().length;
-    Set<String> OldPathFilesSet = new HashSet<>(Arrays.asList(oldTemplatesPath.toFile().list()));
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
+      Path oldTemplatesPath = this.templateLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+      int OldTemplatesFileCount = oldTemplatesPath.toFile().list().length;
+      Set<String> OldPathFilesSet = new HashSet<>(Arrays.asList(oldTemplatesPath.toFile().list()));
 
-    TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-    Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
-        .upgradeTemplatesToTemplateSets(this.templateLocation);
+      TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
+      Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
+          .upgradeTemplatesToTemplateSets(this.templateLocation);
 
-    Path backupPath = this.templateLocation.getParent().resolve("backup")
-        .resolve(ConfigurationConstants.TEMPLATES_FOLDER).resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
-        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-    Set<String> backupPathFilesSet = new HashSet<>(Arrays.asList(backupPath.toFile().list()));
-    Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
-        .resolve(ConfigurationConstants.ADAPTED_FOLDER);
-    Set<String> NewPathFilesSet = new HashSet<>(Arrays.asList(newTemplatesPath.toFile().list()));
+      Path backupPath = this.templateLocation.getParent().getParent().resolve("backup")
+          .resolve(ConfigurationConstants.TEMPLATES_FOLDER).resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
+          .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+      Set<String> backupPathFilesSet = new HashSet<>(Arrays.asList(backupPath.toFile().list()));
+      Path newTemplatesPath = this.templateLocation.getParent().getParent()
+          .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      Set<String> NewPathFilesSet = new HashSet<>(Arrays.asList(newTemplatesPath.toFile().list()));
 
-    assertEquals(OldTemplatesFileCount - 1, NewPathFilesSet.size());
-    assertEquals(OldTemplatesFileCount, backupPathFilesSet.size());
+      assertEquals(OldTemplatesFileCount - 1, NewPathFilesSet.size());
+      assertEquals(OldTemplatesFileCount, backupPathFilesSet.size());
 
-    for (Path contextpath : newContextConfigurations.values()) {
-      assertThat(contextpath).exists();
+      for (Path contextpath : newContextConfigurations.values()) {
+        assertThat(contextpath).exists();
 
-      validateContextConfigurationFile(contextpath, "v3.0");
+        validateContextConfigurationFile(contextpath, "v3.0");
 
-    }
-
-    for (String s : OldPathFilesSet) {
-      if (!s.equals("context.xml")) {
-        assertThat(NewPathFilesSet).contains(s);
-        NewPathFilesSet.remove(s);
       }
-      assertThat(backupPathFilesSet).contains(s);
-      backupPathFilesSet.remove(s);
 
-    }
-    assertThat(NewPathFilesSet).hasSize(0);
-    assertThat(backupPathFilesSet).hasSize(0);
+      for (String s : OldPathFilesSet) {
+        if (!s.equals("context.xml")) {
+          assertThat(NewPathFilesSet).contains(s);
+          NewPathFilesSet.remove(s);
+        }
+        assertThat(backupPathFilesSet).contains(s);
+        backupPathFilesSet.remove(s);
+
+      }
+      assertThat(NewPathFilesSet).hasSize(0);
+      assertThat(backupPathFilesSet).hasSize(0);
+    });
+
   }
 
   /**
@@ -160,22 +169,22 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   @Test
   public void testTemplateSetUpgradeContextSplit() throws Exception {
 
-    Path contextLocation = this.templateLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
-        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-    ContextConfigurationUpgrader upgrader = new ContextConfigurationUpgrader();
-    upgrader.upgradeConfigurationToLatestVersion(contextLocation, BackupPolicy.ENFORCE_BACKUP);
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
+      ContextConfigurationUpgrader upgrader = new ContextConfigurationUpgrader();
+      upgrader.upgradeConfigurationToLatestVersion(this.templateLocation, BackupPolicy.ENFORCE_BACKUP);
 
-    Path newTemplatesPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      Path newTemplatesPath = this.templateLocation.getParent().getParent()
+          .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
-    for (String s : newTemplatesPath.toFile().list()) {
-      Path newContextPath = newTemplatesPath.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-      newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-      assertThat(newContextPath.toFile()).exists();
+      for (String s : newTemplatesPath.toFile().list()) {
+        Path newContextPath = newTemplatesPath.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+        newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        assertThat(newContextPath.toFile()).exists();
 
-      validateContextConfigurationFile(newContextPath, "v3.0");
-    }
-
+        validateContextConfigurationFile(newContextPath, "v3.0");
+      }
+    });
   }
 
 }

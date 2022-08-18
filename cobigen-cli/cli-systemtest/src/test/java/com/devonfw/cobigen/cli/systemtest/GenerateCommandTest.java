@@ -79,7 +79,7 @@ public class GenerateCommandTest extends AbstractCliTest {
     FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates-devon4j"),
         this.tmpProject.toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
-    File monolithicConfiguration = this.tmpProject.resolve("src/main/templates").toFile();
+    File monolithicConfiguration = this.tmpProject.toFile();
     String args[] = new String[7];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();

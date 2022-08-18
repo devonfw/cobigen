@@ -298,7 +298,7 @@ public class ResourcesPluginUtil {
    *
    *
    */
-  public static void upgradeConfiguration(Path monolithicConfiguration) {
+  public static void startTemplatesUpgrader(Path monolithicConfiguration) {
 
     TemplateAdapter templateAdapter;
     if (monolithicConfiguration == null) {

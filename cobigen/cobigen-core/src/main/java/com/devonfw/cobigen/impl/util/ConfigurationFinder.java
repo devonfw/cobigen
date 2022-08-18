@@ -166,7 +166,7 @@ public class ConfigurationFinder {
     Path templatesFolderPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
     // 1. create/use new template sets folder
-    Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, true);
+    Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, false);
 
     Path templateSetsAdaptedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
@@ -188,14 +188,7 @@ public class ConfigurationFinder {
         return jarFilePath.toUri();
       }
     }
-
-    // 5. download template set jars
-
-    LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
-        CobiGenPaths.getCobiGenHomePath());
-
-    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesPath.toFile());
-    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesPath.toFile());
+    templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, true);
     return templateSetsFolderPath.toUri();
   }
 

@@ -30,7 +30,6 @@ import com.devonfw.cobigen.impl.config.entity.io.v3_0.Link;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Links;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tag;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tags;
-import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBContext;
@@ -86,7 +85,7 @@ public class TemplateSetUpgrader {
    * Upgrades the ContextConfiguration from v2.1 to the new structure from v3.0. The monolithic pom and context files
    * will be split into multiple files corresponding to every template set that will be created.
    *
-   * @param contextLocation the location of the context configuration file
+   * @param templatesLocation the location of the templates
    *
    * @param {@link Path} Path to the context.xml that will be upgraded
    * @return {@link Map} collection that contains the upgraded v3.0
@@ -95,12 +94,11 @@ public class TemplateSetUpgrader {
    * @throws Exception if an issue occurred in directory copy operations
    */
   public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
-      Path contextLocation) throws Exception {
+      Path templatesLocation) throws Exception {
 
     Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+    Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
 
-    List<Path> newContextLocation = FileSystemUtil.collectAllContextXML(contextLocation);
-    Path folderOfContextLocation = newContextLocation.get(0).getParent();
     ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
     Path templateSets = cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     if (!Files.exists(templateSets))
@@ -108,7 +106,7 @@ public class TemplateSetUpgrader {
     Path adapted = templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     if (!Files.exists(adapted))
       Files.createDirectory(adapted);
-    Path cobigenTemplatesFolder = CobiGenPaths.getTemplatesPomFileLocation(newContextLocation.get(0));
+    Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
@@ -178,7 +176,8 @@ public class TemplateSetUpgrader {
     try {
       Path oldPom = cobigenTemplates.resolve(MavenConstants.POM);
       Path newPom = newTemplateFolder.resolve(MavenConstants.POM);
-      Files.createFile(newPom);
+      if (!Files.exists(newPom))
+        Files.createFile(newPom);
 
       // read the content of the pom.xml then replace it
       Charset charset = StandardCharsets.UTF_8;

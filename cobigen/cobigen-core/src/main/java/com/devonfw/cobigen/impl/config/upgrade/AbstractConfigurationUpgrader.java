@@ -30,6 +30,7 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
@@ -266,16 +267,22 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
   /**
    * Upgrades the configuration to the latest supported version with option to limit lookup of the maximum version.
    *
-   * @param configurationRoot the root folder containing the configuration with the specified
-   *        {@link #configurationFilename}. See {@link #AbstractConfigurationUpgrader(Enum, Class, String)} for more
-   *        information.
+   * @param templatesProject the path to the templates project
    * @param backupPolicy the {@link BackupPolicy} to choose if a backup is necessary or not.
    * @param maxVersion the latest version to be used for the upgrade (limits the versions to choose from)
-   * @return if manual adoptions has to be performed after upgrading
+   * @return if a manual adoptions has to be performed after upgrading
    * @throws BackupFailedException if the backup could not be created
+   *
+   *         configurationRoot the root folder containing the configuration with the specified
+   *         {@link #configurationFilename}. See {@link #AbstractConfigurationUpgrader(Enum, Class, String)} for more
+   *         information.
    */
-  public boolean upgradeConfigurationToLatestVersion(Path configurationRoot, BackupPolicy backupPolicy,
+  public boolean upgradeConfigurationToLatestVersion(Path templatesProject, BackupPolicy backupPolicy,
       VERSIONS_TYPE maxVersion) {
+
+    Path configurationLocation = templatesProject;
+    if (this.getClass().equals(ContextConfigurationUpgrader.class))
+      configurationLocation = CobiGenPaths.getContextLocation(templatesProject);
 
     boolean manualAdoptionsNecessary = false;
 
@@ -285,13 +292,13 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
     // check if versions need to be limited
     if (maxVersion != null) {
       versionsList = limitVersions(maxVersion);
-      validatedVersion = resolveLatestCompatibleSchemaVersion(configurationRoot, maxVersion);
+      validatedVersion = resolveLatestCompatibleSchemaVersion(configurationLocation, maxVersion);
     } else {
       versionsList = Arrays.asList(this.versions);
-      validatedVersion = resolveLatestCompatibleSchemaVersion(configurationRoot);
+      validatedVersion = resolveLatestCompatibleSchemaVersion(configurationLocation);
     }
 
-    Path configurationFile = configurationRoot.resolve(this.configurationFilename);
+    Path configurationFile = configurationLocation.resolve(this.configurationFilename);
     if (validatedVersion == null) {
       throw new InvalidConfigurationException(configurationFile.toUri().toString(),
           StringUtils.capitalize(this.configurationName) + " does not match any current or legacy schema definitions.");
@@ -314,7 +321,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
             createBackup(configurationFile, backupPolicy);
 
             List<ConfigurationUpgradeResult> results = performNextUpgradeStep(versionsList.get(i), rootNode,
-                configurationRoot);
+                templatesProject);
             for (ConfigurationUpgradeResult result : results) {
 
               manualAdoptionsNecessary |= result.areManualAdoptionsNecessary();
