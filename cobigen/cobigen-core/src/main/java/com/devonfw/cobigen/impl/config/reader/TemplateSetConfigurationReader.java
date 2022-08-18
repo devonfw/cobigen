@@ -86,7 +86,7 @@ public class TemplateSetConfigurationReader {
   protected Path templateSetsRoot;
 
   /** JAXB root node of the configuration */
-  private List<TemplateSetConfiguration> configNodes;
+  private TemplateSetConfiguration configNode;
 
   /** Configuration file */
   private List<Path> configFilePaths;
@@ -107,7 +107,7 @@ public class TemplateSetConfigurationReader {
   private Map<String, List<String>> templateScanTemplates = Maps.newHashMap();
 
   /** The top-level folder where the templates are located. */
-  private List<TemplateFolder> rootTemplateFolders;
+  private TemplateFolder rootTemplateFolder;
 
   /** The {@link ConfigurationHolder} used for reading templates folder **/
   @SuppressWarnings("unused")
@@ -116,21 +116,22 @@ public class TemplateSetConfigurationReader {
   /**
    * The constructor.
    *
-   * @param templateSetRoot the templateSet root directory
+   * @param configRoot the templateSet root directory
    * @throws InvalidConfigurationException if the configuration is not valid
    */
-  public TemplateSetConfigurationReader(Path templateSetRoot) throws InvalidConfigurationException {
+  public TemplateSetConfigurationReader(Path configRoot) throws InvalidConfigurationException {
+
+    if (configRoot == null)
+      throw new IllegalArgumentException("Configuraion path cannot be null.");
 
     this.templateSetFiles = new ArrayList<>();
     this.configFilePaths = new ArrayList<>();
-    this.rootTemplateFolders = new ArrayList<>();
-    this.configNodes = new ArrayList<>();
 
-    Path templateSetsDownloaded = templateSetRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-    Path templateSetsAdapted = templateSetRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    Path templateSetsAdapted = configRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
     if (!Files.exists(templateSetsDownloaded) && !Files.exists(templateSetsAdapted)) {
-      throw new InvalidConfigurationException(templateSetRoot,
+      throw new InvalidConfigurationException(configRoot,
           "Could not find a folder in which to search for the template set configuration file.");
     } else {
       if (Files.exists(templateSetsAdapted)) {
@@ -142,7 +143,8 @@ public class TemplateSetConfigurationReader {
       // }
 
       if (this.templateSetFiles.isEmpty()) {
-        throw new InvalidConfigurationException(templateSetRoot, "Could not find any template set configuration file.");
+        throw new InvalidConfigurationException(configRoot,
+            "Could not find any template set configuration file in the given folder.");
       }
     }
 
@@ -151,14 +153,14 @@ public class TemplateSetConfigurationReader {
       Path templateSetFile = this.templateSetFiles.get(i);
       Path templateLocation;
 
-      System.out.println(templateSetRoot.resolve(templateSetFile));
-      Path rootTemplatePath = templateSetRoot.resolve(templateSetFile).getParent();
+      System.out.println("Root template path: " + configRoot.resolve(templateSetFile));
+      Path rootTemplatePath = configRoot.resolve(templateSetFile).getParent();
 
       this.configFilePaths.add(templateSetFile);
       Path configFilePath = this.configFilePaths.get(i);
 
       if (!Files.exists(configFilePath)) {
-        Path sourceTemplatePath = templateSetRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+        Path sourceTemplatePath = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
         sourceTemplatePath = sourceTemplatePath.resolve(templateSetFile.getParent());
         configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
         templateLocation = sourceTemplatePath;
@@ -170,7 +172,7 @@ public class TemplateSetConfigurationReader {
         templateLocation = rootTemplatePath;
       }
       System.out.println(templateLocation);
-      this.rootTemplateFolders.add(TemplateFolder.create(templateLocation));
+      this.rootTemplateFolder = TemplateFolder.create(templateLocation);
     }
 
     readConfiguration();
@@ -280,7 +282,7 @@ public class TemplateSetConfigurationReader {
           Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
           unmarschaller.setSchema(schema);
           rootNode = unmarschaller.unmarshal(configInputStream);
-          this.configNodes.add((TemplateSetConfiguration) rootNode);
+          this.configNode = (TemplateSetConfiguration) rootNode;
           // // TODO: REMOVE
           // System.out.println(this.configNode.toString());
           this.templateSetConfigurations.put(templateSetFile, (TemplateSetConfiguration) rootNode);
@@ -493,9 +495,10 @@ public class TemplateSetConfigurationReader {
    *
    * @return the configured template engine to be used
    */
-  public String getTemplateEngine(int index) {
+  public String getTemplateEngine() {
 
-    return this.configNodes.get(index).getTemplateEngine();
+    return this.configNode.getTemplateEngine();
+
   }
 
   /**
@@ -511,13 +514,12 @@ public class TemplateSetConfigurationReader {
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
     Map<String, Template> templates = new HashMap<>();
+    Templates templatesNode = this.configNode.getTemplates();
 
     // TODO: All templates from all template sets or just one?
     // Map<String, List<Template>>??? or all templates mixed
-    for (int i = 0; i < this.configNodes.size(); i++) {
+    for (int i = 0; i < 1; i++) {
 
-      Templates templatesNode = this.configNodes.get(i).getTemplates(); // Test fail (NullPointerException) constructor
-                                                                        // checken
       if (templatesNode != null) {
         for (com.devonfw.cobigen.impl.config.entity.io.Template t : templatesNode.getTemplate()) {
           // TODO
@@ -526,8 +528,8 @@ public class TemplateSetConfigurationReader {
             throw new InvalidConfigurationException(this.configFilePaths.get(i).toUri().toString(),
                 "Multiple template definitions found for ref='" + t.getName() + "'");
           }
-          System.out.println("root: " + this.rootTemplateFolders.get(i));
-          TemplatePath child = this.rootTemplateFolders.get(i).navigate(t.getTemplateFile());
+          System.out.println("root: " + this.rootTemplateFolder);
+          TemplatePath child = this.rootTemplateFolder.navigate(t.getTemplateFile());
 
           // TODO: REMOVE
           System.out.println("CHILD: " + child);
@@ -542,7 +544,7 @@ public class TemplateSetConfigurationReader {
         }
       }
 
-      TemplateScans templateScans = this.configNodes.get(i).getTemplateScans();
+      TemplateScans templateScans = this.configNode.getTemplateScans();
       if (templateScans != null) {
         List<TemplateScan> scans = templateScans.getTemplateScan();
         if (scans != null) {
@@ -555,7 +557,7 @@ public class TemplateSetConfigurationReader {
       // override existing templates with extension definitions
       Set<String> observedExtensionNames = Sets.newHashSet();
       if (templatesNode != null && templatesNode.getTemplateExtension() != null) {
-        for (TemplateExtension ext : this.configNodes.get(i).getTemplates().getTemplateExtension()) {
+        for (TemplateExtension ext : this.configNode.getTemplates().getTemplateExtension()) {
           // detection of duplicate templateExtensions
           if (observedExtensionNames.contains(ext.getRef())) {
             throw new InvalidConfigurationException(
@@ -597,7 +599,7 @@ public class TemplateSetConfigurationReader {
   private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger, int index) {
 
     String templatePath = scan.getTemplatePath();
-    TemplatePath templateFolder = this.rootTemplateFolders.get(index).navigate(templatePath);
+    TemplatePath templateFolder = this.rootTemplateFolder.navigate(templatePath);
 
     if ((templateFolder == null) || templateFolder.isFile()) {
       throw new InvalidConfigurationException(this.configFilePaths.get(index).toUri().toString(), "The templatePath '"
@@ -647,7 +649,7 @@ public class TemplateSetConfigurationReader {
         }
         String templateNameWithoutExtension = stripTemplateFileending(templateFileName, index);
 
-        TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(getTemplateEngine(index));
+        TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(getTemplateEngine());
         if (!StringUtils.isEmpty(templateEngine.getTemplateFileEnding())
             && templateFileName.endsWith(templateEngine.getTemplateFileEnding())) {
           templateNameWithoutExtension = templateFileName.substring(0,
@@ -692,7 +694,7 @@ public class TemplateSetConfigurationReader {
   private String stripTemplateFileending(String templateFileName, int index) {
 
     String templateNameWithoutExtension = templateFileName;
-    TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(getTemplateEngine(index));
+    TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(getTemplateEngine());
     if (!StringUtils.isEmpty(templateEngine.getTemplateFileEnding())
         && templateFileName.endsWith(templateEngine.getTemplateFileEnding())) {
       templateNameWithoutExtension = templateFileName.substring(0,
