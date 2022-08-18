@@ -12,19 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides operations to identify and process SQL specific information
  *
  */
 public class SQLUtil extends CommonUtil {
-
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(JavaUtil.class);
 
   /**
    * The constructor.
@@ -161,18 +154,101 @@ public class SQLUtil extends CommonUtil {
     return null;
   }
 
-  // public String getSqlType(String className, String fieldName) throws ClassNotFoundException {
-  //
-  // try {
-  // String javaType = getCanonicalNameOfFieldType(className, fieldName);
-  // } catch (ClassNotFoundException e) {
-  // LOG.error("{}: Could not find {}", e.getMessage(), className);
-  // }
-  // return "";
-  // }
-  //
-  // public String getSqlStrategy(Field field) {
+  // /**
+  // *
+  // * @param field
+  // * @return
+  // */
+  // public String getSqlType(Field field) {
   //
   // return "";
   // }
+
+  /**
+   * Helper function to map a Java Type to its equivalent SQL type
+   *
+   * @param canonicalTypeName {@link String} full qualified class name
+   * @return returns the equivalent SQL type
+   */
+  private String mapJavaToSqlType(String canonicalTypeName) {
+
+    if (isEnum(canonicalTypeName)) {
+      return "INTEGER";
+    }
+    // JavaUtil.isEnum(canonicalTypeName) == INTEGER
+    switch (canonicalTypeName) {
+      // INTEGER
+      case "Integer":
+        return "INTEGER";
+      case "int":
+        return "INTEGER";
+      case "Year":
+        return "INTEGER";
+      case "Month":
+        return "INTEGER";
+      // BIGINT
+      case "Long":
+        return "BIGINT";
+      case "long":
+        return "BIGINT";
+      case "Object":
+        return "BIGINT";
+      // SMALLINT
+      case "Short":
+        return "SMALLINT";
+      case "short":
+        return "SMALLINT";
+      // FLOAT
+      case "Float":
+        return "FLOAT";
+      case "float":
+        return "FLOAT";
+      // DOUBLE
+      case "Double":
+        return "DOUBLE";
+      case "double":
+        return "DOUBLE";
+      // NUMERIC
+      case "BigDecimal":
+        return "NUMERIC";
+      case "BigInteger":
+        return "NUMERIC";
+      // CHAR
+      case "Character":
+        return "CHAR";
+      case "char":
+        return "CHAR";
+      // TINYINT
+      case "Byte":
+        return "TINYINT";
+      case "byte":
+        return "TINYINT";
+      // BOOLEAN
+      case "Boolean":
+        return "BOOLEAN";
+      case "boolean":
+        return "BOOLEAN";
+      // TIMESTAMP
+      case "Instant":
+        return "TIMESTAMP";
+      case "Timestamp":
+        return "TIMESTAMP";
+      // DATE
+      case "Date":
+        return "DATE";
+      case "Calendar":
+        return "DATE";
+      // TIME
+      case "Time":
+        return "TIME";
+      // BINARY
+      case "UUID":
+        return "BINARY";
+      // BLOB
+      case "Blob":
+        return "BLOB";
+      default:
+        return "VARCHAR";
+    }
+  }
 }

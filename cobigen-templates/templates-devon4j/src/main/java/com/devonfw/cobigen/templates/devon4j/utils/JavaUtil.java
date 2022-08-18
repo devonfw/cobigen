@@ -6,19 +6,12 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides type operations, mainly checks and casts for Java Primitives, to be used in the templates
  *
  */
 public class JavaUtil extends CommonUtil {
-
-  /**
-   * Logger for this class
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(JavaUtil.class);
 
   /**
    * The constructor.
@@ -396,22 +389,6 @@ public class JavaUtil extends CommonUtil {
       }
     }
     return null;
-  }
-
-  /**
-   * Checks whether the class given by the full qualified name is an enum
-   *
-   * @param className full qualified class name
-   * @return <code>true</code> if the class is an enum, <code>false</code> otherwise
-   */
-  public boolean isEnum(String className) {
-
-    try {
-      return ClassUtils.getClass(className).isEnum();
-    } catch (ClassNotFoundException e) {
-      LOG.warn("{}: Could not find {}", e.getMessage(), className);
-      return false;
-    }
   }
 
   /**

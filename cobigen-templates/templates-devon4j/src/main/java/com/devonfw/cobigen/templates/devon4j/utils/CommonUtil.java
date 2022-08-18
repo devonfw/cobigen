@@ -3,6 +3,10 @@ package com.devonfw.cobigen.templates.devon4j.utils;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
+import org.apache.commons.lang3.ClassUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class provides utility for all objects that inherit from it
  *
@@ -15,6 +19,27 @@ public class CommonUtil {
   public CommonUtil() {
 
     // Empty for CobiGen to automatically instantiate it
+  }
+
+  /**
+   * Logger for this class
+   */
+  protected static final Logger LOG = LoggerFactory.getLogger(JavaUtil.class);
+
+  /**
+   * Checks whether the class given by the full qualified name is an enum
+   *
+   * @param className full qualified class name
+   * @return <code>true</code> if the class is an enum, <code>false</code> otherwise
+   */
+  public boolean isEnum(String className) {
+
+    try {
+      return ClassUtils.getClass(className).isEnum();
+    } catch (ClassNotFoundException e) {
+      LOG.warn("{}: Could not find {}", e.getMessage(), className);
+      return false;
+    }
   }
 
   /**
