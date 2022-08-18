@@ -285,10 +285,11 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
+   * Method to get the SQL type based on annotations and field type
    *
    * @param className {@link String} full qualified class name
    * @param fieldName {@link String} the name of the field
-   * @return
+   * @return SQL type as a String
    * @throws ClassNotFoundException
    */
   public String getSqlType(String className, String fieldName) throws ClassNotFoundException {
@@ -298,7 +299,20 @@ public class SQLUtil extends CommonUtil {
       String sqlType = mapJavaToSqlType(fieldType);
       Class<?> entityClass = Class.forName(className);
       Annotation[] annotations = getFieldAnnotations(entityClass, fieldName);
-      return sqlType;
+      String sqlTypeExtension = "";
+
+      if (annotations.length != 0) {
+        for (Annotation annotation : annotations) {
+          // if (annotation.annotationType().equals(Constraint.class.getAnnotationsByType(Size.class))) {
+          // sqlTypeExtension = sqlTypeExtension + "";
+          // }
+          // if (annotation.annotationType().isInstance(Column.class) && annotation.annotationType().get ) {
+          // Column column = annotation.annotationType().get
+          //
+          // }
+        }
+      }
+      return sqlType + sqlTypeExtension;
     } catch (ClassNotFoundException e) {
       LOG.error("{}: Could not find {}", e.getMessage(), className);
       return null;
