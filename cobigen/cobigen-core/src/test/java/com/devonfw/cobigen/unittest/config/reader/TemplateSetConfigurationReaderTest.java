@@ -69,7 +69,8 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     });
 
     assertThat(invalidException instanceof InvalidConfigurationException);
-    assertThat(invalidException.getMessage()).contains("Could not find any template set configuration file.");
+    assertThat(invalidException.getMessage())
+        .contains("Could not find any template set configuration file in the given folder.");
   }
 
   /**
@@ -84,14 +85,15 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests if a context configuration can be found from a template set jar file
+   * Tests if a template set configuration can be found from a template set jar file
    *
    */
   @Test
   public void testTemplateSetsDownloaded() {
 
-    Path templateSetPath = Paths.get(new File(testFileRootPath + "valid_template_sets_downloaded").toURI())
+    Path templateSetPath = Paths.get(new File(testFileRootPath + "valid_template_sets").toURI())
         .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    // templateSetPath = Path.of(templateSetPath + "/downloaded");
     TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(templateSetPath);
     assertThat(templateSet.getTemplateSetFiles().size()).isEqualTo(1);
   }
