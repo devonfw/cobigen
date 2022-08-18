@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.templates.devon4j.utils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,6 +29,101 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
+   * Helper function to map a Java Type to its equivalent SQL type
+   *
+   * @param canonicalTypeName {@link String} full qualified class name
+   * @return returns the equivalent SQL type
+   */
+  private String mapJavaToSqlType(String canonicalTypeName) throws IllegalArgumentException {
+
+    try {
+
+      if (isEnum(canonicalTypeName)) {
+        return "INTEGER";
+      }
+
+      switch (canonicalTypeName) {
+        // INTEGER
+        case "Integer":
+          return "INTEGER";
+        case "int":
+          return "INTEGER";
+        case "Year":
+          return "INTEGER";
+        case "Month":
+          return "INTEGER";
+        // BIGINT
+        case "Long":
+          return "BIGINT";
+        case "long":
+          return "BIGINT";
+        case "Object":
+          return "BIGINT";
+        // SMALLINT
+        case "Short":
+          return "SMALLINT";
+        case "short":
+          return "SMALLINT";
+        // FLOAT
+        case "Float":
+          return "FLOAT";
+        case "float":
+          return "FLOAT";
+        // DOUBLE
+        case "Double":
+          return "DOUBLE";
+        case "double":
+          return "DOUBLE";
+        // NUMERIC
+        case "BigDecimal":
+          return "NUMERIC";
+        case "BigInteger":
+          return "NUMERIC";
+        // CHAR
+        case "Character":
+          return "CHAR";
+        case "char":
+          return "CHAR";
+        // TINYINT
+        case "Byte":
+          return "TINYINT";
+        case "byte":
+          return "TINYINT";
+        // BOOLEAN
+        case "Boolean":
+          return "BOOLEAN";
+        case "boolean":
+          return "BOOLEAN";
+        // TIMESTAMP
+        case "Instant":
+          return "TIMESTAMP";
+        case "Timestamp":
+          return "TIMESTAMP";
+        // DATE
+        case "Date":
+          return "DATE";
+        case "Calendar":
+          return "DATE";
+        // TIME
+        case "Time":
+          return "TIME";
+        // BINARY
+        case "UUID":
+          return "BINARY";
+        // BLOB
+        case "Blob":
+          return "BLOB";
+        default:
+          return "VARCHAR";
+      }
+    } catch (IllegalArgumentException e) {
+      LOG.error("{}: The parameter is not a valid argument", e.getMessage());
+      return null;
+    }
+
+  }
+
+  /**
    * Helper methods to get all fields recursively including fields from super classes
    *
    * @param fields list of fields to be accumulated during recursion
@@ -46,13 +142,13 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Helper method to retrieve the type of a field including fields from super classes
+   * Helper method to get a field of a pojo class by its name. Including fields from super classes
    *
    * @param pojoClass {@link Class} the class object of the pojo
    * @param fieldName {@link String} the name of the field
-   * @return return the type of the field
+   * @return return the field object throws IllegalArgumentException
    */
-  private Class<?> getTypeOfField(Class<?> pojoClass, String fieldName) {
+  private Field getFieldByName(Class<?> pojoClass, String fieldName) throws IllegalArgumentException {
 
     if (pojoClass != null) {
       // automatically fetches all fields from pojoClass including its super classes
@@ -62,10 +158,44 @@ public class SQLUtil extends CommonUtil {
       Optional<Field> field = fields.stream().filter(f -> f.getName().equals(fieldName)).findFirst();
 
       if (field.isPresent()) {
-        return field.get().getType();
+        return field.get();
       }
     }
     LOG.error("Could not find type of field {}", fieldName);
+    return null;
+  }
+
+  /**
+   * Method to retrieve the type of a field
+   *
+   * @param pojoClass {@link Class} the class object of the pojo
+   * @param fieldName {@link String} the name of the field
+   * @return return the type of the field
+   */
+  public Class<?> getTypeOfField(Class<?> pojoClass, String fieldName) {
+
+    if (pojoClass != null) {
+      Field field = getFieldByName(pojoClass, fieldName);
+      return field.getType();
+    }
+    return null;
+  }
+
+  /**
+   * Method to retrieve the annotations of a field
+   *
+   * @param pojoClass {@link Class} the class object of the pojo
+   * @param fieldName {@link String} the name of the field
+   * @return an array with annotations found (length = 0 if now annotations found)
+   */
+  public Annotation[] getFieldAnnotations(Class<?> pojoClass, String fieldName) {
+
+    if (pojoClass != null) {
+      Annotation[] annotations;
+      Field field = getFieldByName(pojoClass, fieldName);
+      annotations = field.getAnnotations();
+      return annotations;
+    }
     return null;
   }
 
@@ -154,101 +284,25 @@ public class SQLUtil extends CommonUtil {
     return null;
   }
 
-  // /**
-  // *
-  // * @param field
-  // * @return
-  // */
-  // public String getSqlType(Field field) {
-  //
-  // return "";
-  // }
-
   /**
-   * Helper function to map a Java Type to its equivalent SQL type
    *
-   * @param canonicalTypeName {@link String} full qualified class name
-   * @return returns the equivalent SQL type
+   * @param className {@link String} full qualified class name
+   * @param fieldName {@link String} the name of the field
+   * @return
+   * @throws ClassNotFoundException
    */
-  private String mapJavaToSqlType(String canonicalTypeName) {
+  public String getSqlType(String className, String fieldName) throws ClassNotFoundException {
 
-    if (isEnum(canonicalTypeName)) {
-      return "INTEGER";
-    }
-    // JavaUtil.isEnum(canonicalTypeName) == INTEGER
-    switch (canonicalTypeName) {
-      // INTEGER
-      case "Integer":
-        return "INTEGER";
-      case "int":
-        return "INTEGER";
-      case "Year":
-        return "INTEGER";
-      case "Month":
-        return "INTEGER";
-      // BIGINT
-      case "Long":
-        return "BIGINT";
-      case "long":
-        return "BIGINT";
-      case "Object":
-        return "BIGINT";
-      // SMALLINT
-      case "Short":
-        return "SMALLINT";
-      case "short":
-        return "SMALLINT";
-      // FLOAT
-      case "Float":
-        return "FLOAT";
-      case "float":
-        return "FLOAT";
-      // DOUBLE
-      case "Double":
-        return "DOUBLE";
-      case "double":
-        return "DOUBLE";
-      // NUMERIC
-      case "BigDecimal":
-        return "NUMERIC";
-      case "BigInteger":
-        return "NUMERIC";
-      // CHAR
-      case "Character":
-        return "CHAR";
-      case "char":
-        return "CHAR";
-      // TINYINT
-      case "Byte":
-        return "TINYINT";
-      case "byte":
-        return "TINYINT";
-      // BOOLEAN
-      case "Boolean":
-        return "BOOLEAN";
-      case "boolean":
-        return "BOOLEAN";
-      // TIMESTAMP
-      case "Instant":
-        return "TIMESTAMP";
-      case "Timestamp":
-        return "TIMESTAMP";
-      // DATE
-      case "Date":
-        return "DATE";
-      case "Calendar":
-        return "DATE";
-      // TIME
-      case "Time":
-        return "TIME";
-      // BINARY
-      case "UUID":
-        return "BINARY";
-      // BLOB
-      case "Blob":
-        return "BLOB";
-      default:
-        return "VARCHAR";
+    try {
+      String fieldType = getCanonicalNameOfFieldType(className, fieldName);
+      String sqlType = mapJavaToSqlType(fieldType);
+      Class<?> entityClass = Class.forName(className);
+      Annotation[] annotations = getFieldAnnotations(entityClass, fieldName);
+      return sqlType;
+    } catch (ClassNotFoundException e) {
+      LOG.error("{}: Could not find {}", e.getMessage(), className);
+      return null;
     }
   }
+
 }
