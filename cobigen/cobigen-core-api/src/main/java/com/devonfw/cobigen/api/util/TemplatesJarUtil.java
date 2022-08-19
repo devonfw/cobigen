@@ -44,7 +44,7 @@ public class TemplatesJarUtil {
    * @param templatesDirectory directory where the templates jar are located
    * @return fileName Name of the file downloaded
    */
-  private static String downloadJar(String groupId, String artifactId, String version, boolean isDownloadSource,
+  public static String downloadJar(String groupId, String artifactId, String version, boolean isDownloadSource,
       File templatesDirectory) {
 
     // By default the version should be latest
@@ -115,50 +115,45 @@ public class TemplatesJarUtil {
       return;
       // no templates specified
     }
-    boolean downloadedExists = false;
-    for (File f : templatesDirectory.listFiles()) {
-      if (f.getName().equals(ConfigurationConstants.ADAPTED_FOLDER)) {
-        LOG.debug("Found adapted folder no download of templates needed"); // check for adapetet templates
-        return;
-      } else if (f.getName().equals(ConfigurationConstants.DOWNLOADED_FOLDER)) {
-        // check for downloaded templates
-        downloadedExists = true;
-      }
-    }
-    File downloadedDirectory = templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER).toFile();
-    if (!downloadedExists) {
-      LOG.info("downloaded folder could not be found and will be created ");
-      try {
-        Files.createDirectory(templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException("Could not create Download Folder", e);
-      }
-    }
 
-    Set<MavenCoordinate> checkExistenceSet = new HashSet<>();
-    // check if templates already exist
-
+    Set<MavenCoordinate> existingTemplates = new HashSet<>();
+    File adapted = templatesDirectory.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER).toFile();
+    File downloaded = templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER).toFile();
+    // search for already available template-sets
     for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
-      if (downloadedDirectory.listFiles().length > 0) {
-        for (File downloadedFile : downloadedDirectory.listFiles()) {
-          if (!(downloadedFile.getName().contains(mavenCoordinate.getArtifactID()))) {
-            checkExistenceSet.add(mavenCoordinate);
-            LOG.info("Template specified in the properties file with ArtifactID: " + mavenCoordinate.getArtifactID()
-                + " GroupID:" + mavenCoordinate.getGroupID() + " will be loaded");
+      if (adapted.exists()) {
+        for (File adaptedFile : adapted.listFiles()) {
+          if ((adaptedFile.getName().contains(mavenCoordinate.getArtifactID()))) {
+            existingTemplates.add(mavenCoordinate);
+          }
+        }
+      }
+      if (downloaded.exists()) {
+        for (File downloadedFile : downloaded.listFiles()) {
+          if ((downloadedFile.getName().contains(mavenCoordinate.getArtifactID()))) {
+            existingTemplates.add(mavenCoordinate);
           }
         }
       } else {
-        checkExistenceSet.add(mavenCoordinate);
+        LOG.info("downloaded folder could not be found and will be created ");
+        try {
+          Files.createDirectory(templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
+        } catch (IOException e) {
+          throw new CobiGenRuntimeException("Could not create Download Folder", e);
+        }
       }
     }
-    // download templates
-    checkExistenceSet.toArray();
-    for (MavenCoordinate mavenCoordinate : checkExistenceSet) {
-      downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), false,
-          downloadedDirectory);
-      downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), true,
-          downloadedDirectory);
-      System.out.println(TemplatesJarUtil.getJarFiles(downloadedDirectory.toPath()));
+
+    // nullcheck ?
+    if (existingTemplates.size() > 0) {
+      mavenCoordinates.removeAll(existingTemplates);
+    }
+
+    for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
+      // downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), false,
+      // downloaded);
+      System.out.println(downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(),
+          mavenCoordinate.getVersion(), true, downloaded));
     }
   }
 
