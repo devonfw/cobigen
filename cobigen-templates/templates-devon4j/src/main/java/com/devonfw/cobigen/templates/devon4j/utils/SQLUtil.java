@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * Provides operations to identify and process SQL specific information
@@ -186,7 +190,7 @@ public class SQLUtil extends CommonUtil {
    *
    * @param pojoClass {@link Class} the class object of the pojo
    * @param fieldName {@link String} the name of the field
-   * @return an array with annotations found (length = 0 if now annotations found)
+   * @return an array with annotations found (length = 0 if now annotations were found)
    */
   public Annotation[] getFieldAnnotations(Class<?> pojoClass, String fieldName) {
 
@@ -292,24 +296,30 @@ public class SQLUtil extends CommonUtil {
    * @return SQL type as a String
    * @throws ClassNotFoundException
    */
+  @SuppressWarnings("javadoc")
   public String getSqlType(String className, String fieldName) throws ClassNotFoundException {
 
     try {
-      String fieldType = getCanonicalNameOfFieldType(className, fieldName);
-      String sqlType = mapJavaToSqlType(fieldType);
+      String sqlType = mapJavaToSqlType(getCanonicalNameOfFieldType(className, fieldName));
       Class<?> entityClass = Class.forName(className);
       Annotation[] annotations = getFieldAnnotations(entityClass, fieldName);
       String sqlTypeExtension = "";
 
       if (annotations.length != 0) {
         for (Annotation annotation : annotations) {
-          // if (annotation.annotationType().equals(Constraint.class.getAnnotationsByType(Size.class))) {
-          // sqlTypeExtension = sqlTypeExtension + "";
-          // }
-          // if (annotation.annotationType().isInstance(Column.class) && annotation.annotationType().get ) {
-          // Column column = annotation.annotationType().get
-          //
-          // }
+          if (sqlType == "VARCHAR" && annotation.annotationType().equals(Size.class)) {
+            Integer maxSize = ((Size) annotation).max(); // Size.max is always present as it defaults to
+                                                         // Integer.MAX_VALUE;
+            sqlTypeExtension = sqlTypeExtension + "(" + maxSize.toString() + ")";
+          }
+          if ((annotation.annotationType().equals(Column.class) && !((Column) annotation).nullable())
+              || (annotation.annotationType().equals(NotNull.class))) {
+            sqlTypeExtension = sqlTypeExtension + " NOT NULL";
+          }
+          if (annotation.annotationType().equals(GeneratedValue.class)) {
+            sqlTypeExtension = sqlTypeExtension + " AUTO_INCREMENT";
+          }
+
         }
       }
       return sqlType + sqlTypeExtension;
