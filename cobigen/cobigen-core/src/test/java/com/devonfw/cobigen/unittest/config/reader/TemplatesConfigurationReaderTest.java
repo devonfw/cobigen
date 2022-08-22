@@ -49,7 +49,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testTemplatesOfAPackageRetrieval() throws Exception {
 
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid");
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -69,7 +69,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   public void testTemplateScan() throws Exception {
 
     // given
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid");
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -94,7 +94,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   public void testTemplatesSourceFolder() {
 
     // given
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid_source_folder");
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -124,7 +124,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   public void testTemplateScanDoesNotOverwriteExplicitTemplateDeclarations() throws Exception {
 
     // given
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid");
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -160,7 +160,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   public void testTemplateExtensionDeclarationOverridesTemplateScanDefaults() throws Exception {
 
     // given
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid");
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -205,7 +205,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   public void testEmptyTemplateExtensionDeclarationDoesNotOverrideAnyDefaults() throws Exception {
 
     // given
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid");
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -245,7 +245,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnDuplicateTemplateExtensionDeclaration() throws InvalidConfigurationException {
 
-    TemplatesConfigurationReader reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_duplicate_template_extension");
     reader.loadTemplates(null);
   }
@@ -259,7 +259,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnUnhookedTemplateExtensionDeclaration() throws InvalidConfigurationException {
 
-    TemplatesConfigurationReader reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_unhooked_template_extension");
     reader.loadTemplates(null);
   }
@@ -273,7 +273,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnDuplicateScannedIds() throws InvalidConfigurationException {
 
-    TemplatesConfigurationReader reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_duplicate_scanned_id");
     reader.loadTemplates(null);
   }
@@ -287,7 +287,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   public void testCorrectResolutionOfTemplateScanReferences() throws InvalidConfigurationException {
 
     // given
-    TemplatesConfigurationReader reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid_template_scan_references");
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -313,7 +313,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnDuplicateTemplateScanNames() throws InvalidConfigurationException {
 
-    TemplatesConfigurationReader reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_duplicate_template_scan_name");
     reader.loadTemplates(null);
   }
@@ -326,7 +326,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnInvalidTemplateScanReference() throws InvalidConfigurationException {
 
-    TemplatesConfigurationReader reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_invalid_template_scan_ref");
     reader.loadTemplates(null);
   }
@@ -338,7 +338,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   public void testIncrementComposition_combiningAllPossibleReferences() {
 
     // given
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid_increment_composition");
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -442,7 +442,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     // given
     ConfigurationHolder configurationHolder = new ConfigurationHolder(config.toUri());
 
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_invalid_external_incrementref", configurationHolder);
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -467,7 +467,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     // given
     ConfigurationHolder configurationHolder = new ConfigurationHolder(config.toUri());
 
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_invalid_external_templateref", configurationHolder);
 
     Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -506,7 +506,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     // given
     String templateScanDestinationPath = "src/main/java/";
     String templatesConfigurationRoot = testFileRootPath + "valid_relocate_templateExt_vs_scan/";
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid_relocate_templateExt_vs_scan/");
 
     Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -545,7 +545,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     // given
     String templateScanDestinationPath = "src/main/java/";
     String templatesConfigurationRoot = testFileRootPath + "valid_relocate_template_vs_scan/";
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid_relocate_template_vs_scan/");
 
     Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -553,7 +553,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
     // when
     Map<String, Template> templates = target.loadTemplates(trigger);
-    assertThat(templates).hasSize(2);
+    assertThat(templates).hasSize(6);
 
     // validation
     String staticRelocationPrefix = "../api/";
@@ -581,7 +581,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
   public void testRelocate_propertiesResolution() {
 
     // arrange
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid_relocate_propertiesresolution/");
 
     Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -612,7 +612,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
     // given
     String templatesConfigurationRoot = testFileRootPath + "valid_relocate_template_fileending/";
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid_relocate_template_fileending/");
 
     Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
@@ -648,7 +648,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     String noRelocation = "";
     String templateScanDestinationPath = "src/main/java/";
     String templatesConfigurationRoot = testFileRootPath + "valid_relocate/";
-    TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "valid_relocate/");
 
     Trigger trigger = new Trigger("id", "type", "valid_relocate", Charset.forName("UTF-8"), new LinkedList<Matcher>(),

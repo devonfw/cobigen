@@ -50,6 +50,8 @@ import com.devonfw.cobigen.impl.config.entity.io.TemplateScanRef;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScans;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Templates;
+import com.devonfw.cobigen.impl.config.reader.interfaces.ContextInterface;
+import com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
@@ -66,7 +68,7 @@ import jakarta.xml.bind.Unmarshaller;
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and converts the
  * information to the working entities
  */
-public class TemplatesConfigurationReader {
+public class TemplatesConfigurationReader implements TemplatesInterface {
 
   /**
    * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
@@ -147,6 +149,7 @@ public class TemplatesConfigurationReader {
    *
    * @return the configured template engine to be used
    */
+  @Override
   public String getTemplateEngine() {
 
     return this.configNode.getTemplateEngine();
@@ -234,6 +237,7 @@ public class TemplatesConfigurationReader {
    * @throws UnknownExpressionException if there is an unknown variable modifier
    * @throws InvalidConfigurationException if there are multiple templates with the same name
    */
+  @Override
   public Map<String, Template> loadTemplates(Trigger trigger)
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
@@ -450,6 +454,7 @@ public class TemplatesConfigurationReader {
    * @param trigger {@link Trigger} for which the templates should be loaded
    * @throws InvalidConfigurationException if there is an invalid ref attribute
    */
+  @Override
   public Map<String, Increment> loadIncrements(Map<String, Template> templates, Trigger trigger)
       throws InvalidConfigurationException {
 
@@ -484,6 +489,7 @@ public class TemplatesConfigurationReader {
    * @param incrementName the increment to search
    * @throws InvalidConfigurationException if there is an invalid ref attribute
    */
+  @Override
   public Map<String, Increment> loadSpecificIncrement(Map<String, Template> templates, Trigger trigger,
       String incrementName) throws InvalidConfigurationException {
 
@@ -731,7 +737,7 @@ public class TemplatesConfigurationReader {
    */
   private Trigger getExternalTrigger(String triggerToSearch) {
 
-    AbstractContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
+    ContextInterface contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);
@@ -749,6 +755,7 @@ public class TemplatesConfigurationReader {
    * @param ref name of the increment to get
    * @return Increment if it was found, null if no increment with that name was found
    */
+  @Override
   public com.devonfw.cobigen.impl.config.entity.io.Increment getSpecificIncrement(
       List<com.devonfw.cobigen.impl.config.entity.io.Increment> increment, String ref) {
 
