@@ -272,10 +272,11 @@ public class GenerateCommand extends CommandCommons {
     try {
       CobiGenUtils.initializeCobiGen(this.templatesProject, false);
     } catch (DeprecatedMonolithicConfigurationException e) {
+      String monolithicConfigurationMessage = "Found monolithic configuration at:";
       if (this.templatesProject == null)
-        LOG.warn("Found monolithic configuration at: {} ", ConfigurationFinder.findTemplatesLocation());
+        LOG.warn(monolithicConfigurationMessage + "{} ", ConfigurationFinder.findTemplatesLocation());
       else
-        LOG.warn("Found monolithic configuration at: {} ", this.templatesProject);
+        LOG.warn(monolithicConfigurationMessage + "{} ", this.templatesProject);
       LOG.warn(e.getMessage());
       if (this.upgradeConfiguration) {
         startTemplatesUpgrader();

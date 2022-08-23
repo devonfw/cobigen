@@ -19,12 +19,12 @@ public class TimestampUtilTest {
 
   /**
    *
-   * Tests the read and write method from TimestampUtil also tests that only one Timestamp will be stored at a time
+   * Tests the write method from TimestampUtil also tests that only one Timestamp will be stored at a time
    *
    * @throws IOException
    */
   @Test
-  public void testWriteAndReadTimestamp() throws IOException {
+  public void testWriteTimestamp() throws IOException {
 
     Path configFile = Paths.get("src/test/resources/testdata/unittest/config/util/config");
     Timestamp InstantTimestamp = TimestampUtil.createInstantTimestamp();
@@ -39,4 +39,24 @@ public class TimestampUtilTest {
 
   }
 
+  /**
+   *
+   * Tests the readTimestamp method from TimestampUtil
+   *
+   * @throws IOException
+   */
+  @Test
+  public void testReadTimestamp() throws IOException {
+
+    Path configFile = Paths.get("src/test/resources/testdata/unittest/config/util/config");
+    Timestamp InstantTimestamp = TimestampUtil.createInstantTimestamp();
+    TimestampUtil.writeTimestamp(configFile, InstantTimestamp);
+
+    Timestamp InstantTimestampCopy = TimestampUtil.readTimestamp(configFile);
+
+    Assert.assertEquals(InstantTimestamp, InstantTimestampCopy);
+
+    Files.delete(configFile.toFile());
+
+  }
 }

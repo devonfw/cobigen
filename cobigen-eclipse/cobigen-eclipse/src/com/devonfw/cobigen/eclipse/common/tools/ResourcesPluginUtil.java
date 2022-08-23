@@ -59,7 +59,7 @@ public class ResourcesPluginUtil {
   /**
    * This variable is used to know if the templates got upgraded or not
    */
-  public static boolean TemplatesUpgraded = false;
+  public static boolean templatesUpgraded = false;
 
   /**
    * This variable is used to know if we have a custom generator project
@@ -307,7 +307,7 @@ public class ResourcesPluginUtil {
       templateAdapter = new TemplateAdapterImpl(monolithicConfiguration);
     }
     templateAdapter.upgradeMonolithicTemplates(monolithicConfiguration);
-    TemplatesUpgraded = true;
+    templatesUpgraded = true;
   }
 
 }
