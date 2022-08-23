@@ -126,8 +126,9 @@ public class ExceptionHandler {
               .startTemplatesUpgrader(DeprecatedMonolithicConfigurationException.getMonolithicConfiguration());
           successUpgrade.open();
         } catch (Throwable a) {
-          LOG.error("An error has occurred while upgrading the templates !. ", a);
-          PlatformUIUtil.openErrorDialog("An error has occurred while upgrading the templates !. " + a.getMessage(), a);
+          String upgradeErrorMessage = "An error has occurred while upgrading the templates!";
+          LOG.error(upgradeErrorMessage, a);
+          PlatformUIUtil.openErrorDialog(upgradeErrorMessage + " " + a.getMessage(), a);
         }
       }
       if (result == 1) {
