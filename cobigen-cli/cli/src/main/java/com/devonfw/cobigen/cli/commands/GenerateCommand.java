@@ -309,7 +309,8 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
-   * creates an instance of templatesAdapter and then upgrades the templates.
+   * Upgrades the given template configuration.
+   *
    */
   private void startTemplatesUpgrader() {
 

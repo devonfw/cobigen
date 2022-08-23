@@ -292,21 +292,21 @@ public class ResourcesPluginUtil {
   }
 
   /**
-   * creates an instance of templatesAdapter and then upgrades the templates.
+   * Upgrades the given template configuration.
    *
-   * @param monolithicConfiguration path to the monolithic Configuration
+   * @param configurationPath path to the templates Configuration
    *
    *
    */
-  public static void startTemplatesUpgrader(Path monolithicConfiguration) {
+  public static void startTemplatesUpgrader(Path configurationPath) {
 
     TemplateAdapter templateAdapter;
-    if (monolithicConfiguration == null) {
+    if (configurationPath == null) {
       templateAdapter = new TemplateAdapterImpl();
     } else {
-      templateAdapter = new TemplateAdapterImpl(monolithicConfiguration);
+      templateAdapter = new TemplateAdapterImpl(configurationPath);
     }
-    templateAdapter.upgradeMonolithicTemplates(monolithicConfiguration);
+    templateAdapter.upgradeMonolithicTemplates(configurationPath);
     templatesUpgraded = true;
   }
 
