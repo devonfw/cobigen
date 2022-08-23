@@ -115,7 +115,8 @@ public class ContextConfigurationReader implements ContextInterface {
   /**
    * Reads the context configuration.
    */
-  protected void readConfiguration() {
+  @Override
+  public void readConfiguration() {
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
@@ -284,24 +285,6 @@ public class ContextConfigurationReader implements ContextInterface {
   }
 
   /**
-   * @return the path of the context file
-   */
-  @Override
-  public Path getContextRoot() {
-
-    return this.contextRoot;
-  }
-
-  /**
-   * @return the list of the context files
-   */
-  @Override
-  public List<Path> getContextFiles() {
-
-    return this.contextFiles;
-  }
-
-  /**
    * Loads all {@link Trigger}s of the static context into the local representation
    *
    * @return a {@link List} containing all the {@link Trigger}s
@@ -323,5 +306,14 @@ public class ContextConfigurationReader implements ContextInterface {
       }
     }
     return triggers;
+  }
+
+  /**
+   * @return contextRoot
+   */
+
+  public Path getContextRoot() {
+
+    return this.contextRoot;
   }
 }

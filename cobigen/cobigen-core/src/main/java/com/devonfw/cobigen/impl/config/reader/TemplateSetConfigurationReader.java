@@ -120,7 +120,17 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
   /** The {@link ConfigurationHolder} used for reading templates folder **/
   private ConfigurationHolder configurationHolder;
 
-  TemplateSetConfigurationManager templateSetConfigurationManager;
+  // TODO: Use dependency injection here instead of the new operator
+  private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
+
+  /**
+   * The constructor.
+   *
+   * @param templateSetConfiguration the configuration that will be read by this reader
+   */
+  public TemplateSetConfigurationReader(TemplateSetConfiguration templateSetConfiguration) {
+
+  }
 
   /**
    * The constructor.
@@ -183,7 +193,8 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
   /**
    *
    */
-  protected void readConfiguration() {
+  @Override
+  public void readConfiguration() {
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
@@ -1001,15 +1012,10 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
     return null;
   }
 
-  @Override
+  /**
+   * @return
+   */
   public Path getContextRoot() {
-
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public List<Path> getContextFiles() {
 
     // TODO Auto-generated method stub
     return null;

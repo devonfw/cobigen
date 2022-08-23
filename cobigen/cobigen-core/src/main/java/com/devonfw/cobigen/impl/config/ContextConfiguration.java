@@ -9,7 +9,6 @@ import java.util.Map;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
-import com.devonfw.cobigen.impl.config.reader.interfaces.ContextInterface;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -30,7 +29,7 @@ public class ContextConfiguration {
   /**
    * The reader to read the context.xml files
    */
-  private ContextInterface contextConfigurationReader;
+  private ContextConfigurationReader contextConfigurationReader;
 
   /**
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml

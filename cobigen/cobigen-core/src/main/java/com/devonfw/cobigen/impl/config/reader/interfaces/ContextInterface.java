@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.impl.config.reader.interfaces;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -13,14 +12,9 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 public interface ContextInterface {
 
   /**
-   * @return the path of the context file
+   * Reads the configuration, so the triggers can be loaded
    */
-  Path getContextRoot();
-
-  /**
-   * @return the list of the context files
-   */
-  List<Path> getContextFiles();
+  void readConfiguration();
 
   /**
    * Loads all {@link Trigger}s of the static context into the local representation
