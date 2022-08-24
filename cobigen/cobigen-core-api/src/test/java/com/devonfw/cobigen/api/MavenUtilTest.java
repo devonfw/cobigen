@@ -45,7 +45,7 @@ public class MavenUtilTest {
   @Test(expected = ProcessingException.class)
   public void testWrongTargetLinkThrowsException() {
 
-    AbstractSearchResponse.getJsonResponseStringByTargetLink("this/is/not/a/link", null);
+    AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, null);
   }
 
   /**
@@ -54,7 +54,7 @@ public class MavenUtilTest {
   @Test(expected = ProcessingException.class)
   public void testWrongTargetLinkAndTokenThrowsException() {
 
-    AbstractSearchResponse.getJsonResponseStringByTargetLink("this/is/not/a/link", "thisisabadtoken");
+    AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", "thisisabadtoken", null);
   }
 
   /**
@@ -63,7 +63,8 @@ public class MavenUtilTest {
   @Test(expected = RestSearchResponseException.class)
   public void testWrongResponseStatusCodeThrowsException() {
 
-    AbstractSearchResponse.getJsonResponseStringByTargetLink("https://search.maven.org/solrsearch/select?test", null);
+    AbstractSearchResponse
+        .retrieveJsonResponseWithAuthenticationToken("https://search.maven.org/solrsearch/select?test", null, null);
   }
 
   /**

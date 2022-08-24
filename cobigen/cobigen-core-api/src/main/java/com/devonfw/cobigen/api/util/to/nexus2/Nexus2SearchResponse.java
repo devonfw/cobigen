@@ -59,7 +59,7 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_TARGET_LINK + "?q=" + groupId;
 
-    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken);
+    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken, getRepositoryType());
   }
 
   @Override

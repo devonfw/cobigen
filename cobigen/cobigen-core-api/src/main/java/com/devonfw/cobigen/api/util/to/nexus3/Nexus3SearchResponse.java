@@ -54,7 +54,7 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS3_TARGET_LINK
         + "?repository=maven-central" + "&group=" + groupId;
 
-    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken);
+    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken, getRepositoryType());
   }
 
   @Override

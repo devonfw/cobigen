@@ -47,7 +47,7 @@ public class MavenSearchResponse extends AbstractSearchResponse {
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_TARGET_LINK + "?q=g:" + groupId
         + "&wt=json";
 
-    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken);
+    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken, getRepositoryType());
   }
 
   @Override
@@ -60,8 +60,8 @@ public class MavenSearchResponse extends AbstractSearchResponse {
     for (MavenSearchResponseDoc doc : docs) {
       for (String fileEnding : doc.getEc()) {
         String newFileEnding = fileEnding;
-        downloadLinks
-            .add(AbstractSearchResponse.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
+        downloadLinks.add(
+            AbstractSearchResponse.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
                 doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), newFileEnding));
       }
 

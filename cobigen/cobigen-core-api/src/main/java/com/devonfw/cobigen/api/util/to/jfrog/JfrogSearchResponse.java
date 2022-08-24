@@ -45,7 +45,7 @@ public class JfrogSearchResponse extends AbstractSearchResponse {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.JFROG_TARGET_LINK + "?g=" + groupId;
 
-    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken);
+    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken, getRepositoryType());
   }
 
   @Override

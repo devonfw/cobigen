@@ -83,22 +83,6 @@ public abstract class AbstractSearchResponse {
       throws RestSearchResponseException;
 
   /**
-   * Retrieves the json response from the search API target link using bearer authentication token
-   *
-   * @param targetLink link to get response from
-   * @param authToken bearer token to use for authentication
-   * @return String of json response
-   * @throws RestSearchResponseException if the request did not return status 200
-   */
-  public String retrieveJsonResponseWithAuthenticationToken(String targetLink, String authToken)
-      throws RestSearchResponseException {
-
-    LOG.info("Starting {} search REST API request with URL: {}.", getRepositoryType(), targetLink);
-
-    return getJsonResponseStringByTargetLink(targetLink, authToken);
-  }
-
-  /**
    * Creates a @WebTarget with provided authentication token
    *
    * @param targetLink link to get response from
@@ -115,15 +99,18 @@ public abstract class AbstractSearchResponse {
   }
 
   /**
-   * Gets a json response by given REST API target link using bearer authentication token
+   * Retrieves a json response by given REST API target link using bearer authentication token
    *
    * @param targetLink link to get response from
    * @param authToken bearer token to use for authentication
+   * @param searchRepositoryType the type of the search repository
    * @return String of json response
    * @throws RestSearchResponseException if the returned status code was not 200 OK
    */
-  public static String getJsonResponseStringByTargetLink(String targetLink, String authToken)
-      throws RestSearchResponseException {
+  public static String retrieveJsonResponseWithAuthenticationToken(String targetLink, String authToken,
+      MavenSearchRepositoryType searchRepositoryType) throws RestSearchResponseException {
+
+    LOG.info("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
 
     WebTarget target = null;
 
