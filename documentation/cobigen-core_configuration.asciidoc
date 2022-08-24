@@ -406,14 +406,14 @@ If the configuration needs to be upgraded, the user will be asked whether he wan
 upgrade can also be performed manually, but it is highly recommended to perform it automatically.
 
 === Manual Upgrade Steps
-If you wish to manually split your templates into smaller parts, as specified in version 3.0, please follow the following instruction.
+If you wish to manually split your templates into smaller parts, as specified in version 3.0, please follow the following instructions.
 Navigate to your CobiGen directory e.g. `$cghome/.cobigen`. If the `template-sets` folder is missing,
 please create one. Navigate into the folder and create a `downloaded` and an `adapted` folder.
 
 1. Navigate to the newly created `adapted` folder and create a new folder named after the template you want to upgrade
 e. g. `template1`
 
-2. In the newly created folder, create the following folder-structure:
+2. In the newly created folder, create the following folder structure:
 ```
  |- adapted
    |- template1
