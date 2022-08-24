@@ -202,7 +202,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   private void createFileOrFolder(MavenCoordinate m, File f, boolean folder) throws Exception {
 
     String templateName = m.getArtifactID() + "-" + m.getGroupID() + "-" + m.getVersion();
-
+    // copy from ressorceas to folder
     if (folder) {
       this.tempFolder.newFolder(f.toPath().resolve(templateName).toString());
     } else {

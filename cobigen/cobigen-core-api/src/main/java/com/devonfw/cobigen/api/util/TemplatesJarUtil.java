@@ -115,7 +115,8 @@ public class TemplatesJarUtil {
       return;
       // no templates specified
     }
-
+    // TODO
+    // ALLE Files zu PATHS und mit FILES arbeiten
     Set<MavenCoordinate> existingTemplates = new HashSet<>();
     File adapted = templatesDirectory.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER).toFile();
     File downloaded = templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER).toFile();
