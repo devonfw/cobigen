@@ -345,15 +345,15 @@ public class MavenUtil {
   }
 
   /**
-   * Gets a list of download URLs by groupId from the specified repository search REST API using authentication with
-   * bearer token
+   * Retrieves a list of download URLs by groupId from the specified repository search REST API using authentication
+   * with bearer token
    *
    * @param baseURL String of the repository server URL
    * @param groupId the groupId to search for
    * @param authToken bearer token to use for authentication
    * @return List of artifact download URLS
    */
-  public static List<URL> getMavenArtifactsByGroupId(String baseURL, String groupId, String authToken) {
+  public static List<URL> retrieveMavenArtifactsByGroupId(String baseURL, String groupId, String authToken) {
 
     try {
       return SearchResponseFactory.getArtifactDownloadLinks(baseURL, groupId, authToken);

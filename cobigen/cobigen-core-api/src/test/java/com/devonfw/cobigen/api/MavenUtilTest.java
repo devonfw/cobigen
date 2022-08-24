@@ -38,7 +38,7 @@ public class MavenUtilTest {
   @Test(expected = CobiGenRuntimeException.class)
   public void testWrongRepositoryTypeThrowsException() {
 
-    assertThat(MavenUtil.getMavenArtifactsByGroupId("this/is/not/a/link", "test", null));
+    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("this/is/not/a/link", "test", null));
   }
 
   /**
@@ -175,7 +175,7 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_URL,
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_URL,
         "com.google.inject", null);
 
     assertThat(downloadList).contains(
@@ -195,7 +195,7 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL,
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId(MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL,
         "com.devonfw.cobigen", null);
 
     assertThat(downloadList).contains(new URL(
@@ -213,7 +213,7 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryConstants.NEXUS3_REPOSITORY_URL,
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId(MavenSearchRepositoryConstants.NEXUS3_REPOSITORY_URL,
         "com.devonfw.cobigen", null);
 
     assertThat(downloadList).contains(new URL(
@@ -233,7 +233,7 @@ public class MavenUtilTest {
 
     List<URL> downloadList;
 
-    downloadList = MavenUtil.getMavenArtifactsByGroupId(MavenSearchRepositoryConstants.JFROG_REPOSITORY_URL,
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId(MavenSearchRepositoryConstants.JFROG_REPOSITORY_URL,
         "com.devonfw.cobigen", null);
     assertThat(downloadList).contains(new URL(
         "https://localjfrog.com/artifactory/api/storage/maven-remote-cache/com/devonfw/cobigen/cli-parent/2021.04.001-SNAPSHOT/cli-parent-2021.04.001-SNAPSHOT.pom"),
