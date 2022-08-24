@@ -96,6 +96,10 @@ public class ResourcesPluginUtil {
    */
   public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException, CoreException {
 
+    if (Files.exists(getTemplateSetDirectory().toPath())) {
+      generatorProjExists = false;
+      return null;
+    }
     File templatesDirectory = getTemplatesDirectory();
 
     generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
