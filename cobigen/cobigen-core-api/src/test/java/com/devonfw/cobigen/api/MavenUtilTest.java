@@ -15,7 +15,7 @@ import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
-import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
+import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
 import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
 import com.devonfw.cobigen.api.util.to.nexus2.Nexus2SearchResponse;
@@ -47,7 +47,7 @@ public class MavenUtilTest {
   @Test(expected = ProcessingException.class)
   public void testWrongTargetLinkThrowsException() {
 
-    SearchResponseUtil.getJsonResponseStringByTargetLink("this/is/not/a/link", null);
+    AbstractSearchResponse.getJsonResponseStringByTargetLink("this/is/not/a/link", null);
   }
 
   /**
@@ -56,7 +56,7 @@ public class MavenUtilTest {
   @Test(expected = ProcessingException.class)
   public void testWrongTargetLinkAndTokenThrowsException() {
 
-    SearchResponseUtil.getJsonResponseStringByTargetLink("this/is/not/a/link", "thisisabadtoken");
+    AbstractSearchResponse.getJsonResponseStringByTargetLink("this/is/not/a/link", "thisisabadtoken");
   }
 
   /**
@@ -65,7 +65,7 @@ public class MavenUtilTest {
   @Test(expected = RestSearchResponseException.class)
   public void testWrongResponseStatusCodeThrowsException() {
 
-    SearchResponseUtil.getJsonResponseStringByTargetLink("https://search.maven.org/solrsearch/select?test", null);
+    AbstractSearchResponse.getJsonResponseStringByTargetLink("https://search.maven.org/solrsearch/select?test", null);
   }
 
   /**

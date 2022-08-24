@@ -12,7 +12,6 @@ import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
-import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,7 +40,7 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
     for (Nexus2SearchResponseData item : this.data) {
       for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
         for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
-          downloadLinks.add(SearchResponseUtil.createDownloadLink(
+          downloadLinks.add(AbstractSearchResponse.createDownloadLink(
               MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
                   + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
               item.getGroupId(), item.getArtifactId(), item.getVersion(), "." + artifactLink.getExtension()));

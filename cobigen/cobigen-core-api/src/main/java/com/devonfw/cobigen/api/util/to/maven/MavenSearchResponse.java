@@ -12,7 +12,6 @@ import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
-import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,7 +61,7 @@ public class MavenSearchResponse extends AbstractSearchResponse {
       for (String fileEnding : doc.getEc()) {
         String newFileEnding = fileEnding;
         downloadLinks
-            .add(SearchResponseUtil.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
+            .add(AbstractSearchResponse.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
                 doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), newFileEnding));
       }
 
