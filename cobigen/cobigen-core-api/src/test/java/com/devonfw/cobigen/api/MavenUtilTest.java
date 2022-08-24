@@ -12,7 +12,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
@@ -33,12 +32,11 @@ public class MavenUtilTest {
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenUtilTest";
 
   /**
-   * Tests if a wrong repository type throws {@link CobiGenRuntimeException}
+   * Tests if retrieving maven artifacts with an invalid link returns null
    */
-  @Test(expected = CobiGenRuntimeException.class)
-  public void testWrongRepositoryTypeThrowsException() {
+  public void testRetrieveMavenArtifactsWithInvalidLinkReturnsNull() {
 
-    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("this/is/not/a/link", "test", null));
+    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("this/is/not/a/link", "test", null)).isNull();
   }
 
   /**

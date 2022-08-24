@@ -7,7 +7,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
@@ -21,7 +20,8 @@ import com.google.common.collect.Lists;
 import jakarta.ws.rs.ProcessingException;
 
 /**
- * Factory to create new instances of {@link AbstractSearchResponse} which handles the responses from various search REST APIs.
+ * Factory to create new instances of {@link AbstractSearchResponse} which handles the responses from various search
+ * REST APIs.
  */
 public class SearchResponseFactory {
 
@@ -57,16 +57,16 @@ public class SearchResponseFactory {
       try {
         LOG.debug("Trying to get a response from {} with server URL: {} ...",
             ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL);
-        String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, groupId, authToken);
-        AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse, searchResponse.getClass());
+        String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, groupId,
+            authToken);
+        AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
+            searchResponse.getClass());
         return response.retrieveDownloadURLs();
       } catch (RestSearchResponseException e) {
-        LOG.debug("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
+        LOG.error("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
             ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL, e.getMessage());
       } catch (ProcessingException e) {
-        String errorMsg = "The search REST API was not able to process the URL: " + baseURL;
-        LOG.error(errorMsg, e);
-        throw new CobiGenRuntimeException(errorMsg, e);
+        LOG.error("The search REST API was not able to process the URL: {}", baseURL, e);
       }
     }
 
