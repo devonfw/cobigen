@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import jakarta.ws.rs.ProcessingException;
 
 /**
- * Factory to create new instances of {@link SearchResponse} which handles the responses from various search REST APIs.
+ * Factory to create new instances of {@link AbstractSearchResponse} which handles the responses from various search REST APIs.
  */
 public class SearchResponseFactory {
 
@@ -29,9 +29,9 @@ public class SearchResponseFactory {
   static final Logger LOG = LoggerFactory.getLogger(SearchResponseFactory.class);
 
   /**
-   * List of available {@link SearchResponse} implementations (add new search REST API responses here)
+   * List of available {@link AbstractSearchResponse} implementations (add new search REST API responses here)
    */
-  private static final List<SearchResponse> SEARCH_RESPONSES = Lists.newArrayList(new MavenSearchResponse(),
+  private static final List<Object> SEARCH_RESPONSES = Lists.newArrayList(new MavenSearchResponse(),
       new JfrogSearchResponse(), new Nexus2SearchResponse(), new Nexus3SearchResponse());
 
   /**
@@ -53,16 +53,16 @@ public class SearchResponseFactory {
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
 
-    for (SearchResponse searchResponse : SEARCH_RESPONSES) {
+    for (Object searchResponse : SEARCH_RESPONSES) {
       try {
-        LOG.debug("Trying to get a response from {} with server URL: {} ...", searchResponse.getRepositoryType(),
-            baseURL);
-        String jsonResponse = searchResponse.getJsonResponse(baseURL, groupId, authToken);
-        SearchResponse response = mapper.readValue(jsonResponse, searchResponse.getClass());
+        LOG.debug("Trying to get a response from {} with server URL: {} ...",
+            ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL);
+        String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, groupId, authToken);
+        AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse, searchResponse.getClass());
         return response.getDownloadURLs();
       } catch (RestSearchResponseException e) {
         LOG.debug("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
-            searchResponse.getRepositoryType(), baseURL, e.getMessage());
+            ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL, e.getMessage());
       } catch (ProcessingException e) {
         String errorMsg = "The search REST API was not able to process the URL: " + baseURL;
         LOG.error(errorMsg, e);

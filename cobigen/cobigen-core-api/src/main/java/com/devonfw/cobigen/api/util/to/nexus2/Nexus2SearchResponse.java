@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
-import com.devonfw.cobigen.api.util.to.SearchResponse;
+import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
 import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 @JsonIgnoreProperties(value = { "totalCount", "from", "count", "tooManyResults", "collapsed", "repoDetails" })
-public class Nexus2SearchResponse implements SearchResponse {
+public class Nexus2SearchResponse extends AbstractSearchResponse {
 
   /** Logger instance. */
   @JsonIgnore
@@ -59,24 +59,12 @@ public class Nexus2SearchResponse implements SearchResponse {
 
   @Override
   @JsonIgnore
-  public String getJsonResponse(String repositoryUrl, String groupId) throws RestSearchResponseException {
-
-    return getJsonResponse(repositoryUrl, groupId, null);
-  }
-
-  @Override
-  @JsonIgnore
-  public String getJsonResponse(String repositoryUrl, String groupId, String authToken)
+  public String retrieveJsonResponse(String repositoryUrl, String groupId, String authToken)
       throws RestSearchResponseException {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_TARGET_LINK + "?q=" + groupId;
-    LOG.info("Starting {} search REST API request with URL: {}.", getRepositoryType(), targetLink);
 
-    String jsonResponse;
-
-    jsonResponse = SearchResponseUtil.getJsonResponseStringByTargetLink(targetLink, authToken);
-
-    return jsonResponse;
+    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken);
   }
 
   @Override

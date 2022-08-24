@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
-import com.devonfw.cobigen.api.util.to.SearchResponse;
-import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
+import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -20,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Json model for jfrog Search REST API response
  *
  */
-public class JfrogSearchResponse implements SearchResponse {
+public class JfrogSearchResponse extends AbstractSearchResponse {
 
   /** Logger instance. */
   @JsonIgnore
@@ -41,24 +40,12 @@ public class JfrogSearchResponse implements SearchResponse {
 
   @Override
   @JsonIgnore
-  public String getJsonResponse(String repositoryUrl, String groupId) throws RestSearchResponseException {
-
-    return getJsonResponse(repositoryUrl, groupId, null);
-  }
-
-  @Override
-  @JsonIgnore
-  public String getJsonResponse(String repositoryUrl, String groupId, String authToken)
+  public String retrieveJsonResponse(String repositoryUrl, String groupId, String authToken)
       throws RestSearchResponseException {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.JFROG_TARGET_LINK + "?g=" + groupId;
-    LOG.info("Starting {} search REST API request with URL: {}.", getRepositoryType(), targetLink);
 
-    String jsonResponse;
-
-    jsonResponse = SearchResponseUtil.getJsonResponseStringByTargetLink(targetLink, authToken);
-
-    return jsonResponse;
+    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken);
   }
 
   @Override
