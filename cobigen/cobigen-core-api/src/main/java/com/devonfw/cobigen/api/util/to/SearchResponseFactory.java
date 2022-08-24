@@ -31,7 +31,7 @@ public class SearchResponseFactory {
       new JfrogSearchResponse(), new Nexus2SearchResponse(), new Nexus3SearchResponse());
 
   /**
-   * Gets the maven artifact download links by given base URL, groupId and optional authentication token
+   * Searches for the maven artifact download links by given base URL, groupId and optional authentication token
    *
    * @param baseURL String of the repository server URL
    * @param groupId the groupId to search for
@@ -43,7 +43,7 @@ public class SearchResponseFactory {
    * @throws MalformedURLException if an URL was malformed
    *
    */
-  public static List<URL> getArtifactDownloadLinks(String baseURL, String groupId, String authToken)
+  public static List<URL> searchArtifactDownloadLinks(String baseURL, String groupId, String authToken)
       throws RestSearchResponseException, JsonMappingException, JsonProcessingException, MalformedURLException {
 
     ObjectMapper mapper = new ObjectMapper();

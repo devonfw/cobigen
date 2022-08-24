@@ -356,7 +356,7 @@ public class MavenUtil {
   public static List<URL> retrieveMavenArtifactsByGroupId(String baseURL, String groupId, String authToken) {
 
     try {
-      return SearchResponseFactory.getArtifactDownloadLinks(baseURL, groupId, authToken);
+      return SearchResponseFactory.searchArtifactDownloadLinks(baseURL, groupId, authToken);
     } catch (RestSearchResponseException | JsonProcessingException | MalformedURLException e) {
       throw new CobiGenRuntimeException("Unable to get artifacts from " + baseURL + " by groupId " + groupId, e);
     }
