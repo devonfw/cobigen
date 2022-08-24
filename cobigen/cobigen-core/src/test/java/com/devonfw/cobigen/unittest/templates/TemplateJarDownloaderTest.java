@@ -3,11 +3,9 @@ package com.devonfw.cobigen.unittest.templates;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,14 +90,14 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testDownloadTemplatesAlreadyExisting() {
 
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("2021.12.006"));
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
     assertEquals(this.downloadedFolder.listFiles().length, 2);
     for (File f : FilesList) {
       assertThat(f.getName(), Matchers.either(Matchers.is("templates-devon4j-2021.12.006.jar"))
           .or(Matchers.is("templates-devon4j-2021.12.006-sources.jar")));
     }
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     assertEquals(this.downloadedFolder.listFiles().length, 2);
   }
 
@@ -110,7 +108,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testDownloadTemplatesWithoutVersion() {
 
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(""));
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
     assertEquals(this.downloadedFolder.listFiles().length, 2);
     for (File f : FilesList) {
@@ -118,7 +116,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     }
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("LATEST"));
     this.mavenCoordinatesList.remove(0);
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
 
   }
 
@@ -129,7 +127,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testDownloadTemplatesWithLATEST() {
 
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("LATEST"));
-    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
     assertEquals(this.downloadedFolder.listFiles().length, 2);
     for (File f : FilesList) {
@@ -150,22 +148,24 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     File adapted = this.tempFolder.newFolder("templateLocation/adapted");
     // this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(null));
     this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
-    this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
-    this.mavenCoordinatesList.add(new MavenCoordinate("com.com", "app-app", "87"));
-    // createFileOrFolder(this.mavenCoordinatesList.get(0), adapted, true);
+    // this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
+    // this.mavenCoordinatesList.add(new MavenCoordinate("com.com", "app-app", "87"));
+    createFileOrFolder(this.mavenCoordinatesList.get(0), adapted, true);
     // createFileOrFolder(this.mavenCoordinatesList.get(1), adapted, true);
     // createFileOrFolder(this.mavenCoordinatesList.get(2), this.downloadedFolder, false);
     try (MockedStatic<TemplatesJarUtil> utilities = Mockito.mockStatic(TemplatesJarUtil.class)) {
-      utilities
-          .when(
-              () -> TemplatesJarUtil.downloadJar(anyString(), anyString(), anyString(), anyBoolean(), any(File.class)))
-          .thenReturn("Ich Downloade jetzt");
-      utilities.when(TemplatesJarUtil.downloadTemplatesByMavenCoordinates(any(File.class), Mockito.anyList()))
-          .thenCallRealMethod();
-      assertThat(TemplatesJarUtil.downloadJar("Hallo", "ich", "bins", true, this.downloadedFolder))
-          .isEqualTo("Ich Downloade jetzt");
-      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
+      utilities.when(() -> TemplatesJarUtil.downloadJar("com.group", "artifact-id", "1.0", true, this.downloadedFolder))
+          .thenReturn(createFileOrFolder(this.mavenCoordinatesList.get(0), this.downloadedFolder, false));
+      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
+      assertEquals(0, this.downloadedFolder.listFiles().length);
+      assertEquals(2, adapted.listFiles().length);
     }
+    // utilities.when(TemplatesJarUtil.downloadTemplatesByMavenCoordinates(any(File.class), Mockito.anyList()))
+    // .thenCallRealMethod();
+    // assertThat(TemplatesJarUtil.downloadJar("Hallo", "ich", "bins", true, this.downloadedFolder))
+    // .isEqualTo("Ich Downloade jetzt");
+    // TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
+    // }
     // assertThat(TemplatesJarUtil.downloadJar("Hallo", "ich", "bins", true, this.downloadedFolder))
     // .isEqualTo("Ich Downloade jetzt");
     // utilities
@@ -193,18 +193,22 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     // }
 
     // Download of Templates should not start
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
+
     assertEquals(0, this.downloadedFolder.listFiles().length);
-    assertEquals(3, adapted.listFiles().length);
+    assertEquals(2, adapted.listFiles().length);
     assert (this.downloadedFolder.listFiles(File::isFile)) != null;
 
   }
 
-  private void createFileOrFolder(MavenCoordinate m, File f, boolean folder) throws Exception {
+  private String createFileOrFolder(MavenCoordinate m, File f, boolean folder) throws Exception {
 
+    System.out.println("helperMethode");
     String templateName = m.getArtifactID() + "-" + m.getGroupID() + "-" + m.getVersion();
     // copy from ressorceas to folder
     if (folder) {
-      this.tempFolder.newFolder(f.toPath().resolve(templateName).toString());
+      Path temp = this.tempFolder.getRoot().toPath().relativize(f.toPath());
+      this.tempFolder.newFolder(temp.resolve(templateName).toString());
     } else {
       try {
         File.createTempFile(templateName, ".jar", f);
@@ -212,6 +216,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
         throw e;
       }
     }
+    return "Filecreated";
   }
 
   /**

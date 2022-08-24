@@ -104,7 +104,7 @@ public class CobiGenFactory {
           CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
       URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
       File downloadPath = new File(templatesLocation);
-      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(downloadPath, config.getMavenCoordinates());
+      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(downloadPath.toPath(), config.getMavenCoordinates());
     }
     return createBean;
   }

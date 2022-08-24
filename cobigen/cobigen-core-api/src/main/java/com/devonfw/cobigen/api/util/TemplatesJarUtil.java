@@ -108,54 +108,61 @@ public class TemplatesJarUtil {
    * @param templatesDirectory directory where the templates jar are located
    * @param mavenCoordinates list with {@link MavenCoordinate} that will be loaded
    */
-  public static void downloadTemplatesByMavenCoordinates(File templatesDirectory,
+  public static void downloadTemplatesByMavenCoordinates(Path templatesDirectory,
       List<MavenCoordinate> mavenCoordinates) {
 
     if (mavenCoordinates == null || mavenCoordinates.isEmpty()) {
       return;
       // no templates specified
     }
-    // TODO
-    // ALLE Files zu PATHS und mit FILES arbeiten
+
     Set<MavenCoordinate> existingTemplates = new HashSet<>();
-    File adapted = templatesDirectory.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER).toFile();
-    File downloaded = templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER).toFile();
+    Path adapted = templatesDirectory.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path downloaded = templatesDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     // search for already available template-sets
     for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
-      if (adapted.exists()) {
-        for (File adaptedFile : adapted.listFiles()) {
-          if ((adaptedFile.getName().contains(mavenCoordinate.getArtifactID()))) {
+      if (Files.exists(adapted)) {
+        try {
+          if (Files.list(adapted)
+              .anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactID())))) {
             existingTemplates.add(mavenCoordinate);
           }
+        } catch (IOException e) {
+          LOG.debug("Failed to get all files and directories from adapted folder", e);
         }
       }
-      if (downloaded.exists()) {
-        for (File downloadedFile : downloaded.listFiles()) {
-          if ((downloadedFile.getName().contains(mavenCoordinate.getArtifactID()))) {
+      if (Files.exists(downloaded)) {
+        try {
+          if (Files.list(downloaded)
+              .anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactID())))) {
             existingTemplates.add(mavenCoordinate);
           }
+        } catch (IOException e) {
+          LOG.debug("Failed to get all files and directories from downloaded folder", e);
         }
       } else {
         LOG.info("downloaded folder could not be found and will be created ");
         try {
-          Files.createDirectory(templatesDirectory.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
+          Files.createDirectory(templatesDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
         } catch (IOException e) {
           throw new CobiGenRuntimeException("Could not create Download Folder", e);
         }
       }
     }
-
     // nullcheck ?
     if (existingTemplates.size() > 0) {
       mavenCoordinates.removeAll(existingTemplates);
     }
 
     for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
-      // downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), false,
-      // downloaded);
+      downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), false,
+          downloaded.toFile());
+      downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), true,
+          downloaded.toFile());
       System.out.println(downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(),
-          mavenCoordinate.getVersion(), true, downloaded));
+          mavenCoordinate.getVersion(), true, downloaded.toFile()));
     }
+
   }
 
   /**
