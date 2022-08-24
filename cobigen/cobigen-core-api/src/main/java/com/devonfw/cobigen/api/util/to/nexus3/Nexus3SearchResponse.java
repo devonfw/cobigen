@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public List<URL> getDownloadURLs() throws MalformedURLException {
+  public List<URL> retrieveDownloadURLs() throws MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
 
@@ -44,10 +43,7 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
       }
     }
 
-    // removes duplicates
-    List<URL> newDownloadList = downloadLinks.stream().distinct().collect(Collectors.toList());
-
-    return newDownloadList;
+    return removeDuplicatedDownloadURLs(downloadLinks);
   }
 
   @Override

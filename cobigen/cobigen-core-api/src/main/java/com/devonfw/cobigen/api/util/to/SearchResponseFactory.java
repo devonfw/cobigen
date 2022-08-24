@@ -59,7 +59,7 @@ public class SearchResponseFactory {
             ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL);
         String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, groupId, authToken);
         AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse, searchResponse.getClass());
-        return response.getDownloadURLs();
+        return response.retrieveDownloadURLs();
       } catch (RestSearchResponseException e) {
         LOG.debug("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
             ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL, e.getMessage());

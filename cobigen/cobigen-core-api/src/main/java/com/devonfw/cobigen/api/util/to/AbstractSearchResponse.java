@@ -3,6 +3,7 @@ package com.devonfw.cobigen.api.util.to;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,19 @@ public abstract class AbstractSearchResponse {
    * @return List of download links
    * @throws MalformedURLException if an URL was not valid
    */
-  public abstract List<URL> getDownloadURLs() throws MalformedURLException;
+  public abstract List<URL> retrieveDownloadURLs() throws MalformedURLException;
+
+  /**
+   * Removes duplicates from list of download URLs
+   *
+   * @param downloadUrls list of download URLs
+   * @return List of download links
+   * @throws MalformedURLException if an URL was not valid
+   */
+  public List<URL> removeDuplicatedDownloadURLs(List<URL> downloadUrls) throws MalformedURLException {
+
+    return downloadUrls.stream().distinct().collect(Collectors.toList());
+  }
 
   /**
    * Retrieves the json response from a repository URL and a group ID

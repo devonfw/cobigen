@@ -82,7 +82,7 @@ public class MavenUtilTest {
     String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("mavenJsonTest.json")));
 
     response = mapper.readValue(jsonResponse, MavenSearchResponse.class);
-    List<URL> downloadLinks = response.getDownloadURLs();
+    List<URL> downloadLinks = response.retrieveDownloadURLs();
     assertThat(downloadLinks).contains(
         new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
         new URL("https://repo1.maven.org/maven2/com/google/inject/guice-bom/5.1.0/guice-bom-5.1.0.pom"),
@@ -104,7 +104,7 @@ public class MavenUtilTest {
     String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus2JsonTest.json")));
 
     response = mapper.readValue(jsonResponse, Nexus2SearchResponse.class);
-    List<URL> downloadLinks = response.getDownloadURLs();
+    List<URL> downloadLinks = response.retrieveDownloadURLs();
     assertThat(downloadLinks).contains(new URL(
         "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.pom"),
         new URL(
@@ -137,7 +137,7 @@ public class MavenUtilTest {
     String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")));
 
     response = mapper.readValue(jsonResponse, Nexus3SearchResponse.class);
-    List<URL> downloadLinks = response.getDownloadURLs();
+    List<URL> downloadLinks = response.retrieveDownloadURLs();
     assertThat(downloadLinks).contains(new URL(
         "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
         new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
@@ -158,7 +158,7 @@ public class MavenUtilTest {
     String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")));
 
     response = mapper.readValue(jsonResponse, JfrogSearchResponse.class);
-    List<URL> downloadLinks = response.getDownloadURLs();
+    List<URL> downloadLinks = response.retrieveDownloadURLs();
     assertThat(downloadLinks).contains(new URL(
         "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifact/1.0/artifact-1.0-sources.jar"),
         new URL(

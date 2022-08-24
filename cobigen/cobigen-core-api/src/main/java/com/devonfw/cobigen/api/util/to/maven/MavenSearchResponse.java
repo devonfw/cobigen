@@ -53,7 +53,7 @@ public class MavenSearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public List<URL> getDownloadURLs() throws MalformedURLException {
+  public List<URL> retrieveDownloadURLs() throws MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
     List<MavenSearchResponseDoc> docs = getResponse().getDocs();
