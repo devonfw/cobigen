@@ -27,7 +27,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
+import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.to.SearchResponseFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
@@ -357,7 +357,7 @@ public class MavenUtil {
 
     try {
       return SearchResponseFactory.getArtifactDownloadLinks(baseURL, groupId, authToken);
-    } catch (RESTSearchResponseException | JsonProcessingException | MalformedURLException e) {
+    } catch (RestSearchResponseException | JsonProcessingException | MalformedURLException e) {
       throw new CobiGenRuntimeException("Unable to get artifacts from " + baseURL + " by groupId " + groupId, e);
     }
 

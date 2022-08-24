@@ -5,7 +5,7 @@ import java.net.URL;
 
 import org.glassfish.jersey.client.oauth2.OAuth2ClientSupport;
 
-import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
+import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -44,10 +44,10 @@ public class SearchResponseUtil {
    * @param targetLink link to get response from
    * @param authToken bearer token to use for authentication
    * @return String of json response
-   * @throws RESTSearchResponseException if the returned status code was not 200 OK
+   * @throws RestSearchResponseException if the returned status code was not 200 OK
    */
   public static String getJsonResponseStringByTargetLink(String targetLink, String authToken)
-      throws RESTSearchResponseException {
+      throws RestSearchResponseException {
 
     WebTarget target = null;
 
@@ -67,7 +67,7 @@ public class SearchResponseUtil {
     if (status == 200) {
       jsonResponse = response.readEntity(String.class);
     } else {
-      throw new RESTSearchResponseException("The search REST API returned the unexpected status code: ",
+      throw new RestSearchResponseException("The search REST API returned the unexpected status code: ",
           String.valueOf(status));
     }
     return jsonResponse;

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
-import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
+import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -40,7 +40,7 @@ public class MavenSearchResponse implements SearchResponse {
 
   @Override
   @JsonIgnore
-  public String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException {
+  public String getJsonResponse(String repositoryUrl, String groupId) throws RestSearchResponseException {
 
     return getJsonResponse(repositoryUrl, groupId, null);
   }
@@ -48,7 +48,7 @@ public class MavenSearchResponse implements SearchResponse {
   @Override
   @JsonIgnore
   public String getJsonResponse(String repositoryUrl, String groupId, String authToken)
-      throws RESTSearchResponseException {
+      throws RestSearchResponseException {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_TARGET_LINK + "?q=g:" + groupId
         + "&wt=json";

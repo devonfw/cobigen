@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.List;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
-import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
+import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -33,9 +33,9 @@ public interface SearchResponse {
    * @param repositoryUrl URL of the repository
    * @param groupId to search for
    * @return String of json response
-   * @throws RESTSearchResponseException if the request did not return status 200
+   * @throws RestSearchResponseException if the request did not return status 200
    */
-  String getJsonResponse(String repositoryUrl, String groupId) throws RESTSearchResponseException;
+  String getJsonResponse(String repositoryUrl, String groupId) throws RestSearchResponseException;
 
   /**
    * Gets the json response using bearer authentication token
@@ -44,8 +44,8 @@ public interface SearchResponse {
    * @param groupId to search for
    * @param authToken bearer token to use for authentication
    * @return String of json response
-   * @throws RESTSearchResponseException if the request did not return status 200
+   * @throws RestSearchResponseException if the request did not return status 200
    */
-  String getJsonResponse(String repositoryUrl, String groupId, String authToken) throws RESTSearchResponseException;
+  String getJsonResponse(String repositoryUrl, String groupId, String authToken) throws RestSearchResponseException;
 
 }

@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
+import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,14 +37,14 @@ public class SearchResponseFactory {
    * @param groupId the groupId to search for
    * @param authToken bearer token to use for authentication
    * @return List of download URLs
-   * @throws RESTSearchResponseException if an error occurred while accessing the server
+   * @throws RestSearchResponseException if an error occurred while accessing the server
    * @throws JsonProcessingException if the json processing was not possible
    * @throws JsonMappingException if the json mapping was not possible
    * @throws MalformedURLException if an URL was malformed
    *
    */
   public static List<URL> getArtifactDownloadLinks(String baseURL, String groupId, String authToken)
-      throws RESTSearchResponseException, JsonMappingException, JsonProcessingException, MalformedURLException {
+      throws RestSearchResponseException, JsonMappingException, JsonProcessingException, MalformedURLException {
 
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
@@ -56,7 +56,7 @@ public class SearchResponseFactory {
         String jsonResponse = searchResponse.getJsonResponse(baseURL, groupId, authToken);
         SearchResponse response = mapper.readValue(jsonResponse, searchResponse.getClass());
         return response.getDownloadURLs();
-      } catch (RESTSearchResponseException e) {
+      } catch (RestSearchResponseException e) {
         LOG.debug("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
             searchResponse.getRepositoryType(), baseURL, e.getMessage());
       } catch (ProcessingException e) {

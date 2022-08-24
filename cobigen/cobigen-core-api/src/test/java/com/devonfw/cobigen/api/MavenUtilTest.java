@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.RESTSearchResponseException;
+import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.to.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.MavenSearchResponse;
@@ -62,7 +62,7 @@ public class MavenUtilTest {
   /**
    * Tests if an exception gets thrown when a status code was not 200
    */
-  @Test(expected = RESTSearchResponseException.class)
+  @Test(expected = RestSearchResponseException.class)
   public void testWrongResponseStatusCodeThrowsException() {
 
     SearchResponseUtil.getJsonResponseStringByTargetLink("https://search.maven.org/solrsearch/select?test", null);
