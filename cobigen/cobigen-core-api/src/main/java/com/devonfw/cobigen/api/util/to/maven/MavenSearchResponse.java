@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Json model for maven Search REST API response
  *
  */
-@JsonIgnoreProperties(value = { "responseHeader", "spellcheck" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MavenSearchResponse extends AbstractSearchResponse {
 
   /** Logger instance. */

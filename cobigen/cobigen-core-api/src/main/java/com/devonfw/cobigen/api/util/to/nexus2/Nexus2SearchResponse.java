@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Json model for nexus2 Search REST API response
  *
  */
-@JsonIgnoreProperties(value = { "totalCount", "from", "count", "tooManyResults", "collapsed", "repoDetails" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Nexus2SearchResponse extends AbstractSearchResponse {
 
   /** Logger instance. */

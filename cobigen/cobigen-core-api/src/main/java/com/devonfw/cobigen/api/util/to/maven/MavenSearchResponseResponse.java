@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Maven search response model
  *
  */
-@JsonIgnoreProperties(value = { "start" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 class MavenSearchResponseResponse {
 
   /**

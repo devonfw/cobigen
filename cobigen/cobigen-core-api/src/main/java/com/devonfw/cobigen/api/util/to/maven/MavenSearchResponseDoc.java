@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Maven search response doc model
  *
  */
-@JsonIgnoreProperties(value = { "p", "timestamp", "versionCount", "text" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 class MavenSearchResponseDoc {
 
   /** id */

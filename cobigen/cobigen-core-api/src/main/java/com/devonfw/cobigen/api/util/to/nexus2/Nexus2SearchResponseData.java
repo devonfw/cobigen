@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Nexus2 search response data model
  *
  */
-@JsonIgnoreProperties(value = { "latestRelease", "latestReleaseRepositoryId", "highlightedFragment" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Nexus2SearchResponseData {
 
   /** groupId */

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Nexus search response artifacthits model
  *
  */
-@JsonIgnoreProperties(value = { "repositoryId" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Nexus2SearchResponseArtifactHits {
 
   /** artifactLinks */

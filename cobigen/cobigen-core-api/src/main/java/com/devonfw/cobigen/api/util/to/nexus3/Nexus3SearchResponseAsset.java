@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Nexus3 search response asset model
  *
  */
-@JsonIgnoreProperties(value = { "path", "id", "repository", "format", "checksum" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Nexus3SearchResponseAsset {
 
   /** downloadUrl */
