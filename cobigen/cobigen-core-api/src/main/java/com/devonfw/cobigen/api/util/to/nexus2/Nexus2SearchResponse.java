@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.util.to;
+package com.devonfw.cobigen.api.util.to.nexus2;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
+import com.devonfw.cobigen.api.util.to.SearchResponse;
+import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -81,95 +83,4 @@ public class Nexus2SearchResponse implements SearchResponse {
 
     return MavenSearchRepositoryType.nexus2;
   }
-}
-
-/**
- *
- * Nexus search response asset model
- *
- */
-@JsonIgnoreProperties(value = { "repositoryId" })
-class Nexus2SearchResponseArtifactHits {
-
-  /**
-   * artifactLinks
-   */
-  @JsonProperty("artifactLinks")
-  public List<Nexus2SearchResponeArtifactLinks> artifactLinks;
-
-}
-
-class Nexus2SearchResponeArtifactLinks {
-
-  @JsonProperty("extension")
-  private String extension;
-
-  /**
-   * @return extension
-   */
-  public String getExtension() {
-
-    return this.extension;
-  }
-
-  @JsonProperty("classifier")
-  private String classifier;
-}
-
-/**
- *
- * Nexus2 search response item model
- *
- */
-@JsonIgnoreProperties(value = { "latestRelease", "latestReleaseRepositoryId", "highlightedFragment" })
-class Nexus2SearchResponseData {
-
-  /**
-   * groupId
-   */
-  @JsonProperty("groupId")
-  private String groupId;
-
-  /**
-   * @return groupId
-   */
-  public String getGroupId() {
-
-    return this.groupId;
-  }
-
-  /**
-   * @return artifactId
-   */
-  public String getArtifactId() {
-
-    return this.artifactId;
-  }
-
-  /**
-   * @return version
-   */
-  public String getVersion() {
-
-    return this.version;
-  }
-
-  /**
-   * artifactId
-   */
-  @JsonProperty("artifactId")
-  private String artifactId;
-
-  /**
-   * version
-   */
-  @JsonProperty("version")
-  private String version;
-
-  /**
-   * artifactHits
-   */
-  @JsonProperty("artifactHits")
-  public List<Nexus2SearchResponseArtifactHits> artifactHits;
-
 }

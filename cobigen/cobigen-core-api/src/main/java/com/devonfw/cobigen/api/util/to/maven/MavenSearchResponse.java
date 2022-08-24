@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.util.to;
+package com.devonfw.cobigen.api.util.to.maven;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
+import com.devonfw.cobigen.api.util.to.SearchResponse;
+import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -86,145 +88,6 @@ public class MavenSearchResponse implements SearchResponse {
   public MavenSearchRepositoryType getRepositoryType() {
 
     return MavenSearchRepositoryType.maven;
-  }
-
-}
-
-/**
- *
- * Maven search response doc model
- *
- */
-@JsonIgnoreProperties(value = { "p", "timestamp", "versionCount", "text" })
-class MavenSearchResponseDoc {
-  /**
-   * id
-   */
-  @JsonProperty("id")
-  private String id;
-
-  /**
-   * group
-   */
-  @JsonProperty("g")
-  private String group;
-
-  /**
-   * artifact
-   */
-  @JsonProperty("a")
-  private String artifact;
-
-  /**
-   * latest version
-   */
-  @JsonProperty("latestVersion")
-  private String latestVersion;
-
-  /**
-   * repository ID
-   */
-  @JsonProperty("repositoryId")
-  private String repositoryId;
-
-  /**
-   * ec (file ending)
-   */
-  @JsonProperty("ec")
-  private List<String> ec;
-
-  /**
-   * @return ec
-   */
-  @JsonIgnore
-  public List<String> getEc() {
-
-    return this.ec;
-  }
-
-  /**
-   * @return id
-   */
-  @JsonIgnore
-  public String getId() {
-
-    return this.id;
-  }
-
-  /**
-   * @return group
-   */
-  @JsonIgnore
-  public String getGroup() {
-
-    return this.group;
-  }
-
-  /**
-   * @return artifact
-   */
-  @JsonIgnore
-  public String getArtifact() {
-
-    return this.artifact;
-  }
-
-  /**
-   * @return latestVersion
-   */
-  @JsonIgnore
-  public String getLatestVersion() {
-
-    return this.latestVersion;
-  }
-
-  /**
-   * @return repositoryId
-   */
-  @JsonIgnore
-  public String getRepositoryId() {
-
-    return this.repositoryId;
-  }
-
-}
-
-/**
- *
- * Maven search response model
- *
- */
-@JsonIgnoreProperties(value = { "start" })
-class MavenSearchResponseResponse {
-
-  /**
-   * found results
-   */
-  @JsonProperty("numFound")
-  private int numFound;
-
-  /**
-   * docs
-   */
-  @JsonProperty("docs")
-  private List<MavenSearchResponseDoc> docs;
-
-  /**
-   * @return numFound
-   */
-  @JsonIgnore
-  public int getNumFound() {
-
-    return this.numFound;
-  }
-
-  /**
-   * @return docs
-   */
-  @JsonIgnore
-  public List<MavenSearchResponseDoc> getDocs() {
-
-    return this.docs;
   }
 
 }

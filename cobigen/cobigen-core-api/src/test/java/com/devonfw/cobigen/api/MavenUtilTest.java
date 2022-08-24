@@ -15,11 +15,11 @@ import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
-import com.devonfw.cobigen.api.util.to.JfrogSearchResponse;
-import com.devonfw.cobigen.api.util.to.MavenSearchResponse;
-import com.devonfw.cobigen.api.util.to.Nexus2SearchResponse;
-import com.devonfw.cobigen.api.util.to.Nexus3SearchResponse;
 import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
+import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
+import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
+import com.devonfw.cobigen.api.util.to.nexus2.Nexus2SearchResponse;
+import com.devonfw.cobigen.api.util.to.nexus3.Nexus3SearchResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.ProcessingException;

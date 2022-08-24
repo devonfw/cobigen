@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
+import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
+import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
+import com.devonfw.cobigen.api.util.to.nexus2.Nexus2SearchResponse;
+import com.devonfw.cobigen.api.util.to.nexus3.Nexus3SearchResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

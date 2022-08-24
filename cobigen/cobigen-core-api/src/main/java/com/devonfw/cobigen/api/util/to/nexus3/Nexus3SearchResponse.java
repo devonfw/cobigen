@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.util.to;
+package com.devonfw.cobigen.api.util.to.nexus3;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
+import com.devonfw.cobigen.api.util.to.SearchResponse;
+import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -76,36 +78,4 @@ public class Nexus3SearchResponse implements SearchResponse {
 
     return MavenSearchRepositoryType.nexus3;
   }
-}
-
-/**
- *
- * Nexus3 search response asset model
- *
- */
-@JsonIgnoreProperties(value = { "path", "id", "repository", "format", "checksum" })
-class Nexus3SearchResponseAsset {
-
-  /**
-   * downloadUrl
-   */
-  @JsonProperty("downloadUrl")
-  public String downloadUrl;
-
-}
-
-/**
- *
- * Nexus3 search response item model
- *
- */
-@JsonIgnoreProperties(value = { "id", "repository", "format", "group", "name", "version" })
-class Nexus3SearchResponseItem {
-
-  /**
-   * artifactHits
-   */
-  @JsonProperty("assets")
-  public List<Nexus3SearchResponseAsset> assets;
-
 }

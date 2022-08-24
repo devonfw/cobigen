@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.util.to;
+package com.devonfw.cobigen.api.util.to.jfrog;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
+import com.devonfw.cobigen.api.util.to.SearchResponse;
+import com.devonfw.cobigen.api.util.to.SearchResponseUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -79,28 +81,4 @@ public class JfrogSearchResponse implements SearchResponse {
 
     return MavenSearchRepositoryType.jfrog;
   }
-}
-
-/**
- *
- * Jfrog search response result model
- *
- */
-class JfrogSearchResponseResult {
-
-  /**
-   * uri
-   */
-  @JsonProperty("uri")
-  private String uri;
-
-  /**
-   * @return uri
-   */
-  @JsonIgnore
-  public String getUri() {
-
-    return this.uri;
-  }
-
 }
