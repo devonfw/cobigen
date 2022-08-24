@@ -86,14 +86,16 @@ public class TemplatesInstallationTest extends AbstractApiTest {
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
       File templateSets = this.tmpFolder.newFolder("TemplateSetsInstalledTest",
           ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      File adapted = this.tmpFolder.newFolder("TemplateSetsInstalledTest", ConfigurationConstants.TEMPLATE_SETS_FOLDER,
+          ConfigurationConstants.ADAPTED_FOLDER);
       File downloaded = this.tmpFolder.newFolder("TemplateSetsInstalledTest",
-          ConfigurationConstants.TEMPLATE_SETS_FOLDER, "adapted");
+          ConfigurationConstants.TEMPLATE_SETS_FOLDER, ConfigurationConstants.DOWNLOADED_FOLDER);
       File target = new File(folder, ".cobigen");
       BufferedWriter writer = new BufferedWriter(new FileWriter(target));
       writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.006");
       writer.close();
       CobiGen cobigen = CobiGenFactory.create(templateSets.toURI());
-      assertEquals(0, downloaded.listFiles().length);
+      assertEquals(2, downloaded.listFiles().length);
     });
 
   }

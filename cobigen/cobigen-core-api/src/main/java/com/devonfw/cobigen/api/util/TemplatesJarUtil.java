@@ -128,7 +128,7 @@ public class TemplatesJarUtil {
             existingTemplates.add(mavenCoordinate);
           }
         } catch (IOException e) {
-          LOG.debug("Failed to get all files and directories from adapted folder", e);
+          LOG.warn("Failed to get all files and directories from adapted folder", e);
         }
       }
       if (Files.exists(downloaded)) {
@@ -138,7 +138,7 @@ public class TemplatesJarUtil {
             existingTemplates.add(mavenCoordinate);
           }
         } catch (IOException e) {
-          LOG.debug("Failed to get all files and directories from downloaded folder", e);
+          LOG.warn("Failed to get all files and directories from downloaded folder", e);
         }
       } else {
         LOG.info("downloaded folder could not be found and will be created ");
@@ -159,8 +159,6 @@ public class TemplatesJarUtil {
           downloaded.toFile());
       downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), true,
           downloaded.toFile());
-      System.out.println(downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(),
-          mavenCoordinate.getVersion(), true, downloaded.toFile()));
     }
 
   }

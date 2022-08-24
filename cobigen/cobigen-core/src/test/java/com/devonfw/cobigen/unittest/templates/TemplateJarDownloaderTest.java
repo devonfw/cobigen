@@ -15,8 +15,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
@@ -85,18 +83,19 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
 
   /**
    * Tests if already existing jar will prevent the download of templates
+   *
+   * @throws Exception
    */
   @Test
-  public void testDownloadTemplatesAlreadyExisting() {
+  public void testDownloadTemplatesAlreadyExisting() throws Exception {
 
-    this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("2021.12.006"));
+    this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
+    this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
+    createFileOrFolder(this.mavenCoordinatesList.get(0), this.downloadedFolder, false);
+    createFileOrFolder(this.mavenCoordinatesList.get(1), this.downloadedFolder, false);
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
     assertEquals(this.downloadedFolder.listFiles().length, 2);
-    for (File f : FilesList) {
-      assertThat(f.getName(), Matchers.either(Matchers.is("templates-devon4j-2021.12.006.jar"))
-          .or(Matchers.is("templates-devon4j-2021.12.006-sources.jar")));
-    }
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     assertEquals(this.downloadedFolder.listFiles().length, 2);
   }
@@ -138,70 +137,53 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   }
 
   /**
-   * Test if no download occurs if a adapted folder exits
+   * Test if no download occurs if one template is adapted the second one is downloaded and the third is missing
    *
    * @throws Exception
    */
   @Test
+  public void testDownloadTemplates() throws Exception {
+
+    File adapted = this.tempFolder.newFolder("templateLocation/adapted");
+    this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
+    this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
+    this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(null));
+    this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(null));
+    createFileOrFolder(this.mavenCoordinatesList.get(0), adapted, true);
+    createFileOrFolder(this.mavenCoordinatesList.get(1), this.downloadedFolder, false);
+    TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
+
+    assertEquals(3, this.downloadedFolder.listFiles().length);
+    assertEquals(1, adapted.listFiles().length);
+  }
+
+  /**
+   * TODO
+   *
+   * @throws Exception
+   */
+
+  @Test
   public void testDownloadTemplatesAlreadyAdapted() throws Exception {
 
     File adapted = this.tempFolder.newFolder("templateLocation/adapted");
-    // this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(null));
     this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
-    // this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
-    // this.mavenCoordinatesList.add(new MavenCoordinate("com.com", "app-app", "87"));
+    this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
+    this.mavenCoordinatesList.add(new MavenCoordinate("com.com", "app-app", "87"));
+    this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(null));
     createFileOrFolder(this.mavenCoordinatesList.get(0), adapted, true);
-    // createFileOrFolder(this.mavenCoordinatesList.get(1), adapted, true);
-    // createFileOrFolder(this.mavenCoordinatesList.get(2), this.downloadedFolder, false);
-    try (MockedStatic<TemplatesJarUtil> utilities = Mockito.mockStatic(TemplatesJarUtil.class)) {
-      utilities.when(() -> TemplatesJarUtil.downloadJar("com.group", "artifact-id", "1.0", true, this.downloadedFolder))
-          .thenReturn(createFileOrFolder(this.mavenCoordinatesList.get(0), this.downloadedFolder, false));
-      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
-      assertEquals(0, this.downloadedFolder.listFiles().length);
-      assertEquals(2, adapted.listFiles().length);
-    }
-    // utilities.when(TemplatesJarUtil.downloadTemplatesByMavenCoordinates(any(File.class), Mockito.anyList()))
-    // .thenCallRealMethod();
-    // assertThat(TemplatesJarUtil.downloadJar("Hallo", "ich", "bins", true, this.downloadedFolder))
-    // .isEqualTo("Ich Downloade jetzt");
-    // TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation, this.mavenCoordinatesList);
-    // }
-    // assertThat(TemplatesJarUtil.downloadJar("Hallo", "ich", "bins", true, this.downloadedFolder))
-    // .isEqualTo("Ich Downloade jetzt");
-    // utilities
-    // .when(() -> TemplatesJarUtil.downloadJar(this.mavenCoordinatesList.get(0).getGroupID(),
-    // this.mavenCoordinatesList.get(0).getArtifactID(), this.mavenCoordinatesList.get(0).getVersion(), true,
-    // this.downloadedFolder))
-    // .thenReturn(mockJarDownload(this.mavenCoordinatesList.get(0).getGroupID(),
-    // this.mavenCoordinatesList.get(0).getArtifactID(), this.mavenCoordinatesList.get(0).getVersion(), true,
-    // this.downloadedFolder));
-    // utilities
-    // .when(() -> TemplatesJarUtil.downloadJar(this.mavenCoordinatesList.get(1).getGroupID(),
-    // this.mavenCoordinatesList.get(1).getArtifactID(), this.mavenCoordinatesList.get(1).getVersion(), true,
-    // this.downloadedFolder))
-    // .thenReturn(mockJarDownload(this.mavenCoordinatesList.get(1).getGroupID(),
-    // this.mavenCoordinatesList.get(1).getArtifactID(), this.mavenCoordinatesList.get(1).getVersion(), true,
-    // this.downloadedFolder));
-    // utilities
-    // .when(() -> TemplatesJarUtil.downloadJar(this.mavenCoordinatesList.get(2).getGroupID(),
-    // this.mavenCoordinatesList.get(2).getArtifactID(), this.mavenCoordinatesList.get(2).getVersion(), true,
-    // this.downloadedFolder))
-    // .thenReturn(mockJarDownload(this.mavenCoordinatesList.get(2).getGroupID(),
-    // this.mavenCoordinatesList.get(2).getArtifactID(), this.mavenCoordinatesList.get(2).getVersion(), true,
-    // this.downloadedFolder));
-    //
-    // }
+    createFileOrFolder(this.mavenCoordinatesList.get(1), adapted, true);
+    createFileOrFolder(this.mavenCoordinatesList.get(2), adapted, true);
 
-    // Download of Templates should not start
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
 
-    assertEquals(0, this.downloadedFolder.listFiles().length);
-    assertEquals(2, adapted.listFiles().length);
+    assertEquals(2, this.downloadedFolder.listFiles().length);
+    assertEquals(3, adapted.listFiles().length);
     assert (this.downloadedFolder.listFiles(File::isFile)) != null;
 
   }
 
-  private String createFileOrFolder(MavenCoordinate m, File f, boolean folder) throws Exception {
+  private void createFileOrFolder(MavenCoordinate m, File f, boolean folder) throws Exception {
 
     System.out.println("helperMethode");
     String templateName = m.getArtifactID() + "-" + m.getGroupID() + "-" + m.getVersion();
@@ -216,7 +198,6 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
         throw e;
       }
     }
-    return "Filecreated";
   }
 
   /**
