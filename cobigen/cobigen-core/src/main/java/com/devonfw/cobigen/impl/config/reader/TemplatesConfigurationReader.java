@@ -238,7 +238,7 @@ public class TemplatesConfigurationReader implements TemplatesInterface {
    * @throws InvalidConfigurationException if there are multiple templates with the same name
    */
   @Override
-  public Map<String, Template> loadTemplates(Trigger trigger)
+  public Map<String, Template> loadTemplates()
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
     Map<String, Template> templates = new HashMap<>();
@@ -265,7 +265,7 @@ public class TemplatesConfigurationReader implements TemplatesInterface {
       List<TemplateScan> scans = templateScans.getTemplateScan();
       if (scans != null) {
         for (TemplateScan scan : scans) {
-          scanTemplates(scan, templates, trigger);
+          scanTemplates(scan, templates);
         }
       }
     }
@@ -310,7 +310,7 @@ public class TemplatesConfigurationReader implements TemplatesInterface {
    * @param templates is the {@link Map} where to add the templates.
    * @param trigger the templates are from
    */
-  private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger) {
+  private void scanTemplates(TemplateScan scan, Map<String, Template> templates) {
 
     String templatePath = scan.getTemplatePath();
     TemplatePath templateFolder = this.rootTemplateFolder.navigate(templatePath);
@@ -329,7 +329,7 @@ public class TemplatesConfigurationReader implements TemplatesInterface {
       }
     }
 
-    scanTemplates((TemplateFolder) templateFolder, "", scan, templates, trigger, Sets.<String> newHashSet());
+    scanTemplates((TemplateFolder) templateFolder, "", scan, templates, Sets.<String> newHashSet());
   }
 
   /**
@@ -344,7 +344,7 @@ public class TemplatesConfigurationReader implements TemplatesInterface {
    * @param observedTemplateNames observed template name during template scan. Needed for conflict detection
    */
   private void scanTemplates(TemplateFolder templateFolder, String currentPath, TemplateScan scan,
-      Map<String, Template> templates, Trigger trigger, HashSet<String> observedTemplateNames) {
+      Map<String, Template> templates, HashSet<String> observedTemplateNames) {
 
     String currentPathWithSlash = currentPath;
     if (!currentPathWithSlash.isEmpty()) {
@@ -354,7 +354,7 @@ public class TemplatesConfigurationReader implements TemplatesInterface {
     for (TemplatePath child : templateFolder.getChildren()) {
 
       if (child.isFolder()) {
-        scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates, trigger,
+        scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates,
             observedTemplateNames);
       } else {
         String templateFileName = child.getFileName();

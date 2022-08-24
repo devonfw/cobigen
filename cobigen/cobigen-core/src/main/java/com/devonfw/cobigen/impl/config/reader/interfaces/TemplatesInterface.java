@@ -33,7 +33,7 @@ public interface TemplatesInterface {
    * @throws UnknownExpressionException if there is an unknown variable modifier
    * @throws InvalidConfigurationException if there are multiple templates with the same name
    */
-  Map<String, Template> loadTemplates(Trigger trigger)
+  Map<String, Template> loadTemplates()
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException;
 
   /**

@@ -471,9 +471,13 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
    * @throws UnknownContextVariableException if the destination path contains an undefined context variable
    * @throws UnknownExpressionException if there is an unknown variable modifier
    * @throws InvalidConfigurationException if there are multiple templates with the same name
+   *
+   *         This method is generally not used but must be implemented anyways. For template-set.xml we are using the
+   *         next loadTemplates method
    */
+
   @Override
-  public Map<String, Template> loadTemplates(Trigger trigger)
+  public Map<String, Template> loadTemplates()
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
     Map<String, Template> templates = new HashMap<>();
@@ -502,7 +506,7 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
       List<TemplateScan> scans = templateScans.getTemplateScan();
       if (scans != null) {
         for (TemplateScan scan : scans) {
-          scanTemplates(scan, templates, trigger);
+          scanTemplates(scan, templates);
         }
       }
     }
@@ -548,7 +552,7 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
    * @param templates is the {@link Map} where to add the templates.
    * @param trigger the templates are from
    */
-  private void scanTemplates(TemplateScan scan, Map<String, Template> templates, Trigger trigger) {
+  private void scanTemplates(TemplateScan scan, Map<String, Template> templates) {
 
     String templatePath = scan.getTemplatePath();
     TemplatePath templateFolder = this.rootTemplateFolder.navigate(templatePath);
@@ -567,7 +571,7 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
       }
     }
 
-    scanTemplates((TemplateFolder) templateFolder, "", scan, templates, trigger, Sets.<String> newHashSet());
+    scanTemplates((TemplateFolder) templateFolder, "", scan, templates, Sets.<String> newHashSet());
   }
 
   /**
@@ -582,7 +586,7 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
    * @param observedTemplateNames observed template name during template scan. Needed for conflict detection
    */
   private void scanTemplates(TemplateFolder templateFolder, String currentPath, TemplateScan scan,
-      Map<String, Template> templates, Trigger trigger, HashSet<String> observedTemplateNames) {
+      Map<String, Template> templates, HashSet<String> observedTemplateNames) {
 
     String currentPathWithSlash = currentPath;
     if (!currentPathWithSlash.isEmpty()) {
@@ -592,7 +596,7 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
     for (TemplatePath child : templateFolder.getChildren()) {
 
       if (child.isFolder()) {
-        scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates, trigger,
+        scanTemplates((TemplateFolder) child, currentPathWithSlash + child.getFileName(), scan, templates,
             observedTemplateNames);
       } else {
         String templateFileName = child.getFileName();

@@ -82,8 +82,8 @@ public class TemplateSetConfiguration {
     // TODO: How do we get the template?
     // Fix this this.configurationPath = this.templateSetConfigurationReader.getContextRoot();
     this.triggers = this.templateSetConfigurationReader.loadTriggers();
-    this.templates = this.templateSetConfigurationReader.loadTemplates(null);
-    this.increments = this.templateSetConfigurationReader.loadIncrements(this.templates, null);
+    this.templates = this.templateSetConfigurationReader.loadTemplates();
+    // this.increments = this.templateSetConfigurationReader.loadIncrements(this.templates, this.triggers);
   }
 
   /**

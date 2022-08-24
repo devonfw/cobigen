@@ -57,12 +57,12 @@ public class TemplatesConfiguration {
   public TemplatesConfiguration(Path configRoot, Trigger trigger, ConfigurationHolder configurationHolder)
       throws InvalidConfigurationException {
 
-    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder(),
-        configurationHolder);
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(
+        configRoot, trigger.getTemplateFolder(), configurationHolder);
 
     this.templatesFolderName = trigger.getTemplateFolder();
 
-    this.templates = reader.loadTemplates(trigger);
+    this.templates = reader.loadTemplates();
     this.increments = reader.loadIncrements(this.templates, trigger);
     this.templateEngine = reader.getTemplateEngine();
     this.trigger = trigger;
@@ -85,7 +85,7 @@ public class TemplatesConfiguration {
     this.externalReader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder(),
         configurationHolder);
     this.templatesFolderName = trigger.getTemplateFolder();
-    this.templates = this.externalReader.loadTemplates(trigger);
+    this.templates = this.externalReader.loadTemplates();
     Map<String, Increment> externalIncrements = this.externalReader.loadSpecificIncrement(this.templates, trigger,
         incrementToSearch);
     this.increments = new HashMap<>();
