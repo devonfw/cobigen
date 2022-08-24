@@ -13,9 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(value = { "repositoryId" })
 class Nexus2SearchResponseArtifactHits {
 
-  /**
-   * artifactLinks
-   */
+  /** artifactLinks */
   @JsonProperty("artifactLinks")
   public List<Nexus2SearchResponeArtifactLinks> artifactLinks;
 

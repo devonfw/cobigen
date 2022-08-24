@@ -20,9 +20,7 @@ class MavenSearchResponseResponse {
   @JsonProperty("numFound")
   private int numFound;
 
-  /**
-   * docs
-   */
+  /** docs */
   @JsonProperty("docs")
   private List<MavenSearchResponseDoc> docs;
 

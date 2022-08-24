@@ -10,9 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 class JfrogSearchResponseResult {
 
-  /**
-   * uri
-   */
+  /** uri */
   @JsonProperty("uri")
   private String uri;
 

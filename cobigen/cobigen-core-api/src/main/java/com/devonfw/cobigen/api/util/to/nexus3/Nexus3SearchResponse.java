@@ -29,6 +29,7 @@ public class Nexus3SearchResponse implements SearchResponse {
   @JsonIgnore
   private static final Logger LOG = LoggerFactory.getLogger(Nexus3SearchResponse.class);
 
+  /** items */
   @JsonProperty("items")
   private List<Nexus3SearchResponseItem> items;
 

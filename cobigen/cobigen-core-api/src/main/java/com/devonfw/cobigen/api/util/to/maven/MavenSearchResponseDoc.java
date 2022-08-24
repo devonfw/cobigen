@@ -13,39 +13,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(value = { "p", "timestamp", "versionCount", "text" })
 class MavenSearchResponseDoc {
-  /**
-   * id
-   */
+
+  /** id */
   @JsonProperty("id")
   private String id;
 
-  /**
-   * group
-   */
+  /** group */
   @JsonProperty("g")
   private String group;
 
-  /**
-   * artifact
-   */
+  /** artifact */
   @JsonProperty("a")
   private String artifact;
 
-  /**
-   * latest version
-   */
+  /** latest version */
   @JsonProperty("latestVersion")
   private String latestVersion;
 
-  /**
-   * repository ID
-   */
+  /** repository ID */
   @JsonProperty("repositoryId")
   private String repositoryId;
 
-  /**
-   * ec (file ending)
-   */
+  /** ec (file ending) */
   @JsonProperty("ec")
   private List<String> ec;
 

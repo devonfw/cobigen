@@ -13,11 +13,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(value = { "latestRelease", "latestReleaseRepositoryId", "highlightedFragment" })
 class Nexus2SearchResponseData {
 
-  /**
-   * groupId
-   */
+  /** groupId */
   @JsonProperty("groupId")
   private String groupId;
+
+  /** artifactId */
+  @JsonProperty("artifactId")
+  private String artifactId;
+
+  /** version */
+  @JsonProperty("version")
+  private String version;
+
+  /** artifactHits */
+  @JsonProperty("artifactHits")
+  public List<Nexus2SearchResponseArtifactHits> artifactHits;
 
   /**
    * @return groupId
@@ -42,23 +52,5 @@ class Nexus2SearchResponseData {
 
     return this.version;
   }
-
-  /**
-   * artifactId
-   */
-  @JsonProperty("artifactId")
-  private String artifactId;
-
-  /**
-   * version
-   */
-  @JsonProperty("version")
-  private String version;
-
-  /**
-   * artifactHits
-   */
-  @JsonProperty("artifactHits")
-  public List<Nexus2SearchResponseArtifactHits> artifactHits;
 
 }

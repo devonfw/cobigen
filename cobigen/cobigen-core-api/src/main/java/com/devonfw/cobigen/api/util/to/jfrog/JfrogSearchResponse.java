@@ -26,9 +26,7 @@ public class JfrogSearchResponse implements SearchResponse {
   @JsonIgnore
   private static final Logger LOG = LoggerFactory.getLogger(JfrogSearchResponse.class);
 
-  /**
-   * results
-   */
+  /** results */
   @JsonProperty("results")
   private List<JfrogSearchResponseResult> results;
 

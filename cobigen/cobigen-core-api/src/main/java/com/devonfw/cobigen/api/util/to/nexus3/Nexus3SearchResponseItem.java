@@ -13,9 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(value = { "id", "repository", "format", "group", "name", "version" })
 class Nexus3SearchResponseItem {
 
-  /**
-   * artifactHits
-   */
+  /** artifactHits */
   @JsonProperty("assets")
   public List<Nexus3SearchResponseAsset> assets;
 
