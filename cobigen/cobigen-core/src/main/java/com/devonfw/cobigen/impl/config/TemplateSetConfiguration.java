@@ -2,8 +2,10 @@ package com.devonfw.cobigen.impl.config;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Increment;
@@ -72,18 +74,21 @@ public class TemplateSetConfiguration {
    * @param configRoot CobiGen configuration root path
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
-  private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
+  public void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
     // TODO: Let the ConfigurationFactory take care of this
     if (this.templateSetConfigurationReader == null) {
       this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configRoot);
     }
 
-    // TODO: How do we get the template?
+    this.increments = new HashMap<>();
     // Fix this this.configurationPath = this.templateSetConfigurationReader.getContextRoot();
     this.triggers = this.templateSetConfigurationReader.loadTriggers();
     this.templates = this.templateSetConfigurationReader.loadTemplates();
-    // this.increments = this.templateSetConfigurationReader.loadIncrements(this.templates, this.triggers);
+    // For every trigger put all increments depended on that trigger into the local increments hash map
+    for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
+      this.increments.putAll(this.templateSetConfigurationReader.loadIncrements(this.templates, trigger.getValue()));
+    }
   }
 
   /**
