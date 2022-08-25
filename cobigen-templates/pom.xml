@@ -63,7 +63,6 @@
     </resources>
 
     <plugins>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -139,12 +138,13 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
+
+  <!--profile to attach template-set.xml which resides in other sub-modules and excludes this build in parent project -->
   <profiles>
     <profile>
-      <id>test</id>
+      <id>attach-artifacts</id>
       <activation>
         <file>
           <exists>src/main/resources/template-set.xml</exists>
@@ -179,6 +179,5 @@
       </build>
     </profile>
   </profiles>
-
 
 </project>
