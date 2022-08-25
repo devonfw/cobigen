@@ -9,15 +9,7 @@
     <artifactId>templates-parent</artifactId>
     <version>${revision}</version>
   </parent>
-<!-- Plugin to attach extra files along with General deployment-->
- <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
