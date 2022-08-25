@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.unittest.templates;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -95,9 +94,9 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     createFileOrFolder(this.mavenCoordinatesList.get(1), this.downloadedFolder, false);
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
-    assertEquals(this.downloadedFolder.listFiles().length, 2);
+    assertThat(this.downloadedFolder.listFiles()).hasSize(2);
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
-    assertEquals(this.downloadedFolder.listFiles().length, 2);
+    assertThat(this.downloadedFolder.listFiles()).hasSize(2);
   }
 
   /**
@@ -109,13 +108,15 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(""));
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
-    assertEquals(this.downloadedFolder.listFiles().length, 2);
+    assertThat(this.downloadedFolder.listFiles()).hasSize(2);
     for (File f : FilesList) {
-      assert (f.getName().contains("templates-devon4j"));
+      assertThat(f.getName(), Matchers.either(Matchers.is("templates-devon4j-2021.12.006.jar"))
+          .or(Matchers.is("templates-devon4j-2021.12.006-sources.jar")));
     }
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("LATEST"));
     this.mavenCoordinatesList.remove(0);
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
+    assertThat(this.downloadedFolder.listFiles()).hasSize(2);
 
   }
 
@@ -128,7 +129,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("LATEST"));
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     File[] FilesList = this.downloadedFolder.listFiles();
-    assertEquals(this.downloadedFolder.listFiles().length, 2);
+    assertThat(this.downloadedFolder.listFiles()).hasSize(2);
     for (File f : FilesList) {
       assertThat(f.getName(), Matchers.either(Matchers.is("templates-devon4j-2021.12.006.jar"))
           .or(Matchers.is("templates-devon4j-2021.12.006-sources.jar")));
@@ -153,8 +154,8 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     createFileOrFolder(this.mavenCoordinatesList.get(1), this.downloadedFolder, false);
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
 
-    assertEquals(3, this.downloadedFolder.listFiles().length);
-    assertEquals(1, adapted.listFiles().length);
+    assertThat(this.downloadedFolder.listFiles()).hasSize(3);
+    assertThat(adapted.listFiles()).hasSize(1);
   }
 
   /**
@@ -177,17 +178,14 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
 
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
 
-    assertEquals(2, this.downloadedFolder.listFiles().length);
-    assertEquals(3, adapted.listFiles().length);
-    assert (this.downloadedFolder.listFiles(File::isFile)) != null;
+    assertThat(this.downloadedFolder.listFiles()).hasSize(2);
+    assertThat(adapted.listFiles()).hasSize(3);
 
   }
 
   private void createFileOrFolder(MavenCoordinate m, File f, boolean folder) throws Exception {
 
-    System.out.println("helperMethode");
     String templateName = m.getArtifactID() + "-" + m.getGroupID() + "-" + m.getVersion();
-    // copy from ressorceas to folder
     if (folder) {
       Path temp = this.tempFolder.getRoot().toPath().relativize(f.toPath());
       this.tempFolder.newFolder(temp.resolve(templateName).toString());

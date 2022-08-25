@@ -1,7 +1,7 @@
 package com.devonfw.cobigen.systemtest;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThat;
 
 import java.io.BufferedWriter;
@@ -37,11 +37,11 @@ public class TemplatesInstallationTest extends AbstractApiTest {
       File cobigenDir = templates.toPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES).toFile();
       Files.createDirectories(cobigenDir.toPath());
       File target = new File(folder, ".cobigen");
-      BufferedWriter writer = new BufferedWriter(new FileWriter(target));
-      writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.005");
-      writer.close();
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(target))) {
+        writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.006");
+      }
       CobiGenFactory.create(templates.toURI(), true);
-      assertEquals(0, cobigenDir.listFiles().length);
+      assertThat(cobigenDir.listFiles()).hasSize(0);
     });
   }
 
@@ -61,11 +61,11 @@ public class TemplatesInstallationTest extends AbstractApiTest {
       File downloaded = this.tmpFolder.newFolder("TemplateSetsInstalledTest",
           ConfigurationConstants.TEMPLATE_SETS_FOLDER, "downloaded");
       File target = new File(folder, ".cobigen");
-      BufferedWriter writer = new BufferedWriter(new FileWriter(target));
-      writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.006");
-      writer.close();
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(target))) {
+        writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.006");
+      }
       CobiGen cobigen = CobiGenFactory.create(templateSets.toURI());
-      assertEquals(2, downloaded.listFiles().length);
+      assertThat(downloaded.listFiles()).hasSize(2);
       for (File f : downloaded.listFiles()) {
         assertThat(f.getName(), Matchers.either(Matchers.is("templates-devon4j-2021.12.006.jar"))
             .or(Matchers.is("templates-devon4j-2021.12.006-sources.jar")));
@@ -91,11 +91,11 @@ public class TemplatesInstallationTest extends AbstractApiTest {
       File downloaded = this.tmpFolder.newFolder("TemplateSetsInstalledTest",
           ConfigurationConstants.TEMPLATE_SETS_FOLDER, ConfigurationConstants.DOWNLOADED_FOLDER);
       File target = new File(folder, ".cobigen");
-      BufferedWriter writer = new BufferedWriter(new FileWriter(target));
-      writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.006");
-      writer.close();
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(target))) {
+        writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.005");
+      }
       CobiGen cobigen = CobiGenFactory.create(templateSets.toURI());
-      assertEquals(2, downloaded.listFiles().length);
+      assertThat(downloaded.listFiles()).hasSize(2);
     });
 
   }
@@ -115,11 +115,11 @@ public class TemplatesInstallationTest extends AbstractApiTest {
           ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       File downloaded = templateSets.toPath().resolve(ConfigurationConstants.DOWNLOADED_FOLDER).toFile();
       File target = new File(folder, ".cobigen");
-      BufferedWriter writer = new BufferedWriter(new FileWriter(target));
-      writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.006");
-      writer.close();
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(target))) {
+        writer.write("template-sets.installed=com.devonfw.cobigen:templates-devon4j:2021.12.006");
+      }
       CobiGen cobigen = CobiGenFactory.create(templateSets.toURI());
-      assertEquals(2, downloaded.listFiles().length);
+      assertThat(downloaded.listFiles()).hasSize(2);
       for (File f : downloaded.listFiles()) {
         assertThat(f.getName(), Matchers.either(Matchers.is("templates-devon4j-2021.12.006.jar"))
             .or(Matchers.is("templates-devon4j-2021.12.006-sources.jar")));
@@ -143,11 +143,11 @@ public class TemplatesInstallationTest extends AbstractApiTest {
       File downloaded = this.tmpFolder.newFolder("TemplateSetsInstalledTest",
           ConfigurationConstants.TEMPLATE_SETS_FOLDER, "downloaded");
       File target = new File(folder, ".cobigen");
-      BufferedWriter writer = new BufferedWriter(new FileWriter(target));
-      writer.write("template-sets.installed=com.com.com:com-com:com.com");
-      writer.close();
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(target))) {
+        writer.write("template-sets.installed=com.com.com:com-com:com.com");
+      }
       CobiGen cobigen = CobiGenFactory.create(templateSets.toURI());
-      assertEquals(0, downloaded.listFiles().length);
+      assertThat(downloaded.listFiles()).hasSize(0);
     });
   }
 }
