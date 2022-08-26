@@ -37,7 +37,7 @@ import com.devonfw.cobigen.impl.config.entity.Matcher;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
-import com.devonfw.cobigen.impl.config.reader.interfaces.ContextInterface;
+import com.devonfw.cobigen.impl.config.reader.interfaces.ContextConfigurationInterface;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.google.common.collect.Lists;
@@ -49,7 +49,7 @@ import jakarta.xml.bind.UnmarshalException;
 import jakarta.xml.bind.Unmarshaller;
 
 /** The {@link ContextConfigurationReader} reads the context xml */
-public class ContextConfigurationReader implements ContextInterface {
+public class ContextConfigurationReader implements ContextConfigurationInterface {
 
   /** Map with XML Nodes 'context' of the context.xml files */
   protected Map<Path, TemplateSetConfiguration> contextConfigurations;

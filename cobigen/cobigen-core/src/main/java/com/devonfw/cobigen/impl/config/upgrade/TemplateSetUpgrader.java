@@ -108,7 +108,7 @@ public class TemplateSetUpgrader {
         cobigenDir.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
       }
     }
-    TemplateSetConfiguration contextConfiguration = getContextConfiguration(contextLocation);
+    TemplateSetConfiguration templateSetConfiguration = getContextConfiguration(contextLocation);
 
     Path templateSets = Files.createDirectory(cobigenDir.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
     Path adapted = Files.createDirectory(templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER));
@@ -117,7 +117,7 @@ public class TemplateSetUpgrader {
     Path templates = cobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
-        contextConfiguration);
+        templateSetConfiguration);
     Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
     for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration cc : contextFiles) {
       for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
@@ -223,10 +223,10 @@ public class TemplateSetUpgrader {
    *         contextConfiguration files
    */
   private List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContext(
-      TemplateSetConfiguration monolitic) {
+      TemplateSetConfiguration monolithic) {
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContexts = new ArrayList<>();
-    List<Trigger> triggerList = monolitic.getTrigger();
+    List<Trigger> triggerList = monolithic.getTrigger();
     for (Trigger trigger : triggerList) {
       com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration();
       com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger();

@@ -6,10 +6,10 @@ import java.util.Map;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 
 /**
- * TODO khucklen This type ...
+ * Interface to implement for every reader that handles triggers
  *
  */
-public interface ContextInterface {
+public interface ContextConfigurationInterface {
 
   /**
    * Reads the configuration, so the triggers can be loaded

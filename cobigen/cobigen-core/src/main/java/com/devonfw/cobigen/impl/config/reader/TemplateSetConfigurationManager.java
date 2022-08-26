@@ -13,7 +13,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 
 /**
- * TODO khucklen This type ...
+ * Managing configurations, everything comes together here (I get more specific, once the ticket is done)
  *
  */
 public class TemplateSetConfigurationManager {
@@ -50,7 +50,7 @@ public class TemplateSetConfigurationManager {
   }
 
   /**
-   * search for configuration files in the sub folder for adapted templates
+   * Search for configuration files in the sub folder for adapted templates
    *
    * @param configRoot root directory of the configuration template-sets/adapted
    */

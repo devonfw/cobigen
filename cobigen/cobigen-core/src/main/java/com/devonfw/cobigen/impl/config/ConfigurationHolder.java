@@ -32,7 +32,7 @@ public class ConfigurationHolder {
   /** Cached context configuration */
   private ContextConfiguration contextConfiguration;
 
-  /** Cached template-set configuraion */
+  /** Cached template-set configuration */
   private TemplateSetConfiguration templateSetConfiguration;
 
   /** Root path of the configuration */
@@ -112,16 +112,22 @@ public class ConfigurationHolder {
       this.contextConfiguration = new ContextConfiguration(this.configurationPath);
     }
     return this.contextConfiguration;
+
   }
 
   // TODO: Implement this
-  // public TemplateSetConfiguration readTemplateSetConfiguration(Trigger trigger) {
-  // if (this.templateSetConfiguration == null) {
-  //
-  // this.templateSetConfiguration = new TemplateSetConfiguration();
-  // }
-  //
-  // }
+  /**
+   * @return the {@link TemplateSetConfiguration}
+   */
+  public TemplateSetConfiguration readTemplateSetConfiguration() {
+
+    if (this.templateSetConfiguration == null) {
+
+      this.templateSetConfiguration = new TemplateSetConfiguration(null, false, null); // placeholer Which parameters do
+                                                                                       // I need?
+    }
+    return this.templateSetConfiguration;
+  }
 
   /**
    * @return return if the template folder structure consists of template sets or if the old structure is used

@@ -41,7 +41,7 @@ public class TemplatesConfiguration {
   /**
    * {@link TemplatesConfigurationReader} to be used for reading external increments
    */
-  private com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface externalReader;
+  private com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface externalReader;
 
   /**
    * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings reference. We
@@ -57,7 +57,7 @@ public class TemplatesConfiguration {
   public TemplatesConfiguration(Path configRoot, Trigger trigger, ConfigurationHolder configurationHolder)
       throws InvalidConfigurationException {
 
-    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface reader = new TemplatesConfigurationReader(
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface reader = new TemplatesConfigurationReader(
         configRoot, trigger.getTemplateFolder(), configurationHolder);
 
     this.templatesFolderName = trigger.getTemplateFolder();

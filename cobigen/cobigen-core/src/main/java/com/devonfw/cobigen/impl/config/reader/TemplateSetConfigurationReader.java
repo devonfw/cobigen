@@ -57,8 +57,8 @@ import com.devonfw.cobigen.impl.config.entity.io.TemplateScanRef;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScans;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Templates;
-import com.devonfw.cobigen.impl.config.reader.interfaces.ContextInterface;
-import com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface;
+import com.devonfw.cobigen.impl.config.reader.interfaces.ContextConfigurationInterface;
+import com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
@@ -77,7 +77,7 @@ import jakarta.xml.bind.Unmarshaller;
  * The {@link TemplateSetConfigurationReader} combines everything from the {@link TemplatesConfigurationReader} and
  * {@link ContextConfigurationReader}
  */
-public class TemplateSetConfigurationReader implements ContextInterface, TemplatesInterface {
+public class TemplateSetConfigurationReader implements ContextConfigurationInterface, TemplatesConfigurationInterface {
 
   /** Map with the paths of the configuration locations for a template-set.xml file */
   private Map<Path, Path> configLocations = new HashMap<>();
@@ -471,9 +471,7 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
    * @throws UnknownContextVariableException if the destination path contains an undefined context variable
    * @throws UnknownExpressionException if there is an unknown variable modifier
    * @throws InvalidConfigurationException if there are multiple templates with the same name
-   *
-   *         This method is generally not used but must be implemented anyways. For template-set.xml we are using the
-   *         next loadTemplates method
+   * 
    */
 
   @Override
@@ -985,7 +983,7 @@ public class TemplateSetConfigurationReader implements ContextInterface, Templat
    */
   private Trigger getExternalTrigger(String triggerToSearch) {
 
-    ContextInterface contextConfigurationReader = new ContextConfigurationReader(
+    ContextConfigurationInterface contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);

@@ -12,10 +12,10 @@ import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 
 /**
- * TODO khucklen This type ...
+ * Interface to implement for all readers that handles templates and increments
  *
  */
-public interface TemplatesInterface {
+public interface TemplatesConfigurationInterface {
 
   /**
    * Returns the configured template engine to be used
@@ -48,7 +48,7 @@ public interface TemplatesInterface {
       throws InvalidConfigurationException;
 
   /**
-   * Loads an specific increment of the static configuration into the local representation. The return object must be a
+   * Loads a specific increment of the static configuration into the local representation. The return object must be a
    * map because maybe this increment references other increments
    *
    * @return the mapping of increment names to the corresponding {@link Increment}
@@ -61,7 +61,7 @@ public interface TemplatesInterface {
       throws InvalidConfigurationException;
 
   /**
-   * Tries to find an increment on a list of increments and return it
+   * Tries to find an increment on a list of increments and returns it
    *
    * @param increment list of increments
    * @param ref name of the increment to get

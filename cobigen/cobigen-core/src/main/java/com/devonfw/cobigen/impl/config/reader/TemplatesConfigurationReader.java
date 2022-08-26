@@ -50,8 +50,8 @@ import com.devonfw.cobigen.impl.config.entity.io.TemplateScanRef;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScans;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Templates;
-import com.devonfw.cobigen.impl.config.reader.interfaces.ContextInterface;
-import com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesInterface;
+import com.devonfw.cobigen.impl.config.reader.interfaces.ContextConfigurationInterface;
+import com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
@@ -68,7 +68,7 @@ import jakarta.xml.bind.Unmarshaller;
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and converts the
  * information to the working entities
  */
-public class TemplatesConfigurationReader implements TemplatesInterface {
+public class TemplatesConfigurationReader implements TemplatesConfigurationInterface {
 
   /**
    * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
@@ -737,7 +737,7 @@ public class TemplatesConfigurationReader implements TemplatesInterface {
    */
   private Trigger getExternalTrigger(String triggerToSearch) {
 
-    ContextInterface contextConfigurationReader = new ContextConfigurationReader(
+    ContextConfigurationInterface contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);
