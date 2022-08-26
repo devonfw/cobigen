@@ -124,7 +124,7 @@ public class TemplatesJarUtil {
       if (Files.exists(adapted)) {
         try {
           if (Files.list(adapted)
-              .anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactID())))) {
+              .anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
             existingTemplates.add(mavenCoordinate);
           }
         } catch (IOException e) {
@@ -134,7 +134,7 @@ public class TemplatesJarUtil {
       if (Files.exists(downloaded)) {
         try {
           if (Files.list(downloaded)
-              .anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactID())))) {
+              .anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
             existingTemplates.add(mavenCoordinate);
           }
         } catch (IOException e) {
@@ -155,9 +155,9 @@ public class TemplatesJarUtil {
     }
 
     for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
-      downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), false,
+      downloadJar(mavenCoordinate.getGroupId(), mavenCoordinate.getArtifactId(), mavenCoordinate.getVersion(), false,
           downloaded.toFile());
-      downloadJar(mavenCoordinate.getGroupID(), mavenCoordinate.getArtifactID(), mavenCoordinate.getVersion(), true,
+      downloadJar(mavenCoordinate.getGroupId(), mavenCoordinate.getArtifactId(), mavenCoordinate.getVersion(), true,
           downloaded.toFile());
     }
 

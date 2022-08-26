@@ -6,14 +6,14 @@ package com.devonfw.cobigen.api.util;
 public class MavenCoordinate {
 
   /**
-   * the groupID of the maven artifact
+   * the groupId of the maven artifact
    */
-  private String groupID;
+  private String groupId;
 
   /**
-   * the artifactID of the maven artifact
+   * the artifactId of the maven artifact
    */
-  private String artifactID;
+  private String artifactId;
 
   /**
    * the version of the maven artifact
@@ -23,14 +23,14 @@ public class MavenCoordinate {
   /**
    * Creates a new {@link MavenCoordinate} object with the given properties
    *
-   * @param groupID a {@link String} with the groupID of the maven artifact
-   * @param artifactID {@link String} with the artifactID of the maven artifact
+   * @param groupId a {@link String} with the groupId of the maven artifact
+   * @param artifactId {@link String} with the artifactId of the maven artifact
    * @param version {@link String} with the version of the maven artifact
    */
-  public MavenCoordinate(String groupID, String artifactID, String version) {
+  public MavenCoordinate(String groupId, String artifactId, String version) {
 
-    this.groupID = groupID;
-    this.artifactID = artifactID;
+    this.groupId = groupId;
+    this.artifactId = artifactId;
     this.version = version;
   }
 
@@ -39,9 +39,9 @@ public class MavenCoordinate {
    *
    * @return {@link String} artifactID
    */
-  public String getArtifactID() {
+  public String getArtifactId() {
 
-    return this.artifactID;
+    return this.artifactId;
   }
 
   /**
@@ -49,9 +49,9 @@ public class MavenCoordinate {
    *
    * @return {@link String} groupID
    */
-  public String getGroupID() {
+  public String getGroupId() {
 
-    return this.groupID;
+    return this.groupId;
   }
 
   /**
@@ -72,9 +72,9 @@ public class MavenCoordinate {
     }
     MavenCoordinate mavenCoordinate = (MavenCoordinate) obj;
 
-    if (this.artifactID != mavenCoordinate.getArtifactID()) {
+    if (this.artifactId != mavenCoordinate.getArtifactId()) {
       return false;
-    } else if (this.groupID != mavenCoordinate.getGroupID()) {
+    } else if (this.groupId != mavenCoordinate.getGroupId()) {
       return false;
     } else if (this.version != mavenCoordinate.getVersion()) {
       return false;
@@ -85,7 +85,7 @@ public class MavenCoordinate {
   @Override
   public int hashCode() {
 
-    return this.artifactID.hashCode() + this.groupID.hashCode() + this.version.hashCode();
+    return this.artifactId.hashCode() + this.groupId.hashCode() + this.version.hashCode();
   }
 
 }

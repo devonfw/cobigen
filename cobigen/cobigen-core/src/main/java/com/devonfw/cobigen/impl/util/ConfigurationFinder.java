@@ -86,7 +86,7 @@ public class ConfigurationFinder {
     Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
     Path configFile = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
-    if (configFile != null && Files.exists(configFile) && configFile.toFile().isFile()) {
+    if (configFile != null && Files.exists(configFile) && !Files.isDirectory(configFile)) {
       LOG.debug("Custom cobigen configuration found at {}", configFile);
       Properties props = readConfigurationFile(configFile);
       String templatesLocation = props.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
