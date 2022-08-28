@@ -21,6 +21,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.impl.config.ConfigurationFactory;
 import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 
 /**
@@ -69,7 +70,9 @@ public class ConfigurationFinder {
     List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
         : new ArrayList<>();
 
-    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
+    // TODO: Where do we get the configRoot from?
+    ConfigurationFactory configurationFactory = new ConfigurationFactory(null);
+    return configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
   }
 
   /**

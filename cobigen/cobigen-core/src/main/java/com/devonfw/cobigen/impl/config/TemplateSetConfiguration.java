@@ -44,14 +44,9 @@ public class TemplateSetConfiguration {
   private Map<String, Increment> increments;
 
   /**
-   * Path of the configuration. Might point to a folder or a jar or maybe even something different in future.
-   */
-  private Path configurationPath;
-
-  /**
    * The reader to read the template-set.xml files
    */
-  private TemplateSetConfigurationReader templateSetConfigurationReader;
+  public TemplateSetConfigurationReader templateSetConfigurationReader;
 
   /**
    * The constructor. load properties from a given source
@@ -75,11 +70,6 @@ public class TemplateSetConfiguration {
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
   public void readConfiguration(Path configRoot) throws InvalidConfigurationException {
-
-    // TODO: Let the ConfigurationFactory take care of this
-    if (this.templateSetConfigurationReader == null) {
-      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configRoot);
-    }
 
     this.increments = new HashMap<>();
     // Fix this this.configurationPath = this.templateSetConfigurationReader.getContextRoot();

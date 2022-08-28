@@ -41,6 +41,9 @@ public class ConfigurationHolder {
   /** The OS filesystem path of the configuration */
   private URI configurationLocation;
 
+  /** The factory class which initializes new configurations */
+  private ConfigurationFactory configurationFactory;
+
   /**
    * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
    *
@@ -49,6 +52,7 @@ public class ConfigurationHolder {
   public ConfigurationHolder(URI configurationLocation) {
 
     this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
+    this.configurationFactory = new ConfigurationFactory(this.configurationPath);
     this.configurationLocation = configurationLocation;
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.configurationPath);
@@ -90,14 +94,8 @@ public class ConfigurationHolder {
 
     Path configRoot = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), true);
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
-    if (!this.templatesConfigurations.containsKey(trigger.getId())) {
-      TemplatesConfiguration config = new TemplatesConfiguration(configRoot, trigger, this);
-      this.templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
-
-      this.templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
-    }
-
-    return this.templatesConfigurations.get(trigger.getId()).get(templateFolder);
+    return this.configurationFactory.getTemplatesConfiguration(this.templatesConfigurations, templateFolder, trigger,
+        this);
   }
 
   /**
@@ -112,10 +110,9 @@ public class ConfigurationHolder {
       this.contextConfiguration = new ContextConfiguration(this.configurationPath);
     }
     return this.contextConfiguration;
-
   }
 
-  // TODO: Implement this
+  // TODO: Move loadTemplateSetConfigurations from ConfigurationFinder here?
   /**
    * @return the {@link TemplateSetConfiguration}
    */
