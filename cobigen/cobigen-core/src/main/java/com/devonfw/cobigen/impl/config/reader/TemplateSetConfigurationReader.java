@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -35,7 +34,6 @@ import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
-import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
@@ -79,6 +77,10 @@ import jakarta.xml.bind.Unmarshaller;
  */
 public class TemplateSetConfigurationReader implements ContextConfigurationInterface, TemplatesConfigurationInterface {
 
+  // TODO: Refactor whole class back to processing a single template-set.xml
+  // List of Configurations in Manager
+  // In the manager: Loop through all configurations, calling their readers
+
   /** Map with the paths of the configuration locations for a template-set.xml file */
   private Map<Path, Path> configLocations = new HashMap<>();
 
@@ -120,8 +122,8 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   /** The {@link ConfigurationHolder} used for reading templates folder **/
   private ConfigurationHolder configurationHolder;
 
-  // TODO: Use dependency injection here instead of the new operator
-  private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
+  // // TODO: Use dependency injection here instead of the new operator
+  // private final TemplateSetConfigurationManager templateSetConfigurationManager;
 
   /**
    * The constructor.
@@ -130,6 +132,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
    */
   public TemplateSetConfigurationReader(TemplateSetConfiguration templateSetConfiguration) {
 
+    // TODO: Implement
   }
 
   /**
@@ -144,23 +147,6 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       throw new IllegalArgumentException("Configuraion path cannot be null.");
 
     this.templateSetFiles = new ArrayList<>();
-
-    Path templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-    Path templateSetsAdapted = configRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-
-    if (!Files.exists(templateSetsDownloaded) && !Files.exists(templateSetsAdapted)) {
-      throw new InvalidConfigurationException(configRoot,
-          "Could not find a folder in which to search for the template set configuration file.");
-    } else {
-      if (Files.exists(templateSetsAdapted)) {
-        this.templateSetFiles.addAll(loadTemplateSetFilesAdapted(templateSetsAdapted));
-      }
-
-      if (this.templateSetFiles.isEmpty()) {
-        throw new InvalidConfigurationException(configRoot,
-            "Could not find any template set configuration file in the given folder.");
-      }
-    }
 
     for (int i = 0; i < this.templateSetFiles.size(); i++) {
       Path templateSetFile = this.templateSetFiles.get(i);
@@ -205,6 +191,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
     this.templateSetConfigurations = new HashMap<>();
 
+    // TODO: Remove loops
     for (int i = 0; i < this.templateSetFiles.size(); i++) {
       Path templateSetFile = this.templateSetFiles.get(i);
       try (InputStream in = Files.newInputStream(templateSetFile)) {
@@ -232,6 +219,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
               "Unknown Root Node. Use \"templateSetConfiguration\" as root Node");
         }
 
+        // TODO: Move this part to the Manager?
         // If we reach this point, the configuration version and root node has been validated.
         // Unmarshal with schema checks for checking the correctness and give the user more hints to
         // correct his failures
@@ -277,61 +265,6 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   }
 
   /**
-   * search for configuration files in the subfolder for adapted templates
-   *
-   * @param configRoot root directory of the configuration template-sets/adapted
-   */
-  private List<Path> loadTemplateSetFilesAdapted(Path configRoot) {
-
-    List<Path> templateSetPaths = new ArrayList<>();
-
-    List<Path> templateSetDirectories = new ArrayList<>();
-
-    try (Stream<Path> files = Files.list(configRoot)) {
-      files.forEach(path -> {
-        if (Files.isDirectory(path)) {
-          templateSetDirectories.add(path);
-        }
-      });
-    } catch (IOException e) {
-      throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
-    }
-
-    for (Path templateDirectory : templateSetDirectories) {
-      Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-          .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
-
-      addConfigRoot(templateSetFilePath, templateDirectory, templateSetPaths);
-    }
-
-    return templateSetPaths;
-  }
-
-  /**
-   * search for configuration files in the subfolder for downloaded template jars
-   *
-   * @param configRoot root directory of the configuration template-sets/downloaded
-   */
-  private List<Path> loadTemplateSetFilesDownloaded(Path configRoot) {
-
-    List<Path> templateSetPaths = new ArrayList<>();
-
-    List<Path> templateJars = TemplatesJarUtil.getJarFiles(configRoot);
-    if (templateJars != null) {
-      for (Path jarPath : templateJars) {
-        Path configurationPath = FileSystemUtil.createFileSystemDependentPath(jarPath.toUri());
-
-        Path templateSetFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .getParent().resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
-
-        addConfigRoot(templateSetFilePath, jarPath, templateSetPaths);
-      }
-    }
-
-    return templateSetPaths;
-  }
-
-  /**
    * Loads all {@link Trigger}s of the static context into the local representation
    *
    * @return a {@link List} containing all the {@link Trigger}s
@@ -340,6 +273,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   public Map<String, Trigger> loadTriggers() {
 
     Map<String, Trigger> triggers = Maps.newHashMap();
+    // TODO: Remove loop
     for (Path contextFile : this.templateSetConfigurations.keySet()) {
       TemplateSetConfiguration contextConfiguration = this.templateSetConfigurations.get(contextFile);
       Path configLocation = this.configLocations.get(contextFile);
@@ -471,9 +405,8 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
    * @throws UnknownContextVariableException if the destination path contains an undefined context variable
    * @throws UnknownExpressionException if there is an unknown variable modifier
    * @throws InvalidConfigurationException if there are multiple templates with the same name
-   * 
+   *
    */
-
   @Override
   public Map<String, Template> loadTemplates()
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {

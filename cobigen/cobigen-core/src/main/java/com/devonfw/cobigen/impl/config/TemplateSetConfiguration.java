@@ -44,6 +44,11 @@ public class TemplateSetConfiguration {
   private Map<String, Increment> increments;
 
   /**
+   * Path of the configuration. Might point to a folder or a jar or maybe even something different in future.
+   */
+  private Path configurationPath;
+
+  /**
    * The reader to read the template-set.xml files
    */
   public TemplateSetConfigurationReader templateSetConfigurationReader;
@@ -55,12 +60,14 @@ public class TemplateSetConfiguration {
    * @param allowSnapshots
    * @param hideTemplates
    */
-  public TemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates) {
+  public TemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates,
+      Path configRoot) {
 
-    super();
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
     this.hideTemplates = hideTemplates;
+    this.configurationPath = configRoot;
+    readConfiguration(configRoot);
   }
 
   /**
@@ -71,6 +78,10 @@ public class TemplateSetConfiguration {
    */
   public void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
+    if (this.templateSetConfigurationReader == null) {
+      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configRoot);
+    }
+
     this.increments = new HashMap<>();
     // Fix this this.configurationPath = this.templateSetConfigurationReader.getContextRoot();
     this.triggers = this.templateSetConfigurationReader.loadTriggers();
@@ -79,6 +90,18 @@ public class TemplateSetConfiguration {
     for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
       this.increments.putAll(this.templateSetConfigurationReader.loadIncrements(this.templates, trigger.getValue()));
     }
+  }
+
+  /**
+   * Reloads the configuration from source. This function might be called if the configuration file has changed in a
+   * running system
+   *
+   * @param configRoot CobiGen configuration root path
+   * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the template-set.xsd
+   */
+  public void reloadConfigurationFromFile(Path configRoot) throws InvalidConfigurationException {
+
+    readConfiguration(configRoot);
   }
 
   /**

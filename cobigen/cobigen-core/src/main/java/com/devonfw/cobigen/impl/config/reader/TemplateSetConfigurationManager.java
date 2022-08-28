@@ -10,7 +10,9 @@ import java.util.stream.Stream;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
  * Managing configurations, everything comes together here (I get more specific, once the ticket is done)
@@ -25,6 +27,11 @@ public class TemplateSetConfigurationManager {
    * Map with XML Nodes 'template-set' of the template-set.xml files
    */
   protected Map<Path, TemplateSetConfiguration> templateSetConfigurations;
+
+  // TODO: Implement
+  public TemplateSetConfigurationManager(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates) {
+
+  }
 
   // TODO: This method needs to be implemented
   protected TemplateSetConfiguration getConfiguration() {
@@ -48,6 +55,9 @@ public class TemplateSetConfigurationManager {
       this.configLocations.add(templateSetFilePath);
     }
   }
+
+  // TODO: Save adapted and downloaded template sets in different lists, so we can treat them individually
+  // (Because of the path problems with jars)
 
   /**
    * Search for configuration files in the sub folder for adapted templates
@@ -75,6 +85,30 @@ public class TemplateSetConfigurationManager {
           .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
       addConfigRoot(templateSetFilePath, templateDirectory, templateSetPaths);
+    }
+
+    return templateSetPaths;
+  }
+
+  /**
+   * search for configuration files in the subfolder for downloaded template jars
+   *
+   * @param configRoot root directory of the configuration template-sets/downloaded
+   */
+  private List<Path> loadTemplateSetFilesDownloaded(Path configRoot) {
+
+    List<Path> templateSetPaths = new ArrayList<>();
+
+    List<Path> templateJars = TemplatesJarUtil.getJarFiles(configRoot);
+    if (templateJars != null) {
+      for (Path jarPath : templateJars) {
+        Path configurationPath = FileSystemUtil.createFileSystemDependentPath(jarPath.toUri());
+
+        Path templateSetFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .getParent().resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+
+        addConfigRoot(templateSetFilePath, jarPath, templateSetPaths);
+      }
     }
 
     return templateSetPaths;
