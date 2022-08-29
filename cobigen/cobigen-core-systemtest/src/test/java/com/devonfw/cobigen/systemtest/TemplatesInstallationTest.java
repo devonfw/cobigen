@@ -128,7 +128,7 @@ public class TemplatesInstallationTest extends AbstractApiTest {
    * @throws Exception test fails.
    */
   @Test
-  public void testInstallTemplatesAtStartupWitWrongCoordinates() throws Exception {
+  public void testInstallTemplatesAtStartupWithWrongCoordinates() throws Exception {
 
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
