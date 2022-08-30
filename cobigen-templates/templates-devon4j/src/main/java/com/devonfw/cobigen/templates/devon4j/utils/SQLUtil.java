@@ -289,7 +289,72 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Method to get the SQL type based on annotations and field type
+   * Get the column name based on annotations or default to fieldName
+   *
+   * @param annotations Array of a field's annotations
+   * @param fieldName {@link String} the name of the field
+   * @return SQL Column name base or null
+   */
+  public String getColumnName(Annotation[] annotations, String fieldName) {
+
+    return "";
+  }
+
+  /**
+   * Get a primary key SQL statement based on the @ID annotation
+   *
+   * @param annotations Array of a field's annotations
+   * @param className {@link String} full qualified class name
+   * @param fieldName {@link String} the name of the field
+   * @return SQL Primary key statement or null
+   */
+  public String getPrimaryKeyType(Annotation[] annotations, String className, String fieldName) {
+
+    return "";
+  }
+
+  /**
+   * Get the Foreign Key and its type based on annotated options. If the field is annotated with JoinColumn the Foreign
+   * Key will be the type of the referenced column.
+   *
+   * @param annotations Array of a field's annotations
+   * @param className {@link String} full qualified class name
+   * @param fieldName {@link String} the name of the field
+   * @return SQL foreign key + "," + type or null
+   */
+  public String getForeignKey(Annotation[] annotations, String className, String fieldName) {
+
+    return "" + "," + "";
+  }
+
+  /**
+   * Get the Foreign Key name based on annotated options or default to "column_name + _id"
+   *
+   * @param annotations Array of a field's annotations
+   * @param className {@link String} full qualified class name
+   * @param fieldName {@link String} the name of the field
+   * @return SQL foreign key name or null
+   */
+  public String getForeignKeyName(Annotation[] annotations, String className, String fieldName) {
+
+    return "";
+  }
+
+  /**
+   * Get the Foreign table based on annotated options that will be referenced
+   *
+   * @param annotations Array of a field's annotations
+   * @param className {@link String} full qualified class name
+   * @param fieldName {@link String} the name of the field
+   * @return SQL foreign table to be referenced or null
+   */
+  public String getForeignKeyTable(Annotation[] annotations, String className, String fieldName) {
+
+    return "" + "," + "";
+  }
+
+  /**
+   * Method to get the SQL type statement for Primary Keys and simple Columns
    *
    * @param className {@link String} full qualified class name
    * @param fieldName {@link String} the name of the field
@@ -297,17 +362,16 @@ public class SQLUtil extends CommonUtil {
    * @throws ClassNotFoundException
    */
   @SuppressWarnings("javadoc")
-  public String getSqlType(String className, String fieldName) throws ClassNotFoundException {
+  public String getSqlTypeStatement(Annotation[] annotations, String className, String fieldName)
+      throws ClassNotFoundException {
 
     try {
       String sqlType = mapJavaToSqlType(getCanonicalNameOfFieldType(className, fieldName));
-      Class<?> entityClass = Class.forName(className);
-      Annotation[] annotations = getFieldAnnotations(entityClass, fieldName);
       String sqlTypeExtension = "";
 
       if (annotations.length != 0) {
         for (Annotation annotation : annotations) {
-          if (sqlType == "VARCHAR" && annotation.annotationType().equals(Size.class)) {
+          if (sqlType.equals("VARCHAR") && annotation.annotationType().equals(Size.class)) {
             Integer maxSize = ((Size) annotation).max(); // Size.max is always present as it defaults to
                                                          // Integer.MAX_VALUE;
             sqlTypeExtension = sqlTypeExtension + "(" + maxSize.toString() + ")";
@@ -319,7 +383,6 @@ public class SQLUtil extends CommonUtil {
           if (annotation.annotationType().equals(GeneratedValue.class)) {
             sqlTypeExtension = sqlTypeExtension + " AUTO_INCREMENT";
           }
-
         }
       }
       return sqlType + sqlTypeExtension;
