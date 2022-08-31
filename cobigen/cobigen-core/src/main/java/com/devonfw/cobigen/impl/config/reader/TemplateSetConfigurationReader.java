@@ -81,17 +81,17 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   // List of Configurations in Manager
   // In the manager: Loop through all configurations, calling their readers
 
-  /** Map with the paths of the configuration locations for a template-set.xml file */
-  private Map<Path, Path> configLocations = new HashMap<>();
+  /** Paths of the configuration location for a template-set.xml file */
+  private Path configLocation;
 
   /** Map with the paths of the template set location for a trigger */
   private Map<String, Path> triggerTemplateSetLocations = new HashMap<>();
 
   /** Map with XML Nodes 'template-set' of the template-set.xml files */
-  protected Map<Path, TemplateSetConfiguration> templateSetConfigurations;
+  protected TemplateSetConfiguration templateSetConfiguration;
 
   /** Paths of the template set configuration files */
-  protected List<Path> templateSetFiles;
+  protected Path templateSetFile;
 
   /** Root of the template set configuration file, used for passing to TemplateSetConfiguration */
   protected Path templateSetsRoot;
@@ -146,32 +146,21 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     if (configRoot == null)
       throw new IllegalArgumentException("Configuraion path cannot be null.");
 
-    this.templateSetFiles = new ArrayList<>();
-
-    for (int i = 0; i < this.templateSetFiles.size(); i++) {
-      Path templateSetFile = this.templateSetFiles.get(i);
-      Path templateLocation;
-
-      Path rootTemplatePath = configRoot.resolve(templateSetFile).getParent();
-
-      this.configFilePath = templateSetFile;
-      Path configFilePath = this.configFilePath;
-
-      if (!Files.exists(configFilePath)) {
-        Path sourceTemplatePath = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-        sourceTemplatePath = sourceTemplatePath.resolve(templateSetFile.getParent());
-        configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
-        templateLocation = sourceTemplatePath;
-      }
-      if (!Files.exists(configFilePath)) {
-        throw new InvalidConfigurationException(configFilePath, "Could not find templates set configuration file.");
-      } else {
-
-        // Change this line to templatesLocation = rootTemplatePath if additional "templates" folder is removed
-        templateLocation = Path.of(rootTemplatePath + "/templates");
-      }
-      this.rootTemplateFolder = TemplateFolder.create(templateLocation);
+    Path templateLocation;
+    Path sourceTemplatePath = configRoot;
+    if (!Files.exists(this.configFilePath)) {
+      sourceTemplatePath = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+      sourceTemplatePath = sourceTemplatePath.resolve(this.templateSetFile.getParent());
+      this.configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+      templateLocation = sourceTemplatePath;
     }
+    if (!Files.exists(this.configFilePath)) {
+      throw new InvalidConfigurationException(this.configFilePath, "Could not find templates set configuration file.");
+    } else {
+      // Change this line to templatesLocation = rootTemplatePath if additional "templates" folder is removed
+      templateLocation = Path.of(sourceTemplatePath + "/templates");
+    }
+    this.rootTemplateFolder = TemplateFolder.create(templateLocation);
 
     readConfiguration();
   }
@@ -189,77 +178,70 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
     }
 
-    this.templateSetConfigurations = new HashMap<>();
+    try (InputStream in = Files.newInputStream(this.templateSetFile)) {
+      Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
 
-    // TODO: Remove loops
-    for (int i = 0; i < this.templateSetFiles.size(); i++) {
-      Path templateSetFile = this.templateSetFiles.get(i);
-      try (InputStream in = Files.newInputStream(templateSetFile)) {
-        Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
-
-        // Unmarshal without schema checks for getting the version attribute of the root node.
-        // This is necessary to provide an automatic upgrade client later on
-        Object rootNode = unmarschaller.unmarshal(in);
-        BigDecimal configVersion;
-        if (rootNode instanceof TemplateSetConfiguration) {
-          configVersion = ((TemplateSetConfiguration) rootNode).getVersion();
-          if (configVersion == null) {
-            throw new InvalidConfigurationException(templateSetFile,
-                "The required 'version' attribute of node \"templateSetConfiguration\" has not been set");
-          } else {
-            VersionValidator validator = new VersionValidator(Type.TEMPLATE_SET_CONFIGURATION, MavenMetadata.VERSION);
-            try {
-              validator.validate(configVersion.floatValue());
-            } catch (NotYetSupportedException e) {
-              // TODO
-            }
-          }
+      // Unmarshal without schema checks for getting the version attribute of the root node.
+      // This is necessary to provide an automatic upgrade client later on
+      Object rootNode = unmarschaller.unmarshal(in);
+      BigDecimal configVersion;
+      if (rootNode instanceof TemplateSetConfiguration) {
+        configVersion = ((TemplateSetConfiguration) rootNode).getVersion();
+        if (configVersion == null) {
+          throw new InvalidConfigurationException(this.templateSetFile,
+              "The required 'version' attribute of node \"templateSetConfiguration\" has not been set");
         } else {
-          throw new InvalidConfigurationException(templateSetFile,
-              "Unknown Root Node. Use \"templateSetConfiguration\" as root Node");
+          VersionValidator validator = new VersionValidator(Type.TEMPLATE_SET_CONFIGURATION, MavenMetadata.VERSION);
+          try {
+            validator.validate(configVersion.floatValue());
+          } catch (NotYetSupportedException e) {
+            // TODO
+          }
         }
-
-        // TODO: Move this part to the Manager?
-        // If we reach this point, the configuration version and root node has been validated.
-        // Unmarshal with schema checks for checking the correctness and give the user more hints to
-        // correct his failures
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        TemplateSetConfigurationVersion templateSetVersion = TemplateSetConfigurationVersion.getLatest();
-        try (
-            InputStream schemaStream = getClass()
-                .getResourceAsStream("/schema/" + templateSetVersion + "/templateSetConfiguration.xsd");
-            InputStream configInputStream = Files.newInputStream(templateSetFile)) {
-
-          Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
-          unmarschaller.setSchema(schema);
-          rootNode = unmarschaller.unmarshal(configInputStream);
-          this.configNode = (TemplateSetConfiguration) rootNode;
-          this.templateSetConfigurations.put(templateSetFile, (TemplateSetConfiguration) rootNode);
-        }
-      } catch (JAXBException e) {
-        // try getting SAXParseException for better error handling and user support
-        Throwable parseCause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
-        String message = "";
-        if (parseCause != null && parseCause.getMessage() != null) {
-          message = parseCause.getMessage();
-        }
-
-        throw new InvalidConfigurationException(templateSetFile,
-            "Could not parse template set configuration file:\n" + message, e);
-      } catch (SAXException e) {
-        // Should never occur. Programming error.
-        throw new IllegalStateException(
-            "Could not parse template set configuration schema. Please state this as a bug.");
-      } catch (NumberFormatException e) {
-        // The version number is currently the only xml value which will be parsed to a number data type
-        // So provide help
-        throw new InvalidConfigurationException(
-            "Invalid version number defined. The version of the template set configuration should consist of 'major.minor' version.");
-      } catch (IOException e) {
-        throw new InvalidConfigurationException(templateSetFile, "Could not read template set configuration file.", e);
-      } finally {
-        Thread.currentThread().setContextClassLoader(orig);
+      } else {
+        throw new InvalidConfigurationException(this.templateSetFile,
+            "Unknown Root Node. Use \"templateSetConfiguration\" as root Node");
       }
+
+      // TODO: Move this part to the Manager?
+      // If we reach this point, the configuration version and root node has been validated.
+      // Unmarshal with schema checks for checking the correctness and give the user more hints to
+      // correct his failures
+      SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+      TemplateSetConfigurationVersion templateSetVersion = TemplateSetConfigurationVersion.getLatest();
+      try (
+          InputStream schemaStream = getClass()
+              .getResourceAsStream("/schema/" + templateSetVersion + "/templateSetConfiguration.xsd");
+          InputStream configInputStream = Files.newInputStream(this.templateSetFile)) {
+
+        Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+        unmarschaller.setSchema(schema);
+        rootNode = unmarschaller.unmarshal(configInputStream);
+        this.configNode = (TemplateSetConfiguration) rootNode;
+      }
+    } catch (JAXBException e) {
+      // try getting SAXParseException for better error handling and user support
+      Throwable parseCause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
+      String message = "";
+      if (parseCause != null && parseCause.getMessage() != null) {
+        message = parseCause.getMessage();
+      }
+
+      throw new InvalidConfigurationException(this.templateSetFile,
+          "Could not parse template set configuration file:\n" + message, e);
+    } catch (SAXException e) {
+      // Should never occur. Programming error.
+      throw new IllegalStateException("Could not parse template set configuration schema. Please state this as a bug.");
+    } catch (NumberFormatException e) {
+      // The version number is currently the only xml value which will be parsed to a number data type
+      // So provide help
+      throw new InvalidConfigurationException(
+          "Invalid version number defined. The version of the template set configuration should consist of 'major.minor' version.");
+    } catch (IOException e) {
+      throw new InvalidConfigurationException(this.templateSetFile, "Could not read template set configuration file.",
+          e);
+    } finally {
+      Thread.currentThread().setContextClassLoader(orig);
     }
 
   }
@@ -274,24 +256,18 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
     Map<String, Trigger> triggers = Maps.newHashMap();
     // TODO: Remove loop
-    for (Path contextFile : this.templateSetConfigurations.keySet()) {
-      TemplateSetConfiguration contextConfiguration = this.templateSetConfigurations.get(contextFile);
-      Path configLocation = this.configLocations.get(contextFile);
-      boolean isJarFile = FileSystemUtil.isZipFile(configLocation.toUri());
+    boolean isJarFile = FileSystemUtil.isZipFile(this.configLocation.toUri());
 
-      List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = contextConfiguration.getTrigger();
-      if (!triggerList.isEmpty()) {
-        // context configuration in template sets consists of only one trigger
-        com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
-
-        if (!this.triggerTemplateSetLocations.containsKey(trigger.getId()) || !isJarFile) {
-          // prefer the adapted templates
-          this.triggerTemplateSetLocations.put(trigger.getId(), configLocation);
-
-          triggers.put(trigger.getId(),
-              new Trigger(trigger.getId(), trigger.getType(), ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER,
-                  Charset.forName(trigger.getInputCharset()), loadMatchers(trigger), loadContainerMatchers(trigger)));
-        }
+    List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = this.templateSetConfiguration.getTrigger();
+    if (!triggerList.isEmpty()) {
+      // context configuration in template sets consists of only one trigger
+      com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
+      if (!this.triggerTemplateSetLocations.containsKey(trigger.getId()) || !isJarFile) {
+        // prefer the adapted templates
+        this.triggerTemplateSetLocations.put(trigger.getId(), this.configLocation);
+        triggers.put(trigger.getId(),
+            new Trigger(trigger.getId(), trigger.getType(), ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER,
+                Charset.forName(trigger.getInputCharset()), loadMatchers(trigger), loadContainerMatchers(trigger)));
       }
     }
     return triggers;
@@ -367,16 +343,16 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
     if (Files.exists(templateSetFilePath)) {
       templateSetPaths.add(templateSetFilePath);
-      this.configLocations.put(templateSetFilePath, configRootPath);
+      this.configLocation = configRootPath;
     }
   }
 
   /**
    * @return the list of the template set files
    */
-  public List<Path> getTemplateSetFiles() {
+  public Path getTemplateSetFile() {
 
-    return this.templateSetFiles;
+    return this.templateSetFile;
   }
 
   /**
