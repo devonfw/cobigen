@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl.config.reader;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -90,7 +91,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   /** Map with XML Nodes 'template-set' of the template-set.xml files */
   protected TemplateSetConfiguration templateSetConfiguration;
 
-  /** Paths of the template set configuration files */
+  /** Path of the template set configuration files */
   protected Path templateSetFile;
 
   /** Root of the template set configuration file, used for passing to TemplateSetConfiguration */
@@ -101,6 +102,14 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
   /** Configuration file */
   private Path configFilePath;
+
+  // List with the paths of the configuration locations for the template-set.xml files */
+  private List<Path> configLocations = new ArrayList<>();
+
+  /**
+   * Map with XML Nodes 'template-set' of the template-set.xml files
+   */
+  protected Map<Path, TemplateSetConfiguration> templateSetConfigurations;
 
   /**
    * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
@@ -122,16 +131,21 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   /** The {@link ConfigurationHolder} used for reading templates folder **/
   private ConfigurationHolder configurationHolder;
 
-  // // TODO: Use dependency injection here instead of the new operator
-  // private final TemplateSetConfigurationManager templateSetConfigurationManager;
+  // TODO: Use dependency injection here instead of the new operator
+  private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
 
   /**
    * The constructor.
    *
    * @param templateSetConfiguration the configuration that will be read by this reader
+   * @throws FileNotFoundException
    */
-  public TemplateSetConfigurationReader(TemplateSetConfiguration templateSetConfiguration) {
+  public TemplateSetConfigurationReader(TemplateSetConfiguration templateSetConfiguration)
+      throws FileNotFoundException {
 
+    // TODO: This needs to be in a loop
+    this.configLocations = this.templateSetConfigurationManager.addConfigRoot(this.templateSetFile,
+        this.templateSetsRoot, this.configLocations);
     // TODO: Implement
   }
 
@@ -920,15 +934,6 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
         return inc;
       }
     }
-    return null;
-  }
-
-  /**
-   * @return
-   */
-  public Path getContextRoot() {
-
-    // TODO Auto-generated method stub
     return null;
   }
 

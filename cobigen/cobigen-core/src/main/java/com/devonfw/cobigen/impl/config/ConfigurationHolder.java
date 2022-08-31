@@ -57,9 +57,10 @@ public class ConfigurationHolder {
    */
   public ConfigurationHolder(URI configurationLocation) {
 
-    this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
-    this.configurationFactory = new ConfigurationFactory(this.configurationPath);
     this.configurationLocation = configurationLocation;
+    this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
+    this.configurationFactory = new ConfigurationFactory(configurationLocation);
+
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.configurationPath);
   }
@@ -119,9 +120,10 @@ public class ConfigurationHolder {
   }
 
   /**
+   * @param path
    * @return the {@link TemplateSetConfiguration}
    */
-  public TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
+  public TemplateSetConfiguration readTemplateSetConfiguration(Path path) {
 
     Properties props = new Properties();
     try {
@@ -150,8 +152,9 @@ public class ConfigurationHolder {
     List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
         : new ArrayList<>();
 
-    ConfigurationFactory configurationFactory = new ConfigurationFactory(path);
-    return configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
+    ConfigurationFactory configurationFactory = new ConfigurationFactory(this.configurationLocation);
+    this.templateSetConfiguration = configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
+    return this.templateSetConfiguration;
   }
 
   /**

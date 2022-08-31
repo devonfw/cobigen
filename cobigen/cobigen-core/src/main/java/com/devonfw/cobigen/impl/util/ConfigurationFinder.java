@@ -70,7 +70,8 @@ public class ConfigurationFinder {
     List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
         : new ArrayList<>();
 
-    ConfigurationFactory configurationFactory = new ConfigurationFactory(path);
+    ConfigurationFactory configurationFactory = new ConfigurationFactory(findTemplatesLocation());
+
     return configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
   }
 

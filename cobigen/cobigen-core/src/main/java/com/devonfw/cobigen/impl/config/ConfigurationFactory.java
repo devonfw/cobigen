@@ -1,11 +1,13 @@
 package com.devonfw.cobigen.impl.config;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
 
 /**
@@ -15,9 +17,15 @@ public class ConfigurationFactory {
 
   private Path configRoot;
 
-  public ConfigurationFactory(Path configRoot) {
+  /**
+   * The constructor.
+   *
+   * @param configRoot root of the cobigen
+   */
+  public ConfigurationFactory(URI configRoot) {
 
-    this.configRoot = configRoot;
+    this.configRoot = FileSystemUtil.createFileSystemDependentPath(configRoot);
+
   }
 
   /**
