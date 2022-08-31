@@ -70,8 +70,7 @@ public class ConfigurationFinder {
     List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
         : new ArrayList<>();
 
-    // TODO: Where do we get the configRoot from?
-    ConfigurationFactory configurationFactory = new ConfigurationFactory(null);
+    ConfigurationFactory configurationFactory = new ConfigurationFactory(path);
     return configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
   }
 

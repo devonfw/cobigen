@@ -1,12 +1,18 @@
 package com.devonfw.cobigen.impl.config;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,18 +118,40 @@ public class ConfigurationHolder {
     return this.contextConfiguration;
   }
 
-  // TODO: Move loadTemplateSetConfigurations from ConfigurationFinder here?
   /**
    * @return the {@link TemplateSetConfiguration}
    */
-  public TemplateSetConfiguration readTemplateSetConfiguration() {
+  public TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
 
-    if (this.templateSetConfiguration == null) {
-
-      this.templateSetConfiguration = new TemplateSetConfiguration(null, false, null); // placeholer Which parameters do
-                                                                                       // I need?
+    Properties props = new Properties();
+    try {
+      props = readConfigurationFile(path);
+    } catch (InvalidConfigurationException e) {
+      LOG.info("This path {} is invalid. The default Config values will be loaded instead.", path);
     }
-    return this.templateSetConfiguration;
+
+    String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
+    String snapshot = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS;
+    String hide = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE;
+    String disableLookup = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DISABLE_LOOKUP;
+    String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
+
+    List<String> groupIdsList = (props.getProperty(groupId) != null)
+        ? Arrays.asList(props.getProperty(groupId).split(","))
+        : new ArrayList<>();
+    // Creating a new ArrayList object which can be modified and prevents UnsupportedOperationException.
+    List<String> groupIds = new ArrayList<>(groupIdsList);
+    if (props.getProperty(disableLookup) == null || props.getProperty(disableLookup).equals("false"))
+      if (!groupIds.contains(defaultGroupId))
+        groupIds.add(defaultGroupId);
+
+    boolean useSnapshots = props.getProperty(snapshot) == null || props.getProperty(snapshot).equals("false") ? false
+        : true;
+    List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
+        : new ArrayList<>();
+
+    ConfigurationFactory configurationFactory = new ConfigurationFactory(path);
+    return configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
   }
 
   /**
@@ -159,5 +187,28 @@ public class ConfigurationHolder {
     }
 
     return utilsLocationPaths;
+  }
+
+  /**
+   * This is a helper method to read a given cobigen configuration file
+   *
+   * @param cobigenConfigFile cobigen configuration file
+   * @throws InvalidConfigurationException if the file isn't present or the path is invalid
+   * @return Properties containing configuration
+   */
+  private Properties readConfigurationFile(Path cobigenConfigFile) {
+
+    Properties props = new Properties();
+    try {
+      String configFileContents = Files.readAllLines(cobigenConfigFile, Charset.forName("UTF-8")).stream()
+          .collect(Collectors.joining("\n"));
+      configFileContents = configFileContents.replace("\\", "\\\\");
+      try (StringReader strReader = new StringReader(configFileContents)) {
+        props.load(strReader);
+      }
+    } catch (IOException e) {
+      throw new InvalidConfigurationException("An error occured while reading the config file " + cobigenConfigFile, e);
+    }
+    return props;
   }
 }

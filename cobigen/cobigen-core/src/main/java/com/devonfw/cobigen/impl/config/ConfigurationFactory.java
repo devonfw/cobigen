@@ -60,7 +60,7 @@ public class ConfigurationFactory {
       List<String> hideTemplates) {
 
     TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(groupIds, allowSnapshots,
-        hideTemplates);
+        hideTemplates, this.configRoot);
     templateSetConfiguration.templateSetConfigurationReader = getTemplateSetConfigurationReader();
     return templateSetConfiguration;
   }
