@@ -149,7 +149,7 @@ public class TemplatesJarUtil {
         }
       }
     }
-    // nullcheck ?
+
     if (existingTemplates.size() > 0) {
       mavenCoordinates.removeAll(existingTemplates);
     }

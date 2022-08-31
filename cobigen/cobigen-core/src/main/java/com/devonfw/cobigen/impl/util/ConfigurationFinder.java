@@ -56,23 +56,30 @@ public class ConfigurationFinder {
     String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
     String templateSetsInstalled = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_INSTALLED;
 
-    List<String> groupIdsList = (props.getProperty(groupId) != null)
-        ? Arrays.asList(props.getProperty(groupId).split(","))
-        : new ArrayList<>();
+    List<String> groupIdsList = new ArrayList<>();
+    if (props.getProperty(groupId) != null) {
+      groupIdsList = Arrays.asList(props.getProperty(groupId).split(","));
+    }
     // Creating a new ArrayList object which can be modified and prevents UnsupportedOperationException.
     List<String> groupIds = new ArrayList<>(groupIdsList);
     if (props.getProperty(disableLookup) == null || props.getProperty(disableLookup).equals("false"))
       if (!groupIds.contains(defaultGroupId))
         groupIds.add(defaultGroupId);
 
-    boolean useSnapshots = props.getProperty(snapshot) == null || props.getProperty(snapshot).equals("false") ? false
-        : true;
-    List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
-        : new ArrayList<>();
+    boolean useSnapshots = false;
+    if (props.getProperty(snapshot).equals("true")) {
+      useSnapshots = true;
+    }
 
-    List<String> mavenCoordinates = (props.getProperty(templateSetsInstalled) != null)
-        ? Arrays.asList(props.getProperty(templateSetsInstalled).split(","))
-        : new ArrayList<>();
+    List<String> hiddenIds = new ArrayList<>();
+    if (props.getProperty(hide) != null) {
+      hiddenIds = Arrays.asList(props.getProperty(hide).split(","));
+    }
+
+    List<String> mavenCoordinates = new ArrayList<>();
+    if (props.getProperty(templateSetsInstalled) != null) {
+      mavenCoordinates = Arrays.asList(props.getProperty(templateSetsInstalled).split(","));
+    }
     return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds, mavenCoordinates);
   }
 

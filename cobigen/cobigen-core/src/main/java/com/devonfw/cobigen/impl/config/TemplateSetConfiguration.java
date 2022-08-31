@@ -44,11 +44,18 @@ public class TemplateSetConfiguration {
     super();
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
-    this.hideTemplates = checkAndCovertToMavenCoordinates(hideTemplates);
-    this.mavenCoordinates = checkAndCovertToMavenCoordinates(mavenCoordinates);
+    this.hideTemplates = convertToMavenCoordinates(hideTemplates);
+    this.mavenCoordinates = convertToMavenCoordinates(mavenCoordinates);
   }
 
-  private List<MavenCoordinate> checkAndCovertToMavenCoordinates(List<String> mavenCoordinatesString) {
+  /**
+   * Takes a string with multiple maven coordinates separates them and checks if they meet the maven naming conventions
+   * and are therefore valid.
+   *
+   * @param mavenCoordinatesString a String that contains maven coordinates
+   * @return List with {@link MavenCoordinate}
+   */
+  private List<MavenCoordinate> convertToMavenCoordinates(List<String> mavenCoordinatesString) {
 
     List<MavenCoordinate> result = new ArrayList<>();
     for (String mavenCoordinate : mavenCoordinatesString) {
@@ -68,7 +75,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * return a list of the saved groupIds
+   * Returns a list of the saved groupIds
    *
    * @return groupIds
    */
@@ -78,7 +85,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * set a list of the groupIds from a source
+   * Sets a list of the groupIds from a source
    *
    * @param groupIds new value of {@link #getgroupIds}.
    */
@@ -88,7 +95,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * return a boolean which states if specific Snapshots should be allowed.
+   * Returns a boolean which states if specific Snapshots should be allowed.
    *
    * @return allowSnapshots
    */
@@ -98,7 +105,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * set a value on the snapshot
+   * Sets a value on the snapshot
    *
    * @param allowSnapshots new value of {@link #getallowSnapshots}.
    */
@@ -108,7 +115,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * return a list of the saved templates to be hidden
+   * Returns a list of the saved templates to be hidden
    *
    * @return hideTemplates
    */
@@ -118,7 +125,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * set a list of the HideTemplate from a source
+   * Sets a list of the HideTemplate from a source
    *
    * @param hideTemplates new value of {@link #gethideTemplates}.
    */
@@ -128,7 +135,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * returns a list of maven coordinates for the download of template sets
+   * Returns a list of maven coordinates for the download of template sets
    *
    * @return maven coordinates
    */

@@ -86,12 +86,15 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   @Test
   public void testDownloadTemplatesAlreadyExisting() throws Exception {
 
+    // preparation
     this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
     this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
     createFileOrFolder(this.mavenCoordinatesList.get(0), this.downloadedFolder, false);
     createFileOrFolder(this.mavenCoordinatesList.get(1), this.downloadedFolder, false);
+    // Perform download
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     assertThat(this.downloadedFolder.listFiles()).hasSize(2);
+    // Perform download
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
     assertThat(this.downloadedFolder.listFiles()).hasSize(2);
   }
@@ -102,15 +105,20 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   @Test
   public void testDownloadTemplatesWithoutVersion() {
 
+    // preparation
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(""));
+    // Perform download
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
-    File[] FilesList = this.downloadedFolder.listFiles();
+    // Assert
     assertThat(this.downloadedFolder.listFiles()).hasSize(2);
     assertThat(this.downloadedFolder.listFiles())
         .allMatch(f -> f.getName().matches("templates-devon4j-2021.12.006(-sources)?.jar"));
+    // preparation
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("LATEST"));
     this.mavenCoordinatesList.remove(0);
+    // Perform download
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
+    // Assert
     assertThat(this.downloadedFolder.listFiles()).hasSize(2);
 
   }
@@ -121,9 +129,11 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   @Test
   public void testDownloadTemplatesWithLATEST() {
 
+    // preparation
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates("LATEST"));
+    // Perform download
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
-    File[] FilesList = this.downloadedFolder.listFiles();
+    // Assert
     assertThat(this.downloadedFolder.listFiles()).hasSize(2);
     assertThat(this.downloadedFolder.listFiles())
         .allMatch(f -> f.getName().matches("templates-devon4j-2021.12.006(-sources)?.jar"));
@@ -138,6 +148,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   @Test
   public void testDownloadTemplates() throws Exception {
 
+    // preparation
     File adapted = this.tempFolder.newFolder("templateLocation/adapted");
     this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
     this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
@@ -145,8 +156,9 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(null));
     createFileOrFolder(this.mavenCoordinatesList.get(0), adapted, true);
     createFileOrFolder(this.mavenCoordinatesList.get(1), this.downloadedFolder, false);
+    // Perform download
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
-
+    // Assert
     assertThat(this.downloadedFolder.listFiles()).hasSize(3);
     assertThat(adapted.listFiles()).hasSize(1);
   }
@@ -160,6 +172,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   @Test
   public void testDownloadTemplatesAlreadyAdapted() throws Exception {
 
+    // preparation
     File adapted = this.tempFolder.newFolder("templateLocation/adapted");
     this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
     this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
@@ -168,9 +181,9 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
     createFileOrFolder(this.mavenCoordinatesList.get(0), adapted, true);
     createFileOrFolder(this.mavenCoordinatesList.get(1), adapted, true);
     createFileOrFolder(this.mavenCoordinatesList.get(2), adapted, true);
-
+    // Perform download
     TemplatesJarUtil.downloadTemplatesByMavenCoordinates(this.templateLocation.toPath(), this.mavenCoordinatesList);
-
+    // Assert
     assertThat(this.downloadedFolder.listFiles()).hasSize(2);
     assertThat(adapted.listFiles()).hasSize(3);
 
