@@ -67,7 +67,7 @@ public class ConfigurationFinder {
         groupIds.add(defaultGroupId);
 
     boolean useSnapshots = false;
-    if (props.getProperty(snapshot).equals("true")) {
+    if (props.getProperty(snapshot) != null && props.getProperty(snapshot).equals("true")) {
       useSnapshots = true;
     }
 
