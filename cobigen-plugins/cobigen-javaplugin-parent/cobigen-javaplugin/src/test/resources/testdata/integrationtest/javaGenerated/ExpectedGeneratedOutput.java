@@ -1,10 +1,10 @@
-package ${variables.rootPackage}.${variables.component}.common.api.${variables.detail};
+package com.example.domain.myapp.employeemanagement.common.api.;
 
-import ${variables.rootPackage}.general.common.api.ApplicationEntity;
+import com.example.domain.myapp.general.common.api.ApplicationEntity;
 
-public interface ${variables.entityName} extends ApplicationEntity {
+public interface Employee extends ApplicationEntity {
 
-
+@Generated(value = { "CobiGen" }, date = "2022-08-31T01:10:20+0000")
   public boolean equals(Object obj) {
 
     if (this == obj) {

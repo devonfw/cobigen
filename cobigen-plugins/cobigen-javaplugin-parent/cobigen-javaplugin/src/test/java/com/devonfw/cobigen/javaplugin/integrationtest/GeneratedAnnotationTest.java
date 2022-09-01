@@ -26,7 +26,7 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
     File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
 
     Object input = cobiGen.read(
-        new File("src/test/resources/testdata/integrationtest/javaSources/CustomerEntity.java").toPath(),
+        new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
         Charset.forName("UTF-8"));
     List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
@@ -37,9 +37,12 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
         GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
             false);
         assertThat(report).isSuccessful();
-        Path expectedFile = tmpFolderCobiGen.toPath().resolve("correctAnnotationValueExtraction.txt");
+        Path expectedFile = tmpFolderCobiGen.toPath().resolve("generated.java");
+        Path expectedOutputToBeGenerated = Paths
+            .get("src/test/resources/testdata/integrationtest/javaGenerated/ExpectedGeneratedOutput.java");
         assertThat(expectedFile).exists();
-        assertThat(expectedFile).hasContent("\"/foo/{id}/\"");
+        assertThat(expectedFile).hasContent("@Generated");
+        assertThat(expectedFile).isEqualByComparingTo(expectedOutputToBeGenerated);
         break;
       }
     }
