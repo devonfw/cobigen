@@ -204,8 +204,8 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(
-        aResponse().withStatus(202).withBody(Files.readString(Paths.get(testdataRoot).resolve("mavenJsonTest.json")))));
+    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(202)
+        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("mavenJsonTest.json")))));
 
     this.wireMockRule
         .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
@@ -244,7 +244,7 @@ public class MavenUtilTest {
         .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule.stubFor(get(urlMatching("/service/local/lucene/search/.*")).willReturn(aResponse().withStatus(200)
-        .withBody(Files.readString(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
+        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
 
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
@@ -277,7 +277,7 @@ public class MavenUtilTest {
         .stubFor(get(urlMatching("/service/local/lucene/search/.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(200)
-        .withBody(Files.readString(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
+        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
 
     // when
     downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
@@ -302,8 +302,8 @@ public class MavenUtilTest {
 
     this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(404)));
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(
-        aResponse().withStatus(200).withBody(Files.readString(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")))));
+    this.wireMockRule.stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(200)
+        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")))));
 
     this.wireMockRule
         .stubFor(get(urlMatching("/service/local/lucene/search/.*")).willReturn(aResponse().withStatus(404)));
