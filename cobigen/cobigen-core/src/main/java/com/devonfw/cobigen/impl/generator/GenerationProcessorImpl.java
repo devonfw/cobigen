@@ -201,8 +201,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
       LOG.debug("Generating {} templates", templatesToBeGenerated.size());
       for (TemplateTo template : templatesToBeGenerated) {
         try {
-          // TODO Implement the @Generated Method
-          addGeneratedAnnotation();
           Trigger trigger = this.configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
           TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
           InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
@@ -248,11 +246,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     }
 
     return this.generationReport;
-  }
-
-  private void addGeneratedAnnotation() {
-
-    // TODO addGeneratedAnnotation
   }
 
   /**

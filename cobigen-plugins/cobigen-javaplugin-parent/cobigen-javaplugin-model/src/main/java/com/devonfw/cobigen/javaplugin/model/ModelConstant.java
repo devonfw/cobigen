@@ -80,6 +80,11 @@ public class ModelConstant {
   public static final String METHODS = "methods";
 
   /**
+   * javax.annotation to be added to the generated code from CobiGen
+   */
+  public static final String GENERATED_ANNOTATION = "@Generated";
+
+  /**
    * Annotations of methods or fields, which will be represented by a mapping of the full qualified type of an
    * annotation to its value. To gain template compatibility, the key will be stored with '_' instead of '.' in the full
    * qualified annotation type. Furthermore the annotation might be recursively defined and thus be accessed using the

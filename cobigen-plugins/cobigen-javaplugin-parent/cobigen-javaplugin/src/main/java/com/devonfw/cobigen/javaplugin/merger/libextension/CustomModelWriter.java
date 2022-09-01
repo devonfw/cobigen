@@ -395,6 +395,7 @@ public class CustomModelWriter implements ModelWriter {
   @Override
   public ModelWriter writeAnnotation(JavaAnnotation annotation) {
 
+    // TODO ANALYZE THIS METHOD?
     this.buffer.write('@');
     this.buffer.write(annotation.getType().getGenericValue());
     if (!annotation.getPropertyMap().isEmpty()) {

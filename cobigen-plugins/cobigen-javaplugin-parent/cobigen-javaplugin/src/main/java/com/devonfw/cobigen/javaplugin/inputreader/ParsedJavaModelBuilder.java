@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.processing.Generated;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.util.StringUtil;
+import com.devonfw.cobigen.javaplugin.merger.libextension.CustomModelWriter;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -72,15 +75,17 @@ public class ParsedJavaModelBuilder {
     }
 
     Map<String, Object> annotations = new HashMap<>();
+
     extractAnnotationsRecursively(annotations, javaClass.getAnnotations());
     pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
+    // TODO Hier we can add the @generated annotations?
     List<Map<String, Object>> fields = extractFields(javaClass);
     pojoModel.put(ModelConstant.FIELDS_DEPRECATED, fields);
     pojoModel.put(ModelConstant.FIELDS, fields);
     determinePojoIds(javaClass, fields);
     collectAnnotations(javaClass, fields);
-
+    // TODO Hier we can add the @generated annotations?
     List<Map<String, Object>> accessibleAttributes = extractMethodAccessibleFields(javaClass);
     pojoModel.put(ModelConstant.METHOD_ACCESSIBLE_FIELDS, accessibleAttributes);
     determinePojoIds(javaClass, accessibleAttributes);
@@ -91,12 +96,23 @@ public class ParsedJavaModelBuilder {
 
     List<Map<String, Object>> interfaces = extractInterfaces(javaClass);
     pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
-
+    // TODO Hier we can add the @generated annotations?
     pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
+
     this.cachedModel.put(ModelConstant.MODEL_ROOT, pojoModel);
 
     LOG.debug("Built parsed model in {}s", (Calendar.getInstance().getTimeInMillis() - start) / 100d);
     return new HashMap<>(this.cachedModel);
+  }
+
+  private void addGeneratedAnnotation() {
+
+    // TODO
+    CustomModelWriter customModelWriter = new CustomModelWriter();
+    // TODO
+    Generated generatedAnnotation = Generated.class.getAnnotation(Generated.class);
+    // TODO
+    customModelWriter.writeAnnotation(null);
   }
 
   /**
