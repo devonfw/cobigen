@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
 
@@ -69,16 +68,7 @@ public class ConfigurationFactory {
 
     TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(groupIds, allowSnapshots,
         hideTemplates, this.configRoot);
-    templateSetConfiguration.templateSetConfigurationReader = getTemplateSetConfigurationReader();
     return templateSetConfiguration;
-  }
-
-  /**
-   * @return {@link TemplateSetConfigurationReader} instance
-   */
-  public TemplateSetConfigurationReader getTemplateSetConfigurationReader() {
-
-    return new TemplateSetConfigurationReader(this.configRoot);
   }
 
 }
