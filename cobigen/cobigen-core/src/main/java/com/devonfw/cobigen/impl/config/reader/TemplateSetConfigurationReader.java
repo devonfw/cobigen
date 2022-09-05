@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.impl.config.reader;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -78,9 +77,8 @@ import jakarta.xml.bind.Unmarshaller;
  */
 public class TemplateSetConfigurationReader implements ContextConfigurationInterface, TemplatesConfigurationInterface {
 
-  // TODO: Refactor whole class back to processing a single template-set.xml
-  // List of Configurations in Manager
-  // In the manager: Loop through all configurations, calling their readers
+  /** Path of the template set configuration files */
+  public Path templateSetFile;
 
   /** Paths of the configuration location for a template-set.xml file */
   private Path configLocation;
@@ -91,29 +89,13 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   /** Map with XML Nodes 'template-set' of the template-set.xml files */
   protected TemplateSetConfiguration templateSetConfiguration;
 
-  /** Path of the template set configuration files */
-  protected Path templateSetFile;
-
-  /** Root of the template set configuration file, used for passing to TemplateSetConfiguration */
-  protected Path templateSetsRoot;
-
   /** JAXB root node of the configuration */
   private TemplateSetConfiguration configNode;
 
-  /** Configuration file */
-  private Path configFilePath;
+  /** Root of the configuration */
+  private Path configRoot;
 
-  // List with the paths of the configuration locations for the template-set.xml files */
-  private List<Path> configLocations = new ArrayList<>();
-
-  /**
-   * Map with XML Nodes 'template-set' of the template-set.xml files
-   */
-  protected Map<Path, TemplateSetConfiguration> templateSetConfigurations;
-
-  /**
-   * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
-   */
+  /** The {@link Properties#getProperty(String) name of the property} to relocate a template target folder. */
   private static final String PROPERTY_RELOCATE = "relocate";
 
   /** The syntax for the variable pointing to the current working directory (CWD) of a template. */
@@ -137,46 +119,40 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   /**
    * The constructor.
    *
-   * @param templateSetConfiguration the configuration that will be read by this reader
-   * @throws FileNotFoundException
-   */
-  public TemplateSetConfigurationReader(TemplateSetConfiguration templateSetConfiguration)
-      throws FileNotFoundException {
-
-    // TODO: This needs to be in a loop
-    this.configLocations = this.templateSetConfigurationManager.addConfigRoot(this.templateSetFile,
-        this.templateSetsRoot, this.configLocations);
-    // TODO: Implement
-  }
-
-  /**
-   * The constructor.
-   *
    * @param configRoot the templateSet root directory
+   * @param templateSetConfiguration
    * @throws InvalidConfigurationException if the configuration is not valid
    */
-  public TemplateSetConfigurationReader(Path configRoot) throws InvalidConfigurationException {
+  public TemplateSetConfigurationReader(Path configRoot,
+      com.devonfw.cobigen.impl.config.TemplateSetConfiguration templateSetConfiguration)
+      throws InvalidConfigurationException {
 
     if (configRoot == null)
       throw new IllegalArgumentException("Configuraion path cannot be null.");
 
-    Path templateLocation;
-    Path sourceTemplatePath = configRoot;
-    if (!Files.exists(this.configFilePath)) {
-      sourceTemplatePath = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-      sourceTemplatePath = sourceTemplatePath.resolve(this.templateSetFile.getParent());
-      this.configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
-      templateLocation = sourceTemplatePath;
-    }
-    if (!Files.exists(this.configFilePath)) {
-      throw new InvalidConfigurationException(this.configFilePath, "Could not find templates set configuration file.");
-    } else {
-      // Change this line to templatesLocation = rootTemplatePath if additional "templates" folder is removed
-      templateLocation = Path.of(sourceTemplatePath + "/templates");
-    }
-    this.rootTemplateFolder = TemplateFolder.create(templateLocation);
+    Path templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    Path templateSetsAdapted = configRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
-    readConfiguration();
+    if (!Files.exists(templateSetsDownloaded) && !Files.exists(templateSetsAdapted)) {
+      throw new InvalidConfigurationException(configRoot,
+          "Could not find a folder in which to search for the context configuration file.");
+    } else {
+      if (Files.exists(templateSetsAdapted)) {
+        templateSetConfiguration.templateSetFiles
+            .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesAdapted(templateSetsAdapted));
+      }
+
+      if (Files.exists(templateSetsDownloaded)) {
+        templateSetConfiguration.templateSetFiles
+            .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
+      }
+
+      if (templateSetConfiguration.templateSetFiles.isEmpty()) {
+        throw new InvalidConfigurationException(configRoot, "Could not find any context configuration file.");
+      }
+    }
+
+    this.configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
   }
 
   /**
@@ -184,6 +160,21 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
    */
   @Override
   public void readConfiguration() {
+
+    this.configLocation = this.templateSetFile.getParent();
+    Path templateLocation;
+    if (!Files.exists(this.templateSetFile)) {
+      this.configRoot = this.configRoot.resolve(this.templateSetFile.getParent());
+      this.templateSetFile = this.configRoot.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+      templateLocation = this.configRoot;
+    }
+    if (!Files.exists(this.templateSetFile)) {
+      throw new InvalidConfigurationException(this.templateSetFile, "Could not find templates set configuration file.");
+    } else {
+      // Change this line to templatesLocation = rootTemplatePath if additional "templates" folder is removed
+      templateLocation = Path.of(this.configRoot + "/templates");
+    }
+    this.rootTemplateFolder = TemplateFolder.create(templateLocation);
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
@@ -269,7 +260,6 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   public Map<String, Trigger> loadTriggers() {
 
     Map<String, Trigger> triggers = Maps.newHashMap();
-    // TODO: Remove loop
     boolean isJarFile = FileSystemUtil.isZipFile(this.configLocation.toUri());
 
     List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = this.templateSetConfiguration.getTrigger();
@@ -362,14 +352,6 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   }
 
   /**
-   * @return the list of the template set files
-   */
-  public Path getTemplateSetFile() {
-
-    return this.templateSetFile;
-  }
-
-  /**
    * =========================================================================================================
    * ****************************************TEMPLATES PART STARTS HERE***************************************
    * =========================================================================================================
@@ -407,13 +389,13 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     if (templatesNode != null) {
       for (com.devonfw.cobigen.impl.config.entity.io.Template t : templatesNode.getTemplate()) {
         if (templates.get(t.getName()) != null) {
-          throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+          throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
               "Multiple template definitions found for ref='" + t.getName() + "'");
         }
         TemplatePath child = this.rootTemplateFolder.navigate(t.getTemplateFile());
 
         if ((child == null) || (child.isFolder())) {
-          throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+          throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
               "no template file found for '" + t.getTemplateFile() + "'");
         }
         Template template = createTemplate((TemplateFile) child, t.getName(), t.getDestinationPath(),
@@ -479,13 +461,13 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     TemplatePath templateFolder = this.rootTemplateFolder.navigate(templatePath);
 
     if ((templateFolder == null) || templateFolder.isFile()) {
-      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(), "The templatePath '"
+      throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(), "The templatePath '"
           + templatePath + "' of templateScan with name '" + scan.getName() + "' does not describe a directory.");
     }
 
     if (scan.getName() != null) {
       if (this.templateScanTemplates.containsKey(scan.getName())) {
-        throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+        throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
             "Two templateScan nodes have been defined with the same @name by mistake.");
       } else {
         this.templateScanTemplates.put(scan.getName(), new ArrayList<String>());
@@ -635,7 +617,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
         if (!increments.containsKey(source.getName())) {
           increments.put(source.getName(), new Increment(source.getName(), source.getDescription(), trigger));
         } else {
-          throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+          throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
               "Duplicate increment found with name='" + source.getName() + "'.");
         }
       }
@@ -669,7 +651,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       com.devonfw.cobigen.impl.config.entity.io.Increment source = getSpecificIncrement(incrementsNode.getIncrement(),
           incrementName);
       if (source == null) {
-        throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+        throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
             "No increment found with name='" + incrementName + "' on the external templates.xml folder.");
       }
 
@@ -703,7 +685,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
         if (isExternalRef(ref.getRef())) {
           rootIncrement.addTemplate(loadExternalTemplate(ref));
         } else {
-          throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+          throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
               "No template found for ref='" + ref.getRef() + "'!");
         }
       } else {
@@ -732,7 +714,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
           else if (isExternalRef(ref.getRef())) {
             parentPkg.addIncrementDependency(loadExternalIncrement(ref));
           } else {
-            throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+            throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
                 "No increment found for ref='" + ref.getRef() + "'!");
           }
         }
@@ -749,7 +731,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
         .filter(e -> e instanceof TemplateScanRef).map(e -> (TemplateScanRef) e).collect(Collectors.toList())) {
       List<String> scannedTemplateNames = this.templateScanTemplates.get(ref.getRef());
       if (scannedTemplateNames == null) {
-        throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+        throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
             "No templateScan found for ref='" + ref.getRef() + "'!");
       } else {
         for (String scannedTemplateName : scannedTemplateNames) {
@@ -856,7 +838,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
         if (result == null) {
           result = currentIncrement;
         } else {
-          throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+          throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
               "Multiple increment definitions found for ref='" + source.getRef() + "'");
         }
       }
@@ -865,7 +847,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     if (result != null) {
       return result;
     } else {
-      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+      throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
           "No increment definition found for ref='" + source.getRef() + "'");
     }
   }
@@ -881,7 +863,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
     String[] split = ref.split(ConfigurationConstants.REFERENCE_DELIMITER);
     if (split.length != 2) {
-      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+      throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
           "Invalid external ref for ref='" + ref + "', it should be 'nameOfFolder::nameOfIncrement'!");
     }
     return split;
@@ -911,7 +893,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);
     if (trig == null) {
-      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+      throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
           "Invalid external ref, no trigger '" + triggerToSearch + "' was found on your context.xml!");
     }
     return trig;

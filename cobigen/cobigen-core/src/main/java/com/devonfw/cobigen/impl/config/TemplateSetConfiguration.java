@@ -2,6 +2,7 @@ package com.devonfw.cobigen.impl.config;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,30 +29,23 @@ public class TemplateSetConfiguration {
   /** variable to hide very specific template sets or versions of template sets */
   private List<String> hideTemplates;
 
-  /**
-   * All available {@link Trigger}s
-   */
+  /** All available {@link Trigger}s */
   private Map<String, Trigger> triggers;
 
-  /**
-   * All available {@Link Template}s
-   */
+  /** All available {@Link Template}s */
   private Map<String, Template> templates;
 
-  /**
-   * All available {@Link Increment}
-   */
+  /** All available {@Link Increment} */
   private Map<String, Increment> increments;
 
-  /**
-   * Path of the configuration. Might point to a folder or a jar or maybe even something different in future.
-   */
+  /** Path of the configuration. Might point to a folder or a jar or maybe even something different in future. */
   private Path configurationPath;
 
-  /**
-   * The reader to read the template-set.xml files
-   */
+  /** The reader to read the template-set.xml files */
   public TemplateSetConfigurationReader templateSetConfigurationReader;
+
+  /** Paths of the template set configuration files */
+  public List<Path> templateSetFiles;
 
   /**
    * The constructor. load properties from a given source
@@ -78,14 +72,20 @@ public class TemplateSetConfiguration {
    */
   public void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
+    this.templateSetFiles = new ArrayList<>();
     if (this.templateSetConfigurationReader == null) {
-      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configRoot);
+      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configRoot, this);
     }
 
     this.increments = new HashMap<>();
-    // Fix this this.configurationPath = this.templateSetConfigurationReader.getContextRoot();
-    this.triggers = this.templateSetConfigurationReader.loadTriggers();
-    this.templates = this.templateSetConfigurationReader.loadTemplates();
+    for (Path templateSetFile : this.templateSetFiles) {
+      this.templateSetConfigurationReader.templateSetFile = templateSetFile;
+      this.templateSetConfigurationReader.readConfiguration();
+      // Fix this this.configurationPath = this.templateSetConfigurationReader.getContextRoot();
+      this.triggers.putAll(this.templateSetConfigurationReader.loadTriggers());
+      this.templates.putAll(this.templateSetConfigurationReader.loadTemplates());
+    }
+
     // For every trigger put all increments depended on that trigger into the local increments hash map
     for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
       this.increments.putAll(this.templateSetConfigurationReader.loadIncrements(this.templates, trigger.getValue()));
@@ -102,6 +102,14 @@ public class TemplateSetConfiguration {
   public void reloadConfigurationFromFile(Path configRoot) throws InvalidConfigurationException {
 
     readConfiguration(configRoot);
+  }
+
+  /**
+   * @return the list of the template set files
+   */
+  public List<Path> getTemplateSetFiles() {
+
+    return this.templateSetFiles;
   }
 
   /**

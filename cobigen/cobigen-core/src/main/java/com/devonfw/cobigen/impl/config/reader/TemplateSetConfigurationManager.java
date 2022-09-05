@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -20,10 +22,12 @@ import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 public class TemplateSetConfigurationManager {
 
+  /** List with the paths of the configuration locations for the template-set.xml files */
+  private Map<Path, Path> configLocations = new HashMap<>();
+
   /**
    * The constructor.
    */
-
   public TemplateSetConfigurationManager() {
 
   }
@@ -37,16 +41,11 @@ public class TemplateSetConfigurationManager {
    * @param templateSetPaths a list containing all paths to template-set.xml files
    * @throws FileNotFoundException
    */
-  public List<Path> addConfigRoot(Path templateSetFilePath, Path configRootPath, List<Path> templateSetPaths)
-      throws FileNotFoundException {
+  public void addConfigRoot(Path templateSetFilePath, Path configRootPath, List<Path> templateSetPaths) {
 
     if (Files.exists(templateSetFilePath)) {
       templateSetPaths.add(templateSetFilePath);
-      return templateSetPaths;
-    }
-
-    else {
-      throw new FileNotFoundException("Template set file path doesn't exist!");
+      this.configLocations.put(templateSetFilePath, configRootPath);
     }
   }
 
@@ -57,9 +56,9 @@ public class TemplateSetConfigurationManager {
    * Search for configuration files in the sub folder for adapted templates
    *
    * @param configRoot root directory of the configuration template-sets/adapted
-   * @throws FileNotFoundException
+   * @return List of Paths to the adapted templateSetFiles
    */
-  private List<Path> loadTemplateSetFilesAdapted(Path configRoot) throws FileNotFoundException {
+  protected List<Path> loadTemplateSetFilesAdapted(Path configRoot) {
 
     List<Path> templateSetPaths = new ArrayList<>();
 
@@ -89,9 +88,9 @@ public class TemplateSetConfigurationManager {
    * search for configuration files in the subfolder for downloaded template jars
    *
    * @param configRoot root directory of the configuration template-sets/downloaded
-   * @throws FileNotFoundException
+   * @return List of Paths to the downloaded templateSetFiles
    */
-  private List<Path> loadTemplateSetFilesDownloaded(Path configRoot) throws FileNotFoundException {
+  protected List<Path> loadTemplateSetFilesDownloaded(Path configRoot) {
 
     List<Path> templateSetPaths = new ArrayList<>();
 
@@ -99,9 +98,8 @@ public class TemplateSetConfigurationManager {
     if (templateJars != null) {
       for (Path jarPath : templateJars) {
         Path configurationPath = FileSystemUtil.createFileSystemDependentPath(jarPath.toUri());
-
         Path templateSetFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .getParent().resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+            .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
         addConfigRoot(templateSetFilePath, jarPath, templateSetPaths);
       }
