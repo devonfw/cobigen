@@ -1,5 +1,7 @@
 package com.devonfw.cobigen.api.util;
 
+import java.util.Objects;
+
 /**
  * This MavenCoordinate class is just a dataholder with maven coordinates.
  */
@@ -65,27 +67,23 @@ public class MavenCoordinate {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public int hashCode() {
 
-    if (obj == null || obj.getClass() != this.getClass()) {
-      return false;
-    }
-    MavenCoordinate mavenCoordinate = (MavenCoordinate) obj;
-
-    if (this.artifactId != mavenCoordinate.getArtifactId()) {
-      return false;
-    } else if (this.groupId != mavenCoordinate.getGroupId()) {
-      return false;
-    } else if (this.version != mavenCoordinate.getVersion()) {
-      return false;
-    }
-    return true;
+    return Objects.hash(this.artifactId, this.groupId, this.version);
   }
 
   @Override
-  public int hashCode() {
+  public boolean equals(Object obj) {
 
-    return this.artifactId.hashCode() + this.groupId.hashCode() + this.version.hashCode();
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof MavenCoordinate)) {
+      return false;
+    }
+    MavenCoordinate other = (MavenCoordinate) obj;
+    return Objects.equals(this.artifactId, other.artifactId) && Objects.equals(this.groupId, other.groupId)
+        && Objects.equals(this.version, other.version);
   }
 
 }

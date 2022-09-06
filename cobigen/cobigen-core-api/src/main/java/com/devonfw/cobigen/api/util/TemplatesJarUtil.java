@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class TemplatesJarUtil {
       File templatesDirectory) {
 
     // By default the version should be latest
-    if (version == null || version.isEmpty()) {
+    if (StringUtils.isEmpty(version)) {
 
       version = "LATEST";
     }
@@ -120,37 +121,21 @@ public class TemplatesJarUtil {
     Path adapted = templatesDirectory.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path downloaded = templatesDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     // search for already available template-sets
-    for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
-      if (Files.exists(adapted)) {
-        try {
-          if (Files.list(adapted)
-              .anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
-            existingTemplates.add(mavenCoordinate);
-          }
-        } catch (IOException e) {
-          LOG.warn("Failed to get all files and directories from adapted folder", e);
-        }
-      }
-      if (Files.exists(downloaded)) {
-        try {
-          if (Files.list(downloaded)
-              .anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
-            existingTemplates.add(mavenCoordinate);
-          }
-        } catch (IOException e) {
-          LOG.warn("Failed to get all files and directories from downloaded folder", e);
-        }
-      } else {
-        LOG.info("downloaded folder could not be found and will be created ");
-        try {
-          Files.createDirectory(templatesDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
-        } catch (IOException e) {
-          throw new CobiGenRuntimeException("Could not create Download Folder", e);
-        }
+    if (Files.exists(adapted)) {
+      existingTemplates.addAll(getMatchingTemplates(mavenCoordinates, adapted));
+    }
+    if (Files.exists(downloaded)) {
+      existingTemplates.addAll(getMatchingTemplates(mavenCoordinates, downloaded));
+    } else {
+      LOG.info("downloaded folder could not be found and will be created ");
+      try {
+        Files.createDirectory(templatesDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
+      } catch (IOException e) {
+        throw new CobiGenRuntimeException("Could not create Download Folder", e);
       }
     }
 
-    if (existingTemplates.size() > 0) {
+    if (!existingTemplates.isEmpty()) {
       mavenCoordinates.removeAll(existingTemplates);
     }
 
@@ -160,6 +145,33 @@ public class TemplatesJarUtil {
       downloadJar(mavenCoordinate.getGroupId(), mavenCoordinate.getArtifactId(), mavenCoordinate.getVersion(), true,
           downloaded.toFile());
     }
+
+  }
+
+  /**
+   * Checks if the given Path contains Folders or files with a artifact name from a list of maven artifact. This
+   * function is used to check if templates already exists and just uses the artifactId and not the version of the
+   * artifacts
+   *
+   * @param mavenCoordinates a List of maven coordinates that are check for matching templates
+   * @param path Path to the directory that contains the Templates.
+   * @return Set with MavenCoordinate that are already present in the directory
+   */
+  private static Set<MavenCoordinate> getMatchingTemplates(List<MavenCoordinate> mavenCoordinates, Path path) {
+
+    HashSet<MavenCoordinate> existingTemplates = new HashSet<>();
+
+    for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
+      try {
+        if (Files.list(path).anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
+          existingTemplates.add(mavenCoordinate);
+        }
+      } catch (IOException e) {
+        LOG.warn("Failed to get all files and directories from the folder " + path, e);
+
+      }
+    }
+    return existingTemplates;
 
   }
 
