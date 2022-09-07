@@ -98,6 +98,10 @@ configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `g
 
 * `template-sets.hide:` Hide very specific template sets or versions of template sets.
 
+* `template-sets.installed:` Template sets will be available at cobigen startup if template sets arent already adapted.
+
+The key `template-sets.hide` and `template-sets.installed` accept maven coordinate with the following format: **groupID:artifactID:version** the version is optional and if omitted the **LATEST** version will be used. You can specify multiple maven coordinates seperated with *,*.
+
 * An example of how such a configuration should look like:
 
 ```
@@ -105,6 +109,7 @@ template-sets.groupIds=com.devonfw.cobigen.templates,jaxen,jakarta.xml.bind
 template-sets.allow-snapshots=true
 template-sets.disable-default-lookup=false
 template-sets.hide=com.devonfw.cobigen.templates:crud-angular-client-app:2021.12.007-SNAPSHOT
+template-sets.installed=com.devonfw.cobigen.templates:crud-angular-client-app:2021.12.007-SNAPSHOT, com.devonfw.cobigen.templates:crud-java-server-app:
 ```
 
 == Context Configuration
