@@ -16,12 +16,12 @@ import java.util.Iterator;
 
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import com.devonfw.module.jpa.dataaccess.api.QueryUtil;
 import com.devonfw.module.jpa.dataaccess.api.data.DefaultRepository;
 
 <#assign compositeIdTypeVar = JavaUtil.getReturnTypeOfMethodAnnotatedWith(classObject,"javax.persistence.EmbeddedId")>
-<#if compositeIdTypeVar!="null"> 
+<#if compositeIdTypeVar!="null">
 import ${variables.rootPackage}.${variables.component}.common.api.${compositeIdTypeVar};
 </#if>
 
@@ -55,20 +55,20 @@ public interface ${variables.entityName}Repository extends <#if compositeIdTypeV
               if(${field.name} != null) {
                   query.where($(alias.get${fieldCapName}().getId()).eq(${field.name}));
               }
-              
+
           <#elseif field.type="String">
               String ${field.name} = criteria.${DevonfwUtil.resolveIdGetter(field,false,"")};
               if (${field.name} != null && !${field.name}.isEmpty()) {
                 QueryUtil.get().whereString(query, $(alias.get${field.name?cap_first}()), ${field.name}, criteria.get${field.name?cap_first}Option());
               }
-              
+
           <#else>
               ${newFieldType} ${field.name} = criteria.${DevonfwUtil.resolveIdGetter(field,false,"")};
               if (${field.name} != null) {
                 query.where($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>${DevonfwUtil.resolveIdGetter(field, true, pojo.package)}</#if>).eq(${field.name}));
               }
-              
-          </#if> 
+
+          </#if>
       </#compress>
     </#if>
     </#list>
@@ -77,13 +77,13 @@ public interface ${variables.entityName}Repository extends <#if compositeIdTypeV
     } else {
       addOrderBy(query, alias, criteria.getPageable().getSort());
     }
-    
+
     return QueryUtil.get().findPaginated(criteria.getPageable(), query, true);
   }
-  
+
   /**
    * Add sorting to the given query on the given alias
-   * 
+   *
    * @param query to add sorting to
    * @param alias to retrieve columns from for sorting
    * @param sort specification of sorting
@@ -101,7 +101,7 @@ public interface ${variables.entityName}Repository extends <#if compositeIdTypeV
                 query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()<#if field.name=="id">.toString()</#if></#if><#if field.type?ends_with("Entity") >.getId().toString()</#if>).asc());
             } else {
                 query.orderBy($(alias.<#if field.type=='boolean'>is${fieldCapName}()<#else>get${field.name?cap_first}()<#if field.name=="id">.toString()</#if></#if><#if field.type?ends_with("Entity")>.getId().toString()</#if>).desc());
-            }   
+            }
           break;
           </#if>
         </#list>

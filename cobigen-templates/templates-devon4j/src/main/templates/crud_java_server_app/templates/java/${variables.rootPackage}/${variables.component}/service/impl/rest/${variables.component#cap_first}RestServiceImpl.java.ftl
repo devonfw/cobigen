@@ -3,7 +3,7 @@ package ${variables.rootPackage}.${variables.component}.service.impl.rest;
 import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import ${variables.rootPackage}.${variables.component}.service.api.rest.${variables.component?cap_first}RestService;
 
 import org.springframework.data.domain.Page;
