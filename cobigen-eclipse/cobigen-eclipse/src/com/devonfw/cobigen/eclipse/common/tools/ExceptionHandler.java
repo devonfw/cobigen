@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
@@ -36,6 +37,8 @@ public class ExceptionHandler {
     } else if (InvalidConfigurationException.class.isAssignableFrom(e.getClass())) {
       LOG.warn("Invalid configuration.", e);
       openInvalidConfigurationErrorDialog((InvalidConfigurationException) e);
+    } else if (ConfigurationConflictException.class.isAssignableFrom(e.getClass())) {
+      openInvalidConfigurationErrorDialog((ConfigurationConflictException) e);
     } else if (GeneratorProjectNotExistentException.class.isAssignableFrom(e.getClass())) {
       LOG.error(
           "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
