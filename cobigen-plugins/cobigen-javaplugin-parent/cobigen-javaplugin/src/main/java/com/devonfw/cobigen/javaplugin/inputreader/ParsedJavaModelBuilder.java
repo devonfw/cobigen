@@ -1,5 +1,8 @@
 package com.devonfw.cobigen.javaplugin.inputreader;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -15,8 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.StringUtil;
-import com.devonfw.cobigen.javaplugin.merger.libextension.CustomModelWriter;
+import com.devonfw.cobigen.javaplugin.inputreader.util.AnnotationUtil;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -49,6 +53,9 @@ public class ParsedJavaModelBuilder {
    * @return A {@link Map} of a {@link String} key to {@link Object} mapping keys as described before to the
    *         corresponding information. Learn more about the FreeMarker data model at http
    *         ://freemarker.sourceforge.net/docs/dgui_quickstart.html
+   * @throws InvocationTargetException
+   * @throws IllegalArgumentException
+   * @throws IllegalAccessException
    */
   Map<String, Object> createModel(final JavaClass javaClass) {
 
@@ -79,13 +86,18 @@ public class ParsedJavaModelBuilder {
     extractAnnotationsRecursively(annotations, javaClass.getAnnotations());
     pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
-    // TODO Hier we can add the @generated annotations?
     List<Map<String, Object>> fields = extractFields(javaClass);
+    try {
+      checkAndAddGeneratedAnnotation(fields);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      LOG.error("An error has occured while adding the generated annotation!");
+      throw new CobiGenRuntimeException("An error has occured while adding the generated annotation!");
+    }
     pojoModel.put(ModelConstant.FIELDS_DEPRECATED, fields);
     pojoModel.put(ModelConstant.FIELDS, fields);
     determinePojoIds(javaClass, fields);
     collectAnnotations(javaClass, fields);
-    // TODO Hier we can add the @generated annotations?
+
     List<Map<String, Object>> accessibleAttributes = extractMethodAccessibleFields(javaClass);
     pojoModel.put(ModelConstant.METHOD_ACCESSIBLE_FIELDS, accessibleAttributes);
     determinePojoIds(javaClass, accessibleAttributes);
@@ -96,7 +108,13 @@ public class ParsedJavaModelBuilder {
 
     List<Map<String, Object>> interfaces = extractInterfaces(javaClass);
     pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
-    // TODO Hier we can add the @generated annotations?
+
+    try {
+      checkAndAddGeneratedAnnotation(extractMethods(javaClass));
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      LOG.error("An error has occured while adding the generated annotation!");
+      throw new CobiGenRuntimeException("An error has occured while adding the generated annotation!");
+    }
     pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
 
     this.cachedModel.put(ModelConstant.MODEL_ROOT, pojoModel);
@@ -105,14 +123,23 @@ public class ParsedJavaModelBuilder {
     return new HashMap<>(this.cachedModel);
   }
 
-  private void addGeneratedAnnotation() {
+  private void checkAndAddGeneratedAnnotation(Object object)
+      throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-    // TODO
-    CustomModelWriter customModelWriter = new CustomModelWriter();
-    // TODO
-    Generated generatedAnnotation = Generated.class.getAnnotation(Generated.class);
-    // TODO
-    customModelWriter.writeAnnotation(null);
+    Class<?> clazz = object.getClass();
+    for (Method method : clazz.getDeclaredMethods()) {
+      if (!clazz.isAnnotationPresent(Generated.class)) {
+        method.setAccessible(true);
+        method.invoke(object);
+        AnnotationUtil.addAnnotation(method, Generated.class.getAnnotation(Generated.class));
+      }
+    }
+    for (Field field : clazz.getDeclaredFields()) {
+      if (!clazz.isAnnotationPresent(Generated.class)) {
+        field.setAccessible(true);
+        AnnotationUtil.addAnnotation(field, Generated.class.getAnnotation(Generated.class));
+      }
+    }
   }
 
   /**
