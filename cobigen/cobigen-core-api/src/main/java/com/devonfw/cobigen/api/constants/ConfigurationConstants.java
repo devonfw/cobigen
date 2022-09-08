@@ -103,6 +103,10 @@ public class ConfigurationConstants {
    */
   public static final String CONFIG_PROPERTY_POSTPONE_UPGRADE_MESSAGE_UNTIL = "postpone-upgrade-message-until";
 
+   * Name of configuration key to preinstall specific template sets
+   */
+  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_INSTALLED = "template-sets.installed";
+
   /**
    * Default (public) cobigen GroupId
    */
