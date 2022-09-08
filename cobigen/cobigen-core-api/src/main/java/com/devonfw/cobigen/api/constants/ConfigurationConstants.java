@@ -101,7 +101,7 @@ public class ConfigurationConstants {
   /**
    * Name of configuration key to save specific time
    */
-  public static final String CONFIG_PROPERTY_TIME_STAMP = "timestamp";
+  public static final String CONFIG_PROPERTY_POSTPONE_UPGRADE_MESSAGE_UNTIL = "postpone-upgrade-message-until";
 
   /**
    * Default (public) cobigen GroupId

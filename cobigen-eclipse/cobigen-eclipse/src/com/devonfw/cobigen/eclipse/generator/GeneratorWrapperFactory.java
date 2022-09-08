@@ -274,7 +274,6 @@ public class GeneratorWrapperFactory {
       if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
         return CobiGenFactory.create(templatesDirectoryPath.toUri(), allowMonolithicConfiguration);
       }
-
       templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
       if (Files.exists(templatesDirectoryPath)) {
         // If it is not valid, we should use the jar
@@ -284,7 +283,6 @@ public class GeneratorWrapperFactory {
           MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
               "Not Downloaded the CobiGen Template Jar");
         }
-
         return CobiGenFactory.create(jarPath.toUri(), allowMonolithicConfiguration);
       }
     }

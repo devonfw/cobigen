@@ -145,13 +145,12 @@ public class TemplateSetUpgrader {
     }
 
     // backup of old files
-    Path backupFolder = cobigenHome.resolve("backup");
-    File backupTemplatesLocation = backupFolder.toFile();
-    if (!backupTemplatesLocation.exists()) {
-      backupTemplatesLocation.mkdir();
+    Path backupFolder = cobigenHome.resolve(ConfigurationConstants.BACKUP_FOLDER);
+    if (!Files.exists(backupFolder)) {
+      new File(backupFolder.toUri()).mkdirs();
     }
     try {
-      FileUtils.copyDirectoryToDirectory(cobigenTemplatesFolder.getParent().toFile(), backupTemplatesLocation);
+      FileUtils.copyDirectoryToDirectory(cobigenTemplatesFolder.getParent().toFile(), backupFolder.toFile());
     } catch (IOException e) {
       LOG.error("An error occured while backing up the old template folder", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);

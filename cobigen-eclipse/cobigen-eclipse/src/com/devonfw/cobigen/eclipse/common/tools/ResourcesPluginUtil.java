@@ -304,12 +304,7 @@ public class ResourcesPluginUtil {
    */
   public static void startTemplatesUpgrader(Path configurationPath) {
 
-    TemplateAdapter templateAdapter;
-    if (configurationPath == null) {
-      templateAdapter = new TemplateAdapterImpl();
-    } else {
-      templateAdapter = new TemplateAdapterImpl(configurationPath);
-    }
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(configurationPath);
     templateAdapter.upgradeMonolithicTemplates(configurationPath);
     templatesUpgraded = true;
   }

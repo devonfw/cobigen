@@ -49,16 +49,22 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   private Path templatesLocation;
 
   /**
-   * Creates a new {@link TemplateAdapter} instance. The location of the templates is not specified, so the location is
-   * searched by the core module itself.
+   * Creates a new {@link TemplateAdapter} instance. The location of the templates if is not specified, so the location
+   * is searched by the core module itself. Or if specified, handles the adaption of templates at the given templates
+   * location.
+   *
+   * @param templatesLocation The {@link Path} of the location to search the templates for.
    */
-  public TemplateAdapterImpl() {
+  public TemplateAdapterImpl(Path templatesLocation) {
 
-    URI templatesLocationPath = ConfigurationFinder.findTemplatesLocation();
-    if (Files.exists(Paths.get(templatesLocationPath))) {
-      this.templatesLocation = Paths.get(templatesLocationPath);
+    if (templatesLocation == null) {
+      URI templatesLocationPath = ConfigurationFinder.findTemplatesLocation();
+      if (Files.exists(Paths.get(templatesLocationPath))) {
+        this.templatesLocation = Paths.get(templatesLocationPath);
+      }
+    } else {
+      this.templatesLocation = templatesLocation;
     }
-
   }
 
   @Override
@@ -73,17 +79,6 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     } else {
       throw new TemplateSelectionForAdaptionException(getTemplateSetJars());
     }
-  }
-
-  /**
-   * Creates a new {@link TemplateAdapter} instance that handles the adaption of templates at the given templates
-   * location.
-   *
-   * @param templatesLocation The {@link Path} of the location to search the templates for.
-   */
-  public TemplateAdapterImpl(Path templatesLocation) {
-
-    this.templatesLocation = templatesLocation;
   }
 
   @Override

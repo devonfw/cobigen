@@ -53,7 +53,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   @Before
   public void prepare() throws IOException {
 
-    this.currentHome = this.tempFolder.newFolder(".cobigen").toPath();
+    this.currentHome = this.tempFolder.newFolder(ConfigurationConstants.DEFAULT_HOME_DIR_NAME).toPath();
     FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
     this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
         .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
@@ -116,7 +116,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
       }
 
       for (String s : OldPathFilesSet) {
-        if (!s.equals("context.xml")) {
+        if (!s.equals(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)) {
           assertThat(NewPathFilesSet).contains(s);
           NewPathFilesSet.remove(s);
         }

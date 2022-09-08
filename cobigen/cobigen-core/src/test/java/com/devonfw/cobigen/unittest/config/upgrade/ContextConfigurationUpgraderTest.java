@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.Reader;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
@@ -68,9 +69,13 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
     assertThat(version).as("Target version").isEqualTo(targetVersion);
 
     XMLUnit.setIgnoreWhitespace(true);
-    new XMLTestCase() {
-    }.assertXMLEqual(new FileReader(contextTestFileRootPath + File.separator + targetVersionPath + File.separator
-        + ConfigurationConstants.CONTEXT_CONFIG_FILENAME), new FileReader(context.toFile()));
+    try (
+        Reader firstReader = new FileReader(contextTestFileRootPath + File.separator + targetVersionPath
+            + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        Reader secondReader = new FileReader(context.toFile())) {
+      new XMLTestCase() {
+      }.assertXMLEqual(firstReader, secondReader);
+    }
   }
 
   /**
@@ -127,12 +132,13 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 
         newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         XMLUnit.setIgnoreWhitespace(true);
-        new XMLTestCase() {
-        }.assertXMLEqual(
-            new FileReader(contextTestFileRootPath + File.separator + targetVersionPath + File.separator + s
-                + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME),
-            new FileReader(newContextPath.toFile()));
-
+        try (
+            Reader firstReader = new FileReader(contextTestFileRootPath + File.separator + targetVersionPath
+                + File.separator + s + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            Reader secondReader = new FileReader(newContextPath.toFile())) {
+          new XMLTestCase() {
+          }.assertXMLEqual(firstReader, secondReader);
+        }
       }
     });
   }

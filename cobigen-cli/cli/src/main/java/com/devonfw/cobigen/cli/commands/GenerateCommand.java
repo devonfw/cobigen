@@ -42,7 +42,7 @@ import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
-import com.devonfw.cobigen.impl.util.TimestampUtil;
+import com.devonfw.cobigen.impl.util.PostponeUtil;
 import com.google.googlejavaformat.java.FormatterException;
 
 import picocli.CommandLine.Command;
@@ -114,7 +114,7 @@ public class GenerateCommand extends CommandCommons {
 
     LOG.debug("Input files and output root path confirmed to be valid.");
 
-    if (TimestampUtil.isaMonthPassed())
+    if (PostponeUtil.isTimePassed())
       if (!this.forceMonolithicConfiguration) {
         checkMonolithicConfigurationException();
       }
@@ -316,12 +316,7 @@ public class GenerateCommand extends CommandCommons {
 
     try {
 
-      TemplateAdapter templateAdapter;
-      if (this.templatesProject == null) {
-        templateAdapter = new TemplateAdapterImpl();
-      } else {
-        templateAdapter = new TemplateAdapterImpl(this.templatesProject);
-      }
+      TemplateAdapter templateAdapter = new TemplateAdapterImpl(this.templatesProject);
       // set the new template-set as the templatesProject after the upgrade
       this.templatesProject = templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
     } catch (Throwable e) {
@@ -343,7 +338,7 @@ public class GenerateCommand extends CommandCommons {
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Allright...");
 
     if (setToUserDir) {
-      TimestampUtil.addATimestampForOneMonth();
+      PostponeUtil.addATimestampForOneMonth();
     } else {
       // Do nothing, the user will be asked again.
     }

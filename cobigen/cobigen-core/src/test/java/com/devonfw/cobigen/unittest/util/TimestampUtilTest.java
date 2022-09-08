@@ -9,7 +9,7 @@ import org.assertj.core.util.Files;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.devonfw.cobigen.impl.util.TimestampUtil;
+import com.devonfw.cobigen.impl.util.PostponeUtil;
 
 /**
  * Tests TimestampUtil class on write to the config file and read from the config file correctly
@@ -27,11 +27,11 @@ public class TimestampUtilTest {
   public void testWriteTimestamp() throws IOException {
 
     Path configFile = Paths.get("src/test/resources/testdata/unittest/config/util/config");
-    Timestamp InstantTimestamp = TimestampUtil.createInstantTimestamp();
-    TimestampUtil.addATimestampForOneMonth(configFile);
-    TimestampUtil.writeTimestamp(configFile, InstantTimestamp);
+    Timestamp InstantTimestamp = PostponeUtil.createInstantTimestamp();
+    PostponeUtil.addATimestampForOneMonth(configFile);
+    PostponeUtil.writeTimestamp(configFile, InstantTimestamp);
 
-    Timestamp InstantTimestampCopy = TimestampUtil.readTimestamp(configFile);
+    Timestamp InstantTimestampCopy = PostponeUtil.readTimestamp(configFile);
 
     Assert.assertEquals(InstantTimestamp, InstantTimestampCopy);
 
@@ -49,10 +49,10 @@ public class TimestampUtilTest {
   public void testReadTimestamp() throws IOException {
 
     Path configFile = Paths.get("src/test/resources/testdata/unittest/config/util/config");
-    Timestamp InstantTimestamp = TimestampUtil.createInstantTimestamp();
-    TimestampUtil.writeTimestamp(configFile, InstantTimestamp);
+    Timestamp InstantTimestamp = PostponeUtil.createInstantTimestamp();
+    PostponeUtil.writeTimestamp(configFile, InstantTimestamp);
 
-    Timestamp InstantTimestampCopy = TimestampUtil.readTimestamp(configFile);
+    Timestamp InstantTimestampCopy = PostponeUtil.readTimestamp(configFile);
 
     Assert.assertEquals(InstantTimestamp, InstantTimestampCopy);
 

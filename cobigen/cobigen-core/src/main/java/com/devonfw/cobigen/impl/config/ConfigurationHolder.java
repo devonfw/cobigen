@@ -113,8 +113,6 @@ public class ConfigurationHolder {
 
   /**
    * @return return if the template folder structure consists of template sets or if the monolithic structure is used.
-   *         This is determined by searching the context.xml and check the version if it is compliant.
-   *
    */
   public boolean isTemplateSetConfiguration() {
 

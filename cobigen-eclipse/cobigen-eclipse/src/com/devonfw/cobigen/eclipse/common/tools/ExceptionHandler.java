@@ -17,7 +17,7 @@ import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistent
 import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.healthcheck.HealthCheckDialog;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
-import com.devonfw.cobigen.impl.util.TimestampUtil;
+import com.devonfw.cobigen.impl.util.PostponeUtil;
 
 /**
  * Util class to handle exceptions
@@ -135,7 +135,7 @@ public class ExceptionHandler {
         // Do nothing (Postpone and Continue)
       }
       if (result == 2) {
-        TimestampUtil.addATimestampForOneMonth();
+        PostponeUtil.addATimestampForOneMonth();
 
       }
     });

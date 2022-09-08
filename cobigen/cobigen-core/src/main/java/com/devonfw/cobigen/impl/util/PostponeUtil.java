@@ -14,16 +14,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 
 /**
  * This Class is used to set the timestamp property
  *
  */
-public class TimestampUtil {
+public class PostponeUtil {
 
   /** Logger instance */
-  private static final Logger LOG = LoggerFactory.getLogger(TimestampUtil.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PostponeUtil.class);
 
   /**
    * Writes the timestamp in a config file.
@@ -39,13 +40,10 @@ public class TimestampUtil {
     if (!Files.exists(configFile))
       Files.createFile(configFile);
 
-    props.setProperty(ConfigurationConstants.CONFIG_PROPERTY_TIME_STAMP, timestamp.toString());
-
+    props.setProperty(ConfigurationConstants.CONFIG_PROPERTY_POSTPONE_UPGRADE_MESSAGE_UNTIL, timestamp.toString());
     try (FileOutputStream configfileOutputStream = new FileOutputStream(configFile.toFile())) {
       props.store(configfileOutputStream, null);
-    }
-
-    catch (IOException e) {
+    } catch (IOException e) {
       LOG.error("An error has occurred while writing the timestamp to the config file.", e);
     }
   }
@@ -64,9 +62,9 @@ public class TimestampUtil {
       props.load(configfileInputStream);
     } catch (IOException e) {
       LOG.error("An error has occurred while reading the timestamp from the config file.", e);
+      throw new CobiGenRuntimeException("An error has occurred while reading the timestamp from the config file.");
     }
-
-    String strTimestamp = ConfigurationConstants.CONFIG_PROPERTY_TIME_STAMP;
+    String strTimestamp = ConfigurationConstants.CONFIG_PROPERTY_POSTPONE_UPGRADE_MESSAGE_UNTIL;
     String stampprop = props.getProperty(strTimestamp);
     if (stampprop != null) {
       return Timestamp.valueOf(props.getProperty(strTimestamp));
@@ -86,28 +84,33 @@ public class TimestampUtil {
   }
 
   @SuppressWarnings("javadoc")
-  public static boolean isaMonthPassed() {
+  public static boolean isTimePassed() {
 
-    return isaMonthPassed(getHomePath());
+    return isTimePassed(getHomePath());
   }
 
   /**
    * @param configFile the config file or .cobigen file containing the properties.
-   * @return boolean true if config file not exists, if no Timestamp found, or if 30 days already passed.
+   * @return boolean true if config file not exists, if no Timestamp found, or if the current time already passed the
+   *         time written in the config file
    */
-  public static boolean isaMonthPassed(Path configFile) {
+  public static boolean isTimePassed(Path configFile) {
 
-    if (!Files.exists(configFile) || Files.exists(configFile) && TimestampUtil.readTimestamp(configFile) == null
-        || TimestampUtil.createInstantTimestamp().after(TimestampUtil.readTimestamp(configFile)))
+    if (!Files.exists(configFile)) {
       return true;
-    return false;
+    } else if (PostponeUtil.readTimestamp(configFile) == null) {
+      return true;
+    } else if (PostponeUtil.createInstantTimestamp().after(PostponeUtil.readTimestamp(configFile))) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @SuppressWarnings("javadoc")
   public static void addATimestampForOneMonth() {
 
     addATimestampForOneMonth(getHomePath());
-
   }
 
   /**
@@ -117,14 +120,23 @@ public class TimestampUtil {
    */
   public static void addATimestampForOneMonth(Path configFile) {
 
-    Date afterMonthDate = DateUtils.addMonths(new Date(), 1);
+    addATimestampForASpecificTime(configFile, DateUtils.addMonths(new Date(), 1));
+  }
+
+  /**
+   * Adds a specific date to the config file.
+   *
+   * @param configFile the config file or .cobigen file containing the properties.
+   * @param date to be added to the config file
+   */
+  public static void addATimestampForASpecificTime(Path configFile, Date date) {
 
     try {
-      TimestampUtil.writeTimestamp(configFile, new Timestamp(afterMonthDate.getTime()));
+      PostponeUtil.writeTimestamp(configFile, new Timestamp(date.getTime()));
     } catch (IOException e) {
       LOG.error("An error has occurred while writing the timestamp to the config file.");
+      throw new CobiGenRuntimeException("An error has occurred while writing the timestamp to the config file.");
     }
-
   }
 
   /**
