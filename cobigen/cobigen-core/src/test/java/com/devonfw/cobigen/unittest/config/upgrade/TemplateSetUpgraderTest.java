@@ -97,7 +97,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
       Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
           .upgradeTemplatesToTemplateSets(this.templateLocation);
 
-      Path backupPath = this.templateLocation.getParent().getParent().resolve("backup")
+      Path backupPath = this.templateLocation.getParent().getParent().resolve(ConfigurationConstants.BACKUP_FOLDER)
           .resolve(ConfigurationConstants.TEMPLATES_FOLDER).resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
           .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
       Set<String> backupPathFilesSet = new HashSet<>(Arrays.asList(backupPath.toFile().list()));
