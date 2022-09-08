@@ -6,20 +6,21 @@ toc::[]
 
 == General Installation Process
 
-1. First of all you will have to https://devonfw.com/website/pages/docs/setup.asciidoc.html[setup the devonfw IDE]. Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL. You can just press enter as no special settings are used. Following that, you will simply have to wait and follow any instructions given.
+1. First of all you will have to https://devonfw.com/website/pages/docs/devonfw-guide_ide.wiki_setup.asciidoc.html[setup the devonfw IDE]. Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL. You can just press enter as no special settings are used. Following that, you will simply have to wait and follow any instructions given.
 +
 After you have executed the steps mentioned above, your install location should look like the picture below.
 +
 image::images/howtos/ide-setup/File_Structure.png[Install directory after executing setup.bat]
 +
 2. As devonfw IDE by default does not install eclipse anymore, we need to setup eclipse first by executing `devon eclipse`
-3. The next step is to open a console and execute the following command: `+devon project setup cobigen+`
+4. As GIT by default does not set longpaths, we need to run the following command as administrator `git config --system core.longpaths true` on our git bash.
+5. The next step is to open a console and execute the following command: `+devon project setup cobigen+`
 This downloads all the necessary files for CobiGen development. 
-4. Build the project by running the build.sh located in the `workspaces/main/cobigen` folder within git bash `bash build.sh parallel`.
-5. Optional: If you are making use of SSH private key authentication working with Git on GitHub, you can change the HTTPS default setup git remote URL by executing `git remote set-url origin git@github.com:devonfw/cobigen.git` (possibly with `git@github.com:<your user>/cobigen.git` in case you want to work on your fork)
-6. Now open eclipse using the eclipse-main.bat file or by executing `devon eclipse` on the console and import the CobiGen projects you want to work on
-7. Switch to the "Project Explorer" view (Window->Show View->Project Explorer). This extra step is required because an import from the default view "Package Explorer" doesn't work properly.
-8. Click on File->import...->Maven->Existing Maven Project and entering `{Install directory}/workspaces/main/cobigen `(Should be the default location when clicking on "Browse...")
+6. Build the project by running the build.sh located in the `workspaces/main/cobigen` folder within git bash `bash build.sh parallel`.
+7. Optional: If you are making use of SSH private key authentication working with Git on GitHub, you can change the HTTPS default setup git remote URL by executing `git remote set-url origin git@github.com:devonfw/cobigen.git` (possibly with `git@github.com:<your user>/cobigen.git` in case you want to work on your fork)
+8. Now open eclipse using the eclipse-main.bat file or by executing `devon eclipse` on the console and import the CobiGen projects you want to work on
+ . Switch to the "Project Explorer" view (Window->Show View->Project Explorer). This extra step is required because an import from the default view "Package Explorer" doesn't work properly.
+ . Click on File->import...->Maven->Existing Maven Project and entering `{Install directory}/workspaces/main/cobigen `(Should be the default location when clicking on "Browse...")
 9. After you have have finished your installation run a maven update. To do so right click on a project, select maven and afterwards update project. Select all projects and the checkbox Force Update of Snapshot/Releases.
 You might be asked to install some Tycho-plugins. You need those, if you want to debug eclipse-plugins. 	
 
