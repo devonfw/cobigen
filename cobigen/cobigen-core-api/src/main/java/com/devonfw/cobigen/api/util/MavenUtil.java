@@ -3,11 +3,14 @@ package com.devonfw.cobigen.api.util;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -142,11 +145,10 @@ public class MavenUtil {
 
     if (!Files.exists(classPathCacheFile)) {
       LOG.debug("Building class paths for maven configuration ...");
-      cacheMavenClassPath(pomFile, classPathCacheFile);
+      cacheMavenClassPath(pomFile, classPathCacheFile); // TODO
     } else {
       LOG.debug("Taking cached class paths from: {}", classPathCacheFile);
     }
-
     try (Stream<String> fileLinesStream = Files.lines(classPathCacheFile)) {
       URL[] classPathEntries = fileLinesStream
           .flatMap(e -> Arrays.stream(e.split(SystemUtil.getOS().contains("win") ? ";" : ":"))).map(path -> {
@@ -157,11 +159,43 @@ public class MavenUtil {
             }
             return null;
           }).toArray(size -> new URL[size]);
-
+      validateCachedClassPaths(classPathEntries);
       return new URLClassLoader(classPathEntries, parentClassLoader);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read " + classPathCacheFile, e);
     }
+  }
+
+  /**
+   * TODO
+   *
+   * @param classPathEntries
+   */
+  private static boolean validateCachedClassPaths(URL[] classPathEntries) {
+
+    URI repo = determineMavenRepositoryPath().toUri();
+    List<URL> validatedURLs = new ArrayList<>();
+    for (URL classPath : classPathEntries) {
+      try {
+        URI cp = classPath.toURI();
+        if (!Paths.get(cp).startsWith(Paths.get(repo))) {
+          LOG.warn(String.format("Cache %s pointing to another maven Repository, this could cause some problems",
+              cp.toString()));
+        }
+        File cpFile = new File(cp);
+        if (!cpFile.exists()) {
+          LOG.error(String.format("Cache %s is outdated dependency needs to be resolved or downloaded", cp.toString()));
+          // new dependency resolution ? or download
+          return true;
+        } else {
+          // download new Dependencies
+        }
+      } catch (URISyntaxException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    return false;
   }
 
   /**
@@ -174,7 +208,10 @@ public class MavenUtil {
 
     String pomFileHash;
     try {
-      pomFileHash = ByteSource.wrap(Files.readAllBytes(pomFile)).hash(Hashing.murmur3_128()).toString();
+      // concat pom.xml and m2repo Path bytes
+      ByteSource m2repo = ByteSource.wrap(determineMavenRepositoryPath().toString().getBytes());
+      ByteSource m2repoAndPom = ByteSource.concat(m2repo, ByteSource.wrap(Files.readAllBytes(pomFile)));
+      pomFileHash = m2repoAndPom.hash(Hashing.murmur3_128()).toString();
     } catch (IOException e) {
       LOG.warn("Could not calculate hash of {}", pomFile.toUri());
       pomFileHash = "";
