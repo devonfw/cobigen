@@ -348,17 +348,18 @@ public class MavenUtil {
    * Retrieves a list of download URLs by groupId from the specified repository search REST API using authentication
    * with bearer token
    *
-   * @param baseURL String of the repository server URL
+   * @param baseUrl String of the repository server URL
    * @param groupId the groupId to search for
    * @param authToken bearer token to use for authentication
    * @return List of artifact download URLS or null if an error occurred
    */
-  public static List<URL> retrieveMavenArtifactsByGroupId(String baseURL, String groupId, String authToken) {
+  public static List<URL> retrieveMavenArtifactsByGroupId(String baseUrl, String groupId, String authToken) {
 
     try {
-      return SearchResponseFactory.searchArtifactDownloadLinks(baseURL, groupId, authToken);
+
+      return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, groupId, authToken);
     } catch (RestSearchResponseException | JsonProcessingException | MalformedURLException e) {
-      LOG.error("Unable to get artifacts from " + baseURL + " by groupId " + groupId, e);
+      LOG.error("Unable to get artifacts from {} by groupId {}", baseUrl, groupId, e);
       // TODO: Handle Eclipse, CLI and MavenPlugin here (f.e. with a new Exception)
       return null;
     }
