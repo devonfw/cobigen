@@ -53,6 +53,6 @@ public class MavenSearchRepositoryConstants {
   /**
    * Jfrog target link
    */
-  public static String JFROG_TARGET_LINK = "api/search/gavc";
+  public static String JFROG_TARGET_LINK = "artifactory/api/search/gavc";
 
 }
