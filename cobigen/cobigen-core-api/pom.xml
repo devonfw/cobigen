@@ -47,30 +47,20 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- enables JSON creation for REST search response API -->
     <dependency>
-      <groupId>org.glassfish.jersey.media</groupId>
-      <artifactId>jersey-media-json-jackson</artifactId>
-      <version>3.0.7</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
 
+    <!-- http client -->
     <dependency>
-      <groupId>org.glassfish.jersey.core</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>3.0.7</version>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>4.9.1</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
-      <version>3.0.7</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.glassfish.jersey.security</groupId>
-      <artifactId>oauth2-client</artifactId>
-      <version>3.0.7</version>
-    </dependency>
-
+    <!-- Needed for WireMock test support -->
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-standalone</artifactId>

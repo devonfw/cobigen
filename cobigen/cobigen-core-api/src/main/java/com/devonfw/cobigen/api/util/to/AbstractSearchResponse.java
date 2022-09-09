@@ -1,11 +1,12 @@
 package com.devonfw.cobigen.api.util.to;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.glassfish.jersey.client.oauth2.OAuth2ClientSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,13 +15,9 @@ import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Feature;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * This interface should be inherited for all maven REST search API responses to properly convert {@link JsonProperty}
@@ -87,15 +84,12 @@ public abstract class AbstractSearchResponse {
    *
    * @param targetLink link to get response from
    * @param token bearer token to use for authentication
-   * @return WebTarget to use as resource
+   * @return Request to use as resource
    */
-  private static WebTarget bearerAuthenticationWithOAuth2AtClientLevel(String targetLink, String token) {
+  private static Request bearerAuthenticationWithOAuth2AtClientLevel(String targetLink, String token) {
 
-    Feature feature = OAuth2ClientSupport.feature(token);
-    Client client = ClientBuilder.newBuilder().register(feature).build();
+    return new Request.Builder().url(targetLink).addHeader("Authorization", "Bearer " + token).build();
 
-    WebTarget target = client.target(targetLink);
-    return target;
   }
 
   /**
@@ -112,28 +106,39 @@ public abstract class AbstractSearchResponse {
 
     LOG.info("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
 
-    WebTarget target = null;
-
-    if (authToken != null) {
-      target = bearerAuthenticationWithOAuth2AtClientLevel(targetLink, authToken);
-    } else {
-      Client client = ClientBuilder.newClient();
-      target = client.target(targetLink);
-    }
-
-    Response response = null;
-    Invocation.Builder request = target.request(MediaType.APPLICATION_JSON);
-    response = request.get();
-
-    int status = response.getStatus();
+    OkHttpClient httpClient = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS).callTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true).build();
     String jsonResponse = "";
-    if (status == 200) {
-      jsonResponse = response.readEntity(String.class);
-    } else {
-      throw new RestSearchResponseException("The search REST API returned the unexpected status code: ",
-          String.valueOf(status));
+
+    try {
+      Response response = null;
+
+      if (authToken != null) {
+        response = httpClient.newCall(bearerAuthenticationWithOAuth2AtClientLevel(targetLink, authToken)).execute();
+      } else {
+        response = httpClient.newCall(new Request.Builder().url(targetLink).get().build()).execute();
+      }
+
+      int status = response.code();
+
+      if (response != null) {
+        if (status == 200 || status == 201 || status == 204) {
+          jsonResponse = response.body().string();
+        } else {
+          throw new RestSearchResponseException("The search REST API returned the unexpected status code: ",
+              String.valueOf(response.code()));
+        }
+      }
+
+    } catch (IOException e) {
+      throw new RestSearchResponseException("Unable to send or receive the message from the service", e);
+    } catch (IllegalArgumentException e) {
+      throw new RestSearchResponseException("The target URL was faulty.", e);
     }
+
     return jsonResponse;
+
   }
 
   /**

@@ -15,7 +15,6 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
@@ -25,8 +24,6 @@ import com.devonfw.cobigen.api.util.to.nexus2.Nexus2SearchResponse;
 import com.devonfw.cobigen.api.util.to.nexus3.Nexus3SearchResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
-import jakarta.ws.rs.ProcessingException;
 
 /**
  * Test class for maven utilities
@@ -51,31 +48,43 @@ public class MavenUtilTest {
   }
 
   /**
-   * Tests if an exception gets thrown when a faulty target link without a token was used
+   * Tests if a {@link RestSearchResponseException} gets thrown when a faulty target link without a token was used
    */
-  @Test(expected = ProcessingException.class)
+  @Test
   public void testWrongTargetLinkThrowsException() {
 
-    AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, null);
+    try {
+      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, null);
+    } catch (RestSearchResponseException e) {
+      assertThat(e).hasMessage("The target URL was faulty.");
+    }
   }
 
   /**
    * Tests if an exception gets thrown when a faulty target link and token was used
    */
-  @Test(expected = ProcessingException.class)
+  @Test
   public void testWrongTargetLinkAndTokenThrowsException() {
 
-    AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", "thisisabadtoken", null);
+    try {
+      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", "thisisabadtoken", null);
+    } catch (RestSearchResponseException e) {
+      assertThat(e).hasMessage("The target URL was faulty.");
+    }
   }
 
   /**
-   * Tests if an exception gets thrown when a status code was not 200
+   * Tests if a {@link RestSearchResponseException} gets thrown when a status code was not 200 but 400 instead
    */
-  @Test(expected = RestSearchResponseException.class)
+  @Test
   public void testWrongResponseStatusCodeThrowsException() {
 
-    AbstractSearchResponse
-        .retrieveJsonResponseWithAuthenticationToken("https://search.maven.org/solrsearch/select?test", null, null);
+    try {
+      AbstractSearchResponse
+          .retrieveJsonResponseWithAuthenticationToken("https://search.maven.org/solrsearch/select?test", null, null);
+    } catch (RestSearchResponseException e) {
+      assertThat(e).hasMessage("The search REST API returned the unexpected status code: 400");
+    }
   }
 
   /**
@@ -204,7 +213,7 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(202)
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200)
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("mavenJsonTest.json")))));
 
     this.wireMockRule
@@ -216,8 +225,7 @@ public class MavenUtilTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_URL,
-        "com.google.inject", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.google.inject", null);
 
     // then
     assertThat(downloadList).contains(
@@ -238,19 +246,18 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(404)));
+    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule
         .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
 
-    this.wireMockRule.stubFor(get(urlMatching("/service/local/lucene/search/.*")).willReturn(aResponse().withStatus(200)
-        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
+    this.wireMockRule.stubFor(get(urlMatching("/service/local/lucene/search.*")).willReturn(aResponse().withStatus(200)
+        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus2JsonTest.json")))));
 
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId(MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL,
-        "com.devonfw.cobigen", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
 
     // then
     assertThat(downloadList).contains(new URL(
@@ -311,8 +318,7 @@ public class MavenUtilTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080/artifactory", "com.devonfw.cobigen",
-        null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
 
     // then
     assertThat(downloadList).contains(new URL(
