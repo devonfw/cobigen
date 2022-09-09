@@ -17,8 +17,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
-import jakarta.ws.rs.ProcessingException;
-
 /**
  * Factory to create new instances of {@link AbstractSearchResponse} which handles the responses from various search
  * REST APIs.
@@ -65,8 +63,6 @@ public class SearchResponseFactory {
       } catch (RestSearchResponseException e) {
         LOG.error("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
             ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL, e.getMessage());
-      } catch (ProcessingException e) {
-        LOG.error("The search REST API was not able to process the URL: {}", baseURL, e);
       }
     }
 
