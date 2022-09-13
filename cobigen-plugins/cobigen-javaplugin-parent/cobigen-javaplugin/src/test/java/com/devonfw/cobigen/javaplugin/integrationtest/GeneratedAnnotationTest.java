@@ -30,8 +30,6 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
         Charset.forName("UTF-8"));
     List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 
-    // TODO: we have to extract the template the one we want to use to get rid of the for loop
-
     for (TemplateTo template : templates) {
       if (template.getId().equals("generated.java")) {
         GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),

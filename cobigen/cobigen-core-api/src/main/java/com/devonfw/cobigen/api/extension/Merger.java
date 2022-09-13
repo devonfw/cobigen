@@ -29,4 +29,11 @@ public interface Merger {
    * @throws MergeException if an exception occurs while merging the contents
    */
   public String merge(File base, String patch, String targetCharset) throws MergeException;
+
+  /**
+   * @param tmpOriginalFile
+   * @param targetCharset
+   */
+  public void addGeneratedAnnotation(File tmpOriginalFile, String targetCharset);
+
 }

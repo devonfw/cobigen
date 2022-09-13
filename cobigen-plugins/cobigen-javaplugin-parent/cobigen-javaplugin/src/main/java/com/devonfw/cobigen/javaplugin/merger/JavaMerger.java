@@ -3,6 +3,7 @@ package com.devonfw.cobigen.javaplugin.merger;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -202,6 +203,30 @@ public class JavaMerger implements Merger {
       } else {
         baseClass.getSource().getImports().add(patchImport);
       }
+    }
+  }
+
+  @Override
+  public void addGeneratedAnnotation(File tmpOriginalFile, String targetCharset) {
+
+    Path path = Paths.get(tmpOriginalFile.getAbsolutePath());
+    String lineDelimiter;
+    ModifyableJavaClass baseClass;
+    try (FileInputStream stream = new FileInputStream(path.toString());
+        BufferedInputStream bis = new BufferedInputStream(stream);
+        InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
+
+      baseClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
+      baseClass.getMethods();
+      baseClass.getFields();
+      lineDelimiter = SystemUtil.determineLineDelimiter(path, targetCharset);
+
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 

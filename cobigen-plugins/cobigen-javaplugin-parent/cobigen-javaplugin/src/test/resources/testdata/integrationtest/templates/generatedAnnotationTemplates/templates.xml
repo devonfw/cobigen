@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+ <templates>
+    <templateExtension ref="generated.java" mergeStrategy="javamerge" />
+ </templates>
       <templateScans>
         <templateScan templateNamePrefix="" templatePath="templates" destinationPath=""/>
     </templateScans>

@@ -4,6 +4,8 @@ import ${variables.rootPackage}.general.common.api.ApplicationEntity;
 
 public interface ${variables.entityName} extends ApplicationEntity {
 
+  private string field;
+
 
   public boolean equals(Object obj) {
 
