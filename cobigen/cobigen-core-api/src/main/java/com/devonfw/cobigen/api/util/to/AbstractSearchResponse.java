@@ -120,9 +120,8 @@ public abstract class AbstractSearchResponse {
         response = httpClient.newCall(new Request.Builder().url(targetLink).get().build()).execute();
       }
 
-      int status = response.code();
-
       if (response != null) {
+        int status = response.code();
         if (status == 200 || status == 201 || status == 204) {
           jsonResponse = response.body().string();
         } else {
