@@ -64,6 +64,6 @@ public class JfrogSearchResponse extends AbstractSearchResponse {
   @Override
   public MavenSearchRepositoryType getRepositoryType() {
 
-    return MavenSearchRepositoryType.jfrog;
+    return MavenSearchRepositoryType.JFROG;
   }
 }

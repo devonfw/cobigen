@@ -73,7 +73,7 @@ public class MavenSearchResponse extends AbstractSearchResponse {
   @Override
   public MavenSearchRepositoryType getRepositoryType() {
 
-    return MavenSearchRepositoryType.maven;
+    return MavenSearchRepositoryType.MAVEN;
   }
 
 }

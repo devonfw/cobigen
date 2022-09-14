@@ -9,20 +9,20 @@ public enum MavenSearchRepositoryType {
   /**
    * Nexus2 search repository type
    */
-  nexus2,
+  NEXUS2,
 
   /**
    * Nexus3 search repository type
    */
-  nexus3,
+  NEXUS3,
 
   /**
    * Maven search repository type
    */
-  maven,
+  MAVEN,
 
   /**
    * Jfrog search repository type
    */
-  jfrog
+  JFROG
 }

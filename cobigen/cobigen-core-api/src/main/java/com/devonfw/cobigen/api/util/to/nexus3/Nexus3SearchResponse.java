@@ -60,6 +60,6 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
   @Override
   public MavenSearchRepositoryType getRepositoryType() {
 
-    return MavenSearchRepositoryType.nexus3;
+    return MavenSearchRepositoryType.NEXUS3;
   }
 }
