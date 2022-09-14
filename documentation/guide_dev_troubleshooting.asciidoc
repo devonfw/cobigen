@@ -75,7 +75,7 @@ Error message will be like:
 ----
 
 ==== Solution
-Delete or rename the runtime-`EclipseApplication` inside workspaces folder. Re- run and try setting up workspace in that environment again. It should work!!
+Delete or rename the runtime-`EclipseApplication` inside workspaces folder. Re-run and try setting up workspace in that environment again. It should work!!
 =======
 ```
 1) Caused by: java.lang.ClassNotFoundException: An error occurred while automatically activating bundle com.devonfw.cobigen.eclipse
@@ -83,7 +83,7 @@ Delete or rename the runtime-`EclipseApplication` inside workspaces folder. Re- 
 3) org.eclipse.core.runtime.CoreException: Plug-in com.devonfw.cobigen.eclipse was unable to load class com.devonfw.cobigen.eclipse.workbenchcontrol.handler.XXXXHandler.
 ```
 
-== Issue when running Eclipse SWT bot tests via github actions with custom test projects
+== Issue when running Eclipse SWTBot tests via github actions with custom test projects
 Error message on github actions will be like:
 [source]
 ----
@@ -94,4 +94,4 @@ at com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils.importExistingGene
 But on the local system the build and test process works fine.
 
 ==== Solution
-If you add an Eclipse test project, make sure that you git force add the .project file too. Otherwise the importExistingGeneralProject method will fail.
+If you add an Eclipse test project, make sure that you git force add the .project file too. Otherwise the `importExistingGeneralProject` method will fail.

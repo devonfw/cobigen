@@ -1,7 +1,7 @@
 package ${variables.rootPackage}.${variables.component}.logic.api.usecase;
 
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public interface UcFind${variables.entityName} {
    * @return The {@link ${variables.entityName}Eto} with id 'id'
    */
   ${variables.entityName}Eto find${variables.entityName}(<#if compositeIdTypeVar!="null"> ${compositeIdTypeVar} <#else> long </#if> id);
-  
+
 
   /**
    * Returns a paginated list of ${variables.entityName}s matching the search criteria.
