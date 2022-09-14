@@ -50,23 +50,23 @@ public class ConfigurationFactory {
   }
 
   /**
-   * @return {@link ContextConfiguration} instance
+   * @return {@link ContextConfigurationDecorator} instance
    */
-  public ContextConfiguration getContextConfiguration() {
+  public ContextConfigurationDecorator getContextConfiguration() {
 
-    return new ContextConfiguration(this.configRoot);
+    return new ContextConfigurationDecorator(this.configRoot);
   }
 
   /**
    * @param groupIds
    * @param allowSnapshots
    * @param hideTemplates
-   * @return {@link TemplateSetConfiguration} instance
+   * @return {@link TemplateSetConfigurationDecorator} instance
    */
-  public TemplateSetConfiguration getTemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots,
+  public TemplateSetConfigurationDecorator getTemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots,
       List<String> hideTemplates) {
 
-    TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(groupIds, allowSnapshots,
+    TemplateSetConfigurationDecorator templateSetConfiguration = new TemplateSetConfigurationDecorator(groupIds, allowSnapshots,
         hideTemplates, this.configRoot);
     return templateSetConfiguration;
   }

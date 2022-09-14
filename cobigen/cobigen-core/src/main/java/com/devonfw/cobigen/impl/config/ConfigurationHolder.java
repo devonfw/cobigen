@@ -36,10 +36,10 @@ public class ConfigurationHolder {
   private Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
 
   /** Cached context configuration */
-  private ContextConfiguration contextConfiguration;
+  private ContextConfigurationDecorator contextConfiguration;
 
   /** Cached template-set configuration */
-  private TemplateSetConfiguration templateSetConfiguration;
+  private TemplateSetConfigurationDecorator templateSetConfiguration;
 
   /** Root path of the configuration */
   private Path configurationPath;
@@ -106,24 +106,24 @@ public class ConfigurationHolder {
   }
 
   /**
-   * Reads the {@link ContextConfiguration} from cache or from file if not present in cache.
+   * Reads the {@link ContextConfigurationDecorator} from cache or from file if not present in cache.
    *
-   * @return the {@link ContextConfiguration}
+   * @return the {@link ContextConfigurationDecorator}
    * @throws InvalidConfigurationException if the configuration is not valid
    */
-  public ContextConfiguration readContextConfiguration() {
+  public ContextConfigurationDecorator readContextConfiguration() {
 
     if (this.contextConfiguration == null) {
-      this.contextConfiguration = new ContextConfiguration(this.configurationPath);
+      this.contextConfiguration = new ContextConfigurationDecorator(this.configurationPath);
     }
     return this.contextConfiguration;
   }
 
   /**
-   * @param path
-   * @return the {@link TemplateSetConfiguration}
+   * @param path the configuration root path
+   * @return the {@link TemplateSetConfigurationDecorator}
    */
-  public TemplateSetConfiguration readTemplateSetConfiguration(Path path) {
+  public TemplateSetConfigurationDecorator readTemplateSetConfiguration(Path path) {
 
     Properties props = new Properties();
     try {
@@ -173,7 +173,6 @@ public class ConfigurationHolder {
    * Search for the location of the Java utils
    *
    * @return the {@link Path} of the location of the util classes or null if no location was found
-   * @throws IOException
    */
   public List<Path> getUtilsLocation() {
 

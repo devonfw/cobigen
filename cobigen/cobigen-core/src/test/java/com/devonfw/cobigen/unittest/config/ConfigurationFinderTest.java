@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
 /**
@@ -26,7 +26,7 @@ public class ConfigurationFinderTest {
 
     Path emptyConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/emptyConfigProperties/config.properties");
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(emptyConfiguration);
+    TemplateSetConfigurationDecorator conf = ConfigurationFinder.loadTemplateSetConfigurations(emptyConfiguration);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.getHideTemplates()).isEmpty();
@@ -42,7 +42,7 @@ public class ConfigurationFinderTest {
 
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/validConfigProperties/config.properties");
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration);
+    TemplateSetConfigurationDecorator conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration);
 
     assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob",
         ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
@@ -59,7 +59,7 @@ public class ConfigurationFinderTest {
   public void invalidPathTest() {
 
     Path invalidPath = Paths.get("path/which/does/not/exist");
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath);
+    TemplateSetConfigurationDecorator conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.getHideTemplates()).isEmpty();

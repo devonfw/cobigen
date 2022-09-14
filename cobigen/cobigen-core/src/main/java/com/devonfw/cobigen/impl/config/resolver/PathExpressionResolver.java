@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.impl.config.resolver;
 
-import com.devonfw.cobigen.impl.config.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.ContextConfigurationDecorator;
 import com.devonfw.cobigen.impl.config.entity.Variables;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 
@@ -11,7 +11,7 @@ import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 public class PathExpressionResolver {
 
   /**
-   * Pointer to the {@link ContextConfiguration} which provides all values for the variables to be resolved
+   * Pointer to the {@link ContextConfigurationDecorator} which provides all values for the variables to be resolved
    */
   private Variables variables;
 

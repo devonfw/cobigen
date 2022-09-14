@@ -12,13 +12,17 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 
 /**
- * mdukhan This Class is used to set specific properties if not found, or save them if correctly found. These properties
- * are groupIds, allowSnapshots and hideTemplates.
+ * mdukhan: This Class is used to set specific properties if not found, or save them if correctly found. These
+ * properties are groupIds, allowSnapshots and hideTemplates. khucklen: This is a decorator for the generated
+ * template-set configuration and will be used instead of the other one I know this isn't a REAL decorator, because
+ * {@link TemplateSetConfiguration} isn't an interface, but since it is generated it isn't possible to change it. The
+ * usefulness of a decorator is questionable anyways, this needs to be changed eventually
  */
-public class TemplateSetConfiguration {
+public class TemplateSetConfigurationDecorator {
 
   /** variable for template-set artifacts */
   private List<String> groupIds;
@@ -38,8 +42,8 @@ public class TemplateSetConfiguration {
   /** All available {@Link Increment} */
   private Map<String, Increment> increments;
 
-  /** Path of the configuration. Might point to a folder or a jar or maybe even something different in future. */
-  private Path configurationPath;
+  /** The templateSetConfiguration this decorator wraps */
+  private TemplateSetConfiguration templateSetConfiguration;
 
   /** The reader to read the template-set.xml files */
   public TemplateSetConfigurationReader templateSetConfigurationReader;
@@ -47,21 +51,37 @@ public class TemplateSetConfiguration {
   /** Paths of the template set configuration files */
   public List<Path> templateSetFiles;
 
+  /** Root of the configuration */
+  public Path configRoot;
+
   /**
-   * The constructor. load properties from a given source
+   * The constructor. This constructor is used, when the specific properties aren't needed
    *
-   * @param groupIds
-   * @param allowSnapshots
-   * @param hideTemplates
+   * @param configRoot Root of the configuration
    */
-  public TemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates,
+  public TemplateSetConfigurationDecorator(Path configRoot) {
+
+    this.templateSetConfiguration = new TemplateSetConfiguration();
+    readConfiguration(configRoot);
+
+  }
+
+  /**
+   * The constructor. load properties from a given source -
+   *
+   * @param groupIds variable for template-set artifacts
+   * @param allowSnapshots allow snapshots of template-sets
+   * @param hideTemplates variable to hide very specific template sets or versions of template sets
+   * @param configRoot Root of the configuration
+   */
+  public TemplateSetConfigurationDecorator(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates,
       Path configRoot) {
 
+    this(configRoot);
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
     this.hideTemplates = hideTemplates;
-    this.configurationPath = configRoot;
-    readConfiguration(configRoot);
+
   }
 
   /**
@@ -105,6 +125,14 @@ public class TemplateSetConfiguration {
   }
 
   /**
+   * @return Trigger from wrapped templateSetConfiguration
+   */
+  public List<com.devonfw.cobigen.impl.config.entity.io.Trigger> getTrigger() {
+
+    return this.templateSetConfiguration.getTrigger();
+  }
+
+  /**
    * @return the list of the template set files
    */
   public List<Path> getTemplateSetFiles() {
@@ -125,7 +153,7 @@ public class TemplateSetConfiguration {
   /**
    * set a list of the groupIds from a source
    *
-   * @param groupIds new value of {@link #getgroupIds}.
+   * @param groupIds new value of groupIds}.
    */
   public void setGroupIds(List<String> groupIds) {
 
@@ -145,7 +173,7 @@ public class TemplateSetConfiguration {
   /**
    * set a value on the snapshot
    *
-   * @param allowSnapshots new value of {@link #getallowSnapshots}.
+   * @param allowSnapshots new value of getallowSnapshots}.
    */
   public void setAllowSnapshots(boolean allowSnapshots) {
 
@@ -165,7 +193,7 @@ public class TemplateSetConfiguration {
   /**
    * set a list of the HideTemplate from a source
    *
-   * @param hideTemplates new value of {@link #gethideTemplates}.
+   * @param hideTemplates new value of gethideTemplates}.
    */
   public void setHideTemplates(List<String> hideTemplates) {
 

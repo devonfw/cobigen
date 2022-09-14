@@ -22,7 +22,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationFactory;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
 
 /**
  * Utilities related to the cobigen configurations including:
@@ -41,7 +41,7 @@ public class ConfigurationFinder {
    * @param path to a .properties file
    * @return TemplateSetConfiguration instance
    */
-  public static TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
+  public static TemplateSetConfigurationDecorator loadTemplateSetConfigurations(Path path) {
 
     Properties props = new Properties();
     try {

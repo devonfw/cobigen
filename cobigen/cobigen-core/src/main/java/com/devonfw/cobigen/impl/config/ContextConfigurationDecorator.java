@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.impl.config;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +9,14 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
+import com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 
 /**
- * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
- * destination for the generated data.
+ * The {@link ContextConfigurationDecorator} is a configuration data wrapper for all information about templates and the
+ * target destination for the generated data.
  */
-public class ContextConfiguration {
+public class ContextConfigurationDecorator {
 
   /**
    * All available {@link Trigger}s
@@ -27,17 +29,22 @@ public class ContextConfiguration {
   private Path configurationPath;
 
   /**
+   * contextConfiguration this decorator wraps
+   */
+  private ContextConfiguration contextConfiguration;
+
+  /**
    * The reader to read the context.xml files
    */
   private ContextConfigurationReader contextConfigurationReader;
 
   /**
-   * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
+   * Creates a new {@link ContextConfigurationDecorator} with the contents initially loaded from the context.xml
    *
    * @param configRoot root path for the configuration of CobiGen
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
-  public ContextConfiguration(Path configRoot) throws InvalidConfigurationException {
+  public ContextConfigurationDecorator(Path configRoot) throws InvalidConfigurationException {
 
     this.configurationPath = configRoot;
     readConfiguration(configRoot);
@@ -79,6 +86,14 @@ public class ContextConfiguration {
   public List<Trigger> getTriggers() {
 
     return new ArrayList<>(this.triggers.values());
+  }
+
+  /**
+   * @return
+   */
+  public BigDecimal getVersion() {
+
+    return this.contextConfiguration.getVersion();
   }
 
   /**

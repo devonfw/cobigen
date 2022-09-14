@@ -218,7 +218,7 @@ public class TemplateSetUpgrader {
   /**
    * Splits a contextConfiguration and converts a {@link Trigger} and his data to a v3_0 Trigger
    *
-   * @param {@link ContextConfiguration}the monolithic context that will be split
+   * @param {@link ContextConfigurationDecorator}the monolithic context that will be split
    * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} List of the split
    *         contextConfiguration files
    */
@@ -264,7 +264,7 @@ public class TemplateSetUpgrader {
    * Locates and returns the correct context file
    *
    * @param {@link Path} to the contextFile
-   * @return {@link ContextConfiguration}
+   * @return {@link ContextConfigurationDecorator}
    * @throws Exception
    */
   private TemplateSetConfiguration getContextConfiguration(Path contextFile) throws Exception {

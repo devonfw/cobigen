@@ -29,6 +29,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
+import com.devonfw.cobigen.impl.config.ContextConfigurationDecorator;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
@@ -129,14 +130,14 @@ public class ContextConfigurationReader implements ContextConfigurationInterface
 
     for (Path contextFile : this.contextFiles) {
       try (InputStream in = Files.newInputStream(contextFile)) {
-        Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
+        Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfigurationDecorator.class).createUnmarshaller();
 
         // Unmarshal without schema checks for getting the version attribute of the root node.
         // This is necessary to provide an automatic upgrade client later on
         Object rootNode = unmarschaller.unmarshal(in);
         BigDecimal configVersion;
-        if (rootNode instanceof TemplateSetConfiguration) {
-          configVersion = ((TemplateSetConfiguration) rootNode).getVersion();
+        if (rootNode instanceof ContextConfigurationDecorator) {
+          configVersion = ((ContextConfigurationDecorator) rootNode).getVersion();
           if (configVersion == null) {
             throw new InvalidConfigurationException(contextFile,
                 "The required 'version' attribute of node \"contextConfiguration\" has not been set");

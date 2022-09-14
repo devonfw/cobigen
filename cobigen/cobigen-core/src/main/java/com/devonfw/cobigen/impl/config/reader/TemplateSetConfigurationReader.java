@@ -35,6 +35,7 @@ import com.devonfw.cobigen.api.extension.TextTemplateEngine;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
+import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
@@ -77,7 +78,7 @@ import jakarta.xml.bind.Unmarshaller;
  */
 public class TemplateSetConfigurationReader implements ContextConfigurationInterface, TemplatesConfigurationInterface {
 
-  /** Path of the template set configuration files */
+  /** Path of the template set configuration file */
   public Path templateSetFile;
 
   /** Paths of the configuration location for a template-set.xml file */
@@ -86,11 +87,11 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   /** Map with the paths of the template set location for a trigger */
   private Map<String, Path> triggerTemplateSetLocations = new HashMap<>();
 
-  /** Map with XML Nodes 'template-set' of the template-set.xml files */
-  protected TemplateSetConfiguration templateSetConfiguration;
+  /** XML Node 'template-set' of the template-set.xml files */
+  protected com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator templateSetConfigurationDecorator;
 
   /** JAXB root node of the configuration */
-  private TemplateSetConfiguration configNode;
+  private TemplateSetConfiguration templateSetConfiguration;
 
   /** Root of the configuration */
   private Path configRoot;
@@ -119,40 +120,44 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   /**
    * The constructor.
    *
-   * @param configRoot the templateSet root directory
-   * @param templateSetConfiguration
+   * @param configRoot Root of the configuration
+   * @param templateSetConfigurationWrapper Wrapped configuration that's being read
    * @throws InvalidConfigurationException if the configuration is not valid
    */
   public TemplateSetConfigurationReader(Path configRoot,
-      com.devonfw.cobigen.impl.config.TemplateSetConfiguration templateSetConfiguration)
-      throws InvalidConfigurationException {
+      TemplateSetConfigurationDecorator templateSetConfigurationWrapper) throws InvalidConfigurationException {
 
     if (configRoot == null)
       throw new IllegalArgumentException("Configuraion path cannot be null.");
 
+    this.templateSetConfigurationDecorator = templateSetConfigurationWrapper;
     Path templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     Path templateSetsAdapted = configRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
     if (!Files.exists(templateSetsDownloaded) && !Files.exists(templateSetsAdapted)) {
       throw new InvalidConfigurationException(configRoot,
-          "Could not find a folder in which to search for the context configuration file.");
+          "Could not find a folder in which to search for the template-set configuration file.");
     } else {
       if (Files.exists(templateSetsAdapted)) {
-        templateSetConfiguration.templateSetFiles
+        templateSetConfigurationWrapper.templateSetFiles
             .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesAdapted(templateSetsAdapted));
+        this.configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+
       }
 
       if (Files.exists(templateSetsDownloaded)) {
-        templateSetConfiguration.templateSetFiles
+        templateSetConfigurationWrapper.templateSetFiles
             .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
+        this.configRoot = configRoot.resolve("template-set.jar");
+
       }
 
-      if (templateSetConfiguration.templateSetFiles.isEmpty()) {
-        throw new InvalidConfigurationException(configRoot, "Could not find any context configuration file.");
+      if (templateSetConfigurationWrapper.templateSetFiles.isEmpty()) {
+        throw new InvalidConfigurationException(configRoot,
+            "Could not find any template-set configuration file in the given folder.");
       }
     }
 
-    this.configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
   }
 
   /**
@@ -162,6 +167,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   public void readConfiguration() {
 
     this.configLocation = this.templateSetFile.getParent();
+
     Path templateLocation;
     if (!Files.exists(this.templateSetFile)) {
       this.configRoot = this.configRoot.resolve(this.templateSetFile.getParent());
@@ -172,7 +178,8 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       throw new InvalidConfigurationException(this.templateSetFile, "Could not find templates set configuration file.");
     } else {
       // Change this line to templatesLocation = rootTemplatePath if additional "templates" folder is removed
-      templateLocation = Path.of(this.configRoot + "/templates");
+      templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
+      // templateLocation = this.configRoot.resolve(this.configLocation.toUri() + "/templates");
     }
     this.rootTemplateFolder = TemplateFolder.create(templateLocation);
 
@@ -188,10 +195,10 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
       // Unmarshal without schema checks for getting the version attribute of the root node.
       // This is necessary to provide an automatic upgrade client later on
-      Object rootNode = unmarschaller.unmarshal(in);
+      TemplateSetConfiguration rootNode = (TemplateSetConfiguration) unmarschaller.unmarshal(in);
       BigDecimal configVersion;
-      if (rootNode instanceof TemplateSetConfiguration) {
-        configVersion = ((TemplateSetConfiguration) rootNode).getVersion();
+      if (rootNode != null) {
+        configVersion = rootNode.getVersion();
         if (configVersion == null) {
           throw new InvalidConfigurationException(this.templateSetFile,
               "The required 'version' attribute of node \"templateSetConfiguration\" has not been set");
@@ -221,8 +228,8 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
         Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
         unmarschaller.setSchema(schema);
-        rootNode = unmarschaller.unmarshal(configInputStream);
-        this.configNode = (TemplateSetConfiguration) rootNode;
+        rootNode = (TemplateSetConfiguration) unmarschaller.unmarshal(configInputStream);
+        this.templateSetConfiguration = rootNode;
       }
     } catch (JAXBException e) {
       // try getting SAXParseException for better error handling and user support
@@ -260,9 +267,10 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   public Map<String, Trigger> loadTriggers() {
 
     Map<String, Trigger> triggers = Maps.newHashMap();
-    boolean isJarFile = FileSystemUtil.isZipFile(this.configLocation.toUri());
+    boolean isJarFile = true;// = FileSystemUtil.isZipFile(this.configLocation.toUri());
 
-    List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = this.templateSetConfiguration.getTrigger();
+    List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = this.templateSetConfigurationDecorator
+        .getTrigger();
     if (!triggerList.isEmpty()) {
       // context configuration in template sets consists of only one trigger
       com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
@@ -365,14 +373,13 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   @Override
   public String getTemplateEngine() {
 
-    return this.configNode.getTemplateEngine();
+    return this.templateSetConfiguration.getTemplateEngine();
 
   }
 
   /**
    * Loads all templates of the static configuration into the local representation
    *
-   * @param trigger {@link Trigger} for which the templates should be loaded
    * @return the mapping of template names to the corresponding {@link Template}
    * @throws UnknownContextVariableException if the destination path contains an undefined context variable
    * @throws UnknownExpressionException if there is an unknown variable modifier
@@ -384,7 +391,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
     Map<String, Template> templates = new HashMap<>();
-    Templates templatesNode = this.configNode.getTemplates();
+    Templates templatesNode = this.templateSetConfiguration.getTemplates();
 
     if (templatesNode != null) {
       for (com.devonfw.cobigen.impl.config.entity.io.Template t : templatesNode.getTemplate()) {
@@ -404,7 +411,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       }
     }
 
-    TemplateScans templateScans = this.configNode.getTemplateScans();
+    TemplateScans templateScans = this.templateSetConfiguration.getTemplateScans();
     if (templateScans != null) {
       List<TemplateScan> scans = templateScans.getTemplateScan();
       if (scans != null) {
@@ -417,7 +424,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     // override existing templates with extension definitions
     Set<String> observedExtensionNames = Sets.newHashSet();
     if (templatesNode != null && templatesNode.getTemplateExtension() != null) {
-      for (TemplateExtension ext : this.configNode.getTemplates().getTemplateExtension()) {
+      for (TemplateExtension ext : this.templateSetConfiguration.getTemplates().getTemplateExtension()) {
         // detection of duplicate templateExtensions
         if (observedExtensionNames.contains(ext.getRef())) {
           throw new InvalidConfigurationException(
@@ -610,7 +617,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       throws InvalidConfigurationException {
 
     Map<String, Increment> increments = new HashMap<>();
-    Increments incrementsNode = this.configNode.getIncrements();
+    Increments incrementsNode = this.templateSetConfiguration.getIncrements();
     if (incrementsNode != null) {
       // Add first all increments informally be able to resolve recursive increment references
       for (com.devonfw.cobigen.impl.config.entity.io.Increment source : incrementsNode.getIncrement()) {
@@ -622,7 +629,8 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
         }
       }
       // Collect templates
-      for (com.devonfw.cobigen.impl.config.entity.io.Increment p : this.configNode.getIncrements().getIncrement()) {
+      for (com.devonfw.cobigen.impl.config.entity.io.Increment p : this.templateSetConfiguration.getIncrements()
+          .getIncrement()) {
         Increment target = increments.get(p.getName());
         addAllTemplatesRecursively(target, p, templates, increments);
       }
@@ -645,7 +653,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       String incrementName) throws InvalidConfigurationException {
 
     Map<String, Increment> increments = new HashMap<>();
-    Increments incrementsNode = this.configNode.getIncrements();
+    Increments incrementsNode = this.templateSetConfiguration.getIncrements();
     if (incrementsNode != null) {
       // We only add the specific increment we want
       com.devonfw.cobigen.impl.config.entity.io.Increment source = getSpecificIncrement(incrementsNode.getIncrement(),
@@ -701,7 +709,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       if (childPkg == null) {
 
         // We try to find the increment inside our templates.xml file
-        Increments incrementsNode = this.configNode.getIncrements();
+        Increments incrementsNode = this.templateSetConfiguration.getIncrements();
         com.devonfw.cobigen.impl.config.entity.io.Increment source = null;
         if (incrementsNode != null) {
           // We only add the specific increment we want
@@ -816,7 +824,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       throws InvalidConfigurationException {
 
     if (this.xPathContext == null) {
-      this.xPathContext = JXPathContext.newContext(this.configNode);
+      this.xPathContext = JXPathContext.newContext(this.templateSetConfiguration);
     }
 
     // does not work any longer as name is not a NCName type any more

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Storage class for trigger data provided within the context.xml
+ * Storage class for trigger data provided within the template-set.xml
  */
 public class Trigger {
 

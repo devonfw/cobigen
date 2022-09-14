@@ -71,6 +71,19 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
+   * test
+   */
+  @Test
+  public void testOldConfiguration() {
+
+    ContextConfigurationReader context = new ContextConfigurationReader(
+
+        Paths.get(testFileRootPath + "valid_source_folder"));
+    boolean wahr = true;
+    assertThat(wahr == true);
+  }
+
+  /**
    * Tests whether a valid configuration can be read from a zip file.
    *
    * @throws Exception test fails

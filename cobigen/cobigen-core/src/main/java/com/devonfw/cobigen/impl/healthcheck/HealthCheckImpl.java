@@ -17,7 +17,7 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.HealthCheckReport;
-import com.devonfw.cobigen.impl.config.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.ContextConfigurationDecorator;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
@@ -92,7 +92,7 @@ public class HealthCheckImpl implements HealthCheck {
       upgradeContextConfiguration(contextConfigurationPath, BackupPolicy.NO_BACKUP);
     }
 
-    ContextConfiguration contextConfiguration = new ContextConfiguration(contextConfigurationPath);
+    ContextConfigurationDecorator contextConfiguration = new ContextConfigurationDecorator(contextConfigurationPath);
     List<String> expectedTemplatesConfigurations = new ArrayList<>();
     Set<String> hasConfiguration = Sets.newHashSet();
     Map<String, Path> upgradeableConfigurations = this.healthCheckReport.getUpgradeableConfigurations();
@@ -123,7 +123,7 @@ public class HealthCheckImpl implements HealthCheck {
 
     // 1. Get configuration resources
     // determine expected template configurations to be defined
-    ContextConfiguration contextConfiguration = new ContextConfiguration(configurationPath);
+    ContextConfigurationDecorator contextConfiguration = new ContextConfigurationDecorator(configurationPath);
     List<String> expectedTemplatesConfigurations = Lists.newArrayList();
     Set<String> hasConfiguration = Sets.newHashSet();
     Set<String> isAccessible = Sets.newHashSet();
