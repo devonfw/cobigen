@@ -27,7 +27,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v2
 
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           clone: false
@@ -45,11 +45,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-test # new key will cache
 
       - name: Build & Test Core
         shell: bash
@@ -66,11 +67,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-plugins # new key will cache
+          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-test
 
       - name: Build & Test Plugins
         shell: bash
@@ -87,7 +90,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
@@ -114,10 +117,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-systemtest # new key will cache
+          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-plugins
 
       - name: Run Core Systemtest
         shell: bash
@@ -134,10 +139,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-eclipse # new key will cache
         
       - name: Cache Eclipse repository
         uses: actions/cache@v2
@@ -168,11 +174,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-maven # new key will cache
 
       - name: Build & Test Maven Plugin
         shell: bash
@@ -189,11 +196,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-cli # new key will cache
+          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-templates
 
       - name: Build & Test CLI
         shell: bash
@@ -210,16 +219,60 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-templates # new key will cache
+          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-maven
 
       - name: Build & Test Templates
         shell: bash
         run: |
           mvn install -f cobigen-templates -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+
+  sonar-analysis:
+    needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+
+      - uses: devonfw-actions/java-maven-setup@main
+        with:
+          maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          jacoco-cache-key: Linux-11-jacoco-${{ github.sha }}-cli # hit - restore
+
+      # Restore other parallel results as well
+      - name: Restore eclipse test results
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./**/*.exec
+            ./**/failsafe-reports/**
+            ./**/surefire-reports/**
+          key: Linux-11-jacoco-${{ github.sha }}-eclipse # hit - restore
+
+      - name: Restore core systemtest results
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./**/*.exec
+            ./**/failsafe-reports/**
+            ./**/surefire-reports/**
+          key: Linux-11-jacoco-${{ github.sha }}-core-systemtest # hit - restore
+      
+      - name: SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          git fetch --unshallow
+          mvn verify sonar:sonar -X -Dsonar.verbose=true -B -DskipTests -Dskip.code.coverage=false -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
   
   release:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
@@ -231,7 +284,7 @@ jobs:
     outputs:
       release_tag: ${{ steps.get_tag.outputs.tag }}
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}

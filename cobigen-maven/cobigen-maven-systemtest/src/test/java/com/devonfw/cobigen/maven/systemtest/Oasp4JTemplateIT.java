@@ -17,16 +17,15 @@ import org.junit.Test;
 import com.devonfw.cobigen.maven.systemtest.config.constant.MavenMetadata;
 import com.devonfw.cobigen.maven.test.AbstractMavenTest;
 
-/**
- *
- */
-public class Devon4JTemplateTest extends AbstractMavenTest {
+/** Test suite for testing the maven plugin with whole released template sets */
+public class Oasp4JTemplateIT extends AbstractMavenTest {
+
   /** Root of all test resources of this test suite */
-  public static final String TEST_RESOURCES_ROOT = "src/test/resources/testdata/systemtest/Devon4JTemplateTest/";
+  public static final String TEST_RESOURCES_ROOT = "src/test/resources/testdata/systemtest/Oasp4JTemplateTest/";
 
   /**
-   * Processes a generation of devon4j template increment tos and just checks whether the files have been generated.
-   * Takes an entity (POJO) as input.
+   * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks whether the
+   * files have been generated. Takes an entity (POJO) as input.
    *
    * @throws Exception test fails
    */
@@ -37,19 +36,16 @@ public class Devon4JTemplateTest extends AbstractMavenTest {
     File testProjectRoot = runMavenInvoker(testProject, MavenMetadata.LOCAL_REPO);
 
     assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
-    long numFilesInApi = Files.walk(testProjectRoot.toPath().getParent().resolve("api")).filter(Files::isRegularFile)
-        .count();
-    long numFilesInSrc = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-    // 3 from tos and 4 from dataaccess_infrastructure
-    assertThat(numFilesInApi).isEqualTo(4);
-    assertThat(numFilesInSrc).isEqualTo(3);
+    long numFilesInTarget = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
+    // 3 from entity_infrastructure, 4 from daos, 1 input file
+    assertThat(numFilesInTarget).isEqualTo(8);
   }
 
   /**
-   * Processes a generation of devon4j template increments tos and just checks whether the files have been generated.
-   * Takes an entity (POJO) as input. <br/>
-   * This is the same test as {@link #testEntityInputDataaccessGeneration()} but using the devon4j templates version
-   * 3.1.8. Those templates use Java classes that need to be loaded by the maven plugin
+   * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks whether the
+   * files have been generated. Takes an entity (POJO) as input. <br/>
+   * This is the same test as {@link #testEntityInputDataaccessGeneration()} but using the oasp4j templates version
+   * 2.0.0. Those templates use Java classes that need to be loaded by the maven plugin
    *
    * @throws Exception test fails
    */
@@ -57,17 +53,16 @@ public class Devon4JTemplateTest extends AbstractMavenTest {
   public void testEntityInputDataaccessGenerationForTemplateFolder() throws Exception {
 
     File testProject = new File(TEST_RESOURCES_ROOT + "TestEntityInputDataaccessGenerationWithTemplateFolder/");
-    File templatesProject = new File(TEST_RESOURCES_ROOT, "templates-devon4j");
+    File templatesProject = new File(TEST_RESOURCES_ROOT, "templates-oasp4j");
     File testProjectRoot = runMavenInvoker(testProject, templatesProject, MavenMetadata.LOCAL_REPO);
 
     assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
-    long numFilesInSrc = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-    // 1 from tos
-    assertThat(numFilesInSrc).isEqualTo(1);
+    long numFilesInTarget = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
+    assertThat(numFilesInTarget).isEqualTo(2);
   }
 
   /**
-   * Processes a generation of devon4j template increments tos and entity_infrastructure and just checks whether the
+   * Processes a generation of oasp4j template increments daos and entity_infrastructure and just checks whether the
    * files have been generated. Takes a package as input.
    *
    * @throws Exception test fails
@@ -79,12 +74,9 @@ public class Devon4JTemplateTest extends AbstractMavenTest {
     File testProjectRoot = runMavenInvoker(testProject, MavenMetadata.LOCAL_REPO);
 
     assertThat(testProjectRoot.list()).containsOnly("pom.xml", "src", "target");
-    long numFilesInApi = Files.walk(testProjectRoot.toPath().getParent().resolve("api")).filter(Files::isRegularFile)
-        .count();
-    long numFilesInSrc = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
-    // 4+2 from entity_infrastructure, 4+2 from tos, 2 input files
-    assertThat(numFilesInApi).isEqualTo(7);
-    assertThat(numFilesInSrc).isEqualTo(4);
+    long numFilesInTarget = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
+    // 2+2 from entity_infrastructure, 4+2 from daos, 2 input files
+    assertThat(numFilesInTarget).isEqualTo(12);
   }
 
   /**
@@ -149,7 +141,7 @@ public class Devon4JTemplateTest extends AbstractMavenTest {
 
   /**
    * Tries to reproduce issue #715 https://github.com/devonfw/cobigen/issues/715 where a Windows path exception is
-   * thrown when trying to generate from an OpenApi file. For doing so, processes a generation of devon4j template
+   * thrown when trying to generate from an OpenApi file. For doing so, processes a generation of oasp4j template
    * increments daos, entity_infrastructure, TOs, Logic and Rest Service and just checks whether the files have been
    * generated. Takes a yaml file as input.
    *
@@ -159,10 +151,11 @@ public class Devon4JTemplateTest extends AbstractMavenTest {
   public void testDifferentFileSystemThrowsNoProviderMismatchException() throws Exception {
 
     File testProject = new File(TEST_RESOURCES_ROOT + "TestDifferentFileSystems/");
-
-    // act
-    runMavenInvoker(testProject, MavenMetadata.LOCAL_REPO);
-
-    // assert no exception
+    File testProjectRoot = runMavenInvoker(testProject, MavenMetadata.LOCAL_REPO);
+    long numFilesInTarget = Files.walk(testProjectRoot.toPath().resolve("src")).filter(Files::isRegularFile).count();
+    // 4 from from daos + 4 from entity infrastructure + 6 from TOs + 4 from Logic (all in one) + 2 rest
+    // service imp = 18
+    assertThat(numFilesInTarget).isEqualTo(33);
   }
+
 }

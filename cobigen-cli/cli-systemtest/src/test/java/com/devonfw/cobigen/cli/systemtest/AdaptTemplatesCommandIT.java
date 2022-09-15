@@ -11,10 +11,9 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 
 /**
- * Tests the usage of the adapt-templates command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
- * present among JVM startup arguments.
+ * Tests the usage of the adapt-templates command.
  */
-public class AdaptTemplatesCommandTest extends AbstractCliTest {
+public class AdaptTemplatesCommandIT extends AbstractCliTest {
 
   /**
    * Checks if adapt-templates command successfully created cobigen templates folder and its sub folders
