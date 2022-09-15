@@ -251,13 +251,19 @@ jobs:
       - name: Restore eclipse test results
         uses: actions/cache@v2
         with:
-          path: ./** # simply restore everything as we know it will be a cache hit (will never re-cache)
+          path: |
+            ./**/*.exec
+            ./**/failsafe-reports/**
+            ./**/surefire-reports/**
           key: Linux-11-jacoco-${{ github.sha }}-eclipse # hit - restore
 
       - name: Restore core systemtest results
         uses: actions/cache@v2
         with:
-          path: ./** # simply restore everything as we know it will be a cache hit (will never re-cache)
+          path: |
+            ./**/*.exec
+            ./**/failsafe-reports/**
+            ./**/surefire-reports/**
           key: Linux-11-jacoco-${{ github.sha }}-core-systemtest # hit - restore
       
       - name: SonarCloud Analysis
