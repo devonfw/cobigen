@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +21,8 @@ import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
+import com.devonfw.cobigen.javaplugin.inputreader.util.CobiGenGenerated;
+import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaAnnotation;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -27,6 +30,7 @@ import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaInitializer;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.impl.AbstractBaseJavaEntity;
 import com.thoughtworks.qdox.model.impl.DefaultJavaField;
 import com.thoughtworks.qdox.model.impl.DefaultJavaMethod;
 import com.thoughtworks.qdox.parser.ParseException;
@@ -206,27 +210,53 @@ public class JavaMerger implements Merger {
     }
   }
 
-  @Override
-  public void addGeneratedAnnotation(File tmpOriginalFile, String targetCharset) {
+  public void addGeneratedAnnotation(File tmpOriginalFile, String targetCharset)
+      throws FileNotFoundException, IOException {
 
     Path path = Paths.get(tmpOriginalFile.getAbsolutePath());
     String lineDelimiter;
-    ModifyableJavaClass baseClass;
+    JavaClass baseClass;
+
+    // ModifyableJavaClass baseClass = new ModifyableJavaClass(tmpOriginalFile);
     try (FileInputStream stream = new FileInputStream(path.toString());
         BufferedInputStream bis = new BufferedInputStream(stream);
         InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
 
-      baseClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(reader);
-      baseClass.getMethods();
-      baseClass.getFields();
+      baseClass = JavaParserUtil.getFirstJavaClass(reader);
+      System.out.println(baseClass.getSource().getCodeBlock());
       lineDelimiter = SystemUtil.determineLineDelimiter(path, targetCharset);
+      List<JavaMethod> methods = baseClass.getMethods();
+      List<JavaField> fields = baseClass.getFields();
 
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      String codeBlock = "@Generated(value=CobiGen)";
+      LinkedHashMap<String, Object> generatedMap = new LinkedHashMap<>();
+      JavaClass generatedType = new ModifyableJavaClass(CobiGenGenerated.class.getName());
+      generatedMap.put("value", "cobiGen");
+
+      for (JavaField field : fields) {
+        List<JavaAnnotation> anno = field.getAnnotations();
+        ModifyableJavaAnnotation cobiGengeneratedAnnotation = new ModifyableJavaAnnotation((field.getLineNumber() - 1),
+            codeBlock, generatedType, generatedMap);
+        anno.add(cobiGengeneratedAnnotation);
+        ((AbstractBaseJavaEntity) field).setAnnotations(anno);
+      }
+
+      System.out.println(baseClass.getSource().getCodeBlock());
+
+      // TODO add annotation to methods
+
+      // for (JavaMethod method : methods) {
+      //// List<JavaAnnotation> anno = method.getAnnotations();
+      //// ModifyableJavaAnnotation cobiGengeneratedAnnotation = new ModifyableJavaAnnotation((method.getLineNumber() -
+      // 1),
+      //// codeBlock, generatedType, generatedMap);
+      //// anno.add(cobiGengeneratedAnnotation);
+      // ((AbstractBaseJavaEntity) method).setAnnotations(anno);
+      // }
+
+      // TODO write back the new content of baseClass to the file
+      // FileUtils.writeStringToFile(tmpOriginalFile, baseClass, StandardCharsets.UTF_8);
+
     }
   }
 

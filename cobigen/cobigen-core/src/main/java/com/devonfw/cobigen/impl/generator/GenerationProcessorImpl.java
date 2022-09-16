@@ -525,8 +525,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         }
         generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
 
-        Merger merger = PluginRegistry.getMerger(templateEty.getMergeStrategy());
-        merger.addGeneratedAnnotation(tmpOriginalFile, targetCharset);
+        // Merger merger = PluginRegistry.getMerger(templateEty.getMergeStrategy());
+        // merger.addGeneratedAnnotation(tmpOriginalFile, targetCharset);
       }
     }
   }

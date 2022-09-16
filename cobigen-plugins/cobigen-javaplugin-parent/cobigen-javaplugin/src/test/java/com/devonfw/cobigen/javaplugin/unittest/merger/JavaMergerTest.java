@@ -599,4 +599,15 @@ public class JavaMergerTest {
     assertThat(mergedContents).contains("@Column(name=\"NAME\")");
     assertThat(mergedContents).contains("@Column(name=\"USER\")");
   }
+
+  @Test
+  public void testaddAnnotation() throws IOException {
+
+    String testInputPath = "src/test/resources/testdata/unittest/inputreader/";
+    File baseFile = new File(testInputPath + "EmployeeEntity.java");
+    JavaMerger javaMergerObj = new JavaMerger("", false);
+    javaMergerObj.addGeneratedAnnotation(baseFile, "UTF-8");
+    String output = FileUtils.readFileToString(baseFile, StandardCharsets.UTF_8);
+    // System.out.println(output);
+  }
 }

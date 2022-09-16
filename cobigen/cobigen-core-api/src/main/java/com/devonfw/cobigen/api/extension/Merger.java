@@ -30,10 +30,4 @@ public interface Merger {
    */
   public String merge(File base, String patch, String targetCharset) throws MergeException;
 
-  /**
-   * @param tmpOriginalFile
-   * @param targetCharset
-   */
-  public void addGeneratedAnnotation(File tmpOriginalFile, String targetCharset);
-
 }
