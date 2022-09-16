@@ -37,7 +37,7 @@ jobs:
           clone: false
       
       - name: Resolve non-cobigen dependencies
-        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION || true # never fail
+        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
     
   build-and-test-core:
     needs: cache-dependencies
@@ -58,8 +58,7 @@ jobs:
 
       - name: Build & Test Core
         shell: bash
-        run: |
-          mvn install -f cobigen --projects !cobigen-core-systemtest $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION $MVN_TEST_COVERAGE
+        run: mvn install -f cobigen --projects !cobigen-core-systemtest ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-plugins:
     needs: build-and-test-core
@@ -81,8 +80,7 @@ jobs:
 
       - name: Build & Test Plugins
         shell: bash
-        run: |
-          mvn install -f cobigen-plugins $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION $MVN_TEST_COVERAGE
+        run: mvn install -f cobigen-plugins ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-plugins-p2:
     needs: build-and-test-plugins
@@ -108,8 +106,8 @@ jobs:
       - name: Build Plugins UpdateSite
         shell: bash
         run: |
-          mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION
-          mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION
+          mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }}
+          mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }}
 
   run-core-systemtest:
     needs: build-and-test-plugins
@@ -130,7 +128,7 @@ jobs:
 
       - name: Run Core Systemtest
         shell: bash
-        run: mvn test -f cobigen/cobigen-core-systemtest $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION $MVN_TEST_COVERAGE
+        run: mvn test -f cobigen/cobigen-core-systemtest ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-eclipse-plugin:
     needs: build-plugins-p2
@@ -165,7 +163,7 @@ jobs:
       - name: Build Plugins
         uses: GabrielBB/xvfb-action@v1.5
         with:
-          run: mvn install -f cobigen-eclipse -Pp2-build $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION $MVN_TEST_COVERAGE
+          run: mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-maven-plugin:
     needs: build-and-test-plugins
@@ -187,7 +185,7 @@ jobs:
       - name: Build & Test Maven Plugin
         shell: bash
         run: |
-          mvn install -f cobigen-maven $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION $MVN_TEST_COVERAGE
+          mvn install -f cobigen-maven ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-cli:
     needs: build-and-test-templates
@@ -210,7 +208,7 @@ jobs:
       - name: Build & Test CLI
         shell: bash
         run: |
-          mvn install -f cobigen-cli $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION $MVN_TEST_COVERAGE
+          mvn install -f cobigen-cli ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-templates:
     needs: build-and-test-maven-plugin
@@ -233,7 +231,7 @@ jobs:
       - name: Build & Test Templates
         shell: bash
         run: |
-          mvn install -f cobigen-templates $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION $MVN_TEST_COVERAGE
+          mvn install -f cobigen-templates ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   sonar-analysis:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
@@ -275,7 +273,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           git fetch --unshallow
-          mvn verify sonar:sonar $MVN_BATCH_MODE $MVN_HTTP_OPTIMIZATION $MVN_TEST_COVERAGE
+          mvn verify sonar:sonar ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
   
   release:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
