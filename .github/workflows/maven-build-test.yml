@@ -124,7 +124,6 @@ jobs:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-systemtest # new key will cache
-          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-plugins # hit - restore
 
       - name: Run Core Systemtest
         shell: bash
@@ -203,7 +202,6 @@ jobs:
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-cli # new key will cache
-          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-templates # hit - restore
 
       - name: Build & Test CLI
         shell: bash
@@ -226,7 +224,6 @@ jobs:
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-templates # new key will cache
-          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-maven # hit - restore
 
       - name: Build & Test Templates
         shell: bash
@@ -248,7 +245,7 @@ jobs:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           jacoco-cache-key: Linux-11-jacoco-${{ github.sha }}-cli # hit - restore
 
-      # Restore other parallel results as well
+      # Restore other parallel results as well - seems that for any reason I could not reuse caches incrementally... need to restore all caches
       - name: Restore eclipse test results
         uses: actions/cache@v3
         with:
@@ -266,6 +263,33 @@ jobs:
             ./**/failsafe-reports/**/*
             ./**/surefire-reports/**/*
           key: Linux-11-jacoco-${{ github.sha }}-core-systemtest # hit - restore
+      
+      - name: Restore core template test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./**/*.exec
+            ./**/failsafe-reports/**/*
+            ./**/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-templates # hit - restore
+
+      - name: Restore core maven results
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./**/*.exec
+            ./**/failsafe-reports/**/*
+            ./**/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-maven # hit - restore
+
+      - name: Restore core plugin test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./**/*.exec
+            ./**/failsafe-reports/**/*
+            ./**/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-plugins # hit - restore
       
       - name: SonarCloud Analysis
         env:
