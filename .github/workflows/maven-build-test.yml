@@ -128,7 +128,7 @@ jobs:
 
       - name: Run Core Systemtest
         shell: bash
-        run: mvn test -f cobigen/cobigen-core-systemtest ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
+        run: mvn install -f cobigen/cobigen-core-systemtest ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-eclipse-plugin:
     needs: build-plugins-p2
