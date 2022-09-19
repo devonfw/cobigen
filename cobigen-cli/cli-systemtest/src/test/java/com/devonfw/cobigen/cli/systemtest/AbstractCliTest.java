@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.util.Os;
@@ -22,11 +23,15 @@ import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.cli.config.constant.MavenMetadata;
 
 import uk.org.webcompere.systemstubs.security.SystemExit;
 
 /** Common test implementation for CLI tests */
 public class AbstractCliTest {
+
+  /** Java tool options */
+  private static final String JAVA_TOOL_OPTIONS = "CGCLI_JAVA_OPTIONS";
 
   /** Temporary files rule to create temporary folders or files */
   @Rule
@@ -140,6 +145,15 @@ public class AbstractCliTest {
         .destroyOnExit()
         .redirectError(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asError())
         .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asInfo());
+
+    // enable jacoco coverage monitoring for external processes (especially for CI/CD)
+    if (!StringUtils.isEmpty(MavenMetadata.JACOCO_AGENT_ARGS)) {
+      pe.environment(JAVA_TOOL_OPTIONS, MavenMetadata.JACOCO_AGENT_ARGS
+          // .replaceFirst("destfile=[^,]+(,)?", "")
+          // + ",output=tcpclient,sessionid=test,inclnolocationclasses=true,inclbootstrapclasses=true "
+          + "" + (System.getenv(JAVA_TOOL_OPTIONS) == null ? "" : " " + System.getenv(JAVA_TOOL_OPTIONS)));
+    }
+
     new SystemExit().execute(() -> {
       ProcessResult result = pe.execute();
       int exitCode = result.getExitValue();

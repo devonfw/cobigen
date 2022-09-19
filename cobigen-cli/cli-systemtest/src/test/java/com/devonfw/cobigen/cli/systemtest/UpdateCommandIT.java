@@ -28,10 +28,9 @@ import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 /**
- * Tests the usage of the update command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be present
- * among JVM startup arguments.
+ * Tests the usage of the update command.
  */
-public class UpdateCommandTest extends AbstractCliTest {
+public class UpdateCommandIT extends AbstractCliTest {
 
   /**
    * Original CobiGen CLI pom file

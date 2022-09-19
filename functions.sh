@@ -94,6 +94,15 @@ then
   exit 1
 fi
 
+if [[ "$*" == *coverage* ]]
+then
+  COVERAGE="-Dskip.code.coverage=false"
+  echo -e "\e[92m  > Creating Code Coverage report\e[39m"
+else
+  COVERAGE=""
+  echo "  * No code coverage (pass 'coverage' as argument to enable)"
+fi
+
 DEPLOY_SIGN="-Poss -Dgpg.keyname=$GPG_KEYNAME -Dgpg.executable=gpg"
 if [[ "$SILENT" = true ]] && [[ -z "$GPG_PASSPHRASE" ]]
 then
