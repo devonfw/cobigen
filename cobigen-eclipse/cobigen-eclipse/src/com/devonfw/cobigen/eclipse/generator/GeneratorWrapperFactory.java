@@ -246,6 +246,8 @@ public class GeneratorWrapperFactory {
   }
 
   /**
+   * Initializes the {@link CobiGen} with the correct configuration, checks if template-sets exists, if not the Jar or
+   * generatorProj will be used.
    *
    * @param generatorProj the templates project
    * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not

@@ -276,8 +276,7 @@ public class GenerateCommand extends CommandCommons {
       if (this.templatesProject == null)
         LOG.warn(monolithicConfigurationMessage + "{} ", ConfigurationFinder.findTemplatesLocation());
       else
-        LOG.warn(monolithicConfigurationMessage + "{} ", this.templatesProject);
-      LOG.warn(e.getMessage());
+        LOG.warn(monolithicConfigurationMessage + "{} {}", this.templatesProject, e.getMessage());
       if (this.upgradeConfiguration) {
         startTemplatesUpgrader();
       } else {
@@ -326,7 +325,7 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
-   * ask the user if he wants to postpone the upgrade message for 30 days.
+   * Asks the user if he wants to postpone the upgrade message for 30 days.
    *
    * @throws IOException
    */

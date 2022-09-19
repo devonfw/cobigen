@@ -1,12 +1,13 @@
 package com.devonfw.cobigen.unittest.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 
 import org.assertj.core.util.Files;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.devonfw.cobigen.impl.util.PostponeUtil;
@@ -33,7 +34,7 @@ public class TimestampUtilTest {
 
     Timestamp InstantTimestampCopy = PostponeUtil.readTimestamp(configFile);
 
-    Assert.assertEquals(InstantTimestamp, InstantTimestampCopy);
+    assertThat(InstantTimestamp).isEqualTo(InstantTimestampCopy);
 
     Files.delete(configFile.toFile());
 
@@ -54,7 +55,7 @@ public class TimestampUtilTest {
 
     Timestamp InstantTimestampCopy = PostponeUtil.readTimestamp(configFile);
 
-    Assert.assertEquals(InstantTimestamp, InstantTimestampCopy);
+    assertThat(InstantTimestamp).isEqualTo(InstantTimestampCopy);
 
     Files.delete(configFile.toFile());
 

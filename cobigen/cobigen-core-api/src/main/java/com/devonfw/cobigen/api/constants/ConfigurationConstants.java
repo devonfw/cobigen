@@ -122,7 +122,7 @@ public class ConfigurationConstants {
   public static final String BACKUP_FOLDER = "backup";
 
   /**
-   * Default cobigen version
+   * Default cobigen version TODO retrieve the version dynamically(not as a constant) at runtime.
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_VERSION = "2021.12.007";
 

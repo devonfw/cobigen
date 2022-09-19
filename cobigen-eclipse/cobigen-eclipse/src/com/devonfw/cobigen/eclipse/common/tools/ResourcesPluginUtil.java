@@ -299,8 +299,6 @@ public class ResourcesPluginUtil {
    * Upgrades the given template configuration.
    *
    * @param configurationPath path to the templates Configuration
-   *
-   *
    */
   public static void startTemplatesUpgrader(Path configurationPath) {
 

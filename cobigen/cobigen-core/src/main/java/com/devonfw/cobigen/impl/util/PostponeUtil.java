@@ -18,7 +18,8 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 
 /**
- * This Class is used to set the timestamp property
+ * This util class is used to set(create) a timestamp property, read it, and checks if exists. Also can check if a
+ * timestamp passed the current time.
  *
  */
 public class PostponeUtil {
@@ -27,7 +28,7 @@ public class PostponeUtil {
   private static final Logger LOG = LoggerFactory.getLogger(PostponeUtil.class);
 
   /**
-   * Writes the timestamp in a config file.
+   * Writes the Timestamp to a config file.
    *
    * @param configFile the config file or .cobigen file containing the properties.
    * @param timestamp to be added to the config file
@@ -49,7 +50,7 @@ public class PostponeUtil {
   }
 
   /**
-   * Reads the timestamp from a config file.
+   * Reads the Timestamp from a config file.
    *
    * @param configFile the config file or .cobigen file containing the properties.
    * @return the timestamp found in a config file
@@ -73,7 +74,7 @@ public class PostponeUtil {
   }
 
   /**
-   * creates a time stamp
+   * Creates a time stamp
    *
    * @return a new Timestamp with the current time
    */
@@ -83,16 +84,22 @@ public class PostponeUtil {
     return new Timestamp(currentDate.getTime());
   }
 
-  @SuppressWarnings("javadoc")
+  /**
+   * Searches any Timestamp inside the config file in the HomePath, to determine whether that time is already passed.
+   *
+   * @return true if the current time already passed the time written in the config file.
+   */
   public static boolean isTimePassed() {
 
     return isTimePassed(getHomePath());
   }
 
   /**
+   * Searches any Timestamp inside the config file, to determine whether that time is already passed.
+   *
    * @param configFile the config file or .cobigen file containing the properties.
    * @return boolean true if config file not exists, if no Timestamp found, or if the current time already passed the
-   *         time written in the config file
+   *         time written in the config file.
    */
   public static boolean isTimePassed(Path configFile) {
 
@@ -107,14 +114,16 @@ public class PostponeUtil {
     }
   }
 
-  @SuppressWarnings("javadoc")
+  /**
+   * Adds a new Timestamp to the config file in HomePath.
+   */
   public static void addATimestampForOneMonth() {
 
     addATimestampForOneMonth(getHomePath());
   }
 
   /**
-   * add a new Timestamp in the config file with the current time + one month
+   * Adds a new Timestamp in the config file with the current time + one month
    *
    * @param configFile the config file or .cobigen file containing the properties.
    */
