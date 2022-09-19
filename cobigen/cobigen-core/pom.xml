@@ -60,7 +60,6 @@
     <dependency>
       <groupId>net.sf.m-m-m</groupId>
       <artifactId>mmm-util-core</artifactId>
-      <version>7.4.0</version>
     </dependency>
 
     <!-- Needed for JDK 9+ -->
@@ -84,11 +83,12 @@
       <version>1.5.4</version>
     </dependency>
 
-	<dependency>
+    <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
       <version>3.8.5</version>
-	</dependency>
+    </dependency>
+
   </dependencies>
 
   <build>

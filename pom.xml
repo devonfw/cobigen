@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>master-parent</artifactId>
@@ -19,6 +18,7 @@
     <java.version>1.8</java.version>
     <tycho.version>1.6.0</tycho.version>
     <jaxb.version>3.0.1</jaxb.version>
+    <mmm.util.core.version>7.3.0</mmm.util.core.version>
     <license.skipAggregateDownloadLicenses>${skip.deployment}</license.skipAggregateDownloadLicenses>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     <updatesite.url>https://devonfw.com/cobigen/updatesite</updatesite.url>
@@ -67,7 +67,7 @@
       <name>Apache Software License 2.0</name>
       <url>https://raw.githubusercontent.com/devonfw/.github/master/LICENSE</url>
       <distribution>repo</distribution>
-      <comments/>
+      <comments />
     </license>
   </licenses>
 
@@ -89,6 +89,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>net.sf.m-m-m</groupId>
+        <artifactId>mmm-util-core</artifactId>
+        <version>${mmm.util.core.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
@@ -405,7 +410,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
