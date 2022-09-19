@@ -290,6 +290,15 @@ jobs:
             **/failsafe-reports/**/*
             **/surefire-reports/**/*
           key: Linux-11-jacoco-${{ github.sha }}-plugins # hit - restore
+
+      - name: Restore core cli test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-cli # hit - restore
       
       - name: SonarCloud Analysis
         env:
