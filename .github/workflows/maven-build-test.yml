@@ -250,45 +250,45 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ./**/*.exec
-            ./**/failsafe-reports/**/*
-            ./**/surefire-reports/**/*
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
           key: Linux-11-jacoco-${{ github.sha }}-eclipse # hit - restore
 
       - name: Restore core systemtest results
         uses: actions/cache@v3
         with:
           path: |
-            ./**/*.exec
-            ./**/failsafe-reports/**/*
-            ./**/surefire-reports/**/*
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
           key: Linux-11-jacoco-${{ github.sha }}-core-systemtest # hit - restore
       
       - name: Restore core template test results
         uses: actions/cache@v3
         with:
           path: |
-            ./**/*.exec
-            ./**/failsafe-reports/**/*
-            ./**/surefire-reports/**/*
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
           key: Linux-11-jacoco-${{ github.sha }}-templates # hit - restore
 
       - name: Restore core maven results
         uses: actions/cache@v3
         with:
           path: |
-            ./**/*.exec
-            ./**/failsafe-reports/**/*
-            ./**/surefire-reports/**/*
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
           key: Linux-11-jacoco-${{ github.sha }}-maven # hit - restore
 
       - name: Restore core plugin test results
         uses: actions/cache@v3
         with:
           path: |
-            ./**/*.exec
-            ./**/failsafe-reports/**/*
-            ./**/surefire-reports/**/*
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
           key: Linux-11-jacoco-${{ github.sha }}-plugins # hit - restore
       
       - name: SonarCloud Analysis
