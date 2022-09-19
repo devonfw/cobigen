@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
@@ -65,7 +66,8 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   public void testInvalidTemplateSets() throws InvalidConfigurationException {
 
     try {
-      new TemplateSetConfigurationDecorator(new ArrayList<String>(), true, new ArrayList<String>(), INVALID_CONFIGURATION_PATH);
+      new TemplateSetConfigurationDecorator(new ArrayList<String>(), true, new ArrayList<String>(),
+          INVALID_CONFIGURATION_PATH);
     } catch (InvalidConfigurationException ice) {
       assertThat(ice).hasMessage(INVALID_CONFIGURATION_PATH.toAbsolutePath() + ":\n"
           + "Could not find any template-set configuration file in the given folder.");
@@ -83,11 +85,12 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
         .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     templateSetPath = Path.of(templateSetPath + "/downloaded");
     templateSetPath = FileSystemUtil.createFileSystemDependentPath(templateSetPath.toUri());
-    TemplateSetConfigurationDecorator testConfiguration = new TemplateSetConfigurationDecorator(new ArrayList<String>(), true,
-        new ArrayList<String>(), templateSetPath);
+    TemplateSetConfiguration testConfiguration = new TemplateSetConfiguration();
+    TemplateSetConfigurationDecorator testDecorator = new TemplateSetConfigurationDecorator(new ArrayList<String>(),
+        true, new ArrayList<String>(), templateSetPath);
 
-    TemplateSetConfigurationReader testReader = new TemplateSetConfigurationReader(templateSetPath, testConfiguration);
-    assertThat(testConfiguration.getTemplateSetFiles().size()).isEqualTo(1);
+    TemplateSetConfigurationReader testReader = new TemplateSetConfigurationReader(templateSetPath, testDecorator);
+    assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(1);
   }
 
   /**

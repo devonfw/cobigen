@@ -49,7 +49,7 @@ public class TemplateSetConfigurationDecorator {
   public TemplateSetConfigurationReader templateSetConfigurationReader;
 
   /** Paths of the template set configuration files */
-  public List<Path> templateSetFiles;
+  public List<Path> templateSetFiles = new ArrayList<>();
 
   /** Root of the configuration */
   public Path configRoot;
@@ -62,7 +62,7 @@ public class TemplateSetConfigurationDecorator {
   public TemplateSetConfigurationDecorator(Path configRoot) {
 
     this.templateSetConfiguration = new TemplateSetConfiguration();
-    readConfiguration(configRoot);
+    // readConfiguration(configRoot);
 
   }
 
@@ -92,7 +92,6 @@ public class TemplateSetConfigurationDecorator {
    */
   public void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
-    this.templateSetFiles = new ArrayList<>();
     if (this.templateSetConfigurationReader == null) {
       this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configRoot, this);
     }

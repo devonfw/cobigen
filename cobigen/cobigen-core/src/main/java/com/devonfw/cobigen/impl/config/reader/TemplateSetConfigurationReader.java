@@ -121,16 +121,16 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
    * The constructor.
    *
    * @param configRoot Root of the configuration
-   * @param templateSetConfigurationWrapper Wrapped configuration that's being read
+   * @param templateSetConfigurationDecorator Wrapped configuration that's being read
    * @throws InvalidConfigurationException if the configuration is not valid
    */
   public TemplateSetConfigurationReader(Path configRoot,
-      TemplateSetConfigurationDecorator templateSetConfigurationWrapper) throws InvalidConfigurationException {
+      TemplateSetConfigurationDecorator templateSetConfigurationDecorator) throws InvalidConfigurationException {
 
     if (configRoot == null)
       throw new IllegalArgumentException("Configuraion path cannot be null.");
 
-    this.templateSetConfigurationDecorator = templateSetConfigurationWrapper;
+    this.templateSetConfigurationDecorator = templateSetConfigurationDecorator;
     Path templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     Path templateSetsAdapted = configRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
@@ -139,20 +139,20 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
           "Could not find a folder in which to search for the template-set configuration file.");
     } else {
       if (Files.exists(templateSetsAdapted)) {
-        templateSetConfigurationWrapper.templateSetFiles
+        templateSetConfigurationDecorator.templateSetFiles
             .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesAdapted(templateSetsAdapted));
         this.configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
       }
 
       if (Files.exists(templateSetsDownloaded)) {
-        templateSetConfigurationWrapper.templateSetFiles
+        templateSetConfigurationDecorator.templateSetFiles
             .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
         this.configRoot = configRoot.resolve("template-set.jar");
 
       }
 
-      if (templateSetConfigurationWrapper.templateSetFiles.isEmpty()) {
+      if (templateSetConfigurationDecorator.templateSetFiles.isEmpty()) {
         throw new InvalidConfigurationException(configRoot,
             "Could not find any template-set configuration file in the given folder.");
       }
@@ -269,8 +269,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     Map<String, Trigger> triggers = Maps.newHashMap();
     boolean isJarFile = true;// = FileSystemUtil.isZipFile(this.configLocation.toUri());
 
-    List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = this.templateSetConfigurationDecorator
-        .getTrigger();
+    List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = this.templateSetConfiguration.getTrigger();
     if (!triggerList.isEmpty()) {
       // context configuration in template sets consists of only one trigger
       com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
