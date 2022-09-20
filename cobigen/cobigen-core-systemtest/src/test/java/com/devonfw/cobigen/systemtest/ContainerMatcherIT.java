@@ -2,15 +2,16 @@ package com.devonfw.cobigen.systemtest;
 
 import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
 import static com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers.hasItemsInList;
-import static org.hamcrest.CoreMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.Matchers.any;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -19,7 +20,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.ArgumentMatchers;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
@@ -41,7 +42,7 @@ import com.google.common.collect.Lists;
 /**
  * This test suite concentrates on the {@link ContainerMatcher} support and semantics
  */
-public class ContainerMatcherTest extends AbstractApiTest {
+public class ContainerMatcherIT extends AbstractApiTest {
 
   /**
    * Root path to all resources used in this test case
@@ -87,8 +88,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
     List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
     // Verification
-    Assert.assertNotNull(matchingTriggerIds);
-    Assert.assertTrue(matchingTriggerIds.size() > 0);
+    assertThat(matchingTriggerIds).isNotNull().isNotEmpty();
 
   }
 
@@ -216,7 +216,6 @@ public class ContainerMatcherTest extends AbstractApiTest {
    * @throws Exception test fails
    */
   @Test
-  @SuppressWarnings("unchecked")
   public void testContainerChildrenWillIndividuallyBeMatched() throws Exception {
 
     Object container = new Object() {
@@ -251,16 +250,16 @@ public class ContainerMatcherTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
 
     // Simulate container children resolution of any plug-in
     when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(child1))),
-        anyList(), Mockito.any()))
+        anyList(), ArgumentMatchers.any()))
             .thenReturn(ImmutableMap.<String, String> builder().put("variable", "child1").build());
     when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("or"), any(String.class), sameInstance(child2))),
-        anyList(), Mockito.any()))
+        anyList(), ArgumentMatchers.any()))
             .thenReturn(ImmutableMap.<String, String> builder().put("variable", "child2").build());
-    when(inputReader.getInputObjects(Mockito.any(), Mockito.any(Charset.class)))
+    when(inputReader.getInputObjects(ArgumentMatchers.any(), ArgumentMatchers.any(Charset.class)))
         .thenReturn(Lists.newArrayList(child1, child2));
 
     // match container
@@ -305,7 +304,6 @@ public class ContainerMatcherTest extends AbstractApiTest {
    * calls {@link #createTestDataAndConfigureMock(boolean, boolean)
    * createTestDataAndConfigureMock(containerChildMatchesTrigger, false)}
    */
-  @SuppressWarnings("javadoc")
   private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger) {
 
     return createTestDataAndConfigureMock(containerChildMatchesTrigger, false);
@@ -354,7 +352,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
     when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(container)))))
         .thenReturn(false);
     when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), any(String.class), sameInstance(container)))))
@@ -369,10 +367,10 @@ public class ContainerMatcherTest extends AbstractApiTest {
           return "child2";
         }
       };
-      when(inputReader.getInputObjects(Mockito.any(), Mockito.any(Charset.class)))
+      when(inputReader.getInputObjects(ArgumentMatchers.any(), ArgumentMatchers.any(Charset.class)))
           .thenReturn(Lists.newArrayList(firstChildResource, secondChildResource));
     } else {
-      when(inputReader.getInputObjects(Mockito.any(), Mockito.any(Charset.class)))
+      when(inputReader.getInputObjects(ArgumentMatchers.any(), ArgumentMatchers.any(Charset.class)))
           .thenReturn(Lists.newArrayList(firstChildResource));
     }
 
@@ -387,7 +385,7 @@ public class ContainerMatcherTest extends AbstractApiTest {
             //
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1"), equalTo(false)),
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"), equalTo(false)))),
-        Mockito.any()))
+        ArgumentMatchers.any()))
             .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
                 .put("entityName", "Test").build());
 

@@ -33,20 +33,26 @@ public class ConfigurationUtilTest {
   @Test
   public void testFindTemplatesLocation() throws Exception {
 
-    File userHome = this.tmpFolder.newFolder("user-home");
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
+    restoreSystemProperties(() -> {
+      File userHome = this.tmpFolder.newFolder("user-home");
       System.setProperty("user.home", userHome.getAbsolutePath());
-      Path templatesFolder = userHome.toPath().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+
+      Path defaultCobigenHome = userHome.toPath().resolve(ConfigurationConstants.DEFAULT_HOME_DIR_NAME);
+      Path templatesFolder = defaultCobigenHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
       Files.createDirectories(templatesFolder);
       String templatesArtifact = "templates-devon4j-1.0.jar";
 
-      Path downloadedTemplatesDirectory = templatesFolder.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-      Files.createDirectories(downloadedTemplatesDirectory);
-      Path templatesJar = templatesFolder.resolve(templatesArtifact);
-      Files.createFile(templatesJar);
-      // found template-sets directory
-      assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesFolder.toFile().toURI());
-      Files.delete(downloadedTemplatesDirectory);
+      withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, null).execute(() -> {
+        Path templatesProject = templatesFolder.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+        Files.createDirectories(templatesProject);
+        Path templatesJar = templatesFolder.resolve(templatesArtifact);
+        Files.createFile(templatesJar);
+        // found CobiGen_Templates project
+        assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesProject.toFile().toURI());
+        Files.delete(templatesProject);
+        // found templates artifact
+        assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templatesJar.toFile().toURI());
+      });
 
       // configuration file exists
       File randomDirectoryForConfigFile = this.tmpFolder.newFolder();
@@ -66,10 +72,12 @@ public class ConfigurationUtilTest {
             assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templates.toURI());
           });
 
-      Path configFileInCobigenHome = userHome.toPath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-      FileUtils.copyFile(configFile, configFileInCobigenHome.toFile());
-      // configuration file found in cobigen home directory
-      assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templates.toURI());
+      withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, null).execute(() -> {
+        Path configFileInCobigenHome = defaultCobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+        FileUtils.copyFile(configFile, configFileInCobigenHome.toFile());
+        // configuration file found in cobigen home directory
+        assertThat(ConfigurationFinder.findTemplatesLocation()).isEqualTo(templates.toURI());
+      });
     });
   }
 }

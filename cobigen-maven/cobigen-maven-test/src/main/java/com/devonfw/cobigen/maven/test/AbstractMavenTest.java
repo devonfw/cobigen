@@ -139,9 +139,11 @@ public class AbstractMavenTest {
     request.setBatchMode(true);
     // https://stackoverflow.com/a/66801171
     request.setMavenOpts(
-        "-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn");
+        "-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn "
+            + MavenMetadata.JACOCO_AGENT_ARGS);
 
     Invoker invoker = new DefaultInvoker();
+    LOG.info("Executing maven invoker for unit test ...");
     InvocationResult result = invoker.execute(request);
 
     assertThat(result.getExecutionException()).isNull();
