@@ -53,7 +53,7 @@ public class PluginMockFactory {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
     when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(input)))))
         .thenReturn(false);
     when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), any(String.class), sameInstance(input)))))

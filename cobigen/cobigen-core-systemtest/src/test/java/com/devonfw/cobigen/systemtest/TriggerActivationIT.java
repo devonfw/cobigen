@@ -132,7 +132,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     MatcherInterpreter matcher = mock(MatcherInterpreter.class);
     InputReader inputReader = mock(InputReader.class);
 
-    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
 
     when(triggerInterpreter.getType()).thenReturn("test");
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);

@@ -28,7 +28,7 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
   public void initAdaptTemplatesTest() throws URISyntaxException, IOException {
 
     Path cliSystemTestPath = new File(
-        AdaptTemplatesCommandTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+        AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
             .getParentFile().toPath();
     Path templateJar = cliSystemTestPath.resolve("src/test/resources/testdata/crud-java-server-app.jar");
     if (Files.exists(templateJar)) {

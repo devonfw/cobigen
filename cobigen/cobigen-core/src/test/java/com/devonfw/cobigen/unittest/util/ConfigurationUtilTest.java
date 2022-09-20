@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.unittest.util;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.restoreSystemProperties;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,8 +28,6 @@ public class ConfigurationUtilTest {
   /**
    * Tests findTemplatesLocation logic Checks if a template jar is located inside the downloaded folder of template-sets
    * Checks if a template jar can be loaded directly when being set from the .cobigen properties file
-   *
-   * @throws Exception
    */
   @Test
   public void testFindTemplatesLocation() throws Exception {

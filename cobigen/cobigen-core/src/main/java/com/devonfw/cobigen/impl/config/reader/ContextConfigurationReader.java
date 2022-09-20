@@ -26,9 +26,6 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
-  /** Logger instance. */
-  private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
-
   /**
    * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given context file
    *
