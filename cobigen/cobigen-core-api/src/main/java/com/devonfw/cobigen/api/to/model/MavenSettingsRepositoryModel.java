@@ -1,15 +1,14 @@
-package com.devonfw.cobigen.api.to;
+package com.devonfw.cobigen.api.to.model;
 
 import java.net.URL;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * TODO fberger This type ...
+ * Class, which represents a repository element of the settings.xml
  *
  */
-@XmlRootElement(name = "repositories")
+
 public class MavenSettingsRepositoryModel {
 
   String id;
@@ -29,7 +28,7 @@ public class MavenSettingsRepositoryModel {
   /**
    * @param id new value of {@link #getid}.
    */
-  @XmlElement
+  @XmlElement(name = "id")
   public void setId(String id) {
 
     this.id = id;
@@ -46,7 +45,7 @@ public class MavenSettingsRepositoryModel {
   /**
    * @param name new value of {@link #getname}.
    */
-  @XmlElement
+  @XmlElement(name = "name")
   public void setName(String name) {
 
     this.name = name;
@@ -63,7 +62,7 @@ public class MavenSettingsRepositoryModel {
   /**
    * @param url new value of {@link #geturl}.
    */
-  @XmlElement
+  @XmlElement(name = "url")
   public void setUrl(URL url) {
 
     this.url = url;
