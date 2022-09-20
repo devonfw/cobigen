@@ -27,7 +27,7 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-    
+
     <!-- Proper process reader -->
     <dependency>
       <groupId>org.zeroturnaround</groupId>
@@ -40,9 +40,30 @@
       <artifactId>core-test</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- enables JSON creation for REST search response API -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+    <!-- http client -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+    </dependency>
+
+    <!-- Needed for WireMock test support -->
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <version>2.27.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

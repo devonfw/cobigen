@@ -12,15 +12,19 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
@@ -41,11 +45,12 @@ public class TemplatesJarUtil {
    * @param templatesDirectory directory where the templates jar are located
    * @return fileName Name of the file downloaded
    */
-  private static String downloadJar(String groupId, String artifactId, String version, boolean isDownloadSource,
+  public static String downloadJar(String groupId, String artifactId, String version, boolean isDownloadSource,
       File templatesDirectory) {
 
     // By default the version should be latest
-    if (version.isEmpty() || version == null) {
+    if (StringUtils.isEmpty(version)) {
+
       version = "LATEST";
     }
 
@@ -85,6 +90,8 @@ public class TemplatesJarUtil {
   }
 
   /**
+   * Downloads the latest devon4j templates
+   *
    * @param isDownloadSource true if downloading source jar file
    * @param templatesDirectory directory where the templates jar are located
    * @return fileName Name of the file downloaded
@@ -93,6 +100,79 @@ public class TemplatesJarUtil {
 
     return downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
         TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
+  }
+
+  /**
+   * Downloads multiple jar files defined by the maven coordinates. Only downloads if files are not present or adapted
+   * folder does not exist.
+   *
+   * @param templatesDirectory directory where the templates jar are located
+   * @param mavenCoordinates list with {@link MavenCoordinate} that will be loaded
+   */
+  public static void downloadTemplatesByMavenCoordinates(Path templatesDirectory,
+      List<MavenCoordinate> mavenCoordinates) {
+
+    if (mavenCoordinates == null || mavenCoordinates.isEmpty()) {
+      return;
+      // no templates specified
+    }
+
+    Set<MavenCoordinate> existingTemplates = new HashSet<>();
+    Path adapted = templatesDirectory.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path downloaded = templatesDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    // search for already available template-sets
+    if (Files.exists(adapted)) {
+      existingTemplates.addAll(getMatchingTemplates(mavenCoordinates, adapted));
+    }
+    if (Files.exists(downloaded)) {
+      existingTemplates.addAll(getMatchingTemplates(mavenCoordinates, downloaded));
+    } else {
+      LOG.info("downloaded folder could not be found and will be created ");
+      try {
+        Files.createDirectory(templatesDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
+      } catch (IOException e) {
+        throw new CobiGenRuntimeException("Could not create Download Folder", e);
+      }
+    }
+
+    if (!existingTemplates.isEmpty()) {
+      mavenCoordinates.removeAll(existingTemplates);
+    }
+
+    for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
+      downloadJar(mavenCoordinate.getGroupId(), mavenCoordinate.getArtifactId(), mavenCoordinate.getVersion(), false,
+          downloaded.toFile());
+      downloadJar(mavenCoordinate.getGroupId(), mavenCoordinate.getArtifactId(), mavenCoordinate.getVersion(), true,
+          downloaded.toFile());
+    }
+
+  }
+
+  /**
+   * Checks if the given Path contains Folders or files with a artifact name from a list of maven artifact. This
+   * function is used to check if templates already exists and just uses the artifactId and not the version of the
+   * artifacts
+   *
+   * @param mavenCoordinates a List of maven coordinates that are check for matching templates
+   * @param path Path to the directory that contains the Templates.
+   * @return Set with MavenCoordinate that are already present in the directory
+   */
+  private static Set<MavenCoordinate> getMatchingTemplates(List<MavenCoordinate> mavenCoordinates, Path path) {
+
+    HashSet<MavenCoordinate> existingTemplates = new HashSet<>();
+
+    for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
+      try {
+        if (Files.list(path).anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
+          existingTemplates.add(mavenCoordinate);
+        }
+      } catch (IOException e) {
+        LOG.warn("Failed to get all files and directories from the folder " + path, e);
+
+      }
+    }
+    return existingTemplates;
+
   }
 
   /**

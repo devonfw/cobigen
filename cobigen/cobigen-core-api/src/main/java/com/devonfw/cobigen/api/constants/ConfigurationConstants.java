@@ -99,6 +99,11 @@ public class ConfigurationConstants {
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_HIDE = "template-sets.hide";
 
   /**
+   * Name of configuration key to preinstall specific template sets
+   */
+  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_INSTALLED = "template-sets.installed";
+
+  /**
    * Default (public) cobigen GroupId
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID = "com.devonfw.cobigen.templates";

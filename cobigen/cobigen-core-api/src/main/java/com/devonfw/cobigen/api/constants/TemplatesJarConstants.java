@@ -10,6 +10,12 @@ public class TemplatesJarConstants {
   public static final String DOWNLOADED_JAR_FOLDER = "/.metadata/cobigen_jars";
 
   /**
+   * Regular expression to check the correct definition of maven coordinates to download a template-set with the
+   * configuration key template-sets.installed in the properties.
+   */
+  public static final String MAVEN_COORDINATES_CHECK = "([a-zA-Z0-9_\\-\\.]+):([a-zA-Z0-9_-]+)(:([0-9]+(\\.[0-9]+)*(-SNAPSHOT)?|LATEST))?";
+
+  /**
    * Jar regular expression name to be used in a file name filter, so that we can check whether the templates are
    * already downloaded. Checks "templates-anystring-anydigitbetweendots.jar"
    */

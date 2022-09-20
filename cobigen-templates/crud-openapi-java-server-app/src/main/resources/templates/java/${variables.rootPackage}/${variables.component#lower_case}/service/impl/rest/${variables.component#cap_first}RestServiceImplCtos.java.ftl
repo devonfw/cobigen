@@ -4,7 +4,7 @@ import ${variables.rootPackage}.${variables.component}.common.api.${variables.en
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Cto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import ${variables.rootPackage}.${variables.component}.service.api.rest.${variables.component?cap_first}RestService;
 
 import org.springframework.data.domain.Page;
@@ -22,7 +22,7 @@ public class ${variables.component?cap_first}RestServiceImpl implements ${variab
 
   @Inject
   private ${variables.component?cap_first} ${variables.component?lower_case};
-  
+
   @Override
   public ${variables.entityName}Cto get${variables.entityName}Cto(long id) {
     return this.${variables.component?uncap_first}.find${variables.entityName}Cto(id);

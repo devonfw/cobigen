@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen.templates</groupId>
   <artifactId>templates-parent</artifactId>
@@ -62,6 +61,7 @@
         <targetPath>src/main/java</targetPath>
       </resource>
     </resources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -112,10 +112,9 @@
                 <echo>Integrate flattened POM manually</echo>
                 <!-- Patching the flattened-pom file -->
                 <!-- Removing the last </project> line -->
-                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
-                  classpathref="maven.plugin.classpath" />
+                <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath" />
                 <if>
-                  <available file="../pom_patch.xml"/>
+                  <available file="../pom_patch.xml" />
                   <then>
                     <echo message="The value of property foo is bar" />
                     <replace file=".flattened-pom.xml" value="" token="&lt;/project>"></replace>
@@ -124,7 +123,7 @@
                     <replace file="../pom_patch.xml" value="${maven.compiler.target}" token="{maven.compiler.target}"></replace>
                     <!-- Adding content -->
                     <concat destfile=".flattened-pom.xml" append="true">
-                      <filelist dir="." files="../pom_patch.xml"/>
+                      <filelist dir="." files="../pom_patch.xml" />
                     </concat>
                     <!-- Restoring the patch file -->
                     <replace file="../pom_patch.xml" value="{maven.compiler.source}" token="${maven.compiler.source}"></replace>
@@ -133,7 +132,7 @@
                     <concat destfile=".flattened-pom.xml" append="true">&lt;/project></concat>
                   </then>
                 </if>
-                <copy file=".flattened-pom.xml" tofile="${project.build.outputDirectory}/pom.xml"/>
+                <copy file=".flattened-pom.xml" tofile="${project.build.outputDirectory}/pom.xml" />
               </tasks>
             </configuration>
           </execution>
@@ -141,4 +140,44 @@
       </plugin>
     </plugins>
   </build>
+
+  <!--profile to attach template-set.xml which resides in other sub-modules and excludes this build in parent project -->
+  <profiles>
+    <profile>
+      <id>attach-artifacts</id>
+      <activation>
+        <file>
+          <exists>src/main/resources/template-set.xml</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.3.0</version>
+            <executions>
+              <execution>
+                <id>attach-artifacts</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>attach-artifact</goal>
+                </goals>
+                <configuration>
+                  <artifacts>
+                    <artifact>
+                      <file>src\main\resources\template-set.xml</file>
+                      <type>xml</type>
+                      <classifier>template-set</classifier>
+                    </artifact>
+                  </artifacts>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

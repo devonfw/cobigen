@@ -14,10 +14,9 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 
 /**
- * Tests the usage of the adapt-templates command. Warning: Java 9+ requires -Djdk.attach.allowAttachSelf=true to be
- * present among JVM startup arguments.
+ * Tests the usage of the adapt-templates command.
  */
-public class AdaptTemplatesCommandTest extends AbstractCliTest {
+public class AdaptTemplatesCommandIT extends AbstractCliTest {
 
   /**
    * Simulate the download of the template set jars, as this not yet implemented. This method can be removed later
@@ -29,7 +28,7 @@ public class AdaptTemplatesCommandTest extends AbstractCliTest {
   public void initAdaptTemplatesTest() throws URISyntaxException, IOException {
 
     Path cliSystemTestPath = new File(
-        AdaptTemplatesCommandTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+        AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
             .getParentFile().toPath();
     Path templateJar = cliSystemTestPath.resolve("src/test/resources/testdata/crud-java-server-app.jar");
     if (Files.exists(templateJar)) {
