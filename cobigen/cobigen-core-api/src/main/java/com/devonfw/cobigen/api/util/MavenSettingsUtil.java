@@ -46,14 +46,12 @@ public class MavenSettingsUtil {
       JAXBContext jaxbContext = JAXBContext.newInstance(MavenSettingsModel.class);
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
       MavenSettingsModel model = (MavenSettingsModel) jaxbUnmarshaller.unmarshal(initialFile);
-      // Für Präsentation (Haltepunkt setzen)
-      // System.out.println(model);
 
       LOG.debug("Successfully unmarshalled maven's settings.xml");
       return model;
     } catch (JAXBException e) {
       LOG.error("Unable to unmarshal maven's settings.xml");
-      throw new CobiGenRuntimeException("", e);
+      throw new CobiGenRuntimeException("Unable to unmarshal maven's settings.xml", e);
     }
   }
 

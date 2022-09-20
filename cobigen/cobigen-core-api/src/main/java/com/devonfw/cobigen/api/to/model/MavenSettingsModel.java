@@ -11,28 +11,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "settings")
 public class MavenSettingsModel {
 
-  String localRepository;
-
   MavenSettingsProfilesModel profiles;
 
   MavenSettingsServers servers;
-
-  /**
-   * @return localRepository
-   */
-  public String getLocalRepository() {
-
-    return this.localRepository;
-  }
-
-  /**
-   * @param localRepository new value of {@link #getlocalRepository}.
-   */
-  @XmlElement(name = "localRepository")
-  public void setLocalRepository(String localRepository) {
-
-    this.localRepository = localRepository;
-  }
 
   /**
    * @return profiles
