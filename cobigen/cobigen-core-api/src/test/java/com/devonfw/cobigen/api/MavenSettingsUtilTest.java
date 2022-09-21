@@ -20,7 +20,7 @@ public class MavenSettingsUtilTest {
    * @throws Exception
    */
   @Test
-  public void testReadSettingsSettingsSecurityMasterPassword() throws Exception {
+  public void testReadSettingsSecurityMasterPasswordFromSecuritiesFile() throws Exception {
 
     String securitiesFile = Paths.get(testdataRoot).resolve("settings-security.xml").toAbsolutePath().toString();
     SettingsSecurity settingsSecurity = MavenSettingsUtil.readSettingsSecurity(securitiesFile);
