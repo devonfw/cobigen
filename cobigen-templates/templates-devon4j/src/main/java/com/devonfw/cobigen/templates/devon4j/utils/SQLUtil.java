@@ -5,12 +5,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +41,9 @@ public class SQLUtil extends CommonUtil {
    *
    * @param canonicalTypeName {@link String} full qualified class name
    * @return returns the equivalent SQL type
+   * @throws IllegalArgumentException when type is not a java type
    */
-  private String mapJavaToSqlType(String canonicalTypeName) throws IllegalArgumentException {
+  public String mapJavaToSqlType(String canonicalTypeName) throws IllegalArgumentException {
 
     try {
 
@@ -289,68 +294,117 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Get the column name based on annotations or default to fieldName
+   * Helper method to build a hash map for foreign key values
    *
-   * @param annotations Array of a field's annotations
-   * @param fieldName {@link String} the name of the field
-   * @return SQL Column name base or null
+   * @param name name of the foreign key
+   * @param table the current table name
+   * @param columnname referenced column name
+   * @return
    */
-  public String getColumnName(Annotation[] annotations, String fieldName) {
+  private HashMap<String, String> fkMapBuild(String name, String table, String columnname) {
 
-    return "";
+    HashMap<String, String> foreignKeyMap = new HashMap<String, String>() {
+      {
+        put("key", name);
+        put("table", table);
+        put("id", columnname);
+      }
+    };
+    return foreignKeyMap;
   }
 
   /**
-   * Get a primary key SQL statement based on the @ID annotation
+   * Get a List of HashMaps holding the information for foreign keys assuming the current field is an entity
    *
-   * @param annotations Array of a field's annotations
-   * @param className {@link String} full qualified class name
-   * @param fieldName {@link String} the name of the field
-   * @return SQL Primary key statement or null
+   * @param field the pojo field
+   * @return List of Hash Map holding the information {"key": name, "table": table, "id": id}
+   *
+   * @key {@link String} the name of the foreign key
+   * @table {@link String} the table which is referenced by the foreign key
+   * @id {@link String} the name of the referenced with @id annotated variable
    */
-  public String getPrimaryKeyType(Annotation[] annotations, String className, String fieldName) {
+  public List<HashMap<String, String>> getForeignKeyData(Field field) {
 
-    return "";
+    String table = "", tableReceived;
+    List<HashMap<String, String>> foreignKeyData = new ArrayList<>();
+
+    // Assumes @JoinColumn is present
+    if (field.isAnnotationPresent(JoinColumn.class)) {
+      String[] fkDeclaration = getForeignKeyDeclaration(field).split(",");
+      String name = getForeignKeyName(field, fkDeclaration[1]);
+      String tableName = getForeignKeyTableName(field);
+      foreignKeyData.add(fkMapBuild(name, table, fkDeclaration[0]));
+    }
+
+    return foreignKeyData;
   }
 
   /**
-   * Get the Foreign Key and its type based on annotated options. If the field is annotated with JoinColumn the Foreign
-   * Key will be the type of the referenced column.
+   * Get the table name of the current pojo
    *
-   * @param annotations Array of a field's annotations
-   * @param className {@link String} full qualified class name
-   * @param fieldName {@link String} the name of the field
-   * @return SQL foreign key + "," + type or null
+   * @param field field the pojo field
+   * @return {@link String}
    */
-  public String getForeignKey(Annotation[] annotations, String className, String fieldName) {
+  public String getForeignKeyTableName(Field field) {
 
-    return "" + "," + "";
+    try {
+      String tableName = "";
+      if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+        tableName = getEntityTableName(field.getType().getCanonicalName());
+      } else {
+        tableName = field.getType().getCanonicalName();
+      }
+
+      return tableName;
+    } catch (ClassNotFoundException e) {
+      LOG.error("{}: Could not find {}", e.getMessage(), field.getType().getCanonicalName());
+    }
+    return null;
   }
 
   /**
-   * Get the Foreign Key name based on annotated options or default to "column_name + _id"
+   * Retrieve the name of a referenced column and its type based on the provided field
    *
-   * @param annotations Array of a field's annotations
-   * @param className {@link String} full qualified class name
-   * @param fieldName {@link String} the name of the field
-   * @return SQL foreign key name or null
+   * @param field current pojo class
+   * @return comma separated String or null
    */
-  public String getForeignKeyName(Annotation[] annotations, String className, String fieldName) {
+  public String getForeignKeyDeclaration(Field field) {
 
-    return "";
+    String columnName, type;
+    try {
+      if (field.isAnnotationPresent(JoinColumn.class)
+          && !field.getAnnotation(JoinColumn.class).referencedColumnName().isEmpty()) {
+        columnName = field.getAnnotation(JoinColumn.class).referencedColumnName();
+        type = mapJavaToSqlType(getCanonicalNameOfFieldType(field.getType().getCanonicalName(), columnName));
+      } else {
+        String[] pkReceived = getPrimaryKey(field.getType().getCanonicalName()).split(",");
+        type = mapJavaToSqlType(pkReceived[0]);
+        columnName = pkReceived[1];
+      }
+      return columnName + "," + type;
+
+    } catch (ClassNotFoundException e) {
+      LOG.error("{}: Could not find {}", e.getMessage(), field.getType().getCanonicalName());
+    }
+    return null;
   }
 
   /**
-   * Get the Foreign table based on annotated options that will be referenced
+   * Get the name of a @JoinColumn or fall back to a default in name in case the name option is not set
    *
-   * @param annotations Array of a field's annotations
-   * @param className {@link String} full qualified class name
-   * @param fieldName {@link String} the name of the field
-   * @return SQL foreign table to be referenced or null
+   * @param field current pojo class
+   * @param fallBack String for fallback option
+   * @return {@link String} Column name
    */
-  public String getForeignKeyTable(Annotation[] annotations, String className, String fieldName) {
+  public String getForeignKeyName(Field field, String fallBack) {
 
-    return "" + "," + "";
+    String name;
+    if (field.isAnnotationPresent(JoinColumn.class) && !field.getAnnotation(JoinColumn.class).name().isBlank()) {
+      name = field.getAnnotation(JoinColumn.class).name();
+    } else {
+      name = field.getName() + "_" + fallBack;
+    }
+    return name;
   }
 
   /**
