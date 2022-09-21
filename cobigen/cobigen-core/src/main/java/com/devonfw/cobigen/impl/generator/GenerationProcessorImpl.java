@@ -524,9 +524,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
           progressCallback.accept(formatter.out().toString(), 1);
         }
         generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
-
-        // Merger merger = PluginRegistry.getMerger(templateEty.getMergeStrategy());
-        // merger.addGeneratedAnnotation(tmpOriginalFile, targetCharset);
       }
     }
   }
