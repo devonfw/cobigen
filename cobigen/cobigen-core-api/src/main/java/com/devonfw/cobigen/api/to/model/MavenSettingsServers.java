@@ -10,23 +10,23 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class MavenSettingsServers {
 
-  List<MavenSettingsServer> server;
+  List<MavenSettingsServer> serverList;
 
   /**
    * @return server
    */
-  public List<MavenSettingsServer> getServer() {
+  public List<MavenSettingsServer> getServerList() {
 
-    return this.server;
+    return this.serverList;
   }
 
   /**
    * @param server new value of {@link #getserver}.
    */
   @XmlElement(name = "server")
-  public void setServer(List<MavenSettingsServer> server) {
+  public void setServerList(List<MavenSettingsServer> server) {
 
-    this.server = server;
+    this.serverList = server;
   }
 
 }

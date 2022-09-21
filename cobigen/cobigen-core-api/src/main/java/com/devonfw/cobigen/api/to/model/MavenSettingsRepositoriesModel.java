@@ -11,14 +11,14 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class MavenSettingsRepositoriesModel {
 
-  List<MavenSettingsRepositoryModel> repository;
+  List<MavenSettingsRepositoryModel> repositoryList;
 
   /**
    * @return repository
    */
   public List<MavenSettingsRepositoryModel> getRepository() {
 
-    return this.repository;
+    return this.repositoryList;
   }
 
   /**
@@ -27,7 +27,7 @@ public class MavenSettingsRepositoriesModel {
   @XmlElement(name = "repository")
   public void setRepository(List<MavenSettingsRepositoryModel> repository) {
 
-    this.repository = repository;
+    this.repositoryList = repository;
   }
 
 }

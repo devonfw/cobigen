@@ -20,12 +20,6 @@ import com.devonfw.cobigen.api.to.model.MavenSettingsModel;
  */
 public class MavenSettingsUtil {
 
-  public static void main(String[] args) {
-
-    MavenSettingsUtil.generateMavenSettingsModel();
-
-  }
-
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(MavenSettingsUtil.class);
 
@@ -35,11 +29,11 @@ public class MavenSettingsUtil {
    *
    * @return Java class, on which parts of the settings.xml are mapped to
    */
-  public static MavenSettingsModel generateMavenSettingsModel() {
+  public static MavenSettingsModel generateMavenSettingsModel(Path settingsXMLPath) {
 
     LOG.info("Unmarshal maven's settings.xml");
 
-    Path settingsXMLPath = determineMavenSettingsPath();
+    // Path settingsXMLPath = determineMavenSettingsPath();
 
     try {
       File initialFile = new File(settingsXMLPath.toString());
@@ -60,7 +54,7 @@ public class MavenSettingsUtil {
    *
    * @return Path to settings.xml
    */
-  private static Path determineMavenSettingsPath() {
+  public static Path determineMavenSettingsPath() {
 
     LOG.info("Determine path of maven's settings.xml");
     Path repositoryPath = MavenUtil.determineMavenRepositoryPath();

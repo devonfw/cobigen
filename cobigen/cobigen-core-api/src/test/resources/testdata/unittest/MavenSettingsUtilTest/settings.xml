@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <servers>
+    <server>
+      <id>repository</id>
+      <username>testUsername</username>
+      <password>testPassword</password>
+    </server>
+  </servers>
+
+  <profiles>
+    <profile>
+      <id>devonfw-snapshots</id>
+      <repositories>
+        <repository>
+          <id>123</id>
+          <name>devonfw SNAPSHOT releases</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+</settings>

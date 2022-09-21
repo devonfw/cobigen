@@ -10,23 +10,23 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class MavenSettingsProfilesModel {
 
-  List<MavenSettingsProfileModel> profiles;
+  List<MavenSettingsProfileModel> profileList;
 
   /**
    * @return profiles
    */
-  public List<MavenSettingsProfileModel> getProfiles() {
+  public List<MavenSettingsProfileModel> getProfileList() {
 
-    return this.profiles;
+    return this.profileList;
   }
 
   /**
    * @param profiles new value of {@link #getprofiles}.
    */
   @XmlElement(name = "profile")
-  public void setProfiles(List<MavenSettingsProfileModel> profiles) {
+  public void setProfileList(List<MavenSettingsProfileModel> profiles) {
 
-    this.profiles = profiles;
+    this.profileList = profiles;
   }
 
 }
