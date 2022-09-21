@@ -4,13 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,8 +21,6 @@ import com.devonfw.cobigen.api.extension.Merger;
 import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
-import com.devonfw.cobigen.javaplugin.inputreader.util.CobiGenGenerated;
-import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaAnnotation;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -76,6 +74,22 @@ public class JavaMerger implements Merger {
   @Override
   public String merge(File base, String patch, String targetCharset) throws MergeException {
 
+    boolean flag = patch.contains("addGeneratedAnnotation");
+    if (flag) {
+      String result = null;
+      try {
+        result = addGeneratedAnnotation(base, targetCharset);
+      } catch (FileNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      return result;
+
+    }
+
     ModifyableJavaClass baseClass;
     String lineDelimiter;
     Path path = Paths.get(base.getAbsolutePath());
@@ -111,6 +125,57 @@ public class JavaMerger implements Merger {
 
     ModifyableJavaClass mergedClass = merge(baseClass, patchClass);
     return StringUtil.consolidateLineEndings(mergedClass.getSource().getCodeBlock(), lineDelimiter);
+  }
+
+  private String addGeneratedAnnotation(File tmpOriginalFile, String targetCharset)
+      throws FileNotFoundException, IOException {
+
+    // My Approacch to creating an instance of JavaAnnotation type
+    // Could Not set properties in javaAnnotataion because its properties map take instance of AnnotationValue
+    // insight on this will be appreciated
+    /*
+     * JavaClass generated; generated = new ModifyableJavaClass(Generated.class.getName()); DefaultJavaAnnotation jA =
+     * new DefaultJavaAnnotation(generated);
+     */
+    Path path = Paths.get(tmpOriginalFile.getAbsolutePath());
+    String lineDelimiter;
+    JavaClass baseClass, parsedClass;
+    // Extract generated annotation
+    File file = new File("src/test/resources/testdata/unittest/merger/libextension/Anno.java");
+
+    try (FileInputStream stream = new FileInputStream(path.toString());
+        BufferedInputStream bis = new BufferedInputStream(stream);
+        InputStreamReader reader = new InputStreamReader(bis, targetCharset);
+        FileReader fr = new FileReader(file)) {
+
+      parsedClass = JavaParserUtil.getFirstJavaClass(fr);
+      baseClass = JavaParserUtil.getFirstJavaClass(reader);
+      List<JavaAnnotation> generatedAnnotation = parsedClass.getAnnotations();
+
+      lineDelimiter = SystemUtil.determineLineDelimiter(path, targetCharset);
+      List<JavaMethod> methods = baseClass.getMethods();
+      List<JavaField> fields = baseClass.getFields();
+      List<JavaConstructor> constructors = baseClass.getConstructors();
+
+      for (JavaConstructor constructor : constructors) {
+        List<JavaAnnotation> anno = constructor.getAnnotations();
+        ((AbstractBaseJavaEntity) constructor).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+      }
+
+      for (JavaField field : fields) {
+        List<JavaAnnotation> anno = field.getAnnotations();
+        ((AbstractBaseJavaEntity) field).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+      }
+
+      for (JavaMethod method : methods) {
+        List<JavaAnnotation> anno = method.getAnnotations();
+        ((AbstractBaseJavaEntity) method).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+      }
+      String checkagain = baseClass.getSource().getCodeBlock();
+
+      return StringUtil.consolidateLineEndings(baseClass.getSource().getCodeBlock(), lineDelimiter);
+
+    }
   }
 
   /**
@@ -207,56 +272,6 @@ public class JavaMerger implements Merger {
       } else {
         baseClass.getSource().getImports().add(patchImport);
       }
-    }
-  }
-
-  public void addGeneratedAnnotation(File tmpOriginalFile, String targetCharset)
-      throws FileNotFoundException, IOException {
-
-    Path path = Paths.get(tmpOriginalFile.getAbsolutePath());
-    String lineDelimiter;
-    JavaClass baseClass;
-
-    // ModifyableJavaClass baseClass = new ModifyableJavaClass(tmpOriginalFile);
-    try (FileInputStream stream = new FileInputStream(path.toString());
-        BufferedInputStream bis = new BufferedInputStream(stream);
-        InputStreamReader reader = new InputStreamReader(bis, targetCharset)) {
-
-      baseClass = JavaParserUtil.getFirstJavaClass(reader);
-      System.out.println(baseClass.getSource().getCodeBlock());
-      lineDelimiter = SystemUtil.determineLineDelimiter(path, targetCharset);
-      List<JavaMethod> methods = baseClass.getMethods();
-      List<JavaField> fields = baseClass.getFields();
-
-      String codeBlock = "@Generated(value=CobiGen)";
-      LinkedHashMap<String, Object> generatedMap = new LinkedHashMap<>();
-      JavaClass generatedType = new ModifyableJavaClass(CobiGenGenerated.class.getName());
-      generatedMap.put("value", "cobiGen");
-
-      for (JavaField field : fields) {
-        List<JavaAnnotation> anno = field.getAnnotations();
-        ModifyableJavaAnnotation cobiGengeneratedAnnotation = new ModifyableJavaAnnotation((field.getLineNumber() - 1),
-            codeBlock, generatedType, generatedMap);
-        anno.add(cobiGengeneratedAnnotation);
-        ((AbstractBaseJavaEntity) field).setAnnotations(anno);
-      }
-
-      System.out.println(baseClass.getSource().getCodeBlock());
-
-      // TODO add annotation to methods
-
-      // for (JavaMethod method : methods) {
-      //// List<JavaAnnotation> anno = method.getAnnotations();
-      //// ModifyableJavaAnnotation cobiGengeneratedAnnotation = new ModifyableJavaAnnotation((method.getLineNumber() -
-      // 1),
-      //// codeBlock, generatedType, generatedMap);
-      //// anno.add(cobiGengeneratedAnnotation);
-      // ((AbstractBaseJavaEntity) method).setAnnotations(anno);
-      // }
-
-      // TODO write back the new content of baseClass to the file
-      // FileUtils.writeStringToFile(tmpOriginalFile, baseClass, StandardCharsets.UTF_8);
-
     }
   }
 

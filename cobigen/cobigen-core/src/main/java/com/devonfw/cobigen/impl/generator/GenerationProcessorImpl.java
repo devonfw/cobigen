@@ -606,6 +606,13 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     try (Writer out = new StringWriter()) {
       templateEngine.process(template, model, out, outputCharset);
       FileUtils.writeStringToFile(output, out.toString(), outputCharset);
+      if (output.getAbsolutePath().endsWith(".java")) {
+        Merger merger = PluginRegistry.getMerger(template.getMergeStrategy());
+        String outputAgain = merger.merge(output, "addGeneratedAnnotation", outputCharset);
+        FileUtils.writeStringToFile(output, outputAgain.toString(), outputCharset);
+
+      }
+
     } catch (IOException e) {
       throw new CobiGenRuntimeException(
           "Could not write file while processing template " + template.getAbsoluteTemplatePath(), e);

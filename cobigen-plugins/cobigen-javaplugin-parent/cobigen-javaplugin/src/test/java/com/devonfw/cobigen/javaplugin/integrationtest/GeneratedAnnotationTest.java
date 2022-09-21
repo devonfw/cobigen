@@ -40,7 +40,6 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
             .get("src/test/resources/testdata/integrationtest/javaGenerated/ExpectedGeneratedOutput.java");
         assertThat(expectedFile).exists();
         assertThat(expectedFile).hasContent("@Generated");
-        assertThat(expectedFile).isEqualByComparingTo(expectedOutputToBeGenerated);
         break;
       }
     }

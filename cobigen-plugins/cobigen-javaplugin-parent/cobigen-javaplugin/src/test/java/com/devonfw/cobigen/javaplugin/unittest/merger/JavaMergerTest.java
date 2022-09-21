@@ -603,11 +603,10 @@ public class JavaMergerTest {
   @Test
   public void testaddAnnotation() throws IOException {
 
-    String testInputPath = "src/test/resources/testdata/unittest/inputreader/";
-    File baseFile = new File(testInputPath + "EmployeeEntity.java");
+    File baseFile = new File(testFileRootPath + "Generated.java");
     JavaMerger javaMergerObj = new JavaMerger("", false);
-    javaMergerObj.addGeneratedAnnotation(baseFile, "UTF-8");
-    String output = FileUtils.readFileToString(baseFile, StandardCharsets.UTF_8);
-    // System.out.println(output);
+    String output = javaMergerObj.merge(baseFile, "addGeneratedAnnotation", "UTF-8");
+    assertThat(output).contains("@Generated");
+
   }
 }

@@ -1,4 +1,4 @@
-package ${variables.rootPackage}.${variables.component}.common.api.${variables.detail};
+package ${variables.rootPackage}.${variables.component}.common.api;
 
 import ${variables.rootPackage}.general.common.api.ApplicationEntity;
 

@@ -1,8 +1,6 @@
 package com.devonfw.cobigen.javaplugin.inputreader;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -12,15 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.processing.Generated;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.StringUtil;
-import com.devonfw.cobigen.javaplugin.inputreader.util.AnnotationUtil;
 import com.devonfw.cobigen.javaplugin.model.ModelConstant;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -87,12 +81,6 @@ public class ParsedJavaModelBuilder {
     pojoModel.put(ModelConstant.ANNOTATIONS, annotations);
 
     List<Map<String, Object>> fields = extractFields(javaClass);
-    try {
-      checkAndAddGeneratedAnnotation(fields);
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      LOG.error("An error has occured while adding the generated annotation!");
-      throw new CobiGenRuntimeException("An error has occured while adding the generated annotation!");
-    }
     pojoModel.put(ModelConstant.FIELDS_DEPRECATED, fields);
     pojoModel.put(ModelConstant.FIELDS, fields);
     determinePojoIds(javaClass, fields);
@@ -109,37 +97,12 @@ public class ParsedJavaModelBuilder {
     List<Map<String, Object>> interfaces = extractInterfaces(javaClass);
     pojoModel.put(ModelConstant.IMPLEMENTED_TYPES, interfaces);
 
-    try {
-      checkAndAddGeneratedAnnotation(extractMethods(javaClass));
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      LOG.error("An error has occured while adding the generated annotation!");
-      throw new CobiGenRuntimeException("An error has occured while adding the generated annotation!");
-    }
     pojoModel.put(ModelConstant.METHODS, extractMethods(javaClass));
 
     this.cachedModel.put(ModelConstant.MODEL_ROOT, pojoModel);
 
     LOG.debug("Built parsed model in {}s", (Calendar.getInstance().getTimeInMillis() - start) / 100d);
     return new HashMap<>(this.cachedModel);
-  }
-
-  private void checkAndAddGeneratedAnnotation(Object object)
-      throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-
-    Class<?> clazz = object.getClass();
-    for (Method method : clazz.getDeclaredMethods()) {
-      if (!clazz.isAnnotationPresent(Generated.class)) {
-        method.setAccessible(true);
-        method.invoke(object);
-        AnnotationUtil.addAnnotation(method, Generated.class.getAnnotation(Generated.class));
-      }
-    }
-    for (Field field : clazz.getDeclaredFields()) {
-      if (!clazz.isAnnotationPresent(Generated.class)) {
-        field.setAccessible(true);
-        AnnotationUtil.addAnnotation(field, Generated.class.getAnnotation(Generated.class));
-      }
-    }
   }
 
   /**
