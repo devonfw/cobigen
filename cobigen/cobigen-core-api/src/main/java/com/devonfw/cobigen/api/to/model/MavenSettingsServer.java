@@ -8,10 +8,19 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class MavenSettingsServer {
 
+  /**
+   * Represents the id of a server element in maven's settings.xml
+   */
   String id;
 
+  /**
+   * Represents the username of a server element in maven's settings.xml
+   */
   String username;
 
+  /**
+   * Represents the password of a server element in maven's settings.xml
+   */
   String password;
 
   /**

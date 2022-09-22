@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,16 +16,22 @@ import com.devonfw.cobigen.api.util.MavenSettingsUtil;
  */
 public class MavenSettingsUtilTest {
 
-  /** Testdata root path */
+  /** Test data root path */
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSettingsUtilTest";
 
+  /**
+   * Tests, whether the path of maven's settings.xml is determined correctly
+   */
   @Test
   public void testDetermineMavenSettingsPath() {
 
     Path result = MavenSettingsUtil.determineMavenSettingsPath();
-    assertTrue(result.toString().contains("\\conf\\.m2\\settings.xml"));
+    assertThat(result.toString().contains("\\conf\\.m2\\settings.xml"));
   }
 
+  /**
+   * Tests, whether the the repository elements of maven's settings.xml are mapped correctly to a java class
+   */
   @Test
   public void testGenerateMavenSettingsModelRepository() {
 
@@ -38,13 +43,16 @@ public class MavenSettingsUtilTest {
     String testUrl = result.getProfiles().getProfileList().get(0).getRepositories().getRepository().get(0).getUrl()
         .toString();
 
-    assertEquals("123", testId);
+    assertThat(testId).isEqualTo("123");
 
-    assertEquals("devonfw SNAPSHOT releases", testName);
+    assertThat(testName).isEqualTo("devonfw SNAPSHOT releases");
 
-    assertEquals("https://s01.oss.sonatype.org/content/repositories/snapshots/", testUrl);
+    assertThat(testUrl).isEqualTo("https://s01.oss.sonatype.org/content/repositories/snapshots/");
   }
 
+  /**
+   * Tests, whether the the server elements of maven's settings.xml are mapped correctly to a java class
+   */
   @Test
   public void testGenerateMavenSettingsModelServer() {
 
@@ -55,11 +63,11 @@ public class MavenSettingsUtilTest {
     String testUsername = result.getServers().getServerList().get(0).getUsername();
     String testPassword = result.getServers().getServerList().get(0).getPassword();
 
-    assertEquals("repository", testId);
+    assertThat(testId).isEqualTo("repository");
 
-    assertEquals("testUsername", testUsername);
+    assertThat(testUsername).isEqualTo("testUsername");
 
-    assertEquals("testPassword", testPassword);
+    assertThat(testPassword).isEqualTo("testPassword");
   }
 
 }

@@ -2,7 +2,6 @@ package com.devonfw.cobigen.api.util;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,8 +32,6 @@ public class MavenSettingsUtil {
 
     LOG.info("Unmarshal maven's settings.xml");
 
-    // Path settingsXMLPath = determineMavenSettingsPath();
-
     try {
       File initialFile = new File(settingsXMLPath.toString());
       JAXBContext jaxbContext = JAXBContext.newInstance(MavenSettingsModel.class);
@@ -58,9 +55,9 @@ public class MavenSettingsUtil {
 
     LOG.info("Determine path of maven's settings.xml");
     Path repositoryPath = MavenUtil.determineMavenRepositoryPath();
-    String settingsXMLString = repositoryPath.toString().replaceAll("repository", "settings.xml");
-    LOG.debug("Determined {} as maven's settings.xml path.", settingsXMLString);
-    return Paths.get(settingsXMLString);
+    Path settingsXMLPath = repositoryPath.getParent().resolve("settings.xml");
+    LOG.debug("Determined {} as maven's settings.xml path.", settingsXMLPath);
+    return settingsXMLPath;
   }
 
 }

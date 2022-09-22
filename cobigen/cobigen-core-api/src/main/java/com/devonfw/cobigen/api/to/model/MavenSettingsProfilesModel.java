@@ -10,6 +10,9 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class MavenSettingsProfilesModel {
 
+  /**
+   * Represents profile elements in maven's settings.xml
+   */
   List<MavenSettingsProfileModel> profileList;
 
   /**

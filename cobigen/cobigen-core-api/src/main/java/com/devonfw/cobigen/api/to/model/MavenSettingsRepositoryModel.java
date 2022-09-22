@@ -11,10 +11,19 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class MavenSettingsRepositoryModel {
 
+  /**
+   * Represents the id of a repository element in maven's settings.xml
+   */
   String id;
 
+  /**
+   * Represents the name of a repository element in maven's settings.xml
+   */
   String name;
 
+  /**
+   * Represents the url of a repository element in maven's settings.xml
+   */
   URL url;
 
   /**

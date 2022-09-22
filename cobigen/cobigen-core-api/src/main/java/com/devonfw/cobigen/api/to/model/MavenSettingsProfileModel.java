@@ -8,6 +8,9 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class MavenSettingsProfileModel {
 
+  /**
+   * Represents the repositories element in maven's settings.xml
+   */
   MavenSettingsRepositoriesModel repositories;
 
   /**

@@ -7,12 +7,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Class, which represents the settings element of the settings.xml
  *
  */
-
 @XmlRootElement(name = "settings")
 public class MavenSettingsModel {
 
+  /**
+   * Represents the model element in maven's settings.xml
+   */
   MavenSettingsProfilesModel profiles;
 
+  /**
+   * Represents the servers element in maven's settings.xml
+   */
   MavenSettingsServers servers;
 
   /**

@@ -11,6 +11,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class MavenSettingsRepositoriesModel {
 
+  /**
+   * Represents repository elements in maven's settings.xml
+   */
   List<MavenSettingsRepositoryModel> repositoryList;
 
   /**

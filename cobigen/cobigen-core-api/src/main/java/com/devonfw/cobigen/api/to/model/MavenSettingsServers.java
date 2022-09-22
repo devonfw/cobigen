@@ -10,6 +10,9 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class MavenSettingsServers {
 
+  /**
+   * Represents server elements in maven's settings.xml
+   */
   List<MavenSettingsServer> serverList;
 
   /**
