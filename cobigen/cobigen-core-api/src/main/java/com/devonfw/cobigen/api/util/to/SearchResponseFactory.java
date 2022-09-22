@@ -13,7 +13,6 @@ import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
 import com.devonfw.cobigen.api.util.to.nexus2.Nexus2SearchResponse;
 import com.devonfw.cobigen.api.util.to.nexus3.Nexus3SearchResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
@@ -42,12 +41,11 @@ public class SearchResponseFactory {
    * @return List of download URLs
    * @throws RestSearchResponseException if an error occurred while accessing the server
    * @throws JsonProcessingException if the json processing was not possible
-   * @throws JsonMappingException if the json mapping was not possible
    * @throws MalformedURLException if an URL was malformed
    *
    */
   public static List<URL> searchArtifactDownloadLinks(String baseURL, String username, String password, String groupId)
-      throws RestSearchResponseException, JsonMappingException, JsonProcessingException, MalformedURLException {
+      throws RestSearchResponseException, JsonProcessingException, MalformedURLException {
 
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
