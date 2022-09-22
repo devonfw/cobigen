@@ -42,9 +42,33 @@ public class MavenUtilTest {
   /**
    * Tests if retrieving maven artifacts with an invalid link returns null
    */
+  @Test
   public void testRetrieveMavenArtifactsWithInvalidLinkReturnsNull() {
 
-    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("this/is/not/a/link", "test", null)).isNull();
+    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("this/is/not/a/link", null, null, "test")).isNull();
+  }
+
+  /**
+   * Tests if retrieving maven artifacts with an invalid username and password returns null
+   */
+  @Test
+  public void testRetrieveMavenArtifactsWithInvalidBasicCredentialsReturnsNull() {
+
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(401)));
+
+    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "myuser", "mypassword", "test"))
+        .isNull();
+  }
+
+  /**
+   * Tests if retrieving maven artifacts with an invalid token returns null
+   */
+  @Test
+  public void testRetrieveMavenArtifactsWithInvalidTokenReturnsNull() {
+
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(401)));
+
+    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, "mypassword", "test")).isNull();
   }
 
   /**
@@ -54,7 +78,7 @@ public class MavenUtilTest {
   public void testWrongTargetLinkThrowsException() {
 
     try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, null, null);
+      AbstractSearchResponse.retrieveJsonResponseWithAuthentication("this/is/not/a/link", null, null, null);
     } catch (RestSearchResponseException e) {
       assertThat(e).hasMessage("The target URL was faulty.");
     }
@@ -67,7 +91,7 @@ public class MavenUtilTest {
   public void testWrongTargetLinkAndTokenThrowsException() {
 
     try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, "thisisabadtoken",
+      AbstractSearchResponse.retrieveJsonResponseWithAuthentication("this/is/not/a/link", null, "thisisabadtoken",
           null);
     } catch (RestSearchResponseException e) {
       assertThat(e).hasMessage("The target URL was faulty.");
@@ -81,8 +105,8 @@ public class MavenUtilTest {
   public void testWrongResponseStatusCodeThrowsException() {
 
     try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken(
-          "https://search.maven.org/solrsearch/select?test", null, null, null);
+      AbstractSearchResponse.retrieveJsonResponseWithAuthentication("https://search.maven.org/solrsearch/select?test",
+          null, null, null);
     } catch (RestSearchResponseException e) {
       assertThat(e).hasMessage("The search REST API returned the unexpected status code: 400");
     }
@@ -205,7 +229,7 @@ public class MavenUtilTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.google.inject", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, null, "com.google.inject");
 
     // then
     assertThat(downloadList).contains(new URL(
@@ -223,7 +247,7 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch.*")).willReturn(aResponse().withStatus(404)));
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule
         .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
@@ -234,7 +258,8 @@ public class MavenUtilTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, null,
+        "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(
@@ -252,7 +277,7 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(404)));
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule
         .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
@@ -264,7 +289,8 @@ public class MavenUtilTest {
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, null,
+        "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(
@@ -282,7 +308,7 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(404)));
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule.stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(200)
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")))));
@@ -293,7 +319,8 @@ public class MavenUtilTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, null,
+        "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(

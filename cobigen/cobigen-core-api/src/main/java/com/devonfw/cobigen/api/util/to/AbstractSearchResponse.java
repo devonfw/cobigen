@@ -56,28 +56,16 @@ public abstract class AbstractSearchResponse {
   }
 
   /**
-   * Retrieves the json response from a repository URL and a group ID
-   *
-   * @param repositoryUrl URL of the repository
-   * @param groupId to search for
-   * @return String of json response
-   * @throws RestSearchResponseException if the request did not return status 200
-   */
-  public String retrieveJsonResponse(String repositoryUrl, String groupId) throws RestSearchResponseException {
-
-    return retrieveJsonResponse(repositoryUrl, groupId, null);
-  }
-
-  /**
    * Retrieves the json response from a repository URL, a group ID and a bearer authentication token
    *
    * @param repositoryUrl URL of the repository
-   * @param groupId to search for
+   * @param username to use for authentication
    * @param password to use for authentication
+   * @param groupId to search for
    * @return String of json response
    * @throws RestSearchResponseException if the request did not return status 200
    */
-  public abstract String retrieveJsonResponse(String repositoryUrl, String groupId, String password)
+  public abstract String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
       throws RestSearchResponseException;
 
   /**
@@ -109,16 +97,16 @@ public abstract class AbstractSearchResponse {
   }
 
   /**
-   * Retrieves a json response by given REST API target link using bearer authentication token
+   * Retrieves a json response by given REST API target link using authentication
    *
    * @param targetLink link to get response from
-   * @param username TODO
-   * @param password bearer token to use for authentication
+   * @param username to use for authentication
+   * @param password to use for authentication
    * @param searchRepositoryType the type of the search repository
    * @return String of json response
    * @throws RestSearchResponseException if the returned status code was not 200 OK
    */
-  public static String retrieveJsonResponseWithAuthenticationToken(String targetLink, String username, String password,
+  public static String retrieveJsonResponseWithAuthentication(String targetLink, String username, String password,
       MavenSearchRepositoryType searchRepositoryType) throws RestSearchResponseException {
 
     LOG.info("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
@@ -130,17 +118,20 @@ public abstract class AbstractSearchResponse {
 
     try {
       // use no authentication
-      Response response = httpClient.newCall(new Request.Builder().url(targetLink).get().build()).execute();
+      Response response = null;
 
+      Request request = new Request.Builder().url(targetLink).get().build();
       // use bearer token authentication
       if (password != null) {
-        response = httpClient.newCall(bearerTokenAuthentication(targetLink, password)).execute();
+        request = bearerTokenAuthentication(targetLink, password);
       }
 
       // use basic authentication
       if (username != null && password != null) {
-        response = httpClient.newCall(basicUsernamePasswordAuthentication(targetLink, username, password)).execute();
+        request = basicUsernamePasswordAuthentication(targetLink, username, password);
       }
+
+      response = httpClient.newCall(request).execute();
 
       if (response != null) {
         int status = response.code();

@@ -42,13 +42,13 @@ public class MavenSearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public String retrieveJsonResponse(String repositoryUrl, String groupId, String password)
+  public String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
       throws RestSearchResponseException {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_REST_SEARCH_API_PATH + "?q=g:"
         + groupId + "&wt=json";
 
-    return retrieveJsonResponseWithAuthenticationToken(targetLink, null, password, getRepositoryType());
+    return retrieveJsonResponseWithAuthentication(targetLink, username, password, getRepositoryType());
   }
 
   @Override
