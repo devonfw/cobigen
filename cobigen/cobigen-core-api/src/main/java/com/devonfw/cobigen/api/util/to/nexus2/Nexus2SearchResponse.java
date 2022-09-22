@@ -57,7 +57,7 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
   public String retrieveJsonResponse(String repositoryUrl, String groupId, String password)
       throws RestSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_TARGET_LINK + "?q=" + groupId;
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_REST_SEARCH_API_PATH + "?q=" + groupId;
 
     return retrieveJsonResponseWithAuthenticationToken(targetLink, null, password, getRepositoryType());
   }

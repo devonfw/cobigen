@@ -16,9 +16,9 @@ public class MavenSearchRepositoryConstants {
   public static String MAVEN_REPOSITORY_DOWNLOAD_LINK = "https://repo1.maven.org/maven2";
 
   /**
-   * Maven target link
+   * Maven REST search API path
    */
-  public static String MAVEN_TARGET_LINK = "solrsearch/select";
+  public static String MAVEN_REST_SEARCH_API_PATH = "solrsearch/select";
 
   /**
    * Nexus2 repository URL
@@ -31,14 +31,14 @@ public class MavenSearchRepositoryConstants {
   public static String NEXUS2_REPOSITORY_LINK = "service/local/repositories/releases/content";
 
   /**
-   * Nexus2 target link
+   * Nexus2 REST search API path
    */
-  public static String NEXUS2_TARGET_LINK = "service/local/lucene/search";
+  public static String NEXUS2_REST_SEARCH_API_PATH = "service/local/lucene/search";
 
   /**
-   * Nexus3 target link
+   * Nexus3 REST search API path
    */
-  public static String NEXUS3_TARGET_LINK = "service/rest/v1/search";
+  public static String NEXUS3_REST_SEARCH_API_PATH = "service/rest/v1/search";
 
   /**
    * Nexus3 repository URL
@@ -51,8 +51,8 @@ public class MavenSearchRepositoryConstants {
   public static String JFROG_REPOSITORY_URL = "http://localhost:8082/artifactory";
 
   /**
-   * Jfrog target link
+   * Jfrog REST search API path
    */
-  public static String JFROG_TARGET_LINK = "artifactory/api/search/gavc";
+  public static String JFROG_REST_SEARCH_API_PATH = "artifactory/api/search/gavc";
 
 }

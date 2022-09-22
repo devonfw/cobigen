@@ -43,7 +43,8 @@ public class JfrogSearchResponse extends AbstractSearchResponse {
   public String retrieveJsonResponse(String repositoryUrl, String groupId, String password)
       throws RestSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.JFROG_TARGET_LINK + "?g=" + groupId;
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.JFROG_REST_SEARCH_API_PATH + "?g="
+        + groupId;
 
     return retrieveJsonResponseWithAuthenticationToken(targetLink, null, password, getRepositoryType());
   }
