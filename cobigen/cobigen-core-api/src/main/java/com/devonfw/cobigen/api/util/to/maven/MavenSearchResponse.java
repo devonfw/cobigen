@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
@@ -44,25 +45,27 @@ public class MavenSearchResponse extends AbstractSearchResponse {
   public String retrieveJsonResponse(String repositoryUrl, String groupId, String password)
       throws RestSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_REST_SEARCH_API_PATH + "?q=g:" + groupId
-        + "&wt=json";
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_REST_SEARCH_API_PATH + "?q=g:"
+        + groupId + "&wt=json";
 
     return retrieveJsonResponseWithAuthenticationToken(targetLink, null, password, getRepositoryType());
   }
 
   @Override
   @JsonIgnore
-  public List<URL> retrieveDownloadURLs() throws MalformedURLException {
+  public List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
     List<MavenSearchResponseDoc> docs = getResponse().getDocs();
 
     for (MavenSearchResponseDoc doc : docs) {
       for (String fileEnding : doc.getEc()) {
-        String newFileEnding = fileEnding;
-        downloadLinks.add(
-            AbstractSearchResponse.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
-                doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), newFileEnding));
+        if (fileEnding.endsWith(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)) {
+          downloadLinks.add(
+              AbstractSearchResponse.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
+                  doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), fileEnding));
+        }
+
       }
 
     }

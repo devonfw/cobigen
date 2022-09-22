@@ -24,4 +24,12 @@ class Nexus2SearchResponeArtifactLinks {
 
   @JsonProperty("classifier")
   private String classifier;
+
+  /**
+   * @return classifier
+   */
+  public String getClassifier() {
+
+    return this.classifier;
+  }
 }

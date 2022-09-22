@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
@@ -33,13 +34,15 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public List<URL> retrieveDownloadURLs() throws MalformedURLException {
+  public List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
 
     for (Nexus3SearchResponseItem item : this.items) {
       for (Nexus3SearchResponseAsset asset : item.assets) {
-        downloadLinks.add(new URL(asset.downloadUrl));
+        if (asset.downloadUrl.endsWith(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)) {
+          downloadLinks.add(new URL(asset.downloadUrl));
+        }
       }
     }
 

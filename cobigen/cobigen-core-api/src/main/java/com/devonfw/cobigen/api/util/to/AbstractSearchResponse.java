@@ -22,7 +22,7 @@ import okhttp3.Response;
 
 /**
  * This interface should be inherited for all maven REST search API responses to properly convert {@link JsonProperty}
- * from responses to valid download URLs
+ * from responses to valid template-set.xml download URLs
  */
 public abstract class AbstractSearchResponse {
 
@@ -36,12 +36,12 @@ public abstract class AbstractSearchResponse {
   public abstract MavenSearchRepositoryType getRepositoryType();
 
   /**
-   * Creates a list of download URLs
+   * Creates a list of download URLs containing only template-set.xml files
    *
    * @return List of download links
    * @throws MalformedURLException if an URL was not valid
    */
-  public abstract List<URL> retrieveDownloadURLs() throws MalformedURLException;
+  public abstract List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException;
 
   /**
    * Removes duplicates from list of download URLs

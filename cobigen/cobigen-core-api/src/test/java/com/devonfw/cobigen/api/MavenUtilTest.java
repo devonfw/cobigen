@@ -67,7 +67,8 @@ public class MavenUtilTest {
   public void testWrongTargetLinkAndTokenThrowsException() {
 
     try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, "thisisabadtoken", null);
+      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, "thisisabadtoken",
+          null);
     } catch (RestSearchResponseException e) {
       assertThat(e).hasMessage("The target URL was faulty.");
     }
@@ -80,8 +81,8 @@ public class MavenUtilTest {
   public void testWrongResponseStatusCodeThrowsException() {
 
     try {
-      AbstractSearchResponse
-          .retrieveJsonResponseWithAuthenticationToken("https://search.maven.org/solrsearch/select?test", null, null, null);
+      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken(
+          "https://search.maven.org/solrsearch/select?test", null, null, null);
     } catch (RestSearchResponseException e) {
       assertThat(e).hasMessage("The search REST API returned the unexpected status code: 400");
     }
@@ -103,14 +104,11 @@ public class MavenUtilTest {
 
     response = mapper.readValue(jsonResponse, MavenSearchResponse.class);
     // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
+    List<URL> downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
     // then
-    assertThat(downloadLinks).contains(
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-bom/5.1.0/guice-bom-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-parent/5.1.0/guice-parent-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/jdk8-tests/5.0.1/jdk8-tests-5.0.1.jar"));
+    assertThat(downloadLinks).contains(new URL(
+        "https://repo1.maven.org/maven2/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -130,25 +128,11 @@ public class MavenUtilTest {
     response = mapper.readValue(jsonResponse, Nexus2SearchResponse.class);
 
     // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
+    List<URL> downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
     // then
     assertThat(downloadLinks).contains(new URL(
-        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.005/openapiplugin-2021.12.005.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.005/openapiplugin-2021.12.005.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.006/jsonplugin-2021.12.006.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.006/jsonplugin-2021.12.006.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.005/jsonplugin-2021.12.005.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.005/jsonplugin-2021.12.005.jar"));
+        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -168,13 +152,11 @@ public class MavenUtilTest {
     response = mapper.readValue(jsonResponse, Nexus3SearchResponse.class);
 
     // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
+    List<URL> downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
     // then
     assertThat(downloadLinks).contains(new URL(
-        "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom"));
+        "http://localhost:8081/repository/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -193,13 +175,11 @@ public class MavenUtilTest {
 
     // when
     response = mapper.readValue(jsonResponse, JfrogSearchResponse.class);
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
+    List<URL> downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
     // then
     assertThat(downloadLinks).contains(new URL(
-        "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifact/1.0/artifact-1.0-sources.jar"),
-        new URL(
-            "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifactB/1.0/artifactB-1.0-sources.jar"));
+        "http://localhost:8081/artifactory/api/storage/libs-release-local/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -228,11 +208,8 @@ public class MavenUtilTest {
     downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.google.inject", null);
 
     // then
-    assertThat(downloadList).contains(
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-bom/5.1.0/guice-bom-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-parent/5.1.0/guice-parent-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/jdk8-tests/5.0.1/jdk8-tests-5.0.1.jar"));
+    assertThat(downloadList).contains(new URL(
+        "https://repo1.maven.org/maven2/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -261,7 +238,7 @@ public class MavenUtilTest {
 
     // then
     assertThat(downloadList).contains(new URL(
-        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.jar"));
+        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -291,9 +268,7 @@ public class MavenUtilTest {
 
     // then
     assertThat(downloadList).contains(new URL(
-        "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom"));
+        "http://localhost:8081/repository/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -322,9 +297,7 @@ public class MavenUtilTest {
 
     // then
     assertThat(downloadList).contains(new URL(
-        "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifact/1.0/artifact-1.0-sources.jar"),
-        new URL(
-            "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifactB/1.0/artifactB-1.0-sources.jar"));
+        "http://localhost:8081/artifactory/api/storage/libs-release-local/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
 }

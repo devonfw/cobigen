@@ -33,18 +33,20 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public List<URL> retrieveDownloadURLs() throws MalformedURLException {
+  public List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
 
     for (Nexus2SearchResponseData item : this.data) {
       for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
         for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
-          downloadLinks.add(AbstractSearchResponse.createDownloadLink(
-              MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
-                  + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
-              item.getGroupId(), item.getArtifactId(), item.getVersion(), "." + artifactLink.getExtension()));
-
+          if (artifactLink.getClassifier() != null && artifactLink.getClassifier().equals("template-set")) {
+            downloadLinks.add(AbstractSearchResponse.createDownloadLink(
+                MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
+                    + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
+                item.getGroupId(), item.getArtifactId(), item.getVersion(),
+                "-" + artifactLink.getClassifier() + "." + artifactLink.getExtension()));
+          }
         }
       }
     }
@@ -57,7 +59,8 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
   public String retrieveJsonResponse(String repositoryUrl, String groupId, String password)
       throws RestSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_REST_SEARCH_API_PATH + "?q=" + groupId;
+    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_REST_SEARCH_API_PATH + "?q="
+        + groupId;
 
     return retrieveJsonResponseWithAuthenticationToken(targetLink, null, password, getRepositoryType());
   }

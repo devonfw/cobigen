@@ -59,7 +59,7 @@ public class SearchResponseFactory {
             password);
         AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
             searchResponse.getClass());
-        return response.retrieveDownloadURLs();
+        return response.retrieveTemplateSetXmlDownloadURLs();
       } catch (RestSearchResponseException e) {
         LOG.error("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
             ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL, e.getMessage());
