@@ -37,7 +37,7 @@ public class SearchResponseFactory {
    *
    * @param baseURL String of the repository server URL
    * @param groupId the groupId to search for
-   * @param authToken bearer token to use for authentication
+   * @param password to use for authentication
    * @return List of download URLs
    * @throws RestSearchResponseException if an error occurred while accessing the server
    * @throws JsonProcessingException if the json processing was not possible
@@ -45,7 +45,7 @@ public class SearchResponseFactory {
    * @throws MalformedURLException if an URL was malformed
    *
    */
-  public static List<URL> searchArtifactDownloadLinks(String baseURL, String groupId, String authToken)
+  public static List<URL> searchArtifactDownloadLinks(String baseURL, String groupId, String password)
       throws RestSearchResponseException, JsonMappingException, JsonProcessingException, MalformedURLException {
 
     ObjectMapper mapper = new ObjectMapper();
@@ -56,7 +56,7 @@ public class SearchResponseFactory {
         LOG.debug("Trying to get a response from {} with server URL: {} ...",
             ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL);
         String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, groupId,
-            authToken);
+            password);
         AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
             searchResponse.getClass());
         return response.retrieveDownloadURLs();

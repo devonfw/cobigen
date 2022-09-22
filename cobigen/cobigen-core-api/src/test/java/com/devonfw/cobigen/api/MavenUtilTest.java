@@ -54,7 +54,7 @@ public class MavenUtilTest {
   public void testWrongTargetLinkThrowsException() {
 
     try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, null);
+      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, null, null);
     } catch (RestSearchResponseException e) {
       assertThat(e).hasMessage("The target URL was faulty.");
     }
@@ -67,7 +67,7 @@ public class MavenUtilTest {
   public void testWrongTargetLinkAndTokenThrowsException() {
 
     try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", "thisisabadtoken", null);
+      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, "thisisabadtoken", null);
     } catch (RestSearchResponseException e) {
       assertThat(e).hasMessage("The target URL was faulty.");
     }
@@ -81,7 +81,7 @@ public class MavenUtilTest {
 
     try {
       AbstractSearchResponse
-          .retrieveJsonResponseWithAuthenticationToken("https://search.maven.org/solrsearch/select?test", null, null);
+          .retrieveJsonResponseWithAuthenticationToken("https://search.maven.org/solrsearch/select?test", null, null, null);
     } catch (RestSearchResponseException e) {
       assertThat(e).hasMessage("The search REST API returned the unexpected status code: 400");
     }

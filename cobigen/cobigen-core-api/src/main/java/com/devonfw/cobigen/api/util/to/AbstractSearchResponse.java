@@ -15,6 +15,7 @@ import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -72,23 +73,38 @@ public abstract class AbstractSearchResponse {
    *
    * @param repositoryUrl URL of the repository
    * @param groupId to search for
-   * @param authToken bearer token to use for authentication
+   * @param password to use for authentication
    * @return String of json response
    * @throws RestSearchResponseException if the request did not return status 200
    */
-  public abstract String retrieveJsonResponse(String repositoryUrl, String groupId, String authToken)
+  public abstract String retrieveJsonResponse(String repositoryUrl, String groupId, String password)
       throws RestSearchResponseException;
 
   /**
-   * Creates a @WebTarget with provided authentication token
+   * Creates a @Request with provided authentication token
    *
    * @param targetLink link to get response from
    * @param token bearer token to use for authentication
    * @return Request to use as resource
    */
-  private static Request bearerAuthenticationWithOAuth2AtClientLevel(String targetLink, String token) {
+  private static Request bearerTokenAuthentication(String targetLink, String token) {
 
     return new Request.Builder().url(targetLink).addHeader("Authorization", "Bearer " + token).build();
+
+  }
+
+  /**
+   * Creates a @Request with provided authentication username and password
+   *
+   * @param targetLink link to get response from
+   * @param username to use for authentication
+   * @param password to use for authentication
+   * @return Request to use as resource
+   */
+  private static Request basicUsernamePasswordAuthentication(String targetLink, String username, String password) {
+
+    String credential = Credentials.basic(username, password);
+    return new Request.Builder().url(targetLink).addHeader("Authorization", credential).build();
 
   }
 
@@ -96,12 +112,13 @@ public abstract class AbstractSearchResponse {
    * Retrieves a json response by given REST API target link using bearer authentication token
    *
    * @param targetLink link to get response from
-   * @param authToken bearer token to use for authentication
+   * @param username TODO
+   * @param password bearer token to use for authentication
    * @param searchRepositoryType the type of the search repository
    * @return String of json response
    * @throws RestSearchResponseException if the returned status code was not 200 OK
    */
-  public static String retrieveJsonResponseWithAuthenticationToken(String targetLink, String authToken,
+  public static String retrieveJsonResponseWithAuthenticationToken(String targetLink, String username, String password,
       MavenSearchRepositoryType searchRepositoryType) throws RestSearchResponseException {
 
     LOG.info("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
@@ -112,12 +129,17 @@ public abstract class AbstractSearchResponse {
     String jsonResponse = "";
 
     try {
-      Response response = null;
+      // use no authentication
+      Response response = httpClient.newCall(new Request.Builder().url(targetLink).get().build()).execute();
 
-      if (authToken != null) {
-        response = httpClient.newCall(bearerAuthenticationWithOAuth2AtClientLevel(targetLink, authToken)).execute();
-      } else {
-        response = httpClient.newCall(new Request.Builder().url(targetLink).get().build()).execute();
+      // use bearer token authentication
+      if (password != null) {
+        response = httpClient.newCall(bearerTokenAuthentication(targetLink, password)).execute();
+      }
+
+      // use basic authentication
+      if (username != null && password != null) {
+        response = httpClient.newCall(basicUsernamePasswordAuthentication(targetLink, username, password)).execute();
       }
 
       if (response != null) {

@@ -48,13 +48,13 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public String retrieveJsonResponse(String repositoryUrl, String groupId, String authToken)
+  public String retrieveJsonResponse(String repositoryUrl, String groupId, String password)
       throws RestSearchResponseException {
 
     String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS3_TARGET_LINK
         + "?repository=maven-central" + "&group=" + groupId;
 
-    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken, getRepositoryType());
+    return retrieveJsonResponseWithAuthenticationToken(targetLink, null, password, getRepositoryType());
   }
 
   @Override

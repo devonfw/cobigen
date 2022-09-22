@@ -350,14 +350,14 @@ public class MavenUtil {
    *
    * @param baseUrl String of the repository server URL
    * @param groupId the groupId to search for
-   * @param authToken bearer token to use for authentication
+   * @param password to use for authentication
    * @return List of artifact download URLS or null if an error occurred
    */
-  public static List<URL> retrieveMavenArtifactsByGroupId(String baseUrl, String groupId, String authToken) {
+  public static List<URL> retrieveMavenArtifactsByGroupId(String baseUrl, String groupId, String password) {
 
     try {
 
-      return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, groupId, authToken);
+      return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, groupId, password);
     } catch (RestSearchResponseException | JsonProcessingException | MalformedURLException e) {
       LOG.error("Unable to get artifacts from {} by groupId {}", baseUrl, groupId, e);
       // TODO: Handle Eclipse, CLI and MavenPlugin here (f.e. with a new Exception)
