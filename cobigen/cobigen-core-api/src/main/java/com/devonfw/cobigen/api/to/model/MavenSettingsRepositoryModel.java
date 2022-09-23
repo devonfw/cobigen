@@ -2,7 +2,7 @@ package com.devonfw.cobigen.api.to.model;
 
 import java.net.URL;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents a repository element of the settings.xml

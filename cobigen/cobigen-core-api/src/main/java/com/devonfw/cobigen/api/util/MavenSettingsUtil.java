@@ -1,17 +1,19 @@
 package com.devonfw.cobigen.api.util;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.model.MavenSettingsModel;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Utils to operate with maven's settings.xml
@@ -26,6 +28,8 @@ public class MavenSettingsUtil {
    * Maps parts of maven's settings.xml to a Java class Mapping includes: settings-, profiles-, profile-, repository-,
    * repositories-, servers-, and server-elements
    *
+   * @param settingsXMLPath Path to maven's settings.xml
+   *
    * @return Java class, on which parts of the settings.xml are mapped to
    */
   public static MavenSettingsModel generateMavenSettingsModel(Path settingsXMLPath) {
@@ -33,14 +37,14 @@ public class MavenSettingsUtil {
     LOG.info("Unmarshal maven's settings.xml");
 
     try {
-      File initialFile = new File(settingsXMLPath.toString());
-      JAXBContext jaxbContext = JAXBContext.newInstance(MavenSettingsModel.class);
+      InputStream inputStream = Files.newInputStream(settingsXMLPath);
+      JAXBContext jaxbContext = jakarta.xml.bind.JAXBContext.newInstance(MavenSettingsModel.class);
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-      MavenSettingsModel model = (MavenSettingsModel) jaxbUnmarshaller.unmarshal(initialFile);
+      MavenSettingsModel model = (MavenSettingsModel) jaxbUnmarshaller.unmarshal(inputStream);
 
       LOG.debug("Successfully unmarshalled maven's settings.xml");
       return model;
-    } catch (JAXBException e) {
+    } catch (JAXBException | IOException e) {
       LOG.error("Unable to unmarshal maven's settings.xml");
       throw new CobiGenRuntimeException("Unable to unmarshal maven's settings.xml", e);
     }

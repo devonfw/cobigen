@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.api.to.model;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents a server element of the settings.xml

@@ -26,7 +26,7 @@ public class MavenSettingsUtilTest {
   public void testDetermineMavenSettingsPath() {
 
     Path result = MavenSettingsUtil.determineMavenSettingsPath();
-    assertThat(result.toString().contains("\\conf\\.m2\\settings.xml"));
+    assertThat(result).toString().contains("\\conf\\.m2\\settings.xml");
   }
 
   /**
