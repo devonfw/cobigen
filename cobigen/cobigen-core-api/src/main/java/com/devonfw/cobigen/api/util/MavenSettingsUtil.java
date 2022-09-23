@@ -38,7 +38,7 @@ public class MavenSettingsUtil {
 
     try {
       InputStream inputStream = Files.newInputStream(settingsXMLPath);
-      JAXBContext jaxbContext = jakarta.xml.bind.JAXBContext.newInstance(MavenSettingsModel.class);
+      JAXBContext jaxbContext = JAXBContext.newInstance(MavenSettingsModel.class);
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
       MavenSettingsModel model = (MavenSettingsModel) jaxbUnmarshaller.unmarshal(inputStream);
 
