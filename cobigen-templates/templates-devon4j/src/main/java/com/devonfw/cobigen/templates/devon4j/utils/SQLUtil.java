@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -130,6 +131,30 @@ public class SQLUtil extends CommonUtil {
       return null;
     }
 
+  }
+
+  /**
+   * Get a basic SQL type statement for primitives.
+   *
+   * @param field field of the pojo class
+   * @return SQL statement as {@link String}
+   */
+  public String getSimpleSQLtype(Field field) {
+
+    String sqlStatement = "";
+    String type = mapJavaToSqlType(field.getType().getCanonicalName());
+
+    if (type.contains("VARCHAR") && field.isAnnotationPresent(Size.class)) {
+      Integer maxSize = field.getAnnotation(Size.class).max();
+      sqlStatement = sqlStatement + "(" + maxSize.toString() + ")";
+    }
+
+    if (field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).nullable()
+        || field.isAnnotationPresent(NotNull.class)) {
+      sqlStatement = sqlStatement + " NOT NULL";
+    }
+
+    return sqlStatement;
   }
 
   /**
@@ -438,57 +463,55 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
+   * Returns the name of a field. When the @Column annotation sets the name option that name will be used.
+   *
+   * @param field the current pojo field
+   * @return {@link String}
+   */
+  public String getColumnName(Field field) {
+
+    return field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).name().isBlank()
+        ? field.getAnnotation(Column.class).name()
+        : field.getName();
+  }
+
+  /**
+   * Get a List of HashMap Keys holding information about a given field. Default value overloaded by
+   * {@link SQLUtil#getPrimaryKeySQLstatement(Field, String)}
+   *
+   * @param field the current pojo field
+   * @return HashMap containing name and type of a column
+   */
+  public HashMap<String, String> getPrimaryKeySQLstatement(Field field) {
+
+    String name = getColumnName(field);
+    HashMap<String, String> column = getPrimaryKeySQLstatement(field, name);
+    return column;
+  }
+
+  /**
    * Get a List of HashMap Keys holding information about a given field
    *
    * @param field the current pojo field
    * @param name the column name related to that field
    * @return HashMap containing name and type of a column
    */
-  // public HashMap<String, String> getPrimaryKeySQLstatement(Field field, String name) {
-  //
-  // List<HashMap<String, String>> sqlStatement = new ArrayList<HashMap<String, String>>();
-  //
-  // HashMap column = columnMapBuild();
-  //
-  // return column;
-  // }
+  public HashMap<String, String> getPrimaryKeySQLstatement(Field field, String name) {
 
-  /**
-   * Method to get the SQL type statement for Primary Keys and simple Columns
-   *
-   * @param className {@link String} full qualified class name
-   * @param fieldName {@link String} the name of the field
-   * @return SQL type as a String
-   * @throws ClassNotFoundException to Log an error
-   */
-  public String getSqlTypeStatement(Annotation[] annotations, String className, String fieldName)
-      throws ClassNotFoundException {
+    String type = getSimpleSQLtype(field);
 
-    try {
-      String sqlType = mapJavaToSqlType(getCanonicalNameOfFieldType(className, fieldName));
-      String sqlTypeExtension = "";
-
-      if (annotations.length != 0) {
-        for (Annotation annotation : annotations) {
-          if (sqlType.equals("VARCHAR") && annotation.annotationType().equals(Size.class)) {
-            Integer maxSize = ((Size) annotation).max(); // Size.max is always present as it defaults to
-                                                         // Integer.MAX_VALUE;
-            sqlTypeExtension = sqlTypeExtension + "(" + maxSize.toString() + ")";
-          }
-          if ((annotation.annotationType().equals(Column.class) && !((Column) annotation).nullable())
-              || (annotation.annotationType().equals(NotNull.class))) {
-            sqlTypeExtension = sqlTypeExtension + " NOT NULL";
-          }
-          if (annotation.annotationType().equals(GeneratedValue.class)) {
-            sqlTypeExtension = sqlTypeExtension + " AUTO_INCREMENT";
-          }
-        }
-      }
-      return sqlType + sqlTypeExtension;
-    } catch (ClassNotFoundException e) {
-      LOG.error("{}: Could not find {}", e.getMessage(), className);
-      return null;
+    if (!type.contains("NOT NULL")) {
+      // Make sure Primary Keys will always be created with the NOT NULL statement
+      type = type + " NOT NULL";
     }
+
+    if (field.isAnnotationPresent(GeneratedValue.class)
+        && field.getAnnotation(GeneratedValue.class).strategy().equals(GenerationType.AUTO)) {
+      type = type + " AUTO INCREMENT";
+    }
+    HashMap<String, String> column = columnMapBuild(name, type);
+
+    return column;
   }
 
 }
