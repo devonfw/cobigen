@@ -25,11 +25,11 @@ CREATE TABLE ${tableName} (
       <#elseif !JavaUtil.isCollection2(classObject, field.name)>
         <#--Field: simple entity-->
         <#if field.type?ends_with("Entity")>
-          <#assign type = SQLUtil.getForeignKeyDeclaration(field)?split(",")>
+          <#assign type = SQLUtil.getForeignKeyDeclaration(field)?split(",")[1]>
           <#assign fkList = fkList + [SQLUtil.getForeignKeyData(field)]>
         <#else>
           <#--Field: primitive-->
-          <#assign type = get_type(field)/>
+          <#assign type = get_type(field)>
         </#if>
         <#assign columns = columns + [{"name": name, "type":type}]>
       <#else>

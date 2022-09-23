@@ -213,9 +213,8 @@ public class SQLUtil extends CommonUtil {
    *
    * @param className {@link String} full qualified class name
    * @return return the annotated table name if
-   * @throws ClassNotFoundException
+   * @throws ClassNotFoundException to Log an error
    */
-  @SuppressWarnings("javadoc")
   public String getEntityTableName(String className) throws ClassNotFoundException {
 
     if (!className.endsWith("Entity")) {
@@ -239,9 +238,8 @@ public class SQLUtil extends CommonUtil {
    * @param className {@link String} full qualified class name
    * @param fieldName {@link String} the name of the field
    * @return type of the field in the string
-   * @throws ClassNotFoundException
+   * @throws ClassNotFoundException to Log an error
    */
-  @SuppressWarnings("javadoc")
   public String getCanonicalNameOfFieldType(String className, String fieldName) throws ClassNotFoundException {
 
     try {
@@ -294,61 +292,80 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Helper method to build a hash map for foreign key values
+   * Helper method to build a hash map for foreign key value pairs
    *
    * @param name name of the foreign key
-   * @param table the current table name
+   * @param table table the current table name
    * @param columnname referenced column name
-   * @return
+   * @return HashMap for name, table and column name
    */
   private HashMap<String, String> fkMapBuild(String name, String table, String columnname) {
 
     HashMap<String, String> foreignKeyMap = new HashMap<String, String>() {
       {
-        put("key", name);
+        put("name", name);
         put("table", table);
-        put("id", columnname);
+        put("columnname", columnname);
       }
     };
     return foreignKeyMap;
   }
 
   /**
-   * Get a List of HashMaps holding the information for foreign keys assuming the current field is an entity
+   * Helper method to build a hash map for foreign key value pairs
+   *
+   * @param name name of the column
+   * @param type type of the column
+   * @return HashMap containing name and type of a column
+   */
+  private HashMap<String, String> columnMapBuild(String name, String type) {
+
+    HashMap<String, String> columnMap = new HashMap<String, String>() {
+      {
+        put("name", name);
+        put("type", type);
+      }
+    };
+
+    return columnMap;
+  }
+
+  /**
+   * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
+   * field is an entity.
    *
    * @param field the pojo field
-   * @return List of Hash Map holding the information {"key": name, "table": table, "id": id}
+   * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname} or null
    *
-   * @key {@link String} the name of the foreign key
+   * @name {@link String} the name of the foreign key
    * @table {@link String} the table which is referenced by the foreign key
-   * @id {@link String} the name of the referenced with @id annotated variable
+   * @columnname {@link String} the column name of the referenced with @id annotated variable
    */
-  public List<HashMap<String, String>> getForeignKeyData(Field field) {
-
-    String table = "", tableReceived;
-    List<HashMap<String, String>> foreignKeyData = new ArrayList<>();
+  public HashMap<String, String> getForeignKeyData(Field field) {
 
     // Assumes @JoinColumn is present
     if (field.isAnnotationPresent(JoinColumn.class)) {
       String[] fkDeclaration = getForeignKeyDeclaration(field).split(",");
       String name = getForeignKeyName(field, fkDeclaration[1]);
       String tableName = getForeignKeyTableName(field);
-      foreignKeyData.add(fkMapBuild(name, table, fkDeclaration[0]));
+      HashMap<String, String> foreignKeyData = fkMapBuild(name, tableName, fkDeclaration[0]);
+
+      return foreignKeyData;
     }
 
-    return foreignKeyData;
+    return null;
   }
 
   /**
-   * Get the table name of the current pojo
+   * Get the table for the foreign key that the current field was annotated with
    *
-   * @param field field the pojo field
-   * @return {@link String}
+   * @param field current pojo class
+   * @return table name as a {@link String} or null
    */
   public String getForeignKeyTableName(Field field) {
 
     try {
-      String tableName = "";
+      String tableName;
       if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
         tableName = getEntityTableName(field.getType().getCanonicalName());
       } else {
@@ -363,7 +380,10 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Retrieve the name of a referenced column and its type based on the provided field
+   * Retrieve the name of a referenced column and its type based on the provided field. @JoinColumn has precedence
+   * over @OneToMany when the field is annotated with both the option referencedColumnName from the @JoinColumn
+   * annotation and the mappedBy option from the @OneToMany annotation. The method will find the owner of the entity if
+   * none of the options are provided.
    *
    * @param field current pojo class
    * @return comma separated String or null
@@ -376,7 +396,17 @@ public class SQLUtil extends CommonUtil {
           && !field.getAnnotation(JoinColumn.class).referencedColumnName().isEmpty()) {
         columnName = field.getAnnotation(JoinColumn.class).referencedColumnName();
         type = mapJavaToSqlType(getCanonicalNameOfFieldType(field.getType().getCanonicalName(), columnName));
+      } else if (field.isAnnotationPresent(OneToOne.class)
+          && !field.getAnnotation(OneToOne.class).mappedBy().isBlank()) {
+        // If the field is annotated with the mappedBy option from the @OneToOne annotation
+        // we have to get the name of that class
+        Class<?> entityClass = Class
+            .forName(field.getAnnotation(OneToOne.class).mappedBy().getClass().getCanonicalName());
+        columnName = entityClass.getCanonicalName();
+        type = entityClass.getTypeName();
       } else {
+        // If the field wasn't annotated with either a @JoinColumn or any relationship annotation we have to find the
+        // owner of the current field
         String[] pkReceived = getPrimaryKey(field.getType().getCanonicalName()).split(",");
         type = mapJavaToSqlType(pkReceived[0]);
         columnName = pkReceived[1];
@@ -408,14 +438,29 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
+   * Get a List of HashMap Keys holding information about a given field
+   *
+   * @param field the current pojo field
+   * @param name the column name related to that field
+   * @return HashMap containing name and type of a column
+   */
+  // public HashMap<String, String> getPrimaryKeySQLstatement(Field field, String name) {
+  //
+  // List<HashMap<String, String>> sqlStatement = new ArrayList<HashMap<String, String>>();
+  //
+  // HashMap column = columnMapBuild();
+  //
+  // return column;
+  // }
+
+  /**
    * Method to get the SQL type statement for Primary Keys and simple Columns
    *
    * @param className {@link String} full qualified class name
    * @param fieldName {@link String} the name of the field
    * @return SQL type as a String
-   * @throws ClassNotFoundException
+   * @throws ClassNotFoundException to Log an error
    */
-  @SuppressWarnings("javadoc")
   public String getSqlTypeStatement(Annotation[] annotations, String className, String fieldName)
       throws ClassNotFoundException {
 
