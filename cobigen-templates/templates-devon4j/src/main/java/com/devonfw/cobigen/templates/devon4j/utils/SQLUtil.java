@@ -317,23 +317,17 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Helper method to build a hash map for foreign key value pairs
+   * Get a List of HashMap Keys holding information about a given field. Default value overloaded by
+   * {@link SQLUtil#getPrimaryKeyStatement(Field, String)}
    *
-   * @param name name of the foreign key
-   * @param table table the current table name
-   * @param columnname referenced column name
-   * @return HashMap for name, table and column name
+   * @param field the current pojo field
+   * @return HashMap containing name and type of a column
    */
-  private HashMap<String, String> fkMapBuild(String name, String table, String columnname) {
+  public HashMap<String, String> getPrimaryKeyStatement(Field field) {
 
-    HashMap<String, String> foreignKeyMap = new HashMap<String, String>() {
-      {
-        put("name", name);
-        put("table", table);
-        put("columnname", columnname);
-      }
-    };
-    return foreignKeyMap;
+    String name = getColumnName(field);
+    HashMap<String, String> column = getPrimaryKeyStatement(field, name);
+    return column;
   }
 
   /**
@@ -356,6 +350,65 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
+   * Get a List of HashMap Keys holding information about a given field
+   *
+   * @param field the current pojo field
+   * @param name the column name related to that field
+   * @return HashMap containing name and type of a column
+   */
+  public HashMap<String, String> getPrimaryKeyStatement(Field field, String name) {
+
+    String type = getSimpleSQLtype(field);
+
+    if (!type.contains("NOT NULL")) {
+      // Make sure Primary Keys will always be created with the NOT NULL statement
+      type = type + " NOT NULL";
+    }
+
+    if (field.isAnnotationPresent(GeneratedValue.class)
+        && field.getAnnotation(GeneratedValue.class).strategy().equals(GenerationType.AUTO)) {
+      type = type + " AUTO INCREMENT";
+    }
+
+    HashMap<String, String> column = columnMapBuild(name, type);
+
+    return column;
+  }
+
+  /**
+   * Returns the name of a field. When the @Column annotation sets the name option that name will be used.
+   *
+   * @param field the current pojo field
+   * @return {@link String}
+   */
+  public String getColumnName(Field field) {
+
+    return field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).name().isBlank()
+        ? field.getAnnotation(Column.class).name()
+        : field.getName();
+  }
+
+  /**
+   * Helper method to build a hash map for foreign key value pairs
+   *
+   * @param name name of the foreign key
+   * @param table table the current table name
+   * @param columnname referenced column name
+   * @return HashMap for name, table and column name
+   */
+  private HashMap<String, String> fkMapBuild(String name, String table, String columnname) {
+
+    HashMap<String, String> foreignKeyMap = new HashMap<String, String>() {
+      {
+        put("name", name);
+        put("table", table);
+        put("columnname", columnname);
+      }
+    };
+    return foreignKeyMap;
+  }
+
+  /**
    * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
    * field is an entity. This function defaults the {@link String} name parameter of
    * {@link SQLUtil#getForeignKeyData(Field, String)}
@@ -373,10 +426,8 @@ public class SQLUtil extends CommonUtil {
     if (field.isAnnotationPresent(JoinColumn.class)) {
       String[] fkDeclaration = getForeignKeyStatement(field).split(",");
       String name = getForeignKeyName(field, fkDeclaration[0]);
-      String tableName = getForeignKeyTableName(field);
-      HashMap<String, String> foreignKeyData = fkMapBuild(name, tableName, fkDeclaration[0]);
 
-      return foreignKeyData;
+      return getForeignKeyData(field, name);
     }
 
     return null;
@@ -432,38 +483,41 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Retrieve the name of a referenced column and its type statement based on the provided field. @JoinColumn has
+   * Retrieve the name of a referenced column name and its type statement based on the provided field. @JoinColumn has
    * precedence over @OneToMany when the field is annotated with both the option referencedColumnName from
    * the @JoinColumn annotation and the mappedBy option from the @OneToMany annotation. The method will find the owner
-   * of the entity if none of the options are provided.
+   * of the entity if none of the options are provided. This method will mostly be used on Entity types.
    *
    * @param field current pojo class
    * @return comma separated String or null
    */
   public String getForeignKeyStatement(Field field) {
 
-    String columnName = "", type = "";
-    Class<?> foreignEntityClass;
+    String columnName, type = "";
+
     try {
+      // The current field type is the class in which we are searching the primary key
+      Class<?> foreignEntityClass = Class.forName(field.getType().getCanonicalName());
+
+      // Building the column name based on provided annotations
       if (field.isAnnotationPresent(JoinColumn.class)
           && !field.getAnnotation(JoinColumn.class).referencedColumnName().isEmpty()) {
         // Annotation @JoinColumn is set and a name was provided
         columnName = field.getAnnotation(JoinColumn.class).referencedColumnName();
-        foreignEntityClass = Class.forName(field.getAnnotation(JoinColumn.class).referencedColumnName());
 
       } else if (field.isAnnotationPresent(OneToOne.class)
           && !field.getAnnotation(OneToOne.class).mappedBy().isBlank()) {
-        // If the field is annotated with the mappedBy option from the @OneToOne annotation
-        // we have to get the name of that class
-        foreignEntityClass = Class
-            .forName(field.getAnnotation(OneToOne.class).mappedBy().getClass().getCanonicalName());
+        // mappedBy option is set by @OneToOne annotation
+        columnName = field.getAnnotation(OneToOne.class).mappedBy();
 
       } else {
-        // If the field wasn't annotated with either a @JoinColumn or any relationship annotation we have to find the
-        // owner of the current field
+        // No information was provided and we are looking for the primary key manually
         String[] pkReceived = getPrimaryKey(field.getType().getCanonicalName()).split(",");
-        foreignEntityClass = Class.forName(field.getType().getCanonicalName());
+        if (pkReceived.equals(null)) {
+          return null;
+        }
         columnName = pkReceived[1];
+
       }
 
       try {
@@ -497,59 +551,6 @@ public class SQLUtil extends CommonUtil {
       name = field.getName() + "_" + fallBack;
     }
     return name;
-  }
-
-  /**
-   * Returns the name of a field. When the @Column annotation sets the name option that name will be used.
-   *
-   * @param field the current pojo field
-   * @return {@link String}
-   */
-  public String getColumnName(Field field) {
-
-    return field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).name().isBlank()
-        ? field.getAnnotation(Column.class).name()
-        : field.getName();
-  }
-
-  /**
-   * Get a List of HashMap Keys holding information about a given field. Default value overloaded by
-   * {@link SQLUtil#getPrimaryKeySQLstatement(Field, String)}
-   *
-   * @param field the current pojo field
-   * @return HashMap containing name and type of a column
-   */
-  public HashMap<String, String> getPrimaryKeySQLstatement(Field field) {
-
-    String name = getColumnName(field);
-    HashMap<String, String> column = getPrimaryKeySQLstatement(field, name);
-    return column;
-  }
-
-  /**
-   * Get a List of HashMap Keys holding information about a given field
-   *
-   * @param field the current pojo field
-   * @param name the column name related to that field
-   * @return HashMap containing name and type of a column
-   */
-  public HashMap<String, String> getPrimaryKeySQLstatement(Field field, String name) {
-
-    String type = getSimpleSQLtype(field);
-
-    if (!type.contains("NOT NULL")) {
-      // Make sure Primary Keys will always be created with the NOT NULL statement
-      type = type + " NOT NULL";
-    }
-
-    if (field.isAnnotationPresent(GeneratedValue.class)
-        && field.getAnnotation(GeneratedValue.class).strategy().equals(GenerationType.AUTO)) {
-      type = type + " AUTO INCREMENT";
-    }
-
-    HashMap<String, String> column = columnMapBuild(name, type);
-
-    return column;
   }
 
 }

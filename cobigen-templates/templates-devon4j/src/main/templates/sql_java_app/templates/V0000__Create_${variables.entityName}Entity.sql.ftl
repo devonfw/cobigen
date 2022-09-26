@@ -3,7 +3,7 @@ CREATE TABLE ${tableName} (
 <#assign fkList = []>
 <#assign columns = []>
 <#assign refTables = []>
-<#list pojo.methodAccessibleFields  as field>
+<#list pojo.methodAccessibleFields as field>
     <#if !field.annotations.javax_persistence_Transient??>
       <#assign name = SQLUtil.getColumnName(field)>
       <#--Field: primary key-->
@@ -13,11 +13,12 @@ CREATE TABLE ${tableName} (
       <#elseif !SQLUtil.isCollection(classObject, field.name)>
         <#--Field: simple entity-->
         <#if field.type?ends_with("Entity")>
-          <#assign type = SQLUtil.getForeignKeyDeclaration(field)?split(",")[1]>
-          <#assign fkList = fkList + [SQLUtil.getForeignKeyData(field)]>
+          <#assign name = SQLUtil.getForeignKeyName(field)>
+          <#assign type = SQLUtil.getForeignKeyDeclaration(field, name)?split(",")[1]>
+          <#assign fkList = fkList + [SQLUtil.getForeignKeyData(field, name)]>
         <#else>
           <#--Field: primitive-->
-          <#assign type = get_type(field)>
+          <#assign type = SQLUtil.getSimpleSQLtype(field)>
         </#if>
         <#assign columns = columns + [{"name": name, "type":type}]>
       <#else>
