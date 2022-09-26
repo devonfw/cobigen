@@ -14,6 +14,11 @@ public class MavenSettingsProfileModel {
   MavenSettingsRepositoriesModel repositories;
 
   /**
+   * Represents the activation element in maven's settings.xml
+   */
+  MavenSettingsActivation activation;
+
+  /**
    * @return repositories
    */
   public MavenSettingsRepositoriesModel getRepositories() {
@@ -28,6 +33,23 @@ public class MavenSettingsProfileModel {
   public void setRepositories(MavenSettingsRepositoriesModel repositories) {
 
     this.repositories = repositories;
+  }
+
+  /**
+   * @return activation
+   */
+  public MavenSettingsActivation getActivation() {
+
+    return this.activation;
+  }
+
+  /**
+   * @param activation new value of {@link #getactivation}.
+   */
+  @XmlElement(name = "activation")
+  public void setActivation(MavenSettingsActivation activation) {
+
+    this.activation = activation;
   }
 
 }

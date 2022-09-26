@@ -1,9 +1,6 @@
 package com.devonfw.cobigen.api.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.StringReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,36 +29,31 @@ public class MavenSettingsUtil {
    *
    * @return Java class, on which parts of the settings.xml are mapped to
    */
-  public static MavenSettingsModel generateMavenSettingsModel(Path settingsXMLPath) {
+  public static MavenSettingsModel generateMavenSettingsModel() {
 
     LOG.info("Unmarshal maven's settings.xml");
 
+    String mavenSettings = prepareSettings();
     try {
-      InputStream inputStream = Files.newInputStream(settingsXMLPath);
+      StringReader reader = new StringReader(mavenSettings);
       JAXBContext jaxbContext = JAXBContext.newInstance(MavenSettingsModel.class);
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-      MavenSettingsModel model = (MavenSettingsModel) jaxbUnmarshaller.unmarshal(inputStream);
+      MavenSettingsModel model = (MavenSettingsModel) jaxbUnmarshaller.unmarshal(reader);
 
       LOG.debug("Successfully unmarshalled maven's settings.xml");
       return model;
-    } catch (JAXBException | IOException e) {
+    } catch (JAXBException e) {
       LOG.error("Unable to unmarshal maven's settings.xml");
       throw new CobiGenRuntimeException("Unable to unmarshal maven's settings.xml", e);
     }
   }
 
-  /**
-   * Determines the path of maven's settings.xml
-   *
-   * @return Path to settings.xml
-   */
-  public static Path determineMavenSettingsPath() {
+  private static String prepareSettings() {
 
-    LOG.info("Determine path of maven's settings.xml");
-    Path repositoryPath = MavenUtil.determineMavenRepositoryPath();
-    Path settingsXMLPath = repositoryPath.getParent().resolve("settings.xml");
-    LOG.debug("Determined {} as maven's settings.xml path.", settingsXMLPath);
-    return settingsXMLPath;
+    String mavenSettings = MavenUtil.determineMavenSettings();
+    String preparedMavenSettings = mavenSettings.substring(mavenSettings.indexOf("<settings"));
+    preparedMavenSettings = preparedMavenSettings.substring(preparedMavenSettings.indexOf(">") + 1);
+    preparedMavenSettings = "<settings>" + preparedMavenSettings;
+    return preparedMavenSettings;
   }
-
 }

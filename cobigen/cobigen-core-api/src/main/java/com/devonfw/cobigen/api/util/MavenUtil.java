@@ -199,6 +199,17 @@ public class MavenUtil {
   }
 
   /**
+   * @return the maven settings.xml path
+   */
+  public static String determineMavenSettings() {
+
+    LOG.info("Determine content of maven's settings.xml");
+    String m2Repo = runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(
+        SystemUtil.determineMvnPath().toString(), "help:evaluate", "-Dexpression=settings", "-DforceStdout"));
+    return m2Repo;
+  }
+
+  /**
    * Execute any command in the given execution directory with the given arguments
    *
    * @param execDir the execution directory the command should run in
