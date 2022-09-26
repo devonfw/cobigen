@@ -267,7 +267,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   public Map<String, Trigger> loadTriggers() {
 
     Map<String, Trigger> triggers = Maps.newHashMap();
-    boolean isJarFile = true;// = FileSystemUtil.isZipFile(this.configLocation.toUri());
+    boolean isJarFile = FileSystemUtil.isZipFile(this.configLocation.toUri());
 
     List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = this.templateSetConfiguration.getTrigger();
     if (!triggerList.isEmpty()) {

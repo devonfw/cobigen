@@ -98,13 +98,18 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
    * directory
    *
    */
-  // @Test
-  // public void testTemplateSetsAdaptedAndDownloaded() {
-  //
-  // TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(validConfigurationPath);
-  //
-  // assertThat(templateSet.getTemplateSetFiles().size()).isEqualTo(3);
-  // }
+  @Test
+  public void testTemplateSetsAdaptedAndDownloaded() {
+
+    Path templateSetPath = TEST_FILE_ROOT_PATH
+        .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    TemplateSetConfigurationDecorator testDecorator = new TemplateSetConfigurationDecorator(new ArrayList<String>(),
+        true, new ArrayList<String>(), templateSetPath);
+    TemplateSetConfigurationReader templateSet = new TemplateSetConfigurationReader(VALID_CONFIGURATION_PATH,
+        testDecorator);
+
+    assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(3);
+  }
   //
   // /**
   // * Tests whether a valid template set configuration can be read from a zip file.

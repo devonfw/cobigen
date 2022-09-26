@@ -14,13 +14,13 @@ import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
+import com.google.common.collect.Maps;
 
 /**
  * mdukhan: This Class is used to set specific properties if not found, or save them if correctly found. These
- * properties are groupIds, allowSnapshots and hideTemplates. khucklen: This is a decorator for the generated
- * template-set configuration and will be used instead of the other one I know this isn't a REAL decorator, because
- * {@link TemplateSetConfiguration} isn't an interface, but since it is generated it isn't possible to change it. The
- * usefulness of a decorator is questionable anyways, this needs to be changed eventually
+ * properties are groupIds, allowSnapshots and hideTemplates. khucklen: This is our stable and structured representation
+ * of the automatically generated TemplateSetConfiguration and should not be confused with the XML-generated
+ * {@link TemplateSetConfiguration}.
  */
 public class TemplateSetConfigurationDecorator {
 
@@ -62,7 +62,9 @@ public class TemplateSetConfigurationDecorator {
   public TemplateSetConfigurationDecorator(Path configRoot) {
 
     this.templateSetConfiguration = new TemplateSetConfiguration();
-    // readConfiguration(configRoot);
+    this.triggers = Maps.newHashMap();
+    this.templates = Maps.newHashMap();
+    readConfiguration(configRoot);
 
   }
 

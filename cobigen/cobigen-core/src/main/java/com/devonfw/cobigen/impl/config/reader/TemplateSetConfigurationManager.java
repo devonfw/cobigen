@@ -25,6 +25,8 @@ public class TemplateSetConfigurationManager {
   /** List with the paths of the configuration locations for the template-set.xml files */
   private Map<Path, Path> configLocations = new HashMap<>();
 
+  List<Path> templateSetPaths = new ArrayList<>();
+
   /**
    * The constructor.
    */
@@ -60,8 +62,6 @@ public class TemplateSetConfigurationManager {
    */
   protected List<Path> loadTemplateSetFilesAdapted(Path configRoot) {
 
-    List<Path> templateSetPaths = new ArrayList<>();
-
     List<Path> templateSetDirectories = new ArrayList<>();
 
     try (Stream<Path> files = Files.list(configRoot)) {
@@ -78,10 +78,10 @@ public class TemplateSetConfigurationManager {
       Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
           .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
-      addConfigRoot(templateSetFilePath, templateDirectory, templateSetPaths);
+      addConfigRoot(templateSetFilePath, templateDirectory, this.templateSetPaths);
     }
 
-    return templateSetPaths;
+    return this.templateSetPaths;
   }
 
   /**
@@ -92,8 +92,6 @@ public class TemplateSetConfigurationManager {
    */
   protected List<Path> loadTemplateSetFilesDownloaded(Path configRoot) {
 
-    List<Path> templateSetPaths = new ArrayList<>();
-
     List<Path> templateJars = TemplatesJarUtil.getJarFiles(configRoot);
     if (templateJars != null) {
       for (Path jarPath : templateJars) {
@@ -101,11 +99,11 @@ public class TemplateSetConfigurationManager {
         Path templateSetFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
-        addConfigRoot(templateSetFilePath, jarPath, templateSetPaths);
+        addConfigRoot(templateSetFilePath, jarPath, this.templateSetPaths);
       }
     }
 
-    return templateSetPaths;
+    return this.templateSetPaths;
   }
 
 }
