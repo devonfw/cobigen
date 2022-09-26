@@ -357,7 +357,8 @@ public class SQLUtil extends CommonUtil {
 
   /**
    * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
-   * field is an entity.
+   * field is an entity. This function defaults the {@link String} name parameter of
+   * {@link SQLUtil#getForeignKeyData(Field, String)}
    *
    * @param field the pojo field
    * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname} or null
@@ -370,8 +371,34 @@ public class SQLUtil extends CommonUtil {
 
     // Assumes @JoinColumn is present
     if (field.isAnnotationPresent(JoinColumn.class)) {
-      String[] fkDeclaration = getForeignKeyDeclaration(field).split(",");
-      String name = getForeignKeyName(field, fkDeclaration[1]);
+      String[] fkDeclaration = getForeignKeyStatement(field).split(",");
+      String name = getForeignKeyName(field, fkDeclaration[0]);
+      String tableName = getForeignKeyTableName(field);
+      HashMap<String, String> foreignKeyData = fkMapBuild(name, tableName, fkDeclaration[0]);
+
+      return foreignKeyData;
+    }
+
+    return null;
+  }
+
+  /**
+   * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
+   * field is an entity.
+   *
+   * @param field the pojo field
+   * @param name the name of the foreign key
+   * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname} or null
+   *
+   * @name {@link String} the name of the foreign key
+   * @table {@link String} the table which is referenced by the foreign key
+   * @columnname {@link String} the column name of the referenced with @id annotated variable
+   */
+  public HashMap<String, String> getForeignKeyData(Field field, String name) {
+
+    // Assumes @JoinColumn is present
+    if (field.isAnnotationPresent(JoinColumn.class)) {
+      String[] fkDeclaration = getForeignKeyStatement(field).split(",");
       String tableName = getForeignKeyTableName(field);
       HashMap<String, String> foreignKeyData = fkMapBuild(name, tableName, fkDeclaration[0]);
 
@@ -405,37 +432,47 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Retrieve the name of a referenced column and its type based on the provided field. @JoinColumn has precedence
-   * over @OneToMany when the field is annotated with both the option referencedColumnName from the @JoinColumn
-   * annotation and the mappedBy option from the @OneToMany annotation. The method will find the owner of the entity if
-   * none of the options are provided.
+   * Retrieve the name of a referenced column and its type statement based on the provided field. @JoinColumn has
+   * precedence over @OneToMany when the field is annotated with both the option referencedColumnName from
+   * the @JoinColumn annotation and the mappedBy option from the @OneToMany annotation. The method will find the owner
+   * of the entity if none of the options are provided.
    *
    * @param field current pojo class
    * @return comma separated String or null
    */
-  public String getForeignKeyDeclaration(Field field) {
+  public String getForeignKeyStatement(Field field) {
 
-    String columnName, type;
+    String columnName = "", type = "";
+    Class<?> foreignEntityClass;
     try {
       if (field.isAnnotationPresent(JoinColumn.class)
           && !field.getAnnotation(JoinColumn.class).referencedColumnName().isEmpty()) {
+        // Annotation @JoinColumn is set and a name was provided
         columnName = field.getAnnotation(JoinColumn.class).referencedColumnName();
-        type = mapJavaToSqlType(getCanonicalNameOfFieldType(field.getType().getCanonicalName(), columnName));
+        foreignEntityClass = Class.forName(field.getAnnotation(JoinColumn.class).referencedColumnName());
+
       } else if (field.isAnnotationPresent(OneToOne.class)
           && !field.getAnnotation(OneToOne.class).mappedBy().isBlank()) {
         // If the field is annotated with the mappedBy option from the @OneToOne annotation
         // we have to get the name of that class
-        Class<?> entityClass = Class
+        foreignEntityClass = Class
             .forName(field.getAnnotation(OneToOne.class).mappedBy().getClass().getCanonicalName());
-        columnName = entityClass.getCanonicalName();
-        type = entityClass.getTypeName();
+
       } else {
         // If the field wasn't annotated with either a @JoinColumn or any relationship annotation we have to find the
         // owner of the current field
         String[] pkReceived = getPrimaryKey(field.getType().getCanonicalName()).split(",");
-        type = mapJavaToSqlType(pkReceived[0]);
+        foreignEntityClass = Class.forName(field.getType().getCanonicalName());
         columnName = pkReceived[1];
       }
+
+      try {
+        Field foreignField = foreignEntityClass.getDeclaredField(columnName);
+        type = getSimpleSQLtype(foreignField);
+      } catch (NoSuchFieldException e) {
+        LOG.error("{}: Could not find the field", e.getMessage());
+      }
+
       return columnName + "," + type;
 
     } catch (ClassNotFoundException e) {
@@ -509,6 +546,7 @@ public class SQLUtil extends CommonUtil {
         && field.getAnnotation(GeneratedValue.class).strategy().equals(GenerationType.AUTO)) {
       type = type + " AUTO INCREMENT";
     }
+
     HashMap<String, String> column = columnMapBuild(name, type);
 
     return column;

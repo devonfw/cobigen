@@ -5,24 +5,12 @@ CREATE TABLE ${tableName} (
 <#assign refTables = []>
 <#list pojo.methodAccessibleFields  as field>
     <#if !field.annotations.javax_persistence_Transient??>
-      <#if field.annotations.javax_persistence_Column?? && field.annotations.javax_persistence_Column.name?has_content>
-        <#assign name = field.annotations.javax_persistence_Column.name>
-      <#else>
-        <#assign name = field.name>
-      </#if>
+      <#assign name = SQLUtil.getColumnName(field)>
       <#--Field: primary key-->
       <#if field.annotations.javax_persistence_Id??>
         <#assign pk = name>
-        <#assign type = get_type(field)>
-        <#if !type?contains("NOT NULL")>
-             <#assign type = type + " NOT NULL">
-        </#if>
-        <#if field.annotations.javax_persistence_GeneratedValue??
-             && field.annotations.javax_persistence_GeneratedValue.strategy??>
-          <#assign type = type + " AUTO_INCREMENT">
-        </#if>
-        <#assign columns = columns + [{"name": name, "type":type}]>
-      <#elseif !JavaUtil.isCollection2(classObject, field.name)>
+        <#assign columns = columns + [SQLUtil.getPrimaryKeySQLstatement(field, name)]>
+      <#elseif !SQLUtil.isCollection(classObject, field.name)>
         <#--Field: simple entity-->
         <#if field.type?ends_with("Entity")>
           <#assign type = SQLUtil.getForeignKeyDeclaration(field)?split(",")[1]>
