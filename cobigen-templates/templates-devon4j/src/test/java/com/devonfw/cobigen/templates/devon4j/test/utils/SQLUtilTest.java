@@ -1,6 +1,9 @@
 package com.devonfw.cobigen.templates.devon4j.test.utils;
 
+import java.lang.reflect.Field;
+
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import com.devonfw.cobigen.templates.devon4j.utils.SQLUtil;
 
@@ -14,4 +17,11 @@ public class SQLUtilTest {
 
   }
 
+  /**
+   * Tests if {@link SQLUtil#getSimpleSQLtype(Field)} returns the correct string based on a field type
+   */
+  @Test
+  public void testGetSimpleSQLtype() {
+
+  }
 }

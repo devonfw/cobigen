@@ -44,7 +44,7 @@ public class SQLUtil extends CommonUtil {
    * @return returns the equivalent SQL type
    * @throws IllegalArgumentException when type is not a java type
    */
-  public String mapJavaToSqlType(String canonicalTypeName) throws IllegalArgumentException {
+  private String mapJavaToSqlType(String canonicalTypeName) throws IllegalArgumentException {
 
     try {
 
@@ -331,25 +331,6 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Helper method to build a hash map for foreign key value pairs
-   *
-   * @param name name of the column
-   * @param type type of the column
-   * @return HashMap containing name and type of a column
-   */
-  private HashMap<String, String> columnMapBuild(String name, String type) {
-
-    HashMap<String, String> columnMap = new HashMap<String, String>() {
-      {
-        put("name", name);
-        put("type", type);
-      }
-    };
-
-    return columnMap;
-  }
-
-  /**
    * Get a List of HashMap Keys holding information about a given field
    *
    * @param field the current pojo field
@@ -373,6 +354,25 @@ public class SQLUtil extends CommonUtil {
     HashMap<String, String> column = columnMapBuild(name, type);
 
     return column;
+  }
+
+  /**
+   * Helper method to build a hash map for foreign key value pairs
+   *
+   * @param name name of the column
+   * @param type type of the column
+   * @return HashMap containing name and type of a column
+   */
+  private HashMap<String, String> columnMapBuild(String name, String type) {
+
+    HashMap<String, String> columnMap = new HashMap<String, String>() {
+      {
+        put("name", name);
+        put("type", type);
+      }
+    };
+
+    return columnMap;
   }
 
   /**
