@@ -258,7 +258,7 @@ public class GeneratorWrapperFactory {
     Path templateSetsAdaptedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
-    if (generatorProj.isEmpty()) {
+    if (generatorProj == null) {
 
       // check adapted and downloaded folder
       if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
