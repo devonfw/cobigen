@@ -223,11 +223,6 @@ public class GeneratorWrapperFactory {
 
       initializeCobiGen(generatorProj, allowMonolithicConfiguration);
 
-      // we need to check if templates got upgraded then initialize cobigen again. Now with the new template-set
-      // structure
-      if (ResourcesPluginUtil.templatesUpgraded)
-        return initializeCobiGen(null, true);
-
       return initializeCobiGen(generatorProj, true);
     } catch (CoreException e) {
       throw new GeneratorCreationException("An eclipse internal exception occurred", e);
@@ -263,15 +258,8 @@ public class GeneratorWrapperFactory {
     Path templateSetsAdaptedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
-    if (!ResourcesPluginUtil.generatorProjExists || ResourcesPluginUtil.templatesUpgraded
-        || generatorProj.getLocationURI() == null) {
+    if (generatorProj.isEmpty()) {
 
-      /*
-       * After the upgrade the new template-sets will be used. Only once! Then the old configuration has to be deleted
-       * or the upgrader will start again. This time the upgrader cannot start again because template-sets already
-       * exists.
-       */
-      ResourcesPluginUtil.templatesUpgraded = false;
       // check adapted and downloaded folder
       if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
         return CobiGenFactory.create(templatesDirectoryPath.toUri(), allowMonolithicConfiguration);

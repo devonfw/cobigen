@@ -57,16 +57,6 @@ public class ResourcesPluginUtil {
   static boolean userWantsToDownloadTemplates = true;
 
   /**
-   * This variable is used to know if the templates got upgraded or not
-   */
-  public static boolean templatesUpgraded = false;
-
-  /**
-   * This variable is used to know if we have a custom generator project
-   */
-  public static boolean generatorProjExists = false;
-
-  /**
    * Refreshes the configuration project from the file system.
    */
 
@@ -97,9 +87,10 @@ public class ResourcesPluginUtil {
   public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException, CoreException {
 
     if (Files.exists(getTemplateSetDirectory().toPath())) {
-      generatorProjExists = false;
+      // FIXME Implement a new way to set the generatorProj as the new template-set
       return null;
     }
+
     File templatesDirectory = getTemplatesDirectory();
 
     generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
@@ -133,7 +124,6 @@ public class ResourcesPluginUtil {
       }
     }
     if (userWantsToDownloadTemplates) {
-      generatorProjExists = true;
       return generatorProj;
     } else {
       return null;
@@ -304,7 +294,9 @@ public class ResourcesPluginUtil {
 
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(configurationPath);
     templateAdapter.upgradeMonolithicTemplates(configurationPath);
-    templatesUpgraded = true;
+    // Deactivate generatorProj after the upgrade to use the new template-set
+    // FIXME set generatorProj instead to the new template set
+    generatorProj = null;
   }
 
 }

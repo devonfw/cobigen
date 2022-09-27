@@ -16,7 +16,7 @@ import com.devonfw.cobigen.impl.util.PostponeUtil;
  * Tests TimestampUtil class on write to the config file and read from the config file correctly
  *
  */
-public class TimestampUtilTest {
+public class PostponeUtilTest {
 
   /**
    *

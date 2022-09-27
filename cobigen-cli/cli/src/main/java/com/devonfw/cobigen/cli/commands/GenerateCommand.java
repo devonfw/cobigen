@@ -274,9 +274,10 @@ public class GenerateCommand extends CommandCommons {
     } catch (DeprecatedMonolithicConfigurationException e) {
       String monolithicConfigurationMessage = "Found monolithic configuration at:";
       if (this.templatesProject == null)
-        LOG.warn(monolithicConfigurationMessage + "{} ", ConfigurationFinder.findTemplatesLocation());
+        LOG.warn(monolithicConfigurationMessage.concat("{} {}"), ConfigurationFinder.findTemplatesLocation(),
+            e.getMessage());
       else
-        LOG.warn(monolithicConfigurationMessage + "{} {}", this.templatesProject, e.getMessage());
+        LOG.warn(monolithicConfigurationMessage.concat("{} {}"), this.templatesProject, e.getMessage());
       if (this.upgradeConfiguration) {
         startTemplatesUpgrader();
       } else {
