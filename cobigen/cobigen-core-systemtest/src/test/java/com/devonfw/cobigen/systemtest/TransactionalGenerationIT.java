@@ -18,7 +18,7 @@ import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
  * This test suit focuses on the transactional behavior of generation. In specific, that temporary files will be
  * generated first and just be applied to the final target sources if generation has been successfully.
  */
-public class TransactionalGenerationTest extends AbstractApiTest {
+public class TransactionalGenerationIT extends AbstractApiTest {
 
   /** Root path to all resources used in this test case */
   private static String testFileRootPath = apiTestsRootPath + "TransactionalGenerationTest/";
