@@ -525,6 +525,7 @@ public class SQLUtil extends CommonUtil {
         type = getSimpleSQLtype(foreignField);
       } catch (NoSuchFieldException e) {
         LOG.error("{}: Could not find the field", e.getMessage());
+        return null;
       }
 
       return columnName + "," + type;
