@@ -1,39 +1,25 @@
-diff a/cobigen-plugins/cobigen-javaplugin-parent/cobigen-javaplugin/src/test/resources/testdata/unittest/merger/Generated.java b/cobigen-plugins/cobigen-javaplugin-parent/cobigen-javaplugin/src/test/resources/testdata/unittest/merger/Generated.java	(rejected hunks)
-@@ -1,25 +1,37 @@
-  package com.example.domain.myapp.employeemanagement.common.api;
-  
-++<<<<<<< HEAD
- +
- +
- +import com.example.domain.myapp.general.common.api.ApplicationEntity;
- +
- +
- +
- +public class Employee extends ApplicationEntity {
- +
- +
- +
- + private string field;
- +
- +
-++=======
-+ import com.example.domain.myapp.general.common.api.ApplicationEntity;
-+ 
-+ public class Employee extends ApplicationEntity {
-+ 
-+   private string field;
-++>>>>>>> d4284e6e7 (#1566 Complete Implementation with refinements)
-  
-  
-    public boolean equals(Object obj) {
-  
-++<<<<<<< HEAD
- +
- +
- +   if (this == obj) {
-++=======
-+     if (this == obj) {
-++>>>>>>> d4284e6e7 (#1566 Complete Implementation with refinements)
-        return true;
-      }
-      if (obj == null) {
+package com.example.domain.myapp.employeemanagement.common.api;
+
+import com.example.domain.myapp.general.common.api.ApplicationEntity;
+
+public class Employee extends ApplicationEntity {
+
+  private string field;
+
+  public boolean equals(Object obj) {
+
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    // class check will be done by super type EntityTo!
+    if (!super.equals(obj)) {
+      return false;
+    }
+   }
+
+}
+
+}
