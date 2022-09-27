@@ -1,13 +1,15 @@
-package com.example.domain.myapp.employeemanagement.common.api.;
+package com.example.domain.myapp.employeemanagement.common.api;
 
 import com.example.domain.myapp.general.common.api.ApplicationEntity;
 
 public interface Employee extends ApplicationEntity {
 
-  @Generated(value = { "CobiGen" }, date = "2022-08-31T01:10:20+0000")
+  @Generated( value= {"com.devonfw.cobigen"},
+      date ="21/09/22")
   private string field;
 
-  @Generated(value = { "CobiGen" }, date = "2022-08-31T01:10:20+0000")
+  @Generated( value= {"com.devonfw.cobigen"},
+      date ="21/09/22")
   public boolean equals(Object obj) {
 
     if (this == obj) {

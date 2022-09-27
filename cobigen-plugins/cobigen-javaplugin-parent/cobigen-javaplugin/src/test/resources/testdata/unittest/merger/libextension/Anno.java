@@ -1,13 +1,7 @@
-import javax.annotation.*;
+import javax.annotation.Generated;
 
-
-
-@Generated( value= {"com.devonfw.cobigen"}, date ="21/09/22")
-
-
+@Generated(value= {"com.devonfw.cobigen"}, date = "")
 
 public class Anno{
-
-
 
 }

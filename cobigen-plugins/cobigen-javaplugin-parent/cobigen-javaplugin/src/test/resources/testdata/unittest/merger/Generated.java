@@ -1,25 +1,16 @@
 package com.example.domain.myapp.employeemanagement.common.api;
 
-
-
 import com.example.domain.myapp.general.common.api.ApplicationEntity;
-
-
 
 public class Employee extends ApplicationEntity {
 
-
-
- private string field;
-
-
+  private string field;
 
 
   public boolean equals(Object obj) {
 
+    if (this == obj) {
 
-
-   if (this == obj) {
       return true;
     }
     if (obj == null) {
@@ -31,6 +22,7 @@ public class Employee extends ApplicationEntity {
     }
    }
 
-
+}
 
 }
+

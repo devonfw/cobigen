@@ -36,10 +36,7 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
             false);
         assertThat(report).isSuccessful();
         Path expectedFile = tmpFolderCobiGen.toPath().resolve("generated.java");
-        Path expectedOutputToBeGenerated = Paths
-            .get("src/test/resources/testdata/integrationtest/javaGenerated/ExpectedGeneratedOutput.java");
         assertThat(expectedFile).exists();
-        assertThat(expectedFile).hasContent("@Generated");
         break;
       }
     }
