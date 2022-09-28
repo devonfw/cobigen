@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
@@ -22,21 +23,11 @@ public class MavenSettingsUtilTest {
   /** Test data root path */
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSettingsUtilTest";
 
-  /**
-   * Tests, whether the path of maven's settings.xml is determined correctly
-   */
-  // @Test
-  // public void testDetermineMavenSettingsPath() {
-  //
-  // Path result = MavenSettingsUtil.determineMavenSettingsPath();
-  // assertThat(result).toString().contains("\\conf\\.m2\\settings.xml");
-  // }
+  /** Test model */
+  private static MavenSettingsModel model;
 
-  /**
-   * Tests, whether the the repository elements of maven's settings.xml are mapped correctly to a java class
-   */
-  @Test
-  public void testGenerateMavenSettingsModelRepository() {
+  @BeforeClass
+  public static void setUpClass() {
 
     String content;
     try {
@@ -44,11 +35,19 @@ public class MavenSettingsUtilTest {
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
     }
+    model = MavenSettingsUtil.generateMavenSettingsModel(content);
+  }
 
-    MavenSettingsModel result = MavenSettingsUtil.generateMavenSettingsModel(content);
-    String testId = result.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0).getId();
-    String testName = result.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0).getName();
-    String testUrl = result.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0).getUrl()
+  /**
+   * Tests, whether the the repository elements of maven's settings.xml are mapped correctly to a java class
+   */
+  @Test
+  public void testGenerateMavenSettingsModelRepository() {
+
+    String testId = model.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0).getId();
+    String testName = model.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0)
+        .getName();
+    String testUrl = model.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0).getUrl()
         .toString();
 
     assertThat(testId).isEqualTo("123");
@@ -64,17 +63,9 @@ public class MavenSettingsUtilTest {
   @Test
   public void testGenerateMavenSettingsModelServer() {
 
-    String content;
-    try {
-      content = Files.readString(Paths.get(testdataRoot).resolve("settings.xml"));
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
-    }
-
-    MavenSettingsModel result = MavenSettingsUtil.generateMavenSettingsModel(content);
-    String testId = result.getServers().getServerList().get(0).getId();
-    String testUsername = result.getServers().getServerList().get(0).getUsername();
-    String testPassword = result.getServers().getServerList().get(0).getPassword();
+    String testId = model.getServers().getServerList().get(0).getId();
+    String testUsername = model.getServers().getServerList().get(0).getUsername();
+    String testPassword = model.getServers().getServerList().get(0).getPassword();
 
     assertThat(testId).isEqualTo("repository");
 
@@ -89,18 +80,10 @@ public class MavenSettingsUtilTest {
   @Test
   public void testGenerateMavenSettingsModelMirror() {
 
-    String content;
-    try {
-      content = Files.readString(Paths.get(testdataRoot).resolve("settings.xml"));
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
-    }
-
-    MavenSettingsModel result = MavenSettingsUtil.generateMavenSettingsModel(content);
-    String mirrorOf = result.getMirrors().getMirrorList().get(0).getMirrorOf();
-    String url = result.getMirrors().getMirrorList().get(0).getUrl();
-    String id = result.getMirrors().getMirrorList().get(0).getId();
-    String blocked = result.getMirrors().getMirrorList().get(0).getBlocked();
+    String mirrorOf = model.getMirrors().getMirrorList().get(0).getMirrorOf();
+    String url = model.getMirrors().getMirrorList().get(0).getUrl();
+    String id = model.getMirrors().getMirrorList().get(0).getId();
+    String blocked = model.getMirrors().getMirrorList().get(0).getBlocked();
 
     assertThat(mirrorOf).isEqualTo("external:http:*");
 
@@ -114,6 +97,7 @@ public class MavenSettingsUtilTest {
   @Test
   public void testDetermineMavenSettings() {
 
+    // Waiting for Eduards solution
     String test = MavenUtil.determineMavenSettings();
     System.out.println(test);
   }

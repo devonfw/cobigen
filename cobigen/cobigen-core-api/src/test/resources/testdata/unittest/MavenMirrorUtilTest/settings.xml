@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <mirrors>
+    <mirror>
+      <mirrorOf>*</mirrorOf>
+      <url>http://0.0.0.0/</url>
+      <id>testMirror1</id>
+    </mirror>
+    <mirror>
+      <mirrorOf>repo1</mirrorOf>
+      <url>http://1.1.1.1/</url>
+      <id>testMirror1</id>
+    </mirror>
+    <mirror>
+      <mirrorOf>*,!repo1</mirrorOf>
+      <url>http://2.2.2.2/</url>
+      <id>testMirror1</id>
+    </mirror>
+  </mirrors>
+
+  <profiles>
+    <profile>
+      <id>devonfw-snapshots</id>
+      <repositories>
+        <repository>
+          <id>repo1</id>
+          <name>Test Repo 1</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+        <profile>
+      <id>devonfw-snapshots</id>
+      <repositories>
+        <repository>
+          <id>repo2</id>
+          <name>Test Repo 2</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+</settings>
