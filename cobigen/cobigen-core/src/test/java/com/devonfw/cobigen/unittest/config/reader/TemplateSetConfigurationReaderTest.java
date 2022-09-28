@@ -12,7 +12,6 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
-import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 import junit.framework.TestCase;
@@ -83,7 +82,6 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     Path templateSetPath = TEST_FILE_ROOT_PATH
         .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     templateSetPath = Path.of(templateSetPath + "/downloaded");
-    templateSetPath = FileSystemUtil.createFileSystemDependentPath(templateSetPath.toUri());
     TemplateSetConfigurationDecorator testDecorator = new TemplateSetConfigurationDecorator(new ArrayList<String>(),
         true, new ArrayList<String>(), templateSetPath);
     assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(1);
@@ -97,12 +95,18 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testTemplateSetsAdaptedAndDownloaded() {
 
-    Path templateSetPath = TEST_FILE_ROOT_PATH
+    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH
         .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    TemplateSetConfigurationDecorator testDecorator = new TemplateSetConfigurationDecorator(new ArrayList<String>(),
-        true, new ArrayList<String>(), templateSetPath);
+    TemplateSetConfigurationDecorator testDecoratorAdapted = new TemplateSetConfigurationDecorator(
+        new ArrayList<String>(), true, new ArrayList<String>(), templateSetPathAdapted);
+    Path templateSetPathDownloaded = TEST_FILE_ROOT_PATH
+        .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    templateSetPathDownloaded = Path.of(templateSetPathDownloaded + "/downloaded");
+    TemplateSetConfigurationDecorator testDecoratorDownloaded = new TemplateSetConfigurationDecorator(
+        new ArrayList<String>(), true, new ArrayList<String>(), templateSetPathDownloaded);
 
-    assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(3);
+    assertThat(testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())
+        .isEqualTo(3);
   }
   //
   // /**
