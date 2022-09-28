@@ -599,4 +599,19 @@ public class JavaMergerTest {
     assertThat(mergedContents).contains("@Column(name=\"NAME\")");
     assertThat(mergedContents).contains("@Column(name=\"USER\")");
   }
+
+  /*
+   * Tests Generated annotation is added to the Java Code
+   *
+   * @throws IOException
+   */
+  @Test
+  public void testaddAnnotation() throws IOException {
+
+    File baseFile = new File(testFileRootPath + "Generated.java");
+    JavaMerger javaMergerObj = new JavaMerger("", false);
+    String output = javaMergerObj.merge(baseFile, null, "UTF-8");
+    assertThat(output).contains("@Generated");
+
+  }
 }

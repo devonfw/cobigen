@@ -3,6 +3,7 @@ package com.devonfw.cobigen.javaplugin.merger;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -26,6 +27,7 @@ import com.thoughtworks.qdox.model.JavaConstructor;
 import com.thoughtworks.qdox.model.JavaField;
 import com.thoughtworks.qdox.model.JavaInitializer;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.impl.AbstractBaseJavaEntity;
 import com.thoughtworks.qdox.model.impl.DefaultJavaField;
 import com.thoughtworks.qdox.model.impl.DefaultJavaMethod;
 import com.thoughtworks.qdox.parser.ParseException;
@@ -71,6 +73,10 @@ public class JavaMerger implements Merger {
   @Override
   public String merge(File base, String patch, String targetCharset) throws MergeException {
 
+    if (patch == null) {
+      return addGeneratedAnnotation(base, targetCharset);
+    }
+
     ModifyableJavaClass baseClass;
     String lineDelimiter;
     Path path = Paths.get(base.getAbsolutePath());
@@ -106,6 +112,56 @@ public class JavaMerger implements Merger {
 
     ModifyableJavaClass mergedClass = merge(baseClass, patchClass);
     return StringUtil.consolidateLineEndings(mergedClass.getSource().getCodeBlock(), lineDelimiter);
+  }
+
+  private String addGeneratedAnnotation(File tmpOriginalFile, String targetCharset) {
+
+    Path path = Paths.get(tmpOriginalFile.getAbsolutePath());
+    String lineDelimiter;
+    JavaClass baseClass, parsedAnnotationClass;
+    // Extract generated annotation
+    File file = new File("src/test/resources/testdata/unittest/merger/libextension/Anno.java");
+
+    try (FileInputStream stream = new FileInputStream(path.toString());
+        BufferedInputStream bis = new BufferedInputStream(stream);
+        InputStreamReader reader = new InputStreamReader(bis, targetCharset);
+        FileReader fr = new FileReader(file)) {
+
+      parsedAnnotationClass = JavaParserUtil.getFirstJavaClass(fr);
+      baseClass = JavaParserUtil.getFirstJavaClass(reader);
+      lineDelimiter = SystemUtil.determineLineDelimiter(path, targetCharset);
+
+    } catch (IOException e) {
+      throw new MergeException(tmpOriginalFile, "Cannot read output file.", e);
+    } catch (ParseException e) {
+      throw new MergeException(tmpOriginalFile, "The syntax of the output file is invalid. Error in line: "
+          + e.getLine() + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
+    }
+
+    baseClass.getSource().getImports().add("javax.annotation.Generated");
+    List<JavaAnnotation> generatedAnnotation = parsedAnnotationClass.getAnnotations();
+    List<JavaMethod> methods = baseClass.getMethods();
+    List<JavaField> fields = baseClass.getFields();
+    List<JavaConstructor> constructors = baseClass.getConstructors();
+
+    for (JavaConstructor constructor : constructors) {
+      List<JavaAnnotation> anno = constructor.getAnnotations();
+      ((AbstractBaseJavaEntity) constructor).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+    }
+
+    for (JavaField field : fields) {
+      List<JavaAnnotation> anno = field.getAnnotations();
+      ((AbstractBaseJavaEntity) field).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+    }
+
+    for (JavaMethod method : methods) {
+      List<JavaAnnotation> anno = method.getAnnotations();
+      method.getLineNumber();
+      ((AbstractBaseJavaEntity) method).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+    }
+
+    return StringUtil.consolidateLineEndings(baseClass.getSource().getCodeBlock(), lineDelimiter);
+
   }
 
   /**
