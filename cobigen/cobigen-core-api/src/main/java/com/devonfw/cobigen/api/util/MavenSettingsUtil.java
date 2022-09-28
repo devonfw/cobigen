@@ -25,15 +25,16 @@ public class MavenSettingsUtil {
    * Maps parts of maven's settings.xml to a Java class Mapping includes: settings-, profiles-, profile-, repository-,
    * repositories-, servers-, and server-elements
    *
-   * @param settingsXMLPath Path to maven's settings.xml
+   * @param mavenSettings string of maven's settings.xml
    *
    * @return Java class, on which parts of the settings.xml are mapped to
    */
-  public static MavenSettingsModel generateMavenSettingsModel() {
+  public static MavenSettingsModel generateMavenSettingsModel(String mavenSettings) {
 
     LOG.info("Unmarshal maven's settings.xml");
-
-    String mavenSettings = prepareSettings();
+    mavenSettings = prepareSettings(mavenSettings);
+    // Test
+    String activeProfiles = MavenUtil.determineActiveProfiles();
     try {
       StringReader reader = new StringReader(mavenSettings);
       JAXBContext jaxbContext = JAXBContext.newInstance(MavenSettingsModel.class);
@@ -48,9 +49,13 @@ public class MavenSettingsUtil {
     }
   }
 
-  private static String prepareSettings() {
+  /**
+   * @param mavenSettings string of maven's settings.xml
+   *
+   * @return string of prepared maven's settings, ready to be unmarshalled
+   */
+  private static String prepareSettings(String mavenSettings) {
 
-    String mavenSettings = MavenUtil.determineMavenSettings();
     String preparedMavenSettings = mavenSettings.substring(mavenSettings.indexOf("<settings"));
     preparedMavenSettings = preparedMavenSettings.substring(preparedMavenSettings.indexOf(">") + 1);
     preparedMavenSettings = "<settings>" + preparedMavenSettings;

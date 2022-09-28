@@ -199,14 +199,26 @@ public class MavenUtil {
   }
 
   /**
-   * @return the maven settings.xml path
+   * @return the maven's settings.xml as string
    */
   public static String determineMavenSettings() {
 
     LOG.info("Determine content of maven's settings.xml");
-    String m2Repo = runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(
+    String mavenSettings = runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(
         SystemUtil.determineMvnPath().toString(), "help:evaluate", "-Dexpression=settings", "-DforceStdout"));
-    return m2Repo;
+    return mavenSettings;
+  }
+
+  /**
+   * @return active build profiles
+   */
+  public static String determineActiveProfiles() {
+
+    LOG.info("Determine active build profiles");
+    String activeProfiles = runCommand(SystemUtils.getUserDir().toPath().getParent().getParent(),
+        Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "help:active-profiles",
+            "-Doutput=C:/devon-ide/workspaces/main/cobigen/test.txt", "-DforceStdout"));
+    return activeProfiles;
   }
 
   /**
@@ -227,6 +239,7 @@ public class MavenUtil {
     args.add("-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN");
 
     try {
+      System.out.print(System.getenv("MAVEN_OPTS"));
       StartedProcess process = new ProcessExecutor().readOutput(true).destroyOnExit().directory(execDir.toFile())
           .environment("MAVEN_OPTS", replaceAllUnixPathsOnWin(System.getenv("MAVEN_OPTS")))
           .environment("M2_REPO", replaceAllUnixPathsOnWin(System.getenv("M2_REPO"))).command(args)

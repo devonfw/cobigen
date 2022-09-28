@@ -8,6 +8,16 @@
     </server>
   </servers>
 
+  <mirrors>
+    <mirror>
+      <mirrorOf>external:http:*</mirrorOf>
+      <name>Pseudo repository to mirror external repositories initially using HTTP.</name>
+      <url>http://0.0.0.0/</url>
+      <blocked>true</blocked>
+      <id>maven-default-http-blocker</id>
+    </mirror>
+  </mirrors>
+
   <profiles>
     <profile>
       <id>devonfw-snapshots</id>

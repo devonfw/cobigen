@@ -21,6 +21,11 @@ public class MavenSettingsModel {
   MavenSettingsServers servers;
 
   /**
+   * Represents the mirrors element in maven's settings.xml
+   */
+  MavenSettingsMirrorsModel mirrors;
+
+  /**
    * @return profiles
    */
   public MavenSettingsProfilesModel getProfiles() {
@@ -52,6 +57,23 @@ public class MavenSettingsModel {
   public void setServers(MavenSettingsServers servers) {
 
     this.servers = servers;
+  }
+
+  /**
+   * @return mirrors
+   */
+  public MavenSettingsMirrorsModel getMirrors() {
+
+    return this.mirrors;
+  }
+
+  /**
+   * @param mirrors new value of {@link #getmirrors}.
+   */
+  @XmlElement(name = "mirrors")
+  public void setMirrors(MavenSettingsMirrorsModel mirrors) {
+
+    this.mirrors = mirrors;
   }
 
 }
