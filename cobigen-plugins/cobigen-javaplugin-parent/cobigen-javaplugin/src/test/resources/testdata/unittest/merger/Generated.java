@@ -20,9 +20,7 @@ public class Employee extends ApplicationEntity {
     if (!super.equals(obj)) {
       return false;
     }
-   }
-
-}
+  }
 
 }
 
