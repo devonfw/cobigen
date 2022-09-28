@@ -1,1 +1,0 @@
-${variables.contextVar},${variables.cobigenPropVar}
