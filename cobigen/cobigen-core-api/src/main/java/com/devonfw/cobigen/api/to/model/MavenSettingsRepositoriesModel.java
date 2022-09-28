@@ -19,7 +19,7 @@ public class MavenSettingsRepositoriesModel {
   /**
    * @return repository
    */
-  public List<MavenSettingsRepositoryModel> getRepository() {
+  public List<MavenSettingsRepositoryModel> getRepositoryList() {
 
     return this.repositoryList;
   }
@@ -28,7 +28,7 @@ public class MavenSettingsRepositoriesModel {
    * @param repository new value of {@link #getrepository}.
    */
   @XmlElement(name = "repository")
-  public void setRepository(List<MavenSettingsRepositoryModel> repository) {
+  public void setRepositoryList(List<MavenSettingsRepositoryModel> repository) {
 
     this.repositoryList = repository;
   }

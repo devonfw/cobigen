@@ -14,6 +14,11 @@ public class MavenSettingsProfileModel {
   MavenSettingsRepositoriesModel repositories;
 
   /**
+   * Id of the profile
+   */
+  String id;
+
+  /**
    * @return repositories
    */
   public MavenSettingsRepositoriesModel getRepositories() {
@@ -29,4 +34,22 @@ public class MavenSettingsProfileModel {
 
     this.repositories = repositories;
   }
+
+  /**
+   * @return id
+   */
+  public String getId() {
+
+    return this.id;
+  }
+
+  /**
+   * @param id new value of {@link #getid}.
+   */
+  @XmlElement(name = "id")
+  public void setId(String id) {
+
+    this.id = id;
+  }
+
 }

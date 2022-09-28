@@ -46,9 +46,9 @@ public class MavenSettingsUtilTest {
     }
 
     MavenSettingsModel result = MavenSettingsUtil.generateMavenSettingsModel(content);
-    String testId = result.getProfiles().getProfileList().get(0).getRepositories().getRepository().get(0).getId();
-    String testName = result.getProfiles().getProfileList().get(0).getRepositories().getRepository().get(0).getName();
-    String testUrl = result.getProfiles().getProfileList().get(0).getRepositories().getRepository().get(0).getUrl()
+    String testId = result.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0).getId();
+    String testName = result.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0).getName();
+    String testUrl = result.getProfiles().getProfileList().get(0).getRepositories().getRepositoryList().get(0).getUrl()
         .toString();
 
     assertThat(testId).isEqualTo("123");

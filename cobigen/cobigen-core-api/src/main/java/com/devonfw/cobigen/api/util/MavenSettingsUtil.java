@@ -1,12 +1,19 @@
 package com.devonfw.cobigen.api.util;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.model.MavenSettingsModel;
+import com.devonfw.cobigen.api.to.model.MavenSettingsProfileModel;
+import com.devonfw.cobigen.api.to.model.MavenSettingsRepositoryModel;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -33,8 +40,6 @@ public class MavenSettingsUtil {
 
     LOG.info("Unmarshal maven's settings.xml");
     mavenSettings = prepareSettings(mavenSettings);
-    // Test
-    String activeProfiles = MavenUtil.determineActiveProfiles();
     try {
       StringReader reader = new StringReader(mavenSettings);
       JAXBContext jaxbContext = JAXBContext.newInstance(MavenSettingsModel.class);
@@ -60,5 +65,35 @@ public class MavenSettingsUtil {
     preparedMavenSettings = preparedMavenSettings.substring(preparedMavenSettings.indexOf(">") + 1);
     preparedMavenSettings = "<settings>" + preparedMavenSettings;
     return preparedMavenSettings;
+  }
+
+  /**
+   * @param model Class, on which maven's settings.xml have been mapped to
+   *
+   * @return List of repositories of active profiles in maven's settings.xml
+   */
+  private static List<MavenSettingsRepositoryModel> getRepositoriesOfActiveProfiles(MavenSettingsModel model,
+      Path activeProfilesPath) {
+
+    LOG.debug("Determining repositories of active profiles of maven's settings.xml");
+
+    List<MavenSettingsRepositoryModel> repositoriesOfActiveProfiles = new LinkedList<>();
+
+    String activeProfiles = "";
+
+    try {
+      activeProfiles = Files.readString(activeProfilesPath);
+    } catch (IOException e) {
+      LOG.error("Unable to determine active profiles of maven's settings.xml");
+      throw new CobiGenRuntimeException("Unable to determine active profiles of maven's settings.xml", e);
+    }
+    List<MavenSettingsProfileModel> profilesList = model.getProfiles().getProfileList();
+
+    for (MavenSettingsProfileModel profile : profilesList) {
+      if (profile.getRepositories() != null && activeProfiles.contains(profile.getId())) {
+        repositoriesOfActiveProfiles.addAll(profile.getRepositories().getRepositoryList());
+      }
+    }
+    return repositoriesOfActiveProfiles;
   }
 }
