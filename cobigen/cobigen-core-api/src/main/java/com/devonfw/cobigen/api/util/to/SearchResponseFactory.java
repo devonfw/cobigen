@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
@@ -49,19 +50,20 @@ public class SearchResponseFactory {
 
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
+    MavenSearchRepositoryType searchRepositoryType = null;
 
     for (Object searchResponse : SEARCH_RESPONSES) {
+      searchRepositoryType = ((AbstractSearchResponse) searchResponse).getRepositoryType();
       try {
-        LOG.debug("Trying to get a response from {} with server URL: {} ...",
-            ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL);
+        LOG.debug("Trying to get a response from {} ...", searchRepositoryType);
         String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, username,
             password, groupId);
         AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
             searchResponse.getClass());
+        LOG.debug("The search REST API was able to get a response from {}", searchRepositoryType);
         return response.retrieveTemplateSetXmlDownloadURLs();
       } catch (RestSearchResponseException e) {
-        LOG.error("It was not possible to get a response from {} using the URL: {}.\n Following error occured:\n {}",
-            ((AbstractSearchResponse) searchResponse).getRepositoryType(), baseURL, e.getMessage());
+        LOG.debug("The search REST API was unable to get a response from {}", searchRepositoryType);
       }
     }
 

@@ -361,7 +361,7 @@ public class MavenUtil {
 
       return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, username, password, groupId);
     } catch (RestSearchResponseException | JsonProcessingException | MalformedURLException e) {
-      LOG.error("Unable to get artifacts from {} by groupId {}", baseUrl, groupId, e);
+      LOG.debug("Unable to get artifacts from {} by groupId {}", baseUrl, groupId, e);
       // TODO: Handle Eclipse, CLI and MavenPlugin here (f.e. with a new Exception)
       return null;
     }

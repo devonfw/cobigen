@@ -32,9 +32,9 @@ public class RestSearchResponseException extends CobiGenRuntimeException {
    * @param message describing the exception
    * @param statusCode status code causing the {@link RestSearchResponseException} or null if not available
    */
-  public RestSearchResponseException(String message, String statusCode) {
+  public RestSearchResponseException(String message, int statusCode) {
 
-    super(message + statusCode);
+    super(message + String.valueOf(statusCode));
   }
 
 }

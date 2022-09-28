@@ -109,7 +109,7 @@ public abstract class AbstractSearchResponse {
   public static String retrieveJsonResponseWithAuthentication(String targetLink, String username, String password,
       MavenSearchRepositoryType searchRepositoryType) throws RestSearchResponseException {
 
-    LOG.info("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
+    LOG.debug("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
 
     OkHttpClient httpClient = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS).callTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
@@ -134,12 +134,14 @@ public abstract class AbstractSearchResponse {
       response = httpClient.newCall(request).execute();
 
       if (response != null) {
-        int status = response.code();
-        if (status == 200 || status == 201 || status == 204) {
+        int statusCode = response.code();
+        if (statusCode == 200 || statusCode == 201 || statusCode == 204) {
           jsonResponse = response.body().string();
         } else {
-          throw new RestSearchResponseException("The search REST API returned the unexpected status code: ",
-              String.valueOf(response.code()));
+          LOG.debug(
+              "It was not possible to get a response from {} using the URL: {}.\n The search REST API returned the unexpected status code: {}",
+              searchRepositoryType, targetLink, statusCode);
+          throw new RestSearchResponseException("The search REST API returned the unexpected status code: ", statusCode);
         }
       }
 
