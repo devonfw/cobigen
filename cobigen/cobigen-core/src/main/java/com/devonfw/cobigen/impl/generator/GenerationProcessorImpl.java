@@ -603,7 +603,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     try (Writer out = new StringWriter()) {
       templateEngine.process(template, model, out, outputCharset);
       FileUtils.writeStringToFile(output, out.toString(), outputCharset);
-      if (output.getAbsolutePath().endsWith(".java")) {
+      if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null) {
         Merger merger = PluginRegistry.getMerger(template.getMergeStrategy());
         String outputAgain = merger.merge(output, null, outputCharset);
         FileUtils.writeStringToFile(output, outputAgain.toString(), outputCharset);
