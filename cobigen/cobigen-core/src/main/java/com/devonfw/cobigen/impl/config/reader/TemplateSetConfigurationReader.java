@@ -141,11 +141,11 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       if (Files.exists(templateSetsAdapted)) {
         templateSetConfigurationDecorator.templateSetFiles
             .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesAdapted(templateSetsAdapted));
-        this.configRoot = configRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+        this.configRoot = templateSetsAdapted;
 
       }
 
-      if (Files.exists(templateSetsDownloaded)) {
+      else if (Files.exists(templateSetsDownloaded)) {
         templateSetConfigurationDecorator.templateSetFiles
             .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
         this.configRoot = configRoot.resolve("template-set.jar");
@@ -169,19 +169,24 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     this.configLocation = this.templateSetFile.getParent();
 
     Path templateLocation;
-    if (Files.exists(this.templateSetFile)) {
-      this.configRoot = this.configRoot.resolve(this.templateSetFile.getParent());
-      this.templateSetFile = this.configRoot.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+    if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
+      this.configRoot = this.templateSetFile.getParent().resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
       templateLocation = this.configRoot;
+      this.rootTemplateFolder = TemplateFolder.create(templateLocation.getParent().resolve("templates"));
     }
+
+    if (FileSystemUtil.isZipFile(this.configRoot.toUri())) {
+      templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
+      this.rootTemplateFolder = TemplateFolder
+          .create(templateLocation.resolve(this.configLocation.resolve("templates")));
+    }
+
     if (!Files.exists(this.templateSetFile)) {
       throw new InvalidConfigurationException(this.templateSetFile, "Could not find templates set configuration file.");
     } else {
       // Change this line to templatesLocation = rootTemplatePath if additional "templates" folder is removed
-      templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
       // templateLocation = this.configRoot.resolve(this.configLocation.toUri() + "/templates");
     }
-    this.rootTemplateFolder = TemplateFolder.create(templateLocation.resolve(this.configLocation.resolve("templates")));
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
