@@ -62,6 +62,8 @@ public class TemplateSetConfigurationManager {
    */
   protected List<Path> loadTemplateSetFilesAdapted(Path configRoot) {
 
+    // We need to empty this list to prevent duplicates from being added
+    this.templateSetPaths.clear();
     List<Path> templateSetDirectories = new ArrayList<>();
 
     try (Stream<Path> files = Files.list(configRoot)) {
@@ -92,6 +94,8 @@ public class TemplateSetConfigurationManager {
    */
   protected List<Path> loadTemplateSetFilesDownloaded(Path configRoot) {
 
+    // We need to empty this list to prevent duplicates from being added
+    this.templateSetPaths.clear();
     List<Path> templateJars = TemplatesJarUtil.getJarFiles(configRoot);
     if (templateJars != null) {
       for (Path jarPath : templateJars) {

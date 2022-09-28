@@ -169,7 +169,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     this.configLocation = this.templateSetFile.getParent();
 
     Path templateLocation;
-    if (!Files.exists(this.templateSetFile)) {
+    if (Files.exists(this.templateSetFile)) {
       this.configRoot = this.configRoot.resolve(this.templateSetFile.getParent());
       this.templateSetFile = this.configRoot.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
       templateLocation = this.configRoot;
@@ -181,7 +181,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
       // templateLocation = this.configRoot.resolve(this.configLocation.toUri() + "/templates");
     }
-    this.rootTemplateFolder = TemplateFolder.create(templateLocation);
+    this.rootTemplateFolder = TemplateFolder.create(templateLocation.resolve(this.configLocation.resolve("templates")));
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
@@ -267,7 +267,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   public Map<String, Trigger> loadTriggers() {
 
     Map<String, Trigger> triggers = Maps.newHashMap();
-    boolean isJarFile = FileSystemUtil.isZipFile(this.configLocation.toUri());
+    boolean isJarFile = FileSystemUtil.isZipFile(this.configRoot.toUri());
 
     List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = this.templateSetConfiguration.getTrigger();
     if (!triggerList.isEmpty()) {
