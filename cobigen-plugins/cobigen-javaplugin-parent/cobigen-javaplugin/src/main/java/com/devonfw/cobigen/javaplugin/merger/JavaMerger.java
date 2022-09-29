@@ -124,7 +124,6 @@ public class JavaMerger implements Merger {
   private String addGeneratedAnnotation(ModifyableJavaClass baseClass, String lineDelimiter, String targetCharset) {
 
     ModifyableJavaClass parsedAnnotationClass = null;
-    boolean contentExist;
     LocalDate localDate = LocalDate.now();
     String annotation = "@Generated(value={\"com.devon.CobiGen\"}, date = \"" + localDate + "\")"
         + "public class Anno{}";
@@ -132,15 +131,14 @@ public class JavaMerger implements Merger {
     try (StringReader fr = new StringReader(annotation)) {
       parsedAnnotationClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(fr);
     } catch (ParseException e) {
-      throw new ParseException("An error occured while parsing generated Annotation", e.getLine(), e.getColumn());
+      e.printStackTrace();
     }
     List<JavaAnnotation> generatedAnnotation = parsedAnnotationClass.getAnnotations();
-    List<JavaConstructor> constructors = baseClass.getConstructors();
     List<JavaMethod> methods = baseClass.getMethods();
     List<JavaField> fields = baseClass.getFields();
-    contentExist = constructors != null ? true : fields != null ? true : methods != null ? true : false;
+    List<JavaConstructor> constructors = baseClass.getConstructors();
 
-    if (contentExist) {
+    if (methods != null || fields != null || constructors != null) {
       baseClass.getSource().getImports().add("javax.annotation.Generated");
     }
     for (JavaConstructor constructor : constructors) {
