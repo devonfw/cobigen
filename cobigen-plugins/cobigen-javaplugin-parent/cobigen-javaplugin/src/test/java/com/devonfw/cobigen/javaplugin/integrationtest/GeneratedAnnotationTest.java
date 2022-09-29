@@ -22,11 +22,11 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
   @Test
   public void testGenerateAddedGeneratedAnnotaions() throws Exception {
 
-    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI(), true);
+    CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
     File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
 
     Object input = cobiGen.read(
-        new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
+        new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java").toPath(),
         Charset.forName("UTF-8"));
     List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 

@@ -6,11 +6,7 @@
  */
 package com.devonfw.cobigen.javaplugin.merger.libextension;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -411,14 +407,6 @@ public class CustomModelWriter implements ModelWriter {
         if (annotationEntrySet.size() != 1 || !"value".equals(entry.getKey())) {
           this.buffer.write(entry.getKey());
           this.buffer.write('=');
-          if (annotation.getType().getGenericValue().equals("Generated") && entry.getKey().equals("date")) {
-            String pattern = "MM/dd/yyyy";
-            DateFormat df = new SimpleDateFormat(pattern);
-            Date today = Calendar.getInstance().getTime();
-            String todayAsString = df.format(today);
-            this.buffer.write(todayAsString);
-          }
-
         }
 
         if (entry.getValue().getParameterValue() instanceof JavaAnnotation) {
@@ -443,19 +431,16 @@ public class CustomModelWriter implements ModelWriter {
           }
           this.buffer.write("}");
         } else {
-          if (!annotation.getType().getGenericValue().equals("Generated") && !entry.getKey().equals("date")) {
-            this.buffer.write(entry.getValue().toString());
-          }
-
+          this.buffer.write(entry.getValue().toString());
         }
 
-        if (iterator.hasNext()) {
-          this.buffer.write(',');
-          this.buffer.newline();
-        }
+      if (iterator.hasNext()) {
+        this.buffer.write(',');
+        this.buffer.newline();
       }
-      this.buffer.write(')');
-      this.buffer.deindent();
+    }
+    this.buffer.write(')');
+    this.buffer.deindent();
     }
     this.buffer.newline();
     return this;

@@ -4,8 +4,9 @@ import com.example.domain.myapp.general.common.api.ApplicationEntity;
 
 public class Employee extends ApplicationEntity {
 
-  private string field;
+  public Employee() {};
 
+  private string field;
 
   public boolean equals(Object obj) {
 
