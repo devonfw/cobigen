@@ -26,6 +26,9 @@ public class MavenSettingsUtilTest {
   /** Test model */
   private static MavenSettingsModel model;
 
+  /**
+   * Used to initialize data needed for the tests
+   */
   @BeforeClass
   public static void setUpClass() {
 

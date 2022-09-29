@@ -1,7 +1,5 @@
 package com.devonfw.cobigen.api.to.model;
 
-import java.net.URL;
-
 import jakarta.xml.bind.annotation.XmlElement;
 
 /**
@@ -24,7 +22,7 @@ public class MavenSettingsRepositoryModel {
   /**
    * Represents the url of a repository element in maven's settings.xml
    */
-  URL url;
+  String url;
 
   /**
    * @return id
@@ -63,7 +61,7 @@ public class MavenSettingsRepositoryModel {
   /**
    * @return url
    */
-  public URL getUrl() {
+  public String getUrl() {
 
     return this.url;
   }
@@ -72,7 +70,7 @@ public class MavenSettingsRepositoryModel {
    * @param url new value of {@link #geturl}.
    */
   @XmlElement(name = "url")
-  public void setUrl(URL url) {
+  public void setUrl(String url) {
 
     this.url = url;
   }
