@@ -111,16 +111,14 @@ public class JavaMerger implements Merger {
     ModifyableJavaClass mergedClass = merge(baseClass, patchClass);
     return StringUtil.consolidateLineEndings(mergedClass.getSource().getCodeBlock(), lineDelimiter);
   }
-  /*
-   * Merges the generated annotation on methods, fields and constructors.
-   *
-   * @param baseclass contains contents of output file
-   *
-   * @param lineDelimiter
-   *
-   * @param String Charset
-   */
 
+  /**
+   * Merges the generated annotation on methods, fields and constructors. *
+   *
+   * @param baseclass contains contents of output file *
+   * @param lineDelimiter
+   * @param Character set
+   */
   private String addGeneratedAnnotation(ModifyableJavaClass baseClass, String lineDelimiter, String targetCharset) {
 
     ModifyableJavaClass parsedAnnotationClass = null;
@@ -138,24 +136,23 @@ public class JavaMerger implements Merger {
     List<JavaConstructor> constructors = baseClass.getConstructors();
     List<JavaField> fields = baseClass.getFields();
     List<JavaMethod> methods = baseClass.getMethods();
-
     contentExist = constructors != null ? true : fields != null ? true : methods != null ? true : false;
 
     if (contentExist) {
       baseClass.getSource().getImports().add("javax.annotation.Generated");
-    }
-    for (JavaConstructor constructor : constructors) {
-      List<JavaAnnotation> anno = constructor.getAnnotations();
-      ((AbstractBaseJavaEntity) constructor).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
-    }
-    for (JavaField field : fields) {
-      List<JavaAnnotation> anno = field.getAnnotations();
-      ((AbstractBaseJavaEntity) field).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
-    }
-    for (JavaMethod method : methods) {
-      List<JavaAnnotation> anno = method.getAnnotations();
-      method.getLineNumber();
-      ((AbstractBaseJavaEntity) method).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+      for (JavaConstructor constructor : constructors) {
+        List<JavaAnnotation> anno = constructor.getAnnotations();
+        ((AbstractBaseJavaEntity) constructor).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+      }
+      for (JavaField field : fields) {
+        List<JavaAnnotation> anno = field.getAnnotations();
+        ((AbstractBaseJavaEntity) field).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+      }
+      for (JavaMethod method : methods) {
+        List<JavaAnnotation> anno = method.getAnnotations();
+        method.getLineNumber();
+        ((AbstractBaseJavaEntity) method).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+      }
     }
     return StringUtil.consolidateLineEndings(baseClass.getSource().getCodeBlock(), lineDelimiter);
 
