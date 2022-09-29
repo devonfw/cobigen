@@ -201,4 +201,12 @@ public class TemplateSetConfigurationDecorator {
     this.hideTemplates = hideTemplates;
   }
 
+  /**
+   * @return the map of the templates
+   */
+  public Map<String, Template> getTemplates() {
+
+    return this.templates;
+  }
+
 }

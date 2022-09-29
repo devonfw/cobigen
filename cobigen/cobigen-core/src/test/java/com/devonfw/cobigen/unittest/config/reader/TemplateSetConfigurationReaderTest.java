@@ -5,12 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
+import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -108,6 +111,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     assertThat(testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())
         .isEqualTo(3);
   }
+
   //
   // /**
   // * Tests whether a valid template set configuration can be read from a zip file.
@@ -695,109 +699,104 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   // .containsEntry("foo", "logic.api.to").containsEntry("bar", "barValue").containsEntry("local", "localValue");
   // }
   //
-  // /**
-  // * Test relocate while the template is defined with the template file ending, which should be removed on destination
-  // * path resolution.
-  // */
-  // @Test
-  // public void testRelocate_withTemplateFilenameEnding() {
-  //
-  // // given
-  // String templatesConfigurationRoot = testFileRootPath + "valid_relocate_template_fileending/";
-  // com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface target = new
-  // TemplatesConfigurationReader(
-  // new File(testFileRootPath).toPath(), "valid_relocate_template_fileending/");
-  //
-  // // when
-  // Map<String, Template> templates = target.loadTemplates();
-  //
-  // // validation
-  // assertThat(templates).hasSize(1);
-  //
-  // String staticRelocationPrefix = "../server/";
-  // String templateName = "$_Component_$Impl.java";
-  // Template template = templates.get(templateName);
-  // assertThat(template).isNotNull();
-  // String pathWithName = "$_rootpackage_$/$_component_$/logic/impl/" + templateName;
-  // assertThat(template.getRelativeTemplatePath()).isEqualTo("templates/" + pathWithName + ".ftl");
-  // assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
-  // .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName + ".ftl");
-  // assertThat(template.getUnresolvedTemplatePath()).isEqualTo("src/main/java/" + pathWithName);
-  // assertThat(template.getUnresolvedTargetPath()).isEqualTo(staticRelocationPrefix + pathWithName);
-  //
-  // }
-  //
-  // /**
-  // * Test the basic valid configuration of <a href="https://github.com/devonfw/cobigen/issues/157">issue 157</a> for
-  // * relocation of templates to support multi-module generation.
-  // */
-  // @Test
-  // public void testRelocate() {
-  //
-  // // given
-  // String noRelocation = "";
-  // String templateScanDestinationPath = "src/main/java/";
-  // String templatesConfigurationRoot = TEST_FILE_ROOT_PATH + "valid_relocate/";
-  // com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface target = new
-  // TemplatesConfigurationReader(
-  // new File(testFileRootPath).toPath(), "valid_relocate/");
-  //
-  // // when
-  // Map<String, Template> templates = target.loadTemplates();
-  //
-  // // validation
-  // assertThat(templates).hasSize(3);
-  //
-  // String staticRelocationPrefix = "../api/";
-  // verifyScannedTemplate(templates, "$_EntityName_$Entity.java", "$_rootpackage_$/$_component_$/dataaccess/api/",
-  // templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
-  //
-  // staticRelocationPrefix = "../api2/";
-  // verifyScannedTemplate(templates, "$_EntityName_$Eto.java", "$_rootpackage_$/$_component_$/logic/api/to/",
-  // templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
-  //
-  // verifyScannedTemplate(templates, "$_Component_$.java", "$_rootpackage_$/$_component_$/logic/api/",
-  // templatesConfigurationRoot, noRelocation, templateScanDestinationPath);
-  // }
-  //
-  // /**
-  // * Verifies a template's path properties
-  // *
-  // * @param templates list of all templates mapping template name to template
-  // * @param templateName name of the template
-  // * @param templatePath template path
-  // * @param templatesConfigurationRoot configuration root folder of the templates configuration
-  // * @param staticRelocationPrefix static prefix of a relocation value excluding ${cwd}
-  // * @param templateScanDestinationPath destination path of the involved {@link TemplateScan}
-  // * @return the template with the given templateName
-  // */
-  // private Template verifyScannedTemplate(Map<String, Template> templates, String templateName, String templatePath,
-  // String templatesConfigurationRoot, String staticRelocationPrefix, String templateScanDestinationPath) {
-  //
-  // Template template = templates.get(templateName);
-  // assertThat(template).isNotNull();
-  // String pathWithName = templatePath + templateName;
-  // assertThat(template.getRelativeTemplatePath()).isEqualTo("templates/" + pathWithName);
-  // assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
-  // .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName);
-  // assertThat(template.getUnresolvedTemplatePath()).isEqualTo("src/main/java/" + pathWithName);
-  // if (StringUtils.isEmpty(staticRelocationPrefix)) {
-  // assertThat(template.getUnresolvedTargetPath()).isEqualTo(templateScanDestinationPath + pathWithName);
-  // } else {
-  // assertThat(template.getUnresolvedTargetPath()).isEqualTo(staticRelocationPrefix + pathWithName);
-  // }
-  // return template;
-  // }
-  // TODO: That should be tested in the cobigen factory
-  // /**
-  // * Tests whether a valid configuration can be read from template-sets/adapted folder
-  // *
-  // * @throws Exception test fails
-  // */
-  // @Test
-  // public void testTemplateSetLoadedFromNewConfiguration() throws Exception {
-  //
-  // CobiGenFactory.create((TEST_FILE_ROOT_PATH + "valid_template_sets_adapted"));
-  // }
+  /**
+   * Test relocate while the template is defined with the template file ending, which should be removed on destination
+   * path resolution.
+   */
+  @Test
+  public void testRelocate_withTemplateFilenameEnding() {
+
+    // given
+    String templatesConfigurationRoot = TEST_FILE_ROOT_PATH + "valid_relocate_template_fileending/";
+    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH
+        .resolve("valid_relocate_template_fileending/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    TemplateSetConfigurationDecorator testDecoratorAdapted = new TemplateSetConfigurationDecorator(
+        new ArrayList<String>(), true, new ArrayList<String>(), templateSetPathAdapted);
+    com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface target = testDecoratorAdapted.templateSetConfigurationReader;
+
+    // when
+    Map<String, Template> templates = target.loadTemplates();
+
+    // validation
+    assertThat(templates).hasSize(1);
+
+    String staticRelocationPrefix = "../server/";
+    String templateName = "$_Component_$Impl.java";
+    Template template = templates.get(templateName);
+    assertThat(template).isNotNull();
+    String pathWithName = "$_rootpackage_$/$_component_$/logic/impl/" + templateName;
+    assertThat(template.getRelativeTemplatePath()).isEqualTo("templates/" + pathWithName + ".ftl");
+    assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
+        .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName + ".ftl");
+    assertThat(template.getUnresolvedTemplatePath()).isEqualTo("src/main/java/" + pathWithName);
+    assertThat(template.getUnresolvedTargetPath()).isEqualTo(staticRelocationPrefix + pathWithName);
+
+  }
+
+  /**
+   * Test the basic valid configuration of <a href="https://github.com/devonfw/cobigen/issues/157">issue 157</a> for
+   * relocation of templates to support multi-module generation.
+   */
+  @Test
+  public void testRelocate() {
+
+    // given
+    String noRelocation = "";
+    String templateScanDestinationPath = "src/main/java/$_rootpackage_$";
+    String templatesConfigurationRoot = TEST_FILE_ROOT_PATH + "/valid_relocate/"
+        + ConfigurationConstants.TEMPLATE_SETS_FOLDER + "/adapted/test_template/"
+        + ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER + "/";
+
+    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH
+        .resolve("valid_relocate/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    TemplateSetConfigurationDecorator testDecoratorAdapted = new TemplateSetConfigurationDecorator(
+        new ArrayList<String>(), true, new ArrayList<String>(), templateSetPathAdapted);
+
+    // when
+    Map<String, Template> templates = testDecoratorAdapted.getTemplates();
+
+    // validation
+    assertThat(templates).hasSize(3);
+
+    String staticRelocationPrefix = "../api/";
+    verifyScannedTemplate(templates, "$_EntityName_$Entity.java", "$_rootpackage_$/$_component_$/dataaccess/api/",
+        templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
+
+    staticRelocationPrefix = "../api2/";
+    verifyScannedTemplate(templates, "$_EntityName_$Eto.java", "$_rootpackage_$/$_component_$/logic/api/to/",
+        templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
+
+    verifyScannedTemplate(templates, "$_Component_$.java", "$_rootpackage_$/$_component_$/logic/api/",
+        templatesConfigurationRoot, noRelocation, templateScanDestinationPath);
+  }
+
+  /**
+   * Verifies a template's path properties
+   *
+   * @param templates list of all templates mapping template name to template
+   * @param templateName name of the template
+   * @param templatePath template path
+   * @param templatesConfigurationRoot configuration root folder of the templates configuration
+   * @param staticRelocationPrefix static prefix of a relocation value excluding ${cwd}
+   * @param templateScanDestinationPath destination path of the involved {@link TemplateScan}
+   * @return the template with the given templateName
+   */
+  private Template verifyScannedTemplate(Map<String, Template> templates, String templateName, String templatePath,
+      String templatesConfigurationRoot, String staticRelocationPrefix, String templateScanDestinationPath) {
+
+    Template template = templates.get(templateName);
+    assertThat(template).isNotNull();
+    String pathWithName = templatePath + templateName;
+    assertThat(template.getRelativeTemplatePath()).isEqualTo(pathWithName);
+    assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
+        .isEqualTo(new String(templatesConfigurationRoot + "templates/" + pathWithName).replace('\\', '/'));
+    assertThat(template.getUnresolvedTemplatePath()).isEqualTo("src/main/java/" + pathWithName);
+    if (StringUtils.isEmpty(staticRelocationPrefix)) {
+      assertThat(template.getUnresolvedTargetPath()).isEqualTo(templateScanDestinationPath + pathWithName);
+    } else {
+      assertThat(template.getUnresolvedTargetPath()).isEqualTo(staticRelocationPrefix + pathWithName);
+    }
+    return template;
+  }
 
 }
