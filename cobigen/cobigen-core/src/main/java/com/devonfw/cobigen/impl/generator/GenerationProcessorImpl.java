@@ -588,8 +588,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
       FileUtils.writeStringToFile(output, out.toString(), outputCharset);
       if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null) {
         Merger merger = PluginRegistry.getMerger(template.getMergeStrategy());
-        String outputAgain = merger.merge(output, null, outputCharset);
-        FileUtils.writeStringToFile(output, outputAgain.toString(), outputCharset);
+        String addGeneratedAnnotataionToJavacode = merger.merge(output, null, outputCharset);
+        FileUtils.writeStringToFile(output, addGeneratedAnnotataionToJavacode.toString(), outputCharset);
 
       }
 
