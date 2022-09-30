@@ -96,17 +96,19 @@ public class TemplateSetUpgrader {
   public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
       Path templatesLocation) throws Exception {
 
-    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-    Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
+    Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
+    Path parentOfCobigenTemplates = cobigenTemplatesFolder.getParent();
 
+    File renamedParentCobigenTemplatesFolder = new File(
+        parentOfCobigenTemplates.getParent() + "/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    parentOfCobigenTemplates.toFile().renameTo(renamedParentCobigenTemplatesFolder);
+
+    Path folderOfContextLocation = CobiGenPaths.getContextLocation(renamedParentCobigenTemplatesFolder.toPath());
+    cobigenTemplatesFolder = CobiGenPaths.getPomLocation(renamedParentCobigenTemplatesFolder.toPath());
     ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
-    Path templateSets = cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    if (!Files.exists(templateSets))
-      Files.createDirectory(templateSets);
-    Path adapted = templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path adapted = renamedParentCobigenTemplatesFolder.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER);
     if (!Files.exists(adapted))
       Files.createDirectory(adapted);
-    Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
@@ -144,17 +146,10 @@ public class TemplateSetUpgrader {
       }
     }
 
-    // backup of old files
-    Path backupFolder = cobigenHome.resolve(ConfigurationConstants.BACKUP_FOLDER);
-    if (!Files.exists(backupFolder)) {
-      new File(backupFolder.toUri()).mkdirs();
-    }
-    try {
-      FileUtils.copyDirectoryToDirectory(cobigenTemplatesFolder.getParent().toFile(), backupFolder.toFile());
-    } catch (IOException e) {
-      LOG.error("An error occured while backing up the old template folder", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    }
+    File renamedCobigenTemplatesFolder = new File(
+        renamedParentCobigenTemplatesFolder + "/" + ConfigurationConstants.BACKUP_FOLDER);
+    cobigenTemplatesFolder.toFile().renameTo(renamedCobigenTemplatesFolder);
+
     return contextMap;
 
   }
