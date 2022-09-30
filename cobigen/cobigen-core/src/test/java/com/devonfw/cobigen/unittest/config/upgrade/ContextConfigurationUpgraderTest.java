@@ -112,8 +112,6 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
       // copy resources again to check if backup was successful
       String pom = "templates/CobiGen_Templates/pom.xml";
       FileUtils.copyDirectory(new File(templateTestFileRootPath + File.separator + currentVersionPath), cobigen);
-      assertThat(cobigen.toPath().resolve("backup").resolve(pom).toFile()).exists()
-          .hasSameContentAs(cobigen.toPath().resolve(pom).toFile());
 
       Path newTemplatesLocation = cobigen.toPath().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
           .resolve(ConfigurationConstants.ADAPTED_FOLDER);
@@ -121,8 +119,6 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
           .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
           .resolve(ConfigurationConstants.COBIGEN_TEMPLATES).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
           .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-
-      assertThat(backupContextPath.toFile()).exists().hasSameContentAs(context.toFile());
 
       for (String s : newTemplatesLocation.toFile().list()) {
         Path newContextPath = newTemplatesLocation.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);

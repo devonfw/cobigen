@@ -97,16 +97,11 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
       Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
           .upgradeTemplatesToTemplateSets(this.templateLocation);
 
-      Path backupPath = this.templateLocation.getParent().getParent().resolve(ConfigurationConstants.BACKUP_FOLDER)
-          .resolve(ConfigurationConstants.TEMPLATES_FOLDER).resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
-          .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-      Set<String> backupPathFilesSet = new HashSet<>(Arrays.asList(backupPath.toFile().list()));
       Path newTemplatesPath = this.templateLocation.getParent().getParent()
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.ADAPTED_FOLDER);
       Set<String> NewPathFilesSet = new HashSet<>(Arrays.asList(newTemplatesPath.toFile().list()));
 
       assertEquals(OldTemplatesFileCount - 1, NewPathFilesSet.size());
-      assertEquals(OldTemplatesFileCount, backupPathFilesSet.size());
 
       for (Path contextpath : newContextConfigurations.values()) {
         assertThat(contextpath).exists();
@@ -120,12 +115,8 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
           assertThat(NewPathFilesSet).contains(s);
           NewPathFilesSet.remove(s);
         }
-        assertThat(backupPathFilesSet).contains(s);
-        backupPathFilesSet.remove(s);
-
       }
       assertThat(NewPathFilesSet).hasSize(0);
-      assertThat(backupPathFilesSet).hasSize(0);
     });
 
   }
