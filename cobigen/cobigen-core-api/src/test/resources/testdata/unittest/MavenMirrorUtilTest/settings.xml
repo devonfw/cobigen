@@ -13,22 +13,22 @@
     </mirror>
     <mirror>
       <mirrorOf>repo1, repo2</mirrorOf>
-      <url>http://1.1.1.1/</url>
+      <url>http://2.2.2.2/</url>
       <id>testMirror3</id>
     </mirror>
     <mirror>
       <mirrorOf>*,!repo1</mirrorOf>
-      <url>http://2.2.2.2/</url>
+      <url>http://3.3.3.3/</url>
       <id>testMirror4</id>
     </mirror>
     <mirror>
       <mirrorOf>external:*</mirrorOf>
-      <url>http://2.2.2.2/</url>
+      <url>http://4.4.4.4/</url>
       <id>testMirror5</id>
     </mirror>
     <mirror>
       <mirrorOf>external:http:*</mirrorOf>
-      <url>http://2.2.2.2/</url>
+      <url>http://5.5.5.5/</url>
       <id>testMirror6</id>
     </mirror>
   </mirrors>

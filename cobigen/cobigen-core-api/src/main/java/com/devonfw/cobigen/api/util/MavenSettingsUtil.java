@@ -25,6 +25,12 @@ import jakarta.xml.bind.Unmarshaller;
  */
 public class MavenSettingsUtil {
 
+  // Testen, muss entfernt werden
+  public static void main(String[] args) {
+
+    MavenUtil.determineActiveProfiles();
+  }
+
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(MavenSettingsUtil.class);
 

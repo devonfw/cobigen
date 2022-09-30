@@ -56,84 +56,131 @@ public class MavenMirrorUtilTest {
     // Get all the mirrors for the test
     mirrorsList = new LinkedList<>();
     mirrorsList.addAll(model.getMirrors().getMirrorList());
+
   }
 
   /**
-   * Tests the wildcard (*) of the matchPattern method
+   * Tests the injectInjectMirrorUrl method with the wildcard selector (*)
    */
   @Test
-  public void testMatchPatternWildcard() {
+  public void testInjectMirrorUrlMultipleMirrors() {
 
-    boolean resultRepo1Mirror1 = MavenMirrorUtil.matchPattern(repositoriesList.get(0),
-        mirrorsList.get(0).getMirrorOf());
-    boolean resultRepo2Mirror1 = MavenMirrorUtil.matchPattern(repositoriesList.get(1),
-        mirrorsList.get(0).getMirrorOf());
+    List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    assertThat(resultRepo1Mirror1).isEqualTo(true);
-    assertThat(resultRepo2Mirror1).isEqualTo(true);
+    MavenMirrorUtil.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(0)));
+
+    assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("http://0.0.0.0/");
+    assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://0.0.0.0/");
+    assertThat(repositoriesListForInjectionTest.get(2).getUrl()).isEqualTo("http://0.0.0.0/");
   }
 
   /**
-   * Tests, whether matchPattern detects specific pattern (eg. repo1, repo2)
+   * Tests the injectInjectMirrorUrl method with a single selector (eg. only repo1)
    */
   @Test
-  public void testMatchPatternSpecificRepos() {
+  public void testInjectMirrorUrlSingleSelector() {
 
-    boolean resultRepo1Mirror2 = MavenMirrorUtil.matchPattern(repositoriesList.get(0),
-        mirrorsList.get(1).getMirrorOf());
-    boolean resultRepo1Mirror3 = MavenMirrorUtil.matchPattern(repositoriesList.get(0),
-        mirrorsList.get(2).getMirrorOf());
+    List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    assertThat(resultRepo1Mirror2).isEqualTo(true);
-    assertThat(resultRepo1Mirror3).isEqualTo(true);
+    MavenMirrorUtil.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(1)));
+
+    assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("http://1.1.1.1/");
+    assertThat(repositoriesListForInjectionTest.get(1).getUrl())
+        .isEqualTo("https://s01.oss.sonatype.org/content/repositories/snapshots/");
+    assertThat(repositoriesListForInjectionTest.get(2).getUrl())
+        .isEqualTo("http://s01.oss.sonatype.org/content/repositories/snapshots/");
   }
 
   /**
-   * Tests, whether the exclusion operator (!) works
+   * Tests the injectInjectMirrorUrl method with a multiple selector (eg. repo1, repo2)
    */
   @Test
-  public void testMatchPatternExclusion() {
+  public void testInjectMirrorUrlWithMultipleSelectors() {
 
-    boolean resultRepo1Mirror4 = MavenMirrorUtil.matchPattern(repositoriesList.get(0),
-        mirrorsList.get(3).getMirrorOf());
-    boolean resultRepo2Mirror4 = MavenMirrorUtil.matchPattern(repositoriesList.get(1),
-        mirrorsList.get(3).getMirrorOf());
+    List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    assertThat(resultRepo1Mirror4).isEqualTo(false);
-    assertThat(resultRepo2Mirror4).isEqualTo(true);
+    MavenMirrorUtil.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(2)));
+
+    assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("http://2.2.2.2/");
+    assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://2.2.2.2/");
+    assertThat(repositoriesListForInjectionTest.get(2).getUrl())
+        .isEqualTo("http://s01.oss.sonatype.org/content/repositories/snapshots/");
   }
 
   /**
-   * Tests, whether the external operator works (eg. external:*)
+   * Tests the injectInjectMirrorUrl method with a exclusion selector (eg. *,!repo1)
    */
   @Test
-  public void testMatchPatternExternalSources() {
+  public void testInjectMirrorUrlWithExclusionSelector() {
 
-    boolean resultRepo1Mirror5 = MavenMirrorUtil.matchPattern(repositoriesList.get(0),
-        mirrorsList.get(4).getMirrorOf());
-    boolean resultRepo2Mirror5 = MavenMirrorUtil.matchPattern(repositoriesList.get(1),
-        mirrorsList.get(4).getMirrorOf());
+    List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    assertThat(resultRepo1Mirror5).isEqualTo(false);
-    assertThat(resultRepo2Mirror5).isEqualTo(true);
+    MavenMirrorUtil.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(3)));
+
+    assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("localhost");
+    assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://3.3.3.3/");
+    assertThat(repositoriesListForInjectionTest.get(2).getUrl()).isEqualTo("http://3.3.3.3/");
   }
 
   /**
-   * Tests, whether the external operator works with patterns (eg. external:http:*)
+   * Tests the injectInjectMirrorUrl method with an external selector (eg. external:*)
    */
   @Test
-  public void testMatchPatternExternalHTTPSources() {
+  public void testInjectMirrorUrlWithExternalSelector() {
 
-    boolean resultRepo1Mirror6 = MavenMirrorUtil.matchPattern(repositoriesList.get(0),
-        mirrorsList.get(5).getMirrorOf());
-    boolean resultRepo2Mirror6 = MavenMirrorUtil.matchPattern(repositoriesList.get(1),
-        mirrorsList.get(5).getMirrorOf());
-    boolean resultRepo3Mirror6 = MavenMirrorUtil.matchPattern(repositoriesList.get(2),
-        mirrorsList.get(5).getMirrorOf());
+    List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    assertThat(resultRepo1Mirror6).isEqualTo(false);
-    assertThat(resultRepo2Mirror6).isEqualTo(false);
-    assertThat(resultRepo3Mirror6).isEqualTo(true);
+    MavenMirrorUtil.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(4)));
+
+    assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("localhost");
+    assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://4.4.4.4/");
+    assertThat(repositoriesListForInjectionTest.get(2).getUrl()).isEqualTo("http://4.4.4.4/");
+  }
+
+  /**
+   * Tests the injectInjectMirrorUrl method with an extended external selector (eg. external:http:*)
+   */
+  @Test
+  public void testInjectMirrorUrlWithExtendedExternalSelector() {
+
+    List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
+
+    MavenMirrorUtil.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(5)));
+
+    assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("localhost");
+    assertThat(repositoriesListForInjectionTest.get(1).getUrl())
+        .isEqualTo("https://s01.oss.sonatype.org/content/repositories/snapshots/");
+    assertThat(repositoriesListForInjectionTest.get(2).getUrl()).isEqualTo("http://5.5.5.5/");
+  }
+
+  /**
+   * Tests the injectInjectMirrorUrl method with an multipleMirrors
+   */
+  @Test
+  public void testInjectMirrorUrlWithMultipleMirrors() {
+
+    List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
+
+    MavenMirrorUtil.injectMirrorUrl(repositoriesListForInjectionTest, mirrorsList);
+
+    assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("http://0.0.0.0/");
+    assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://0.0.0.0/");
+    assertThat(repositoriesListForInjectionTest.get(2).getUrl()).isEqualTo("http://0.0.0.0/");
+  }
+
+  /**
+   * This method creates a new deep copy of the repositoriesList. It is needed because each test method needs it's own
+   * list.
+   *
+   * @return a deep copy of repositoriesList
+   */
+  private static List<MavenSettingsRepositoryModel> cloneList() {
+
+    List<MavenSettingsRepositoryModel> result = new LinkedList<>();
+    for (MavenSettingsRepositoryModel r : repositoriesList) {
+      result.add(new MavenSettingsRepositoryModel(r));
+    }
+    return result;
   }
 
 }

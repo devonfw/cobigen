@@ -25,6 +25,25 @@ public class MavenSettingsRepositoryModel {
   String url;
 
   /**
+   * The constructor.
+   */
+  public MavenSettingsRepositoryModel() {
+
+  }
+
+  /**
+   * The constructor. It is needed for tests. As a simple way to clone a list.
+   *
+   * @param model
+   */
+  public MavenSettingsRepositoryModel(MavenSettingsRepositoryModel model) {
+
+    this.id = model.getId();
+    this.name = model.getName();
+    this.url = model.getUrl();
+  }
+
+  /**
    * @return id
    */
   public String getId() {

@@ -2,7 +2,9 @@ package com.devonfw.cobigen.api.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
+import com.devonfw.cobigen.api.to.model.MavenSettingsMirrorModel;
 import com.devonfw.cobigen.api.to.model.MavenSettingsRepositoryModel;
 
 /**
@@ -17,6 +19,30 @@ public class MavenMirrorUtil {
   private static final String EXTERNAL_HTTP_WILDCARD = "external:http:*";
 
   /**
+   * Replaces urls of repositories with the urls of their mirrors if available
+   *
+   * @param repositories list of repositories of maven's settings.xml
+   * @param mirrors list of mirrors of maven's settings.xml
+   */
+  /*
+   * Important: The order of the mirrors is important! There can be at most one mirror for a given repository. Maven
+   * will not aggregate the mirrors but simply picks the first match. Take a look here:
+   * https://maven.apache.org/guides/mini/guide-mirror-settings.html
+   */
+  public static void injectMirrorUrl(List<MavenSettingsRepositoryModel> repositories,
+      List<MavenSettingsMirrorModel> mirrors) {
+
+    for (MavenSettingsRepositoryModel r : repositories) {
+      for (MavenSettingsMirrorModel m : mirrors) {
+        if (matchPattern(r, m.getMirrorOf())) {
+          r.setUrl(m.getUrl());
+          break;
+        }
+      }
+    }
+  }
+
+  /**
    * This method checks if the pattern of the mirror (mirrorOf) matches the repository. Valid patterns:
    * <ul>
    * <li>{@code *} = everything,</li>
@@ -26,9 +52,12 @@ public class MavenMirrorUtil {
    * <li>{@code *,!repo1} = everything except {@code repo1}.</li>
    * </ul>
    *
+   * @param repository repository which will be checked
+   * @param pattern pattern which will be used to determine if the repository id matches this pattern
+   *
    * @return true if the repository is a match to this pattern.
    */
-  public static boolean matchPattern(MavenSettingsRepositoryModel repository, String pattern) {
+  private static boolean matchPattern(MavenSettingsRepositoryModel repository, String pattern) {
 
     boolean result = false;
     String originalId = repository.getId();
@@ -85,7 +114,6 @@ public class MavenMirrorUtil {
       URL url = new URL(repository.getUrl().toString());
       return !(isLocal(url.getHost()) || url.getProtocol().equals("file"));
     } catch (MalformedURLException e) {
-      // bad url just skip it here. It should have been validated already, but the wagon lookup will deal with it
       return false;
     }
   }
@@ -109,7 +137,6 @@ public class MavenMirrorUtil {
           || "dav:http".equalsIgnoreCase(url.getProtocol()) || "dav+http".equalsIgnoreCase(url.getProtocol()))
           && !isLocal(url.getHost());
     } catch (MalformedURLException e) {
-      // bad url just skip it here. It should have been validated already, but the wagon lookup will deal with it
       return false;
     }
   }
