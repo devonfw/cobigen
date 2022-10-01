@@ -90,7 +90,17 @@ public class JavaMerger implements Merger {
           + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
     }
     if (patch == null) {
-      return addGeneratedAnnotation(baseClass, lineDelimiter, targetCharset);
+      JavaClass parsedAnnotationClass;
+      LocalDate localDate = LocalDate.now();
+      String annotation = "@Generated(value={\"com.devon.CobiGen\"}, date = \"" + localDate + "\")"
+          + "public class Anno{}";
+      try (StringReader fr = new StringReader(annotation)) {
+        parsedAnnotationClass = JavaParserUtil.getFirstJavaClass(fr);
+      } catch (ParseException e) {
+        throw new MergeException(base, "The syntax of the generated annotataion patch is invalid. Error in line: "
+            + e.getLine() + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
+      }
+      return addGeneratedAnnotation(baseClass, parsedAnnotationClass, lineDelimiter);
     }
 
     ModifyableJavaClass patchClass;
@@ -115,23 +125,13 @@ public class JavaMerger implements Merger {
   /**
    * Merges the generated annotation on methods, fields and constructors. *
    *
-   * @param baseclass contains contents of output file *
+   * @param baseclass contains contents of output file
+   * @param parsedAnnotataionClass contains the generated Annotataion
    * @param lineDelimiter
-   * @param Character set
    */
-  private String addGeneratedAnnotation(ModifyableJavaClass baseClass, String lineDelimiter, String targetCharset) {
+  private String addGeneratedAnnotation(JavaClass baseClass, JavaClass parsedAnnotationClass, String lineDelimiter) {
 
-    ModifyableJavaClass parsedAnnotationClass = null;
     boolean contentExist;
-    LocalDate localDate = LocalDate.now();
-    String annotation = "@Generated(value={\"com.devon.CobiGen\"}, date = \"" + localDate + "\")"
-        + "public class Anno{}";
-
-    try (StringReader fr = new StringReader(annotation)) {
-      parsedAnnotationClass = (ModifyableJavaClass) JavaParserUtil.getFirstJavaClass(fr);
-    } catch (ParseException e) {
-      throw new ParseException("An error occured while parsing generated Annotation", e.getLine(), e.getColumn());
-    }
     List<JavaAnnotation> generatedAnnotation = parsedAnnotationClass.getAnnotations();
     List<JavaConstructor> constructors = baseClass.getConstructors();
     List<JavaField> fields = baseClass.getFields();

@@ -19,6 +19,10 @@ import com.devonfw.cobigen.javaplugin.integrationtest.common.AbstractIntegration
 
 public class GeneratedAnnotationTest extends AbstractIntegrationTest {
 
+  /*
+   * Test to check weather the entire generation process runs with new modifications in JavaMerger and merges the
+   * generated annotation
+   */
   @Test
   public void testGenerateAddedGeneratedAnnotaions() throws Exception {
 
@@ -26,7 +30,7 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
     File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
 
     Object input = cobiGen.read(
-        new File("src/test/resources/testdata/integrationtest/javaSources/SampleEntity.java").toPath(),
+        new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
         Charset.forName("UTF-8"));
     List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
 

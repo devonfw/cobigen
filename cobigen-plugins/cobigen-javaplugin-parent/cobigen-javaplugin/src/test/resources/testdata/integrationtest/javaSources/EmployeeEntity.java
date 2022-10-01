@@ -1,7 +1,5 @@
 package com.example.domain.myapp.employeemanagement.dataaccess.api;
 
-
-
 import javax.persistence.Entity;
 
 public class EmployeeEntity {
