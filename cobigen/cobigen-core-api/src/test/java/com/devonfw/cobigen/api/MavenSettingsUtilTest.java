@@ -12,7 +12,6 @@ import org.junit.Test;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.to.model.MavenSettingsModel;
 import com.devonfw.cobigen.api.util.MavenSettingsUtil;
-import com.devonfw.cobigen.api.util.MavenUtil;
 
 /**
  * Test class for MavenSettingsUtil
@@ -97,12 +96,37 @@ public class MavenSettingsUtilTest {
     assertThat(blocked).isEqualTo("true");
   }
 
+  /**
+   * Tests, whether the the proxy elements of maven's settings.xml are mapped correctly to a java class
+   */
   @Test
-  public void testDetermineMavenSettings() {
+  public void testGenerateMavenSettingsModelProxy() {
 
-    // Waiting for Eduards solution
-    String test = MavenUtil.determineMavenSettings();
-    System.out.println(test);
+    String id = model.getProxies().getProxyList().get(0).getId();
+    String active = model.getProxies().getProxyList().get(0).getActive();
+    String protocol = model.getProxies().getProxyList().get(0).getProtocol();
+    String host = model.getProxies().getProxyList().get(0).getHost();
+    String port = model.getProxies().getProxyList().get(0).getPort();
+    String nonProxyHosts = model.getProxies().getProxyList().get(0).getNonProxyHosts();
+
+    assertThat(id).isEqualTo("example-proxy");
+
+    assertThat(active).isEqualTo("true");
+
+    assertThat(protocol).isEqualTo("http");
+
+    assertThat(host).isEqualTo("proxy.example.com");
+
+    assertThat(port).isEqualTo("8080");
+
+    assertThat(nonProxyHosts).isEqualTo("www.google.com|*.example.com");
   }
+
+  // @Test
+  // public void testDetermineMavenSettings() {
+  //
+  // // Waiting for Eduards solution
+  // String test = MavenUtil.determineMavenSettings();
+  // }
 
 }

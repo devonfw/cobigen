@@ -2,8 +2,6 @@ package com.devonfw.cobigen.api.util;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,14 +23,32 @@ import jakarta.xml.bind.Unmarshaller;
  */
 public class MavenSettingsUtil {
 
-  // Testen, muss entfernt werden
-  public static void main(String[] args) {
-
-    MavenUtil.determineActiveProfiles();
-  }
-
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(MavenSettingsUtil.class);
+
+  /**
+   * @return repositories from active profiles with injected mirror urls
+   */
+  public static List<MavenSettingsRepositoryModel> getRepositoriesFromMavenSettings() {
+
+    MavenSettingsModel model = generateMavenSettingsModel(MavenUtil.determineMavenSettings());
+
+    List<MavenSettingsRepositoryModel> activeRepos = new LinkedList<>();
+
+    String activeProfiles = "";
+
+    try {
+      activeProfiles = MavenUtil.determineActiveProfiles();
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Unable to read active profiles.", e);
+    }
+
+    activeRepos = getRepositoriesOfActiveProfiles(model, activeProfiles);
+
+    MavenMirrorUtil.injectMirrorUrl(activeRepos, model.getMirrors().getMirrorList());
+
+    return activeRepos;
+  }
 
   /**
    * Maps parts of maven's settings.xml to a Java class Mapping includes: settings-, profiles-, profile-, repository-,
@@ -55,7 +71,6 @@ public class MavenSettingsUtil {
       LOG.debug("Successfully unmarshalled maven's settings.xml");
       return model;
     } catch (JAXBException e) {
-      LOG.error("Unable to unmarshal maven's settings.xml");
       throw new CobiGenRuntimeException("Unable to unmarshal maven's settings.xml", e);
     }
   }
@@ -75,24 +90,17 @@ public class MavenSettingsUtil {
 
   /**
    * @param model Class, on which maven's settings.xml have been mapped to
+   * @param string with active profiles
    *
    * @return List of repositories of active profiles in maven's settings.xml
    */
   private static List<MavenSettingsRepositoryModel> getRepositoriesOfActiveProfiles(MavenSettingsModel model,
-      Path activeProfilesPath) {
+      String activeProfiles) {
 
     LOG.debug("Determining repositories of active profiles of maven's settings.xml");
 
     List<MavenSettingsRepositoryModel> repositoriesOfActiveProfiles = new LinkedList<>();
 
-    String activeProfiles = "";
-
-    try {
-      activeProfiles = Files.readString(activeProfilesPath);
-    } catch (IOException e) {
-      LOG.error("Unable to determine active profiles of maven's settings.xml");
-      throw new CobiGenRuntimeException("Unable to determine active profiles of maven's settings.xml", e);
-    }
     List<MavenSettingsProfileModel> profilesList = model.getProfiles().getProfileList();
 
     for (MavenSettingsProfileModel profile : profilesList) {

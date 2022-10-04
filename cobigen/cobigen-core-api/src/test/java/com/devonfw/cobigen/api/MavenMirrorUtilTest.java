@@ -154,7 +154,7 @@ public class MavenMirrorUtilTest {
   }
 
   /**
-   * Tests the injectInjectMirrorUrl method with an multipleMirrors
+   * Tests the injectInjectMirrorUrl method with a multiple mirrors
    */
   @Test
   public void testInjectMirrorUrlWithMultipleMirrors() {

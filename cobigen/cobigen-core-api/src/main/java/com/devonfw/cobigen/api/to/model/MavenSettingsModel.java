@@ -18,12 +18,17 @@ public class MavenSettingsModel {
   /**
    * Represents the servers element in maven's settings.xml
    */
-  MavenSettingsServers servers;
+  MavenSettingsServersModel servers;
 
   /**
    * Represents the mirrors element in maven's settings.xml
    */
   MavenSettingsMirrorsModel mirrors;
+
+  /**
+   * Represents the mirrors element in maven's settings.xml
+   */
+  MavenSettingsProxiesModel proxies;
 
   /**
    * @return profiles
@@ -45,7 +50,7 @@ public class MavenSettingsModel {
   /**
    * @return servers
    */
-  public MavenSettingsServers getServers() {
+  public MavenSettingsServersModel getServers() {
 
     return this.servers;
   }
@@ -54,7 +59,7 @@ public class MavenSettingsModel {
    * @param servers new value of {@link #getservers}.
    */
   @XmlElement(name = "servers")
-  public void setServers(MavenSettingsServers servers) {
+  public void setServers(MavenSettingsServersModel servers) {
 
     this.servers = servers;
   }
@@ -74,6 +79,23 @@ public class MavenSettingsModel {
   public void setMirrors(MavenSettingsMirrorsModel mirrors) {
 
     this.mirrors = mirrors;
+  }
+
+  /**
+   * @return proxies
+   */
+  public MavenSettingsProxiesModel getProxies() {
+
+    return this.proxies;
+  }
+
+  /**
+   * @param proxies new value of {@link #getproxies}.
+   */
+  @XmlElement(name = "proxies")
+  public void setProxies(MavenSettingsProxiesModel proxies) {
+
+    this.proxies = proxies;
   }
 
 }

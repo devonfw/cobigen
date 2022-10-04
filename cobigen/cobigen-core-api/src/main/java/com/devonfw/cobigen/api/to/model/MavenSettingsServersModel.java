@@ -8,17 +8,17 @@ import jakarta.xml.bind.annotation.XmlElement;
  * Class, which represents the servers element of the settings.xml
  *
  */
-public class MavenSettingsServers {
+public class MavenSettingsServersModel {
 
   /**
    * Represents server elements in maven's settings.xml
    */
-  List<MavenSettingsServer> serverList;
+  List<MavenSettingsServerModel> serverList;
 
   /**
    * @return server
    */
-  public List<MavenSettingsServer> getServerList() {
+  public List<MavenSettingsServerModel> getServerList() {
 
     return this.serverList;
   }
@@ -27,7 +27,7 @@ public class MavenSettingsServers {
    * @param server new value of {@link #getserver}.
    */
   @XmlElement(name = "server")
-  public void setServerList(List<MavenSettingsServer> server) {
+  public void setServerList(List<MavenSettingsServerModel> server) {
 
     this.serverList = server;
   }

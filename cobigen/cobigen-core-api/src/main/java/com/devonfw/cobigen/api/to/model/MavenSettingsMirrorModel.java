@@ -8,12 +8,24 @@ import jakarta.xml.bind.annotation.XmlElement;
  */
 public class MavenSettingsMirrorModel {
 
+  /**
+   * Represents the mirrorOf element of a mirror
+   */
   String mirrorOf;
 
+  /**
+   * Represents the url element of a mirror
+   */
   String url;
 
+  /**
+   * Represents the id element of a mirror
+   */
   String id;
 
+  /**
+   * Represents the blocked element of a mirror
+   */
   String blocked;
 
   /**
