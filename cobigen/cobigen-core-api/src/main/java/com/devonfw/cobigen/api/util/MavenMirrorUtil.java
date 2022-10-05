@@ -4,6 +4,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.to.model.MavenSettingsMirrorModel;
 import com.devonfw.cobigen.api.to.model.MavenSettingsRepositoryModel;
 
@@ -11,6 +14,9 @@ import com.devonfw.cobigen.api.to.model.MavenSettingsRepositoryModel;
  * Utils to operate with mirrors specified in maven's settings.xml
  */
 public class MavenMirrorUtil {
+
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(MavenMirrorUtil.class);
 
   private static final String WILDCARD = "*";
 
@@ -31,6 +37,8 @@ public class MavenMirrorUtil {
    */
   public static void injectMirrorUrl(List<MavenSettingsRepositoryModel> repositories,
       List<MavenSettingsMirrorModel> mirrors) {
+
+    LOG.info("Injecting mirror urls into repositories");
 
     for (MavenSettingsRepositoryModel r : repositories) {
       for (MavenSettingsMirrorModel m : mirrors) {

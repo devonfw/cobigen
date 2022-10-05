@@ -215,22 +215,18 @@ public class MavenUtil {
    */
   public static String determineActiveProfiles() throws IOException {
 
+    LOG.info("Determine active build profiles");
+
     String activeProfiles = "";
     String activeProfilePath = "src/main/resources/activeProfiles.txt";
 
     Files.createFile(Paths.get(activeProfilePath));
 
-    LOG.info("Determine active build profiles");
     runCommand(SystemUtils.getUserDir().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
         "help:active-profiles", "-Doutput=" + activeProfilePath));
 
-    try {
-      activeProfiles = Files.readString(Paths.get(activeProfilePath));
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to read active profiles.", e);
-    } finally {
-      Files.deleteIfExists(Paths.get(activeProfilePath));
-    }
+    activeProfiles = Files.readString(Paths.get(activeProfilePath));
+
     Files.deleteIfExists(Paths.get(activeProfilePath));
 
     return activeProfiles;
