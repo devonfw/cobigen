@@ -601,7 +601,7 @@ public class JavaMergerTest {
   }
 
   /*
-   * Tests Generated annotation is added to the Java Code
+   * Test if an @generated annotation was added to the java code.
    *
    * @throws IOException
    */
@@ -609,9 +609,23 @@ public class JavaMergerTest {
   public void testaddAnnotation() throws IOException {
 
     File baseFile = new File(testFileRootPath + "Generated.java");
+    JavaMerger javaMergerObj = new JavaMerger("", true);
+    String output = javaMergerObj.merge(baseFile, null, "UTF-8");
+    assertThat(output).contains("@Generated(value={\"com.devon.CobiGen\"}");
+  }
+
+  /*
+   * Test if @Generated annotation already present in JavaCode if yes then it does not override
+   */
+  @Test
+  public void testDoNotOverrideGeneratedAnnotation() throws IOException {
+
+    File baseFile = new File(testFileRootPath + "AlreadyGenerated.java");
     JavaMerger javaMergerObj = new JavaMerger("", false);
     String output = javaMergerObj.merge(baseFile, null, "UTF-8");
-    assertThat(output).contains("@Generated");
-
+    assertThat(output).contains("@Generated(value={\"com.devon.CobiGen\"}");
+    assertThat(output).contains("date=\"2022-07-05\")");
+    assertThat(output).contains("date=\"2022-10-05\")");
+    assertThat(output).contains("date=\"2022-05-05\")");
   }
 }

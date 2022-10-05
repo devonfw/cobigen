@@ -586,11 +586,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     try (Writer out = new StringWriter()) {
       templateEngine.process(template, model, out, outputCharset);
       FileUtils.writeStringToFile(output, out.toString(), outputCharset);
+      // If the output file is of java type add @Generated annotation on fields, methods and constructors
       if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null) {
         Merger merger = PluginRegistry.getMerger(template.getMergeStrategy());
-        String addGeneratedAnnotataionToJavacode = merger.merge(output, null, outputCharset);
-        FileUtils.writeStringToFile(output, addGeneratedAnnotataionToJavacode.toString(), outputCharset);
-
+        String generatedAnnotation = merger.merge(output, null, outputCharset);
+        FileUtils.writeStringToFile(output, generatedAnnotation, outputCharset);
       }
 
     } catch (IOException e) {

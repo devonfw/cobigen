@@ -94,10 +94,10 @@ public class JavaMerger implements Merger {
       LocalDate localDate = LocalDate.now();
       String annotation = "@Generated(value={\"com.devon.CobiGen\"}, date = \"" + localDate + "\")"
           + "public class Anno{}";
-      try (StringReader fr = new StringReader(annotation)) {
-        parsedAnnotationClass = JavaParserUtil.getFirstJavaClass(fr);
+      try (StringReader reader = new StringReader(annotation)) {
+        parsedAnnotationClass = JavaParserUtil.getFirstJavaClass(reader);
       } catch (ParseException e) {
-        throw new MergeException(base, "The syntax of the generated annotataion patch is invalid. Error in line: "
+        throw new MergeException(base, "The syntax of the generated annotation patch is invalid. Error in line: "
             + e.getLine() + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
       }
       return addGeneratedAnnotation(baseClass, parsedAnnotationClass, lineDelimiter);
@@ -123,10 +123,10 @@ public class JavaMerger implements Merger {
   }
 
   /**
-   * Merges the generated annotation on methods, fields and constructors. *
+   * Merges the generated annotation on methods, fields and constructors
    *
    * @param baseclass contains contents of output file
-   * @param parsedAnnotataionClass contains the generated Annotataion
+   * @param parsedAnnotataionClass contains the generated Annotation
    * @param lineDelimiter
    */
   private String addGeneratedAnnotation(JavaClass baseClass, JavaClass parsedAnnotationClass, String lineDelimiter) {
@@ -136,22 +136,61 @@ public class JavaMerger implements Merger {
     List<JavaConstructor> constructors = baseClass.getConstructors();
     List<JavaField> fields = baseClass.getFields();
     List<JavaMethod> methods = baseClass.getMethods();
+    // checks if the basefile has methods, constructors and fields present
+    // if so, then execute the rest of the code
     contentExist = constructors != null ? true : fields != null ? true : methods != null ? true : false;
 
     if (contentExist) {
-      baseClass.getSource().getImports().add("javax.annotation.Generated");
+      // checks if import is already present
+      List<String> imports = baseClass.getSource().getImports();
+      boolean importPresent = false;
+      for (String imp : imports) {
+        if (imp.equals("javax.annotation.Generated")) {
+          importPresent = true;
+          break;
+        }
+      }
+      if (!importPresent) {
+        baseClass.getSource().getImports().add("javax.annotation.Generated");
+      }
+      // Check if generated annotation already present, if yes then it does not add
       for (JavaConstructor constructor : constructors) {
-        List<JavaAnnotation> anno = constructor.getAnnotations();
-        ((AbstractBaseJavaEntity) constructor).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+        List<JavaAnnotation> annos = constructor.getAnnotations();
+        boolean annotationAlreadyPresent = false;
+        for (JavaAnnotation anno : annos) {
+          if (anno.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
+            annotationAlreadyPresent = true;
+            break;
+          }
+        }
+        if (!annotationAlreadyPresent)
+          ((AbstractBaseJavaEntity) constructor).setAnnotations(mergeAnnotation(annos, generatedAnnotation));
       }
+      // Check if generated annotation already present, if yes then it does not add
       for (JavaField field : fields) {
-        List<JavaAnnotation> anno = field.getAnnotations();
-        ((AbstractBaseJavaEntity) field).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+        boolean annotationAlreadyPresent = false;
+        List<JavaAnnotation> annos = field.getAnnotations();
+        for (JavaAnnotation anno : annos) {
+          if (anno.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
+            annotationAlreadyPresent = true;
+            break;
+          }
+        }
+        if (!annotationAlreadyPresent)
+          ((AbstractBaseJavaEntity) field).setAnnotations(mergeAnnotation(annos, generatedAnnotation));
       }
+      // Check if generated annotation already present, if yes then it does not add
       for (JavaMethod method : methods) {
-        List<JavaAnnotation> anno = method.getAnnotations();
-        method.getLineNumber();
-        ((AbstractBaseJavaEntity) method).setAnnotations(mergeAnnotation(anno, generatedAnnotation));
+        boolean annotationAlreadyPresent = false;
+        List<JavaAnnotation> annos = method.getAnnotations();
+        for (JavaAnnotation anno : annos) {
+          if (anno.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
+            annotationAlreadyPresent = true;
+            break;
+          }
+        }
+        if (!annotationAlreadyPresent)
+          ((AbstractBaseJavaEntity) method).setAnnotations(mergeAnnotation(annos, generatedAnnotation));
       }
     }
     return StringUtil.consolidateLineEndings(baseClass.getSource().getCodeBlock(), lineDelimiter);

@@ -24,7 +24,7 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
    * generated annotation
    */
   @Test
-  public void testGenerateAddedGeneratedAnnotaions() throws Exception {
+  public void testGenerateAddedGeneratedAnnotations() throws Exception {
 
     CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
     File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
