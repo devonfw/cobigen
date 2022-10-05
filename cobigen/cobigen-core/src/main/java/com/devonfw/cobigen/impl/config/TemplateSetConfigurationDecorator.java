@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
@@ -24,6 +28,9 @@ import com.google.common.collect.Maps;
  */
 public class TemplateSetConfigurationDecorator {
 
+  /** Logger instance */
+  private static final Logger LOG = LoggerFactory.getLogger(TemplateSetConfigurationDecorator.class);
+
   /** variable for template-set artifacts */
   private List<String> groupIds;
 
@@ -31,7 +38,7 @@ public class TemplateSetConfigurationDecorator {
   private boolean allowSnapshots;
 
   /** variable to hide very specific template sets or versions of template sets */
-  private List<String> hideTemplates;
+  private List<MavenCoordinate> hideTemplates;
 
   /** All available {@link Trigger}s */
   private Map<String, Trigger> triggers;
@@ -53,6 +60,9 @@ public class TemplateSetConfigurationDecorator {
 
   /** Root of the configuration */
   public Path configRoot;
+
+  /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
+  private List<MavenCoordinate> mavenCoordinates;
 
   /**
    * The constructor. This constructor is used, when the specific properties aren't needed
@@ -76,8 +86,8 @@ public class TemplateSetConfigurationDecorator {
    * @param hideTemplates variable to hide very specific template sets or versions of template sets
    * @param configRoot Root of the configuration
    */
-  public TemplateSetConfigurationDecorator(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates,
-      Path configRoot) {
+  public TemplateSetConfigurationDecorator(List<String> groupIds, boolean allowSnapshots,
+      List<MavenCoordinate> hideTemplates, Path configRoot) {
 
     this(configRoot);
     this.groupIds = groupIds;
@@ -92,6 +102,7 @@ public class TemplateSetConfigurationDecorator {
    * @param configRoot CobiGen configuration root path
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
+
   public void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
     if (this.templateSetConfigurationReader == null) {
@@ -186,7 +197,7 @@ public class TemplateSetConfigurationDecorator {
    *
    * @return hideTemplates
    */
-  public List<String> getHideTemplates() {
+  public List<MavenCoordinate> getHideTemplates() {
 
     return this.hideTemplates;
   }
@@ -196,7 +207,7 @@ public class TemplateSetConfigurationDecorator {
    *
    * @param hideTemplates new value of gethideTemplates}.
    */
-  public void setHideTemplates(List<String> hideTemplates) {
+  public void setHideTemplates(List<MavenCoordinate> hideTemplates) {
 
     this.hideTemplates = hideTemplates;
   }
@@ -207,6 +218,15 @@ public class TemplateSetConfigurationDecorator {
   public Map<String, Template> getTemplates() {
 
     return this.templates;
+  }
+
+  /**
+   * @return @param mavenCoordinates
+   */
+  public List<MavenCoordinate> getMavenCoordinates() {
+
+    // TODO Auto-generated method stub
+    return this.mavenCoordinates;
   }
 
 }

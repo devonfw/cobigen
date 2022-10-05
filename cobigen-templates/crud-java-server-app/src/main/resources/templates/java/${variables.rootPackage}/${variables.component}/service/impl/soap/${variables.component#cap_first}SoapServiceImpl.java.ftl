@@ -10,7 +10,7 @@ import org.springframework.web.context.WebApplicationContext;
 import ${variables.rootPackage}.general.common.api.to.PaginatedListToWrapper;
 import ${variables.rootPackage}.${variables.component}.logic.api.${variables.component?cap_first};
 import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}Eto;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 
 import ${variables.rootPackage}.general.service.api.soap.${variables.component?cap_first}Service;
 import ${variables.rootPackage}.general.service.impl.config.WebApplicationContextLocator;
@@ -46,7 +46,7 @@ public class ${variables.component?cap_first}SoapServiceImpl implements ${variab
    public ${variables.entityName}Eto get${variables.entityName}(@WebParam(name = "id") <#if compositeIdTypeVar!="null">${compositeIdTypeVar}<#else>long</#if> id){
     return this.${variables.component?lower_case}.find${variables.entityName}(id);
    }
- 
+
    @Override
    public ${variables.entityName}Eto save${variables.entityName}(${variables.entityName}Eto ${variables.entityName?lower_case}){
       Object o = ${variables.entityName?lower_case}.getId();
@@ -57,12 +57,12 @@ public class ${variables.component?cap_first}SoapServiceImpl implements ${variab
       }
       return this.${variables.component?lower_case}.save${variables.entityName}(${variables.entityName?lower_case});
     }
-   
+
   @Override
   public void delete${variables.entityName}(@WebParam(name = "id") <#if compositeIdTypeVar!="null">${compositeIdTypeVar}<#else>long</#if> id){
     this.${variables.component?lower_case}.delete${variables.entityName}(id);
   }
-  
+
   @Override
   public PaginatedListToWrapper<${variables.entityName}Eto> find${variables.entityName}sByPost(${variables.entityName}SearchCriteriaTo searchCriteriaTo){
     Page<${variables.entityName}Eto> actualResult = this.${variables.component?lower_case}.find${variables.entityName}Etos(searchCriteriaTo);
@@ -71,5 +71,5 @@ public class ${variables.component?cap_first}SoapServiceImpl implements ${variab
     wrapper.setPagination(actualResult.getPageable());
     return wrapper;
   }
-  
+
 }

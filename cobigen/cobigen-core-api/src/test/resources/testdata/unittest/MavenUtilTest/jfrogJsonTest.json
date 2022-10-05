@@ -1,0 +1,9 @@
+{
+"results": [
+    {
+        "uri": "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifact/1.0/artifact-1.0-sources.jar"
+    },{
+        "uri": "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifactB/1.0/artifactB-1.0-sources.jar"
+    }
+]
+}

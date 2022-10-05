@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
@@ -64,10 +65,10 @@ public class ConfigurationFactory {
    * @return {@link TemplateSetConfigurationDecorator} instance
    */
   public TemplateSetConfigurationDecorator getTemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots,
-      List<String> hideTemplates) {
+      List<MavenCoordinate> hideTemplates) {
 
-    TemplateSetConfigurationDecorator templateSetConfiguration = new TemplateSetConfigurationDecorator(groupIds, allowSnapshots,
-        hideTemplates, this.configRoot);
+    TemplateSetConfigurationDecorator templateSetConfiguration = new TemplateSetConfigurationDecorator(groupIds,
+        allowSnapshots, hideTemplates, this.configRoot);
     return templateSetConfiguration;
   }
 

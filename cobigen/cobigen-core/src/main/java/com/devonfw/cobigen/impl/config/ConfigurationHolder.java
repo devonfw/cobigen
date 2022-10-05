@@ -19,9 +19,11 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
+import com.devonfw.cobigen.impl.util.MavenCoordinateUtil;
 import com.google.common.collect.Maps;
 
 /**
@@ -149,9 +151,10 @@ public class ConfigurationHolder {
 
     boolean useSnapshots = props.getProperty(snapshot) == null || props.getProperty(snapshot).equals("false") ? false
         : true;
-    List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
+    List<String> hiddenIdsString = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
         : new ArrayList<>();
 
+    List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
     ConfigurationFactory configurationFactory = new ConfigurationFactory(this.configurationLocation);
     this.templateSetConfiguration = configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
     return this.templateSetConfiguration;
@@ -213,4 +216,5 @@ public class ConfigurationHolder {
     }
     return props;
   }
+
 }

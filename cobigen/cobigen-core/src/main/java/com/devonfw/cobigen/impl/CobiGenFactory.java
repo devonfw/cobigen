@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.Objects;
@@ -9,11 +10,15 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
+import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
@@ -69,7 +74,8 @@ public class CobiGenFactory {
   }
 
   /**
-   * Creates a new {@link CobiGen} while searching a valid configuration at the given path
+   * Creates a new {@link CobiGen} while searching a valid configuration at the given path and also start downloading
+   * templates defined in the properties
    *
    * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
    * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
@@ -89,8 +95,17 @@ public class CobiGenFactory {
     // Notifies all plugins of new template root path
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
 
-    if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration())
+    if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration()) {
       throw new DeprecatedMonolithicConfigurationException();
+    }
+    // install Template Sets defined in .properties file
+    if (configurationHolder.isTemplateSetConfiguration()) {
+      TemplateSetConfigurationDecorator config = ConfigurationFinder.loadTemplateSetConfigurations(
+          CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
+      URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
+      File downloadPath = new File(templatesLocation);
+      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(downloadPath.toPath(), config.getMavenCoordinates());
+    }
     return createBean;
   }
 
@@ -109,6 +124,7 @@ public class CobiGenFactory {
       throw new InvalidConfigurationException(
           "No valid templates can be found. Please configure your cobigen configuration file properly or place the templates in cobigen home directory. Creating CobiGen instance aborted.");
     }
+
     return create(configFileOrFolder, allowMonolithicConfiguration);
   }
 
