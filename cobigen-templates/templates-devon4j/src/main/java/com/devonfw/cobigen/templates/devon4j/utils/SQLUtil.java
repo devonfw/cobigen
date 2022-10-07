@@ -215,7 +215,7 @@ public class SQLUtil extends CommonUtil {
    * @return return the field object throws IllegalArgumentException
    * @throws IllegalAccessError when the pojoClass is null
    */
-  private Field getFieldByName(Class<?> pojoClass, String fieldName) throws IllegalAccessError {
+  public Field getFieldByName(Class<?> pojoClass, String fieldName) throws IllegalAccessError {
 
     if (pojoClass != null) {
       // automatically fetches all fields from pojoClass including its super classes
@@ -226,27 +226,14 @@ public class SQLUtil extends CommonUtil {
 
       if (field.isPresent()) {
         return field.get();
+      } else {
+        throw new IllegalAccessError(
+            "This field doesn't exist. Cannot generate template as it might obviously depend on reflection.");
       }
     }
 
     throw new IllegalAccessError(
         "Class object is null. Cannot generate template as it might obviously depend on reflection.");
-  }
-
-  /**
-   * Method to retrieve the type of a field
-   *
-   * @param pojoClass {@link Class} the class object of the pojo
-   * @param fieldName {@link String} the name of the field
-   * @return return the type of the field
-   */
-  public Class<?> getTypeOfField(Class<?> pojoClass, String fieldName) {
-
-    if (pojoClass != null) {
-      Field field = getFieldByName(pojoClass, fieldName);
-      return field.getType();
-    }
-    return null;
   }
 
   /**
@@ -303,7 +290,7 @@ public class SQLUtil extends CommonUtil {
 
     try {
       Class<?> entityClass = Class.forName(className);
-      Class<?> type = getTypeOfField(entityClass, fieldName);
+      Class<?> type = getFieldByName(entityClass, fieldName).getType();
       if (type != null) {
         return type.getCanonicalName();
       }

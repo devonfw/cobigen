@@ -1,12 +1,14 @@
 package com.devonfw.cobigen.templates.devon4j.test.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
 import java.lang.reflect.Field;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.TestCat;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.TestSqlTypeAnnotations;
 import com.devonfw.cobigen.templates.devon4j.utils.SQLUtil;
 
@@ -15,12 +17,20 @@ import com.devonfw.cobigen.templates.devon4j.utils.SQLUtil;
  */
 public class SQLUtilTest {
 
+  // Annotation test class
   private static Class<?> testSqlTypeAnnotations;
 
+  // Annotation test fields
   private static Field fieldTestSimpleString, fieldTestAtSize, fieldTestSizeMissing, fieldTestSimpleInteger,
       fieldTestAtColumnNullableAtNotNull, fieldTestAtColumnNullable, fieldTestAtColumnNotNullableAtNotNull,
       fieldTestAtColumnNotNullable, fieldTestAtNotNull, fieldTestAtSizeAtNotNull,
       fieldTestEntityAtColumnNotNullableAtSizeAtNotNull;
+
+  // Class and Field lookup test class
+  private static Class<?> testTestCatClass;
+
+  // Field test fields for lookup comparison
+  private static Field testResultLegs;
 
   /**
    * Get all Classes for testing
@@ -32,7 +42,9 @@ public class SQLUtilTest {
   @BeforeClass
   public static void beforeAll() throws NoSuchFieldException, SecurityException {
 
+    // Annotation class
     testSqlTypeAnnotations = new TestSqlTypeAnnotations().getClass();
+    // Annotation fields
     fieldTestSimpleString = testSqlTypeAnnotations.getDeclaredField("testSimpleString");
     fieldTestAtSize = testSqlTypeAnnotations.getDeclaredField("testAtSize");
     fieldTestSizeMissing = testSqlTypeAnnotations.getDeclaredField("testSizeMissing");
@@ -46,6 +58,12 @@ public class SQLUtilTest {
     fieldTestAtSizeAtNotNull = testSqlTypeAnnotations.getDeclaredField("testAtSizeAtNotNull");
     fieldTestEntityAtColumnNotNullableAtSizeAtNotNull = testSqlTypeAnnotations
         .getDeclaredField("testEntityAtColumnNotNullableAtSizeAtNotNull");
+
+    // Class and Field lookup class
+    testTestCatClass = new TestCat("Molly", 15).getClass();
+
+    // Field test fields for lookup comparison
+    testResultLegs = testTestCatClass.getDeclaredField("legs");
 
   }
 
@@ -197,4 +215,36 @@ public class SQLUtilTest {
         .isEqualTo("VARCHAR(2147483647) NOT NULL");
   }
 
+  /**
+   * Tests if {@linkplain SQLUtil#getFieldByName(Class, String)} can lookup for a field in a certain class by its name.
+   */
+  @Test
+  public void testGetFieldByNameSuccess() {
+
+    assertThat(new SQLUtil().getFieldByName(testTestCatClass, "legs")).isEqualTo(testResultLegs);
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getFieldByName(Class, String)} throws an {@linkplain java.lang.IllegalAccessError
+   * Error} when the field doesn't exist.
+   */
+  @Test
+  public void testGetFieldByNameThrowsIllegalAccessErrorByField() {
+
+    assertThrows(IllegalAccessError.class, () -> {
+      new SQLUtil().getFieldByName(testTestCatClass, null);
+    });
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getFieldByName(Class, String)} throws an {@linkplain java.lang.IllegalAccessError
+   * Error} when the class doesn't exist.
+   */
+  @Test
+  public void testGetFieldByNameThrowsIllegalAccessErrorByClass() {
+
+    assertThrows(IllegalAccessError.class, () -> {
+      new SQLUtil().getFieldByName(null, null);
+    });
+  }
 }
