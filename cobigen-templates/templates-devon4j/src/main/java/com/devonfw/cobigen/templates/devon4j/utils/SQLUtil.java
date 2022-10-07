@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -40,19 +42,45 @@ public class SQLUtil extends CommonUtil {
   /**
    * Helper function to map a Java Type to its equivalent SQL type
    *
-   * @param canonicalTypeName {@link String} full qualified class name
+   * @param field {@link Field} of the pojo class
    * @return returns the equivalent SQL type
    * @throws IllegalArgumentException when type is not a java type
+   * @throws IllegalAccessError when the provided field wa
    */
-  private String mapJavaToSqlType(String canonicalTypeName) throws IllegalArgumentException {
+  private String mapJavaToSqlType(Field field) throws IllegalArgumentException, IllegalAccessError {
 
-    try {
+    // Either a full qualified class name or a simple string like "byte" for primitives
+    String canonicalTypeName = field.getType().getCanonicalName();
+    String javaType = "";
+    Boolean isExistingClass = false;
+
+    // Verifies that the provided class exists if it's not a primitive
+    if (!field.getType().isPrimitive()) {
+      try {
+        Class<?> existingClass = Class.forName(canonicalTypeName);
+        isExistingClass = true;
+      } catch (ClassNotFoundException e) {
+        throw new IllegalArgumentException(
+            "The provided type can not be converted into an SQL type equivalent because the java class doesn't exist!",
+            e);
+      }
+    }
+
+    // Get the class name from *.Byte or Byte
+    Pattern myClassPattern = Pattern.compile("(\\.|^)((?:.(?!\\.))+)$");
+    Matcher myClassMatch = myClassPattern.matcher(canonicalTypeName);
+
+    if (field.getType().isPrimitive() || isExistingClass) {
+      if (myClassMatch.find()) {
+        javaType = myClassMatch.group(2);
+
+      }
 
       if (isEnum(canonicalTypeName)) {
         return "INTEGER";
       }
 
-      switch (canonicalTypeName) {
+      switch (javaType) {
         // INTEGER
         case "Integer":
           return "INTEGER";
@@ -123,33 +151,37 @@ public class SQLUtil extends CommonUtil {
         // BLOB
         case "Blob":
           return "BLOB";
+        // String, Entities
         default:
           return "VARCHAR";
       }
-    } catch (IllegalArgumentException e) {
-      LOG.error("{}: The parameter is not a valid argument", e.getMessage());
-      return null;
-    }
+    } else {
 
+      throw new IllegalAccessError(
+          "The provided field is neither an existing class nor an existing primitive type. Cannot generate template as it might obviously depend on reflection.");
+
+    }
   }
 
   /**
-   * Get a basic SQL type statement for primitives.
+   * Get a basic SQL type statement for wrapper and primitives.
    *
-   * @param field field of the pojo class
+   * @param field {@link Field} of the pojo class
    * @return SQL statement as {@link String}
    */
   public String getSimpleSQLtype(Field field) {
 
     String sqlStatement = "";
-    String type = mapJavaToSqlType(field.getType().getCanonicalName());
+    String type = mapJavaToSqlType(field);
+    // getCanonicalNameOfFieldType(field.getDeclaringClass().getCanonicalName(), field.getName())
+    sqlStatement += type;
 
     if (type.contains("VARCHAR") && field.isAnnotationPresent(Size.class)) {
       Integer maxSize = field.getAnnotation(Size.class).max();
       sqlStatement = sqlStatement + "(" + maxSize.toString() + ")";
     }
 
-    if (field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).nullable()
+    if (field.isAnnotationPresent(Column.class) && field.getAnnotation(Column.class).nullable()
         || field.isAnnotationPresent(NotNull.class)) {
       sqlStatement = sqlStatement + " NOT NULL";
     }
@@ -161,7 +193,7 @@ public class SQLUtil extends CommonUtil {
    * Helper methods to get all fields recursively including fields from super classes
    *
    * @param fields list of fields to be accumulated during recursion
-   * @param cl class to find fields
+   * @param cl class to find declared fields
    * @return list of all fields
    */
   private static List<Field> getAllFields(List<Field> fields, Class<?> cl) {
@@ -181,8 +213,9 @@ public class SQLUtil extends CommonUtil {
    * @param pojoClass {@link Class} the class object of the pojo
    * @param fieldName {@link String} the name of the field
    * @return return the field object throws IllegalArgumentException
+   * @throws IllegalAccessError when the pojoClass is null
    */
-  private Field getFieldByName(Class<?> pojoClass, String fieldName) throws IllegalArgumentException {
+  private Field getFieldByName(Class<?> pojoClass, String fieldName) throws IllegalAccessError {
 
     if (pojoClass != null) {
       // automatically fetches all fields from pojoClass including its super classes
@@ -195,8 +228,9 @@ public class SQLUtil extends CommonUtil {
         return field.get();
       }
     }
-    LOG.error("Could not find type of field {}", fieldName);
-    return null;
+
+    throw new IllegalAccessError(
+        "Class object is null. Cannot generate template as it might obviously depend on reflection.");
   }
 
   /**
@@ -263,7 +297,7 @@ public class SQLUtil extends CommonUtil {
    * @param className {@link String} full qualified class name
    * @param fieldName {@link String} the name of the field
    * @return type of the field in the string
-   * @throws ClassNotFoundException to Log an error
+   * @throws ClassNotFoundException when the className is no fully qualified class name
    */
   public String getCanonicalNameOfFieldType(String className, String fieldName) throws ClassNotFoundException {
 
@@ -322,8 +356,11 @@ public class SQLUtil extends CommonUtil {
    *
    * @param field the current pojo field
    * @return HashMap containing name and type of a column
+   * @throws ClassNotFoundException
+   * @throws IllegalArgumentException
    */
-  public HashMap<String, String> getPrimaryKeyStatement(Field field) {
+  public HashMap<String, String> getPrimaryKeyStatement(Field field)
+      throws IllegalArgumentException, ClassNotFoundException {
 
     String name = getColumnName(field);
     HashMap<String, String> column = getPrimaryKeyStatement(field, name);
@@ -336,8 +373,11 @@ public class SQLUtil extends CommonUtil {
    * @param field the current pojo field
    * @param name the column name related to that field
    * @return HashMap containing name and type of a column
+   * @throws ClassNotFoundException
+   * @throws IllegalArgumentException
    */
-  public HashMap<String, String> getPrimaryKeyStatement(Field field, String name) {
+  public HashMap<String, String> getPrimaryKeyStatement(Field field, String name)
+      throws IllegalArgumentException, ClassNotFoundException {
 
     String type = getSimpleSQLtype(field);
 

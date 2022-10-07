@@ -19,25 +19,40 @@ public class TestSqlTypeAnnotations {
   @Id
   Long id;
 
-  @Column(name = "TEST_AT_COLUMN_NULLABLE", length = 50, nullable = false)
+  String testSimpleString;
+
+  @Size
+  String testAtSize;
+
+  @Size
+  Integer testSizeMissing;
+
+  Integer testSimpleInteger;
+
+  @Column(name = "TEST_AT_COLUMN_NULLABLE_AT_NOTNULL", length = 50, nullable = true)
+  @NotNull
+  String testAtColumnNullableAtNotNull;
+
+  @Column(name = "TEST_AT_COLUMN_NULLABLE", length = 50, nullable = true)
   String testAtColumnNullable;
 
-  @Column(name = "TEST_AT_COLUMN_NULLABLE_MISSING", length = 50)
-  String testAtColumnNullableMissing;
-
-  @Column(name = "TEST_AT_NULLABLE", length = 50)
+  @Column(name = "TEST_AT_COLUMN_AT_NOTNULL", length = 50, nullable = false)
   @NotNull
-  String testAtColumnNotNull;
+  String testAtColumnNotNullableAtNotNull;
 
-  @Column(name = "TEST_AT_NULLABLE_MISSING", length = 50)
-  String testAtColumnNotNullMissing;
+  @Column(name = "TEST_AT_COLUMN", length = 50, nullable = false)
+  String testAtColumnNotNullable;
 
-  // Entities
-  @Column(name = "TEST_SIMPLE_ENTITY_AT_SIZE", length = 50)
+  @NotNull
+  String testAtNotNull;
+
   @Size
-  TestSimpleEntity testSimpleEntityAtSize;
+  @NotNull
+  String testAtSizeAtNotNull;
 
-  @Column(name = "TEST_SIMPLE_ENTITY_AT_SIZE_MISSING", length = 50)
-  TestSimpleEntity testSimpleEntityAtSizeMissing;
+  @Column(name = "TEST_AT_COLUMN", length = 50, nullable = false)
+  @Size
+  @NotNull
+  TestSimpleEntity testEntityAtColumnNotNullableAtSizeAtNotNull;
 
 }
