@@ -26,6 +26,9 @@ This downloads all the necessary files for CobiGen development.
 ... Execute: `git remote add upstream `https://github.com/devonfw/cobigen.git`.
 . Now open eclipse using the eclipse-main.bat file or by executing `devon eclipse` on the console and import the CobiGen projects.
 .. Switch to the "Project Explorer" view (Window->Show View->Project Explorer). This extra step is required because an import from the default view "Package Explorer" doesn't work properly.
+.. Now we need to re-import the cobigen project. This extra step is required because the automatic project import from devonfw doesn't work properly.
+... Rightclick on your cobigen root project and choose `Delete`.
+... Tick `Delete xx nested Projects` and make sure to untick `Delete project content on disc`
 .. Click on File->import...->Maven->Existing Maven Project and entering `<Install directory>/workspaces/main/cobigen `(Should be the default location when clicking on "Browse...")
 . After you have have finished your installation run a maven update. To do so right click on a project, select maven and afterwards update project. Select all projects and the checkbox Force Update of Snapshot/Releases.
 You might be asked to install some Tycho-plugins. You need those, if you want to debug eclipse-plugins. 	
@@ -43,7 +46,10 @@ To install the plugin manually, open a console in your IDE Install location and 
 
 When using the default devonfw IDE, you should get an error here that stems from parts of the plugin being installed with the devonfw IDE by default.
 
-You can also manually install the PDE and sources by opening Eclipse, switching to *Help/Install new Software*, choosing *Eclipse Project latest release repository - http://download.eclipse.org/eclipse/updates/latest* from the dropdown menu next to *Add* and ticking *Eclipse Plugin Development Tools*.
+* You can also manually install the PDE:
+** Open *Help/Eclipse Marketplace*
+** Search for *Eclipse PDE*
+** Click on *install* (if it is marked as installed already, choose *uninstall* from the next dialog, restart eclipse and install it again)
 
 === Eclipse Testing
 
@@ -53,6 +59,13 @@ It is not strictly necessary to install this manually as Eclipse should prompt y
 To install the plugin manually, open a console in your IDE Install location and  execute the command `+devon eclipse add-plugin swtbot+` in a console
 
 When using the default devonfw IDE, you should get an error here that stems from parts of the plugin being installed with the devonfw IDE by default.
+
+You can also manually install the SWT Bot by switching to *Help/Eclipse Marketplace*, search for *SWTBot* and clicking on *install*.
+
+* You can also manually install the SWT Bot:
+** Open *Help/Eclipse Marketplace*
+** Search for *SWTBot*
+** Click on *install* (if it is marked as installed already, choose *uninstall* from the next dialog, restart eclipse and install it again)
 
 === Optional
 
