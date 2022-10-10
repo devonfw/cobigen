@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
-import com.devonfw.cobigen.impl.config.ContextConfigurationDecorator;
+import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 
 import ma.glasnost.orika.MapperFacade;
@@ -30,7 +30,7 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
    */
   public ContextConfigurationUpgrader() {
 
-    super(ContextConfigurationVersion.v1_0, ContextConfigurationDecorator.class, ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    super(ContextConfigurationVersion.v1_0, ContextConfiguration.class, ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
   }
 
   @Override

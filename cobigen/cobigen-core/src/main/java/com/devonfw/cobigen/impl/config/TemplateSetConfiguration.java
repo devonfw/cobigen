@@ -16,7 +16,6 @@ import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.google.common.collect.Maps;
 
@@ -26,10 +25,10 @@ import com.google.common.collect.Maps;
  * of the automatically generated TemplateSetConfiguration and should not be confused with the XML-generated
  * {@link TemplateSetConfiguration}.
  */
-public class TemplateSetConfigurationDecorator {
+public class TemplateSetConfiguration {
 
   /** Logger instance */
-  private static final Logger LOG = LoggerFactory.getLogger(TemplateSetConfigurationDecorator.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TemplateSetConfiguration.class);
 
   /** variable for template-set artifacts */
   private List<String> groupIds;
@@ -50,7 +49,7 @@ public class TemplateSetConfigurationDecorator {
   private Map<String, Increment> increments;
 
   /** The templateSetConfiguration this decorator wraps */
-  private TemplateSetConfiguration templateSetConfiguration;
+  private com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration templateSetConfiguration;
 
   /** The reader to read the template-set.xml files */
   public TemplateSetConfigurationReader templateSetConfigurationReader;
@@ -69,9 +68,9 @@ public class TemplateSetConfigurationDecorator {
    *
    * @param configRoot Root of the configuration
    */
-  public TemplateSetConfigurationDecorator(Path configRoot) {
+  public TemplateSetConfiguration(Path configRoot) {
 
-    this.templateSetConfiguration = new TemplateSetConfiguration();
+    // this.templateSetConfiguration = new TemplateSetConfiguration();
     this.triggers = Maps.newHashMap();
     this.templates = Maps.newHashMap();
     readConfiguration(configRoot);
@@ -86,8 +85,8 @@ public class TemplateSetConfigurationDecorator {
    * @param hideTemplates variable to hide very specific template sets or versions of template sets
    * @param configRoot Root of the configuration
    */
-  public TemplateSetConfigurationDecorator(List<String> groupIds, boolean allowSnapshots,
-      List<MavenCoordinate> hideTemplates, Path configRoot) {
+  public TemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots, List<MavenCoordinate> hideTemplates,
+      Path configRoot) {
 
     this(configRoot);
     this.groupIds = groupIds;

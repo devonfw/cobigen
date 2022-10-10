@@ -23,7 +23,7 @@ import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationFactory;
-import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
+import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 
 /**
  * Utilities related to the cobigen configurations including:
@@ -43,7 +43,7 @@ public class ConfigurationFinder {
    * @return TemplateSetConfiguration instance
    */
 
-  public static TemplateSetConfigurationDecorator loadTemplateSetConfigurations(Path path) {
+  public static TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
 
     Properties props = new Properties();
     try {

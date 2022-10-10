@@ -9,14 +9,13 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 
 /**
  * The {@link ContextConfigurationDecorator} is a configuration data wrapper for all information about templates and the
  * target destination for the generated data.
  */
-public class ContextConfigurationDecorator {
+public class ContextConfiguration {
 
   /**
    * All available {@link Trigger}s
@@ -39,12 +38,12 @@ public class ContextConfigurationDecorator {
   private ContextConfigurationReader contextConfigurationReader;
 
   /**
-   * Creates a new {@link ContextConfigurationDecorator} with the contents initially loaded from the context.xml
+   * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
    *
    * @param configRoot root path for the configuration of CobiGen
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
-  public ContextConfigurationDecorator(Path configRoot) throws InvalidConfigurationException {
+  public ContextConfiguration(Path configRoot) throws InvalidConfigurationException {
 
     this.configurationPath = configRoot;
     readConfiguration(configRoot);

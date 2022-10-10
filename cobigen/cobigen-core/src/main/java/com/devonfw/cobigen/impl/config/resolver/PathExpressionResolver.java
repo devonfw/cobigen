@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.impl.config.resolver;
 
-import com.devonfw.cobigen.impl.config.ContextConfigurationDecorator;
 import com.devonfw.cobigen.impl.config.entity.Variables;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 

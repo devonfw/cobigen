@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.impl.config.TemplateSetConfigurationDecorator;
+import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -42,7 +42,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
     try {
-      new TemplateSetConfigurationDecorator(TEST_FILE_ROOT_PATH.resolve("faulty"));
+      new TemplateSetConfiguration(TEST_FILE_ROOT_PATH.resolve("faulty"));
 
     } catch (InvalidConfigurationException ice) {
       assertThat(ice).hasMessage(TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath() + ":\n"
@@ -62,7 +62,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   public void testInvalidTemplateSets() throws InvalidConfigurationException {
 
     try {
-      new TemplateSetConfigurationDecorator(INVALID_CONFIGURATION_PATH);
+      new TemplateSetConfiguration(INVALID_CONFIGURATION_PATH);
     } catch (InvalidConfigurationException ice) {
       assertThat(ice).hasMessage(INVALID_CONFIGURATION_PATH.toAbsolutePath() + ":\n"
           + "Could not find any template-set configuration file in the given folder.");
@@ -79,7 +79,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     Path templateSetPath = TEST_FILE_ROOT_PATH
         .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     templateSetPath = Path.of(templateSetPath + "/downloaded");
-    TemplateSetConfigurationDecorator testDecorator = new TemplateSetConfigurationDecorator(templateSetPath);
+    TemplateSetConfiguration testDecorator = new TemplateSetConfiguration(templateSetPath);
     assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(1);
   }
 
@@ -93,13 +93,11 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
 
     Path templateSetPathAdapted = TEST_FILE_ROOT_PATH
         .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    TemplateSetConfigurationDecorator testDecoratorAdapted = new TemplateSetConfigurationDecorator(
-        templateSetPathAdapted);
+    TemplateSetConfiguration testDecoratorAdapted = new TemplateSetConfiguration(templateSetPathAdapted);
     Path templateSetPathDownloaded = TEST_FILE_ROOT_PATH
         .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     templateSetPathDownloaded = Path.of(templateSetPathDownloaded + "/downloaded");
-    TemplateSetConfigurationDecorator testDecoratorDownloaded = new TemplateSetConfigurationDecorator(
-        templateSetPathDownloaded);
+    TemplateSetConfiguration testDecoratorDownloaded = new TemplateSetConfiguration(templateSetPathDownloaded);
 
     assertThat(testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())
         .isEqualTo(3);
@@ -703,7 +701,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   // String templatesConfigurationRoot = TEST_FILE_ROOT_PATH + "valid_relocate_template_fileending/";
   // Path templateSetPathAdapted = TEST_FILE_ROOT_PATH
   // .resolve("valid_relocate_template_fileending/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-  // TemplateSetConfigurationDecorator testDecoratorAdapted = new TemplateSetConfigurationDecorator(
+  // TemplateSetConfiguration testDecoratorAdapted = new TemplateSetConfiguration(
   // templateSetPathAdapted);
   // com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface target =
   // testDecoratorAdapted.templateSetConfigurationReader;
@@ -743,7 +741,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   //
   // Path templateSetPathAdapted = TEST_FILE_ROOT_PATH
   // .resolve("valid_relocate/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-  // TemplateSetConfigurationDecorator testDecoratorAdapted = new TemplateSetConfigurationDecorator(
+  // TemplateSetConfiguration testDecoratorAdapted = new TemplateSetConfiguration(
   // templateSetPathAdapted);
   //
   // // when

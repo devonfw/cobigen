@@ -38,10 +38,10 @@ public class ConfigurationHolder {
   private Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
 
   /** Cached context configuration */
-  private ContextConfigurationDecorator contextConfiguration;
+  private ContextConfiguration contextConfiguration;
 
   /** Cached template-set configuration */
-  private TemplateSetConfigurationDecorator templateSetConfiguration;
+  private TemplateSetConfiguration templateSetConfiguration;
 
   /** Root path of the configuration */
   private Path configurationPath;
@@ -113,19 +113,19 @@ public class ConfigurationHolder {
    * @return the {@link ContextConfigurationDecorator}
    * @throws InvalidConfigurationException if the configuration is not valid
    */
-  public ContextConfigurationDecorator readContextConfiguration() {
+  public ContextConfiguration readContextConfiguration() {
 
     if (this.contextConfiguration == null) {
-      this.contextConfiguration = new ContextConfigurationDecorator(this.configurationPath);
+      this.contextConfiguration = new ContextConfiguration(this.configurationPath);
     }
     return this.contextConfiguration;
   }
 
   /**
    * @param path the configuration root path
-   * @return the {@link TemplateSetConfigurationDecorator}
+   * @return the {@link TemplateSetConfiguration}
    */
-  public TemplateSetConfigurationDecorator readTemplateSetConfiguration(Path path) {
+  public TemplateSetConfiguration readTemplateSetConfiguration(Path path) {
 
     Properties props = new Properties();
     try {
