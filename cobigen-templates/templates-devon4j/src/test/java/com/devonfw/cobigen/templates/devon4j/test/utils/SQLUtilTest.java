@@ -3,8 +3,10 @@ package com.devonfw.cobigen.templates.devon4j.test.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
+import org.assertj.core.api.Condition;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -24,7 +26,9 @@ public class SQLUtilTest {
   private static Field fieldTestSimpleString, fieldTestAtSize, fieldTestSizeMissing, fieldTestSimpleInteger,
       fieldTestAtColumnNullableAtNotNull, fieldTestAtColumnNullable, fieldTestAtColumnNotNullableAtNotNull,
       fieldTestAtColumnNotNullable, fieldTestAtNotNull, fieldTestAtSizeAtNotNull,
-      fieldTestEntityAtColumnNotNullableAtSizeAtNotNull;
+      fieldTestEntityAtColumnNotNullableAtSizeAtNotNull, fieldTestEntityAtTable, fieldTestAnonymousClassEntity,
+      fieldTestEntityAtTableNameDefault, fieldTestAnonymousEntityAtTableNameDefault, fieldTestEntityAtTableNull,
+      fieldTestAnonymousEntityAtTableNull;
 
   // Class and Field lookup test class
   private static Class<?> testTestCatClass;
@@ -58,7 +62,13 @@ public class SQLUtilTest {
     fieldTestAtSizeAtNotNull = testSqlTypeAnnotations.getDeclaredField("testAtSizeAtNotNull");
     fieldTestEntityAtColumnNotNullableAtSizeAtNotNull = testSqlTypeAnnotations
         .getDeclaredField("testEntityAtColumnNotNullableAtSizeAtNotNull");
-
+    fieldTestEntityAtTable = testSqlTypeAnnotations.getDeclaredField("testEntityAtTable");
+    fieldTestAnonymousClassEntity = testSqlTypeAnnotations.getDeclaredField("testAnonymousEntityAtTable");
+    fieldTestEntityAtTableNameDefault = testSqlTypeAnnotations.getDeclaredField("testEntityAtTableNameDefault");
+    fieldTestAnonymousEntityAtTableNameDefault = testSqlTypeAnnotations
+        .getDeclaredField("testAnonymousEntityAtTableNameDefault");
+    fieldTestEntityAtTableNull = testSqlTypeAnnotations.getDeclaredField("testEntityAtTableNull");
+    fieldTestAnonymousEntityAtTableNull = testSqlTypeAnnotations.getDeclaredField("testAnonymousEntityAtTableNull");
     // Class and Field lookup class
     testTestCatClass = new TestCat("Molly", 15).getClass();
 
@@ -68,8 +78,8 @@ public class SQLUtilTest {
   }
 
   /**
-   * Tests if {@linkplain SQLUtil#getSimpleSQLtype(Field)} returns the correct string when the type of the current field
-   * is translated to the SQL Type VARCHAR.
+   * Tests if {@linkplain SQLUtil#getSimpleSQLtype(Field)} returns the correct string when the type of the current
+   * {@linkplain java.lang.reflect.Field field} is translated to the SQL Type VARCHAR.
    *
    */
   @Test
@@ -79,8 +89,9 @@ public class SQLUtilTest {
   }
 
   /**
-   * Tests if {@linkplain SQLUtil#getSimpleSQLtype(Field)} returns the correct string when the type of the current field
-   * is translated to the SQL Type VARCHAR(SIZE) when the field is provided with the annotation
+   * Tests if {@linkplain SQLUtil#getSimpleSQLtype(Field)} returns the correct string when the type of the current
+   * {@linkplain java.lang.reflect.Field field} is translated to the SQL Type VARCHAR(SIZE) when the
+   * {@linkplain java.lang.reflect.Field field} is provided with the annotation
    * {@linkplain jakarta.validation.constraints.Size @Size}.
    *
    */
@@ -91,8 +102,9 @@ public class SQLUtilTest {
   }
 
   /**
-   * Tests if {@linkplain SQLUtil#getSimpleSQLtype(Field)} returns the correct string when the type of the current field
-   * is translated to the SQL Type INTEGER and the field is provided with the annotation
+   * Tests if {@linkplain SQLUtil#getSimpleSQLtype(Field)} returns the correct string when the type of the current
+   * {@linkplain java.lang.reflect.Field field} is translated to the SQL Type INTEGER and the
+   * {@linkplain java.lang.reflect.Field field} is provided with the annotation
    * {@linkplain jakarta.validation.constraints.Size}.
    *
    * This scenario shows that the generation ignores the {@linkplain jakarta.validation.constraints.Size} annotation
@@ -106,8 +118,8 @@ public class SQLUtilTest {
   }
 
   /**
-   * Tests if {@linkplain SQLUtil#getSimpleSQLtype(Field)} returns the correct string when the type of the current field
-   * is translated to the SQL Type INTEGER.
+   * Tests if {@linkplain SQLUtil#getSimpleSQLtype(Field)} returns the correct string when the type of the current
+   * {@linkplain java.lang.reflect.Field field} is translated to the SQL Type INTEGER.
    *
    */
   @Test
@@ -216,7 +228,7 @@ public class SQLUtilTest {
   }
 
   /**
-   * Tests if {@linkplain SQLUtil#getFieldByName(Class, String)} can lookup for a field in a certain class by its name.
+   * Tests if {@linkplain SQLUtil#getFieldByName(Class, String)} finds a field in a certain class by its name.
    */
   @Test
   public void testGetFieldByNameSuccess() {
@@ -226,7 +238,7 @@ public class SQLUtilTest {
 
   /**
    * Tests if {@linkplain SQLUtil#getFieldByName(Class, String)} throws an {@linkplain java.lang.IllegalAccessError
-   * Error} when the field doesn't exist.
+   * Error} when the {@linkplain java.lang.reflect.Field field} doesn't exist.
    */
   @Test
   public void testGetFieldByNameThrowsIllegalAccessErrorByField() {
@@ -246,5 +258,131 @@ public class SQLUtilTest {
     assertThrows(IllegalAccessError.class, () -> {
       new SQLUtil().getFieldByName(null, null);
     });
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getFieldAnnotations(Class, String)} collects a {@linkplain java.lang.reflect.Field
+   * field's} annotations.
+   */
+  @Test
+  public void testGetFieldAnnotationsSuccess() {
+
+    final int annotationCountHasElements = 3;
+    final int annotationCountHasNoElements = 0;
+
+    Condition<Annotation[]> hasElements = new Condition<Annotation[]>("A condition to ") {
+      @Override
+      public boolean matches(Annotation[] value) {
+
+        return value.length == annotationCountHasElements || value.length == annotationCountHasNoElements;
+      }
+    };
+    assertThat(new SQLUtil().getFieldAnnotations(testTestCatClass, "name")).has(hasElements);
+    assertThat(new SQLUtil().getFieldAnnotations(testTestCatClass, "legs")).has(hasElements);
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getFieldAnnotations(Class, String)} throws an {@linkplain java.lang.IllegalAccessError
+   * Error} when the class doesn't exist.
+   */
+  @Test
+  public void testGetFieldAnnotationsThrowsIllegalAccessErrorByClass() {
+
+    assertThrows(IllegalAccessError.class, () -> {
+      new SQLUtil().getFieldByName(null, "legs");
+    });
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getFieldAnnotations(Class, String)} throws an {@linkplain java.lang.IllegalAccessError
+   * Error} when the provided field name can not be searched for.
+   */
+  @Test
+  public void testGetFieldAnnotationsThrowsIllegalAccessErrorByFieldName() {
+
+    assertThrows(IllegalAccessError.class, () -> {
+      new SQLUtil().getFieldByName(testTestCatClass, "");
+      new SQLUtil().getFieldByName(testTestCatClass, null);
+    });
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} returns the table name of the provided entity class that
+   * was annotated with the option {@linkplain javax.persistence.Table#name() name} from the
+   * {@linkplain javax.persistence.Table @Table} annotation.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGetEntityTableNameAtTableSuccess() throws Exception {
+
+    assertThat(new SQLUtil().getEntityTableName(fieldTestEntityAtTable)).isEqualTo("TEST_SIMPLE_ENTITY");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} returns the table name of the provided entity class that
+   * was annotated with the option {@linkplain javax.persistence.Table#name() name} from the
+   * {@linkplain javax.persistence.Table @Table} annotation even when the provided class is an anonymous class.
+   */
+  @Test
+  public void testGetEntityTableNameAtTableSuccessAnonymousClasses() throws Exception {
+
+    assertThat(new SQLUtil().getEntityTableName(fieldTestAnonymousClassEntity)).isEqualTo("TEST_SIMPLE_ENTITY");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} returns the table name of the provided entity class that
+   * was not annotated with the option {@linkplain javax.persistence.Table#name() name} from the
+   * {@linkplain javax.persistence.Table @Table} annotation.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGetEntityTableNameAtTableNameDefaultSuccess() throws Exception {
+
+    assertThat(new SQLUtil().getEntityTableName(fieldTestEntityAtTableNameDefault)).isEqualTo("TestAnotherSimple");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} returns the table name of the provided entity class that
+   * was not annotated with the option {@linkplain javax.persistence.Table#name() name} from the
+   * {@linkplain javax.persistence.Table @Table} annotation even when the provided class is an anonymous class.
+   */
+  @Test
+  public void testGetEntityTableNameAtTableNameDefaultSuccessAnonymousClasses() throws Exception {
+
+    assertThat(new SQLUtil().getEntityTableName(fieldTestAnonymousEntityAtTableNameDefault))
+        .isEqualTo("TestAnotherSimple");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} returns the table name of the provided entity class that
+   * was not annotated with the {@linkplain javax.persistence.Table @Table} annotation.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGetEntityTableNameAtTableNullSuccess() throws Exception {
+
+    assertThat(new SQLUtil().getEntityTableName(fieldTestEntityAtTableNull)).isEqualTo("TestNotSoSimple");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} returns the table name of the provided entity class that
+   * was not annotated with the {@linkplain javax.persistence.Table @Table} annotation even when the provided class is
+   * an anonymous class.
+   */
+  @Test
+  public void testGetEntityTableNameAtTableNNullSuccessAnonymousClasses() throws Exception {
+
+    assertThat(new SQLUtil().getEntityTableName(fieldTestAnonymousEntityAtTableNull)).isEqualTo("TestNotSoSimple");
+
   }
 }

@@ -40,24 +40,21 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Helper function to map a Java Type to its equivalent SQL type
+   * Returns the name of a java type as a {@link String}
    *
-   * @param field {@link Field} of the pojo class
-   * @return returns the equivalent SQL type
-   * @throws IllegalArgumentException when type is not a java type
-   * @throws IllegalAccessError when the provided field wa
+   * @param field
+   * @return
    */
-  private String mapJavaToSqlType(Field field) throws IllegalArgumentException, IllegalAccessError {
+  private String getSimpleJavaTypeString(Field field) {
 
     // Either a full qualified class name or a simple string like "byte" for primitives
     String canonicalTypeName = field.getType().getCanonicalName();
-    String javaType = "";
     Boolean isExistingClass = false;
 
     // Verifies that the provided class exists if it's not a primitive
     if (!field.getType().isPrimitive()) {
       try {
-        Class<?> existingClass = Class.forName(canonicalTypeName);
+        Class.forName(canonicalTypeName);
         isExistingClass = true;
       } catch (ClassNotFoundException e) {
         throw new IllegalArgumentException(
@@ -72,94 +69,105 @@ public class SQLUtil extends CommonUtil {
 
     if (field.getType().isPrimitive() || isExistingClass) {
       if (myClassMatch.find()) {
-        javaType = myClassMatch.group(2);
+        return myClassMatch.group(2);
 
       }
 
-      if (isEnum(canonicalTypeName)) {
+    }
+    throw new IllegalAccessError(
+        "The provided field is neither an existing class nor an existing primitive type. Cannot generate template as it might obviously depend on reflection.");
+  }
+
+  /**
+   * Helper function to map a Java Type to its equivalent SQL type
+   *
+   * @param field {@link Field} of the pojo class
+   * @return returns the equivalent SQL type
+   * @throws IllegalArgumentException when type is not a java type
+   * @throws IllegalAccessError when the provided field wa
+   */
+  private String mapJavaToSqlType(Field field) throws IllegalArgumentException, IllegalAccessError {
+
+    String javaType = getSimpleJavaTypeString(field);
+
+    if (isEnum(field.getType().getCanonicalName())) {
+      return "INTEGER";
+    }
+
+    switch (javaType) {
+      // INTEGER
+      case "Integer":
         return "INTEGER";
-      }
-
-      switch (javaType) {
-        // INTEGER
-        case "Integer":
-          return "INTEGER";
-        case "int":
-          return "INTEGER";
-        case "Year":
-          return "INTEGER";
-        case "Month":
-          return "INTEGER";
-        // BIGINT
-        case "Long":
-          return "BIGINT";
-        case "long":
-          return "BIGINT";
-        case "Object":
-          return "BIGINT";
-        // SMALLINT
-        case "Short":
-          return "SMALLINT";
-        case "short":
-          return "SMALLINT";
-        // FLOAT
-        case "Float":
-          return "FLOAT";
-        case "float":
-          return "FLOAT";
-        // DOUBLE
-        case "Double":
-          return "DOUBLE";
-        case "double":
-          return "DOUBLE";
-        // NUMERIC
-        case "BigDecimal":
-          return "NUMERIC";
-        case "BigInteger":
-          return "NUMERIC";
-        // CHAR
-        case "Character":
-          return "CHAR";
-        case "char":
-          return "CHAR";
-        // TINYINT
-        case "Byte":
-          return "TINYINT";
-        case "byte":
-          return "TINYINT";
-        // BOOLEAN
-        case "Boolean":
-          return "BOOLEAN";
-        case "boolean":
-          return "BOOLEAN";
-        // TIMESTAMP
-        case "Instant":
-          return "TIMESTAMP";
-        case "Timestamp":
-          return "TIMESTAMP";
-        // DATE
-        case "Date":
-          return "DATE";
-        case "Calendar":
-          return "DATE";
-        // TIME
-        case "Time":
-          return "TIME";
-        // BINARY
-        case "UUID":
-          return "BINARY";
-        // BLOB
-        case "Blob":
-          return "BLOB";
-        // String, Entities
-        default:
-          return "VARCHAR";
-      }
-    } else {
-
-      throw new IllegalAccessError(
-          "The provided field is neither an existing class nor an existing primitive type. Cannot generate template as it might obviously depend on reflection.");
-
+      case "int":
+        return "INTEGER";
+      case "Year":
+        return "INTEGER";
+      case "Month":
+        return "INTEGER";
+      // BIGINT
+      case "Long":
+        return "BIGINT";
+      case "long":
+        return "BIGINT";
+      case "Object":
+        return "BIGINT";
+      // SMALLINT
+      case "Short":
+        return "SMALLINT";
+      case "short":
+        return "SMALLINT";
+      // FLOAT
+      case "Float":
+        return "FLOAT";
+      case "float":
+        return "FLOAT";
+      // DOUBLE
+      case "Double":
+        return "DOUBLE";
+      case "double":
+        return "DOUBLE";
+      // NUMERIC
+      case "BigDecimal":
+        return "NUMERIC";
+      case "BigInteger":
+        return "NUMERIC";
+      // CHAR
+      case "Character":
+        return "CHAR";
+      case "char":
+        return "CHAR";
+      // TINYINT
+      case "Byte":
+        return "TINYINT";
+      case "byte":
+        return "TINYINT";
+      // BOOLEAN
+      case "Boolean":
+        return "BOOLEAN";
+      case "boolean":
+        return "BOOLEAN";
+      // TIMESTAMP
+      case "Instant":
+        return "TIMESTAMP";
+      case "Timestamp":
+        return "TIMESTAMP";
+      // DATE
+      case "Date":
+        return "DATE";
+      case "Calendar":
+        return "DATE";
+      // TIME
+      case "Time":
+        return "TIME";
+      // BINARY
+      case "UUID":
+        return "BINARY";
+      // BLOB
+      case "Blob":
+        return "BLOB";
+      // String, Entities
+      default:
+        return "VARCHAR";
     }
   }
 
@@ -173,7 +181,6 @@ public class SQLUtil extends CommonUtil {
 
     String sqlStatement = "";
     String type = mapJavaToSqlType(field);
-    // getCanonicalNameOfFieldType(field.getDeclaringClass().getCanonicalName(), field.getName())
     sqlStatement += type;
 
     if (type.contains("VARCHAR") && field.isAnnotationPresent(Size.class)) {
@@ -245,59 +252,54 @@ public class SQLUtil extends CommonUtil {
    */
   public Annotation[] getFieldAnnotations(Class<?> pojoClass, String fieldName) {
 
+    if (fieldName.isBlank() || fieldName == null) {
+      throw new IllegalAccessError(
+          "It is not possible to look for a non existing field. Cannot generate template as it might obviously depend on reflection.");
+    }
+
     if (pojoClass != null) {
       Annotation[] annotations;
       Field field = getFieldByName(pojoClass, fieldName);
       annotations = field.getAnnotations();
       return annotations;
     }
-    return null;
+    throw new IllegalAccessError(
+        "Class object is null. Cannot generate template as it might obviously depend on reflection.");
   }
 
   /**
    * Get the annotated table name of a given Entity class
    *
-   * @param className {@link String} full qualified class name
+   * @param field {@link Field} of the pojo class
    * @return return the annotated table name if
    * @throws ClassNotFoundException to Log an error
    */
-  public String getEntityTableName(String className) throws ClassNotFoundException {
+  public String getEntityTableName(Field field) throws ClassNotFoundException {
 
-    if (!className.endsWith("Entity")) {
-      LOG.error("Could not return table name because {} is not an Entity class", className);
-      return null;
+    if (!field.getType().getCanonicalName().endsWith("Entity")) {
+      throw new IllegalAccessError("The field " + field.getName()
+          + " is not an entity class. Cannot generate template as it might obviously depend on reflection.");
     }
 
     try {
-      Class<?> entityClass = Class.forName(className);
+
+      Class<?> entityClass = Class.forName(field.getType().getCanonicalName());
       Table table = entityClass.getAnnotation(Table.class);
-      return table == null
-          ? StringUtils.left(entityClass.getSimpleName(), entityClass.getSimpleName().length() - "Entity".length())
-          : table.name();
-    } catch (ClassNotFoundException e) {
-      LOG.error("{}: Could not find {}", e.getMessage(), className);
-      return null;
-    }
-  }
 
-  /**
-   * @param className {@link String} full qualified class name
-   * @param fieldName {@link String} the name of the field
-   * @return type of the field in the string
-   * @throws ClassNotFoundException when the className is no fully qualified class name
-   */
-  public String getCanonicalNameOfFieldType(String className, String fieldName) throws ClassNotFoundException {
+      String javaType = getSimpleJavaTypeString(field);
 
-    try {
-      Class<?> entityClass = Class.forName(className);
-      Class<?> type = getFieldByName(entityClass, fieldName).getType();
-      if (type != null) {
-        return type.getCanonicalName();
+      if (table == null) {
+        return StringUtils.left(javaType, javaType.length() - "Entity".length());
+      } else {
+        return table.name().isEmpty() ? StringUtils.left(javaType, javaType.length() - "Entity".length())
+            : table.name();
       }
+
     } catch (ClassNotFoundException e) {
-      LOG.error("{}: Could not find {}", e.getMessage(), className);
+      throw new IllegalAccessError(
+          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
-    return null;
+
   }
 
   /**
@@ -497,16 +499,19 @@ public class SQLUtil extends CommonUtil {
     try {
       String tableName;
       if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
-        tableName = getEntityTableName(field.getType().getCanonicalName());
+        tableName = getEntityTableName(field);
       } else {
+        // apply regex filter
         tableName = field.getType().getCanonicalName();
       }
 
       return tableName;
     } catch (ClassNotFoundException e) {
-      LOG.error("{}: Could not find {}", e.getMessage(), field.getType().getCanonicalName());
+      throw new IllegalAccessError(
+          "It is not possible to look for a non existing field. Cannot generate template as it might obviously depend on reflection.");
+
     }
-    return null;
+
   }
 
   /**

@@ -5,6 +5,7 @@ package com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest;
  *
  */
 public class TestCat extends TestAnimal {
+
   private Integer legs;
 
   /**

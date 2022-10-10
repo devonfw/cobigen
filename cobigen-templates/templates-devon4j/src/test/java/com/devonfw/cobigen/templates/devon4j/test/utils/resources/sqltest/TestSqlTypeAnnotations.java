@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 
 import com.devonfw.cobigen.templates.devon4j.test.utils.SQLUtilTest;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestAnotherSimpleEntity;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestNotSoSimpleEntity;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestSimpleEntity;
 
 import jakarta.validation.constraints.NotNull;
@@ -55,4 +57,36 @@ public class TestSqlTypeAnnotations {
   @NotNull
   TestSimpleEntity testEntityAtColumnNotNullableAtSizeAtNotNull;
 
+  TestSimpleEntity testEntityAtTable;
+
+  TestSimpleEntity testAnonymousEntityAtTable = new TestSimpleEntity("Test", 19) {
+    @Override
+    public String testMethod() {
+
+      return "This method will is overwritten";
+    }
+
+  };
+
+  TestAnotherSimpleEntity testEntityAtTableNameDefault;
+
+  TestAnotherSimpleEntity testAnonymousEntityAtTableNameDefault = new TestAnotherSimpleEntity("Test", 19) {
+    @Override
+    public String testMethod() {
+
+      return "This method will is overwritten";
+    }
+
+  };
+
+  TestNotSoSimpleEntity testEntityAtTableNull;
+
+  TestNotSoSimpleEntity testAnonymousEntityAtTableNull = new TestNotSoSimpleEntity("Test", 19) {
+    @Override
+    public String testMethod() {
+
+      return "This method will is overwritten";
+    }
+
+  };
 }

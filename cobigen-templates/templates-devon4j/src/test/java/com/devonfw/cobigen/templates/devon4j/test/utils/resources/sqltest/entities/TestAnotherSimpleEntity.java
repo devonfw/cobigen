@@ -13,8 +13,8 @@ import jakarta.validation.constraints.NotNull;
  */
 
 @Entity
-@Table(name = "TEST_SIMPLE_ENTITY", schema = "RECORDS")
-public class TestSimpleEntity {
+@Table(schema = "RECORDS")
+public class TestAnotherSimpleEntity {
 
   @Id
   private Long id;
@@ -32,7 +32,7 @@ public class TestSimpleEntity {
    * @param name {@link String} of this test entity
    * @param age {@link Integer} of this test entity
    */
-  public TestSimpleEntity(String name, @NotNull Integer age) {
+  public TestAnotherSimpleEntity(String name, @NotNull Integer age) {
 
     this.name = name;
     this.age = age;

@@ -3,7 +3,6 @@ package com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entit
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -13,8 +12,7 @@ import jakarta.validation.constraints.NotNull;
  */
 
 @Entity
-@Table(name = "TEST_SIMPLE_ENTITY", schema = "RECORDS")
-public class TestSimpleEntity {
+public class TestNotSoSimpleEntity {
 
   @Id
   private Long id;
@@ -32,7 +30,7 @@ public class TestSimpleEntity {
    * @param name {@link String} of this test entity
    * @param age {@link Integer} of this test entity
    */
-  public TestSimpleEntity(String name, @NotNull Integer age) {
+  public TestNotSoSimpleEntity(String name, @NotNull Integer age) {
 
     this.name = name;
     this.age = age;
