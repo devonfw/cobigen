@@ -143,6 +143,13 @@ public class GenerationProcessorImpl implements GenerationProcessor {
       Path targetRootPath, boolean forceOverride, Map<String, Object> rawModel,
       BiConsumer<String, Integer> progressCallback) {
 
+    return generate(input, generableArtifacts, targetRootPath, forceOverride, rawModel, progressCallback, false);
+  }
+
+  public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
+      Path targetRootPath, boolean forceOverride, Map<String, Object> rawModel,
+      BiConsumer<String, Integer> progressCallback, boolean generateAnnotation) {
+
     InputValidator.validateInputsUnequalNull(input, generableArtifacts);
 
     List<Class<?>> logicClasses = null;
@@ -205,7 +212,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
           InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
           progressCallback.accept("Generating " + template.getId(),
               Math.round(1 / (float) templatesToBeGenerated.size() * 800));
-          generate(template, triggerInterpreter, origToTmpFileTrace, progressCallback);
+          generate(template, triggerInterpreter, origToTmpFileTrace, progressCallback, generateAnnotation);
         } catch (CobiGenCancellationException e) {
           throw (e);
         } catch (CobiGenRuntimeException e) {
@@ -395,7 +402,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
    *         failures
    */
   private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter, Map<File, File> origToTmpFileTrace,
-      BiConsumer<String, Integer> progressCallback) {
+      BiConsumer<String, Integer> progressCallback, boolean generateAnnotation) {
 
     Trigger trigger = this.configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
 
@@ -464,7 +471,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             progressCallback.accept(formatter.out().toString(), 1);
           }
           progressCallback.accept("Generating " + template.getId() + " for " + generatorInput, 1);
-          generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
+          generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset,
+              generateAnnotation);
         } else if (templateEty.getMergeStrategy() != null) {
           try (Formatter formatter = new Formatter()) {
             formatter.format("Merging    %1$-40s FROM %2$-50s TO %3$s ...", originalFile.getName(),
@@ -480,6 +488,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             Merger merger = PluginRegistry.getMerger(templateEty.getMergeStrategy());
             if (merger != null) {
               mergeResult = merger.merge(tmpOriginalFile, patch, targetCharset);
+
             } else {
               throw new PluginNotAvailableException("merge strategy '" + templateEty.getMergeStrategy() + "'", null);
             }
@@ -506,7 +515,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
           LOG.info(formatter.out().toString());
           progressCallback.accept(formatter.out().toString(), 1);
         }
-        generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset);
+        generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset,
+            generateAnnotation);
       }
     }
   }
@@ -579,15 +589,16 @@ public class GenerationProcessorImpl implements GenerationProcessor {
    * @param templateEngine template engine to be used
    * @param model to generate with
    * @param outputCharset charset the target file should be written with
+   * @param generateAnnotation
    */
   private void generateTemplateAndWriteFile(File output, Template template, TextTemplateEngine templateEngine,
-      Map<String, Object> model, String outputCharset) {
+      Map<String, Object> model, String outputCharset, boolean generateAnnotation) {
 
     try (Writer out = new StringWriter()) {
       templateEngine.process(template, model, out, outputCharset);
       FileUtils.writeStringToFile(output, out.toString(), outputCharset);
       // If the output file is of java type add @Generated annotation on fields, methods and constructors
-      if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null) {
+      if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null && generateAnnotation) {
         Merger merger = PluginRegistry.getMerger(template.getMergeStrategy());
         String generatedAnnotation = merger.merge(output, null, outputCharset);
         FileUtils.writeStringToFile(output, generatedAnnotation, outputCharset);

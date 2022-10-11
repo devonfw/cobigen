@@ -21,6 +21,7 @@ import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaParserUtil;
 import com.devonfw.cobigen.javaplugin.merger.libextension.ModifyableJavaClass;
+import com.thoughtworks.qdox.model.JavaAnnotatedElement;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaConstructor;
@@ -70,7 +71,12 @@ public class JavaMerger implements Merger {
   }
 
   @Override
-  public String merge(File base, String patch, String targetCharset) throws MergeException {
+  public String merge(File base, String patch, String targetCharse) throws MergeException {
+
+    return merge(base, patch, targetCharse, false);
+  }
+
+  public String merge(File base, String patch, String targetCharset, boolean generateAnnotation) throws MergeException {
 
     ModifyableJavaClass baseClass;
     String lineDelimiter;
@@ -89,7 +95,7 @@ public class JavaMerger implements Merger {
       throw new MergeException(base, "The syntax of the base file is invalid. Error in line: " + e.getLine()
           + " / column: " + e.getColumn() + ": " + e.getMessage(), e);
     }
-    if (patch == null) {
+    if (patch == null && generateAnnotation) {
       JavaClass parsedAnnotationClass;
       LocalDate localDate = LocalDate.now();
       String annotation = "@Generated(value={\"com.devon.CobiGen\"}, date = \"" + localDate + "\")"
