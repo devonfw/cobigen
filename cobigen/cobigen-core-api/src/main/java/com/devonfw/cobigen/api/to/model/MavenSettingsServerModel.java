@@ -24,6 +24,16 @@ public class MavenSettingsServerModel {
   String password;
 
   /**
+   * Represents the privateKey of a server element in maven's settings.xml
+   */
+  String privateKey;
+
+  /**
+   * Represents the passphrase of a server element in maven's settings.xml
+   */
+  String passphrase;
+
+  /**
    * @return id
    */
   @XmlElement(name = "id")
@@ -72,6 +82,40 @@ public class MavenSettingsServerModel {
   public void setPassword(String password) {
 
     this.password = password;
+  }
+
+  /**
+   * @return privateKey
+   */
+  public String getPrivateKey() {
+
+    return this.privateKey;
+  }
+
+  /**
+   * @param privateKey new value of {@link #getprivateKey}.
+   */
+  @XmlElement
+  public void setPrivateKey(String privateKey) {
+
+    this.privateKey = privateKey;
+  }
+
+  /**
+   * @return passphrase
+   */
+  public String getPassphrase() {
+
+    return this.passphrase;
+  }
+
+  /**
+   * @param passphrase new value of {@link #getpassphrase}.
+   */
+  @XmlElement
+  public void setPassphrase(String passphrase) {
+
+    this.passphrase = passphrase;
   }
 
 }

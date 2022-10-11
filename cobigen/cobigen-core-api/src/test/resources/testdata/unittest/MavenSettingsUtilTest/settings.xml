@@ -6,6 +6,8 @@
       <id>repository</id>
       <username>testUsername</username>
       <password>testPassword</password>
+      <privateKey>testKey</privateKey>
+      <passphrase>testPassphrase</passphrase>
     </server>
   </servers>
 

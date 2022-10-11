@@ -68,12 +68,18 @@ public class MavenSettingsUtilTest {
     String testId = model.getServers().getServerList().get(0).getId();
     String testUsername = model.getServers().getServerList().get(0).getUsername();
     String testPassword = model.getServers().getServerList().get(0).getPassword();
+    String privateKey = model.getServers().getServerList().get(0).getPrivateKey();
+    String passphrase = model.getServers().getServerList().get(0).getPassphrase();
 
     assertThat(testId).isEqualTo("repository");
 
     assertThat(testUsername).isEqualTo("testUsername");
 
     assertThat(testPassword).isEqualTo("testPassword");
+
+    assertThat(privateKey).isEqualTo("testKey");
+
+    assertThat(passphrase).isEqualTo("testPassphrase");
   }
 
   /**
@@ -123,7 +129,7 @@ public class MavenSettingsUtilTest {
   }
 
   // @Test
-  // public void testDetermineMavenSettings() {
+  // public void testGetRepositoriesFromMavenSettings() {
   //
   // // Waiting for Eduards solution
   // String test = MavenUtil.determineMavenSettings();
