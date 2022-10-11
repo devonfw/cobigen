@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.LinkedList;
 
 import org.apache.commons.io.FileUtils;
@@ -612,10 +613,11 @@ public class JavaMergerTest {
     JavaMerger javaMergerObj = new JavaMerger("", true);
     String output = javaMergerObj.merge(baseFile, null, "UTF-8");
     assertThat(output).contains("@Generated(value={\"com.devon.CobiGen\"}");
+    assertThat(output).contains("date=\"" + LocalDate.now() + "\")");
   }
 
   /*
-   * Test if @Generated annotation already present in JavaCode if yes then it does not override
+   * Test if @Generated annotation already present, do not override
    */
   @Test
   public void testDoNotOverrideGeneratedAnnotation() throws IOException {
@@ -625,7 +627,6 @@ public class JavaMergerTest {
     String output = javaMergerObj.merge(baseFile, null, "UTF-8");
     assertThat(output).contains("@Generated(value={\"com.devon.CobiGen\"}");
     assertThat(output).contains("date=\"2022-07-05\")");
-    assertThat(output).contains("date=\"2022-10-05\")");
     assertThat(output).contains("date=\"2022-05-05\")");
   }
 }
