@@ -44,7 +44,8 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
         assertThat(report).isSuccessful();
         Path expectedFile = tmpFolderCobiGen.toPath().resolve("generated.java");
         assertThat(expectedFile).exists();
-        assertThat(Files.readString(expectedFile).trim()).isEqualToIgnoringWhitespace(
+        String content = new String(Files.readAllBytes(Paths.get(expectedFile.toUri())));
+        assertThat(content.trim()).isEqualToIgnoringWhitespace(
             "package com.example.domain.myapp.employeemanagement.common.api;" + LINE_SEPARATOR + LINE_SEPARATOR
                 + "import com.example.domain.myapp.general.common.api.ApplicationEntity;" + LINE_SEPARATOR
                 + "import javax.annotation.Generated;" + LINE_SEPARATOR + LINE_SEPARATOR
