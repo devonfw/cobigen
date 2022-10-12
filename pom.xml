@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>master-parent</artifactId>
@@ -19,7 +19,6 @@
     <tycho.version>1.6.0</tycho.version>
     <jaxb.version>3.0.1</jaxb.version>
     <jacoco.version>0.8.8</jacoco.version>
-    <mmm.util.core.version>7.3.0</mmm.util.core.version>
     <license.skipAggregateDownloadLicenses>${skip.deployment}</license.skipAggregateDownloadLicenses>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     <updatesite.url>https://devonfw.com/cobigen/updatesite</updatesite.url>
@@ -102,11 +101,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>net.sf.m-m-m</groupId>
-        <artifactId>mmm-util-core</artifactId>
-        <version>${mmm.util.core.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
