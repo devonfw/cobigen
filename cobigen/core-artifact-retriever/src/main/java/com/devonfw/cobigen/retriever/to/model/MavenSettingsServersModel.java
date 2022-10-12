@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.to.model;
+package com.devonfw.cobigen.retriever.to.model;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.util;
+package com.devonfw.cobigen.retriever.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,8 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.to.model.MavenSettingsMirrorModel;
-import com.devonfw.cobigen.api.to.model.MavenSettingsRepositoryModel;
+import com.devonfw.cobigen.retriever.to.model.MavenSettingsMirrorModel;
+import com.devonfw.cobigen.retriever.to.model.MavenSettingsRepositoryModel;
 
 /**
  * Utils to operate with mirrors specified in maven's settings.xml

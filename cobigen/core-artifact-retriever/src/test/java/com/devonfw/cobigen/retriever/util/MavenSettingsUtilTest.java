@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api;
+package com.devonfw.cobigen.retriever.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,8 +10,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.to.model.MavenSettingsModel;
-import com.devonfw.cobigen.api.util.MavenSettingsUtil;
+import com.devonfw.cobigen.retriever.to.model.MavenSettingsModel;
+import com.devonfw.cobigen.retriever.util.MavenSettingsUtil;
 
 /**
  * Test class for MavenSettingsUtil

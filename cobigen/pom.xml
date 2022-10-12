@@ -16,5 +16,6 @@
     <module>cobigen-core-test</module>
     <module>cobigen-core-systemtest</module>
     <module>core-externalprocess-api</module>
+    <module>core-artifact-retriever</module>
   </modules>
 </project>

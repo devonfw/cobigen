@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.util;
+package com.devonfw.cobigen.retriever.util;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -8,10 +8,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.to.model.MavenSettingsModel;
-import com.devonfw.cobigen.api.to.model.MavenSettingsProfileModel;
-import com.devonfw.cobigen.api.to.model.MavenSettingsRepositoryModel;
+import com.devonfw.cobigen.api.util.MavenUtil;
+import com.devonfw.cobigen.retriever.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.retriever.to.model.MavenSettingsModel;
+import com.devonfw.cobigen.retriever.to.model.MavenSettingsProfileModel;
+import com.devonfw.cobigen.retriever.to.model.MavenSettingsRepositoryModel;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
