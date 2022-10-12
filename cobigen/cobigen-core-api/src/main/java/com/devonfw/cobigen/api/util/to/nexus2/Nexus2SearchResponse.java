@@ -33,18 +33,20 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public List<URL> retrieveDownloadURLs() throws MalformedURLException {
+  public List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
 
     for (Nexus2SearchResponseData item : this.data) {
       for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
         for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
-          downloadLinks.add(AbstractSearchResponse.createDownloadLink(
-              MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
-                  + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
-              item.getGroupId(), item.getArtifactId(), item.getVersion(), "." + artifactLink.getExtension()));
-
+          if (artifactLink.getClassifier() != null && artifactLink.getClassifier().equals("template-set")) {
+            downloadLinks.add(AbstractSearchResponse.createDownloadLink(
+                MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
+                    + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
+                item.getGroupId(), item.getArtifactId(), item.getVersion(),
+                "-" + artifactLink.getClassifier() + "." + artifactLink.getExtension()));
+          }
         }
       }
     }
@@ -54,17 +56,23 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public String retrieveJsonResponse(String repositoryUrl, String groupId, String authToken)
+  public String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
       throws RestSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_TARGET_LINK + "?q=" + groupId;
+    String targetLink = retrieveRestSearchApiTargetLink(repositoryUrl, groupId);
 
-    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken, getRepositoryType());
+    return retrieveJsonResponseWithAuthentication(targetLink, username, password, getRepositoryType());
   }
 
   @Override
   public MavenSearchRepositoryType getRepositoryType() {
 
     return MavenSearchRepositoryType.NEXUS2;
+  }
+
+  @Override
+  public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
+
+    return repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_REST_SEARCH_API_PATH + "?q=" + groupId;
   }
 }

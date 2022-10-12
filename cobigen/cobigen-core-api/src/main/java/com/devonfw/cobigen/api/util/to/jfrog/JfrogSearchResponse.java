@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
@@ -40,22 +41,24 @@ public class JfrogSearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public String retrieveJsonResponse(String repositoryUrl, String groupId, String authToken)
+  public String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
       throws RestSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.JFROG_TARGET_LINK + "?g=" + groupId;
+    String targetLink = retrieveRestSearchApiTargetLink(repositoryUrl, groupId);
 
-    return retrieveJsonResponseWithAuthenticationToken(targetLink, authToken, getRepositoryType());
+    return retrieveJsonResponseWithAuthentication(targetLink, username, password, getRepositoryType());
   }
 
   @Override
   @JsonIgnore
-  public List<URL> retrieveDownloadURLs() throws MalformedURLException {
+  public List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
 
     for (JfrogSearchResponseResult result : getResults()) {
-      downloadLinks.add(new URL(result.getUri()));
+      if (result.getUri().endsWith(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)) {
+        downloadLinks.add(new URL(result.getUri()));
+      }
     }
 
     return downloadLinks;
@@ -65,5 +68,11 @@ public class JfrogSearchResponse extends AbstractSearchResponse {
   public MavenSearchRepositoryType getRepositoryType() {
 
     return MavenSearchRepositoryType.JFROG;
+  }
+
+  @Override
+  public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
+
+    return repositoryUrl + "/" + MavenSearchRepositoryConstants.JFROG_REST_SEARCH_API_PATH + "?g=" + groupId;
   }
 }

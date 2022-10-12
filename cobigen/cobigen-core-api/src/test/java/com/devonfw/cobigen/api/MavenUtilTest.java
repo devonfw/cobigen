@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,9 +16,12 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
+import com.devonfw.cobigen.api.util.to.SearchResponseFactory;
 import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
 import com.devonfw.cobigen.api.util.to.nexus2.Nexus2SearchResponse;
@@ -40,24 +44,59 @@ public class MavenUtilTest {
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenUtilTest";
 
   /**
-   * Tests if retrieving maven artifacts with an invalid link returns null
+   * Tests if retrieving maven artifacts with an invalid link throws a {@link CobiGenRuntimeException}
    */
-  public void testRetrieveMavenArtifactsWithInvalidLinkReturnsNull() {
+  @Test
+  public void testRetrieveMavenArtifactsWithInvalidLinkThrowsException() {
 
-    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("this/is/not/a/link", "test", null)).isNull();
+    assertThatThrownBy(() -> {
+
+      SearchResponseFactory.searchArtifactDownloadLinks("this/is/not/a/link", null, null, "test");
+
+    }).isInstanceOf(CobiGenRuntimeException.class)
+        .hasMessageContaining("this/is/not/a/link/solrsearch/select?q=g:test&wt=json.");
   }
 
   /**
-   * Tests if a {@link RestSearchResponseException} gets thrown when a faulty target link without a token was used
+   * Tests if retrieving maven artifacts with an invalid username and password throws a {@link CobiGenRuntimeException}
+   */
+  @Test
+  public void testRetrieveMavenArtifactsWithInvalidBasicCredentialsThrowsException() {
+
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(401)));
+
+    assertThatThrownBy(() -> {
+
+      SearchResponseFactory.searchArtifactDownloadLinks("http://localhost:8080", "myuser", "mypassword", "test");
+
+    }).isInstanceOf(CobiGenRuntimeException.class).hasMessageContaining(
+        "Basic Authentication using the URL http://localhost:8080/solrsearch/select?q=g:test&wt=json");
+
+  }
+
+  /**
+   * Tests if retrieving maven artifacts with an invalid token throws a {@link CobiGenRuntimeException}
+   */
+  @Test
+  public void testRetrieveMavenArtifactsWithInvalidTokenThrowsException() {
+
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(401)));
+
+    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, "mypassword", "test")).isNull();
+  }
+
+  /**
+   * Tests if a {@link CobiGenRuntimeException} gets thrown when a faulty target link without a token was used
    */
   @Test
   public void testWrongTargetLinkThrowsException() {
 
-    try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The target URL was faulty.");
-    }
+    assertThatThrownBy(() -> {
+
+      AbstractSearchResponse.retrieveJsonResponseWithAuthentication("this/is/not/a/link", null, null,
+          MavenSearchRepositoryType.MAVEN);
+
+    }).isInstanceOf(CobiGenRuntimeException.class).hasMessageContaining("faulty target URL: this/is/not/a/link.");
   }
 
   /**
@@ -66,11 +105,13 @@ public class MavenUtilTest {
   @Test
   public void testWrongTargetLinkAndTokenThrowsException() {
 
-    try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", "thisisabadtoken", null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The target URL was faulty.");
-    }
+    assertThatThrownBy(() -> {
+
+      AbstractSearchResponse.retrieveJsonResponseWithAuthentication("this/is/not/a/link", null, "thisisabadtoken",
+          MavenSearchRepositoryType.MAVEN);
+
+    }).isInstanceOf(CobiGenRuntimeException.class).hasMessageContaining("faulty target URL: this/is/not/a/link.");
+
   }
 
   /**
@@ -79,12 +120,37 @@ public class MavenUtilTest {
   @Test
   public void testWrongResponseStatusCodeThrowsException() {
 
-    try {
-      AbstractSearchResponse
-          .retrieveJsonResponseWithAuthenticationToken("https://search.maven.org/solrsearch/select?test", null, null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The search REST API returned the unexpected status code: 400");
-    }
+    assertThatThrownBy(() -> {
+
+      AbstractSearchResponse.retrieveJsonResponseWithAuthentication("https://search.maven.org/solrsearch/select?test",
+          null, null, MavenSearchRepositoryType.MAVEN);
+
+    }).isInstanceOf(CobiGenRuntimeException.class)
+        .hasMessageContaining("MAVEN with the URL: https://search.maven.org/solrsearch/select?test.\n"
+            + "The search REST API returned the unexpected status code: 400");
+  }
+
+  /**
+   * Tests if a {@link CobiGenRuntimeException} gets thrown if the search request received an empty json string as a
+   * response
+   *
+   */
+  @Test
+  public void testSearchRequestWithEmptyJsonResponseThrowsException() {
+
+    // given
+    this.wireMockRule
+        .stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200).withBody("")));
+
+    // when
+    assertThatThrownBy(() -> {
+
+      SearchResponseFactory.searchArtifactDownloadLinks("http://localhost:8080", null, null,
+          "com.devonfw.cobigen.templates");
+
+    }).isInstanceOf(CobiGenRuntimeException.class).hasMessageContaining(
+        "empty json response from the target URL http://localhost:8080/solrsearch/select?q=g:com.devonfw.cobigen.templates&wt=json");
+
   }
 
   /**
@@ -103,14 +169,11 @@ public class MavenUtilTest {
 
     response = mapper.readValue(jsonResponse, MavenSearchResponse.class);
     // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
+    List<URL> downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
     // then
-    assertThat(downloadLinks).contains(
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-bom/5.1.0/guice-bom-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-parent/5.1.0/guice-parent-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/jdk8-tests/5.0.1/jdk8-tests-5.0.1.jar"));
+    assertThat(downloadLinks).contains(new URL(
+        "https://repo1.maven.org/maven2/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -130,25 +193,11 @@ public class MavenUtilTest {
     response = mapper.readValue(jsonResponse, Nexus2SearchResponse.class);
 
     // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
+    List<URL> downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
     // then
     assertThat(downloadLinks).contains(new URL(
-        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.005/openapiplugin-2021.12.005.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.005/openapiplugin-2021.12.005.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.006/jsonplugin-2021.12.006.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.006/jsonplugin-2021.12.006.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.005/jsonplugin-2021.12.005.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.005/jsonplugin-2021.12.005.jar"));
+        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -168,13 +217,11 @@ public class MavenUtilTest {
     response = mapper.readValue(jsonResponse, Nexus3SearchResponse.class);
 
     // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
+    List<URL> downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
     // then
     assertThat(downloadLinks).contains(new URL(
-        "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom"));
+        "http://localhost:8081/repository/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -193,13 +240,11 @@ public class MavenUtilTest {
 
     // when
     response = mapper.readValue(jsonResponse, JfrogSearchResponse.class);
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
+    List<URL> downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
     // then
     assertThat(downloadLinks).contains(new URL(
-        "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifact/1.0/artifact-1.0-sources.jar"),
-        new URL(
-            "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifactB/1.0/artifactB-1.0-sources.jar"));
+        "http://localhost:8081/artifactory/api/storage/libs-release-local/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -225,14 +270,11 @@ public class MavenUtilTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.google.inject", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, null, "com.google.inject");
 
     // then
-    assertThat(downloadList).contains(
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-bom/5.1.0/guice-bom-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-parent/5.1.0/guice-parent-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/jdk8-tests/5.0.1/jdk8-tests-5.0.1.jar"));
+    assertThat(downloadList).contains(new URL(
+        "https://repo1.maven.org/maven2/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -246,7 +288,7 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch.*")).willReturn(aResponse().withStatus(404)));
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule
         .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
@@ -257,11 +299,12 @@ public class MavenUtilTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, null,
+        "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(
-        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.jar"));
+        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -275,7 +318,7 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(404)));
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule
         .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
@@ -287,13 +330,12 @@ public class MavenUtilTest {
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, null,
+        "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(
-        "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom"));
+        "http://localhost:8081/repository/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
   /**
@@ -307,7 +349,7 @@ public class MavenUtilTest {
     // given
     List<URL> downloadList;
 
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(404)));
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(404)));
 
     this.wireMockRule.stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(200)
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")))));
@@ -318,13 +360,12 @@ public class MavenUtilTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
     // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
+    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", null, null,
+        "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(
-        "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifact/1.0/artifact-1.0-sources.jar"),
-        new URL(
-            "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifactB/1.0/artifactB-1.0-sources.jar"));
+        "http://localhost:8081/artifactory/api/storage/libs-release-local/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
 
 }

@@ -103,10 +103,10 @@
          ]
       },
       {
-         "groupId":"com.devonfw.cobigen",
-         "artifactId":"jsonplugin",
-         "version":"2021.12.005",
-         "latestRelease":"2021.12.006",
+         "groupId":"com.devonfw.cobigen.templates",
+         "artifactId":"crud-java-server-app",
+         "version":"2021.08.001",
+         "latestRelease":"2021.08.001",
          "latestReleaseRepositoryId":"releases",
          "highlightedFragment":"<blockquote>Group ID<UL><LI><B>com<\/B>.<B>devonfw<\/B>.<B>cobigen<\/B><\/LI><\/UL><\/blockquote>",
          "artifactHits":[
@@ -119,6 +119,10 @@
                   {
                      "classifier":"javadoc",
                      "extension":"jar"
+                  },
+				  {
+                     "classifier":"template-set",
+                     "extension":"xml"
                   },
                   {
                      "extension":"jar"

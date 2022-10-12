@@ -10,18 +10,21 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 /**
  * This interface should be inherited for all maven REST search API responses to properly convert {@link JsonProperty}
- * from responses to valid download URLs
+ * from responses to valid template-set.xml download URLs
  */
 public abstract class AbstractSearchResponse {
 
@@ -35,12 +38,21 @@ public abstract class AbstractSearchResponse {
   public abstract MavenSearchRepositoryType getRepositoryType();
 
   /**
-   * Creates a list of download URLs
+   * Creates a list of download URLs containing only template-set.xml files
    *
    * @return List of download links
    * @throws MalformedURLException if an URL was not valid
    */
-  public abstract List<URL> retrieveDownloadURLs() throws MalformedURLException;
+  public abstract List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException;
+
+  /**
+   * Retrieves the target link of the respective REST search API
+   *
+   * @param repositoryUrl the repository server URL
+   * @param groupId the groupId to search for
+   * @return the REST search API target link
+   */
+  public abstract String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId);
 
   /**
    * Removes duplicates from list of download URLs
@@ -55,56 +67,60 @@ public abstract class AbstractSearchResponse {
   }
 
   /**
-   * Retrieves the json response from a repository URL and a group ID
-   *
-   * @param repositoryUrl URL of the repository
-   * @param groupId to search for
-   * @return String of json response
-   * @throws RestSearchResponseException if the request did not return status 200
-   */
-  public String retrieveJsonResponse(String repositoryUrl, String groupId) throws RestSearchResponseException {
-
-    return retrieveJsonResponse(repositoryUrl, groupId, null);
-  }
-
-  /**
    * Retrieves the json response from a repository URL, a group ID and a bearer authentication token
    *
    * @param repositoryUrl URL of the repository
+   * @param username to use for authentication
+   * @param password to use for authentication
    * @param groupId to search for
-   * @param authToken bearer token to use for authentication
    * @return String of json response
    * @throws RestSearchResponseException if the request did not return status 200
    */
-  public abstract String retrieveJsonResponse(String repositoryUrl, String groupId, String authToken)
+  public abstract String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
       throws RestSearchResponseException;
 
   /**
-   * Creates a @WebTarget with provided authentication token
+   * Creates a @Request with provided authentication token
    *
    * @param targetLink link to get response from
    * @param token bearer token to use for authentication
    * @return Request to use as resource
    */
-  private static Request bearerAuthenticationWithOAuth2AtClientLevel(String targetLink, String token) {
+  private static Request bearerTokenAuthentication(String targetLink, String token) {
 
     return new Request.Builder().url(targetLink).addHeader("Authorization", "Bearer " + token).build();
 
   }
 
   /**
-   * Retrieves a json response by given REST API target link using bearer authentication token
+   * Creates a @Request with provided authentication username and password
    *
    * @param targetLink link to get response from
-   * @param authToken bearer token to use for authentication
+   * @param username to use for authentication
+   * @param password to use for authentication
+   * @return Request to use as resource
+   */
+  private static Request basicUsernamePasswordAuthentication(String targetLink, String username, String password) {
+
+    String credential = Credentials.basic(username, password);
+    return new Request.Builder().url(targetLink).addHeader("Authorization", credential).build();
+
+  }
+
+  /**
+   * Retrieves a json response by given REST API target link using authentication
+   *
+   * @param targetLink link to get response from
+   * @param username to use for authentication
+   * @param password to use for authentication
    * @param searchRepositoryType the type of the search repository
    * @return String of json response
    * @throws RestSearchResponseException if the returned status code was not 200 OK
    */
-  public static String retrieveJsonResponseWithAuthenticationToken(String targetLink, String authToken,
+  public static String retrieveJsonResponseWithAuthentication(String targetLink, String username, String password,
       MavenSearchRepositoryType searchRepositoryType) throws RestSearchResponseException {
 
-    LOG.info("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
+    LOG.debug("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
 
     OkHttpClient httpClient = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS).callTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
@@ -112,28 +128,37 @@ public abstract class AbstractSearchResponse {
     String jsonResponse = "";
 
     try {
+      // use no authentication
       Response response = null;
 
-      if (authToken != null) {
-        response = httpClient.newCall(bearerAuthenticationWithOAuth2AtClientLevel(targetLink, authToken)).execute();
-      } else {
-        response = httpClient.newCall(new Request.Builder().url(targetLink).get().build()).execute();
+      Request request = new Request.Builder().url(targetLink).get().build();
+
+      // use basic authentication
+      if (username != null && password != null) {
+        request = basicUsernamePasswordAuthentication(targetLink, username, password);
       }
 
+      response = httpClient.newCall(request).execute();
+
       if (response != null) {
-        int status = response.code();
-        if (status == 200 || status == 201 || status == 204) {
+        int statusCode = response.code();
+        if (statusCode == 200 || statusCode == 201 || statusCode == 204) {
           jsonResponse = response.body().string();
         } else {
-          throw new RestSearchResponseException("The search REST API returned the unexpected status code: ",
-              String.valueOf(response.code()));
+          throw new RestSearchResponseException(searchRepositoryType, targetLink, statusCode);
         }
       }
 
     } catch (IOException e) {
-      throw new RestSearchResponseException("Unable to send or receive the message from the service", e);
+      throw new CobiGenRuntimeException(
+          MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_REQUEST_FAILED + " " + targetLink, e);
     } catch (IllegalArgumentException e) {
-      throw new RestSearchResponseException("The target URL was faulty.", e);
+      throw new CobiGenRuntimeException("The search REST API recieved the faulty target URL: " + targetLink + ".", e);
+    }
+
+    if (jsonResponse.isEmpty()) {
+      throw new CobiGenRuntimeException(
+          MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_EMPTY_JSON_RESPONSE + " " + targetLink);
     }
 
     return jsonResponse;
