@@ -42,12 +42,13 @@ public class MavenSearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
-      throws RestSearchResponseException {
+  public String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId,
+      String proxyAddress, int proxyPort) throws RestSearchResponseException {
 
     String targetLink = retrieveRestSearchApiTargetLink(repositoryUrl, groupId);
 
-    return retrieveJsonResponseWithAuthentication(targetLink, username, password, getRepositoryType());
+    return retrieveJsonResponseWithAuthentication(targetLink, username, password, getRepositoryType(), proxyAddress,
+        proxyPort);
   }
 
   @Override

@@ -1,7 +1,10 @@
 package com.devonfw.cobigen.retriever.mavensearch.util.to.model;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -73,10 +76,12 @@ public abstract class AbstractSearchResponse {
    * @param username to use for authentication
    * @param password to use for authentication
    * @param groupId to search for
+   * @param proxyAddress TODO
+   * @param proxyPort TODO
    * @return String of json response
    * @throws RestSearchResponseException if the request did not return status 200
    */
-  public abstract String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
+  public abstract String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId, String proxyAddress, int proxyPort)
       throws RestSearchResponseException;
 
   /**
@@ -114,17 +119,33 @@ public abstract class AbstractSearchResponse {
    * @param username to use for authentication
    * @param password to use for authentication
    * @param searchRepositoryType the type of the search repository
+   * @param proxyAddress address of the proxy
+   * @param proxyPort port of the proxy
    * @return String of json response
    * @throws RestSearchResponseException if the returned status code was not 200 OK
    */
   public static String retrieveJsonResponseWithAuthentication(String targetLink, String username, String password,
-      MavenSearchRepositoryType searchRepositoryType) throws RestSearchResponseException {
+      MavenSearchRepositoryType searchRepositoryType, String proxyAddress, int proxyPort)
+      throws RestSearchResponseException {
 
     LOG.debug("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
 
-    OkHttpClient httpClient = new OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS).callTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
-        .retryOnConnectionFailure(true).build();
+    OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+    builder.connectTimeout(10, TimeUnit.SECONDS);
+    builder.readTimeout(30, TimeUnit.SECONDS);
+    builder.callTimeout(30, TimeUnit.SECONDS);
+    builder.writeTimeout(30, TimeUnit.SECONDS);
+    builder.retryOnConnectionFailure(true);
+
+    if (!proxyAddress.isEmpty() && proxyPort != 0) {
+      SocketAddress address = new InetSocketAddress(proxyAddress, proxyPort);
+      Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
+      builder.proxy(proxy);
+    }
+
+    OkHttpClient httpClient = builder.build();
+
     String jsonResponse = "";
 
     try {

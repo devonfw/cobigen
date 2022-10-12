@@ -41,12 +41,14 @@ public class SearchResponseFactory {
    * @param username to use for authentication
    * @param password to use for authentication
    * @param groupId the groupId to search for
+   * @param proxyAddress address of proxy
+   * @param proxyPort port of proxy
    * @return List of download URLs
    * @throws CobiGenRuntimeException if an unexpected error occurred
    *
    */
-  public static List<URL> searchArtifactDownloadLinks(String baseURL, String username, String password, String groupId)
-      throws CobiGenRuntimeException {
+  public static List<URL> searchArtifactDownloadLinks(String baseURL, String username, String password, String groupId,
+      String proxyAddress, int proxyPort) throws CobiGenRuntimeException {
 
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
@@ -63,7 +65,7 @@ public class SearchResponseFactory {
         LOG.debug("Trying to get a response from {} ...", searchRepositoryType);
 
         String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, username,
-            password, groupId);
+            password, groupId, proxyAddress, proxyPort);
         AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
             searchResponse.getClass());
 

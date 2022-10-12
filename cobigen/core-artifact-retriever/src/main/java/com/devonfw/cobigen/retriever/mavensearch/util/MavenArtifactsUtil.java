@@ -26,13 +26,16 @@ public class MavenArtifactsUtil {
    * @param username to use for authentication
    * @param password to use for authentication
    * @param groupId the groupId to search for
+   * @param proxyAddress TODO
+   * @param proxyPort TODO
    * @return List of artifact download URLS
    */
   public static List<URL> retrieveMavenArtifactsByGroupId(String baseUrl, String username, String password,
-      String groupId) {
+      String groupId, String proxyAddress, int proxyPort) {
 
     try {
-      return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, username, password, groupId);
+      return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, username, password, groupId, proxyAddress,
+          proxyPort);
     } catch (CobiGenRuntimeException e) {
       LOG.warn("An exception occured: ", e);
     }
