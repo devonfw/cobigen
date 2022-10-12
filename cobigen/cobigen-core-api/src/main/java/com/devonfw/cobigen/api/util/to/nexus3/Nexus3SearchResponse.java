@@ -54,8 +54,7 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
   public String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
       throws RestSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS3_REST_SEARCH_API_PATH
-        + "?repository=maven-central" + "&group=" + groupId;
+    String targetLink = retrieveRestSearchApiTargetLink(repositoryUrl, groupId);
 
     return retrieveJsonResponseWithAuthentication(targetLink, username, password, getRepositoryType());
   }
@@ -64,5 +63,12 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
   public MavenSearchRepositoryType getRepositoryType() {
 
     return MavenSearchRepositoryType.NEXUS3;
+  }
+
+  @Override
+  public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
+
+    return repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS3_REST_SEARCH_API_PATH
+        + "?repository=maven-central" + "&group=" + groupId;
   }
 }

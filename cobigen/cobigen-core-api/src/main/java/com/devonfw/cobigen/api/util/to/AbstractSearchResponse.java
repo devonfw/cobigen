@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,6 +44,15 @@ public abstract class AbstractSearchResponse {
    * @throws MalformedURLException if an URL was not valid
    */
   public abstract List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException;
+
+  /**
+   * Retrieves the target link of the respective REST search API
+   *
+   * @param repositoryUrl the repository server URL
+   * @param groupId the groupId to search for
+   * @return the REST search API target link
+   */
+  public abstract String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId);
 
   /**
    * Removes duplicates from list of download URLs
@@ -121,10 +132,6 @@ public abstract class AbstractSearchResponse {
       Response response = null;
 
       Request request = new Request.Builder().url(targetLink).get().build();
-      // use bearer token authentication
-      if (password != null) {
-        request = bearerTokenAuthentication(targetLink, password);
-      }
 
       // use basic authentication
       if (username != null && password != null) {
@@ -138,17 +145,20 @@ public abstract class AbstractSearchResponse {
         if (statusCode == 200 || statusCode == 201 || statusCode == 204) {
           jsonResponse = response.body().string();
         } else {
-          LOG.debug(
-              "It was not possible to get a response from {} using the URL: {}.\n The search REST API returned the unexpected status code: {}",
-              searchRepositoryType, targetLink, statusCode);
-          throw new RestSearchResponseException("The search REST API returned the unexpected status code: ", statusCode);
+          throw new RestSearchResponseException(searchRepositoryType, targetLink, statusCode);
         }
       }
 
     } catch (IOException e) {
-      throw new RestSearchResponseException("Unable to send or receive the message from the service", e);
+      throw new CobiGenRuntimeException(
+          MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_REQUEST_FAILED + " " + targetLink, e);
     } catch (IllegalArgumentException e) {
-      throw new RestSearchResponseException("The target URL was faulty.", e);
+      throw new CobiGenRuntimeException("The search REST API recieved the faulty target URL: " + targetLink + ".", e);
+    }
+
+    if (jsonResponse.isEmpty()) {
+      throw new CobiGenRuntimeException(
+          MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_EMPTY_JSON_RESPONSE + " " + targetLink);
     }
 
     return jsonResponse;

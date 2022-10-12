@@ -45,8 +45,7 @@ public class MavenSearchResponse extends AbstractSearchResponse {
   public String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId)
       throws RestSearchResponseException {
 
-    String targetLink = repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_REST_SEARCH_API_PATH + "?q=g:"
-        + groupId + "&wt=json";
+    String targetLink = retrieveRestSearchApiTargetLink(repositoryUrl, groupId);
 
     return retrieveJsonResponseWithAuthentication(targetLink, username, password, getRepositoryType());
   }
@@ -77,6 +76,13 @@ public class MavenSearchResponse extends AbstractSearchResponse {
   public MavenSearchRepositoryType getRepositoryType() {
 
     return MavenSearchRepositoryType.MAVEN;
+  }
+
+  @Override
+  public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
+
+    return repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_REST_SEARCH_API_PATH + "?q=g:" + groupId
+        + "&wt=json";
   }
 
 }

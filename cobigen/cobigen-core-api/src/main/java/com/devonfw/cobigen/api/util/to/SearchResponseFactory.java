@@ -7,7 +7,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
@@ -40,30 +42,61 @@ public class SearchResponseFactory {
    * @param password to use for authentication
    * @param groupId the groupId to search for
    * @return List of download URLs
-   * @throws RestSearchResponseException if an error occurred while accessing the server
-   * @throws JsonProcessingException if the json processing was not possible
-   * @throws MalformedURLException if an URL was malformed
+   * @throws CobiGenRuntimeException if an unexpected error occurred
    *
    */
   public static List<URL> searchArtifactDownloadLinks(String baseURL, String username, String password, String groupId)
-      throws RestSearchResponseException, JsonProcessingException, MalformedURLException {
+      throws CobiGenRuntimeException {
 
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
     MavenSearchRepositoryType searchRepositoryType = null;
+    String searchRepositoryTargetLink = "";
+
+    LOG.debug("Starting search for REST APIs with repository URL: {} and groupId: {} ...", baseURL, groupId);
 
     for (Object searchResponse : SEARCH_RESPONSES) {
       searchRepositoryType = ((AbstractSearchResponse) searchResponse).getRepositoryType();
+      searchRepositoryTargetLink = ((AbstractSearchResponse) searchResponse).retrieveRestSearchApiTargetLink(baseURL,
+          groupId);
       try {
         LOG.debug("Trying to get a response from {} ...", searchRepositoryType);
+
         String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, username,
             password, groupId);
         AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
             searchResponse.getClass());
+
         LOG.debug("The search REST API was able to get a response from {}", searchRepositoryType);
-        return response.retrieveTemplateSetXmlDownloadURLs();
+
+        downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
+
+        if (downloadLinks == null || downloadLinks.isEmpty()) {
+          throw new CobiGenRuntimeException(
+              MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_ARTIFACT_LIST_EMPTY + " " + searchRepositoryType
+                  + " repository matching the group id: " + groupId + " while using the URL: "
+                  + searchRepositoryTargetLink);
+        }
+
+        return downloadLinks;
+
       } catch (RestSearchResponseException e) {
         LOG.debug("The search REST API was unable to get a response from {}", searchRepositoryType);
+
+        if (e.getStatusCode() == 401) {
+          throw new CobiGenRuntimeException(
+              MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_AUTH_FAILED_ONE + " " + searchRepositoryType
+                  + " " + MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_AUTH_FAILED_TWO + " "
+                  + searchRepositoryTargetLink,
+              e);
+        }
+
+      } catch (JsonProcessingException e) {
+        throw new CobiGenRuntimeException(MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_UNABLE_TO_PARSE_JSON
+            + " " + searchRepositoryType + " repository using the URL: " + searchRepositoryTargetLink, e);
+      } catch (MalformedURLException e) {
+        throw new CobiGenRuntimeException(MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_FAULTY_TARGET_URL
+            + " " + searchRepositoryType + " repository using the URL: " + searchRepositoryTargetLink, e);
       }
     }
 

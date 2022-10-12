@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,9 +16,12 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.constants.MavenSearchRepositoryType;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
+import com.devonfw.cobigen.api.util.to.SearchResponseFactory;
 import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
 import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
 import com.devonfw.cobigen.api.util.to.nexus2.Nexus2SearchResponse;
@@ -40,31 +44,41 @@ public class MavenUtilTest {
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenUtilTest";
 
   /**
-   * Tests if retrieving maven artifacts with an invalid link returns null
+   * Tests if retrieving maven artifacts with an invalid link throws a {@link CobiGenRuntimeException}
    */
   @Test
-  public void testRetrieveMavenArtifactsWithInvalidLinkReturnsNull() {
+  public void testRetrieveMavenArtifactsWithInvalidLinkThrowsException() {
 
-    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("this/is/not/a/link", null, null, "test")).isNull();
+    assertThatThrownBy(() -> {
+
+      SearchResponseFactory.searchArtifactDownloadLinks("this/is/not/a/link", null, null, "test");
+
+    }).isInstanceOf(CobiGenRuntimeException.class)
+        .hasMessageContaining("this/is/not/a/link/solrsearch/select?q=g:test&wt=json.");
   }
 
   /**
-   * Tests if retrieving maven artifacts with an invalid username and password returns null
+   * Tests if retrieving maven artifacts with an invalid username and password throws a {@link CobiGenRuntimeException}
    */
   @Test
-  public void testRetrieveMavenArtifactsWithInvalidBasicCredentialsReturnsNull() {
+  public void testRetrieveMavenArtifactsWithInvalidBasicCredentialsThrowsException() {
 
     this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(401)));
 
-    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "myuser", "mypassword", "test"))
-        .isNull();
+    assertThatThrownBy(() -> {
+
+      SearchResponseFactory.searchArtifactDownloadLinks("http://localhost:8080", "myuser", "mypassword", "test");
+
+    }).isInstanceOf(CobiGenRuntimeException.class).hasMessageContaining(
+        "Basic Authentication using the URL http://localhost:8080/solrsearch/select?q=g:test&wt=json");
+
   }
 
   /**
-   * Tests if retrieving maven artifacts with an invalid token returns null
+   * Tests if retrieving maven artifacts with an invalid token throws a {@link CobiGenRuntimeException}
    */
   @Test
-  public void testRetrieveMavenArtifactsWithInvalidTokenReturnsNull() {
+  public void testRetrieveMavenArtifactsWithInvalidTokenThrowsException() {
 
     this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(401)));
 
@@ -72,16 +86,17 @@ public class MavenUtilTest {
   }
 
   /**
-   * Tests if a {@link RestSearchResponseException} gets thrown when a faulty target link without a token was used
+   * Tests if a {@link CobiGenRuntimeException} gets thrown when a faulty target link without a token was used
    */
   @Test
   public void testWrongTargetLinkThrowsException() {
 
-    try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthentication("this/is/not/a/link", null, null, null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The target URL was faulty.");
-    }
+    assertThatThrownBy(() -> {
+
+      AbstractSearchResponse.retrieveJsonResponseWithAuthentication("this/is/not/a/link", null, null,
+          MavenSearchRepositoryType.MAVEN);
+
+    }).isInstanceOf(CobiGenRuntimeException.class).hasMessageContaining("faulty target URL: this/is/not/a/link.");
   }
 
   /**
@@ -90,12 +105,13 @@ public class MavenUtilTest {
   @Test
   public void testWrongTargetLinkAndTokenThrowsException() {
 
-    try {
+    assertThatThrownBy(() -> {
+
       AbstractSearchResponse.retrieveJsonResponseWithAuthentication("this/is/not/a/link", null, "thisisabadtoken",
-          null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The target URL was faulty.");
-    }
+          MavenSearchRepositoryType.MAVEN);
+
+    }).isInstanceOf(CobiGenRuntimeException.class).hasMessageContaining("faulty target URL: this/is/not/a/link.");
+
   }
 
   /**
@@ -104,12 +120,37 @@ public class MavenUtilTest {
   @Test
   public void testWrongResponseStatusCodeThrowsException() {
 
-    try {
+    assertThatThrownBy(() -> {
+
       AbstractSearchResponse.retrieveJsonResponseWithAuthentication("https://search.maven.org/solrsearch/select?test",
-          null, null, null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The search REST API returned the unexpected status code: 400");
-    }
+          null, null, MavenSearchRepositoryType.MAVEN);
+
+    }).isInstanceOf(CobiGenRuntimeException.class)
+        .hasMessageContaining("MAVEN with the URL: https://search.maven.org/solrsearch/select?test.\n"
+            + "The search REST API returned the unexpected status code: 400");
+  }
+
+  /**
+   * Tests if a {@link CobiGenRuntimeException} gets thrown if the search request received an empty json string as a
+   * response
+   *
+   */
+  @Test
+  public void testSearchRequestWithEmptyJsonResponseThrowsException() {
+
+    // given
+    this.wireMockRule
+        .stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200).withBody("")));
+
+    // when
+    assertThatThrownBy(() -> {
+
+      SearchResponseFactory.searchArtifactDownloadLinks("http://localhost:8080", null, null,
+          "com.devonfw.cobigen.templates");
+
+    }).isInstanceOf(CobiGenRuntimeException.class).hasMessageContaining(
+        "empty json response from the target URL http://localhost:8080/solrsearch/select?q=g:com.devonfw.cobigen.templates&wt=json");
+
   }
 
   /**

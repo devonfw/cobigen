@@ -27,9 +27,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.to.SearchResponseFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
@@ -352,19 +350,17 @@ public class MavenUtil {
    * @param username to use for authentication
    * @param password to use for authentication
    * @param groupId the groupId to search for
-   * @return List of artifact download URLS or null if an error occurred
+   * @return List of artifact download URLS
    */
   public static List<URL> retrieveMavenArtifactsByGroupId(String baseUrl, String username, String password,
       String groupId) {
 
     try {
-
       return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, username, password, groupId);
-    } catch (RestSearchResponseException | JsonProcessingException | MalformedURLException e) {
-      LOG.debug("Unable to get artifacts from {} by groupId {}", baseUrl, groupId, e);
-      // TODO: Handle Eclipse, CLI and MavenPlugin here (f.e. with a new Exception)
-      return null;
+    } catch (CobiGenRuntimeException e) {
+      LOG.warn("An exception occured: ", e);
     }
+    return null;
 
   }
 
