@@ -169,45 +169,17 @@ public class JavaMerger implements Merger {
       List<JavaAnnotation> generatedAnnotation) {
 
     if (!elements.isEmpty()) {
-      if (elements.get(0) instanceof JavaConstructor) {
-        for (JavaAnnotatedElement constructor : elements) {
-          List<JavaAnnotation> annotations = constructor.getAnnotations();
-          boolean annotationAlreadyPresent = false;
-          for (JavaAnnotation annotation : annotations) {
-            if (annotation.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
-              annotationAlreadyPresent = true;
-              break;
-            }
+      for (JavaAnnotatedElement element : elements) {
+        List<JavaAnnotation> annotations = element.getAnnotations();
+        boolean annotationAlreadyPresent = false;
+        for (JavaAnnotation annotation : annotations) {
+          if (annotation.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
+            annotationAlreadyPresent = true;
+            break;
           }
-          if (!annotationAlreadyPresent)
-            ((AbstractBaseJavaEntity) constructor).setAnnotations(mergeAnnotation(annotations, generatedAnnotation));
         }
-      } else if (elements.get(0) instanceof JavaMethod) {
-        for (JavaAnnotatedElement method : elements) {
-          boolean annotationAlreadyPresent = false;
-          List<JavaAnnotation> annotations = method.getAnnotations();
-          for (JavaAnnotation annotation : annotations) {
-            if (annotation.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
-              annotationAlreadyPresent = true;
-              break;
-            }
-          }
-          if (!annotationAlreadyPresent)
-            ((AbstractBaseJavaEntity) method).setAnnotations(mergeAnnotation(annotations, generatedAnnotation));
-        }
-      } else {
-        for (JavaAnnotatedElement field : elements) {
-          boolean annotationAlreadyPresent = false;
-          List<JavaAnnotation> annotations = field.getAnnotations();
-          for (JavaAnnotation annotation : annotations) {
-            if (annotation.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
-              annotationAlreadyPresent = true;
-              break;
-            }
-          }
-          if (!annotationAlreadyPresent)
-            ((AbstractBaseJavaEntity) field).setAnnotations(mergeAnnotation(annotations, generatedAnnotation));
-        }
+        if (!annotationAlreadyPresent)
+          ((AbstractBaseJavaEntity) element).setAnnotations(mergeAnnotation(annotations, generatedAnnotation));
       }
     }
   }
