@@ -1,17 +1,16 @@
 package com.devonfw.cobigen.api.matchers;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
+import java.util.Objects;
+
 import org.hamcrest.Matcher;
+import org.mockito.ArgumentMatcher;
 
 import com.devonfw.cobigen.api.to.MatcherTo;
 
 /**
  * Hamcrest Matcher for {@link MatcherTo}s
- *
- * @author mbrunnli (13.10.2014)
  */
-public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
+public class MatcherToMatcher implements ArgumentMatcher<MatcherTo> {
 
   /**
    * The matchers type to be matched
@@ -34,7 +33,6 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
    * @param type to be matched
    * @param value to be matched
    * @param target to be matched
-   * @author mbrunnli (13.10.2014)
    */
   public MatcherToMatcher(Matcher<String> type, Matcher<String> value, Matcher<Object> target) {
 
@@ -44,40 +42,30 @@ public class MatcherToMatcher extends BaseMatcher<MatcherTo> {
   }
 
   @Override
-  public void describeTo(Description description) {
+  public boolean matches(MatcherTo item) {
 
-    description.appendText(MatcherTo.class.getSimpleName() + "(type='" + this.type + "', value='" + this.value
-        + "', target='" + this.target + "')");
+    return item != null && this.type != null && this.type.matches(item.getType()) && this.value != null
+        && this.value.matches(item.getValue()) && this.target != null && this.target.matches(item.getTarget());
   }
 
   @Override
-  public boolean matches(Object item) {
+  public int hashCode() {
 
-    if (item instanceof MatcherTo) {
-      return this.type != null && this.type.matches(((MatcherTo) item).getType()) && this.value != null
-          && this.value.matches(((MatcherTo) item).getValue()) && this.target != null
-          && this.target.matches(((MatcherTo) item).getTarget());
-    }
-    return false;
+    return Objects.hash(this.target, this.type, this.value);
   }
 
   @Override
-  public void describeMismatch(Object item, Description mismatchDescription) {
+  public boolean equals(Object obj) {
 
-    if (this.type == null || this.value == null || this.target == null) {
-      mismatchDescription.appendText("One of the parameter matcher has been null. Please use AnyOf matchers instead.");
-      return;
-    }
-
-    MatcherTo matchedMatcherTo = (MatcherTo) item;
-
-    mismatchDescription.appendText("MatcherTo does not match!\nShould be MatcherTo(");
-    this.type.describeTo(mismatchDescription);
-    mismatchDescription.appendText(", ");
-    this.value.describeTo(mismatchDescription);
-    mismatchDescription.appendText(", ");
-    this.target.describeTo(mismatchDescription);
-    mismatchDescription.appendText(")\nWas       MatcherTo('" + matchedMatcherTo.getType() + "', '"
-        + matchedMatcherTo.getValue() + "', '" + matchedMatcherTo.getTarget() + "')");
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    MatcherToMatcher other = (MatcherToMatcher) obj;
+    return Objects.equals(this.target, other.target) && Objects.equals(this.type, other.type)
+        && Objects.equals(this.value, other.value);
   }
+
 }

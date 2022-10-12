@@ -18,7 +18,11 @@ on:
       - 'solicitor/**'
       - '**.asciidoc'
 
-# Try fixing random Connection Reset on Maven downloads by '-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120' as proposed here: https://github.com/actions/virtual-environments/issues/2715#issuecomment-797388909
+env:
+  MVN_BATCH_MODE: '-Djansi.force=true -Djansi.passthrough=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+  # fixing random connection reset of maven downloads as proposed here: https://github.com/actions/virtual-environments/issues/2715#issuecomment-797388909
+  MVN_HTTP_OPTIMIZATION: '-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120'
+  MVN_TEST_COVERAGE: '-Dskip.code.coverage=false'
 
 jobs:
   cache-dependencies:
@@ -27,13 +31,13 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v2
 
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           clone: false
       
       - name: Resolve non-cobigen dependencies
-        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -T1C -P!p2-build -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 || true # never fail
+        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
     
   build-and-test-core:
     needs: cache-dependencies
@@ -45,16 +49,16 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-test # new key will cache
 
       - name: Build & Test Core
         shell: bash
-        run: |
-          mvn install -f cobigen --projects !cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+        run: mvn install -f cobigen --projects !cobigen-core-systemtest ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-plugins:
     needs: build-and-test-core
@@ -66,16 +70,17 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-plugins # new key will cache
+          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-test # hit - restore
 
       - name: Build & Test Plugins
         shell: bash
-        run: |
-          mvn install -f cobigen-plugins -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+        run: mvn install -f cobigen-plugins ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-plugins-p2:
     needs: build-and-test-plugins
@@ -87,13 +92,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
 
       - name: Cache p2 plugin repositories
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./**/target/repository/
           key: p2-plugins-${{ github.sha }} # new key will cache
@@ -101,8 +106,8 @@ jobs:
       - name: Build Plugins UpdateSite
         shell: bash
         run: |
-          mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
-          mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+          mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }}
+          mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }}
 
   run-core-systemtest:
     needs: build-and-test-plugins
@@ -114,15 +119,15 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-systemtest # new key will cache
 
       - name: Run Core Systemtest
         shell: bash
-        run: |
-          mvn test -f cobigen/cobigen-core-systemtest -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+        run: mvn install -f cobigen/cobigen-core-systemtest ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-eclipse-plugin:
     needs: build-plugins-p2
@@ -134,20 +139,21 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-eclipse # new key will cache
         
       - name: Cache Eclipse repository
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./**/eclipse/target/repository/
           key: p2-eclipse-${{ github.sha }} # new key will cache
       
       # After checkout we need to restore the built repositories
       - name: Restore P2 plugins repositories
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./**/target/repository/
           key: p2-plugins-${{ github.sha }} # key hit will not update cache
@@ -156,7 +162,7 @@ jobs:
       - name: Build Plugins
         uses: GabrielBB/xvfb-action@v1.5
         with:
-          run: mvn install -f cobigen-eclipse -Pp2-build -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dsurefire.rerunFailingTestsCount=2 -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+          run: mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-maven-plugin:
     needs: build-and-test-plugins
@@ -168,16 +174,17 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-maven # new key will cache
 
       - name: Build & Test Maven Plugin
         shell: bash
         run: |
-          mvn install -f cobigen-maven -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+          mvn install -f cobigen-maven ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-cli:
     needs: build-and-test-templates
@@ -189,16 +196,17 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-cli # new key will cache
 
       - name: Build & Test CLI
         shell: bash
         run: |
-          mvn install -f cobigen-cli -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+          mvn install -f cobigen-cli ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-templates:
     needs: build-and-test-maven-plugin
@@ -210,16 +218,95 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
           maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
           java-version: ${{ matrix.javaVersion }}
+          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-templates # new key will cache
 
       - name: Build & Test Templates
         shell: bash
         run: |
-          mvn install -f cobigen-templates -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+          mvn install -f cobigen-templates ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
+
+  sonar-analysis:
+    needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+
+      - uses: devonfw-actions/java-maven-setup@main
+        with:
+          maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          jacoco-cache-key: Linux-11-jacoco-${{ github.sha }}-cli # hit - restore
+
+      # Restore other parallel results as well - seems that for any reason I could not reuse caches incrementally... need to restore all caches
+      - name: Restore eclipse test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-eclipse # hit - restore
+
+      - name: Restore core systemtest results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-core-systemtest # hit - restore
+      
+      - name: Restore core template test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-templates # hit - restore
+
+      - name: Restore core maven results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-maven # hit - restore
+
+      - name: Restore core plugin test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-plugins # hit - restore
+
+      - name: Restore core cli test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-cli # hit - restore
+      
+      - name: SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          git fetch --unshallow
+          mvn verify sonar:sonar -DskipTests ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
   
   release:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
@@ -231,7 +318,7 @@ jobs:
     outputs:
       release_tag: ${{ steps.get_tag.outputs.tag }}
     steps:
-      - uses: devonfw-actions/java-maven-setup@v2
+      - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}

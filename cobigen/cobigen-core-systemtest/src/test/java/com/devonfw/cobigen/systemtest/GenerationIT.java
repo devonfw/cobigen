@@ -3,12 +3,12 @@ package com.devonfw.cobigen.systemtest;
 import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.Matchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.ArgumentMatchers;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -44,7 +44,7 @@ import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
 /**
  * Test suite for generation purposes.
  */
-public class GenerationTest extends AbstractApiTest {
+public class GenerationIT extends AbstractApiTest {
 
   /**
    * Root path to all resources used in this test case
@@ -165,15 +165,15 @@ public class GenerationTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
     when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(input)))))
         .thenReturn(true);
 
     // Simulate variable resolving of any plug-in
     HashMap<String, String> variables = new HashMap<>(1);
     variables.put("contextVar", "contextValue");
-    when(matcher.resolveVariables(Mockito.any(MatcherTo.class), Mockito.any(List.class), Mockito.any()))
-        .thenReturn(variables);
+    when(matcher.resolveVariables(ArgumentMatchers.any(MatcherTo.class), ArgumentMatchers.any(List.class),
+        ArgumentMatchers.any())).thenReturn(variables);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
@@ -220,15 +220,15 @@ public class GenerationTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(Mockito.any())).thenReturn(true);
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
     when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(input)))))
         .thenReturn(true);
 
     // Simulate variable resolving of any plug-in
     HashMap<String, String> variables = new HashMap<>(1);
     variables.put("contextVar", "contextValue");
-    when(matcher.resolveVariables(Mockito.any(MatcherTo.class), Mockito.any(List.class), Mockito.any()))
-        .thenReturn(variables);
+    when(matcher.resolveVariables(ArgumentMatchers.any(MatcherTo.class), ArgumentMatchers.any(List.class),
+        ArgumentMatchers.any())).thenReturn(variables);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
