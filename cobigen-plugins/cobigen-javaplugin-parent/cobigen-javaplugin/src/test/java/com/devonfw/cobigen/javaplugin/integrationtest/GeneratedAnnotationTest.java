@@ -40,7 +40,7 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
     for (TemplateTo template : templates) {
       if (template.getId().equals("generated.java")) {
         GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
-            false);
+            false, true);
         assertThat(report).isSuccessful();
         Path expectedFile = tmpFolderCobiGen.toPath().resolve("generated.java");
         assertThat(expectedFile).exists();

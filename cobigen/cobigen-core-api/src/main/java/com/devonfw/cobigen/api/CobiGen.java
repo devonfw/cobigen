@@ -144,6 +144,63 @@ public interface CobiGen extends ConfigurationInterpreter, InputInterpreter {
       boolean forceOverride, BiConsumer<String, Integer> progressCallback);
 
   /**
+   * * Generates code by processing the {@link GenerableArtifact} for the given input.
+   *
+   * @param input generator input object
+   * @param generableArtifact the artifact to be generated
+   * @param targetRootPath target root path to generate to (to be used to resolve the dependent template destination
+   *        paths)
+   * @param forceOverride if <code>true</code> and the destination path is already existent, the contents will be
+   *        overwritten by the generated ones iff there is no merge strategy defined by the templates configuration.
+   *        (default: {@code false})
+   * @param generateAnnotation if true adds Generated Annotation to the new output file on generated methods and fields
+   * @return The {@link GenerationReportTo generation report} covering the actual status of success, a list of warnings,
+   *         as well as a list of error messages.
+   */
+  public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
+      boolean forceOverride, boolean generateAnnotation);
+
+  /**
+   * Generates code by processing the {@link GenerableArtifact} for the given input.
+   *
+   * @param input generator input object
+   * @param generableArtifact the artifact to be generated
+   * @param targetRootPath target root path to generate to (to be used to resolve the dependent template destination
+   *        paths)
+   * @param forceOverride if <code>true</code> and the destination path is already existent, the contents will be
+   *        overwritten by the generated ones iff there is no merge strategy defined by the templates configuration.
+   *        (default: {@code false})
+   * @param rawModel externally adapted model to be used for generation.
+   * @param progressCallback expects the progress in percent as Integer
+   * @param generateAnnotation if true adds Generated Annotation to the new output file on generated methods and fields
+   * @return The {@link GenerationReportTo generation report} covering the actual status of success, a list of warnings,
+   *         as well as a list of error messages.
+   */
+  GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
+      boolean forceOverride, Map<String, Object> rawModel, BiConsumer<String, Integer> progressCallback,
+      boolean generateAnnotation);
+
+  /**
+   * Generates code by processing the {@link GenerableArtifact} for the given input.
+   *
+   * @param input generator input object
+   * @param generableArtifact the artifact to be generated
+   * @param targetRootPath target root path to generate to (to be used to resolve the dependent template destination
+   *        paths)
+   * @param forceOverride if <code>true</code> and the destination path is already existent, the contents will be
+   *        overwritten by the generated ones iff there is no merge strategy defined by the templates configuration.
+   *        (default: {@code false})
+   * @param rawModel externally adapted model to be used for generation.
+   * @param progressCallback expects the progress in percent as Integer
+   * @param generateAnnotation if true adds Generated Annotation to the new output file on generated methods and fields
+   * @return The {@link GenerationReportTo generation report} covering the actual status of success, a list of warnings,
+   *         as well as a list of error messages.
+   */
+  GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath,
+      boolean forceOverride, Map<String, Object> rawModel, BiConsumer<String, Integer> progressCallback,
+      boolean generateAnnotation);
+
+  /**
    * Generates code by processing the {@link GenerableArtifact} for the given input.
    *
    * @param input generator input object
