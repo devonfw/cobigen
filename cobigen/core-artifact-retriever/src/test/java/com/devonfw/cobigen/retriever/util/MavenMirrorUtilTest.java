@@ -12,11 +12,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.retriever.to.model.MavenSettingsMirrorModel;
-import com.devonfw.cobigen.retriever.to.model.MavenSettingsModel;
-import com.devonfw.cobigen.retriever.to.model.MavenSettingsRepositoryModel;
-import com.devonfw.cobigen.retriever.util.MavenMirrorUtil;
-import com.devonfw.cobigen.retriever.util.MavenSettingsUtil;
+import com.devonfw.cobigen.retriever.settings.util.MavenMirrorUtil;
+import com.devonfw.cobigen.retriever.settings.util.MavenSettingsUtil;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsMirrorModel;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
 
 /**
  * Test class for MavenMirrorUtil
