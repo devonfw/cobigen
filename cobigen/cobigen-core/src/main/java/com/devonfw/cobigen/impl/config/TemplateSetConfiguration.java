@@ -4,6 +4,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,11 +21,16 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.google.common.collect.Maps;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
+
 /**
- * mdukhan: This Class is used to set specific properties if not found, or save them if correctly found. These
- * properties are groupIds, allowSnapshots and hideTemplates. khucklen: This is our stable and structured representation
- * of the automatically generated TemplateSetConfiguration and should not be confused with the XML-generated
- * {@link TemplateSetConfiguration}.
+
+ * This Class is used to set specific properties if not found, or save them if correctly found. These properties are
+ * groupIds, allowSnapshots and hideTemplates.
  */
 public class TemplateSetConfiguration {
 
@@ -38,6 +45,9 @@ public class TemplateSetConfiguration {
 
   /** variable to hide very specific template sets or versions of template sets */
   private List<MavenCoordinate> hideTemplates;
+
+  /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
+  private List<MavenCoordinate> mavenCoordinates;
 
   /** All available {@link Trigger}s */
   private Map<String, Trigger> triggers;
@@ -60,16 +70,10 @@ public class TemplateSetConfiguration {
   /** Root of the configuration */
   public Path configRoot;
 
-  /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
-  private List<MavenCoordinate> mavenCoordinates;
-
   /**
-   * The constructor. This constructor is used, when the specific properties aren't needed
-   *
    * @param configRoot Root of the configuration
    */
   public TemplateSetConfiguration(Path configRoot) {
-
     // this.templateSetConfiguration = new TemplateSetConfiguration();
     this.triggers = Maps.newHashMap();
     this.templates = Maps.newHashMap();
@@ -91,7 +95,8 @@ public class TemplateSetConfiguration {
     this(configRoot);
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
-    this.hideTemplates = hideTemplates;
+    this.hideTemplates = convertToMavenCoordinates(hideTemplates);
+    this.mavenCoordinates = convertToMavenCoordinates(mavenCoordinates);
 
   }
 
@@ -152,7 +157,33 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * return a list of the saved groupIds
+   * Takes a string with multiple maven coordinates separates them and checks if they meet the maven naming conventions
+   * and are therefore valid.
+   *
+   * @param mavenCoordinatesString a String that contains maven coordinates
+   * @return List with {@link MavenCoordinate}
+   */
+  private List<MavenCoordinate> convertToMavenCoordinates(List<String> mavenCoordinatesString) {
+
+    List<MavenCoordinate> result = new ArrayList<>();
+    for (String mavenCoordinate : mavenCoordinatesString) {
+      mavenCoordinate = mavenCoordinate.trim();
+      if (!mavenCoordinate.matches(TemplatesJarConstants.MAVEN_COORDINATES_CHECK)) {
+        LOG.warn("configuration key:" + mavenCoordinate + " in .cobigen for "
+            + "template-sets.installed or template-sets.hide doesnt match the specification and could not be used");
+      } else {
+        String[] split = mavenCoordinate.split(":");
+        String groupID = split[0];
+        String artifactID = split[1];
+        String version = split.length > 2 ? split[2] : null;
+        result.add(new MavenCoordinate(groupID, artifactID, version));
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns a list of the saved groupIds
    *
    * @return groupIds
    */
@@ -162,7 +193,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * set a list of the groupIds from a source
+   * Sets a list of the groupIds from a source
    *
    * @param groupIds new value of groupIds}.
    */
@@ -172,7 +203,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * return a boolean which states if specific Snapshots should be allowed.
+   * Returns a boolean which states if specific Snapshots should be allowed.
    *
    * @return allowSnapshots
    */
@@ -182,7 +213,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * set a value on the snapshot
+   * Sets a value on the snapshot
    *
    * @param allowSnapshots new value of getallowSnapshots}.
    */
@@ -192,7 +223,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * return a list of the saved templates to be hidden
+   * Returns a list of the saved templates to be hidden
    *
    * @return hideTemplates
    */
@@ -202,7 +233,7 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * set a list of the HideTemplate from a source
+   * Sets a list of the HideTemplate from a source
    *
    * @param hideTemplates new value of gethideTemplates}.
    */
@@ -220,11 +251,12 @@ public class TemplateSetConfiguration {
   }
 
   /**
-   * @return @param mavenCoordinates
+   * Returns a list of maven coordinates for the download of template sets
+   *
+   * @return maven coordinates
    */
   public List<MavenCoordinate> getMavenCoordinates() {
 
-    // TODO Auto-generated method stub
     return this.mavenCoordinates;
   }
 
