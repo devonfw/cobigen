@@ -51,7 +51,6 @@ import com.devonfw.cobigen.impl.config.entity.io.TemplateScans;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Templates;
 import com.devonfw.cobigen.impl.config.reader.interfaces.ContextConfigurationInterface;
-import com.devonfw.cobigen.impl.config.reader.interfaces.TemplatesConfigurationInterface;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
@@ -68,7 +67,7 @@ import jakarta.xml.bind.Unmarshaller;
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and converts the
  * information to the working entities
  */
-public class TemplatesConfigurationReader implements TemplatesConfigurationInterface {
+public class TemplatesConfigurationReader {
 
   /**
    * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
@@ -79,7 +78,7 @@ public class TemplatesConfigurationReader implements TemplatesConfigurationInter
   private static final String VARIABLE_CWD = "${cwd}";
 
   /** JAXB root node of the configuration */
-  private TemplateSetConfiguration configNode;
+  private com.devonfw.cobigen.impl.config.entity.io.v4_0.TemplatesConfiguration configNode;
 
   /** Configuration file */
   private Path configFilePath;
@@ -149,7 +148,6 @@ public class TemplatesConfigurationReader implements TemplatesConfigurationInter
    *
    * @return the configured template engine to be used
    */
-  @Override
   public String getTemplateEngine() {
 
     return this.configNode.getTemplateEngine();
@@ -200,7 +198,7 @@ public class TemplatesConfigurationReader implements TemplatesConfigurationInter
         Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
         unmarschaller.setSchema(schema);
         rootNode = unmarschaller.unmarshal(configInputStream);
-        this.configNode = (TemplateSetConfiguration) rootNode;
+        this.configNode = (TemplatesConfiguration) rootNode;
       }
     } catch (JAXBException e) {
       // try getting SAXParseException for better error handling and user support
@@ -237,12 +235,11 @@ public class TemplatesConfigurationReader implements TemplatesConfigurationInter
    * @throws UnknownExpressionException if there is an unknown variable modifier
    * @throws InvalidConfigurationException if there are multiple templates with the same name
    */
-  @Override
-  public Map<String, Template> loadTemplates()
+  public Map<String, Template> loadTemplates(Trigger trigger)
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
     Map<String, Template> templates = new HashMap<>();
-    Templates templatesNode = this.configNode.getTemplates();
+    Templates templatesNode = this.configNode.getTemplate();
     if (templatesNode != null) {
       for (com.devonfw.cobigen.impl.config.entity.io.Template t : templatesNode.getTemplate()) {
         if (templates.get(t.getName()) != null) {
