@@ -98,15 +98,32 @@ public class TemplateSetUpgrader {
 
     Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
     Path parentOfCobigenTemplates = cobigenTemplatesFolder.getParent();
+    Path template_sets = null;
+    Path adapted = null;
+    if (Files.exists(template_sets)) {
+      throw new CobiGenRuntimeException("MACH WAS");
+    }
+    Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
+    if (parentOfCobigenTemplates.endsWith(ConfigurationConstants.TEMPLATES_FOLDER)) {
+      template_sets = parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      adapted = cobigenTemplatesFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).toFile()
+          .renameTo(template_sets.toFile());
+      // rename cobigenTemplatesFolder to backup
+    } else {
+      template_sets = parentOfCobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      parentOfCobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).toFile()
+          .renameTo(template_sets.toFile());
+      adapted = template_sets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    }
 
-    File renamedParentCobigenTemplatesFolder = new File(
-        parentOfCobigenTemplates.getParent() + "/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    parentOfCobigenTemplates.toFile().renameTo(renamedParentCobigenTemplatesFolder);
-
-    Path folderOfContextLocation = CobiGenPaths.getContextLocation(renamedParentCobigenTemplatesFolder.toPath());
-    cobigenTemplatesFolder = CobiGenPaths.getPomLocation(renamedParentCobigenTemplatesFolder.toPath());
+    // if (renamedParentCobigenTemplatesFolder.exists()) {
+    // folderOfContextLocation = CobiGenPaths.getContextLocation(renamedParentCobigenTemplatesFolder.toPath());
+    // cobigenTemplatesFolder = CobiGenPaths.getPomLocation(renamedParentCobigenTemplatesFolder.toPath());
+    // adapted = renamedParentCobigenTemplatesFolder.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    // }
     ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
-    Path adapted = renamedParentCobigenTemplatesFolder.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER);
+
     if (!Files.exists(adapted))
       Files.createDirectory(adapted);
 
