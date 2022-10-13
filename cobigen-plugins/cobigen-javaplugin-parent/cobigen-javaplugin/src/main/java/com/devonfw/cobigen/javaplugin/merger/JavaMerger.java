@@ -93,9 +93,11 @@ public class JavaMerger implements Merger {
     if (patch == null) {
       JavaClass parsedAnnotationClass;
       LocalDate localDate = LocalDate.now();
-      String annotation = "@Generated(value={\"com.devon.CobiGen\"}, date = \"" + localDate + "\")"
-          + "public class Anno{}";
-      try (StringReader reader = new StringReader(annotation)) {
+      // Workaround to be able to create a class which has generated annotation
+      // was required because DefaultJavaAnnotation could not be instantiated properly
+      String temporaryExtractClass = "@Generated(value={\"com.devon.CobiGen\"}, date = \"" + localDate + "\")"
+          + "public class TemporaryClass{}";
+      try (StringReader reader = new StringReader(temporaryExtractClass)) {
         parsedAnnotationClass = JavaParserUtil.getFirstJavaClass(reader);
       } catch (ParseException e) {
         throw new MergeException(base, "The syntax of the generated annotation patch is invalid. Error in line: "
