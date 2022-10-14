@@ -14,6 +14,11 @@ public class MavenSettingsProfileModel {
   MavenSettingsRepositoriesModel repositories;
 
   /**
+   * Represents the activation element in maven's settings.xml
+   */
+  MavenSettingsActivationModel activation;
+
+  /**
    * Id of the profile
    */
   String id;
@@ -50,6 +55,22 @@ public class MavenSettingsProfileModel {
   public void setId(String id) {
 
     this.id = id;
+  }
+
+  /**
+   * @return activation
+   */
+  public MavenSettingsActivationModel getActivation() {
+
+    return this.activation;
+  }
+
+  /**
+   * @param activation new value of {@link #getactivation}.
+   */
+  public void setActivation(MavenSettingsActivationModel activation) {
+
+    this.activation = activation;
   }
 
 }

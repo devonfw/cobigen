@@ -1,7 +1,8 @@
 package com.devonfw.cobigen.retriever.settings.util;
 
-import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProfileModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsServerModel;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -42,19 +44,34 @@ public class MavenSettingsUtil {
 
     List<MavenSettingsRepositoryModel> activeRepos = new LinkedList<>();
 
-    String activeProfiles = "";
-
-    try {
-      activeProfiles = MavenUtil.determineActiveProfiles();
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to read active profiles.", e);
-    }
-
-    activeRepos = getRepositoriesOfActiveProfiles(model, activeProfiles);
+    activeRepos = getRepositoriesOfActiveProfiles(model);
 
     MavenMirrorUtil.injectMirrorUrl(activeRepos, model.getMirrors().getMirrorList());
 
     return activeRepos;
+  }
+
+  /**
+   * Matches the id of the server to the id of the repository that maven tries to connect to
+   *
+   * @param servers from maven's settings.xml
+   * @param repositories (with injected mirrors) from maven's settings.xml
+   * @return a map, with pairs of servers and repositories
+   */
+  public static HashMap<MavenSettingsServerModel, MavenSettingsRepositoryModel> getServerForRepositories(
+      List<MavenSettingsServerModel> servers, List<MavenSettingsRepositoryModel> repositories) {
+
+    HashMap<MavenSettingsServerModel, MavenSettingsRepositoryModel> serverForRepository = new HashMap<>();
+
+    for (MavenSettingsRepositoryModel r : repositories) {
+      for (MavenSettingsServerModel s : servers) {
+        if (r.getId().equals(s.getId())) {
+          serverForRepository.put(s, r);
+          break;
+        }
+      }
+    }
+    return serverForRepository;
   }
 
   /**
@@ -97,21 +114,38 @@ public class MavenSettingsUtil {
 
   /**
    * @param model Class, on which maven's settings.xml have been mapped to
-   * @param string with active profiles
    *
    * @return List of repositories of active profiles in maven's settings.xml
    */
-  private static List<MavenSettingsRepositoryModel> getRepositoriesOfActiveProfiles(MavenSettingsModel model,
-      String activeProfiles) {
+  private static List<MavenSettingsRepositoryModel> getRepositoriesOfActiveProfiles(MavenSettingsModel model) {
 
     LOG.debug("Determining repositories of active profiles of maven's settings.xml");
 
-    List<MavenSettingsRepositoryModel> repositoriesOfActiveProfiles = new LinkedList<>();
+    List<MavenSettingsRepositoryModel> repositoriesOfActiveProfiles = new ArrayList<>();
 
-    List<MavenSettingsProfileModel> profilesList = model.getProfiles().getProfileList();
+    List<MavenSettingsProfileModel> profilesList = new ArrayList<>();
+
+    List<String> activeProfileElementList = new ArrayList<>();
+
+    if (model.getActiveProfiles() != null && model.getActiveProfiles().getActiveProfilesList() != null) {
+      activeProfileElementList = model.getActiveProfiles().getActiveProfilesList();
+    }
+
+    if (model.getProfiles() != null && model.getProfiles().getProfileList() != null) {
+      profilesList = model.getProfiles().getProfileList();
+    }
 
     for (MavenSettingsProfileModel profile : profilesList) {
-      if (profile.getRepositories() != null && activeProfiles.contains(profile.getId())) {
+
+      // Check if profile was activated by the activeProfiles element
+      if (activeProfileElementList.contains(profile.getId()) && profile.getRepositories() != null) {
+        repositoriesOfActiveProfiles.addAll(profile.getRepositories().getRepositoryList());
+        continue;
+      }
+      // Check if profile was activated by default
+      if (profile.getActivation() != null && profile.getRepositories() != null
+          && profile.getActivation().getActiveByDefault() != null
+          && profile.getActivation().getActiveByDefault().equals("true")) {
         repositoriesOfActiveProfiles.addAll(profile.getRepositories().getRepositoryList());
       }
     }

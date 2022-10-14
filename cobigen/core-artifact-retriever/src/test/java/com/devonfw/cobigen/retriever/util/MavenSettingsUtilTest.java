@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,6 +15,8 @@ import org.sonatype.plexus.components.sec.dispatcher.model.SettingsSecurity;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.retriever.settings.util.MavenSettingsUtil;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsServerModel;
 
 /**
  * Test class for MavenSettingsUtil
@@ -61,6 +65,29 @@ public class MavenSettingsUtilTest {
   }
 
   /**
+   * Tests, whether the the activation element of a profile is mapped correctly to a java class
+   */
+  @Test
+  public void testGenerateMavenSettingsModelProfile() {
+
+    String activationStatus = model.getProfiles().getProfileList().get(0).getActivation().getActiveByDefault();
+
+    assertThat(activationStatus).isEqualTo("true");
+  }
+
+  /**
+   * Tests, whether the the activeProfiles element is mapped correctly to a java class
+   */
+  @Test
+  public void testGenerateMavenSettingsModelActiveProfiles() {
+
+    List<String> activeProfiles = model.getActiveProfiles().getActiveProfilesList();
+
+    assertThat(activeProfiles.get(0)).isEqualTo("profile-1");
+    assertThat(activeProfiles.get(1)).isEqualTo("profile-2");
+  }
+
+  /**
    * Tests, whether the the server elements of maven's settings.xml are mapped correctly to a java class
    */
   @Test
@@ -69,18 +96,12 @@ public class MavenSettingsUtilTest {
     String testId = model.getServers().getServerList().get(0).getId();
     String testUsername = model.getServers().getServerList().get(0).getUsername();
     String testPassword = model.getServers().getServerList().get(0).getPassword();
-    String privateKey = model.getServers().getServerList().get(0).getPrivateKey();
-    String passphrase = model.getServers().getServerList().get(0).getPassphrase();
 
     assertThat(testId).isEqualTo("repository");
 
     assertThat(testUsername).isEqualTo("testUsername");
 
     assertThat(testPassword).isEqualTo("testPassword");
-
-    assertThat(privateKey).isEqualTo("testKey");
-
-    assertThat(passphrase).isEqualTo("testPassphrase");
   }
 
   /**
@@ -168,6 +189,26 @@ public class MavenSettingsUtilTest {
     String decodedPassword = MavenSettingsUtil.decryptPassword("{jrdiSuRPexMHvBd66Hsiy3nR1VpCc8TDREVCj+6AYrU=}",
         decodedMasterPassword);
     assertThat(decodedPassword).isEqualTo("thisisapassword");
+  }
+
+  /**
+   * Tests, whether a the matching of servers to repositories is working
+   */
+  @Test
+  public void testGetServerForRepositories() {
+
+    List<MavenSettingsServerModel> servers = model.getServers().getServerList();
+    List<MavenSettingsRepositoryModel> repositories = model.getProfiles().getProfileList().get(0).getRepositories()
+        .getRepositoryList();
+
+    HashMap<MavenSettingsServerModel, MavenSettingsRepositoryModel> result = MavenSettingsUtil
+        .getServerForRepositories(servers, repositories);
+
+    MavenSettingsServerModel serverResult = model.getServers().getServerList().get(0);
+    MavenSettingsRepositoryModel RepositoryResult = result.get(serverResult);
+
+    assertThat(RepositoryResult.getId()).isEqualTo(serverResult.getId());
+
   }
 
   // @Test
