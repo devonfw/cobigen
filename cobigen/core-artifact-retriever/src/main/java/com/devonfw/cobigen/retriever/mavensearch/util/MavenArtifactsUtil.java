@@ -26,8 +26,8 @@ public class MavenArtifactsUtil {
    * @param username to use for authentication
    * @param password to use for authentication
    * @param groupId the groupId to search for
-   * @param proxyAddress TODO
-   * @param proxyPort TODO
+   * @param proxyAddress address of proxy
+   * @param proxyPort port of proxy
    * @return List of artifact download URLS
    */
   public static List<URL> retrieveMavenArtifactsByGroupId(String baseUrl, String username, String password,

@@ -6,13 +6,26 @@
       <id>repository</id>
       <username>testUsername</username>
       <password>testPassword</password>
-      <privateKey>testKey</privateKey>
-      <passphrase>testPassphrase</passphrase>
+    </server>
+    <server>
+      <id>repository2</id>
+      <username>testUsername</username>
+      <password>testPassword</password>
     </server>
   </servers>
 
   <proxies>
-   <proxy>
+    <proxy>
+      <id>example-proxy2</id>
+      <active>false</active>
+      <protocol>https</protocol>
+      <host>proxy.example.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.example.com</nonProxyHosts>
+    </proxy>
+    <proxy>
       <id>example-proxy</id>
       <active>true</active>
       <protocol>http</protocol>
@@ -36,6 +49,9 @@
 
   <profiles>
     <profile>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <id>devonfw-snapshots</id>
       <repositories>
         <repository>
@@ -43,7 +59,37 @@
           <name>devonfw SNAPSHOT releases</name>
           <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+          <id>repository</id>
+          <name>test repository</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>profile-1</id>
+      <repositories>
+        <repository>
+          <id>repository1</id>
+          <name>test repository</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>profile-2</id>
+      <repositories>
+        <repository>
+          <id>repository2</id>
+          <name>test repository</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
       </repositories>
     </profile>
   </profiles>
+
+  <activeProfiles>
+    <activeProfile>profile-1</activeProfile>
+    <activeProfile>profile-3</activeProfile>
+  </activeProfiles>
 </settings>

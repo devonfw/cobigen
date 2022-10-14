@@ -40,6 +40,10 @@ public class MavenMirrorUtil {
 
     LOG.info("Injecting mirror urls into repositories");
 
+    if (mirrors == null || repositories == null) {
+      return;
+    }
+
     for (MavenSettingsRepositoryModel r : repositories) {
       for (MavenSettingsMirrorModel m : mirrors) {
         if (matchPattern(r, m.getMirrorOf())) {

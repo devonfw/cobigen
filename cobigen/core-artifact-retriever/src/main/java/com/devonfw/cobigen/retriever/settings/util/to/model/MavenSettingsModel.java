@@ -31,6 +31,11 @@ public class MavenSettingsModel {
   MavenSettingsProxiesModel proxies;
 
   /**
+   * Represents the activeProfiles element in maven's settings.xml
+   */
+  MavenSettingsActiveProfilesModel activeProfiles;
+
+  /**
    * @return profiles
    */
   public MavenSettingsProfilesModel getProfiles() {
@@ -96,6 +101,23 @@ public class MavenSettingsModel {
   public void setProxies(MavenSettingsProxiesModel proxies) {
 
     this.proxies = proxies;
+  }
+
+  /**
+   * @return activeProfiles
+   */
+  public MavenSettingsActiveProfilesModel getActiveProfiles() {
+
+    return this.activeProfiles;
+  }
+
+  /**
+   * @param activeProfiles new value of {@link #getactiveProfiles}.
+   */
+  @XmlElement
+  public void setActiveProfiles(MavenSettingsActiveProfilesModel activeProfiles) {
+
+    this.activeProfiles = activeProfiles;
   }
 
 }

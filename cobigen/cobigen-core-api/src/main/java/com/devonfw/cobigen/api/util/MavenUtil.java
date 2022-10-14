@@ -207,29 +207,6 @@ public class MavenUtil {
   }
 
   /**
-   * @return active build profiles
-   * @throws IOException
-   */
-  public static String determineActiveProfiles() throws IOException {
-
-    LOG.info("Determine active build profiles");
-
-    String activeProfiles = "";
-    String activeProfilePath = "src/main/resources/activeProfiles.txt";
-
-    Files.createFile(Paths.get(activeProfilePath));
-
-    runCommand(SystemUtils.getUserDir().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
-        "help:active-profiles", "-Doutput=" + activeProfilePath));
-
-    activeProfiles = Files.readString(Paths.get(activeProfilePath));
-
-    Files.deleteIfExists(Paths.get(activeProfilePath));
-
-    return activeProfiles;
-  }
-
-  /**
    * Execute any command in the given execution directory with the given arguments
    *
    * @param execDir the execution directory the command should run in
