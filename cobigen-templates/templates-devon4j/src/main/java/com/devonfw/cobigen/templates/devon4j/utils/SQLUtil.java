@@ -307,6 +307,40 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
+   * Returns the name of a field when the @Column annotation sets the name option that name will be used.
+   *
+   * @param field the current pojo field
+   * @return {@link String}
+   */
+  public String getColumnName(Field field) {
+
+    if (field == null) {
+      throw new IllegalAccessError(
+          "Field object is null. Cannot generate template as it might obviously depend on reflection.");
+    }
+    return field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).name().isBlank()
+        ? field.getAnnotation(Column.class).name()
+        : field.getName();
+  }
+
+  /**
+   * Returns the name of a method when the @Column annotation sets the name option that name will be used.
+   *
+   * @param method the current method
+   * @return {@link String}
+   */
+  public String getColumnName(Method method) {
+
+    if (method == null) {
+      throw new IllegalAccessError(
+          "Method object is null. Cannot generate template as it might obviously depend on reflection.");
+    }
+    return method.isAnnotationPresent(Column.class) && !method.getAnnotation(Column.class).name().isBlank()
+        ? method.getAnnotation(Column.class).name()
+        : method.getName();
+  }
+
+  /**
    * Get the primary key and its type of a given Entity class
    *
    * @param className {@link String} full qualified class name
@@ -327,11 +361,7 @@ public class SQLUtil extends CommonUtil {
 
         if (field.isAnnotationPresent(Id.class)) {
 
-          columnName = field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).name().isBlank()
-              ? field.getAnnotation(Column.class).name()
-              : field.getName();
-
-          return field.getType().getCanonicalName() + "," + columnName;
+          return field.getType().getCanonicalName() + "," + getColumnName(field);
         } else {
           Optional<Method> getterOptional = Arrays.stream(entityClass.getMethods())
               .filter(m -> m.getName()
@@ -342,11 +372,7 @@ public class SQLUtil extends CommonUtil {
 
             Method getter = getterOptional.get();
 
-            columnName = getter.isAnnotationPresent(Column.class)
-                && !getter.getAnnotation(Column.class).name().isBlank() ? getter.getAnnotation(Column.class).name()
-                    : getter.getName();
-
-            return getter.getReturnType().getCanonicalName() + "," + columnName;
+            return getter.getReturnType().getCanonicalName() + "," + getColumnName(getter);
           }
         }
       }
@@ -365,12 +391,13 @@ public class SQLUtil extends CommonUtil {
    *
    * @param field the current pojo field
    * @return HashMap containing name and type of a column
-   * @throws ClassNotFoundException
-   * @throws IllegalArgumentException
    */
-  public HashMap<String, String> getPrimaryKeyStatement(Field field)
-      throws IllegalArgumentException, ClassNotFoundException {
+  public HashMap<String, String> getPrimaryKeyStatement(Field field) {
 
+    if (field == null) {
+      throw new IllegalAccessError(
+          "Field object is null. Cannot generate template as it might obviously depend on reflection.");
+    }
     String name = getColumnName(field);
     HashMap<String, String> column = getPrimaryKeyStatement(field, name);
     return column;
@@ -382,12 +409,17 @@ public class SQLUtil extends CommonUtil {
    * @param field the current pojo field
    * @param name the column name related to that field
    * @return HashMap containing name and type of a column
-   * @throws ClassNotFoundException
-   * @throws IllegalArgumentException
    */
-  public HashMap<String, String> getPrimaryKeyStatement(Field field, String name)
-      throws IllegalArgumentException, ClassNotFoundException {
+  public HashMap<String, String> getPrimaryKeyStatement(Field field, String name) {
 
+    if (field == null) {
+      throw new IllegalAccessError(
+          "Field object is null. Cannot generate template as it might obviously depend on reflection.");
+    }
+
+    if (name == null || name.isBlank()) {
+      name = getColumnName(field);
+    }
     String type = getSimpleSQLtype(field);
 
     if (!type.contains("NOT NULL")) {
@@ -425,19 +457,6 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Returns the name of a field. When the @Column annotation sets the name option that name will be used.
-   *
-   * @param field the current pojo field
-   * @return {@link String}
-   */
-  public String getColumnName(Field field) {
-
-    return field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).name().isBlank()
-        ? field.getAnnotation(Column.class).name()
-        : field.getName();
-  }
-
-  /**
    * Helper method to build a hash map for foreign key value pairs
    *
    * @param name name of the foreign key
@@ -455,6 +474,24 @@ public class SQLUtil extends CommonUtil {
       }
     };
     return foreignKeyMap;
+  }
+
+  /**
+   * Get the name of a @JoinColumn or fall back to a default in name in case the name option is not set
+   *
+   * @param field current pojo class
+   * @param fallBack String for fallback option
+   * @return {@link String} Column name
+   */
+  public String getForeignKeyName(Field field, String fallBack) {
+
+    String name;
+    if (field.isAnnotationPresent(JoinColumn.class) && !field.getAnnotation(JoinColumn.class).name().isBlank()) {
+      name = field.getAnnotation(JoinColumn.class).name();
+    } else {
+      name = field.getName() + "_" + fallBack;
+    }
+    return name;
   }
 
   /**
@@ -586,24 +623,6 @@ public class SQLUtil extends CommonUtil {
       LOG.error("{}: Could not find {}", e.getMessage(), field.getType().getCanonicalName());
     }
     return null;
-  }
-
-  /**
-   * Get the name of a @JoinColumn or fall back to a default in name in case the name option is not set
-   *
-   * @param field current pojo class
-   * @param fallBack String for fallback option
-   * @return {@link String} Column name
-   */
-  public String getForeignKeyName(Field field, String fallBack) {
-
-    String name;
-    if (field.isAnnotationPresent(JoinColumn.class) && !field.getAnnotation(JoinColumn.class).name().isBlank()) {
-      name = field.getAnnotation(JoinColumn.class).name();
-    } else {
-      name = field.getName() + "_" + fallBack;
-    }
-    return name;
   }
 
 }

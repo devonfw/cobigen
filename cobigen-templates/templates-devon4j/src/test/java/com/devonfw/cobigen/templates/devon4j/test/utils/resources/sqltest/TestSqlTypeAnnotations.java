@@ -89,4 +89,29 @@ public class TestSqlTypeAnnotations {
     }
 
   };
+
+  @Column(name = "FIELD_AT_COLUMN", length = 50, nullable = false)
+  Integer testGetColumnNameFieldAtColumn;
+
+  @Column(length = 50, nullable = false)
+  Integer testGetColumnNameFieldAtColumnBlank;
+
+  Integer testGetColumnNameFieldAtColumnMissing;
+
+  @Column(name = "METHOD_AT_COLUMN", length = 50, nullable = false)
+  public Integer getTestGetColumnNameMethodAtColumn() {
+
+    return this.testGetColumnNameFieldAtColumn;
+  }
+
+  @Column(length = 50, nullable = false)
+  public Integer getTestGetColumnNameMethodAtColumnBlank() {
+
+    return this.testGetColumnNameFieldAtColumnBlank;
+  }
+
+  public Integer getTestGetColumnNameMethodAtColumnMissing() {
+
+    return this.testGetColumnNameFieldAtColumnMissing;
+  }
 }

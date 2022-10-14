@@ -5,6 +5,8 @@ import static org.junit.Assert.assertThrows;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 
 import org.assertj.core.api.Condition;
 import org.junit.BeforeClass;
@@ -12,6 +14,11 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.TestCat;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.TestSqlTypeAnnotations;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryfive;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryfour;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryone;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primarythree;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primarytwo;
 import com.devonfw.cobigen.templates.devon4j.utils.SQLUtil;
 
 /**
@@ -36,15 +43,30 @@ public class SQLUtilTest {
   // Field test fields for lookup comparison
   private static Field testResultLegs;
 
+  // Class for primary keys
+  private static Class<?> testPrimaryOne, testPrimaryTwo, testPrimaryThree, testPrimaryFour, testPrimaryFive;
+
+  // Field for primary keys
+  private static Field fieldTestAtId, fieldTestAtIdAtGeneratedValue;
+
+  // Simple fields
+  private static Field fieldGetColumnNameFieldAtColumn, fieldGetColumnNameFieldAtColumnBlank,
+      fieldGetColumnNameFieldAtColumnMissing;
+
+  // Simple methods
+  private static Method methodGetColumnNameMethodAtColumn, methodGetColumnNameMethodAtColumnBlank,
+      methodGetColumnNameMethodAtColumnMissing;
+
   /**
    * Get all Classes for testing
    *
    * @throws SecurityException
    * @throws NoSuchFieldException
+   * @throws NoSuchMethodException
    */
   @SuppressWarnings("javadoc")
   @BeforeClass
-  public static void beforeAll() throws NoSuchFieldException, SecurityException {
+  public static void beforeAll() throws NoSuchFieldException, SecurityException, NoSuchMethodException {
 
     // Annotation class
     testSqlTypeAnnotations = new TestSqlTypeAnnotations().getClass();
@@ -69,12 +91,31 @@ public class SQLUtilTest {
         .getDeclaredField("testAnonymousEntityAtTableNameDefault");
     fieldTestEntityAtTableNull = testSqlTypeAnnotations.getDeclaredField("testEntityAtTableNull");
     fieldTestAnonymousEntityAtTableNull = testSqlTypeAnnotations.getDeclaredField("testAnonymousEntityAtTableNull");
+    fieldGetColumnNameFieldAtColumn = testSqlTypeAnnotations.getDeclaredField("testGetColumnNameFieldAtColumn");
+    fieldGetColumnNameFieldAtColumnBlank = testSqlTypeAnnotations
+        .getDeclaredField("testGetColumnNameFieldAtColumnBlank");
+    fieldGetColumnNameFieldAtColumnMissing = testSqlTypeAnnotations
+        .getDeclaredField("testGetColumnNameFieldAtColumnMissing");
+    methodGetColumnNameMethodAtColumn = testSqlTypeAnnotations.getDeclaredMethod("getTestGetColumnNameMethodAtColumn");
+    methodGetColumnNameMethodAtColumnBlank = testSqlTypeAnnotations
+        .getDeclaredMethod("getTestGetColumnNameMethodAtColumnBlank");
+    methodGetColumnNameMethodAtColumnMissing = testSqlTypeAnnotations
+        .getDeclaredMethod("getTestGetColumnNameMethodAtColumnMissing");
     // Class and Field lookup class
     testTestCatClass = new TestCat("Molly", 15).getClass();
 
     // Field test fields for lookup comparison
     testResultLegs = testTestCatClass.getDeclaredField("legs");
 
+    // Annotation class primary key
+    testPrimaryOne = new Primaryone().getClass();
+    testPrimaryTwo = new Primarytwo().getClass();
+    testPrimaryThree = new Primarythree().getClass();
+    testPrimaryFour = new Primaryfour().getClass();
+    testPrimaryFive = new Primaryfive().getClass();
+    // Annotation fields primary key
+    fieldTestAtId = testPrimaryOne.getDeclaredField("id");
+    fieldTestAtIdAtGeneratedValue = testPrimaryTwo.getDeclaredField("id");
   }
 
   /**
@@ -389,7 +430,7 @@ public class SQLUtilTest {
   }
 
   /**
-   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} throws the Exception .
+   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} throws the Exception IllegalAccessError.
    *
    * @throws Exception
    */
@@ -400,6 +441,74 @@ public class SQLUtilTest {
       new SQLUtil().getEntityTableName(null);
     });
 
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getColumnName(Field)} returns the correct string based on the value in
+   * {@linkplain javax.persistence.Column#name() name } of the provided annotation
+   * {@linkplain javax.persistence.Column @Column}.
+   */
+  @Test
+  public void testFieldGetColumnNameAtColumn() {
+
+    assertThat(new SQLUtil().getColumnName(fieldGetColumnNameFieldAtColumn)).isEqualTo("FIELD_AT_COLUMN");
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getColumnName(Field)} returns the correct string when the option
+   * {@linkplain javax.persistence.Column#name() name } of the provided annotation
+   * {@linkplain javax.persistence.Column @Column} is defaulting to blank.
+   */
+  @Test
+  public void testFieldGetColumnNameAtColumnBlank() {
+
+    assertThat(new SQLUtil().getColumnName(fieldGetColumnNameFieldAtColumnBlank))
+        .isEqualTo("testGetColumnNameFieldAtColumnBlank");
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getColumnName(Field)} returns the correct string when the provided annotation
+   * {@linkplain javax.persistence.Column @Column} is missing.
+   */
+  @Test
+  public void testFieldGetColumnNameAtColumnMissing() {
+
+    assertThat(new SQLUtil().getColumnName(fieldGetColumnNameFieldAtColumnMissing))
+        .isEqualTo("testGetColumnNameFieldAtColumnMissing");
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getColumnName(Method)} returns the correct string based on the value in
+   * {@linkplain javax.persistence.Column#name() name } of the provided annotation
+   * {@linkplain javax.persistence.Column @Column}.
+   */
+  @Test
+  public void testMethodGetColumnNameAtColumn() {
+
+    assertThat(new SQLUtil().getColumnName(methodGetColumnNameMethodAtColumn)).isEqualTo("METHOD_AT_COLUMN");
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getColumnName(Method)} returns the correct string when the option
+   * {@linkplain javax.persistence.Column#name() name } of the provided annotation
+   * {@linkplain javax.persistence.Column @Column} is defaulting to blank.
+   */
+  @Test
+  public void testMethodGetColumnNameAtColumnBlank() {
+
+    assertThat(new SQLUtil().getColumnName(methodGetColumnNameMethodAtColumnBlank))
+        .isEqualTo("getTestGetColumnNameMethodAtColumnBlank");
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getColumnName(Method)} returns the correct string when the provided annotation
+   * {@linkplain javax.persistence.Column @Column} is missing.
+   */
+  @Test
+  public void testMethodGetColumnNameAtColumnMissing() {
+
+    assertThat(new SQLUtil().getColumnName(methodGetColumnNameMethodAtColumnMissing))
+        .isEqualTo("getTestGetColumnNameMethodAtColumnMissing");
   }
 
   /**
@@ -506,6 +615,70 @@ public class SQLUtilTest {
       new SQLUtil()
           .getPrimaryKey("com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryfive");
     });
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} returns the correct HashMap values.
+   *
+   */
+  @Test
+  public void testGetPrimaryKeyStatementAtId() {
+
+    HashMap<String, String> columnMap = new HashMap<String, String>() {
+      {
+        put("name", "id");
+        put("type", "BIGINT NOT NULL");
+      }
+    };
+    assertThat(new SQLUtil().getPrimaryKeyStatement(fieldTestAtId)).isEqualTo(columnMap);
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} returns the correct HashMap values.
+   *
+   */
+  @Test
+  public void testGetPrimaryKeyStatementAtIdAtGeneratedValue() {
+
+    HashMap<String, String> columnMap = new HashMap<String, String>() {
+      {
+        put("name", "TEST_ID");
+        put("type", "BIGINT NOT NULL AUTO INCREMENT");
+      }
+    };
+    assertThat(new SQLUtil().getPrimaryKeyStatement(fieldTestAtIdAtGeneratedValue)).isEqualTo(columnMap);
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} throws the IllegalAccessError when the field is null.
+   */
+  @Test
+  public void testGetPrimaryKeyStatementAtIdThrowsIllegalAccessError() {
+
+    assertThrows(IllegalAccessError.class, () -> {
+      new SQLUtil().getPrimaryKeyStatement(null);
+    });
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} returns the correct HashMap values even if the name was
+   * not provided.
+   *
+   */
+  @Test
+  public void testGetPrimaryKeyStatementNameNull() {
+
+    HashMap<String, String> columnMap = new HashMap<String, String>() {
+      {
+        put("name", "TEST_ID");
+        put("type", "BIGINT NOT NULL AUTO INCREMENT");
+      }
+    };
+    assertThat(new SQLUtil().getPrimaryKeyStatement(fieldTestAtIdAtGeneratedValue, null)).isEqualTo(columnMap);
 
   }
 }

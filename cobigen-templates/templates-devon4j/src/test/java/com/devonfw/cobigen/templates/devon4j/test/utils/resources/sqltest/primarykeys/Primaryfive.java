@@ -6,4 +6,9 @@ package com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.prima
  */
 public class Primaryfive {
   private Long id;
+
+  public Long getId() {
+
+    return this.id;
+  }
 }
