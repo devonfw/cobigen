@@ -378,11 +378,134 @@ public class SQLUtilTest {
    * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} returns the table name of the provided entity class that
    * was not annotated with the {@linkplain javax.persistence.Table @Table} annotation even when the provided class is
    * an anonymous class.
+   *
+   * @throws Exception
    */
   @Test
   public void testGetEntityTableNameAtTableNNullSuccessAnonymousClasses() throws Exception {
 
     assertThat(new SQLUtil().getEntityTableName(fieldTestAnonymousEntityAtTableNull)).isEqualTo("TestNotSoSimple");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getEntityTableName(Field)} throws the Exception .
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGetEntityTableNameThrowClassNotFoundExceptions() throws Exception {
+
+    assertThrows(IllegalAccessError.class, () -> {
+      new SQLUtil().getEntityTableName(null);
+    });
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKey(String)} returns the correct string when a
+   * {@linkplain java.lang.reflect.Field field} of the provided class is annotated with the
+   * {@linkplain javax.persistence.Id @Id} annotation.
+   *
+   */
+  @Test
+  public void testGetPrimaryKeyAtIdSuccess() {
+
+    assertThat(new SQLUtil()
+        .getPrimaryKey("com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryone"))
+            .isEqualTo("java.lang.Long,id");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKey(String)} returns the correct string when a
+   * {@linkplain java.lang.reflect.Field field} of the provided class is annotated with the
+   * {@linkplain javax.persistence.Id @Id} annotation and the option and {@linkplain javax.persistence.Column#name()
+   * name} from {@linkplain javax.persistence.Column @Column}.
+   *
+   */
+  @Test
+  public void testGetPrimaryKeyAtIdAtColumnSuccess() {
+
+    assertThat(new SQLUtil()
+        .getPrimaryKey("com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primarytwo"))
+            .isEqualTo("java.lang.Long,TEST_ID");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKey(String)} returns the correct string when a method of the provided class
+   * is annotated with the {@linkplain javax.persistence.Id @Id} annotation.
+   *
+   */
+  @Test
+  public void testGetPrimaryKeyMethodAtIdSuccess() {
+
+    assertThat(new SQLUtil()
+        .getPrimaryKey("com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primarythree"))
+            .isEqualTo("java.lang.Long,getTestId");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKey(String)} returns the correct string when a method of the provided class
+   * is annotated with the {@linkplain javax.persistence.Id @Id} annotation and the option and
+   * {@linkplain javax.persistence.Column#name() name} from {@linkplain javax.persistence.Column @Column}.
+   */
+  @Test
+  public void testGetPrimaryKeyMethodAtIdAtColumnSuccess() {
+
+    assertThat(new SQLUtil()
+        .getPrimaryKey("com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryfour"))
+            .isEqualTo("java.lang.Long,TEST_ID");
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKey(String)} throws the IllegalArgumentException when the provided class
+   * doesn't exist .
+   *
+   * @throws IllegalArgumentException when non existing class
+   */
+  @Test
+  public void testGetPrimaryKeyNoClass() throws IllegalArgumentException {
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      new SQLUtil()
+          .getPrimaryKey("com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.NoClass");
+    });
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKey(String)} throws the IllegalArgumentError when the provided class doesn't
+   * exist .
+   *
+   * @throws IllegalAccessError when class object is null
+   */
+  @Test
+  public void testGetPrimaryKeyStringNull() throws IllegalAccessError {
+
+    assertThrows(IllegalAccessError.class, () -> {
+      new SQLUtil().getPrimaryKey(null);
+    });
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKey(String)} throws the IllegalArgumentError when the provided class doesn't
+   * have a {@linkplain java.lang.reflect.Field field} or a method annotated with the
+   * {@linkplain javax.persistence.Id @Id} annotation.
+   *
+   * @throws IllegalAccessError when class object is null
+   */
+  @Test
+  public void testGetPrimaryKeyNoFieldNoMethod() throws IllegalAccessError {
+
+    assertThrows(IllegalAccessError.class, () -> {
+      new SQLUtil()
+          .getPrimaryKey("com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryfive");
+    });
 
   }
 }

@@ -276,6 +276,10 @@ public class SQLUtil extends CommonUtil {
    */
   public String getEntityTableName(Field field) throws ClassNotFoundException {
 
+    if (field == null) {
+      throw new IllegalAccessError(
+          "Field object is null. Cannot generate template as it might obviously depend on reflection.");
+    }
     if (!field.getType().getCanonicalName().endsWith("Entity")) {
       throw new IllegalAccessError("The field " + field.getName()
           + " is not an entity class. Cannot generate template as it might obviously depend on reflection.");
@@ -296,8 +300,8 @@ public class SQLUtil extends CommonUtil {
       }
 
     } catch (ClassNotFoundException e) {
-      throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+      throw new IllegalArgumentException(
+          "Class path doesn't exist. Cannot generate template as it might obviously depend on reflection.", e);
     }
 
   }
@@ -310,14 +314,24 @@ public class SQLUtil extends CommonUtil {
    */
   public String getPrimaryKey(String className) {
 
+    if (className == null) {
+      throw new IllegalAccessError(
+          "The provides class name can not be null. Cannot generate template as it might obviously depend on reflection.");
+    }
     try {
       Class<?> entityClass = Class.forName(className);
       List<Field> fields = new ArrayList<>();
       getAllFields(fields, entityClass);
+      String columnName = "";
       for (Field field : fields) {
+
         if (field.isAnnotationPresent(Id.class)) {
-          return field.getType().getCanonicalName() + ","
-              + (field.isAnnotationPresent(Column.class) ? field.getAnnotation(Column.class).name() : field.getName());
+
+          columnName = field.isAnnotationPresent(Column.class) && !field.getAnnotation(Column.class).name().isBlank()
+              ? field.getAnnotation(Column.class).name()
+              : field.getName();
+
+          return field.getType().getCanonicalName() + "," + columnName;
         } else {
           Optional<Method> getterOptional = Arrays.stream(entityClass.getMethods())
               .filter(m -> m.getName()
@@ -325,18 +339,24 @@ public class SQLUtil extends CommonUtil {
                   && m.isAnnotationPresent(Id.class))
               .findFirst();
           if (getterOptional.isPresent()) {
+
             Method getter = getterOptional.get();
-            return getter.getReturnType().getCanonicalName() + ","
-                + (getter.isAnnotationPresent(Column.class) ? getter.getAnnotation(Column.class).name()
-                    : field.getName());
+
+            columnName = getter.isAnnotationPresent(Column.class)
+                && !getter.getAnnotation(Column.class).name().isBlank() ? getter.getAnnotation(Column.class).name()
+                    : getter.getName();
+
+            return getter.getReturnType().getCanonicalName() + "," + columnName;
           }
         }
       }
     } catch (ClassNotFoundException e) {
-      LOG.error("{}: Could not find {}", e.getMessage(), className);
+      throw new IllegalArgumentException(
+          "Class path doesn't exist. Cannot generate template as it might obviously depend on reflection.", e);
     }
-    LOG.error("Could not find the field or getter with @Id annotated");
-    return null;
+
+    throw new IllegalAccessError(
+        "Could not find the field or getter with @Id annotated. Cannot generate template as it might obviously depend on reflection.");
   }
 
   /**

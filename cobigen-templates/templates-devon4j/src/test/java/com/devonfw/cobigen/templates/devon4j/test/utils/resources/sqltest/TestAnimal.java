@@ -1,6 +1,8 @@
 package com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +14,7 @@ import jakarta.validation.constraints.Size;
  */
 public class TestAnimal {
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   Long id;
 
   @Column(name = "ANIMAL_NAME", length = 50, nullable = false)
