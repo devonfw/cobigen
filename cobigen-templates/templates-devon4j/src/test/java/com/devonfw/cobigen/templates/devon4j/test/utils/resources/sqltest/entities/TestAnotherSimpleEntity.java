@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotNull;
 public class TestAnotherSimpleEntity {
 
   @Id
-  private Long id;
+  private Long simpleEntityId;
 
   @Column(name = "TEST_SIMPLE_NAME", length = 50, nullable = false)
   private String name;

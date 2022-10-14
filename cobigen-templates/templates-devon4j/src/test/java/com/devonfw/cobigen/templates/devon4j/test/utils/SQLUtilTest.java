@@ -14,6 +14,9 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.TestCat;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.TestSqlTypeAnnotations;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestAnotherSimpleEntity;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestNotSoSimpleEntity;
+import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestSimpleEntity;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryfive;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryfour;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.primarykeys.Primaryone;
@@ -56,6 +59,13 @@ public class SQLUtilTest {
   // Simple methods
   private static Method methodGetColumnNameMethodAtColumn, methodGetColumnNameMethodAtColumnBlank,
       methodGetColumnNameMethodAtColumnMissing;
+
+  // Foreign Keys
+  // Classes
+  private static Class<?> testAnotherSimpleEntity, testNotSoSimpleEntity, testSimpleEntity;
+
+  // Fields
+  private static Field fieldSimpleEntity;
 
   /**
    * Get all Classes for testing
@@ -116,6 +126,14 @@ public class SQLUtilTest {
     // Annotation fields primary key
     fieldTestAtId = testPrimaryOne.getDeclaredField("id");
     fieldTestAtIdAtGeneratedValue = testPrimaryTwo.getDeclaredField("id");
+
+    // Foreign key
+    // Classes
+    testAnotherSimpleEntity = new TestAnotherSimpleEntity("TestAnotherSimple", 20).getClass();
+    testNotSoSimpleEntity = new TestNotSoSimpleEntity("TestNotSoSimple", 18).getClass();
+    testSimpleEntity = new TestSimpleEntity("TestSimple", 15).getClass();
+    // Fields
+    fieldSimpleEntity = testSimpleEntity.getDeclaredField("simpleEntity");
   }
 
   /**
@@ -679,6 +697,18 @@ public class SQLUtilTest {
       }
     };
     assertThat(new SQLUtil().getPrimaryKeyStatement(fieldTestAtIdAtGeneratedValue, null)).isEqualTo(columnMap);
+
+  }
+
+  /**
+   * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} returns the correct HashMap values even if the name was
+   * not provided.
+   *
+   */
+  @Test
+  public void testgetForeignKeyNameWithAnnotations() {
+
+    assertThat(new SQLUtil().getForeignKeyName(fieldSimpleEntity, "test")).isEqualTo("");
 
   }
 }

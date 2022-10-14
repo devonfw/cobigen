@@ -2,7 +2,10 @@ package com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entit
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import jakarta.validation.constraints.NotNull;
@@ -25,6 +28,10 @@ public class TestSimpleEntity {
   @Column(name = "TEST_SIMPLE_AGE", length = 50)
   @NotNull
   private Integer age;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "simpleEntityId")
+  private TestAnotherSimpleEntity simpleEntity;
 
   /**
    * The constructor.

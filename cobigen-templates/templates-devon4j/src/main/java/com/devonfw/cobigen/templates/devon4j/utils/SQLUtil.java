@@ -485,6 +485,15 @@ public class SQLUtil extends CommonUtil {
    */
   public String getForeignKeyName(Field field, String fallBack) {
 
+    if (field == null) {
+      throw new IllegalAccessError(
+          "Field object is null. Cannot generate template as it might obviously depend on reflection.");
+    }
+
+    if (fallBack == null || fallBack.isBlank()) {
+      fallBack = "default";
+    }
+
     String name;
     if (field.isAnnotationPresent(JoinColumn.class) && !field.getAnnotation(JoinColumn.class).name().isBlank()) {
       name = field.getAnnotation(JoinColumn.class).name();
@@ -492,83 +501,6 @@ public class SQLUtil extends CommonUtil {
       name = field.getName() + "_" + fallBack;
     }
     return name;
-  }
-
-  /**
-   * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
-   * field is an entity. This function defaults the {@link String} name parameter of
-   * {@link SQLUtil#getForeignKeyData(Field, String)}
-   *
-   * @param field the pojo field
-   * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname} or null
-   *
-   * @name {@link String} the name of the foreign key
-   * @table {@link String} the table which is referenced by the foreign key
-   * @columnname {@link String} the column name of the referenced with @id annotated variable
-   */
-  public HashMap<String, String> getForeignKeyData(Field field) {
-
-    // Assumes @JoinColumn is present
-    if (field.isAnnotationPresent(JoinColumn.class)) {
-      String[] fkDeclaration = getForeignKeyStatement(field).split(",");
-      String name = getForeignKeyName(field, fkDeclaration[0]);
-
-      return getForeignKeyData(field, name);
-    }
-
-    return null;
-  }
-
-  /**
-   * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
-   * field is an entity.
-   *
-   * @param field the pojo field
-   * @param name the name of the foreign key
-   * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname} or null
-   *
-   * @name {@link String} the name of the foreign key
-   * @table {@link String} the table which is referenced by the foreign key
-   * @columnname {@link String} the column name of the referenced with @id annotated variable
-   */
-  public HashMap<String, String> getForeignKeyData(Field field, String name) {
-
-    // Assumes @JoinColumn is present
-    if (field.isAnnotationPresent(JoinColumn.class)) {
-      String[] fkDeclaration = getForeignKeyStatement(field).split(",");
-      String tableName = getForeignKeyTableName(field);
-      HashMap<String, String> foreignKeyData = fkMapBuild(name, tableName, fkDeclaration[0]);
-
-      return foreignKeyData;
-    }
-
-    return null;
-  }
-
-  /**
-   * Get the table for the foreign key that the current field was annotated with
-   *
-   * @param field current pojo class
-   * @return table name as a {@link String} or null
-   */
-  public String getForeignKeyTableName(Field field) {
-
-    try {
-      String tableName;
-      if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
-        tableName = getEntityTableName(field);
-      } else {
-        // apply regex filter
-        tableName = field.getType().getCanonicalName();
-      }
-
-      return tableName;
-    } catch (ClassNotFoundException e) {
-      throw new IllegalAccessError(
-          "It is not possible to look for a non existing field. Cannot generate template as it might obviously depend on reflection.");
-
-    }
-
   }
 
   /**
@@ -602,9 +534,6 @@ public class SQLUtil extends CommonUtil {
       } else {
         // No information was provided and we are looking for the primary key manually
         String[] pkReceived = getPrimaryKey(field.getType().getCanonicalName()).split(",");
-        if (pkReceived.equals(null)) {
-          return null;
-        }
         columnName = pkReceived[1];
 
       }
@@ -613,16 +542,94 @@ public class SQLUtil extends CommonUtil {
         Field foreignField = foreignEntityClass.getDeclaredField(columnName);
         type = getSimpleSQLtype(foreignField);
       } catch (NoSuchFieldException e) {
-        LOG.error("{}: Could not find the field", e.getMessage());
-        return null;
+        throw new IllegalAccessError(
+            "Couldn't find the foreign key field. Cannot generate template as it might obviously depend on reflection.");
       }
 
       return columnName + "," + type;
 
     } catch (ClassNotFoundException e) {
-      LOG.error("{}: Could not find {}", e.getMessage(), field.getType().getCanonicalName());
+      throw new IllegalAccessError(
+          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
-    return null;
+  }
+
+  /**
+   * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
+   * field is an entity. This function defaults the {@link String} name parameter of
+   * {@link SQLUtil#getForeignKeyData(Field, String)}
+   *
+   * @param field the pojo field
+   * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname} or null
+   *
+   * @name {@link String} the name of the foreign key
+   * @table {@link String} the table which is referenced by the foreign key
+   * @columnname {@link String} the column name of the referenced with @id annotated variable
+   */
+  public HashMap<String, String> getForeignKeyData(Field field) {
+
+    // Assumes @JoinColumn is present
+    if (field.isAnnotationPresent(JoinColumn.class)) {
+      String[] fkDeclaration = getForeignKeyStatement(field).split(",");
+      String name = getForeignKeyName(field, fkDeclaration[0]);
+
+      return getForeignKeyData(field, name);
+    }
+
+    throw new IllegalAccessError(
+        "The ForeignKeyData couldn't be generated. Cannot generate template as it might obviously depend on reflection.");
+  }
+
+  /**
+   * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
+   * field is an entity.
+   *
+   * @param field the pojo field
+   * @param name the name of the foreign key
+   * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname} or null
+   *
+   * @name {@link String} the name of the foreign key
+   * @table {@link String} the table which is referenced by the foreign key
+   * @columnname {@link String} the column name of the referenced with @id annotated variable
+   */
+  public HashMap<String, String> getForeignKeyData(Field field, String name) {
+
+    // Assumes @JoinColumn is present
+    if (field.isAnnotationPresent(JoinColumn.class)) {
+      String[] fkDeclaration = getForeignKeyStatement(field).split(",");
+      String tableName = getForeignKeyTableName(field);
+      HashMap<String, String> foreignKeyData = fkMapBuild(name, tableName, fkDeclaration[0]);
+
+      return foreignKeyData;
+    }
+
+    throw new IllegalAccessError(
+        "The ForeignKeyData couldn't be generated. Cannot generate template as it might obviously depend on reflection.");
+  }
+
+  /**
+   * Get the table for the foreign key that the current field was annotated with
+   *
+   * @param field current pojo class
+   * @return table name as a {@link String} or null
+   */
+  public String getForeignKeyTableName(Field field) {
+
+    try {
+      String tableName;
+      if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+        tableName = getEntityTableName(field);
+      } else {
+        tableName = getSimpleJavaTypeString(field);
+      }
+
+      return tableName;
+    } catch (ClassNotFoundException e) {
+      throw new IllegalAccessError(
+          "It is not possible to look for a non existing field. Cannot generate template as it might obviously depend on reflection.");
+
+    }
+
   }
 
 }
