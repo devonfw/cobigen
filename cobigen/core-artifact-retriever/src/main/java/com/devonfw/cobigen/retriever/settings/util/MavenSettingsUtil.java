@@ -16,9 +16,9 @@ import org.sonatype.plexus.components.sec.dispatcher.SecUtil;
 import org.sonatype.plexus.components.sec.dispatcher.model.SettingsSecurity;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProfileModel;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProxyModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsServerModel;
 
@@ -36,11 +36,12 @@ public class MavenSettingsUtil {
   private static final Logger LOG = LoggerFactory.getLogger(MavenSettingsUtil.class);
 
   /**
+   * @param mavenSettings maven's settings.xml as a string
    * @return repositories from active profiles with injected mirror urls
    */
-  public static List<MavenSettingsRepositoryModel> getRepositoriesFromMavenSettings() {
+  public static List<MavenSettingsRepositoryModel> getRepositoriesFromMavenSettings(String mavenSettings) {
 
-    MavenSettingsModel model = generateMavenSettingsModel(MavenUtil.determineMavenSettings());
+    MavenSettingsModel model = generateMavenSettingsModel(mavenSettings);
 
     List<MavenSettingsRepositoryModel> activeRepos = new LinkedList<>();
 
@@ -49,6 +50,24 @@ public class MavenSettingsUtil {
     MavenMirrorUtil.injectMirrorUrl(activeRepos, model.getMirrors().getMirrorList());
 
     return activeRepos;
+  }
+
+  /**
+   * @param model class, on which maven's settings.xml has been mapped on
+   * @return the active proxy or null if their is no active one
+   */
+  public static MavenSettingsProxyModel getActiveProxy(MavenSettingsModel model) {
+
+    MavenSettingsProxyModel proxy = null;
+    if (model.getProxies() != null && model.getProxies().getProxyList() != null) {
+      for (MavenSettingsProxyModel p : model.getProxies().getProxyList()) {
+        if (p.getActive().equals("true")) {
+          proxy = p;
+          break;
+        }
+      }
+    }
+    return proxy;
   }
 
   /**

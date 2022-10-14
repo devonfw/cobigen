@@ -31,7 +31,8 @@ public class ArtifactRetriever {
 
   public void retrieveTemplateSetXmlDownloadLinks() {
 
-    List<MavenSettingsRepositoryModel> repositories = MavenSettingsUtil.getRepositoriesFromMavenSettings();
+    List<MavenSettingsRepositoryModel> repositories = MavenSettingsUtil
+        .getRepositoriesFromMavenSettings(MavenUtil.determineMavenSettings());
 
     MavenSettingsModel model = MavenSettingsUtil.generateMavenSettingsModel(MavenUtil.determineMavenSettings());
 

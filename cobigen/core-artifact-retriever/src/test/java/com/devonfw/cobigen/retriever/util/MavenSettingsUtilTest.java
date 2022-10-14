@@ -15,6 +15,7 @@ import org.sonatype.plexus.components.sec.dispatcher.model.SettingsSecurity;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.retriever.settings.util.MavenSettingsUtil;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProxyModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsServerModel;
 
@@ -30,6 +31,9 @@ public class MavenSettingsUtilTest {
   /** Test model */
   private static MavenSettingsModel model;
 
+  /** Content of the test setting.xmls */
+  private static String mavenSettings;
+
   /**
    * Used to initialize data needed for the tests
    */
@@ -43,6 +47,7 @@ public class MavenSettingsUtilTest {
       throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
     }
     model = MavenSettingsUtil.generateMavenSettingsModel(content);
+    mavenSettings = content;
   }
 
   /**
@@ -84,7 +89,7 @@ public class MavenSettingsUtilTest {
     List<String> activeProfiles = model.getActiveProfiles().getActiveProfilesList();
 
     assertThat(activeProfiles.get(0)).isEqualTo("profile-1");
-    assertThat(activeProfiles.get(1)).isEqualTo("profile-2");
+    assertThat(activeProfiles.get(1)).isEqualTo("profile-3");
   }
 
   /**
@@ -137,17 +142,41 @@ public class MavenSettingsUtilTest {
     String port = model.getProxies().getProxyList().get(0).getPort();
     String nonProxyHosts = model.getProxies().getProxyList().get(0).getNonProxyHosts();
 
-    assertThat(id).isEqualTo("example-proxy");
+    assertThat(id).isEqualTo("example-proxy2");
 
-    assertThat(active).isEqualTo("true");
+    assertThat(active).isEqualTo("false");
 
-    assertThat(protocol).isEqualTo("http");
+    assertThat(protocol).isEqualTo("https");
 
     assertThat(host).isEqualTo("proxy.example.com");
 
     assertThat(port).isEqualTo("8080");
 
     assertThat(nonProxyHosts).isEqualTo("www.google.com|*.example.com");
+  }
+
+  /**
+   * Tests, whether the only active proxy is returned
+   */
+  @Test
+  public void testGetActiveProxy() {
+
+    MavenSettingsProxyModel result = MavenSettingsUtil.getActiveProxy(model);
+
+    assertThat(result.getId()).isEqualTo("example-proxy");
+  }
+
+  /**
+   * Tests, whether only repositories of active profiles are returned
+   */
+  @Test
+  public void testGetRepositoriesFromMavenSettings() {
+
+    List<MavenSettingsRepositoryModel> result = MavenSettingsUtil.getRepositoriesFromMavenSettings(mavenSettings);
+    assertThat(result.size()).isEqualTo(3);
+    assertThat(result.get(0).getId()).isEqualTo("123");
+    assertThat(result.get(1).getId()).isEqualTo("repository");
+    assertThat(result.get(2).getId()).isEqualTo("repository1");
   }
 
   /**
@@ -212,7 +241,7 @@ public class MavenSettingsUtilTest {
   }
 
   // @Test
-  // public void testGetRepositoriesFromMavenSettings() {
+  // public void testGetSettingsFromMavenSettings() {
   //
   // // Waiting for Eduards solution
   // String test = MavenUtil.determineMavenSettings();

@@ -7,10 +7,25 @@
       <username>testUsername</username>
       <password>testPassword</password>
     </server>
+    <server>
+      <id>repository2</id>
+      <username>testUsername</username>
+      <password>testPassword</password>
+    </server>
   </servers>
 
   <proxies>
-   <proxy>
+    <proxy>
+      <id>example-proxy2</id>
+      <active>false</active>
+      <protocol>https</protocol>
+      <host>proxy.example.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.example.com</nonProxyHosts>
+    </proxy>
+    <proxy>
       <id>example-proxy</id>
       <active>true</active>
       <protocol>http</protocol>
@@ -51,10 +66,30 @@
         </repository>
       </repositories>
     </profile>
+    <profile>
+      <id>profile-1</id>
+      <repositories>
+        <repository>
+          <id>repository1</id>
+          <name>test repository</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>profile-2</id>
+      <repositories>
+        <repository>
+          <id>repository2</id>
+          <name>test repository</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
   </profiles>
 
   <activeProfiles>
     <activeProfile>profile-1</activeProfile>
-    <activeProfile>profile-2</activeProfile>
+    <activeProfile>profile-3</activeProfile>
   </activeProfiles>
 </settings>
