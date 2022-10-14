@@ -361,8 +361,9 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   public Path upgradeMonolithicTemplates(Path templatesProject) {
 
     Path templatesPath = null;
+    Path CobigenTemplates = CobiGenPaths.getPomLocation(templatesProject);
     if (templatesProject != null) {
-      templatesPath = FileSystemUtil.createFileSystemDependentPath(templatesProject.toUri());
+      templatesPath = FileSystemUtil.createFileSystemDependentPath(CobigenTemplates.toUri());
     } else {
       templatesPath = FileSystemUtil.createFileSystemDependentPath(ConfigurationFinder.findTemplatesLocation());
     }
@@ -374,9 +375,27 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     LOG.info("context.xml upgraded successfully. {}", templatesPath);
     LOG.info("Templates successfully upgraded. \n ");
 
-    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+    // check the new Path to the template-set after the upgrade
+    Path newTemplates;
+    if (templatesProject == null) {
+      // 1. check in .cobigen Home
+      // No need to check renaming in Home folder since we only have two templates folders:
+      // templates and templates-set
+      newTemplates = Paths.get(ConfigurationFinder.findTemplatesLocation());
+    } else {
+      // 2. otherwise check in the given customTemplates
 
-    Path newTemplates = cobigenHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      // check renaming
+      // 2.1 renaming from CobiGen_Templates to template-sets occurred
+      if (Files.exists(CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)))
+        newTemplates = CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
+            .resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      else {
+        // 2.2 Renaming from templates to template-sets occurred
+        newTemplates = CobigenTemplates.getParent().getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
+            .resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      }
+    }
     LOG.info("New templates location: {} ", newTemplates);
     return newTemplates;
   }
