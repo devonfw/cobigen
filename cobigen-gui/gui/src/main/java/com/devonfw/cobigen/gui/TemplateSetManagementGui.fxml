@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="outerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="463.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+   <children>
+      <SplitPane fx:id="verticalSplitPane" dividerPositions="0.33008213552361404" prefHeight="463.0" prefWidth="652.0">
+        <items>
+          <AnchorPane fx:id="leftPane" minHeight="0.0" minWidth="0.0" prefHeight="260.0" prefWidth="200.0">
+               <children>
+                  <AnchorPane fx:id="menuPane" layoutY="1.0" prefHeight="25.0" prefWidth="207.0" styleClass="menu-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label fx:id="templateSetsLabel" text="Template Sets" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="4.0" />
+                        <Button fx:id="homeButton" layoutX="128.0" layoutY="-1.0" mnemonicParsing="false" text="#" AnchorPane.rightAnchor="84.0" AnchorPane.topAnchor="0.0">
+                           <tooltip>
+                              <Tooltip fx:id="homeTooltip" text="Home" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="refreshButton" mnemonicParsing="false" text="+" AnchorPane.rightAnchor="59.0" AnchorPane.topAnchor="0.0">
+                           <tooltip>
+                              <Tooltip fx:id="refreshTooltip" text="Refresh" />
+                           </tooltip>
+                        </Button>
+                        <MenuButton fx:id="filterMenuButton" mnemonicParsing="false" text="Filter" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                              <Menu fx:id="viewsMenu" mnemonicParsing="false" text="Views">
+                                <items>
+                                    <CheckMenuItem fx:id="adaptedCheckMenuItem" mnemonicParsing="false" text="Adapted" />
+                                    <CheckMenuItem fx:id="installedCheckMenuItem" mnemonicParsing="false" text="Installed" />
+                                    <CheckMenuItem fx:id="recommendedCheckMenuItem" mnemonicParsing="false" text="Recommended" />
+                                </items>
+                              </Menu>
+                            <MenuItem fx:id="updatesMenuItem" mnemonicParsing="false" text="Check for Updates" />
+                              <SeparatorMenuItem fx:id="filterSeparatorMenuItem" mnemonicParsing="false" />
+                              <Menu fx:id="tagsMenu" mnemonicParsing="false" text="Tags">
+                                <items>
+                                    <CheckMenuItem mnemonicParsing="false" text="Tag 1" />
+                                    <CheckMenuItem mnemonicParsing="false" text="Tag 2" />
+                                    <CheckMenuItem mnemonicParsing="false" text="Tag 3" />
+                                </items>
+                              </Menu>
+                          </items>
+                        </MenuButton>
+                     </children>
+                     <padding>
+                        <Insets bottom="2.0" top="1.0" />
+                     </padding>
+                  </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+                     <children>
+                        <TextField fx:id="searchBar" onKeyPressed="#search" prefHeight="25.0" prefWidth="211.0" promptText="Search Template Sets" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+                        <Button fx:id="clearSearchResultsButton" layoutX="189.0" layoutY="-1.0" mnemonicParsing="false" onAction="#clearSearchResults" style="-fx-background-color: TRANSPARENT;" text="x" textFill="#0000004d" AnchorPane.rightAnchor="0.0" />
+                        <ScrollPane prefHeight="436.0" prefWidth="211.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
+                           <content>
+                              <ListView fx:id="searchResultsView" />
+                           </content>
+                        </ScrollPane>
+
+                        <!-- TODO: Search Results as ListView of HBox -->
+
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+          <AnchorPane fx:id="detailsPane" minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="455.0">
+               <children>
+                  <SplitPane fx:id="horizontalSplitPane" dividerPositions="0.1119186046511628" orientation="VERTICAL" prefHeight="461.0" prefWidth="432.0" AnchorPane.bottomAnchor="-0.6666666666666288" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <!--  Put Home Screen or TemplateSetDetails her interchangebly -->
+                  </SplitPane>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

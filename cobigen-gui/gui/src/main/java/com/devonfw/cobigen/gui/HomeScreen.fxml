@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+
+          <AnchorPane fx:id="detailsPane" minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="455.0">
+               <children>
+                  <SplitPane fx:id="horizontalSplitPane" dividerPositions="0.1119186046511628" orientation="VERTICAL" prefHeight="461.0" prefWidth="432.0">
+                    <items>
+                      <AnchorPane fx:id="headerPane" minHeight="0.0" minWidth="0.0" prefHeight="57.0" prefWidth="429.0">
+                           <children>
+                              <Text fx:id="headersText" layoutX="5.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="HOME">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </AnchorPane>
+                      <AnchorPane fx:id="detailsPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <Label fx:id="howItWorksLabel" layoutX="6.0" layoutY="6.0" text="How it Works">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Separator fx:id="howItWorksSeparator" layoutX="2.0" layoutY="35.0" prefHeight="3.0" prefWidth="432.0" />
+                              <Text layoutX="9.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search for template sets in the search bar on the left" wrappingWidth="340.80274963378906" />
+                              <Text layoutX="19.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Install Template Set" wrappingWidth="108.13612365722656" />
+                              <Text layoutX="165.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Delete Template Set" wrappingWidth="108.13612365722656" />
+                              <Text layoutX="305.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Update Template Set" wrappingWidth="114.13612365722656" />
+                              <Button layoutX="59.0" layoutY="73.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Button>
+                              <Button layoutX="207.0" layoutY="73.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="*" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Button>
+                              <Button layoutX="346.0" layoutY="73.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="~" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Button>
+                              <Label layoutX="7.0" layoutY="300.0" text="Wiki">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Separator fx:id="wikiSeparator" layoutX="-1.0" layoutY="329.0" prefHeight="3.0" prefWidth="432.0" />
+                              <Text layoutX="9.0" layoutY="351.0" strokeType="OUTSIDE" strokeWidth="0.0" text="More information can be found in our Wiki: --&gt; https://github.com/devonfw/cobigen/wiki" wrappingWidth="246.13607788085938" />
+                              <Text layoutX="36.0" layoutY="208.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&quot;Tree view for example template set with increments and templates&quot;" />
+                           </children>
+                        </AnchorPane>
+                    </items>
+                  </SplitPane>
+               </children>
+            </AnchorPane>
