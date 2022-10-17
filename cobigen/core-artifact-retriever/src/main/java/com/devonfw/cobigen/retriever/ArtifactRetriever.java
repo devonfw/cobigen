@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.retriever.settings.util.MavenSettingsUtil;
-import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
+import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProxyModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
 
 public class ArtifactRetriever {
@@ -31,10 +31,12 @@ public class ArtifactRetriever {
 
   public void retrieveTemplateSetXmlDownloadLinks() {
 
-    List<MavenSettingsRepositoryModel> repositories = MavenSettingsUtil
-        .getRepositoriesFromMavenSettings(MavenUtil.determineMavenSettings());
+    String mavenSettings = MavenUtil.determineMavenSettings();
 
-    MavenSettingsModel model = MavenSettingsUtil.generateMavenSettingsModel(MavenUtil.determineMavenSettings());
+    List<MavenSettingsRepositoryModel> repositories = MavenSettingsUtil.getRepositoriesFromMavenSettings(mavenSettings);
+
+    MavenSettingsProxyModel activeProxy = MavenSettingsUtil
+        .getActiveProxy(MavenSettingsUtil.generateMavenSettingsModel(mavenSettings));
 
   }
 

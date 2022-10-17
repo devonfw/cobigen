@@ -55,6 +55,9 @@ public class MavenMirrorUtil {
   }
 
   /**
+   * Code was taken from here:
+   * https://github.com/apache/maven/blob/c3cf29438e3d65d6ee5c5726f8611af99d9a649a/maven-compat/src/main/java/org/apache/maven/repository/DefaultMirrorSelector.java
+   *
    * This method checks if the pattern of the mirror (mirrorOf) matches the repository. Valid patterns:
    * <ul>
    * <li>{@code *} = everything,</li>
