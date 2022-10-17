@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.retriever.mavensearch.exception.RestSearchResponseException;
@@ -161,21 +160,28 @@ public abstract class AbstractSearchResponse {
         int statusCode = response.code();
         if (statusCode == 200 || statusCode == 201 || statusCode == 204) {
           jsonResponse = response.body().string();
+        } else if (statusCode == 401) {
+          LOG.debug("{} {} {} {}", MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_AUTH_FAILED_ONE,
+              searchRepositoryType, MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_AUTH_FAILED_TWO,
+              targetLink);
+          throw new RestSearchResponseException(searchRepositoryType, targetLink, statusCode);
         } else {
           throw new RestSearchResponseException(searchRepositoryType, targetLink, statusCode);
         }
+
       }
 
     } catch (IOException e) {
-      throw new CobiGenRuntimeException(
-          MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_REQUEST_FAILED + " " + targetLink, e);
+      LOG.debug("{} {}", MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_REQUEST_FAILED, targetLink, e);
+      return null;
     } catch (IllegalArgumentException e) {
-      throw new CobiGenRuntimeException("The search REST API recieved the faulty target URL: " + targetLink + ".", e);
+      LOG.debug("The search REST API recieved the faulty target URL: {}", targetLink, e);
+      return null;
     }
 
     if (jsonResponse.isEmpty()) {
-      throw new CobiGenRuntimeException(
-          MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_EMPTY_JSON_RESPONSE + " " + targetLink);
+      LOG.debug("{} {}", MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_EMPTY_JSON_RESPONSE, targetLink);
+      return null;
     }
 
     return jsonResponse;
