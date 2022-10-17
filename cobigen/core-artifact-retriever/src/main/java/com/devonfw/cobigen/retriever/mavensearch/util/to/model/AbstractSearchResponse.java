@@ -72,16 +72,13 @@ public abstract class AbstractSearchResponse {
   /**
    * Retrieves the json response from a repository URL, a group ID and a bearer authentication token
    *
-   * @param repositoryUrl URL of the repository
-   * @param username to use for authentication
-   * @param password to use for authentication
+   * @param serverCredentials TODO
    * @param groupId to search for
-   * @param proxyAddress TODO
-   * @param proxyPort TODO
+   *
    * @return String of json response
    * @throws RestSearchResponseException if the request did not return status 200
    */
-  public abstract String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId, String proxyAddress, int proxyPort)
+  public abstract String retrieveJsonResponse(ServerCredentials serverCredentials, String groupId)
       throws RestSearchResponseException;
 
   /**
@@ -116,16 +113,13 @@ public abstract class AbstractSearchResponse {
    * Retrieves a json response by given REST API target link using authentication
    *
    * @param targetLink link to get response from
-   * @param username to use for authentication
-   * @param password to use for authentication
    * @param searchRepositoryType the type of the search repository
-   * @param proxyAddress address of the proxy
-   * @param proxyPort port of the proxy
+   * @param serverCredentials to connect with the server
    * @return String of json response
    * @throws RestSearchResponseException if the returned status code was not 200 OK
    */
-  public static String retrieveJsonResponseWithAuthentication(String targetLink, String username, String password,
-      MavenSearchRepositoryType searchRepositoryType, String proxyAddress, int proxyPort)
+  public static String retrieveJsonResponseWithAuthentication(String targetLink,
+      MavenSearchRepositoryType searchRepositoryType, ServerCredentials serverCredentials)
       throws RestSearchResponseException {
 
     LOG.debug("Starting {} search REST API request with URL: {}.", searchRepositoryType, targetLink);
@@ -138,8 +132,9 @@ public abstract class AbstractSearchResponse {
     builder.writeTimeout(30, TimeUnit.SECONDS);
     builder.retryOnConnectionFailure(true);
 
-    if (!proxyAddress.isEmpty() && proxyPort != 0) {
-      SocketAddress address = new InetSocketAddress(proxyAddress, proxyPort);
+    if (serverCredentials.getProxyAddress() != null && serverCredentials.getProxyPort() != 0) {
+      SocketAddress address = new InetSocketAddress(serverCredentials.getProxyAddress(),
+          serverCredentials.getProxyPort());
       Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
       builder.proxy(proxy);
     }
@@ -155,8 +150,9 @@ public abstract class AbstractSearchResponse {
       Request request = new Request.Builder().url(targetLink).get().build();
 
       // use basic authentication
-      if (username != null && password != null) {
-        request = basicUsernamePasswordAuthentication(targetLink, username, password);
+      if (serverCredentials.getUsername() != null && serverCredentials.getPassword() != null) {
+        request = basicUsernamePasswordAuthentication(targetLink, serverCredentials.getUsername(),
+            serverCredentials.getPassword());
       }
 
       response = httpClient.newCall(request).execute();

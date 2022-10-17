@@ -37,35 +37,42 @@ public class SearchResponseFactory {
   /**
    * Searches for the maven artifact download links by given base URL, groupId and optional authentication token
    *
-   * @param baseURL String of the repository server URL
-   * @param username to use for authentication
-   * @param password to use for authentication
-   * @param groupId the groupId to search for
-   * @param proxyAddress address of proxy
-   * @param proxyPort port of proxy
+   * @param serverCredentials TODO
+   * @param groupId TODO
+   *
    * @return List of download URLs
    * @throws CobiGenRuntimeException if an unexpected error occurred
    *
    */
-  public static List<URL> searchArtifactDownloadLinks(String baseURL, String username, String password, String groupId,
-      String proxyAddress, int proxyPort) throws CobiGenRuntimeException {
+  public static List<URL> searchArtifactDownloadLinks(ServerCredentials serverCredentials, String groupId)
+      throws CobiGenRuntimeException {
 
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
     MavenSearchRepositoryType searchRepositoryType = null;
     String searchRepositoryTargetLink = "";
 
-    LOG.debug("Starting search for REST APIs with repository URL: {} and groupId: {} ...", baseURL, groupId);
+    if (serverCredentials == null) {
+      throw new CobiGenRuntimeException("No server credentials were provided.");
+    }
+
+    if (serverCredentials.getBaseUrl() == null) {
+      throw new CobiGenRuntimeException("The server credentials are missing the base URL.");
+    }
+
+    String baseUrl = serverCredentials.getBaseUrl();
+
+    LOG.debug("Starting search for REST APIs with repository URL: {} and groupId: {} ...", baseUrl, groupId);
 
     for (Object searchResponse : SEARCH_RESPONSES) {
       searchRepositoryType = ((AbstractSearchResponse) searchResponse).getRepositoryType();
-      searchRepositoryTargetLink = ((AbstractSearchResponse) searchResponse).retrieveRestSearchApiTargetLink(baseURL,
+      searchRepositoryTargetLink = ((AbstractSearchResponse) searchResponse).retrieveRestSearchApiTargetLink(baseUrl,
           groupId);
       try {
         LOG.debug("Trying to get a response from {} ...", searchRepositoryType);
 
-        String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(baseURL, username,
-            password, groupId, proxyAddress, proxyPort);
+        String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(serverCredentials,
+            groupId);
         AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
             searchResponse.getClass());
 

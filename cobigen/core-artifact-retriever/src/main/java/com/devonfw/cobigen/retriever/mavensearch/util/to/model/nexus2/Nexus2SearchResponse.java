@@ -12,6 +12,7 @@ import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepository
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.retriever.mavensearch.exception.RestSearchResponseException;
 import com.devonfw.cobigen.retriever.mavensearch.util.to.model.AbstractSearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.util.to.model.ServerCredentials;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -56,13 +57,12 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
 
   @Override
   @JsonIgnore
-  public String retrieveJsonResponse(String repositoryUrl, String username, String password, String groupId,
-      String proxyAddress, int proxyPort) throws RestSearchResponseException {
+  public String retrieveJsonResponse(ServerCredentials serverCredentials, String groupId)
+      throws RestSearchResponseException {
 
-    String targetLink = retrieveRestSearchApiTargetLink(repositoryUrl, groupId);
+    String targetLink = retrieveRestSearchApiTargetLink(serverCredentials.getBaseUrl(), groupId);
 
-    return retrieveJsonResponseWithAuthentication(targetLink, username, password, getRepositoryType(), proxyAddress,
-        proxyPort);
+    return retrieveJsonResponseWithAuthentication(targetLink, getRepositoryType(), serverCredentials);
   }
 
   @Override
