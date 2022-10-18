@@ -303,7 +303,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
       throw new InvalidConfigurationException(configurationFile.toUri().toString(),
           StringUtils.capitalize(this.configurationName) + " does not match any current or legacy schema definitions.");
     } else {
-      VERSIONS_TYPE latestVersion = versionsList.get(versionsList.size() - 1);
+      VERSIONS_TYPE latestVersion = versionsList.get(0);
       // increasing iteration of versions
       for (int i = 0; i < versionsList.size(); i++) {
         if (validatedVersion == latestVersion) {

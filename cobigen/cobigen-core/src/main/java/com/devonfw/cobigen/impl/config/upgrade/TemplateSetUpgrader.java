@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl.config.upgrade;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,39 +99,35 @@ public class TemplateSetUpgrader {
     Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
     Path parentOfCobigenTemplates = cobigenTemplatesFolder.getParent();
     Path template_sets = null;
-    Path adapted = null;
-
+    Path neuerAdaptedFolder = null;
+    File folderToRename = null;
     Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
     if (parentOfCobigenTemplates.endsWith(ConfigurationConstants.TEMPLATES_FOLDER)) {
       // #1 case Here we need to rename parentOfCobigenTemplates to template-sets
       template_sets = parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-      adapted = template_sets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-      if (Files.exists(template_sets))
-        throw new CobiGenRuntimeException("template-sets folder already exists!");
-      parentOfCobigenTemplates.toFile().renameTo(template_sets.toFile());
+      neuerAdaptedFolder = template_sets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      // parentOfCobigenTemplates.toFile().renameTo(template_sets.toFile());
+      folderToRename = parentOfCobigenTemplates.toFile();
       // Update the context.xml and pom.xml locations after renaming
-      cobigenTemplatesFolder = CobiGenPaths
-          .getPomLocation(template_sets.resolve(ConfigurationConstants.COBIGEN_TEMPLATES));
-      folderOfContextLocation = CobiGenPaths
-          .getContextLocation(template_sets.resolve(ConfigurationConstants.COBIGEN_TEMPLATES));
 
     } else {
       // #2 case we need to rename cobigenTemplatesFolder to template-sets, this is only the case if the
       // parentOfCobigenTemplates name is not "templates"
       template_sets = parentOfCobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-      if (Files.exists(template_sets))
-        throw new CobiGenRuntimeException("template-sets folder already exists!");
-      cobigenTemplatesFolder.toFile().renameTo(template_sets.toFile());
-      adapted = template_sets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      // cobigenTemplatesFolder.toFile().renameTo(template_sets.toFile());
+      folderToRename = cobigenTemplatesFolder.toFile();
+      neuerAdaptedFolder = template_sets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
       // Update the context.xml location after renaming
-      folderOfContextLocation = CobiGenPaths.getContextLocation(template_sets);
     }
-
-    // if (!Files.exists(template_sets))
-    Files.createDirectory(template_sets);
-
-    ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
-
+    Path adapted = folderToRename.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    if (Files.exists(template_sets)) {
+      throw new CobiGenRuntimeException("template-sets folder already exists!");
+    } else {
+      // hier checken ob rename oder create
+      // Files.createDirectory(template_sets);
+    }
+    ContextConfiguration contextConfiguration = getContextConfiguration(templatesLocation);
+    // TODO backup funktionier nicht mehr
     if (!Files.exists(adapted))
       Files.createDirectory(adapted);
 
@@ -170,6 +167,7 @@ public class TemplateSetUpgrader {
       }
     }
 
+    folderToRename.renameTo(template_sets.toFile());
     return contextMap;
 
   }
@@ -236,6 +234,7 @@ public class TemplateSetUpgrader {
       trigger3_0.setInputCharset(trigger.getInputCharset());
       trigger3_0.setType(trigger.getType());
       trigger3_0.setTemplateFolder(trigger.getTemplateFolder());
+      System.out.println("Triggerfolder: " + trigger.getTemplateFolder());
 
       List<com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher> v3MList = this.mapper.mapAsList(trigger.getMatcher(),
           com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class);
@@ -283,7 +282,7 @@ public class TemplateSetUpgrader {
         context = contextFile.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         LOG.info("Found Context File");
-      } else if (contextFile.endsWith(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)) {
+      } else if (contextFile.endsWith(ConfigurationConstants.TEMPLATES_FOLDER)) {
         context = contextFile.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
             .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);

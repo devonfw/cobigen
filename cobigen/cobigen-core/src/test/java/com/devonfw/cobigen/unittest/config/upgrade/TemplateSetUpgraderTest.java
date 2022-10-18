@@ -79,6 +79,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
       assertThat(templateSetsAdapted).exists();
     });
   }
+  // TODO Fall CobigenTemplates ohne parent Templates folder als test implementieren
 
   /**
    * Tests if the Template files have been correctly copied into both the new template set and the backup folder
