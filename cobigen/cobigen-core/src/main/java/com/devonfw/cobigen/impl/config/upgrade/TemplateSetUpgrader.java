@@ -98,14 +98,12 @@ public class TemplateSetUpgrader {
 
     Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
     Path parentOfCobigenTemplates = cobigenTemplatesFolder.getParent();
-    Path template_sets = null;
-    Path neuerAdaptedFolder = null;
+    Path templateSets = null;
     File folderToRename = null;
     Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
     if (parentOfCobigenTemplates.endsWith(ConfigurationConstants.TEMPLATES_FOLDER)) {
       // #1 case Here we need to rename parentOfCobigenTemplates to template-sets
-      template_sets = parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-      neuerAdaptedFolder = template_sets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      templateSets = parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       // parentOfCobigenTemplates.toFile().renameTo(template_sets.toFile());
       folderToRename = parentOfCobigenTemplates.toFile();
       // Update the context.xml and pom.xml locations after renaming
@@ -113,20 +111,19 @@ public class TemplateSetUpgrader {
     } else {
       // #2 case we need to rename cobigenTemplatesFolder to template-sets, this is only the case if the
       // parentOfCobigenTemplates name is not "templates"
-      template_sets = parentOfCobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      templateSets = parentOfCobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       // cobigenTemplatesFolder.toFile().renameTo(template_sets.toFile());
       folderToRename = cobigenTemplatesFolder.toFile();
-      neuerAdaptedFolder = template_sets.resolve(ConfigurationConstants.ADAPTED_FOLDER);
       // Update the context.xml location after renaming
     }
     Path adapted = folderToRename.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER);
-    if (Files.exists(template_sets)) {
+    if (Files.exists(templateSets)) {
       throw new CobiGenRuntimeException("template-sets folder already exists!");
     } else {
       // hier checken ob rename oder create
       // Files.createDirectory(template_sets);
     }
-    ContextConfiguration contextConfiguration = getContextConfiguration(templatesLocation);
+    ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
     // TODO backup funktionier nicht mehr
     if (!Files.exists(adapted))
       Files.createDirectory(adapted);
@@ -164,13 +161,29 @@ public class TemplateSetUpgrader {
           JAXB.marshal(cc, out);
         }
         writeNewPomFile(cobigenTemplatesFolder, newTriggerFolder, trigger);
+        newContextPath = templateSets.resolve(folderToRename.toPath().relativize(newTriggerFolder)
+            .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
+        contextMap.put(cc, newContextPath);
       }
     }
 
-    folderToRename.renameTo(template_sets.toFile());
+    folderToRename.renameTo(templateSets.toFile());
     return contextMap;
 
   }
+  // Path newContextPath = templateSets.resolve(folderToRename.toPath().relativize(newTriggerFolder)
+  // .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+  // .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
+  // contextMap.put(cc, newContextPath);
+  // // creates actual context configuration file
+  // try (OutputStream out = Files.newOutputStream(newContextPath)) {
+  // JAXB.marshal(cc, out);
+  // }
+  // writeNewPomFile(cobigenTemplatesFolder, newTriggerFolder, trigger);
+  // contextMap.put(cc, newContextPath);
+  // }
+  // }
 
   /**
    * Writes a pom.xml file for the split context and template folder
@@ -269,6 +282,8 @@ public class TemplateSetUpgrader {
    * @throws Exception
    */
   private ContextConfiguration getContextConfiguration(Path contextFile) throws Exception {
+
+    System.out.println(contextFile);
 
     if (contextFile == null) {
       throw new Exception("Templates location cannot be null!");

@@ -75,8 +75,9 @@ public class GenerateCommandIT extends AbstractCliTest {
   @Test
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates-devon4j"),
-        this.tmpProject.toFile());
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
+    this.tmpProject.resolve("templates-devon4j").toFile()
+        .renameTo(this.tmpProject.resolve(ConfigurationConstants.COBIGEN_TEMPLATES).toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
     File monolithicConfiguration = this.tmpProject.toFile();
     String args[] = new String[7];

@@ -54,9 +54,6 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   public void prepare() throws IOException {
 
     this.currentHome = this.tempFolder.newFolder(ConfigurationConstants.DEFAULT_HOME_DIR_NAME).toPath();
-    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
-    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
-        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
   }
 
@@ -67,6 +64,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    */
   @Test
   public void testTemplateSetUpgrade() throws Exception {
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
+    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
@@ -79,7 +80,29 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
       assertThat(templateSetsAdapted).exists();
     });
   }
+
   // TODO Fall CobigenTemplates ohne parent Templates folder als test implementieren
+  /**
+   * Test the correct folder creation
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testTemplateSetUpgradeWithoutTemplatesFolder() throws Exception {
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1/templates"), this.currentHome.toFile());
+    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
+      TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
+      templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
+
+      Path templateSetsPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      assertThat(templateSetsPath).exists();
+      assertThat(templateSetsAdapted).exists();
+    });
+  }
 
   /**
    * Tests if the Template files have been correctly copied into both the new template set and the backup folder
@@ -88,6 +111,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    */
   @Test
   public void testTemplateSetUpgradeCopyOfTemplates() throws Exception {
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
+    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
       Path oldTemplatesPath = this.templateLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
@@ -160,6 +187,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    */
   @Test
   public void testTemplateSetUpgradeContextSplit() throws Exception {
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
+    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
       ContextConfigurationUpgrader upgrader = new ContextConfigurationUpgrader();
