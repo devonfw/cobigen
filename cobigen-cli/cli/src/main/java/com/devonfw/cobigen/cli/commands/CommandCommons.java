@@ -29,7 +29,7 @@ public abstract class CommandCommons implements Callable<Integer> {
   /**
    * If this option is enabled, the old monolithic templates will be upgraded to the new template-set structure.
    */
-  @Option(names = { "--upgrade", "-u" }, description = MessagesConstants.UPGRADE_CONFIGURATION_OPTION)
+  @Option(names = { "--upgrade-configuration" }, description = MessagesConstants.UPGRADE_CONFIGURATION_OPTION)
   boolean upgradeConfiguration;
 
   @Override

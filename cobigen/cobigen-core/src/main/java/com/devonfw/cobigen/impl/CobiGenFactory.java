@@ -3,6 +3,7 @@ package com.devonfw.cobigen.impl;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -96,7 +97,7 @@ public class CobiGenFactory {
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
 
     if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration()) {
-      throw new DeprecatedMonolithicConfigurationException();
+      throw new DeprecatedMonolithicConfigurationException(Paths.get(configFileOrFolder));
     }
     // install Template Sets defined in .properties file
     if (configurationHolder.isTemplateSetConfiguration()) {

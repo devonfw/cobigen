@@ -30,8 +30,6 @@ import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
 import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
-import com.devonfw.cobigen.impl.util.ConfigurationFinder;
-import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /** Util for NPE save access of {@link ResourcesPlugin} utils */
 public class ResourcesPluginUtil {
@@ -196,18 +194,6 @@ public class ResourcesPluginUtil {
   private static File getTemplatesDirectory() {
 
     return CobiGenPaths.getTemplatesFolderPath().toFile();
-  }
-
-  /**
-   * The method finds location of templates. It could be CobiGen_Templates folder or a template artifact
-   *
-   * @return the templateDirectory
-   */
-  private static File findTemplatesLocation() {
-
-    URI findTemplatesLocation = ConfigurationFinder.findTemplatesLocation();
-    Path templatesPath = FileSystemUtil.createFileSystemDependentPath(findTemplatesLocation);
-    return templatesPath.toFile();
   }
 
   /**

@@ -85,7 +85,7 @@ public class GenerateCommandIT extends AbstractCliTest {
     args[1] = this.entityInputFile.getAbsolutePath();
     args[2] = "--increments";
     args[3] = "0";
-    args[4] = "--upgrade";
+    args[4] = "--upgrade-configuration";
     args[5] = "-tp";
     args[6] = monolithicConfiguration.getAbsolutePath();
 

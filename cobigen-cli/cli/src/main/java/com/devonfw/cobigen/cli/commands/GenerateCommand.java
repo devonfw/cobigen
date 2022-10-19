@@ -114,10 +114,8 @@ public class GenerateCommand extends CommandCommons {
 
     LOG.debug("Input files and output root path confirmed to be valid.");
 
-    if (PostponeUtil.isTimePassed())
-      if (!this.forceMonolithicConfiguration) {
-        checkMonolithicConfigurationException();
-      }
+    if ((PostponeUtil.isTimePassed()) && (!this.forceMonolithicConfiguration))
+      checkMonolithicConfigurationException();
 
     CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject, true);
 
@@ -272,16 +270,13 @@ public class GenerateCommand extends CommandCommons {
     try {
       CobiGenUtils.initializeCobiGen(this.templatesProject, false);
     } catch (DeprecatedMonolithicConfigurationException e) {
-      String monolithicConfigurationMessage = "Found monolithic configuration at:";
-      if (this.templatesProject == null)
-        LOG.warn(monolithicConfigurationMessage.concat("{} {}"), ConfigurationFinder.findTemplatesLocation(),
-            e.getMessage());
-      else
-        LOG.warn(monolithicConfigurationMessage.concat("{} {}"), this.templatesProject, e.getMessage());
-      if (this.upgradeConfiguration) {
+      LOG.warn("Found monolithic configuration at: {} {}",
+          DeprecatedMonolithicConfigurationException.getMonolithicConfiguration(), e.getMessage());
+
+      if (this.upgradeConfiguration || askUserToUpgradeTemplates()) {
         startTemplatesUpgrader();
       } else {
-        askUserToUpgradeTemplates();
+        askUserToPostponeUpgrade();
       }
     }
 
@@ -291,7 +286,7 @@ public class GenerateCommand extends CommandCommons {
    * Opens a looping prompt with a yes/no question and upgrades the templates to the newest version.
    *
    */
-  private void askUserToUpgradeTemplates() {
+  private boolean askUserToUpgradeTemplates() {
 
     LOG.info(
         "Would you like to upgrade your templates to the newest version? \n"
@@ -302,9 +297,9 @@ public class GenerateCommand extends CommandCommons {
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with monolithic templates...");
 
     if (setToUserDir) {
-      startTemplatesUpgrader();
+      return true;
     } else {
-      askUserToPostponeUpgrade();
+      return false;
     }
   }
 

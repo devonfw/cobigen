@@ -14,9 +14,7 @@ import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -36,18 +34,8 @@ public class UpgradeMonolithicTemplatesTest extends SystemTest {
   /** Root path of the Test Resources */
   private static final String resourcesRootPath = "src/main/resources/UpgradeMonolithicTemplatesTest/";
 
-  /** Temporary files rule to create temporary folders or files */
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
-
   /** Current home directory */
   protected Path currentHome;
-
-  /**
-   * Setup home path for cobigen to isolate the test
-   *
-   * @throws Exception
-   */
 
   /**
    * Setup workbench appropriately for tests
@@ -68,13 +56,14 @@ public class UpgradeMonolithicTemplatesTest extends SystemTest {
   /**
    * Tests if the Upgrader will work properly and generate after that
    *
+   * Setup home path for cobigen to isolate the test (withEnvironmentVariable)
    *
    * @throws Exception Test fails
    */
   @Test
   public void testUpgradeAndGenerateFromTemplateSet() throws Exception {
 
-    this.currentHome = this.tempFolder.newFolder("cobigen-test-home").toPath();
+    this.currentHome = this.tmpFolderRule.newFolder("cobigen-test-home").toPath();
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
 
       // create a new temporary java project and copy java class used as an input for CobiGen
