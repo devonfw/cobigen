@@ -361,11 +361,13 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   public Path upgradeMonolithicTemplates(Path templatesProject) {
 
     Path templatesPath = null;
-    Path CobigenTemplates = CobiGenPaths.getPomLocation(templatesProject);
+    Path CobigenTemplates;
     if (templatesProject != null) {
+      CobigenTemplates = CobiGenPaths.getPomLocation(templatesProject);
       templatesPath = FileSystemUtil.createFileSystemDependentPath(CobigenTemplates.toUri());
     } else {
       templatesPath = FileSystemUtil.createFileSystemDependentPath(ConfigurationFinder.findTemplatesLocation());
+      CobigenTemplates = CobiGenPaths.getPomLocation(templatesPath);
     }
     AbstractConfigurationUpgrader<ContextConfigurationVersion> contextUpgraderObject = new ContextConfigurationUpgrader();
 
