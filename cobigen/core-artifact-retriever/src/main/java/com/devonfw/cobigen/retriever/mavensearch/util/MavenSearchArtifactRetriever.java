@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.retriever.mavensearch.util.to.model.SearchResponseFactory;
 import com.devonfw.cobigen.retriever.mavensearch.util.to.model.ServerCredentials;
 
@@ -38,23 +37,7 @@ public class MavenSearchArtifactRetriever {
 
     ServerCredentials serverCredentials = new ServerCredentials(baseUrl, username, password, proxyAddress, proxyPort);
 
-    this.mavenArtifactDownloadUrls = retrieveMavenArtifactsByGroupId(serverCredentials, groupId);
-  }
-
-  /**
-   * Retrieves a list of download URLs by groupId from the specified repository search REST API
-   *
-   * @return List of artifact download URLS
-   */
-  private List<URL> retrieveMavenArtifactsByGroupId(ServerCredentials serverCredentials, String groupId) {
-
-    try {
-      return SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, groupId);
-    } catch (CobiGenRuntimeException e) {
-      LOG.debug("An error occurred while searching for the maven artifact with the group ID: {}", groupId, e);
-    }
-    return null;
-
+    this.mavenArtifactDownloadUrls = SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, groupId);
   }
 
   /**

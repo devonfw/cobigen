@@ -7,7 +7,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.retriever.mavensearch.exception.RestSearchResponseException;
@@ -37,15 +36,12 @@ public class SearchResponseFactory {
   /**
    * Searches for the maven artifact download links by given base URL, groupId and optional authentication token
    *
-   * @param serverCredentials TODO
-   * @param groupId TODO
+   * @param serverCredentials to use for connection and authentication
+   * @param groupId to search for
    *
    * @return List of download URLs
-   * @throws CobiGenRuntimeException if an unexpected error occurred
-   *
    */
-  public static List<URL> searchArtifactDownloadLinks(ServerCredentials serverCredentials, String groupId)
-      throws CobiGenRuntimeException {
+  public static List<URL> searchArtifactDownloadLinks(ServerCredentials serverCredentials, String groupId) {
 
     ObjectMapper mapper = new ObjectMapper();
     List<URL> downloadLinks = null;
@@ -53,11 +49,13 @@ public class SearchResponseFactory {
     String searchRepositoryTargetLink = "";
 
     if (serverCredentials == null) {
-      throw new CobiGenRuntimeException("No server credentials were provided.");
+      LOG.debug("No server credentials were provided.");
+      return null;
     }
 
     if (serverCredentials.getBaseUrl() == null) {
-      throw new CobiGenRuntimeException("The server credentials are missing the base URL.");
+      LOG.debug("The server credentials are missing the base URL.");
+      return null;
     }
 
     String baseUrl = serverCredentials.getBaseUrl();
@@ -74,7 +72,8 @@ public class SearchResponseFactory {
         String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(serverCredentials,
             groupId);
 
-        if (jsonResponse == null) {
+        if (jsonResponse == null || jsonResponse.isEmpty()) {
+          LOG.debug("The json response was empty.");
           return null;
         }
 
