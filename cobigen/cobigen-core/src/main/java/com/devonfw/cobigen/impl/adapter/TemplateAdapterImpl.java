@@ -390,8 +390,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       // check renaming
       // 2.1 renaming from CobiGen_Templates to template-sets occurred
       if (Files.exists(CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)))
-        newTemplates = CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
-            .resolve(ConfigurationConstants.ADAPTED_FOLDER);
+        newTemplates = CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       else {
         // 2.2 Renaming from templates to template-sets occurred
         newTemplates = CobigenTemplates.getParent().getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)

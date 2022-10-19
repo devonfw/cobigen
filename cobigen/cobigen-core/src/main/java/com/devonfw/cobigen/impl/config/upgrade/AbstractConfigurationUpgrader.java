@@ -178,7 +178,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
       return null;
     }
 
-    VERSIONS_TYPE[] reversedVersions = this.versions;
+    VERSIONS_TYPE[] reversedVersions = Arrays.copyOf(this.versions, this.versions.length);
     ArrayUtils.reverse(reversedVersions);
 
     for (VERSIONS_TYPE version : Arrays.asList(reversedVersions)) {

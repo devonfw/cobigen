@@ -293,14 +293,8 @@ public class GenerateCommand extends CommandCommons {
             + MessagesConstants.YES_NO_ANSWER_DESCRIPTION + "For more Informations, please visit: ",
         WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION, System.getProperty("user.dir"));
 
-    boolean setToUserDir = ValidationUtils.yesNoPrompt("Upgrading templates configuration...: ",
+    return ValidationUtils.yesNoPrompt("Upgrading templates configuration...: ",
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with monolithic templates...");
-
-    if (setToUserDir) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   /**
