@@ -30,7 +30,7 @@ public class MavenProxyUtilTest {
   /** Repositories on which the tests are performed on */
   private static List<MavenSettingsRepositoryModel> repositoriesList;
 
-  /** Proxies on which the tests are performed on */
+  /** Proxies, on which the tests are performed on */
   private static List<MavenSettingsProxyModel> proxiesList;
 
   /**
@@ -65,40 +65,56 @@ public class MavenProxyUtilTest {
   }
 
   /**
-   *
+   * Tests, whether a declaration with multiple nonProxyHosts is working
    */
   @Test
-  public void testObtainRepositoriesWithProxiesMultipleNonProxyHosts() {
+  public void testObtainRepositoriesWithProxiesWithMultipleNonProxyHosts() {
 
-    List<MavenSettingsRepositoryModel> result = MavenProxyUtil.obtainRepositoriesWithProxies(repositoriesList,
-        proxiesList.get(0));
+    List<MavenSettingsRepositoryModel> result = MavenProxyUtil.obtainRepositories(repositoriesList, proxiesList.get(0),
+        true);
 
     assertThat(result.size()).isEqualTo(1);
     assertThat(result.get(0).getUrl()).isEqualTo("localhost");
   }
 
   /**
-   *
+   * Tests, whether a declaration with a wildcard in nonProxyHosts is working
    */
   @Test
-  public void testObtainRepositoriesWithWildcard() {
+  public void testObtainRepositoriesWithProxiesWithWildcard() {
 
-    List<MavenSettingsRepositoryModel> result = MavenProxyUtil.obtainRepositoriesWithProxies(repositoriesList,
-        proxiesList.get(1));
+    List<MavenSettingsRepositoryModel> result = MavenProxyUtil.obtainRepositories(repositoriesList, proxiesList.get(1),
+        true);
 
     assertThat(result.size()).isEqualTo(0);
   }
 
   /**
-   *
+   * Tests, whether repositories without proxies (withProxies=false) are returned, when using a wildcard
    */
   @Test
-  public void testObtainRepositoriesWithProtocol() {
+  public void testObtainRepositoriesWithoutProxiesWithWildcard() {
 
-    List<MavenSettingsRepositoryModel> result = MavenProxyUtil.obtainRepositoriesWithProxies(repositoriesList,
-        proxiesList.get(2));
+    List<MavenSettingsRepositoryModel> result = MavenProxyUtil.obtainRepositories(repositoriesList, proxiesList.get(1),
+        false);
 
     assertThat(result.size()).isEqualTo(3);
+    assertThat(result.get(0).getUrl()).isEqualTo("localhost");
+    assertThat(result.get(1).getUrl()).isEqualTo("www.google.com");
+    assertThat(result.get(2).getUrl()).isEqualTo("test.example.com");
   }
 
+  /**
+   * Tests, whether repositories without proxies (withProxies=false) are returned, when using a selector
+   */
+  @Test
+  public void testObtainRepositoriesWithoutProxiesWithSelector() {
+
+    List<MavenSettingsRepositoryModel> result = MavenProxyUtil.obtainRepositories(repositoriesList, proxiesList.get(0),
+        false);
+
+    assertThat(result.size()).isEqualTo(2);
+    assertThat(result.get(0).getUrl()).isEqualTo("www.google.com");
+    assertThat(result.get(1).getUrl()).isEqualTo("test.example.com");
+  }
 }
