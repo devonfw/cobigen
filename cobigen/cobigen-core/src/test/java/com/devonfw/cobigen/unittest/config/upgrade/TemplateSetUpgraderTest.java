@@ -8,11 +8,14 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -75,13 +78,14 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
       Path templateSetsPath = this.templateLocation.getParent().getParent()
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      Path backup = this.templateLocation.getParent().getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
       Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
       assertThat(templateSetsPath).exists();
       assertThat(templateSetsAdapted).exists();
+      assertThat(backup).exists();
     });
   }
 
-  // TODO Fall CobigenTemplates ohne parent Templates folder als test implementieren
   /**
    * Test the correct folder creation
    *
@@ -99,8 +103,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
       Path templateSetsPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      Path backup = this.templateLocation.getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
       assertThat(templateSetsPath).exists();
       assertThat(templateSetsAdapted).exists();
+      assertThat(backup).exists();
     });
   }
 
@@ -117,9 +123,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
         .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
-      Path oldTemplatesPath = this.templateLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-      int OldTemplatesFileCount = oldTemplatesPath.toFile().list().length;
-      Set<String> OldPathFilesSet = new HashSet<>(Arrays.asList(oldTemplatesPath.toFile().list()));
+      Path templatesFolder = this.templateLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+      int OldTemplatesFileCount = templatesFolder.toFile().list().length;
+      List<Path> templatesFolderPaths = Files.walk(this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER))
+          .map(Path::getFileName).collect(Collectors.toList());
 
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
       Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
@@ -127,7 +134,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
       Path newTemplatesPath = this.templateLocation.getParent().getParent()
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.ADAPTED_FOLDER);
-      Set<String> NewPathFilesSet = new HashSet<>(Arrays.asList(newTemplatesPath.toFile().list()));
+      Set<File> NewPathFilesSet = new HashSet<>(Arrays.asList(newTemplatesPath.toFile().listFiles()));
 
       assertEquals(OldTemplatesFileCount - 1, NewPathFilesSet.size());
 
@@ -137,14 +144,15 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
         validateContextConfigurationFile(contextpath, "v3.0");
 
       }
+      List<Path> backupFolderFiles = Files.walk(this.currentHome.resolve(ConfigurationConstants.BACKUP_FOLDER)
+          .resolve(ConfigurationConstants.TEMPLATES_FOLDER)).map(Path::getFileName).collect(Collectors.toList());
+      assertThat(backupFolderFiles).containsAll(templatesFolderPaths);
 
-      for (String s : OldPathFilesSet) {
-        if (!s.equals(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)) {
-          assertThat(NewPathFilesSet).contains(s);
-          NewPathFilesSet.remove(s);
+      for (File file : NewPathFilesSet) {
+        if (!file.getName().equals(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)) {
+          assertThat(templatesFolderPaths).contains(file.toPath().getFileName());
         }
       }
-      assertThat(NewPathFilesSet).hasSize(0);
     });
 
   }

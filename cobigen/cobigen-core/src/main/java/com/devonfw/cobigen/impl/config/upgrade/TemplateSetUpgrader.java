@@ -85,9 +85,8 @@ public class TemplateSetUpgrader {
    * Upgrades the ContextConfiguration from v2.1 to the new structure from v3.0. The monolithic pom and context files
    * will be split into multiple files corresponding to every template set that will be created.
    *
-   * @param templatesLocation the location of the templates
+   * @param Path {@link Path} to the templatesLocation
    *
-   * @param {@link Path} Path to the context.xml that will be upgraded
    * @return {@link Map} collection that contains the upgraded v3.0
    *         {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} as key and a {@link Path} for
    *         the new location of the context.xml as value
@@ -100,33 +99,37 @@ public class TemplateSetUpgrader {
     Path parentOfCobigenTemplates = cobigenTemplatesFolder.getParent();
     Path templateSets = null;
     File folderToRename = null;
-    Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
+    Path backupFolder = null;
     if (parentOfCobigenTemplates.endsWith(ConfigurationConstants.TEMPLATES_FOLDER)) {
       // #1 case Here we need to rename parentOfCobigenTemplates to template-sets
       templateSets = parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-      // parentOfCobigenTemplates.toFile().renameTo(template_sets.toFile());
       folderToRename = parentOfCobigenTemplates.toFile();
-      // Update the context.xml and pom.xml locations after renaming
-
+      backupFolder = parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
     } else {
       // #2 case we need to rename cobigenTemplatesFolder to template-sets, this is only the case if the
       // parentOfCobigenTemplates name is not "templates"
       templateSets = parentOfCobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-      // cobigenTemplatesFolder.toFile().renameTo(template_sets.toFile());
       folderToRename = cobigenTemplatesFolder.toFile();
-      // Update the context.xml location after renaming
+      backupFolder = parentOfCobigenTemplates.resolve(ConfigurationConstants.BACKUP_FOLDER);
     }
+    // backup of old files
+    Files.createDirectory(backupFolder);
+    try {
+      FileUtils.copyDirectoryToDirectory(folderToRename, backupFolder.toFile());
+    } catch (IOException e) {
+      LOG.error("An error occured while backing up the old template folder", e);
+      throw new CobiGenRuntimeException(e.getMessage(), e);
+    }
+
     Path adapted = folderToRename.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER);
     if (Files.exists(templateSets)) {
       throw new CobiGenRuntimeException("template-sets folder already exists!");
-    } else {
-      // hier checken ob rename oder create
-      // Files.createDirectory(template_sets);
     }
-    ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
-    // TODO backup funktionier nicht mehr
-    if (!Files.exists(adapted))
+    if (!Files.exists(adapted)) {
       Files.createDirectory(adapted);
+    }
+    Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
+    ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
@@ -168,29 +171,24 @@ public class TemplateSetUpgrader {
       }
     }
 
+    // cleanup
+    for (File file : folderToRename.listFiles()) {
+      if (!file.getName().equals(ConfigurationConstants.ADAPTED_FOLDER)) {
+        FileUtils.forceDelete(file);
+      }
+    }
     folderToRename.renameTo(templateSets.toFile());
+
     return contextMap;
 
   }
-  // Path newContextPath = templateSets.resolve(folderToRename.toPath().relativize(newTriggerFolder)
-  // .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-  // .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
-  // contextMap.put(cc, newContextPath);
-  // // creates actual context configuration file
-  // try (OutputStream out = Files.newOutputStream(newContextPath)) {
-  // JAXB.marshal(cc, out);
-  // }
-  // writeNewPomFile(cobigenTemplatesFolder, newTriggerFolder, trigger);
-  // contextMap.put(cc, newContextPath);
-  // }
-  // }
 
   /**
    * Writes a pom.xml file for the split context and template folder
    *
-   * @param {@link Path}cobigen_templates Path to the CobiGen_Templates folder
-   * @param {@link Path}newTemplateFolder Path to the split template folder
-   * @param {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }trigger to the related template folder
+   * @param Path {@link Path} to the CobiGen_Templates folder
+   * @param Path {@link Path} to the split template folder
+   * @param Trigger {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }to the related template folder
    * @throws IOException
    * @throws FileNotFoundException
    */
@@ -231,7 +229,7 @@ public class TemplateSetUpgrader {
   /**
    * Splits a contextConfiguration and converts a {@link Trigger} and his data to a v3_0 Trigger
    *
-   * @param {@link ContextConfiguration}the monolithic context that will be split
+   * @param ContextConfiguration {@link ContextConfiguration} of the monolithic context that will be split
    * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} List of the split
    *         contextConfiguration files
    */
@@ -247,7 +245,6 @@ public class TemplateSetUpgrader {
       trigger3_0.setInputCharset(trigger.getInputCharset());
       trigger3_0.setType(trigger.getType());
       trigger3_0.setTemplateFolder(trigger.getTemplateFolder());
-      System.out.println("Triggerfolder: " + trigger.getTemplateFolder());
 
       List<com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher> v3MList = this.mapper.mapAsList(trigger.getMatcher(),
           com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class);
@@ -277,34 +274,20 @@ public class TemplateSetUpgrader {
   /**
    * Locates and returns the correct context file
    *
-   * @param {@link Path} to the contextFile
+   * @param path {@link Path} to the contextFile
    * @return {@link ContextConfiguration}
    * @throws Exception
    */
   private ContextConfiguration getContextConfiguration(Path contextFile) throws Exception {
 
-    System.out.println(contextFile);
-
     if (contextFile == null) {
-      throw new Exception("Templates location cannot be null!");
+      throw new CobiGenRuntimeException("Templates location cannot be null!");
     }
     // check if context exits here
     Path context = contextFile.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
     if (Files.exists(context)) {
       LOG.info("Found Context File");
     } else {
-      if (contextFile.endsWith(ConfigurationConstants.COBIGEN_TEMPLATES)) {
-        context = contextFile.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        LOG.info("Found Context File");
-      } else if (contextFile.endsWith(ConfigurationConstants.TEMPLATES_FOLDER)) {
-        context = contextFile.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
-            .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        LOG.info("Found Context File");
-      }
-    }
-    if (!Files.exists(context)) {
       throw new FileNotFoundException("Context.xml could not be found");
     }
 
