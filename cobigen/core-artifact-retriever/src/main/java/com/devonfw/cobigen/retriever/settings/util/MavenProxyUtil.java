@@ -14,20 +14,28 @@ public class MavenProxyUtil {
 
   /**
    *
+   * @param repositories all active repositories
+   * @param proxy the active proxy
+   * @param withProxies boolean when set true it delivers repositories with proxies, when set false otherwise
    * @return a list of all repositories, which are using the given proxy
    */
-  public static List<MavenSettingsRepositoryModel> obtainRepositoriesWithProxies(
-      List<MavenSettingsRepositoryModel> repositories, MavenSettingsProxyModel proxy) {
+  public static List<MavenSettingsRepositoryModel> obtainRepositories(List<MavenSettingsRepositoryModel> repositories,
+      MavenSettingsProxyModel proxy, boolean withProxies) {
 
-    List<MavenSettingsRepositoryModel> repositoriesWhichAreUsingTheProxy = new ArrayList<>();
+    List<MavenSettingsRepositoryModel> result = new ArrayList<>();
 
     for (MavenSettingsRepositoryModel r : repositories) {
-      if (!validateNonProxyHosts(proxy, r.getUrl())) {
-        repositoriesWhichAreUsingTheProxy.add(r);
+      if (withProxies) {
+        if (!validateNonProxyHosts(proxy, r.getUrl())) {
+          result.add(r);
+        }
+      } else {
+        if (validateNonProxyHosts(proxy, r.getUrl())) {
+          result.add(r);
+        }
       }
-
     }
-    return repositoriesWhichAreUsingTheProxy;
+    return result;
   }
 
   /**

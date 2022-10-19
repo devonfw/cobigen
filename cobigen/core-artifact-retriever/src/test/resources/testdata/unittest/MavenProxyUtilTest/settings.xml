@@ -22,16 +22,6 @@
             <password>somepassword</password>
             <nonProxyHosts>*</nonProxyHosts>
         </proxy>
-        <proxy>
-            <id>proxy3</id>
-            <active>false</active>
-            <protocol>http</protocol>
-            <host>proxy.example.com</host>
-            <port>8080</port>
-            <username>proxyuser</username>
-            <password>somepassword</password>
-            <nonProxyHosts>http://www.google.com</nonProxyHosts>
-        </proxy>
     </proxies>
 
     <profiles>
@@ -65,15 +55,5 @@
                 </repository>
             </repositories>
         </profile>
-        <profile>
-            <id>profile4</id>
-            <repositories>
-                <repository>
-                    <id>repo4</id>
-                    <name>Test Repo 4</name>
-                    <url>http://wwww.google.com</url>
-                </repository>
-            </repositories>
-        </profile>
-    </profiles>
+      </profiles>
 </settings>
