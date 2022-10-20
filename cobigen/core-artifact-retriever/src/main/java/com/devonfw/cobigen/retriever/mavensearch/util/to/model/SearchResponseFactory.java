@@ -2,6 +2,7 @@ package com.devonfw.cobigen.retriever.mavensearch.util.to.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class SearchResponseFactory {
       new JfrogSearchResponse(), new Nexus2SearchResponse(), new Nexus3SearchResponse());
 
   /**
-   * Searches for the maven artifact download links by given base URL, groupId and optional authentication token
+   * Searches for the maven artifact download links by given server credentials and groupId
    *
    * @param serverCredentials to use for connection and authentication
    * @param groupId to search for
@@ -44,18 +45,18 @@ public class SearchResponseFactory {
   public static List<URL> searchArtifactDownloadLinks(ServerCredentials serverCredentials, String groupId) {
 
     ObjectMapper mapper = new ObjectMapper();
-    List<URL> downloadLinks = null;
+    List<URL> downloadLinks = new ArrayList<>();
     MavenSearchRepositoryType searchRepositoryType = null;
     String searchRepositoryTargetLink = "";
 
     if (serverCredentials == null) {
       LOG.debug("No server credentials were provided.");
-      return null;
+      return downloadLinks;
     }
 
-    if (serverCredentials.getBaseUrl() == null) {
+    if (serverCredentials.getBaseUrl() == null || serverCredentials.getBaseUrl().isEmpty()) {
       LOG.debug("The server credentials are missing the base URL.");
-      return null;
+      return downloadLinks;
     }
 
     String baseUrl = serverCredentials.getBaseUrl();
@@ -74,7 +75,7 @@ public class SearchResponseFactory {
 
         if (jsonResponse == null || jsonResponse.isEmpty()) {
           LOG.debug("The json response was empty.");
-          return null;
+          return downloadLinks;
         }
 
         AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
@@ -84,28 +85,30 @@ public class SearchResponseFactory {
 
         downloadLinks = response.retrieveTemplateSetXmlDownloadURLs();
 
-        if (downloadLinks == null || downloadLinks.isEmpty()) {
+        if (downloadLinks == null) {
           LOG.debug("{} {} repository matching the group id: {} while using the URL: {}",
               MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_ARTIFACT_LIST_EMPTY, searchRepositoryType,
               groupId, searchRepositoryTargetLink);
-          return null;
+          return new ArrayList<>();
         }
 
         return downloadLinks;
 
       } catch (RestSearchResponseException e) {
         LOG.debug("The search REST API was unable to get a response from {}", searchRepositoryType);
-
+        if (SEARCH_RESPONSES.indexOf(searchResponse) != (SEARCH_RESPONSES.size() - 1)) {
+          LOG.debug("Trying to get a response from another search REST API type.");
+        }
       } catch (JsonProcessingException e) {
         LOG.debug("{} repository using the URL: {}",
             MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_UNABLE_TO_PARSE_JSON, searchRepositoryType,
             searchRepositoryTargetLink, e);
-        return null;
+        return downloadLinks;
       } catch (MalformedURLException e) {
         LOG.debug("{} {} repository using the URL: {}",
             MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_FAULTY_TARGET_URL, searchRepositoryType,
             searchRepositoryTargetLink, e);
-        return null;
+        return downloadLinks;
       }
     }
 

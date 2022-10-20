@@ -6,6 +6,7 @@ package com.devonfw.cobigen.retriever.mavensearch.util.to.model;
  *
  */
 public class ServerCredentials {
+
   /** The maven repository server base URL */
   private String baseUrl;
 

@@ -27,6 +27,7 @@ import com.devonfw.cobigen.retriever.mavensearch.util.to.model.maven.MavenSearch
 import com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus2.Nexus2SearchResponse;
 import com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus3.Nexus3SearchResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
@@ -44,18 +45,76 @@ public class MavenRestSearchTest {
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSearchTest";
 
   /**
-   * Tests if retrieving maven artifacts with an invalid link returns null
+   * Tests if retrieving maven artifacts with an invalid link cancels the process and returns an empty list.
    */
   @Test
   public void testRetrieveMavenArtifactsWithInvalidLinkThrowsException() {
 
     ServerCredentials serverCredentials = new ServerCredentials("this/is/not/a/link", null, null, null, 0);
-    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isNull();
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
 
   }
 
   /**
-   * Tests if retrieving maven artifacts with an invalid username and password returns null
+   * Tests if retrieving maven artifacts with basic authentication returns a list of download urls
+   *
+   * @throws IOException if the test resource could not be read
+   */
+  @Test
+  public void testRetrieveMavenArtifactsWithBasicAuthenticationReturnsAResponse() throws IOException {
+
+    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200)
+        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("mavenJsonTest.json")))));
+
+    ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", "testuser", "testpassword",
+        null, 0);
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).contains(new URL(
+        "https://repo1.maven.org/maven2/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
+
+  }
+
+  /**
+   * Tests if retrieving a json response with a connection problem (connection reset) cancels the process and returns an
+   * empty response String
+   *
+   * @throws IOException if the test resource could not be read
+   */
+  @Test
+  public void testRetrieveJsonResponseWithConnectionProblemCancelsAndReturnsNull() throws IOException {
+
+    this.wireMockRule.stubFor(
+        get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+
+    ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", null, null, null, 0);
+
+    assertThat(AbstractSearchResponse.retrieveJsonResponseWithAuthentication(
+        "http://localhost:8080/solrsearch/select.*", MavenSearchRepositoryType.MAVEN, serverCredentials)).isEmpty();
+
+  }
+
+  /**
+   * Tests if retrieving maven artifacts using an invalid proxy cancels the process and returns an empty list of
+   * download URLs.
+   *
+   * @throws IOException if the test resource could not be read
+   */
+  @Test
+  public void testRetrieveMavenArtifactsWithInvalidProxyCancelsAndReturnsNull() throws IOException {
+
+    this.wireMockRule
+        .stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().proxiedFrom("http://localhost:8081")
+            .withStatus(200).withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("mavenJsonTest.json")))));
+
+    ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", null, null, "http://localhost",
+        8081);
+
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
+
+  }
+
+  /**
+   * Tests if retrieving maven artifacts with an invalid username and password and returns an empty list of download
+   * URLs.
    */
   @Test
   public void testRetrieveMavenArtifactsWithInvalidBasicCredentialsReturnsNull() {
@@ -63,24 +122,104 @@ public class MavenRestSearchTest {
     this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(401)));
 
     ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", null, null, null, 0);
-    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isNull();
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
 
   }
 
   /**
-   * Tests if null gets returned when a faulty target link was used
+   * Tests if a maven artifact search with empty server credentials cancels the process and returns an empty list
    */
   @Test
-  public void testWrongTargetLinkReturnsNull() {
+  public void testEmptyServerCredentialsCancelsAndReturnsEmptyList() {
+
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(null, "test")).isEmpty();
+  }
+
+  /**
+   * Tests if a maven artifact search with server credentials and empty base URL cancels the process and returns an
+   * empty list of download URLs.
+   */
+  @Test
+  public void testEmptyServerCredentialsBaseUrlCancelsAndReturnsEmptyList() {
+
+    ServerCredentials serverCredentials = new ServerCredentials("", "", "", "", 0);
+
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
+  }
+
+  /**
+   * Tests if a maven artifact search with an empty download list as response cancels and returns an empty list.
+   */
+  @Test
+  public void testMavenEmptyDownloadLinksAfterSearchRequestCancelsAndReturnsEmptyList() {
+
+    this.wireMockRule
+        .stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200).withBody("{}")));
+
+    ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", null, null, null, 0);
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
+
+    this.wireMockRule.stubFor(
+        get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(200).withBody("{}")));
+
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
+  }
+
+  /**
+   * Tests if a jfrog artifact search with an empty body as response cancels and returns an empty list.
+   */
+  @Test
+  public void testJfrogEmptyDownloadLinksAfterSearchRequestCancelsAndReturnsEmptyList() {
+
+    ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", null, null, null, 0);
+
+    this.wireMockRule.stubFor(
+        get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(200).withBody("{}")));
+
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
+  }
+
+  /**
+   * Tests if a nexus2 artifact search with an empty body as response cancels and returns an empty list.
+   */
+  @Test
+  public void testNexus2EmptyDownloadLinksAfterSearchRequestCancelsAndReturnsNull() {
+
+    ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", null, null, null, 0);
+
+    this.wireMockRule.stubFor(
+        get(urlMatching("/service/local/lucene/search.*")).willReturn(aResponse().withStatus(200).withBody("{}")));
+
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
+  }
+
+  /**
+   * Tests if a nexus3 artifact search with an empty download list as response cancels and returns an empty list.
+   */
+  @Test
+  public void testNexus3EmptyDownloadLinksAfterSearchRequestCancelsAndReturnsNull() {
+
+    ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", null, null, null, 0);
+
+    this.wireMockRule
+        .stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(200).withBody("{}")));
+
+    assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "test")).isEmpty();
+  }
+
+  /**
+   * Tests if an empty String gets returned when a faulty target link was used
+   */
+  @Test
+  public void testWrongTargetLinkReturnsEmptyString() {
 
     ServerCredentials serverCredentials = new ServerCredentials(null, null, null, null, 0);
     assertThat(AbstractSearchResponse.retrieveJsonResponseWithAuthentication("this/is/not/a/link",
-        MavenSearchRepositoryType.MAVEN, serverCredentials)).isNull();
-
+        MavenSearchRepositoryType.MAVEN, serverCredentials)).isEmpty();
   }
 
   /**
-   * Tests if an {@link RestSearchResponseException} gets returned when a status code was not 200 but 400 instead
+   * Tests if an {@link RestSearchResponseException} gets thrown when a status code was not 200 but 400 instead
    */
   @Test
   public void testWrongResponseStatusCodeThrowsException() {
@@ -98,7 +237,7 @@ public class MavenRestSearchTest {
   }
 
   /**
-   * Tests if null gets returned if the search request received an empty json string as a response
+   * Tests if an empty list gets returned if the search request received an empty json string as a response
    *
    */
   @Test
@@ -110,7 +249,7 @@ public class MavenRestSearchTest {
 
     ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8080", null, null, null, 0);
     assertThat(SearchResponseFactory.searchArtifactDownloadLinks(serverCredentials, "com.devonfw.cobigen.templates"))
-        .isNull();
+        .isEmpty();
 
   }
 
@@ -230,11 +369,9 @@ public class MavenRestSearchTest {
 
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
-    MavenSearchArtifactRetriever retriever = new MavenSearchArtifactRetriever("http://localhost:8080", null, null, "",
-        0, "com.devonfw.cobigen");
-
     // when
-    downloadList = retriever.getMavenArtifactDownloadUrls();
+    downloadList = MavenSearchArtifactRetriever.retrieveMavenArtifactDownloadUrls("http://localhost:8080", null, null,
+        "", 0, "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(
@@ -262,11 +399,9 @@ public class MavenRestSearchTest {
 
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
-    MavenSearchArtifactRetriever retriever = new MavenSearchArtifactRetriever("http://localhost:8080", null, null, "",
-        0, "com.devonfw.cobigen");
-
     // when
-    downloadList = retriever.getMavenArtifactDownloadUrls();
+    downloadList = MavenSearchArtifactRetriever.retrieveMavenArtifactDownloadUrls("http://localhost:8080", null, null,
+        "", 0, "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(
@@ -295,11 +430,9 @@ public class MavenRestSearchTest {
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(200)
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
 
-    MavenSearchArtifactRetriever retriever = new MavenSearchArtifactRetriever("http://localhost:8080", null, null, "",
-        0, "com.devonfw.cobigen");
-
     // when
-    downloadList = retriever.getMavenArtifactDownloadUrls();
+    downloadList = MavenSearchArtifactRetriever.retrieveMavenArtifactDownloadUrls("http://localhost:8080", null, null,
+        "", 0, "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(
@@ -327,11 +460,9 @@ public class MavenRestSearchTest {
 
     this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
 
-    MavenSearchArtifactRetriever retriever = new MavenSearchArtifactRetriever("http://localhost:8080", null, null, "",
-        0, "com.devonfw.cobigen");
-
     // when
-    downloadList = retriever.getMavenArtifactDownloadUrls();
+    downloadList = MavenSearchArtifactRetriever.retrieveMavenArtifactDownloadUrls("http://localhost:8080", null, null,
+        "", 0, "com.devonfw.cobigen");
 
     // then
     assertThat(downloadList).contains(new URL(

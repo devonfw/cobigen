@@ -39,6 +39,11 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
 
     List<URL> downloadLinks = new ArrayList<>();
 
+    if (this.items == null) {
+      LOG.debug("The {} response was empty.", getRepositoryType());
+      return downloadLinks;
+    }
+
     for (Nexus3SearchResponseItem item : this.items) {
       for (Nexus3SearchResponseAsset asset : item.assets) {
         if (asset.downloadUrl.endsWith(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)) {

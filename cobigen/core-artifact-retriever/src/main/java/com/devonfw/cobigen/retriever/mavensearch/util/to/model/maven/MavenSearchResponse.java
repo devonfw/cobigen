@@ -56,6 +56,12 @@ public class MavenSearchResponse extends AbstractSearchResponse {
   public List<URL> retrieveTemplateSetXmlDownloadURLs() throws MalformedURLException {
 
     List<URL> downloadLinks = new ArrayList<>();
+
+    if (getResponse() == null) {
+      LOG.debug("The {} response was empty.", getRepositoryType());
+      return downloadLinks;
+    }
+
     List<MavenSearchResponseDoc> docs = getResponse().getDocs();
 
     for (MavenSearchResponseDoc doc : docs) {

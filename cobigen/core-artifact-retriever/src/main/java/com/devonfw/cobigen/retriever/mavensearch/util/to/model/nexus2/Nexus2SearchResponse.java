@@ -38,6 +38,11 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
 
     List<URL> downloadLinks = new ArrayList<>();
 
+    if (this.data == null) {
+      LOG.debug("The {} response was empty.", getRepositoryType());
+      return downloadLinks;
+    }
+
     for (Nexus2SearchResponseData item : this.data) {
       for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
         for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {

@@ -56,6 +56,11 @@ public class JfrogSearchResponse extends AbstractSearchResponse {
 
     List<URL> downloadLinks = new ArrayList<>();
 
+    if (getResults() == null) {
+      LOG.debug("The {} response was empty.", getRepositoryType());
+      return downloadLinks;
+    }
+
     for (JfrogSearchResponseResult result : getResults()) {
       if (result.getUri().endsWith(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)) {
         downloadLinks.add(new URL(result.getUri()));

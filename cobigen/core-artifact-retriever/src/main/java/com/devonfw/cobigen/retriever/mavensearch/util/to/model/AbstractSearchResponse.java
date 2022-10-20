@@ -71,7 +71,7 @@ public abstract class AbstractSearchResponse {
   /**
    * Retrieves the json response from a repository URL, a group ID and a bearer authentication token
    *
-   * @param serverCredentials TODO
+   * @param serverCredentials to use
    * @param groupId to search for
    *
    * @return String of json response
@@ -79,19 +79,6 @@ public abstract class AbstractSearchResponse {
    */
   public abstract String retrieveJsonResponse(ServerCredentials serverCredentials, String groupId)
       throws RestSearchResponseException;
-
-  /**
-   * Creates a @Request with provided authentication token
-   *
-   * @param targetLink link to get response from
-   * @param token bearer token to use for authentication
-   * @return Request to use as resource
-   */
-  private static Request bearerTokenAuthentication(String targetLink, String token) {
-
-    return new Request.Builder().url(targetLink).addHeader("Authorization", "Bearer " + token).build();
-
-  }
 
   /**
    * Creates a @Request with provided authentication username and password
@@ -113,7 +100,7 @@ public abstract class AbstractSearchResponse {
    *
    * @param targetLink link to get response from
    * @param searchRepositoryType the type of the search repository
-   * @param serverCredentials to connect with the server
+   * @param serverCredentials to use for connection and authentication with the server
    * @return String of json response
    * @throws RestSearchResponseException if the returned status code was not 200 OK
    */
@@ -173,15 +160,15 @@ public abstract class AbstractSearchResponse {
 
     } catch (IOException e) {
       LOG.debug("{} {}", MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_REQUEST_FAILED, targetLink, e);
-      return null;
+      return jsonResponse;
     } catch (IllegalArgumentException e) {
       LOG.debug("The search REST API recieved the faulty target URL: {}", targetLink, e);
-      return null;
+      return jsonResponse;
     }
 
     if (jsonResponse.isEmpty()) {
       LOG.debug("{} {}", MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_EMPTY_JSON_RESPONSE, targetLink);
-      return null;
+      return jsonResponse;
     }
 
     return jsonResponse;
