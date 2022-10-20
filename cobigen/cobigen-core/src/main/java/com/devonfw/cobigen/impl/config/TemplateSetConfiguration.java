@@ -4,8 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,6 +11,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Increment;
@@ -21,14 +20,8 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.google.common.collect.Maps;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
-import com.devonfw.cobigen.api.util.MavenCoordinate;
-
 /**
-
+ *
  * This Class is used to set specific properties if not found, or save them if correctly found. These properties are
  * groupIds, allowSnapshots and hideTemplates.
  */
@@ -74,6 +67,7 @@ public class TemplateSetConfiguration {
    * @param configRoot Root of the configuration
    */
   public TemplateSetConfiguration(Path configRoot) {
+
     // this.templateSetConfiguration = new TemplateSetConfiguration();
     this.triggers = Maps.newHashMap();
     this.templates = Maps.newHashMap();
@@ -95,8 +89,7 @@ public class TemplateSetConfiguration {
     this(configRoot);
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
-    this.hideTemplates = convertToMavenCoordinates(hideTemplates);
-    this.mavenCoordinates = convertToMavenCoordinates(mavenCoordinates);
+    this.hideTemplates = hideTemplates;
 
   }
 

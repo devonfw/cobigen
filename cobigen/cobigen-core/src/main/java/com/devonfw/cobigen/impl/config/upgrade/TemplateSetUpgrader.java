@@ -65,18 +65,18 @@ public class TemplateSetUpgrader {
 
     this.mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
     this.mapperFactory
-        .classMap(com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher.class,
+        .classMap(com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class,
             com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class)
         .field(
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
         .byDefault().register();
-    this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.Trigger.class,
+    this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger.class,
         com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger.class).byDefault().register();
-    this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.Matcher.class,
+    this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class,
         com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class).byDefault().register();
     this.mapperFactory
-        .classMap(com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher.class,
+        .classMap(com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class,
             com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class)
         .field(
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",

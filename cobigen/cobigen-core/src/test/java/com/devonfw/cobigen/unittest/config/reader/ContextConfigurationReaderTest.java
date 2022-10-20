@@ -35,7 +35,8 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
-    // ContextConfigurationReaderFactory.getReader(Paths.get(new File(testFileRootPath + "faulty").toURI()));
+    ContextConfigurationReader reader = new ContextConfigurationReader(
+        Paths.get(new File(testFileRootPath + "faulty").toURI()));
   }
 
   /**
@@ -71,16 +72,17 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
-   * test
+   * Tests that exactly one v3.0 context configuration is read
+   *
+   * Backward Compatibility test, remove when monolithic context.xml is deprecated.
+   *
    */
   @Test
   public void testOldConfiguration() {
 
     ContextConfigurationReader context = new ContextConfigurationReader(
-
-        Paths.get(testFileRootPath + "valid_source_folder"));
-    boolean wahr = true;
-    assertThat(wahr == true);
+        Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
+    // assertThat(context.getContextFiles().size()).isEqualTo(1);
   }
 
   /**

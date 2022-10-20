@@ -12,8 +12,8 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 
 /**
- * The {@link ContextConfigurationDecorator} is a configuration data wrapper for all information about templates and the
- * target destination for the generated data.
+ * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
+ * destination for the generated data.
  */
 public class ContextConfiguration {
 

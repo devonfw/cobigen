@@ -901,7 +901,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
    */
   private Trigger getExternalTrigger(String triggerToSearch) {
 
-    ContextConfigurationInterface contextConfigurationReader = new ContextConfigurationReader(
+    ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);

@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -29,19 +28,13 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
-import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
-import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
-import com.devonfw.cobigen.impl.config.entity.Matcher;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
-import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
-import com.devonfw.cobigen.impl.config.reader.interfaces.ContextConfigurationInterface;
+import com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import jakarta.xml.bind.JAXBContext;
@@ -50,16 +43,7 @@ import jakarta.xml.bind.UnmarshalException;
 import jakarta.xml.bind.Unmarshaller;
 
 /** The {@link ContextConfigurationReader} reads the context xml */
-public class ContextConfigurationReader implements ContextConfigurationInterface {
-
-  /** Map with XML Nodes 'context' of the context.xml files */
-  protected Map<Path, TemplateSetConfiguration> contextConfigurations;
-
-  /** Paths of the context configuration files */
-  protected List<Path> contextFiles;
-
-  /** Root of the context configuration file, used for passing to ContextConfiguration */
-  protected Path contextRoot;
+public class ContextConfigurationReader extends AbstractContextConfigurationReader {
 
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
@@ -72,9 +56,7 @@ public class ContextConfigurationReader implements ContextConfigurationInterface
    */
   public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
 
-    if (configRoot == null) {
-      throw new IllegalArgumentException("Configuration path cannot be null.");
-    }
+    super(configRoot);
 
     this.contextFiles = new ArrayList<>();
 
@@ -107,17 +89,10 @@ public class ContextConfigurationReader implements ContextConfigurationInterface
   }
 
   /**
-   * Checks if a conflict with the old and modular configuration exists
-   *
-   * @param configRoot Path to root directory of the configuration
-   * @param contextFile Path to context file of the configuration
-   */
-
-  /**
    * Reads the context configuration.
    */
   @Override
-  public void readConfiguration() {
+  protected void readConfiguration() {
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
@@ -167,7 +142,7 @@ public class ContextConfigurationReader implements ContextConfigurationInterface
           Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
           unmarschaller.setSchema(schema);
           rootNode = unmarschaller.unmarshal(configInputStream);
-          this.contextConfigurations.put(contextFile, (TemplateSetConfiguration) rootNode);
+          this.contextConfigurations.put(contextFile, (ContextConfiguration) rootNode);
         }
       } catch (JAXBException e) {
         // try getting SAXParseException for better error handling and user support
@@ -194,6 +169,12 @@ public class ContextConfigurationReader implements ContextConfigurationInterface
     }
   }
 
+  /**
+   * Checks if a conflict with the old and modular configuration exists
+   *
+   * @param configRoot Path to root directory of the configuration
+   * @param contextFile Path to context file of the configuration
+   */
   private void checkForConflict(Path configRoot, Path contextFile) {
 
     if (!loadContextFilesInSubfolder(configRoot).isEmpty()) {
@@ -239,53 +220,6 @@ public class ContextConfigurationReader implements ContextConfigurationInterface
   }
 
   /**
-   * Loads all {@link Matcher}s of a given {@link com.devonfw.cobigen.impl.config.entity.io.Trigger}
-   *
-   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
-   * @return the {@link List} of {@link Matcher}s
-   */
-  protected List<Matcher> loadMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
-
-    List<Matcher> matcher = new LinkedList<>();
-    for (com.devonfw.cobigen.impl.config.entity.io.Matcher m : trigger.getMatcher()) {
-      matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m.getAccumulationType()));
-    }
-    return matcher;
-  }
-
-  /**
-   * Loads all {@link ContainerMatcher}s of a given {@link com.devonfw.cobigen.impl.config.entity.io.Trigger}
-   *
-   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
-   * @return the {@link List} of {@link Matcher}s
-   */
-  protected List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
-
-    List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
-    for (com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
-      containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm.isRetrieveObjectsRecursively()));
-    }
-    return containerMatchers;
-  }
-
-  /**
-   * Loads all {@link VariableAssignment}s from a given {@link com.devonfw.cobigen.impl.config.entity.io.Matcher}
-   *
-   * @param matcher {@link com.devonfw.cobigen.impl.config.entity.io.Matcher} to retrieve the {@link VariableAssignment}
-   *        from
-   * @return the {@link List} of {@link Matcher}s
-   */
-  protected List<VariableAssignment> loadVariableAssignments(
-      com.devonfw.cobigen.impl.config.entity.io.Matcher matcher) {
-
-    List<VariableAssignment> variableAssignments = new LinkedList<>();
-    for (com.devonfw.cobigen.impl.config.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {
-      variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue(), va.isMandatory()));
-    }
-    return variableAssignments;
-  }
-
-  /**
    * Loads all {@link Trigger}s of the static context into the local representation
    *
    * @return a {@link List} containing all the {@link Trigger}s
@@ -295,9 +229,9 @@ public class ContextConfigurationReader implements ContextConfigurationInterface
 
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.contextConfigurations.keySet()) {
-      TemplateSetConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
-      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
-        // templateFolder property is optional in schema version 2.2. If not set take the path of the context.xml file
+      ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
+      for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger t : contextConfiguration.getTrigger()) {
+        // templateFolder property is optional in schema version 3.0. If not set take the path of the context.xml file
         String templateFolder = t.getTemplateFolder();
         if (templateFolder.isEmpty() || templateFolder.equals("/")) {
           templateFolder = contextFile.getParent().getFileName().toString();
@@ -307,14 +241,5 @@ public class ContextConfigurationReader implements ContextConfigurationInterface
       }
     }
     return triggers;
-  }
-
-  /**
-   * @return contextRoot
-   */
-
-  public Path getContextRoot() {
-
-    return this.contextRoot;
   }
 }
