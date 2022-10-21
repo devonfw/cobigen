@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <servers>
+    <server>
+      <id>repository1</id>
+      <username>testUsername</username>
+      <password>testPassword</password>
+    </server>
+    <server>
+      <id>repository2</id>
+      <username>testUsername</username>
+      <password>testPassword</password>
+    </server>
+  </servers>
+
+  <proxies>
+    <proxy>
+      <id>example-proxy2</id>
+      <active>false</active>
+      <protocol>https</protocol>
+      <host>proxy.example.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.example.com</nonProxyHosts>
+    </proxy>
+    <proxy>
+      <id>example-proxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy.example.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.example.com</nonProxyHosts>
+    </proxy>
+  </proxies>
+
+  <mirrors>
+    <mirror>
+      <mirrorOf>external:http:*</mirrorOf>
+      <name>Pseudo repository to mirror external repositories initially using HTTP.</name>
+      <url>http://0.0.0.0/</url>
+      <blocked>true</blocked>
+      <id>maven-default-http-blocker</id>
+    </mirror>
+  </mirrors>
+
+  <profiles>
+    <profile>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <id>devonfw-snapshots</id>
+      <repositories>
+        <repository>
+          <id>repository1</id>
+          <name>devonfw SNAPSHOT releases</name>
+          <url>http://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+          <id>repository11</id>
+          <name>test repository</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>profile-1</id>
+      <repositories>
+        <repository>
+          <id>repository2</id>
+          <name>test repository</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>profile-2</id>
+      <repositories>
+        <repository>
+          <id>repository3</id>
+          <name>test repository</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>profile-1</activeProfile>
+    <activeProfile>profile-3</activeProfile>
+  </activeProfiles>
+</settings>

@@ -2,7 +2,6 @@ package com.devonfw.cobigen.retriever.settings.util;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProfileModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProxyModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
-import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsServerModel;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -68,29 +66,6 @@ public class MavenSettingsUtil {
       }
     }
     return proxy;
-  }
-
-  /**
-   * Matches the id of the server to the id of the repository that maven tries to connect to
-   *
-   * @param servers from maven's settings.xml
-   * @param repositories (with injected mirrors) from maven's settings.xml
-   * @return a map, with pairs of servers and repositories
-   */
-  public static HashMap<MavenSettingsServerModel, MavenSettingsRepositoryModel> getServerForRepositories(
-      List<MavenSettingsServerModel> servers, List<MavenSettingsRepositoryModel> repositories) {
-
-    HashMap<MavenSettingsServerModel, MavenSettingsRepositoryModel> serverForRepository = new HashMap<>();
-
-    for (MavenSettingsRepositoryModel r : repositories) {
-      for (MavenSettingsServerModel s : servers) {
-        if (r.getId().equals(s.getId())) {
-          serverForRepository.put(s, r);
-          break;
-        }
-      }
-    }
-    return serverForRepository;
   }
 
   /**
