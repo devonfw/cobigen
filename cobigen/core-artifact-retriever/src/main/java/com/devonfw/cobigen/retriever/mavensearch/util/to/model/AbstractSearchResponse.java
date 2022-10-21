@@ -19,10 +19,12 @@ import com.devonfw.cobigen.retriever.mavensearch.exception.RestSearchResponseExc
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.Route;
 
 /**
  * This interface should be inherited for all maven REST search API responses to properly convert {@link JsonProperty}
@@ -119,12 +121,7 @@ public abstract class AbstractSearchResponse {
     builder.retryOnConnectionFailure(true);
 
     if (serverCredentials.getProxyAddress() != null && serverCredentials.getProxyPort() != 0) {
-      LOG.debug("Connecting to REST API using proxy with host address: {} and port: {}",
-          serverCredentials.getProxyAddress(), serverCredentials.getProxyPort());
-      SocketAddress address = new InetSocketAddress(serverCredentials.getProxyAddress(),
-          serverCredentials.getProxyPort());
-      Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
-      builder.proxy(proxy);
+      buildProxy(serverCredentials, builder);
     }
 
     OkHttpClient httpClient = builder.build();
@@ -182,6 +179,42 @@ public abstract class AbstractSearchResponse {
 
     return jsonResponse;
 
+  }
+
+  /**
+   * Builds a {@link OkHttpClient.Builder} with proxy server credentials
+   *
+   * @param serverCredentials {@link ServerCredentials} to use for connection and authentication
+   * @param builder {@link OkHttpClient.Builder} to build with proxy
+   */
+  private static void buildProxy(ServerCredentials serverCredentials, OkHttpClient.Builder builder) {
+
+    Authenticator authenticator = null;
+
+    if (serverCredentials.getProxyUsername() != null && serverCredentials.getProxyPassword() != null) {
+      LOG.debug("Trying to connect to proxy using Basic Authentication.");
+      authenticator = new Authenticator() {
+        @Override
+        public Request authenticate(Route route, Response response) throws IOException {
+
+          String credential = Credentials.basic(serverCredentials.getProxyUsername(),
+              serverCredentials.getProxyPassword());
+          return response.request().newBuilder().header("Proxy-Authorization", credential).build();
+        }
+      };
+    }
+
+    LOG.debug("Connecting to REST API using proxy with host address: {} and port: {}",
+        serverCredentials.getProxyAddress(), serverCredentials.getProxyPort());
+
+    SocketAddress address = new InetSocketAddress(serverCredentials.getProxyAddress(),
+        serverCredentials.getProxyPort());
+    Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
+    if (authenticator != null) {
+      builder.proxy(proxy).proxyAuthenticator(authenticator);
+    } else {
+      builder.proxy(proxy);
+    }
   }
 
   /**

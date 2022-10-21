@@ -22,6 +22,12 @@ public class ServerCredentials {
   /** The port to use for the proxy server */
   private int proxyPort;
 
+  /** The user name to use for the proxy server */
+  private String proxyUsername;
+
+  /** The password to use for the proxy server */
+  private String proxyPassword;
+
   /**
    *
    * The constructor.
@@ -31,14 +37,19 @@ public class ServerCredentials {
    * @param password to use for authentication
    * @param proxyAddress to use for the proxy server
    * @param proxyPort to use for the proxy server
+   * @param proxyUsername to use for the proxy server authentication
+   * @param proxyPassword to use for the proxy server authentication
    */
-  public ServerCredentials(String baseUrl, String username, String password, String proxyAddress, int proxyPort) {
+  public ServerCredentials(String baseUrl, String username, String password, String proxyAddress, int proxyPort,
+      String proxyUsername, String proxyPassword) {
 
     this.baseUrl = baseUrl;
     this.username = username;
     this.password = password;
     this.proxyAddress = proxyAddress;
     this.proxyPort = proxyPort;
+    this.proxyUsername = proxyUsername;
+    this.proxyPassword = proxyPassword;
   }
 
   /**
@@ -79,5 +90,21 @@ public class ServerCredentials {
   public int getProxyPort() {
 
     return this.proxyPort;
+  }
+
+  /**
+   * @return proxyUsername
+   */
+  public String getProxyUsername() {
+
+    return this.proxyUsername;
+  }
+
+  /**
+   * @return proxyPassword
+   */
+  public String getProxyPassword() {
+
+    return this.proxyPassword;
   }
 }

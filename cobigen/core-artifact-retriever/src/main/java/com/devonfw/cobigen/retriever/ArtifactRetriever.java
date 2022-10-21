@@ -77,10 +77,10 @@ public class ArtifactRetriever {
         if (activeProxy != null) {
           result.addAll(MavenSearchArtifactRetriever.retrieveMavenArtifactDownloadUrls(repositoryModel.getUrl(),
               serverModel.getUsername(), serverModel.getPassword(), activeProxy.getHost(),
-              Integer.valueOf(activeProxy.getPort()), groupID));
+              Integer.valueOf(activeProxy.getPort()), null, null, groupID));
         } else {
           result.addAll(MavenSearchArtifactRetriever.retrieveMavenArtifactDownloadUrls(repositoryModel.getUrl(),
-              serverModel.getUsername(), serverModel.getPassword(), null, 0, groupID));
+              serverModel.getUsername(), serverModel.getPassword(), null, 0, null, null, groupID));
         }
       }
     }
