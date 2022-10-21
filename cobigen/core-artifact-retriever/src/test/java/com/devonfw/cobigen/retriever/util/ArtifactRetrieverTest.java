@@ -15,9 +15,13 @@ public class ArtifactRetrieverTest {
 
   private final static String testdataRoot = "src/test/resources/testdata/unittest/ArtifactRetrieverTest";
 
-  private static MavenSettingsModel model;
+  private static MavenSettingsModel modelNonProxy;
 
-  private static String mavenSettings;
+  private static MavenSettingsModel modelProxy;
+
+  private static String mavenSettingsNonProxy;
+
+  private static String mavenSettingsProxy;
 
   /**
    * Used to initialize data needed for the tests
@@ -26,12 +30,13 @@ public class ArtifactRetrieverTest {
   public static void setUpClass() {
 
     try {
-      mavenSettings = Files.readString(Paths.get(testdataRoot).resolve("settings.xml"));
+      mavenSettingsNonProxy = Files.readString(Paths.get(testdataRoot).resolve("settingsNonProxy.xml"));
+      mavenSettingsProxy = Files.readString(Paths.get(testdataRoot).resolve("settingsProxy.xml"));
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
     }
-    model = MavenSettingsUtil.generateMavenSettingsModel(mavenSettings);
-
+    modelNonProxy = MavenSettingsUtil.generateMavenSettingsModel(mavenSettingsNonProxy);
+    modelProxy = MavenSettingsUtil.generateMavenSettingsModel(mavenSettingsProxy);
   }
 
   @Test
