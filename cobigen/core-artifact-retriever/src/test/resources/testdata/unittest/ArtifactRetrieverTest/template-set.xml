@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.0">
+  <trigger id="crud_java_server_app" type="languageType">
+    <matcher type="fqn" value="*">
+    </matcher>
+  </trigger>
+
+  <tags>
+    <tag name="Tag1"/>
+    <tag name="Tag2"/>
+  </tags>
+
+  <templates>
+    <template name="prefix_Foo2Class.java" destinationPath="src/main/java/foo/Foo2Class${variable}.java"
+      templateFile="foo/Foo2Class.java.ftl" mergeStrategy="javamerge"/>
+    <templateExtension ref="prefix2_FooClass.java" destinationPath="adapted/path/FooClass.java"
+      mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
+    <templateExtension ref="prefix2_Foo2Class.java"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templateNamePrefix="prefix2_" templatePath="bar" destinationPath="src/main/java/bar"/>
+  </templateScans>
+
+  <increments>
+    <increment name="increment1" description="Description of increment 1" explanation="Explanation of increment 1">
+      <templateRef ref="SomeImpl.java" />
+    </increment>
+    <increment name="increment2" description="Description of increment 2" explanation="Explanation of increment 2">
+      <templateRef ref="SomeAbstract.java" />
+    </increment>
+  </increments>
+
+</templateSetConfiguration>

@@ -21,7 +21,7 @@ public class ArtifactRetriever {
   /**
    *
    */
-  public List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
+  public static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
 
     List<URL> downloadLinks = new ArrayList<>();
 
@@ -60,12 +60,15 @@ public class ArtifactRetriever {
    * @param activeProxy
    * @param repositories
    */
-  private List<URL> retrieveArtifactsFromRepository(List<String> groupIdsList, MavenSettingsModel model,
+  private static List<URL> retrieveArtifactsFromRepository(List<String> groupIdsList, MavenSettingsModel model,
       MavenSettingsProxyModel activeProxy, List<MavenSettingsRepositoryModel> repositories) {
 
     List<URL> result = new ArrayList<>();
 
     for (MavenSettingsRepositoryModel repositoryModel : repositories) {
+      if (model.getServers() == null) {
+        return result;
+      }
       MavenSettingsServerModel serverModel = getServerModel(model.getServers().getServerList(), repositoryModel);
       if (serverModel == null) {
         continue;
@@ -88,7 +91,7 @@ public class ArtifactRetriever {
       MavenSettingsRepositoryModel repository) {
 
     for (MavenSettingsServerModel serverModel : servers) {
-      if (serverModel.getId() == repository.getId()) {
+      if (serverModel.getId().equals(repository.getId())) {
         return serverModel;
       }
     }

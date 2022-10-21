@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -17,7 +16,6 @@ import com.devonfw.cobigen.retriever.settings.util.MavenSettingsUtil;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProxyModel;
 import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
-import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsServerModel;
 
 /**
  * Test class for MavenSettingsUtil
@@ -218,26 +216,6 @@ public class MavenSettingsUtilTest {
     String decodedPassword = MavenSettingsUtil.decryptPassword("{jrdiSuRPexMHvBd66Hsiy3nR1VpCc8TDREVCj+6AYrU=}",
         decodedMasterPassword);
     assertThat(decodedPassword).isEqualTo("thisisapassword");
-  }
-
-  /**
-   * Tests, whether a the matching of servers to repositories is working
-   */
-  @Test
-  public void testGetServerForRepositories() {
-
-    List<MavenSettingsServerModel> servers = model.getServers().getServerList();
-    List<MavenSettingsRepositoryModel> repositories = model.getProfiles().getProfileList().get(0).getRepositories()
-        .getRepositoryList();
-
-    HashMap<MavenSettingsServerModel, MavenSettingsRepositoryModel> result = MavenSettingsUtil
-        .getServerForRepositories(servers, repositories);
-
-    MavenSettingsServerModel serverResult = model.getServers().getServerList().get(0);
-    MavenSettingsRepositoryModel RepositoryResult = result.get(serverResult);
-
-    assertThat(RepositoryResult.getId()).isEqualTo(serverResult.getId());
-
   }
 
   // @Test

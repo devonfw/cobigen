@@ -45,6 +45,10 @@ public class MavenSettingsUtil {
 
     activeRepos = getRepositoriesOfActiveProfiles(model);
 
+    if (model.getMirrors() == null) {
+      return activeRepos;
+    }
+
     MavenMirrorUtil.injectMirrorUrl(activeRepos, model.getMirrors().getMirrorList());
 
     return activeRepos;

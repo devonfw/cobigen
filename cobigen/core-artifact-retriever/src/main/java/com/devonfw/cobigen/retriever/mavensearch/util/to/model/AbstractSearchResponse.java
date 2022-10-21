@@ -119,6 +119,8 @@ public abstract class AbstractSearchResponse {
     builder.retryOnConnectionFailure(true);
 
     if (serverCredentials.getProxyAddress() != null && serverCredentials.getProxyPort() != 0) {
+      LOG.debug("Connecting to REST API using proxy with host address: {} and port: {}",
+          serverCredentials.getProxyAddress(), serverCredentials.getProxyPort());
       SocketAddress address = new InetSocketAddress(serverCredentials.getProxyAddress(),
           serverCredentials.getProxyPort());
       Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
@@ -135,10 +137,13 @@ public abstract class AbstractSearchResponse {
 
       Request request = new Request.Builder().url(targetLink).get().build();
 
+      boolean usingBasicAuth = false;
       // use basic authentication
       if (serverCredentials.getUsername() != null && serverCredentials.getPassword() != null) {
+        LOG.debug("Connecting to REST API using Basic Authentication.");
         request = basicUsernamePasswordAuthentication(targetLink, serverCredentials.getUsername(),
             serverCredentials.getPassword());
+        usingBasicAuth = true;
       }
 
       response = httpClient.newCall(request).execute();
@@ -146,6 +151,10 @@ public abstract class AbstractSearchResponse {
       if (response != null) {
         int statusCode = response.code();
         if (statusCode == 200 || statusCode == 201 || statusCode == 204) {
+          if (usingBasicAuth) {
+            LOG.debug("The connection to the REST API using Basic Authentication was successful");
+          }
+
           jsonResponse = response.body().string();
         } else if (statusCode == 401) {
           LOG.debug("{} {} {} {}", MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_AUTH_FAILED_ONE,
