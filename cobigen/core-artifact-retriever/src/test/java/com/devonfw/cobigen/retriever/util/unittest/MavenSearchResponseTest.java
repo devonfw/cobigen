@@ -17,12 +17,12 @@ import com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus3.Nexus3Sear
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Test class for {@link MavenSearchResponse}
+ * Test class for proper parsing of maven repository search responses
  */
 public class MavenSearchResponseTest {
 
   /** Testdata root path */
-  private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSearchTest";
+  private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSearchResponseTest";
 
   /**
    * Tests if maven json response can properly be parsed and converted to a list of download URLs

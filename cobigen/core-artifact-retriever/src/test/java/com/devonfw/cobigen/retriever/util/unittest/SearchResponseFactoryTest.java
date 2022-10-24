@@ -31,7 +31,7 @@ public class SearchResponseFactoryTest {
   public WireMockRule wireMockRule = new WireMockRule(options().disableRequestJournal());
 
   /** Testdata root path */
-  private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSearchTest";
+  private static final String testdataRoot = "src/test/resources/testdata/unittest/SearchResponseFactoryTest";
 
   /**
    * Tests if retrieving maven artifacts with an invalid link cancels the process and returns an empty list.

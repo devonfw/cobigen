@@ -30,7 +30,7 @@ public class MavenSearchArtifactRetrieverTest {
   public WireMockRule wireMockRule = new WireMockRule(options().disableRequestJournal());
 
   /** Testdata root path */
-  private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSearchTest";
+  private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSearchArtifactRetrieverTest";
 
   /**
    * Tests if a request to maven search REST API returns a list of download URLs

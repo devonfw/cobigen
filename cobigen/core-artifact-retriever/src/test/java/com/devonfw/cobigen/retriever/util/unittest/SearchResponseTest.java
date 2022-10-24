@@ -30,9 +30,6 @@ public class SearchResponseTest {
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(options().disableRequestJournal());
 
-  /** Testdata root path */
-  private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenSearchTest";
-
   /**
    * Tests if retrieving a json response with a connection problem (connection reset) cancels the process and returns an
    * empty response String
