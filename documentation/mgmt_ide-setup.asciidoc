@@ -12,7 +12,7 @@ After you have executed the steps mentioned above, your install location should 
 +
 image::images/howtos/ide-setup/File_Structure.png[Install directory after executing setup.bat]
 +
-. Now create a fork of https://github.com/devonfw/cobigen as described https://docs.github.com/en/get-started/quickstart/fork-a-repo[here].
+. Now create a fork of `https://github.com/devonfw/cobigen` as described https://docs.github.com/en/get-started/quickstart/fork-a-repo[here].
 . As GIT by default does not set long paths, you need to run the following command as administrator `git config --system core.longpaths true` on your git bash.
 . The next step is to open a console inside you devonfw installation and execute the following command: `+devon project setup cobigen+`
 This downloads all the necessary files for CobiGen development.
@@ -29,7 +29,7 @@ This downloads all the necessary files for CobiGen development.
 .. Now we need to re-import the CobiGen project. This extra step is required because the automatic project import from devonfw doesn't work properly.
 ... Rightclick on your CobiGen root project and choose `Delete`.
 ... Tick `Delete xx nested Projects` and make sure to untick `Delete project content on disc`
-.. Click on File->import...->Maven->Existing Maven Project and entering `<Install directory>/workspaces/main/cobigen `(Should be the default location when clicking on "Browse...")
+.. Click on File->import...->Maven->Existing Maven Project and entering `<Install directory>/workspaces/main/cobigen` (Should be the default location when clicking on "Browse...")
 . After you have have finished your installation run a maven update. To do so right click on a project, select maven and afterwards update project. Select all projects and the checkbox Force Update of Snapshot/Releases.
 You might be asked to install some Tycho-plugins. You need those, if you want to debug eclipse-plugins. 	
 
@@ -60,7 +60,7 @@ To install the plugin manually, open a console in your IDE Install location and 
 
 When using the default devonfw IDE, you should get an error here that stems from parts of the plugin being installed with the devonfw IDE by default.
 
-* You can also manually install the SWT Bot:
+* You can also manually install the SWTBot:
 ** Open *Help/Eclipse Marketplace*
 ** Search for *SWTBot*
 ** Click on *install* (if it is marked as installed already, choose *uninstall* from the next dialog, restart eclipse and install it again)
