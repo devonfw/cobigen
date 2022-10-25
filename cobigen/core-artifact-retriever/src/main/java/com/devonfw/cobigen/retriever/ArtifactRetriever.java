@@ -5,38 +5,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.devonfw.cobigen.retriever.mavensearch.util.MavenSearchArtifactRetriever;
-import com.devonfw.cobigen.retriever.settings.util.MavenProxyUtil;
-import com.devonfw.cobigen.retriever.settings.util.MavenSettingsUtil;
-import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsModel;
-import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsProxyModel;
-import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsRepositoryModel;
-import com.devonfw.cobigen.retriever.settings.util.to.model.MavenSettingsServerModel;
+import com.devonfw.cobigen.retriever.settings.MavenProxy;
+import com.devonfw.cobigen.retriever.settings.MavenSettings;
+import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
+import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsProxyModel;
+import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsRepositoryModel;
+import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsServerModel;
 
 /**
- * TODO fberger This type ...
- *
+ * Utils to obtain maven artifact download URLs
  */
 public class ArtifactRetriever {
 
   /**
+   * Retrieves a list of maven artifact download URLs
+   *
+   * @param groupIdsList grouIds for template-sets
+   * @param mavenSettings string of maven's settings.xml
+   * @return list of maven artifact download URLs
    *
    */
   public static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
 
     List<URL> downloadLinks = new ArrayList<>();
 
-    MavenSettingsModel model = MavenSettingsUtil.generateMavenSettingsModel(mavenSettings);
+    MavenSettingsModel model = MavenSettings.generateMavenSettingsModel(mavenSettings);
 
-    MavenSettingsProxyModel activeProxy = MavenSettingsUtil
-        .getActiveProxy(MavenSettingsUtil.generateMavenSettingsModel(mavenSettings));
+    MavenSettingsProxyModel activeProxy = MavenSettings
+        .getActiveProxy(MavenSettings.generateMavenSettingsModel(mavenSettings));
 
-    List<MavenSettingsRepositoryModel> allActiveRepositories = MavenSettingsUtil
+    List<MavenSettingsRepositoryModel> allActiveRepositories = MavenSettings
         .getRepositoriesFromMavenSettings(mavenSettings);
 
-    List<MavenSettingsRepositoryModel> repositoriesWhichAreUsingTheProxy = MavenProxyUtil
+    List<MavenSettingsRepositoryModel> repositoriesWhichAreUsingTheProxy = MavenProxy
         .obtainRepositories(allActiveRepositories, activeProxy, true);
 
-    List<MavenSettingsRepositoryModel> repositoriesWhichDoNotUseTheProxy = MavenProxyUtil
+    List<MavenSettingsRepositoryModel> repositoriesWhichDoNotUseTheProxy = MavenProxy
         .obtainRepositories(allActiveRepositories, activeProxy, false);
 
     if (!repositoriesWhichAreUsingTheProxy.isEmpty()) {
@@ -54,11 +58,12 @@ public class ArtifactRetriever {
   }
 
   /**
-   * @param groupIdsList
-   * @param downloadLinks
-   * @param model
-   * @param activeProxy
-   * @param repositories
+   * Helper method to retrieve maven artifact download URLs
+   *
+   * @param groupIdsList grouIds for template-sets
+   * @param model a class on which maven's settings.xml has been mapped to
+   * @param activeProxy the currently active proxy
+   * @param repositories local repositories from maven's settings.xml
    */
   private static List<URL> retrieveArtifactsFromRepository(List<String> groupIdsList, MavenSettingsModel model,
       MavenSettingsProxyModel activeProxy, List<MavenSettingsRepositoryModel> repositories) {
@@ -87,6 +92,13 @@ public class ArtifactRetriever {
     return result;
   }
 
+  /**
+   * Helper method to determine the machting server for a repository
+   *
+   * @param servers from maven's settings.xml
+   * @param repository for which a server is searched for
+   * @return a server or null if none is found
+   */
   private static MavenSettingsServerModel getServerModel(List<MavenSettingsServerModel> servers,
       MavenSettingsRepositoryModel repository) {
 
