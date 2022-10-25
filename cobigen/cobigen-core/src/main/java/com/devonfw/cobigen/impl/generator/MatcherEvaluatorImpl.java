@@ -9,7 +9,7 @@ import com.devonfw.cobigen.api.annotation.Cached;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
-import com.devonfw.cobigen.impl.config.entity.io.AccumulationType;
+import com.devonfw.cobigen.impl.config.entity.io.v3_0.AccumulationType;
 import com.devonfw.cobigen.impl.generator.api.MatcherEvaluator;
 
 /**

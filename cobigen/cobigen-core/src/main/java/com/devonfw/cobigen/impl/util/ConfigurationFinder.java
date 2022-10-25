@@ -20,7 +20,10 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.impl.config.ConfigurationFactory;
+import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 
 /**
@@ -71,16 +74,23 @@ public class ConfigurationFinder {
       useSnapshots = true;
     }
 
-    List<String> hiddenIds = new ArrayList<>();
+    List<String> hiddenIdsString = new ArrayList<>();
     if (props.getProperty(hide) != null) {
-      hiddenIds = Arrays.asList(props.getProperty(hide).split(","));
+      hiddenIdsString = Arrays.asList(props.getProperty(hide).split(","));
     }
 
     List<String> mavenCoordinates = new ArrayList<>();
     if (props.getProperty(templateSetsInstalled) != null) {
       mavenCoordinates = Arrays.asList(props.getProperty(templateSetsInstalled).split(","));
     }
-    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds, mavenCoordinates);
+
+    List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
+
+    ConfigurationFactory configurationFactory = new ConfigurationFactory(findTemplatesLocation());
+
+    ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds);
+
+    return configurationFactory.retrieveTemplateSetConfiguration(configurationProperties);
   }
 
   /**

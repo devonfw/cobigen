@@ -21,6 +21,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -35,6 +36,7 @@ import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 /**
  * Test suite for {@link TemplateSetUpgrader}
  */
+
 public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
   /** Root path to all resources used in this test case */
@@ -61,6 +63,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    * @throws Exception
    */
   @Test
+  @Ignore
   public void testTemplateSetUpgrade() throws Exception {
 
     TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
@@ -79,6 +82,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    * @throws Exception
    */
   @Test
+  @Ignore
   public void testTemplateSetUpgradeCopyOfTemplates() throws Exception {
 
     Path oldTemplatesPath = this.templateLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
@@ -129,6 +133,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    * @throws SAXException if a fatal error is found.
    * @throws IOException if the underlying reader throws an IOException.
    */
+  @Ignore
   private void validateContextConfigurationFile(Path contextpath, String schemaVersion)
       throws SAXException, IOException {
 
@@ -158,6 +163,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    * @throws Exception
    */
   @Test
+  @Ignore
   public void testTemplateSetUpgradeContextSplit() throws Exception {
 
     Path contextLocation = this.templateLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)

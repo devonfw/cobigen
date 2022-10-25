@@ -1,21 +1,29 @@
 package com.devonfw.cobigen.impl.config;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
+import com.devonfw.cobigen.impl.util.MavenCoordinateUtil;
 import com.google.common.collect.Maps;
 
 /**
@@ -32,11 +40,19 @@ public class ConfigurationHolder {
   /** Cached context configuration */
   private ContextConfiguration contextConfiguration;
 
+  /** Cached template-set configuration */
+  private TemplateSetConfiguration templateSetConfiguration;
+
   /** Root path of the configuration */
   private Path configurationPath;
 
   /** The OS filesystem path of the configuration */
   private URI configurationLocation;
+
+  /** The factory class which initializes new configurations */
+  private ConfigurationFactory configurationFactory;
+
+  private ConfigurationProperties configurationProperties;
 
   /**
    * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
@@ -45,8 +61,10 @@ public class ConfigurationHolder {
    */
   public ConfigurationHolder(URI configurationLocation) {
 
-    this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
     this.configurationLocation = configurationLocation;
+    this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
+    this.configurationFactory = new ConfigurationFactory(configurationLocation);
+
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.configurationPath);
   }
@@ -87,14 +105,8 @@ public class ConfigurationHolder {
 
     Path configRoot = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), true);
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
-    if (!this.templatesConfigurations.containsKey(trigger.getId())) {
-      TemplatesConfiguration config = new TemplatesConfiguration(configRoot, trigger, this);
-      this.templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
-
-      this.templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
-    }
-
-    return this.templatesConfigurations.get(trigger.getId()).get(templateFolder);
+    return this.configurationFactory.retrieveTemplatesConfiguration(this.templatesConfigurations, templateFolder,
+        trigger, this);
   }
 
   /**
@@ -109,6 +121,48 @@ public class ConfigurationHolder {
       this.contextConfiguration = new ContextConfiguration(this.configurationPath);
     }
     return this.contextConfiguration;
+  }
+
+  /**
+   * Reads the {@link TemplateSetConfiguration} in the given Path
+   *
+   * @param path the configuration root path
+   * @return the {@link TemplateSetConfiguration}
+   */
+  public TemplateSetConfiguration readTemplateSetConfiguration(Path path) {
+
+    Properties props = new Properties();
+    try {
+      props = readConfigurationFile(path);
+    } catch (InvalidConfigurationException e) {
+      LOG.info("This path {} is invalid. The default Config values will be loaded instead.", path);
+    }
+
+    String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
+    String snapshot = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS;
+    String hide = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE;
+    String disableLookup = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DISABLE_LOOKUP;
+    String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
+
+    List<String> groupIdsList = (props.getProperty(groupId) != null)
+        ? Arrays.asList(props.getProperty(groupId).split(","))
+        : new ArrayList<>();
+    // Creating a new ArrayList object which can be modified and prevents UnsupportedOperationException.
+    List<String> groupIds = new ArrayList<>(groupIdsList);
+    if (props.getProperty(disableLookup) == null || props.getProperty(disableLookup).equals("false"))
+      if (!groupIds.contains(defaultGroupId))
+        groupIds.add(defaultGroupId);
+
+    boolean useSnapshots = props.getProperty(snapshot) == null || props.getProperty(snapshot).equals("false") ? false
+        : true;
+    List<String> hiddenIdsString = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
+        : new ArrayList<>();
+
+    List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
+    ConfigurationFactory configurationFactory = new ConfigurationFactory(this.configurationLocation);
+    this.configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds);
+    this.templateSetConfiguration = configurationFactory.retrieveTemplateSetConfiguration(this.configurationProperties);
+    return this.templateSetConfiguration;
   }
 
   /**
@@ -127,7 +181,6 @@ public class ConfigurationHolder {
    * Search for the location of the Java utils
    *
    * @return the {@link Path} of the location of the util classes or null if no location was found
-   * @throws IOException
    */
   public List<Path> getUtilsLocation() {
 
@@ -145,4 +198,28 @@ public class ConfigurationHolder {
 
     return utilsLocationPaths;
   }
+
+  /**
+   * This is a helper method to read a given cobigen configuration file
+   *
+   * @param cobigenConfigFile cobigen configuration file
+   * @throws InvalidConfigurationException if the file isn't present or the path is invalid
+   * @return Properties containing configuration
+   */
+  private Properties readConfigurationFile(Path cobigenConfigFile) {
+
+    Properties props = new Properties();
+    try {
+      String configFileContents = Files.readAllLines(cobigenConfigFile, Charset.forName("UTF-8")).stream()
+          .collect(Collectors.joining("\n"));
+      configFileContents = configFileContents.replace("\\", "\\\\");
+      try (StringReader strReader = new StringReader(configFileContents)) {
+        props.load(strReader);
+      }
+    } catch (IOException e) {
+      throw new InvalidConfigurationException("An error occured while reading the config file " + cobigenConfigFile, e);
+    }
+    return props;
+  }
+
 }

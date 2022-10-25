@@ -1,0 +1,35 @@
+package com.devonfw.cobigen.unittest;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.junit.Test;
+
+import com.devonfw.cobigen.impl.CobiGenFactory;
+
+import junit.framework.TestCase;
+
+/**
+ * This {@link TestCase} tests the {@link CobiGenFactory}
+ */
+public class CobiGenFactoryTest {
+
+  /**
+   * Root path to all resources used in this test case
+   */
+  private final static Path TEST_FILE_ROOT_PATH = Paths
+      .get("src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/");
+
+  /**
+   * Tests whether a valid configuration can be read from template-sets/adapted folder
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testTemplateSetLoadedFromNewConfiguration() throws Exception {
+
+    // TODO this test and also the whole class would be more suited in core-systemtest.
+    // CobiGenFactory.create((TEST_FILE_ROOT_PATH + "valid_template_sets_adapted"));
+  }
+
+}

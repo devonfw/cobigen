@@ -27,8 +27,6 @@ public class ConfigurationUtilTest {
   /**
    * Tests findTemplatesLocation logic Checks if a template jar is located inside the downloaded folder of template-sets
    * Checks if a template jar can be loaded directly when being set from the .cobigen properties file
-   *
-   * @throws Exception
    */
   @Test
   public void testFindTemplatesLocation() throws Exception {

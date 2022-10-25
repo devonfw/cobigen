@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templates>
+    <template name="ExplicitlyDefined" templateFile="OuterTemplate.java"
+      destinationPath="src/main/java/$_rootpackage_$/$_component_$/common/api/ExplicitlyDefined.java"/>
+  </templates>
+
+  <templateScans>
+    <templateScan name="crud" templatePath="templates" destinationPath="src/main/java"/>
+  </templateScans>
+
+</templatesConfiguration>

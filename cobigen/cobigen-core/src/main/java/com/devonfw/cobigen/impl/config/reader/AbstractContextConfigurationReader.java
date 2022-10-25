@@ -28,7 +28,8 @@ import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.google.common.collect.Lists;
@@ -79,14 +80,14 @@ public abstract class AbstractContextConfigurationReader {
 
     for (Path contextFile : this.contextFiles) {
       try (InputStream in = Files.newInputStream(contextFile)) {
-        Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+        Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
 
         // Unmarshal without schema checks for getting the version attribute of the root node.
         // This is necessary to provide an automatic upgrade client later on
         Object rootNode = unmarschaller.unmarshal(in);
         BigDecimal configVersion;
-        if (rootNode instanceof ContextConfiguration) {
-          configVersion = ((ContextConfiguration) rootNode).getVersion();
+        if (rootNode instanceof TemplateSetConfiguration) {
+          configVersion = ((TemplateSetConfiguration) rootNode).getVersion();
           if (configVersion == null) {
             throw new InvalidConfigurationException(contextFile,
                 "The required 'version' attribute of node \"contextConfiguration\" has not been set");
@@ -156,10 +157,10 @@ public abstract class AbstractContextConfigurationReader {
    * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
    * @return the {@link List} of {@link Matcher}s
    */
-  protected List<Matcher> loadMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
+  protected List<Matcher> loadMatchers(com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) {
 
     List<Matcher> matcher = new LinkedList<>();
-    for (com.devonfw.cobigen.impl.config.entity.io.Matcher m : trigger.getMatcher()) {
+    for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher m : trigger.getMatcher()) {
       matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m.getAccumulationType()));
     }
     return matcher;
@@ -168,13 +169,13 @@ public abstract class AbstractContextConfigurationReader {
   /**
    * Loads all {@link ContainerMatcher}s of a given {@link com.devonfw.cobigen.impl.config.entity.io.Trigger}
    *
-   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
+   * @param t {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
    * @return the {@link List} of {@link Matcher}s
    */
-  protected List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
+  protected List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger t) {
 
     List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
-    for (com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
+    for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher cm : t.getContainerMatcher()) {
       containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm.isRetrieveObjectsRecursively()));
     }
     return containerMatchers;
@@ -183,15 +184,13 @@ public abstract class AbstractContextConfigurationReader {
   /**
    * Loads all {@link VariableAssignment}s from a given {@link com.devonfw.cobigen.impl.config.entity.io.Matcher}
    *
-   * @param matcher {@link com.devonfw.cobigen.impl.config.entity.io.Matcher} to retrieve the {@link VariableAssignment}
-   *        from
+   * @param m {@link com.devonfw.cobigen.impl.config.entity.io.Matcher} to retrieve the {@link VariableAssignment} from
    * @return the {@link List} of {@link Matcher}s
    */
-  protected List<VariableAssignment> loadVariableAssignments(
-      com.devonfw.cobigen.impl.config.entity.io.Matcher matcher) {
+  protected List<VariableAssignment> loadVariableAssignments(com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher m) {
 
     List<VariableAssignment> variableAssignments = new LinkedList<>();
-    for (com.devonfw.cobigen.impl.config.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {
+    for (com.devonfw.cobigen.impl.config.entity.io.v3_0.VariableAssignment va : m.getVariableAssignment()) {
       variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue(), va.isMandatory()));
     }
     return variableAssignments;

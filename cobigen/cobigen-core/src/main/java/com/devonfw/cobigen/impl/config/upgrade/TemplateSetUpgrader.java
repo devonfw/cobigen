@@ -28,7 +28,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Link;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Links;
@@ -65,18 +65,18 @@ public class TemplateSetUpgrader {
 
     this.mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
     this.mapperFactory
-        .classMap(com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher.class,
+        .classMap(com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class,
             com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class)
         .field(
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
         .byDefault().register();
-    this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.Trigger.class,
+    this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger.class,
         com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger.class).byDefault().register();
-    this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.Matcher.class,
+    this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class,
         com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class).byDefault().register();
     this.mapperFactory
-        .classMap(com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher.class,
+        .classMap(com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class,
             com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class)
         .field(
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
@@ -108,7 +108,7 @@ public class TemplateSetUpgrader {
         cobigenDir.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
       }
     }
-    ContextConfiguration contextConfiguration = getContextConfiguration(contextLocation);
+    TemplateSetConfiguration templateSetConfiguration = getContextConfiguration(contextLocation);
 
     Path templateSets = Files.createDirectory(cobigenDir.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
     Path adapted = Files.createDirectory(templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER));
@@ -117,7 +117,7 @@ public class TemplateSetUpgrader {
     Path templates = cobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
-        contextConfiguration);
+        templateSetConfiguration);
     Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
     for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration cc : contextFiles) {
       for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
@@ -223,10 +223,10 @@ public class TemplateSetUpgrader {
    *         contextConfiguration files
    */
   private List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContext(
-      ContextConfiguration monolitic) {
+      TemplateSetConfiguration monolithic) {
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContexts = new ArrayList<>();
-    List<Trigger> triggerList = monolitic.getTrigger();
+    List<Trigger> triggerList = monolithic.getTrigger();
     for (Trigger trigger : triggerList) {
       com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration();
       com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger();
@@ -264,10 +264,10 @@ public class TemplateSetUpgrader {
    * Locates and returns the correct context file
    *
    * @param {@link Path} to the contextFile
-   * @return {@link ContextConfiguration}
+   * @return {@link ContextConfigurationDecorator}
    * @throws Exception
    */
-  private ContextConfiguration getContextConfiguration(Path contextFile) throws Exception {
+  private TemplateSetConfiguration getContextConfiguration(Path contextFile) throws Exception {
 
     if (contextFile == null) {
       throw new Exception("Templates location cannot be null!");
@@ -293,11 +293,11 @@ public class TemplateSetUpgrader {
     }
 
     try (InputStream in = Files.newInputStream(context)) {
-      Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+      Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
 
       Object rootNode = unmarschaller.unmarshal(in);
-      if (rootNode instanceof ContextConfiguration) {
-        return (ContextConfiguration) rootNode;
+      if (rootNode instanceof TemplateSetConfiguration) {
+        return (TemplateSetConfiguration) rootNode;
       }
     } catch (IOException e) {
       throw new InvalidConfigurationException("Context file could not be found", e);

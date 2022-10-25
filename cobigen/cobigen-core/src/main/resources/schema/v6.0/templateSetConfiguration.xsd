@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified" version="6.0">
+
+  <xs:element name="templateSetConfiguration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="trigger" type="tns:trigger" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="tags" type="tns:tags" minOccurs="1" maxOccurs="1" />
+        <xs:element name="links" type="tns:links" minOccurs="0" maxOccurs="1" />
+        <xs:element name="templates" minOccurs="0" type="tns:templates" />
+        <xs:element name="templateScans" minOccurs="0" type="tns:templateScans" />
+        <xs:element name="increments" minOccurs="0" type="tns:increments" />
+      </xs:sequence>
+      <xs:attribute name="templateEngine" use="optional" type="xs:string" default="FreeMarker"/>
+      <xs:attribute name="version" use="required" type="xs:decimal" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="trigger">
+    <xs:sequence>
+      <xs:element name="containerMatcher" type="tns:containerMatcher" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="matcher" type="tns:matcher" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" use="required" type="xs:NCName"/>
+    <xs:attribute name="type" use="required" type="xs:string"/>
+    <xs:attribute name="templateFolder" use="optional" type="xs:string" default="/"/>
+    <xs:attribute name="inputCharset" use="optional" type="xs:string" default="UTF-8"/>
+  </xs:complexType>
+
+  <xs:complexType name="matcher">
+    <xs:sequence>
+      <xs:element name="variableAssignment" type="tns:variableAssignment" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+    <xs:attribute name="accumulationType" type="tns:accumulationType" use="optional" default="OR"/>
+  </xs:complexType>
+
+  <xs:complexType name="containerMatcher">
+    <xs:attribute name="type" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+    <xs:attribute name="retrieveObjectsRecursively" type="xs:boolean" use="optional" default="false"/>
+  </xs:complexType>
+
+  <xs:simpleType name="accumulationType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="AND"/>
+      <xs:enumeration value="OR"/>
+      <xs:enumeration value="NOT"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="variableAssignment">
+    <xs:attribute name="type" use="required" type="xs:string"/>
+    <xs:attribute name="key" use="required" type="xs:NCName"/>
+    <xs:attribute name="value" use="required" type="xs:string"/>
+    <xs:attribute name="mandatory" use="optional" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <xs:complexType name="tags">
+    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+      <xs:element name="tag" type="tns:tag"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tag">
+    <xs:attribute name="name" use="required" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="links">
+    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+      <xs:element name="link" type="tns:link"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="link">
+    <xs:attribute name="url" use="required" type="xs:string"/>
+    <xs:attribute name="description" use="optional" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="templates">
+    <xs:sequence>
+      <xs:element name="template" minOccurs="0" maxOccurs="unbounded" type="tns:template"/>
+      <xs:element name="templateExtension" minOccurs="0" maxOccurs="unbounded" type="tns:templateExtension"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="templateScans">
+    <xs:sequence maxOccurs="unbounded" minOccurs="0">
+      <xs:element name="templateScan" type="tns:templateScan"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="template">
+    <xs:attribute name="name" use="required" type="xs:string"/>
+    <xs:attribute name="destinationPath" use="required" type="xs:string"/>
+    <xs:attribute name="templateFile" use="required" type="xs:string"/>
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string"/>
+    <xs:attribute name="targetCharset" use="optional" type="xs:string" default="UTF-8"/>
+  </xs:complexType>
+
+  <xs:complexType name="templateExtension">
+    <xs:attribute name="ref" use="required" type="xs:string"/>
+    <xs:attribute name="destinationPath" use="optional" type="xs:string"/>
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string"/>
+    <xs:attribute name="targetCharset" use="optional" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="templateScan">
+    <xs:attribute name="name" use="optional" type="xs:string"/>
+    <xs:attribute name="templateNamePrefix" use="optional" type="xs:string"/>
+    <xs:attribute name="templatePath" use="required" type="xs:string"/>
+    <xs:attribute name="destinationPath" use="required" type="xs:string"/>
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string"/>
+    <xs:attribute name="targetCharset" use="optional" type="xs:string" default="UTF-8"/>
+  </xs:complexType>
+
+  <xs:complexType name="increments">
+    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+      <xs:element name="increment" type="tns:increment"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="increment">
+    <xs:choice maxOccurs="unbounded" minOccurs="1">
+      <xs:element name="templateRef" type="tns:templateRef"/>
+      <xs:element name="incrementRef" type="tns:incrementRef"/>
+      <xs:element name="templateScanRef" type="tns:templateScanRef"/>
+    </xs:choice>
+    <xs:attribute name="name" use="required" type="xs:string"/>
+    <xs:attribute name="description" use="required" type="xs:string"/>
+    <xs:attribute name="explanation" use="optional" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="templateRef">
+    <xs:attribute name="ref" use="required" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="incrementRef">
+    <xs:attribute name="ref" use="required" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="templateScanRef">
+    <xs:attribute name="ref" use="required" type="xs:string"/>
+  </xs:complexType>
+
+</xs:schema>
