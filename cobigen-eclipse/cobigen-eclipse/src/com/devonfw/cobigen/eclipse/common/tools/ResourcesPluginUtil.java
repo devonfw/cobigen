@@ -3,13 +3,11 @@ package com.devonfw.cobigen.eclipse.common.tools;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -19,8 +17,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.wst.sse.core.utils.StringUtils;
 
 import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -85,7 +82,7 @@ public class ResourcesPluginUtil {
   public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException, CoreException {
 
     if (Files.exists(getTemplateSetDirectory().toPath())) {
-      // FIXME Implement a new way to set the generatorProj as the new template-set
+      // FIXME Implement a new way to set the generatorProj as the new template-set should be done in #1587.
       return null;
     }
 
@@ -278,11 +275,9 @@ public class ResourcesPluginUtil {
    */
   public static void startTemplatesUpgrader(Path configurationPath) {
 
-    TemplateAdapter templateAdapter = new TemplateAdapterImpl(configurationPath);
-    templateAdapter.upgradeMonolithicTemplates(configurationPath);
-    // Deactivate generatorProj after the upgrade to use the new template-set
-    // FIXME set generatorProj instead to the new template set
-    generatorProj = null;
+    CobiGenUtils.startTemplatesUpgrader(configurationPath);
+    // FIXME after the upgrade adapt the new template-set. should be done in #1587
+    // refreshConfigurationProject();
   }
 
 }

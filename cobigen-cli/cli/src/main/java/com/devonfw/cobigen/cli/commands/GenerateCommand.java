@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
-import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
@@ -38,7 +37,6 @@ import com.devonfw.cobigen.cli.exceptions.UserAbortException;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
-import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
@@ -304,10 +302,8 @@ public class GenerateCommand extends CommandCommons {
   private void startTemplatesUpgrader() {
 
     try {
-
-      TemplateAdapter templateAdapter = new TemplateAdapterImpl(this.templatesProject);
       // set the new template-set as the templatesProject after the upgrade
-      this.templatesProject = templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
+      this.templatesProject = CobiGenUtils.startTemplatesUpgrader(this.templatesProject);
     } catch (Throwable e) {
       LOG.error("An error occurred while upgrading the templates.");
       throw e;

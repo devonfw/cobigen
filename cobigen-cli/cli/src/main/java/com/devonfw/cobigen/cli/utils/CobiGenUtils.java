@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.InputInterpreter;
+import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
@@ -25,6 +26,7 @@ import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.extension.ClassServiceLoader;
 import com.google.common.base.Charsets;
 
@@ -60,6 +62,18 @@ public class CobiGenUtils {
     } else {
       return CobiGenFactory.create(allowMonolithicConfiguration);
     }
+  }
+
+  /**
+   * Upgrades the given template configuration.
+   *
+   * @param configurationPath path to the templates Configuration
+   * @return the new path to the new template-sets
+   */
+  public static Path startTemplatesUpgrader(Path configurationPath) {
+
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(configurationPath);
+    return templateAdapter.upgradeMonolithicTemplates(configurationPath);
   }
 
   /**
