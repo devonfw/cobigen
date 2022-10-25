@@ -2,10 +2,8 @@ package com.devonfw.cobigen.impl.config;
 
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 
-import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
@@ -36,7 +34,7 @@ public class ConfigurationFactory {
    * @param holder holds the templatesConfigurations in the given list
    * @return the {@link TemplatesConfiguration} instance saved in the given map
    */
-  public TemplatesConfiguration getTemplatesConfiguration(
+  public TemplatesConfiguration retrieveTemplatesConfiguration(
       Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations, Path templateFolder, Trigger trigger,
       ConfigurationHolder holder) {
 
@@ -59,16 +57,14 @@ public class ConfigurationFactory {
   }
 
   /**
-   * @param groupIds
-   * @param allowSnapshots
-   * @param hideTemplates
+   * @param groupIds property
+   * @param allowSnapshots property
+   * @param hideTemplates property
    * @return {@link TemplateSetConfiguration} instance
    */
-  public TemplateSetConfiguration getTemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots,
-      List<MavenCoordinate> hideTemplates) {
+  public TemplateSetConfiguration retrieveTemplateSetConfiguration(ConfigurationProperties properties) {
 
-    TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(groupIds, allowSnapshots,
-        hideTemplates, this.configRoot);
+    TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(properties, this.configRoot);
     return templateSetConfiguration;
   }
 

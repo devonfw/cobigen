@@ -28,7 +28,7 @@ public class CobiGenFactoryTest {
   @Test
   public void testTemplateSetLoadedFromNewConfiguration() throws Exception {
 
-    // TODO
+    // TODO this test and also the whole class would be more suited in core-systemtest.
     // CobiGenFactory.create((TEST_FILE_ROOT_PATH + "valid_template_sets_adapted"));
   }
 

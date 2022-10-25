@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.unittest.config.reader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,13 +42,14 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   @Test // (expected = InvalidConfigurationException.class)
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
-    try {
+    // when
+    assertThatThrownBy(() -> {
+
       new TemplateSetConfiguration(TEST_FILE_ROOT_PATH.resolve("faulty"));
 
-    } catch (InvalidConfigurationException ice) {
-      assertThat(ice).hasMessage(TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath() + ":\n"
-          + "Could not find a folder in which to search for the template-set configuration file.");
-    }
+    }).isInstanceOf(InvalidConfigurationException.class)
+        .hasMessage(TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath() + ":\n"
+            + "Could not find a folder in which to search for the template-set configuration file.");
 
   }
 
@@ -61,12 +63,13 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testInvalidTemplateSets() throws InvalidConfigurationException {
 
-    try {
+    assertThatThrownBy(() -> {
+
       new TemplateSetConfiguration(INVALID_CONFIGURATION_PATH);
-    } catch (InvalidConfigurationException ice) {
-      assertThat(ice).hasMessage(INVALID_CONFIGURATION_PATH.toAbsolutePath() + ":\n"
-          + "Could not find any template-set configuration file in the given folder.");
-    }
+
+    }).isInstanceOf(InvalidConfigurationException.class).hasMessage(INVALID_CONFIGURATION_PATH.toAbsolutePath() + ":\n"
+        + "Could not find any template-set configuration file in the given folder.");
+
   }
 
   /**
@@ -76,9 +79,8 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testTemplateSetsDownloaded() {
 
-    Path templateSetPath = TEST_FILE_ROOT_PATH
-        .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    templateSetPath = Path.of(templateSetPath + "/downloaded");
+    Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets")
+        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve("downloaded");
     TemplateSetConfiguration testDecorator = new TemplateSetConfiguration(templateSetPath);
     assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(1);
   }
@@ -94,9 +96,8 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     Path templateSetPathAdapted = TEST_FILE_ROOT_PATH
         .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     TemplateSetConfiguration testDecoratorAdapted = new TemplateSetConfiguration(templateSetPathAdapted);
-    Path templateSetPathDownloaded = TEST_FILE_ROOT_PATH
-        .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    templateSetPathDownloaded = Path.of(templateSetPathDownloaded + "/downloaded");
+    Path templateSetPathDownloaded = TEST_FILE_ROOT_PATH.resolve("valid_template_sets")
+        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve("downloaded");
     TemplateSetConfiguration testDecoratorDownloaded = new TemplateSetConfiguration(templateSetPathDownloaded);
 
     assertThat(testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())

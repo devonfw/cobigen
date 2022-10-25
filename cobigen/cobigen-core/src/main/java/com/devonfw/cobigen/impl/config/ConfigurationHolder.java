@@ -52,6 +52,8 @@ public class ConfigurationHolder {
   /** The factory class which initializes new configurations */
   private ConfigurationFactory configurationFactory;
 
+  private ConfigurationProperties configurationProperties;
+
   /**
    * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
    *
@@ -103,14 +105,14 @@ public class ConfigurationHolder {
 
     Path configRoot = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), true);
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
-    return this.configurationFactory.getTemplatesConfiguration(this.templatesConfigurations, templateFolder, trigger,
-        this);
+    return this.configurationFactory.retrieveTemplatesConfiguration(this.templatesConfigurations, templateFolder,
+        trigger, this);
   }
 
   /**
-   * Reads the {@link ContextConfigurationDecorator} from cache or from file if not present in cache.
+   * Reads the {@link ContextConfiguration} from cache or from file if not present in cache.
    *
-   * @return the {@link ContextConfigurationDecorator}
+   * @return the {@link ContextConfiguration}
    * @throws InvalidConfigurationException if the configuration is not valid
    */
   public ContextConfiguration readContextConfiguration() {
@@ -122,6 +124,8 @@ public class ConfigurationHolder {
   }
 
   /**
+   * Reads the {@link TemplateSetConfiguration} in the given Path
+   *
    * @param path the configuration root path
    * @return the {@link TemplateSetConfiguration}
    */
@@ -156,7 +160,8 @@ public class ConfigurationHolder {
 
     List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
     ConfigurationFactory configurationFactory = new ConfigurationFactory(this.configurationLocation);
-    this.templateSetConfiguration = configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
+    this.configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds);
+    this.templateSetConfiguration = configurationFactory.retrieveTemplateSetConfiguration(this.configurationProperties);
     return this.templateSetConfiguration;
   }
 

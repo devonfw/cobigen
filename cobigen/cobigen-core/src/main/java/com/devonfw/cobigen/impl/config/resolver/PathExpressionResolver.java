@@ -10,7 +10,7 @@ import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 public class PathExpressionResolver {
 
   /**
-   * Pointer to the {@link ContextConfigurationDecorator} which provides all values for the variables to be resolved
+   * Pointer to the {@link ContextConfiguration} which provides all values for the variables to be resolved
    */
   private Variables variables;
 

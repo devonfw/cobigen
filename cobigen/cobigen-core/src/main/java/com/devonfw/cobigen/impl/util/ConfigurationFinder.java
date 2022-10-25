@@ -23,6 +23,7 @@ import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationFactory;
+import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 
 /**
@@ -42,7 +43,6 @@ public class ConfigurationFinder {
    * @param path to a .properties file
    * @return TemplateSetConfiguration instance
    */
-
   public static TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
 
     Properties props = new Properties();
@@ -88,7 +88,9 @@ public class ConfigurationFinder {
 
     ConfigurationFactory configurationFactory = new ConfigurationFactory(findTemplatesLocation());
 
-    return configurationFactory.getTemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
+    ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds);
+
+    return configurationFactory.retrieveTemplateSetConfiguration(configurationProperties);
   }
 
   /**

@@ -28,9 +28,9 @@ public class ContextConfiguration {
   private Path configurationPath;
 
   /**
-   * contextConfiguration this decorator wraps
+   * This is the automatically generated ContextConfiguration
    */
-  private ContextConfiguration contextConfiguration;
+  private com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration;
 
   /**
    * The reader to read the context.xml files
@@ -88,7 +88,7 @@ public class ContextConfiguration {
   }
 
   /**
-   * @return
+   * @return the version
    */
   public BigDecimal getVersion() {
 
@@ -123,7 +123,7 @@ public class ContextConfiguration {
    */
   public Path getConfigLocationforTrigger(String id, boolean b) {
 
-    // TODO Auto-generated method stub
+    // TODO: implement this please
     return null;
   }
 

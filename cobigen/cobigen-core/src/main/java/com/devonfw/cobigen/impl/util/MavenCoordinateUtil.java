@@ -10,7 +10,7 @@ import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 
 /**
- * util class
+ * Converts a list of maven coordinates in String form to an actual List of maven Coordinates
  *
  */
 public class MavenCoordinateUtil {
@@ -23,7 +23,6 @@ public class MavenCoordinateUtil {
    *
    * @param mavenCoordinatesString a String that contains maven coordinates
    * @return List with {@link MavenCoordinate}
-   *
    */
   public static List<MavenCoordinate> convertToMavenCoordinates(List<String> mavenCoordinatesString) {
 

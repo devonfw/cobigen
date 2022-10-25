@@ -82,7 +82,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
 
     ContextConfigurationReader context = new ContextConfigurationReader(
         Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
-    // assertThat(context.getContextFiles().size()).isEqualTo(1);
+    assertThat(context.getContextFiles().size()).isEqualTo(1);
   }
 
   /**

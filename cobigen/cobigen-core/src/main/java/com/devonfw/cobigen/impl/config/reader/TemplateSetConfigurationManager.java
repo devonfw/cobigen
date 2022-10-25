@@ -16,10 +16,9 @@ import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
- * Managing configurations, everything comes together here (I get more specific, once the ticket is done)
+ * This class takes care of finding either adapted or dowloaded template-set files.
  *
  */
-
 public class TemplateSetConfigurationManager {
 
   /** List with the paths of the configuration locations for the template-set.xml files */
@@ -87,7 +86,7 @@ public class TemplateSetConfigurationManager {
   }
 
   /**
-   * search for configuration files in the subfolder for downloaded template jars
+   * Search for configuration files in the subfolder for downloaded template jars
    *
    * @param configRoot root directory of the configuration template-sets/downloaded
    * @return List of Paths to the downloaded templateSetFiles
