@@ -3,7 +3,7 @@ package com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest;
 import javax.persistence.Column;
 import javax.persistence.Id;
 
-import com.devonfw.cobigen.templates.devon4j.test.utils.SQLUtilTest;
+import com.devonfw.cobigen.templates.devon4j.test.utils.SQLUtilTest.SQLAnnotationTest;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestAnotherSimpleEntity;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestNotSoSimpleEntity;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestSimpleEntity;
@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
- * This class is a test class for {@link SQLUtilTest}
+ * This class is a test class for {@link SQLAnnotationTest}
  *
  */
 public class TestSqlTypeAnnotations {

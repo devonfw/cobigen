@@ -12,10 +12,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -40,6 +42,24 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
+   * @param field
+   * @return
+   */
+  public Boolean isFieldEntity(Field field) {
+
+    try {
+
+      Class<?> clazz = Class.forName(field.getType().getCanonicalName());
+
+      return clazz.isAnnotationPresent(Entity.class);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalArgumentException(
+          "The declared class of this field type can not be verified as an Entity because the java class does not exist!",
+          e);
+    }
+  }
+
+  /**
    * Returns the name of a java type as a {@link String}
    *
    * @param field
@@ -49,7 +69,7 @@ public class SQLUtil extends CommonUtil {
 
     // Either a full qualified class name or a simple string like "byte" for primitives
     String canonicalTypeName = field.getType().getCanonicalName();
-    Boolean isExistingClass = false;
+    boolean isExistingClass = false;
 
     // Verifies that the provided class exists if it's not a primitive
     if (!field.getType().isPrimitive()) {
@@ -356,11 +376,11 @@ public class SQLUtil extends CommonUtil {
       Class<?> entityClass = Class.forName(className);
       List<Field> fields = new ArrayList<>();
       getAllFields(fields, entityClass);
-      String columnName = "";
       for (Field field : fields) {
 
         if (field.isAnnotationPresent(Id.class)) {
 
+          // return canonical field name , column name
           return field.getType().getCanonicalName() + "," + getColumnName(field);
         } else {
           Optional<Method> getterOptional = Arrays.stream(entityClass.getMethods())
@@ -477,30 +497,30 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Get the name of a @JoinColumn or fall back to a default in name in case the name option is not set
+   * Get the name of the Column for the Foreign Key. Extracted from
+   * {@linkplain javax.persistence.JoinColumn#name() @JoinColumn.name()}. When no name has been provided in the
+   * Annotation a string with a fallback name will be generated.
    *
    * @param field current pojo class
    * @param fallBack String for fallback option
-   * @return {@link String} Column name
+   * @return {@link String} Column name for Foreign Key declaration
    */
-  public String getForeignKeyName(Field field, String fallBack) {
+  public String getForeignKeyColumnName(Field field, String fallBack) {
 
     if (field == null) {
-      throw new IllegalAccessError(
-          "Field object is null. Cannot generate template as it might obviously depend on reflection.");
+      throw new IllegalAccessError("Field object is null. Cannot generate a column name for a foreign key.");
     }
 
-    if (fallBack == null || fallBack.isBlank()) {
-      fallBack = "default";
-    }
+    if (field.isAnnotationPresent(JoinColumn.class)) {
 
-    String name;
-    if (field.isAnnotationPresent(JoinColumn.class) && !field.getAnnotation(JoinColumn.class).name().isBlank()) {
-      name = field.getAnnotation(JoinColumn.class).name();
-    } else {
-      name = field.getName() + "_" + fallBack;
+      if (fallBack == null || fallBack.isBlank()) {
+        fallBack = "FK";
+      }
+      // A name will be generated based on the option set in @JoinColumn.name()
+      return !field.getAnnotation(JoinColumn.class).name().isBlank() ? field.getAnnotation(JoinColumn.class).name()
+          : fallBack + "_" + field.getName();
     }
-    return name;
+    throw new IllegalAccessError("Field is not annotated with @JoinColumn. Implicit foreign keys are not allowed.");
   }
 
   /**
@@ -514,7 +534,7 @@ public class SQLUtil extends CommonUtil {
    */
   public String getForeignKeyStatement(Field field) {
 
-    String columnName, type = "";
+    String foreignKeyOwnedBy = null, type = "";
 
     try {
       // The current field type is the class in which we are searching the primary key
@@ -522,31 +542,42 @@ public class SQLUtil extends CommonUtil {
 
       // Building the column name based on provided annotations
       if (field.isAnnotationPresent(JoinColumn.class)
-          && !field.getAnnotation(JoinColumn.class).referencedColumnName().isEmpty()) {
+          && !field.getAnnotation(JoinColumn.class).referencedColumnName().isBlank()) {
         // Annotation @JoinColumn is set and a name was provided
-        columnName = field.getAnnotation(JoinColumn.class).referencedColumnName();
+        foreignKeyOwnedBy = field.getAnnotation(JoinColumn.class).referencedColumnName();
 
       } else if (field.isAnnotationPresent(OneToOne.class)
           && !field.getAnnotation(OneToOne.class).mappedBy().isBlank()) {
         // mappedBy option is set by @OneToOne annotation
-        columnName = field.getAnnotation(OneToOne.class).mappedBy();
+        foreignKeyOwnedBy = field.getAnnotation(OneToOne.class).mappedBy();
+      } else if (field.isAnnotationPresent(JoinColumns.class)) {
 
-      } else {
-        // No information was provided and we are looking for the primary key manually
+        JoinColumn[] joinColumnDeclarations = field.getAnnotation(JoinColumns.class).value();
+        // @JoinColumns holds multiple @JoinColumn
+        // for (JoinColumn joinColumn : joinColumnDeclarations) {
+        //
+        // }
+
+        field.getAnnotation(JoinColumns.class).value();
+      } else if (field.isAnnotationPresent(JoinColumn.class)) {
+        // Default values to JoinColumn apply
         String[] pkReceived = getPrimaryKey(field.getType().getCanonicalName()).split(",");
-        columnName = pkReceived[1];
+        foreignKeyOwnedBy = pkReceived[1];
 
       }
 
       try {
-        Field foreignField = foreignEntityClass.getDeclaredField(columnName);
+        // Retrieving the field for the calculated coumnName
+        Field foreignField = foreignEntityClass.getDeclaredField(foreignKeyOwnedBy);
+        // Field was found and its type will be mapped into the SQL world
         type = getSimpleSQLtype(foreignField);
       } catch (NoSuchFieldException e) {
         throw new IllegalAccessError(
             "Couldn't find the foreign key field. Cannot generate template as it might obviously depend on reflection.");
       }
 
-      return columnName + "," + type;
+      // Returning comma separated string so that it can be used in freemarker template with the split method
+      return foreignKeyOwnedBy + "," + type;
 
     } catch (ClassNotFoundException e) {
       throw new IllegalAccessError(
@@ -555,12 +586,12 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Get a List of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
+   * Get HashMap of Key and Value pairs holding the information about foreign keys. It will be assumed that the current
    * field is an entity. This function defaults the {@link String} name parameter of
    * {@link SQLUtil#getForeignKeyData(Field, String)}
    *
    * @param field the pojo field
-   * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname} or null
+   * @return HashMap holding the information {"name": name, "table": table, "columnname": columnname}
    *
    * @name {@link String} the name of the foreign key
    * @table {@link String} the table which is referenced by the foreign key
@@ -571,7 +602,7 @@ public class SQLUtil extends CommonUtil {
     // Assumes @JoinColumn is present
     if (field.isAnnotationPresent(JoinColumn.class)) {
       String[] fkDeclaration = getForeignKeyStatement(field).split(",");
-      String name = getForeignKeyName(field, fkDeclaration[0]);
+      String name = getForeignKeyColumnName(field, fkDeclaration[0]);
 
       return getForeignKeyData(field, name);
     }

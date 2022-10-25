@@ -33,6 +33,10 @@ public class TestSimpleEntity {
   @JoinColumn(name = "simpleEntityId")
   private TestAnotherSimpleEntity simpleEntity;
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn
+  private TestAnotherSimpleEntity simpleEntityDefaultName;
+
   /**
    * The constructor.
    *

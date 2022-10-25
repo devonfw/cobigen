@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.templates.devon4j.test.utils;
+package com.devonfw.cobigen.templates.devon4j.test.utils.SQLUtilTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -27,7 +27,7 @@ import com.devonfw.cobigen.templates.devon4j.utils.SQLUtil;
 /**
  * Test class for {@link SQLUtil}
  */
-public class SQLUtilTest {
+public class SQLAnnotationTest {
 
   // Annotation test class
   private static Class<?> testSqlTypeAnnotations;
@@ -65,7 +65,9 @@ public class SQLUtilTest {
   private static Class<?> testAnotherSimpleEntity, testNotSoSimpleEntity, testSimpleEntity;
 
   // Fields
-  private static Field fieldSimpleEntity;
+  private static Field fieldSimpleEntity, fieldSimpleEntityDefaultName, fieldTestEntityExisting;
+
+  private static TestSimpleEntity testtest;
 
   /**
    * Get all Classes for testing
@@ -134,6 +136,20 @@ public class SQLUtilTest {
     testSimpleEntity = new TestSimpleEntity("TestSimple", 15).getClass();
     // Fields
     fieldSimpleEntity = testSimpleEntity.getDeclaredField("simpleEntity");
+    fieldSimpleEntityDefaultName = testSimpleEntity.getDeclaredField("simpleEntityDefaultName");
+    fieldTestEntityExisting = testSimpleEntity.getDeclaredField("simpleEntityDefaultName");
+  }
+
+  @Test
+  public void testIsFieldEntitySuccess() {
+
+    assertThat(new SQLUtil().isFieldEntity(fieldTestEntityExisting)).isTrue();
+  }
+
+  @Test
+  public void testIsFieldEntityFail() {
+
+    assertThat(new SQLUtil().isFieldEntity(fieldTestSizeMissing)).isFalse();
   }
 
   /**
@@ -700,15 +716,43 @@ public class SQLUtilTest {
 
   }
 
-  /**
-   * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} returns the correct HashMap values even if the name was
-   * not provided.
-   *
-   */
-  @Test
-  public void testgetForeignKeyNameWithAnnotations() {
-
-    assertThat(new SQLUtil().getForeignKeyName(fieldSimpleEntity, "test")).isEqualTo("");
-
-  }
+  // /**
+  // * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} returns the correct HashMap values even if the name
+  // was
+  // * not provided.
+  // *
+  // */
+  // @Test
+  // public void testgetForeignKeyNameWithAnnotationsSuccess() {
+  //
+  // assertThat(new SQLUtil().getForeignKeyName(fieldSimpleEntity, "test")).isEqualTo("simpleEntityId");
+  //
+  // }
+  //
+  // /**
+  // * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} returns the correct HashMap values even if the name
+  // was
+  // * not provided.
+  // *
+  // */
+  // @Test
+  // public void testgetForeignKeyNameWithAnnotationsSuccessWithDefaultName() {
+  //
+  // assertThat(new SQLUtil().getForeignKeyName(fieldSimpleEntityDefaultName, "test")).isEqualTo("simpleEntityId_test");
+  //
+  // }
+  //
+  // /**
+  // * Tests if {@linkplain SQLUtil#getPrimaryKeyStatement(Field)} returns the correct HashMap values even if the name
+  // was
+  // * not provided.
+  // *
+  // */
+  // @Test
+  // public void testgetForeignKeyNameWithAnnotationsSuccessFallbackIsNull() {
+  //
+  // assertThat(new SQLUtil().getForeignKeyName(fieldSimpleEntityDefaultName,
+  // null)).isEqualTo("simpleEntityId_default");
+  //
+  // }
 }
