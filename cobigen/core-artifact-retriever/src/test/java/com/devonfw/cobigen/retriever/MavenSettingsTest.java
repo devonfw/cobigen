@@ -218,11 +218,4 @@ public class MavenSettingsTest {
     assertThat(decodedPassword).isEqualTo("thisisapassword");
   }
 
-  // @Test
-  // public void testGetSettingsFromMavenSettings() {
-  //
-  // // Waiting for Eduards solution
-  // String test = MavenUtil.determineMavenSettings();
-  // }
-
 }
