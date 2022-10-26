@@ -14,7 +14,7 @@
       <id>example-proxy</id>
       <active>true</active>
       <protocol>http</protocol>
-      <host>proxy.example.com</host>
+      <host>localhost</host>
       <port>8080</port>
       <username>proxyuser</username>
       <password>somepassword</password>
@@ -32,7 +32,7 @@
         <repository>
           <id>repository1</id>
           <name>Sample name</name>
-          <url>http://localhost:8080</url>
+          <url>http://localhost:8081</url>
         </repository>
       </repositories>
     </profile>
