@@ -72,7 +72,7 @@ public class ConfigurationFinder {
    * @param cobigenConfigFile cobigen configuration file
    * @return Properties containing configuration
    */
-  private static Properties readConfigrationFile(Path cobigenConfigFile) {
+  public static Properties readConfigrationFile(Path cobigenConfigFile) {
 
     Properties props = new Properties();
     try {

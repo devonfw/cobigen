@@ -12,6 +12,9 @@ public class ConfigurationConstants {
   /** Merge strategy to override complete file rather than merging at all */
   public static final String MERGE_STRATEGY_OVERRIDE = "override";
 
+  /** Name of configuration key to add generated annotation */
+  public static final String ADD_GENERATED_ANNOTATION = "add-generated-annotation";
+
   // configuration constants of templates folder contents
 
   /** Context configuration file name */

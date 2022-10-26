@@ -138,7 +138,10 @@ public class JavaMerger implements Merger {
     List<JavaConstructor> constructors = baseClass.getConstructors();
     List<JavaField> fields = baseClass.getFields();
     List<JavaMethod> methods = baseClass.getMethods();
-    boolean contentExist = constructors != null ? true : fields != null ? true : methods != null ? true : false;
+    boolean contentExist = false;
+    if (constructors != null || fields != null || methods != null) {
+      contentExist = true;
+    }
 
     if (contentExist) {
       // checks if import is already present
@@ -158,15 +161,15 @@ public class JavaMerger implements Merger {
       addAnnotationOn(fields, generatedAnnotation);
     }
     return StringUtil.consolidateLineEndings(baseClass.getSource().getCodeBlock(), lineDelimiter);
-
   }
 
   /**
+   * Adds the generated Annotation on methods, fields and constructors. If already exists then merges the generated
+   * annotation.
    *
    * @param elements on what elements of the class the annotation should be added to
    * @param generatedAnnotation list contains only generated Annotation
    */
-
   private void addAnnotationOn(List<? extends JavaAnnotatedElement> elements,
       List<JavaAnnotation> generatedAnnotation) {
 

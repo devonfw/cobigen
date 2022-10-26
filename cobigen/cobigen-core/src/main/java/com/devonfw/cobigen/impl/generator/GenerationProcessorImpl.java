@@ -16,6 +16,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -23,6 +24,7 @@ import java.util.function.BiConsumer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -45,6 +47,7 @@ import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.api.util.SystemUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
@@ -61,6 +64,7 @@ import com.devonfw.cobigen.impl.generator.api.GenerationProcessor;
 import com.devonfw.cobigen.impl.generator.api.InputResolver;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.validator.InputValidator;
 import com.google.common.collect.Maps;
 
@@ -391,12 +395,12 @@ public class GenerationProcessorImpl implements GenerationProcessor {
    * @param origToTmpFileTrace the mapping of temporary generated files to their original target destination to
    *        eventually finalizing the generation process
    * @param progressCallback to track progress
-   * @param generateAnnotation if true adds Generated Annotation to the new output file
+   * @param addGeneratedAnnotation if true adds Generated Annotation to the new output file
    * @throws InvalidConfigurationException if the inputs do not fit to the configuration or there are some configuration
    *         failures
    */
   private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter, Map<File, File> origToTmpFileTrace,
-      BiConsumer<String, Integer> progressCallback, boolean generateAnnotation) {
+      BiConsumer<String, Integer> progressCallback, boolean addGeneratedAnnotation) {
 
     Trigger trigger = this.configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
 
@@ -508,7 +512,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
           progressCallback.accept(formatter.out().toString(), 1);
         }
         generateTemplateAndWriteFile(tmpOriginalFile, templateEty, templateEngine, model, targetCharset,
-            generateAnnotation);
+            addGeneratedAnnotation);
       }
     }
   }
@@ -596,16 +600,25 @@ public class GenerationProcessorImpl implements GenerationProcessor {
    * @param templateEngine template engine to be used
    * @param model to generate with
    * @param outputCharset charset the target file should be written with
-   * @param generateAnnotation if true adds Generated Annotation to the new output file on generated methods and fields
+   * @param addGeneratedAnnotation if true adds Generated Annotation to the new output file on generated methods and
+   *        fields
    */
   private void generateTemplateAndWriteFile(File output, Template template, TextTemplateEngine templateEngine,
-      Map<String, Object> model, String outputCharset, boolean generateAnnotation) {
+      Map<String, Object> model, String outputCharset, boolean addGeneratedAnnotation) {
 
+    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+    String defaultGeneratdAnnotation = null;
+    if (Files.exists(cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE))) {
+      Properties props = ConfigurationFinder
+          .readConfigrationFile(cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
+      defaultGeneratdAnnotation = props.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
+    }
     try (Writer out = new StringWriter()) {
       templateEngine.process(template, model, out, outputCharset);
       FileUtils.writeStringToFile(output, out.toString(), outputCharset);
       // If the output file is of java type add @Generated annotation on fields, methods and constructors
-      if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null && generateAnnotation) {
+      if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null
+          && (addGeneratedAnnotation || StringUtils.equals("true", defaultGeneratdAnnotation))) {
         Merger merger = PluginRegistry.getMerger(template.getMergeStrategy());
         String generatedAnnotation = merger.merge(output, null, outputCharset);
         FileUtils.writeStringToFile(output, generatedAnnotation, outputCharset);

@@ -617,7 +617,7 @@ public class JavaMergerTest {
   }
 
   /*
-   * Test if @Generated annotation already present, do not override
+   * Test if @Generated annotation is already present and does not override
    */
   @Test
   public void testDoNotOverrideGeneratedAnnotation() throws IOException {

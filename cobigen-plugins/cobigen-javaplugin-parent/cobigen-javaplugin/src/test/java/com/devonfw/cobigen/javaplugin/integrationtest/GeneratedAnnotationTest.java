@@ -1,9 +1,11 @@
 package com.devonfw.cobigen.javaplugin.integrationtest;
 
 import static com.devonfw.cobigen.api.assertj.CobiGenAsserts.assertThat;
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,19 +13,25 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.javaplugin.integrationtest.common.AbstractIntegrationTest;
 
 public class GeneratedAnnotationTest extends AbstractIntegrationTest {
 
   /*
-   * Test to check weather the entire generation process runs with new modifications in JavaMerger and merges the
+   * Test to check whether the entire generation process runs with new modifications in JavaMerger and merges the
    * generated annotation
+   *
+   * @throws Exception
+   *
    */
   @Test
   public void testGenerateAddedGeneratedAnnotations() throws Exception {
@@ -36,6 +44,41 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
         new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
         Charset.forName("UTF-8"));
     List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
+    checkExsistingAnnotation(templates, cobiGen, input, tmpFolderCobiGen, LINE_SEPARATOR);
+  }
+
+  /*
+   * Test to check whether the entire generation process can be defaulted by .cobigen properties, to add the generated
+   * annotation
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testGenerateAddedGeneratedAnnotationsFromProperties() throws Exception {
+
+    File tmpProject = this.tmpFolder.newFolder("playground", "project");
+
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, tmpProject.toPath().toString()).execute(() -> {
+      Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+      Path propertiesPath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+      Files.createFile(propertiesPath);
+      FileUtils.writeStringToFile(new File(propertiesPath.toString()),
+          ConfigurationConstants.ADD_GENERATED_ANNOTATION + "=true", Charset.forName("UTF-8"));
+      CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
+      File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
+      String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
+
+      Object input = cobiGen.read(
+          new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
+          Charset.forName("UTF-8"));
+      List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
+
+      checkExsistingAnnotation(templates, cobiGen, input, tmpFolderCobiGen, LINE_SEPARATOR);
+    });
+  }
+
+  private void checkExsistingAnnotation(List<TemplateTo> templates, CobiGen cobiGen, Object input,
+      File tmpFolderCobiGen, String LINE_SEPARATOR) throws IOException {
 
     for (TemplateTo template : templates) {
       if (template.getId().equals("generated.java")) {
@@ -60,5 +103,4 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
       }
     }
   }
-
 }
