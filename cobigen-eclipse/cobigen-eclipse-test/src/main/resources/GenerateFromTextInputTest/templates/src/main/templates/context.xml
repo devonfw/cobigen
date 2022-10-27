@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.2">
-    <trigger id="test" type="java">
+    <trigger id="test" type="java" templateFolder="template1">
         <matcher type="fqn" value=".*">
         </matcher>
     </trigger>

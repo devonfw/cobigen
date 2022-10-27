@@ -10,8 +10,7 @@ import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 
 /**
- * This Class is used to set specific properties if not found, or save them if correctly found. These properties are
- * groupIds, allowSnapshots and hideTemplates.
+ * This Class is used to set specific properties. These properties are groupIds, allowSnapshots and hideTemplates.
  */
 public class TemplateSetConfiguration {
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+
+  <templates>
+    <templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
+  </templates>
+
+  <templateScans>
+    <templateScan name="ts_scan" templatePath="templates" destinationPath=""/>
+  </templateScans>
+
+  <increments>
+    <increment name="app_angular_env" description="Server URL Registration">
+      <templateRef ref="environment.ts"/>
+    </increment>
+  </increments>
+</templatesConfiguration>

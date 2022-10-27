@@ -10,6 +10,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+
 /**
  * Tests the usage of the generate command.
  */
@@ -58,9 +60,40 @@ public class GenerateCommandIT extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "springdata-repository";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
+        .exists();
+  }
+
+  /**
+   *
+   * Test the upgrade process from templates in a given path and generates from the new template-sets structure
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void upgradeAndGenerateFromEntityTest() throws Exception {
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
+    this.tmpProject.resolve("templates-devon4j").toFile()
+        .renameTo(this.tmpProject.resolve(ConfigurationConstants.COBIGEN_TEMPLATES).toFile());
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    File monolithicConfiguration = this.tmpProject.toFile();
+    String args[] = new String[7];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "0";
+    args[4] = "--upgrade-configuration";
+    args[5] = "-tp";
+    args[6] = monolithicConfiguration.getAbsolutePath();
+
+    execute(args, false);
+
+    assertThat(this.currentHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)).exists();
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
         .exists();
   }
 
@@ -73,10 +106,10 @@ public class GenerateCommandIT extends AbstractCliTest {
   @Test
   public void generateFromTemplatesJarWithUtilClassDependencyTest() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates-devon4j"),
+        this.tmpProject.toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
-    File templatesProject = this.tmpProject.resolve("templates-devon4j/target/templates-devon4j-dev-SNAPSHOT.jar")
-        .toFile();
+    File templatesProject = this.tmpProject.resolve("target/templates-devon4j-dev-SNAPSHOT.jar").toFile();
 
     String args[] = new String[6];
     args[0] = "generate";
@@ -108,7 +141,7 @@ public class GenerateCommandIT extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "8";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
         .exists();
@@ -133,7 +166,7 @@ public class GenerateCommandIT extends AbstractCliTest {
     args[2] = "--increments";
     args[3] = "app_angular_devon4ng_component";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     Thread.sleep(1000);
 
@@ -161,7 +194,7 @@ public class GenerateCommandIT extends AbstractCliTest {
     args[4] = "--increments";
     args[5] = "all";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     assertThat(
         outputRootPath.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
@@ -211,7 +244,7 @@ public class GenerateCommandIT extends AbstractCliTest {
     args[2] = "-t";
     args[3] = "crud_complex_AbstractBeanMapperSupport";
 
-    execute(args, true, false, true);
+    execute(args, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/general/")).exists();
   }
@@ -235,7 +268,7 @@ public class GenerateCommandIT extends AbstractCliTest {
     args[4] = "--increments";
     args[5] = "rest_service_impl";
 
-    execute(args, true, true, true);
+    execute(args, true, true);
   }
 
   /**

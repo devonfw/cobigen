@@ -3,6 +3,8 @@ package com.devonfw.cobigen.impl;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -10,11 +12,13 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
+import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
@@ -96,7 +100,7 @@ public class CobiGenFactory {
     PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
 
     if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration()) {
-      throw new DeprecatedMonolithicConfigurationException();
+      throw new DeprecatedMonolithicConfigurationException(Paths.get(configFileOrFolder));
     }
     // install Template Sets defined in .properties file
     if (configurationHolder.isTemplateSetConfiguration()) {
@@ -138,4 +142,15 @@ public class CobiGenFactory {
     return ProxyFactory.getProxy(new HealthCheckImpl());
   }
 
+  /**
+   * Upgrades the given template configuration.
+   *
+   * @param configurationPath path to the templates Configuration
+   * @return the new path to the new template-sets
+   */
+  public static Path startTemplatesUpgrader(Path configurationPath) {
+
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(configurationPath);
+    return templateAdapter.upgradeMonolithicTemplates(configurationPath);
+  }
 }
