@@ -24,7 +24,6 @@ import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Link;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.Links;
@@ -129,10 +128,12 @@ public class TemplateSetUpgrader {
       Files.createDirectory(adapted);
     }
     Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
-    ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
+
+    com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration contextConfiguration = getContextConfiguration(
+        folderOfContextLocation);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
-        templateSetConfiguration);
+        contextConfiguration);
     Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
     for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration cc : contextFiles) {
       for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
@@ -234,11 +235,11 @@ public class TemplateSetUpgrader {
    *         contextConfiguration files
    */
   private List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContext(
-      TemplateSetConfiguration monolithic) {
+      com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration monolithic) {
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContexts = new ArrayList<>();
-    List<Trigger> triggerList = monolithic.getTrigger();
-    for (Trigger trigger : triggerList) {
+    List<com.devonfw.cobigen.impl.config.entity.io.v2_1.Trigger> triggerList = monolithic.getTrigger();
+    for (com.devonfw.cobigen.impl.config.entity.io.v2_1.Trigger trigger : triggerList) {
       com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration();
       com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger();
       trigger3_0.setId(trigger.getId());
@@ -278,7 +279,8 @@ public class TemplateSetUpgrader {
    * @return {@link ContextConfigurationDecorator}
    * @throws Exception
    */
-  private TemplateSetConfiguration getContextConfiguration(Path contextFile) throws Exception {
+  private com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration getContextConfiguration(Path contextFile)
+      throws Exception {
 
     if (contextFile == null) {
       throw new CobiGenRuntimeException("Templates location cannot be null!");
@@ -292,11 +294,12 @@ public class TemplateSetUpgrader {
     }
 
     try (InputStream in = Files.newInputStream(context)) {
-      Unmarshaller unmarschaller = JAXBContext.newInstance(TemplateSetConfiguration.class).createUnmarshaller();
+      Unmarshaller unmarschaller = JAXBContext
+          .newInstance(com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class).createUnmarshaller();
 
       Object rootNode = unmarschaller.unmarshal(in);
-      if (rootNode instanceof TemplateSetConfiguration) {
-        return (TemplateSetConfiguration) rootNode;
+      if (rootNode instanceof com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration) {
+        return (com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration) rootNode;
       }
     } catch (IOException e) {
       throw new InvalidConfigurationException("Context file could not be found", e);
