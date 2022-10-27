@@ -14,7 +14,6 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
 
@@ -123,14 +122,15 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
 
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.contextConfigurations.keySet()) {
-      ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
+      com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration = this.contextConfigurations
+          .get(contextFile);
       Path configLocation = this.configLocations.get(contextFile);
       boolean isJarFile = FileSystemUtil.isZipFile(configLocation.toUri());
 
-      List<com.devonfw.cobigen.impl.config.entity.io.Trigger> triggerList = contextConfiguration.getTrigger();
+      List<com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger> triggerList = contextConfiguration.getTrigger();
       if (!triggerList.isEmpty()) {
         // context configuration in template sets consists of only one trigger
-        com.devonfw.cobigen.impl.config.entity.io.Trigger trigger = triggerList.get(0);
+        com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger = triggerList.get(0);
 
         if (!this.triggerConfigLocations.containsKey(trigger.getId()) || !isJarFile) {
           // prefer the adapted templates
