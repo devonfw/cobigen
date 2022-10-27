@@ -1,11 +1,13 @@
 package com.devonfw.cobigen.eclipse.test;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
@@ -19,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
@@ -86,6 +89,13 @@ public class UpgradeMonolithicTemplatesTest extends SystemTest {
 
       // check assertions
       bot.waitUntil(new AllJobsAreFinished(), 10000);
+
+      IFile generationResult = project.getProject().getFile("src/environments/environment.ts");
+      assertThat(generationResult.exists()).isTrue();
     });
+    FileUtils.deleteDirectory(this.currentHome.toFile());
+    // Set to null to to run all eclipse tests after the upgrade
+    ResourcesPluginUtil.setTemplateSetPathAfterUpgrade(null);
+
   }
 }

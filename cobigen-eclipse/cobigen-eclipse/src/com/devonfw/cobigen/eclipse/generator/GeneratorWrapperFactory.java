@@ -258,6 +258,10 @@ public class GeneratorWrapperFactory {
     Path templateSetsAdaptedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
     Path templateSetsDownloadedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
 
+    if (ResourcesPluginUtil.getTemplateSetPathAfterUpgrade() != null) {
+      return CobiGenFactory.create(ResourcesPluginUtil.getTemplateSetPathAfterUpgrade().toUri(),
+          allowMonolithicConfiguration);
+    }
     if (generatorProj == null) {
 
       // check adapted and downloaded folder

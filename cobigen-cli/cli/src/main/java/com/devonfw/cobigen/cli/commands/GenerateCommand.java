@@ -37,6 +37,7 @@ import com.devonfw.cobigen.cli.exceptions.UserAbortException;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
+import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
@@ -303,7 +304,7 @@ public class GenerateCommand extends CommandCommons {
 
     try {
       // set the new template-set as the templatesProject after the upgrade
-      this.templatesProject = CobiGenUtils.startTemplatesUpgrader(this.templatesProject);
+      this.templatesProject = CobiGenFactory.startTemplatesUpgrader(this.templatesProject);
     } catch (Throwable e) {
       LOG.error("An error occurred while upgrading the templates.");
       throw e;

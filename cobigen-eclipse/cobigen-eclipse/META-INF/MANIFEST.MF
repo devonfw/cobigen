@@ -67,4 +67,5 @@ Bundle-ClassPath: .,
  lib/slf4j-api.jar,
  lib/txw2.jar,
  lib/zt-exec.jar
-Export-Package: com.devonfw.cobigen.eclipse.common.constants.external
+Export-Package: com.devonfw.cobigen.eclipse.common.constants.external,
+ com.devonfw.cobigen.eclipse.common.tools
