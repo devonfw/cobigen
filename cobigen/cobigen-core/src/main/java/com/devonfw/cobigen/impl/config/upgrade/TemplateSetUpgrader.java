@@ -1,13 +1,13 @@
 package com.devonfw.cobigen.impl.config.upgrade;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -16,15 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
@@ -89,41 +85,60 @@ public class TemplateSetUpgrader {
    * Upgrades the ContextConfiguration from v2.1 to the new structure from v3.0. The monolithic pom and context files
    * will be split into multiple files corresponding to every template set that will be created.
    *
-   * @param contextLocation the location of the context configuration file
+   * @param Path {@link Path} to the templatesLocation
    *
-   * @param {@link Path} Path to the context.xml that will be upgraded
    * @return {@link Map} collection that contains the upgraded v3.0
    *         {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} as key and a {@link Path} for
    *         the new location of the context.xml as value
    * @throws Exception if an issue occurred in directory copy operations
    */
   public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
-      Path contextLocation) throws Exception {
+      Path templatesLocation) throws Exception {
 
-    Path cobigenDir = contextLocation;
-    while (!cobigenDir.endsWith(ConfigurationConstants.COBIGEN_CONFIG_FILE)) {
-      cobigenDir = cobigenDir.getParent();
-      if (cobigenDir == null) {
-        cobigenDir = CobiGenPaths.getCobiGenHomePath();
-        cobigenDir.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-      }
+    Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
+    Path parentOfCobigenTemplates = cobigenTemplatesFolder.getParent();
+    Path templateSets = null;
+    File folderToRename = null;
+    Path backupFolder = null;
+    if (parentOfCobigenTemplates.endsWith(ConfigurationConstants.TEMPLATES_FOLDER)) {
+      // #1 case Here we need to rename parentOfCobigenTemplates to template-sets
+      templateSets = parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      folderToRename = parentOfCobigenTemplates.toFile();
+      backupFolder = parentOfCobigenTemplates.getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
+    } else {
+      // #2 case we need to rename cobigenTemplatesFolder to template-sets, this is only the case if the
+      // parentOfCobigenTemplates name is not "templates"
+      templateSets = parentOfCobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      folderToRename = cobigenTemplatesFolder.toFile();
+      backupFolder = parentOfCobigenTemplates.resolve(ConfigurationConstants.BACKUP_FOLDER);
     }
-    TemplateSetConfiguration templateSetConfiguration = getContextConfiguration(contextLocation);
+    // backup of old files
+    Files.createDirectory(backupFolder);
+    try {
+      FileUtils.copyDirectoryToDirectory(folderToRename, backupFolder.toFile());
+    } catch (IOException e) {
+      LOG.error("An error occured while backing up the old template folder", e);
+      throw new CobiGenRuntimeException(e.getMessage(), e);
+    }
 
-    Path templateSets = Files.createDirectory(cobigenDir.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER));
-    Path adapted = Files.createDirectory(templateSets.resolve(ConfigurationConstants.ADAPTED_FOLDER));
-    Path cobigenTemplates = cobigenDir.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
-        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-    Path templates = cobigenTemplates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    Path adapted = folderToRename.toPath().resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    if (Files.exists(templateSets)) {
+      throw new CobiGenRuntimeException("template-sets folder already exists!");
+    }
+    if (!Files.exists(adapted)) {
+      Files.createDirectory(adapted);
+    }
+    Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
+    ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
         templateSetConfiguration);
     Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
     for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration cc : contextFiles) {
       for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
-        Path triggerFolder = templates.resolve(trigger.getTemplateFolder());
+        Path triggerFolder = folderOfContextLocation.resolve(trigger.getTemplateFolder());
         Path newTriggerFolder = adapted.resolve(trigger.getTemplateFolder());
-        Path utilsPath = cobigenTemplates.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER);
+        Path utilsPath = folderOfContextLocation.getParent().resolve("java");
         try {
           FileUtils.copyDirectory(triggerFolder.toFile(),
               newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toFile());
@@ -132,8 +147,10 @@ public class TemplateSetUpgrader {
           throw new CobiGenRuntimeException(e.getMessage(), e);
         }
         try {
-          FileUtils.copyDirectory(utilsPath.toFile(),
-              newTriggerFolder.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER).toFile());
+          if (Files.exists(utilsPath)) {
+            FileUtils.copyDirectory(utilsPath.toFile(),
+                newTriggerFolder.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER).toFile());
+          }
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template utilities Folder", e);
           throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -146,22 +163,22 @@ public class TemplateSetUpgrader {
         try (OutputStream out = Files.newOutputStream(newContextPath)) {
           JAXB.marshal(cc, out);
         }
-        writeNewPomFile(cobigenTemplates, newTriggerFolder, trigger);
+        writeNewPomFile(cobigenTemplatesFolder, newTriggerFolder, trigger);
+        newContextPath = templateSets.resolve(folderToRename.toPath().relativize(newTriggerFolder)
+            .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
+        contextMap.put(cc, newContextPath);
       }
     }
 
-    // backup of old files
-    Path backupFolder = cobigenDir.resolve("backup");
-    File f = backupFolder.toFile();
-    if (!f.exists()) {
-      f.mkdir();
+    // cleanup
+    for (File file : folderToRename.listFiles()) {
+      if (!file.getName().equals(ConfigurationConstants.ADAPTED_FOLDER)) {
+        FileUtils.forceDelete(file);
+      }
     }
-    try {
-      FileUtils.moveDirectoryToDirectory(cobigenTemplates.getParent().toFile(), f, false);
-    } catch (IOException e) {
-      LOG.error("An error occured while backing up the old template folder", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    }
+    folderToRename.renameTo(templateSets.toFile());
+
     return contextMap;
 
   }
@@ -169,47 +186,41 @@ public class TemplateSetUpgrader {
   /**
    * Writes a pom.xml file for the split context and template folder
    *
-   * @param {@link Path}cobigen_templates Path to the CobiGen_Templates folder
-   * @param {@link Path}newTemplateFolder Path to the split template folder
-   * @param {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }trigger to the related template folder
+   * @param Path {@link Path} to the CobiGen_Templates folder
+   * @param Path {@link Path} to the split template folder
+   * @param Trigger {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }to the related template folder
    * @throws IOException
-   * @throws XmlPullParserException
+   * @throws FileNotFoundException
    */
-  private void writeNewPomFile(Path cobigen_templates, Path newTemplateFolder,
-      com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) throws IOException, XmlPullParserException {
+  private void writeNewPomFile(Path cobigenTemplates, Path newTemplateFolder,
+      com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) throws IOException, FileNotFoundException {
 
     // Pom.xml creation
-    MavenXpp3Reader reader = new MavenXpp3Reader();
-    MavenXpp3Writer writer = new MavenXpp3Writer();
-    Model monolithicPomModel;
-    try (FileInputStream pomInputStream = new FileInputStream(cobigen_templates.resolve("pom.xml").toFile());) {
-      monolithicPomModel = reader.read(pomInputStream);
+    try {
+      Path oldPom = cobigenTemplates.resolve(MavenConstants.POM);
+      Path newPom = newTemplateFolder.resolve(MavenConstants.POM);
+      if (!Files.exists(newPom))
+        Files.createFile(newPom);
+
+      // read the content of the pom.xml then replace it
+      Charset charset = StandardCharsets.UTF_8;
+      String content = new String(Files.readAllBytes(oldPom), charset);
+      content = content.replaceAll("</modelVersion>\n" + "  <groupId>([a-zA-Z]+(\\.[a-zA-Z]+)+)</groupId>",
+          "</modelVersion>\n" + "  <groupId>" + ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID
+              + "</groupId>");
+      content = content.replaceAll("</groupId>\n" + "  <artifactId>.*</artifactId>", "</groupId>\n" + "  <artifactId>"
+          + newTemplateFolder.getFileName().toString().replace('_', '-') + "</artifactId>");
+      content = content.replaceAll("</artifactId>\n" + "  <version>([0-9]+(\\.[0-9]+)+)</version>", "</artifactId>\n"
+          + "  <version>" + ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_VERSION + "</version>");
+      content = content.replaceAll("</version>\n" + "  <name>.*</name>",
+          "</version>\n" + "  <name>" + newTemplateFolder.getFileName().toString() + "</name>");
+      Files.write(newPom, content.getBytes(charset));
+
     } catch (FileNotFoundException e) {
       LOG.error("Monolitic pom file could not be found", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
     } catch (IOException e) {
       LOG.error("IOError while reading the monolithic pom file", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    } catch (XmlPullParserException e) {
-      LOG.error("XMLError while parsing the monolitic pom file", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    }
-    Model splitPomModel = new Model();
-    Parent pomParent = new Parent();
-    pomParent.setArtifactId(monolithicPomModel.getArtifactId());
-    pomParent.setGroupId(monolithicPomModel.getGroupId());
-    pomParent.setVersion(monolithicPomModel.getVersion());
-    splitPomModel.setParent(pomParent);
-    splitPomModel.setDependencies(monolithicPomModel.getDependencies());
-    splitPomModel.setArtifactId(trigger.getId().replace('_', '-'));
-    splitPomModel.setName("PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER");
-    try (FileOutputStream pomOutputStream = new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile());) {
-      writer.write(new FileOutputStream(newTemplateFolder.resolve("pom.xml").toFile()), splitPomModel);
-    } catch (FileNotFoundException e) {
-      LOG.error("An error occured while creating the new v3_0 pom file", e);
-      throw new CobiGenRuntimeException(e.getMessage(), e);
-    } catch (IOException e) {
-      LOG.error("An IOError occured while writing the new v3_0 pom file", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
     }
 
@@ -218,7 +229,7 @@ public class TemplateSetUpgrader {
   /**
    * Splits a contextConfiguration and converts a {@link Trigger} and his data to a v3_0 Trigger
    *
-   * @param {@link ContextConfiguration}the monolithic context that will be split
+   * @param ContextConfiguration {@link ContextConfiguration} of the monolithic context that will be split
    * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} List of the split
    *         contextConfiguration files
    */
@@ -270,25 +281,13 @@ public class TemplateSetUpgrader {
   private TemplateSetConfiguration getContextConfiguration(Path contextFile) throws Exception {
 
     if (contextFile == null) {
-      throw new Exception("Templates location cannot be null!");
+      throw new CobiGenRuntimeException("Templates location cannot be null!");
     }
     // check if context exits here
     Path context = contextFile.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
     if (Files.exists(context)) {
       LOG.info("Found Context File");
     } else {
-      if (contextFile.endsWith(ConfigurationConstants.COBIGEN_TEMPLATES)) {
-        context = contextFile.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        LOG.info("Found Context File");
-      } else if (contextFile.endsWith(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)) {
-        context = contextFile.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
-            .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        LOG.info("Found Context File");
-      }
-    }
-    if (!Files.exists(context)) {
       throw new FileNotFoundException("Context.xml could not be found");
     }
 

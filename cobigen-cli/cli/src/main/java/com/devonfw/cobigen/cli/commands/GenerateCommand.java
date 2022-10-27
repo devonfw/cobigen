@@ -37,9 +37,11 @@ import com.devonfw.cobigen.cli.exceptions.UserAbortException;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
+import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
+import com.devonfw.cobigen.impl.util.PostponeUtil;
 import com.google.googlejavaformat.java.FormatterException;
 
 import picocli.CommandLine.Command;
@@ -110,9 +112,10 @@ public class GenerateCommand extends CommandCommons {
     }
 
     LOG.debug("Input files and output root path confirmed to be valid.");
-    if (!this.forceMonolithicConfiguration) {
+
+    if ((PostponeUtil.isTimePassed()) && (!this.forceMonolithicConfiguration))
       checkMonolithicConfigurationException();
-    }
+
     CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject, true);
 
     resolveTemplateDependencies();
@@ -130,22 +133,8 @@ public class GenerateCommand extends CommandCommons {
             MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg, IncrementTo.class);
       }
     }
+
     return 0;
-  }
-
-  /**
-   * Uses default initialization, checks if monolithic templates exist, handles the exception and lets the user decide
-   * if the templates should be upgraded.
-   */
-  private void checkMonolithicConfigurationException() {
-
-    try {
-      CobiGenUtils.initializeCobiGen(this.templatesProject, false);
-    } catch (DeprecatedMonolithicConfigurationException e) {
-      LOG.warn(e.getMessage());
-      askUserToUpgradeTemplates();
-
-    }
 
   }
 
@@ -272,24 +261,72 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
+   * Uses default initialization, checks if monolithic templates exist, handles the exception and lets the user decide
+   * if the templates should be upgraded.
+   */
+  private void checkMonolithicConfigurationException() {
+
+    try {
+      CobiGenUtils.initializeCobiGen(this.templatesProject, false);
+    } catch (DeprecatedMonolithicConfigurationException e) {
+      LOG.warn("Found monolithic configuration at: {} {}",
+          DeprecatedMonolithicConfigurationException.getMonolithicConfiguration(), e.getMessage());
+
+      if (this.upgradeConfiguration || askUserToUpgradeTemplates()) {
+        startTemplatesUpgrader();
+      } else {
+        askUserToPostponeUpgrade();
+      }
+    }
+
+  }
+
+  /**
    * Opens a looping prompt with a yes/no question and upgrades the templates to the newest version.
    *
    */
-  private void askUserToUpgradeTemplates() {
+  private boolean askUserToUpgradeTemplates() {
 
     LOG.info(
         "Would you like to upgrade your templates to the newest version? \n"
             + MessagesConstants.YES_NO_ANSWER_DESCRIPTION + "For more Informations, please visit: ",
         WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION, System.getProperty("user.dir"));
-    Path outputDirectory = Paths.get(System.getProperty("user.dir"));
 
-    boolean setToUserDir = ValidationUtils.yesNoPrompt("upgrading templates version...: " + outputDirectory.toString(),
-        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with old templates...");
+    return ValidationUtils.yesNoPrompt("Upgrading templates configuration...: ",
+        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with monolithic templates...");
+  }
+
+  /**
+   * Upgrades the given template configuration.
+   *
+   */
+  private void startTemplatesUpgrader() {
+
+    try {
+      // set the new template-set as the templatesProject after the upgrade
+      this.templatesProject = CobiGenFactory.startTemplatesUpgrader(this.templatesProject);
+    } catch (Throwable e) {
+      LOG.error("An error occurred while upgrading the templates.");
+      throw e;
+    }
+  }
+
+  /**
+   * Asks the user if he wants to postpone the upgrade message for 30 days.
+   *
+   * @throws IOException
+   */
+  private void askUserToPostponeUpgrade() {
+
+    LOG.info("Would you like to postpone the upgrade warning message for 30 days?"
+        + MessagesConstants.YES_NO_ANSWER_DESCRIPTION, System.getProperty("user.dir"));
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("A timer is set for 30 days...: ",
+        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Allright...");
 
     if (setToUserDir) {
-      // TODO Use the Upgrader from Ticket #1502
+      PostponeUtil.addATimestampForOneMonth();
     } else {
-      // Do Nothing, continue with old templates generation
+      // Do nothing, the user will be asked again.
     }
   }
 

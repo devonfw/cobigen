@@ -40,18 +40,14 @@ public class AdaptTemplatesCommand extends CommandCommons {
   @Override
   public Integer doAction() throws Exception {
 
-    TemplateAdapter templateAdapter;
-    if (this.templatesProject == null) {
-      templateAdapter = new TemplateAdapterImpl();
-    } else {
-      templateAdapter = new TemplateAdapterImpl(this.templatesProject);
-    }
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(this.templatesProject);
 
     try {
       templateAdapter.adaptTemplates();
     } catch (UpgradeTemplatesNotificationException e) {
       if (askUserToContinueWithUpgrade(e)) {
-        templateAdapter.upgradeMonolithicTemplates();
+
+        templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
       }
     } catch (TemplateSelectionForAdaptionException e) {
       List<Path> templateJars = e.getTemplateSets();

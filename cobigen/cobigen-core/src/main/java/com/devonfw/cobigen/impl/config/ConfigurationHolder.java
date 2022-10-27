@@ -166,7 +166,7 @@ public class ConfigurationHolder {
   }
 
   /**
-   * @return return if the template folder structure consists of template sets or if the old structure is used
+   * @return return if the template folder structure consists of template sets or if the monolithic structure is used.
    */
   public boolean isTemplateSetConfiguration() {
 
@@ -175,6 +175,7 @@ public class ConfigurationHolder {
       return false;
     }
     return true;
+
   }
 
   /**

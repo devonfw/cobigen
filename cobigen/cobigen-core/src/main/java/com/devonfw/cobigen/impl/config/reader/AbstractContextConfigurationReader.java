@@ -19,7 +19,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
@@ -93,11 +92,7 @@ public abstract class AbstractContextConfigurationReader {
                 "The required 'version' attribute of node \"contextConfiguration\" has not been set");
           } else {
             VersionValidator validator = new VersionValidator(Type.CONTEXT_CONFIGURATION, MavenMetadata.VERSION);
-            try {
-              validator.validate(configVersion.floatValue());
-            } catch (NotYetSupportedException e) {
-              // TODO
-            }
+            validator.validate(configVersion.floatValue());
           }
         } else {
           throw new InvalidConfigurationException(contextFile,

@@ -63,6 +63,20 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Selects the increment with the given name, upgrades the monolithic templates and generates.
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws Exception test fails
+   */
+  public static void processCobiGenAndUpgrade(SWTWorkbenchBot bot, SWTBotTreeItem input, String... increments)
+      throws Exception {
+
+    processCobiGenAndUpgrade(bot, input, DEFAULT_TIMEOUT, increments);
+  }
+
+  /**
    * Tries a Generate process with an expected error title.
    *
    * @param bot the {@link SWTWorkbenchBot} of the test
@@ -150,6 +164,7 @@ public class EclipseCobiGenUtils {
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
+    postponeUpgradeAndContinue(bot);
     generateWithSelectedIncrements(bot, defaultTimeout, increments);
   }
 
@@ -226,27 +241,28 @@ public class EclipseCobiGenUtils {
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
     postponeUpgradeAndContinue(bot);
-    bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE,
-        CobiGenDialogConstants.GenerateWizard.DIALOG_TITLE_BATCH), defaultTimeout);
+    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+  }
 
-    // select increment and generate
-    for (String increment : increments) {
-      // check for multi layer nodes
-      if (increment.contains(">")) {
-        SWTBotTreeItem treeItem = expandNodes(bot, increment);
-        bot.waitUntil(widgetIsEnabled(treeItem));
-        treeItem.check();
-      } else {
-        // select single increment
-        SWTBotTreeItem treeItem = bot.tree().getTreeItem(increment);
-        bot.waitUntil(widgetIsEnabled(treeItem));
-        treeItem.check();
-      }
-    }
-    SWTBotButton finishButton = bot.button(IDialogConstants.FINISH_LABEL);
-    bot.waitUntil(widgetIsEnabled(bot.button()));
-    finishButton.click();
+  /**
+   * Selects the increment with the given name and generates it, upgrade if monolithic templates found
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws CoreException
+   * @throws Exception test fails
+   */
+  private static void processCobiGenAndUpgrade(SWTWorkbenchBot bot, SWTBotTreeItem input, int defaultTimeout,
+      String[] increments) throws Exception {
 
+    // Open generation wizard with new file as Input
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
+    input.contextMenu("CobiGen").menu("Generate...").click();
+    upgradeAndContinue(bot, defaultTimeout);
+
+    generateWithSelectedIncrements(bot, defaultTimeout, increments);
   }
 
   /**
@@ -286,6 +302,25 @@ public class EclipseCobiGenUtils {
     takeScreenshot(bot, "Warning!");
     SWTBotShell finishDialog = bot.shell("Warning!");
     finishDialog.bot().button("Postpone").click();
+  }
+
+  /**
+   * Starts the upgrade process with the "Upgrade" button
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param defaultTimeout
+   *
+   */
+  private static void upgradeAndContinue(SWTWorkbenchBot bot, int defaultTimeout) {
+
+    takeScreenshot(bot, "Warning!");
+    SWTBotShell finishDialog = bot.shell("Warning!");
+    finishDialog.bot().button("Upgrade").click();
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout);
+    takeScreenshot(bot, "Success!");
+    SWTBotShell successDialog = bot.shell("Success!");
+    successDialog.bot().button("Ok").click();
+
   }
 
   /**

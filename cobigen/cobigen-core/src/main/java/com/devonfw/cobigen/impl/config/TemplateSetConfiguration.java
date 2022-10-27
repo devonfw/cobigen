@@ -21,7 +21,6 @@ import com.google.common.collect.Maps;
 
 /**
  * This is the readable and persistent representation of the automatically generated TemplateSetConfiguration file
- *
  */
 public class TemplateSetConfiguration {
 

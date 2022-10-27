@@ -11,11 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
  * Utilities related to the cobigen configurations including:
- *
  *
  * 1. templates location
  */
@@ -176,6 +176,47 @@ public class CobiGenPaths {
       return null;
     }
 
+  }
+
+  /**
+   * return the path for the context.xml in a monolithic structure
+   *
+   * @param templatesLocation the path to the Cobigen templates project
+   * @return the parent path to the context.xml
+   */
+  public static Path getContextLocation(Path templatesLocation) {
+
+    if (Files.exists(templatesLocation.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME))) {
+      return templatesLocation;
+    } else if (Files.exists(templatesLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME))) {
+      return templatesLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    } else if (Files.exists(templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
+        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME))) {
+      return templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES)
+          .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    } else {
+      throw new CobiGenRuntimeException("Could not find any context.xml !" + templatesLocation);
+    }
+  }
+
+  /**
+   * return the path of the found pom.xml in a monolithic structure
+   *
+   * @param templatesLocation the path to the Cobigen templates project
+   * @return parent path to the found pom.xml
+   */
+  public static Path getPomLocation(Path templatesLocation) {
+
+    if (Files.exists(templatesLocation.resolve(MavenConstants.POM))) {
+      return templatesLocation;
+    } else if (Files
+        .exists(templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES).resolve(MavenConstants.POM))) {
+      return templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    } else {
+      throw new CobiGenRuntimeException("Could not find any pom.xml !" + templatesLocation);
+    }
   }
 
 }

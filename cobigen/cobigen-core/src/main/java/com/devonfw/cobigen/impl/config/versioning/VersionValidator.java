@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
@@ -77,6 +78,18 @@ public class VersionValidator {
    */
   public void validate(float configVersion) {
 
+    validate(configVersion, true);
+  }
+
+  /**
+   * Validates the given version with the running instance of CobiGen.
+   *
+   * @param configVersion version to be validated
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
+   */
+  public void validate(float configVersion, boolean allowMonolithicConfiguration) {
+
     Float currentCobiGenVersion;
     String currentCobiGenVersionStr = this.cobiGenVersion;
     currentCobiGenVersionStr = currentCobiGenVersionStr.substring(0, currentCobiGenVersionStr.lastIndexOf("."));
@@ -100,8 +113,8 @@ public class VersionValidator {
             && !versionStep.getValue()) {
           LOG.warn("{} version too old for current CobiGen version. CobiGen: {} / {}: {}", this.configName,
               currentCobiGenVersionStr, this.configName, configVersion);
-          throw new NotYetSupportedException("The " + this.configName + " with version '" + configVersion
-              + "' has to be upgraded to a compatible " + this.configName + " version.");
+          if (!allowMonolithicConfiguration)
+            throw new DeprecatedMonolithicConfigurationException();
         }
       }
       LOG.debug("Compatible {} as no breaking changes found. CobiGen: {} / {}: {}", this.configName,

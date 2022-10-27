@@ -15,10 +15,10 @@
   </templateScans>
 
   <increments>
-    <increment name="gui_spring" description="Spring configuration" explanation="This does x">
+    <increment name="gui_spring" description="Spring configuration">
       <templateRef ref="resources_resources_spring_common" />
     </increment>
-    <increment name="gui" description="GUI" explanation="this does y">
+    <increment name="gui" description="GUI">
       <incrementRef ref="gui_spring" />
     </increment>
   </increments>

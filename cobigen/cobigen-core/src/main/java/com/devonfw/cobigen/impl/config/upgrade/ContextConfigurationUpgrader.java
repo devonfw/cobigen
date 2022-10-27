@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 
@@ -35,8 +36,9 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
 
   @Override
   protected List<ConfigurationUpgradeResult> performNextUpgradeStep(ContextConfigurationVersion source,
-      Object previousConfigurationRootNode, Path configurationRoot) throws Exception {
+      Object previousConfigurationRootNode, Path templatesLocation) throws Exception {
 
+    Path configurationRoot = CobiGenPaths.getContextLocation(templatesLocation);
     ConfigurationUpgradeResult result = new ConfigurationUpgradeResult();
     MapperFactory mapperFactory;
     MapperFacade mapper;
@@ -64,14 +66,15 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
             com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class);
         upgradedConfig_2_1.setVersion(new BigDecimal("2.1"));
 
-        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig_2_1, configurationRoot);
+        result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig_2_1,
+            configurationRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
         results.add(result);
 
         break;
       case v2_1:
         TemplateSetUpgrader templatesSetUpgrader = new TemplateSetUpgrader();
         Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = templatesSetUpgrader
-            .upgradeTemplatesToTemplateSets(configurationRoot);
+            .upgradeTemplatesToTemplateSets(templatesLocation);
         for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration context : contextMap.keySet()) {
           ConfigurationUpgradeResult tempResult = new ConfigurationUpgradeResult();
           tempResult.setResultConfigurationJaxbRootNodeAndPath(context, contextMap.get(context));

@@ -22,6 +22,7 @@ import com.devonfw.cobigen.eclipse.generator.CobiGenWrapper;
 import com.devonfw.cobigen.eclipse.generator.GeneratorWrapperFactory;
 import com.devonfw.cobigen.eclipse.wizard.generate.GenerateBatchWizard;
 import com.devonfw.cobigen.eclipse.wizard.generate.GenerateWizard;
+import com.devonfw.cobigen.impl.util.PostponeUtil;
 
 /**
  *
@@ -65,7 +66,8 @@ public class GenerateJob implements IRunnableWithProgress {
     try {
       LOG.info("Initiating CobiGen...");
       monitor.beginTask("Initiating CobiGen...", 1);
-      checkMonolithicConfigurationException(monitor);
+      if (PostponeUtil.isTimePassed())
+        checkMonolithicConfigurationException(monitor);
       CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(this.selection, monitor, true);
       monitor.worked(1);
       if (generator == null) {

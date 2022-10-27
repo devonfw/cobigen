@@ -4,6 +4,7 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironment
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -56,7 +57,7 @@ public class ConfigurationUtilTest {
 
       String templatesLocation = templates.getAbsolutePath().replace("\\", "\\\\");
       FileUtils.writeStringToFile(configFile,
-          ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + templatesLocation);
+          ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + templatesLocation, StandardCharsets.UTF_8);
 
       withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, randomDirectoryForConfigFile.getAbsolutePath())
           .execute(() -> {

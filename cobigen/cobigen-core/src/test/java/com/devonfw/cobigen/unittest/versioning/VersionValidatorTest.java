@@ -2,9 +2,9 @@ package com.devonfw.cobigen.unittest.versioning;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
@@ -40,15 +40,15 @@ public class VersionValidatorTest {
    *
    * @author mbrunnli (May 17, 2016)
    */
-  @Ignore // Should be reactivated after issue #1531
-  @Test(expected = InvalidConfigurationException.class)
+  @Test(expected = DeprecatedMonolithicConfigurationException.class)
   public void testInvalidCobiGenVersion_tooNew_contextConfiguration() {
 
     try {
       VersionValidator validator = new VersionValidator(Type.CONTEXT_CONFIGURATION, "2.1.0");
-      validator.validate(1.2f);
-    } catch (InvalidConfigurationException e) {
-      assertThat(e.getMessage()).matches(".* version '1.2' has to be upgraded .*");
+      validator.validate(1.2f, false);
+    } catch (DeprecatedMonolithicConfigurationException e) {
+      assertThat(e.getMessage()).matches(
+          "You are using an old templates configuration. Please consider upgrading your templates! Thank you!");
       throw e;
     }
   }
