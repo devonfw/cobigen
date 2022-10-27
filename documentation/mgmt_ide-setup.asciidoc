@@ -19,11 +19,11 @@ This downloads all the necessary files for CobiGen development.
 . Build the project by running the build.sh located in the `workspaces/main/cobigen` folder within git bash `bash build.sh parallel`.
 . Change the default setup git remote origin URL to your fork URL and add the upstream (devonfw CobiGen repository) URL to your remotes:
 .. For SSH with private key authentication: 
-... Execute: `git remote set-url origin `git@github.com:<your user>/cobigen.git`.
-... Execute: `git remote add upstream `git@github.com:devonfw/cobigen.git`.
+... Execute: `git remote set-url origin git@github.com:<your user>/cobigen.git`.
+... Execute: `git remote add upstream git@github.com:devonfw/cobigen.git`.
 .. For HTTPS: 
-... Execute: `git remote set-url origin `https://github.com/<your user>/cobigen.git`.
-... Execute: `git remote add upstream `https://github.com/devonfw/cobigen.git`.
+... Execute: `git remote set-url origin https://github.com/<your user>/cobigen.git`.
+... Execute: `git remote add upstream https://github.com/devonfw/cobigen.git`.
 . Now open eclipse using the eclipse-main.bat file or by executing `devon eclipse` on the console and import the CobiGen projects.
 .. Switch to the "Project Explorer" view (Window->Show View->Project Explorer). This extra step is required because an import from the default view "Package Explorer" doesn't work properly.
 .. Now we need to re-import the CobiGen project. This extra step is required because the automatic project import from devonfw doesn't work properly.
