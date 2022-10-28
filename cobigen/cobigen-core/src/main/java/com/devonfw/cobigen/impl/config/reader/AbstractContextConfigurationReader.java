@@ -41,9 +41,6 @@ import jakarta.xml.bind.Unmarshaller;
 /** The {@link ContextConfigurationReader} reads the context xml */
 public abstract class AbstractContextConfigurationReader {
 
-  /** Map with XML Nodes 'context' of the context.xml files */
-  protected Map<Path, ContextConfiguration> contextConfigurations;
-
   /** Paths of the context configuration files */
   protected List<Path> contextFiles;
 
