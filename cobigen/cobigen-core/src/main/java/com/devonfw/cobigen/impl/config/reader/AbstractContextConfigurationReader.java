@@ -28,7 +28,6 @@ import com.devonfw.cobigen.impl.config.entity.Matcher;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
-import com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.google.common.collect.Lists;
@@ -46,6 +45,8 @@ public abstract class AbstractContextConfigurationReader {
 
   /** Root of the context configuration file, used for passing to ContextConfiguration */
   protected Path contextRoot;
+
+  private HashMap contextConfigurations;
 
   /**
    * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given context file
@@ -109,7 +110,7 @@ public abstract class AbstractContextConfigurationReader {
           Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
           unmarschaller.setSchema(schema);
           rootNode = unmarschaller.unmarshal(configInputStream);
-          this.contextConfigurations.put(contextFile, (ContextConfiguration) rootNode);
+          this.contextConfigurations.put(contextFile, rootNode);
         }
       } catch (JAXBException e) {
         // try getting SAXParseException for better error handling and user support

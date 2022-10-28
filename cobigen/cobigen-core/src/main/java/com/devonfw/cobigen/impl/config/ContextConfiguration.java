@@ -10,7 +10,6 @@ import java.util.Map;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
-import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -125,13 +124,15 @@ public class ContextConfiguration {
    */
   public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
 
-    if (this.contextConfigurationReader != null) {
-      Path configLocation = this.contextConfigurationReader.getConfigLocationForTrigger(triggerId);
-      if (fileSystemDependentPath && FileSystemUtil.isZipFile(configLocation.toUri())) {
-        configLocation = FileSystemUtil.createFileSystemDependentPath(configLocation.toUri());
-      }
-      return configLocation;
-    }
-    return this.contextConfigurationReader.getContextRoot();
+    // if (this.contextConfigurationReader != null) {
+    // Path configLocation = this.contextConfigurationReader.getConfigLocationForTrigger(triggerId);
+    // if (fileSystemDependentPath && FileSystemUtil.isZipFile(configLocation.toUri())) {
+    // configLocation = FileSystemUtil.createFileSystemDependentPath(configLocation.toUri());
+    // }
+    // return configLocation;
+    // }
+    // return this.contextConfigurationReader.getContextRoot();
+    // }
+    return null;
   }
 }

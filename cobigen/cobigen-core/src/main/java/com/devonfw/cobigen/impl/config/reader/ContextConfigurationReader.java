@@ -35,7 +35,6 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
-import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
 
 import jakarta.xml.bind.JAXBContext;
@@ -54,9 +53,6 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
 
   /** Map with the paths of the config location for a trigger */
   private Map<String, Path> triggerConfigLocations = new HashMap<>();
-
-  /** Map with the paths of the config locations for a context.xml file */
-  private Map<Path, Path> configLocations = new HashMap<>();
 
   /**
    * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given context file
@@ -240,11 +236,10 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
-      Path configLocation = this.configLocations.get(contextFile);
-      boolean isJarFile = FileSystemUtil.isZipFile(configLocation.toUri());
       for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger t : contextConfiguration.getTrigger()) {
         // templateFolder property is optional in schema version 3.0. If not set take the path of the context.xml file
         String templateFolder = t.getTemplateFolder();
+
         if (templateFolder.isEmpty() || templateFolder.equals("/")) {
           templateFolder = contextFile.getParent().getFileName().toString();
         }
@@ -254,4 +249,16 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
     }
     return triggers;
   }
+
+  /**
+   * Get the configuration location for a given trigger. Either a jar file or a folder
+   *
+   * @param triggerId the trigger id to search the config root for
+   * @return the {@link Path} of the config location for a trigger
+   */
+  public Path getConfigLocationForTrigger(String triggerId) {
+
+    return this.triggerConfigLocations.get(triggerId);
+  }
+
 }

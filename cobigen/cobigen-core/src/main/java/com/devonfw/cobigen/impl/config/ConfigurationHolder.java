@@ -44,7 +44,10 @@ public class ConfigurationHolder {
   private TemplateSetConfiguration templateSetConfiguration;
 
   /** Root path of the configuration */
-  private Path configurationPath;
+  private Path contextConfigurationPath;
+
+  /** Root path of the configuration */
+  private Path templateSetConfigurationPath;
 
   /** The OS filesystem path of the configuration */
   private URI configurationLocation;
@@ -52,6 +55,7 @@ public class ConfigurationHolder {
   /** The factory class which initializes new configurations */
   private ConfigurationFactory configurationFactory;
 
+  /** Location where the properties are saved */
   private ConfigurationProperties configurationProperties;
 
   /**
@@ -62,11 +66,11 @@ public class ConfigurationHolder {
   public ConfigurationHolder(URI configurationLocation) {
 
     this.configurationLocation = configurationLocation;
-    this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
+    this.contextConfigurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
     this.configurationFactory = new ConfigurationFactory(configurationLocation);
 
     // updates the root template path and informs all of its observers
-    PluginRegistry.notifyPlugins(this.configurationPath);
+    PluginRegistry.notifyPlugins(this.contextConfigurationPath);
   }
 
   /**
@@ -91,7 +95,7 @@ public class ConfigurationHolder {
    */
   public Path getConfigurationPath() {
 
-    return this.configurationPath;
+    return this.contextConfigurationPath;
   }
 
   /**
@@ -103,7 +107,6 @@ public class ConfigurationHolder {
    */
   public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
-    Path configRoot = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), true);
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
     return this.configurationFactory.retrieveTemplatesConfiguration(this.templatesConfigurations, templateFolder,
         trigger, this);
@@ -118,7 +121,7 @@ public class ConfigurationHolder {
   public ContextConfiguration readContextConfiguration() {
 
     if (this.contextConfiguration == null) {
-      this.contextConfiguration = new ContextConfiguration(this.configurationPath);
+      this.contextConfiguration = new ContextConfiguration(this.contextConfigurationPath);
     }
     return this.contextConfiguration;
   }
@@ -162,6 +165,7 @@ public class ConfigurationHolder {
     ConfigurationFactory configurationFactory = new ConfigurationFactory(this.configurationLocation);
     this.configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds);
     this.templateSetConfiguration = configurationFactory.retrieveTemplateSetConfiguration(this.configurationProperties);
+
     return this.templateSetConfiguration;
   }
 
@@ -170,8 +174,8 @@ public class ConfigurationHolder {
    */
   public boolean isTemplateSetConfiguration() {
 
-    if (this.configurationPath.toUri().getScheme().equals("jar")
-        || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
+    if (this.contextConfigurationPath.toUri().getScheme().equals("jar") || !this.contextConfigurationPath.getFileName()
+        .toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return false;
     }
     return true;
