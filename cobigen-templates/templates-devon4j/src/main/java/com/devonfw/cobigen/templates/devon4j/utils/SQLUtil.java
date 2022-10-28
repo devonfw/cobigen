@@ -42,8 +42,11 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * @param field
-   * @return
+   * This method checks whether a declared class of the current field is annotated with the
+   * {@linkplain javax.persistence.Entity @Entity} Annotation.
+   *
+   * @param field {@link Field} of the pojo class
+   * @return true when entity
    */
   public Boolean isFieldEntity(Field field) {
 
@@ -60,10 +63,11 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Returns the name of a java type as a {@link String}
+   * Returns the name of a java type as a {@link String}. This simplifies strings like "java.lang.Integer" to "Integer".
+   * When "byte" is passed as an argument "byte" will be returned.
    *
-   * @param field
-   * @return
+   * @param field {@link Field} of the pojo class
+   * @return Java type as {@link String}
    */
   private String getSimpleJavaTypeString(Field field) {
 
