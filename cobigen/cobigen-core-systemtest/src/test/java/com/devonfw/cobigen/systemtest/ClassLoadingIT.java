@@ -5,11 +5,10 @@ import static com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers.hasItemsI
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.hamcrest.Matchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.matchers.Any.ANY;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -17,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
 /**
  * This test loads two compiled classes from a jar file that are added to the data model and called in a template file.
  */
-public class ClassLoadingTest extends AbstractApiTest {
+public class ClassLoadingIT extends AbstractApiTest {
 
   /**
    * Root path to all resources used in this test case
@@ -139,25 +139,27 @@ public class ClassLoadingTest extends AbstractApiTest {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(container)))))
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(container)))))
         .thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(container)))))
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), any(String.class), sameInstance(container)))))
         .thenReturn(true);
 
     // Simulate container children resolution of any plug-in
-    when(inputReader.getInputObjects(any(), any(Charset.class))).thenReturn(Lists.newArrayList(firstChildResource));
+    when(inputReader.getInputObjects(ArgumentMatchers.any(), ArgumentMatchers.any(Charset.class)))
+        .thenReturn(Lists.newArrayList(firstChildResource));
 
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource)))))
-        .thenReturn(true);
+    when(matcher
+        .matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(firstChildResource)))))
+            .thenReturn(true);
 
     // Simulate variable resolving of any plug-in
-    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(firstChildResource))),
+    when(matcher.resolveVariables(
+        argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(firstChildResource))),
         argThat(hasItemsInList(
-            //
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1"), equalTo(false)),
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"), equalTo(false)))),
-        any()))
+        ArgumentMatchers.any()))
             .thenReturn(ImmutableMap.<String, String> builder().put("rootPackage", "com.devonfw")
                 .put("entityName", "Test").build());
 

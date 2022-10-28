@@ -3,13 +3,14 @@ package com.devonfw.cobigen.systemtest.util;
 import static com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers.hasItemsInList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
+import static org.hamcrest.Matchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.matchers.Any.ANY;
 
 import java.util.HashMap;
+
+import org.mockito.ArgumentMatchers;
 
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
@@ -52,11 +53,14 @@ public class PluginMockFactory {
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
-    when(inputReader.isValidInput(any())).thenReturn(true);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))))).thenReturn(false);
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), ANY, sameInstance(input))))).thenReturn(true);
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(input)))))
+        .thenReturn(false);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("package"), any(String.class), sameInstance(input)))))
+        .thenReturn(true);
 
-    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))))).thenReturn(true);
+    when(matcher.matches(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(input)))))
+        .thenReturn(true);
 
     // Simulate variable resolving of any plug-in
     HashMap<String, String> variables = new HashMap<>(3);
@@ -64,12 +68,11 @@ public class PluginMockFactory {
     variables.put("component", "comp1");
     variables.put("detail", "");
 
-    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), ANY, sameInstance(input))),
+    when(matcher.resolveVariables(argThat(new MatcherToMatcher(equalTo("fqn"), any(String.class), sameInstance(input))),
         argThat(hasItemsInList(
-            //
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("rootPackage"), equalTo("1"), equalTo(false)),
             new VariableAssignmentToMatcher(equalTo("regex"), equalTo("entityName"), equalTo("3"), equalTo(false)))),
-        any())).thenReturn(variables);
+        ArgumentMatchers.any())).thenReturn(variables);
 
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
