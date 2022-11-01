@@ -8,7 +8,6 @@ import java.util.List;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
-import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.v1_2.Increment;
 import com.devonfw.cobigen.impl.config.entity.io.v1_2.IncrementRef;
 import com.devonfw.cobigen.impl.config.entity.io.v1_2.Template;
@@ -35,7 +34,8 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
    */
   public TemplateConfigurationUpgrader() {
 
-    super(TemplatesConfigurationVersion.v1_0, TemplateSetConfiguration.class,
+    super(TemplatesConfigurationVersion.v1_0,
+        com.devonfw.cobigen.impl.config.entity.io.v1_0.TemplatesConfiguration.class,
         ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
   }
 

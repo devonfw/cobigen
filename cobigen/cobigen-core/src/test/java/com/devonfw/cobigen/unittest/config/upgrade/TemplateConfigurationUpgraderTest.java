@@ -7,7 +7,6 @@ import java.io.FileReader;
 
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -77,7 +76,6 @@ public class TemplateConfigurationUpgraderTest extends AbstractUnitTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
   public void testCorrectLatestSchemaDetection() throws Exception {
 
     // preparation
