@@ -124,15 +124,6 @@ public class ContextConfiguration {
    */
   public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
 
-    // if (this.contextConfigurationReader != null) {
-    // Path configLocation = this.contextConfigurationReader.getConfigLocationForTrigger(triggerId);
-    // if (fileSystemDependentPath && FileSystemUtil.isZipFile(configLocation.toUri())) {
-    // configLocation = FileSystemUtil.createFileSystemDependentPath(configLocation.toUri());
-    // }
-    // return configLocation;
-    // }
-    // return this.contextConfigurationReader.getContextRoot();
-    // }
-    return null;
+    return this.contextConfigurationReader.getContextRoot();
   }
 }
