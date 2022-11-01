@@ -4,16 +4,18 @@
     <artifactId>gui</artifactId>
     <packaging>jar</packaging>
 
-     <parent>
+    <parent>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>gui-parent</artifactId>
       <version>${revision}</version>
     </parent>
 
     <properties>
+        <skip.deployment>false</skip.deployment>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
-        <javafx.version>18</javafx.version>
+        <java.version>11</java.version>
+        <javafx.version>11</javafx.version>
         <javafx.maven.plugin.version>0.0.6</javafx.maven.plugin.version>
     </properties>
 

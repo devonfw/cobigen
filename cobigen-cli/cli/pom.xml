@@ -25,6 +25,10 @@
       <artifactId>core-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>gui</artifactId>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core-externalprocess-api</artifactId>
     </dependency>
