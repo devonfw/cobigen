@@ -23,6 +23,7 @@ doRunCommand "mvn install $MVN_SETTINGS bundle:bundle -Pp2-build,p2-bundle -Dski
 
 log_step "Package & Run E2E Tests"
 doRunCommand "mvn test $MVN_SETTINGS -f cobigen/cobigen-core-systemtest $ENABLED_TEST $DEBUG $BATCH_MODE"
+doRunCommand "mvn install $MVN_SETTINGS -f cobigen-gui $ENABLED_TEST $DEBUG $BATCH_MODE"
 doRunCommand "mvn install $MVN_SETTINGS -f cobigen-cli $ENABLED_TEST $DEBUG $BATCH_MODE"
 doRunCommand "mvn install $MVN_SETTINGS -f cobigen-maven $ENABLED_TEST $DEBUG $BATCH_MODE"
 doRunCommand "mvn install $MVN_SETTINGS -f cobigen-templates $ENABLED_TEST $DEBUG $BATCH_MODE"
