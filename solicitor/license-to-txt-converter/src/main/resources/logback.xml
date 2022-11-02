@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This file is for logback classic. The file contains the configuration 
+<!-- This file is for logback classic. The file contains the configuration
 	for sl4j logging -->
 <configuration>
   <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<!-- defines the level of logging -->
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>%msg%n</Pattern>
-		</layout>
-	</appender>
-  
-	<root level="ERROR">
-		<appender-ref ref="STDOUT" />
-	</root>
-  
-  <logger name="io.github.maybeec.html2text" level="INFO"/>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- defines the level of logging -->
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+      </Pattern>
+    </layout>
+  </appender>
+
+  <root level="ERROR">
+    <appender-ref ref="STDOUT" />
+  </root>
+
+  <logger name="io.github.maybeec.html2text" level="INFO" />
 </configuration>

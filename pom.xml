@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>master-parent</artifactId>
@@ -19,6 +18,7 @@
     <java.version>1.8</java.version>
     <tycho.version>1.6.0</tycho.version>
     <jaxb.version>3.0.1</jaxb.version>
+    <jacoco.version>0.8.8</jacoco.version>
     <license.skipAggregateDownloadLicenses>${skip.deployment}</license.skipAggregateDownloadLicenses>
     <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     <updatesite.url>https://devonfw.com/cobigen/updatesite</updatesite.url>
@@ -27,6 +27,17 @@
     <p2.repository.build.dir>${project.build.directory}${file.separator}repository</p2.repository.build.dir>
     <p2.repository.upload.dir>${master.basedir}${file.separator}..${file.separator}gh-pages${file.separator}updatesite${file.separator}${updatesite.repository}</p2.repository.upload.dir>
     <p2.repository.upload.dir.plugin>${p2.repository.upload.dir}/cobigen-${project.artifactId}</p2.repository.upload.dir.plugin>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <!-- needs to be defined in .mvn/maven.config -->
+    <!--<sonar.projectKey>devonfw_cobigen</sonar.projectKey>-->
+    <sonar.organization>devonfw</sonar.organization>
+    <sonar.projectName>cobigen</sonar.projectName>
+    <sonar.projectVersion>${revision}</sonar.projectVersion>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/sonar-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.exclusions>**/test/**,**/systemtest/**,**/impl/config/entity/**</sonar.coverage.exclusions>
+    <sonar.coverage.inclusions>com/devonfw/cobigen/**</sonar.coverage.inclusions>
+    <!-- Unable to do this in a profile as of non-proper lazy replacement of variable surefireArgLineIntegration in tycho surefire argLine -->
+    <skip.code.coverage>true</skip.code.coverage>
   </properties>
 
   <modules>
@@ -37,6 +48,7 @@
     <module>cobigen-eclipse</module>
     <module>cobigen-maven</module>
     <module>cobigen-templates</module>
+    <module>sonar-report</module>
   </modules>
 
   <developers>
@@ -68,7 +80,7 @@
       <name>Apache Software License 2.0</name>
       <url>https://raw.githubusercontent.com/devonfw/.github/master/LICENSE</url>
       <distribution>repo</distribution>
-      <comments/>
+      <comments />
     </license>
   </licenses>
 
@@ -128,12 +140,22 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.13.2.2</version>
+        <version>2.13.3</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>2.8.6</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>4.10.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okio</groupId>
+        <artifactId>okio</artifactId>
+        <version>3.2.0</version>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
@@ -311,6 +333,59 @@
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <configuration>
+          <append>true</append>
+          <includes>
+            <include>com/devonfw/cobigen/**</include>
+          </includes>
+          <excludes>
+            <exclude>**/test/**</exclude>
+            <exclude>**/systemtest/**</exclude>
+            <exclude>**/impl/config/entity/**</exclude>
+          </excludes>
+          <skip>${skip.code.coverage}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <propertyName>surefireArgLine</propertyName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>prepare-agent-integration</id>
+            <goals>
+              <goal>prepare-agent-integration</goal>
+            </goals>
+            <phase>initialize</phase> <!-- to be able to use the result in MavenMetadata templates -->
+            <configuration>
+              <propertyName>surefireArgLineIntegration</propertyName>
+              <inclBootstrapClasses>true</inclBootstrapClasses>
+              <inclNoLocationClasses>true</inclNoLocationClasses>
+              <sessionId>test</sessionId>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -379,6 +454,18 @@
           </dependencies>
           <configuration>
             <trimStackTrace>false</trimStackTrace>
+            <!-- Sets the VM argument line used when unit tests are run. -->
+            <argLine>@{surefireArgLine}</argLine>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.0.0-M5</version>
+          <configuration>
+            <trimStackTrace>false</trimStackTrace>
+            <!-- Sets the VM argument line used when unit tests are run. -->
+            <argLine>@{surefireArgLineIntegration}</argLine>
           </configuration>
         </plugin>
 
@@ -401,7 +488,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore/>
+                    <ignore />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -557,7 +644,7 @@
               </execution>
             </executions>
             <configuration>
-              <skip>${skip.deployment}</skip>
+              <skipSource>${skip.deployment}</skipSource>
             </configuration>
           </plugin>
           <plugin>

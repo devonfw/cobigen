@@ -99,6 +99,16 @@ public class ConfigurationConstants {
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_HIDE = "template-sets.hide";
 
   /**
+   * Name of configuration key to save specific time
+   */
+  public static final String CONFIG_PROPERTY_POSTPONE_UPGRADE_MESSAGE_UNTIL = "postpone-upgrade-message-until";
+
+  /**
+   * Name of configuration key to preinstall specific template sets
+   */
+  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_INSTALLED = "template-sets.installed";
+
+  /**
    * Default (public) cobigen GroupId
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID = "com.devonfw.cobigen.templates";
@@ -107,5 +117,13 @@ public class ConfigurationConstants {
 
   /** Name of the environment variable pointing to cobigen configuration file */
   public static final String CONFIG_ENV_HOME = "COBIGEN_HOME";
+
+  /** Name of the backup folder containing the old configuration */
+  public static final String BACKUP_FOLDER = "backup";
+
+  /**
+   * Default cobigen version TODO retrieve the version dynamically(not as a constant) at runtime.
+   */
+  public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_VERSION = "2021.12.007";
 
 }

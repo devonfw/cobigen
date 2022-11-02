@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.util.Os;
@@ -21,17 +22,25 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.cli.config.constant.MavenMetadata;
 
 import uk.org.webcompere.systemstubs.security.SystemExit;
 
 /** Common test implementation for CLI tests */
 public class AbstractCliTest {
+
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractCliTest.class);
+
+  /** Java tool options */
+  private static final String JAVA_TOOL_OPTIONS = "CGCLI_JAVA_OPTIONS";
 
   /** Temporary files rule to create temporary folders or files */
   @Rule
@@ -228,6 +237,20 @@ public class AbstractCliTest {
         .destroyOnExit()
         .redirectError(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asError())
         .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asInfo());
+
+    // enable jacoco coverage monitoring for external processes (especially for CI/CD)
+    if (!StringUtils.isEmpty(MavenMetadata.JACOCO_AGENT_ARGS)
+        && !StringUtils.startsWith(MavenMetadata.JACOCO_AGENT_ARGS, "$")) {
+      System.out.println(System.getenv(JAVA_TOOL_OPTIONS));
+      pe.environment(JAVA_TOOL_OPTIONS, MavenMetadata.JACOCO_AGENT_ARGS
+
+          // .replaceFirst("destfile=[^,]+(,)?", "")
+          // + ",output=tcpclient,sessionid=test,inclnolocationclasses=true,inclbootstrapclasses=true "
+          + "" + (System.getenv(JAVA_TOOL_OPTIONS) == null ? "" : " " + System.getenv(JAVA_TOOL_OPTIONS)));
+    } else {
+      LOG.warn("No value for JACOCO is set!");
+    }
+
     new SystemExit().execute(() -> {
       ProcessResult result = pe.execute();
       int exitCode = result.getExitValue();

@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
@@ -138,10 +139,17 @@ public class AbstractMavenTest {
     request.setUserSettingsFile(this.mvnSettingsFile);
     request.setBatchMode(true);
     // https://stackoverflow.com/a/66801171
-    request.setMavenOpts(
-        "-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn");
+    if (!StringUtils.startsWith(MavenMetadata.JACOCO_AGENT_ARGS, "$")) {
+      request.setMavenOpts(
+          "-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn "
+              + MavenMetadata.JACOCO_AGENT_ARGS);
+    } else {
+      request.setMavenOpts(
+          "-Xmx4096m -Djansi.force=true -Djansi.passthrough=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn");
+    }
 
     Invoker invoker = new DefaultInvoker();
+    LOG.info("Executing maven invoker for unit test ...");
     InvocationResult result = invoker.execute(request);
 
     assertThat(result.getExecutionException()).isNull();

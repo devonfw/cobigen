@@ -13,6 +13,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -21,13 +24,13 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+
 import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
-import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
-import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
-import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
+import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 
 /** Util for NPE save access of {@link ResourcesPlugin} utils */
@@ -52,6 +55,27 @@ public class ResourcesPluginUtil {
    * them. Strange case but could happen.
    */
   static boolean userWantsToDownloadTemplates = true;
+
+  /**
+   * This variable is the path to the templateSet folder, when the ugrader is finished
+   */
+  static Path templateSetPathAfterUpgrade;
+
+  /**
+   * @return afterUpgradetemplateSetPath
+   */
+  public static Path getTemplateSetPathAfterUpgrade() {
+
+    return templateSetPathAfterUpgrade;
+  }
+
+  /**
+   * @param afterUpgradetemplateSetPath new value of {@link #getafterUpgradetemplateSetPath}.
+   */
+  public static void setTemplateSetPathAfterUpgrade(Path afterUpgradetemplateSetPath) {
+
+    ResourcesPluginUtil.templateSetPathAfterUpgrade = afterUpgradetemplateSetPath;
+  }
 
   /**
    * Refreshes the configuration project from the file system.
@@ -115,7 +139,6 @@ public class ResourcesPluginUtil {
         }
       }
     }
-
     if (userWantsToDownloadTemplates) {
       return generatorProj;
     } else {
@@ -182,14 +205,23 @@ public class ResourcesPluginUtil {
   }
 
   /**
-   * Gets or creates a new templates directory
+   * Gets or creates a new templates directory from the monolithic structure
    *
    * @return the templateDirectory
    */
   private static File getTemplatesDirectory() {
 
-    File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
-    return templatesDirectory;
+    return CobiGenPaths.getTemplatesFolderPath().toFile();
+  }
+
+  /**
+   * Gets or creates a new templates directory from the template-set structure
+   *
+   * @return the templateDirectory
+   */
+  private static File getTemplateSetDirectory() {
+
+    return CobiGenPaths.getTemplateSetsFolderPath().toFile();
   }
 
   /**
@@ -244,8 +276,7 @@ public class ResourcesPluginUtil {
    */
   public static IPath getWorkspaceLocation() {
 
-    IPath ws = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-    return ws;
+    return ResourcesPlugin.getWorkspace().getRoot().getLocation();
   }
 
   /**
@@ -256,6 +287,19 @@ public class ResourcesPluginUtil {
   public static void setUserWantsToDownloadTemplates(boolean userWantsToDownloadTemplates) {
 
     ResourcesPluginUtil.userWantsToDownloadTemplates = userWantsToDownloadTemplates;
+  }
+
+  /**
+   * Upgrades the given template configuration.
+   *
+   * @param configurationPath path to the templates Configuration
+   */
+  public static void startTemplatesUpgrader(Path configurationPath) {
+
+    setTemplateSetPathAfterUpgrade(CobiGenFactory.startTemplatesUpgrader(configurationPath));
+
+
+    // FIXME after the upgrade adapt the new template-set folder. should be done in #1587
   }
 
 }

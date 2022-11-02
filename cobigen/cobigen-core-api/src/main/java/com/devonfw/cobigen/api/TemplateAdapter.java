@@ -74,11 +74,6 @@ public interface TemplateAdapter {
   public boolean isMonolithicTemplatesConfiguration();
 
   /**
-   * Upgrade an adapted monolithic template structure to the new template structure consisting of template sets.
-   */
-  public void upgradeMonolithicTemplates();
-
-  /**
    * Get the parent location of the templates.
    *
    * @return The {@link Path} of the templates location.
@@ -92,4 +87,12 @@ public interface TemplateAdapter {
    * @return Returns {@code true} if the template set is already adapted. Otherwise false.
    */
   public boolean isTemplateSetAlreadyAdapted(Path templateSetJar);
+
+  /**
+   * Upgrade an adapted monolithic template structure to the new template structure consisting of template sets.
+   *
+   * @param templatesProject path to the templates which should be upgraded.
+   * @return the new path to the new template-sets
+   */
+  Path upgradeMonolithicTemplates(Path templatesProject);
 }

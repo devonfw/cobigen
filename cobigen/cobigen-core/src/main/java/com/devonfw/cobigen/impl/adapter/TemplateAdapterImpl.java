@@ -10,6 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -22,12 +23,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.TemplateAdapter;
+import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
+import com.devonfw.cobigen.impl.config.upgrade.AbstractConfigurationUpgrader;
+import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
@@ -43,19 +49,21 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   private Path templatesLocation;
 
   /**
-   * Creates a new {@link TemplateAdapter} instance. The location of the templates is not specified, so the location is
-   * searched by the core module itself.
+   * Creates a new {@link TemplateAdapter} instance. The location of the templates if is not specified, so the location
+   * is searched by the core module itself. Or if specified, handles the adaption of templates at the given templates
+   * location.
+   *
+   * @param templatesLocation The {@link Path} of the location to search the templates for.
    */
-  public TemplateAdapterImpl() {
+  public TemplateAdapterImpl(Path templatesLocation) {
 
-    Path templatesLocationPath = CobiGenPaths.getTemplateSetsFolderPath(false);
-    if (Files.exists(templatesLocationPath)) {
-      this.templatesLocation = templatesLocationPath;
-    } else {
-      templatesLocationPath = CobiGenPaths.getTemplatesFolderPath();
-      if (Files.exists(templatesLocationPath)) {
-        this.templatesLocation = templatesLocationPath;
+    if (templatesLocation == null) {
+      URI templatesLocationPath = ConfigurationFinder.findTemplatesLocation();
+      if (Files.exists(Paths.get(templatesLocationPath))) {
+        this.templatesLocation = Paths.get(templatesLocationPath);
       }
+    } else {
+      this.templatesLocation = templatesLocation;
     }
   }
 
@@ -71,17 +79,6 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     } else {
       throw new TemplateSelectionForAdaptionException(getTemplateSetJars());
     }
-  }
-
-  /**
-   * Creates a new {@link TemplateAdapter} instance that handles the adaption of templates at the given templates
-   * location.
-   *
-   * @param templatesLocation The {@link Path} of the location to search the templates for.
-   */
-  public TemplateAdapterImpl(Path templatesLocation) {
-
-    this.templatesLocation = templatesLocation;
   }
 
   @Override
@@ -361,11 +358,46 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   }
 
   @Override
-  public void upgradeMonolithicTemplates() {
+  public Path upgradeMonolithicTemplates(Path templatesProject) {
 
-    if (!isMonolithicTemplatesConfiguration()) {
-      return;
+    Path templatesPath = null;
+    Path CobigenTemplates;
+    if (templatesProject != null) {
+      CobigenTemplates = CobiGenPaths.getPomLocation(templatesProject);
+      templatesPath = FileSystemUtil.createFileSystemDependentPath(CobigenTemplates.toUri());
+    } else {
+      templatesPath = FileSystemUtil.createFileSystemDependentPath(ConfigurationFinder.findTemplatesLocation());
+      CobigenTemplates = CobiGenPaths.getPomLocation(templatesPath);
     }
-    // TODO The upgrade needs to be implemented. Will be done in #1502
+    AbstractConfigurationUpgrader<ContextConfigurationVersion> contextUpgraderObject = new ContextConfigurationUpgrader();
+
+    // Upgrade the context.xml to the new template-set with latest version
+    contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.NO_BACKUP);
+
+    LOG.info("context.xml upgraded successfully. {}", templatesPath);
+    LOG.info("Templates successfully upgraded. \n ");
+
+    // check the new Path to the template-set after the upgrade
+    Path newTemplates;
+    if (templatesProject == null) {
+      // 1. check in .cobigen Home
+      // No need to check renaming in Home folder since we only have two templates folders:
+      // templates and templates-set
+      newTemplates = Paths.get(ConfigurationFinder.findTemplatesLocation());
+    } else {
+      // 2. otherwise check in the given customTemplates
+
+      // check renaming
+      // 2.1 renaming from CobiGen_Templates to template-sets occurred
+      if (Files.exists(CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)))
+        newTemplates = CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      else {
+        // 2.2 Renaming from templates to template-sets occurred
+        newTemplates = CobigenTemplates.getParent().getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
+            .resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      }
+    }
+    LOG.info("New templates location: {} ", newTemplates);
+    return newTemplates;
   }
 }

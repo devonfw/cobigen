@@ -54,22 +54,33 @@ public class ConfigurationFinder {
     String hide = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE;
     String disableLookup = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DISABLE_LOOKUP;
     String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
+    String templateSetsInstalled = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_INSTALLED;
 
-    List<String> groupIdsList = (props.getProperty(groupId) != null)
-        ? Arrays.asList(props.getProperty(groupId).split(","))
-        : new ArrayList<>();
+    List<String> groupIdsList = new ArrayList<>();
+    if (props.getProperty(groupId) != null) {
+      groupIdsList = Arrays.asList(props.getProperty(groupId).split(","));
+    }
     // Creating a new ArrayList object which can be modified and prevents UnsupportedOperationException.
     List<String> groupIds = new ArrayList<>(groupIdsList);
     if (props.getProperty(disableLookup) == null || props.getProperty(disableLookup).equals("false"))
       if (!groupIds.contains(defaultGroupId))
         groupIds.add(defaultGroupId);
 
-    boolean useSnapshots = props.getProperty(snapshot) == null || props.getProperty(snapshot).equals("false") ? false
-        : true;
-    List<String> hiddenIds = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
-        : new ArrayList<>();
+    boolean useSnapshots = false;
+    if (props.getProperty(snapshot) != null && props.getProperty(snapshot).equals("true")) {
+      useSnapshots = true;
+    }
 
-    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds);
+    List<String> hiddenIds = new ArrayList<>();
+    if (props.getProperty(hide) != null) {
+      hiddenIds = Arrays.asList(props.getProperty(hide).split(","));
+    }
+
+    List<String> mavenCoordinates = new ArrayList<>();
+    if (props.getProperty(templateSetsInstalled) != null) {
+      mavenCoordinates = Arrays.asList(props.getProperty(templateSetsInstalled).split(","));
+    }
+    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds, mavenCoordinates);
   }
 
   /**
@@ -82,17 +93,11 @@ public class ConfigurationFinder {
     Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
     Path configFile = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
-    if (configFile != null && Files.exists(configFile)) {
+    if (configFile != null && Files.exists(configFile) && !Files.isDirectory(configFile)) {
       LOG.debug("Custom cobigen configuration found at {}", configFile);
       Properties props = readConfigurationFile(configFile);
       String templatesLocation = props.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
       String templateSetsLocation = props.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH);
-
-      // use old templates configuration
-      Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
-      if (templatesFolderLocation != null && Files.exists(templatesFolderLocation)) {
-        return templatesFolderLocation.toUri();
-      }
 
       // use new template set configuration
       Path templateSetsFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templateSetsLocation);
@@ -100,9 +105,11 @@ public class ConfigurationFinder {
         return templateSetsFolderLocation.toUri();
       }
 
-    } else {
-      LOG.info("No custom templates configuration found. Getting templates from {}",
-          CobiGenPaths.getTemplateSetsFolderPath(cobigenHome));
+      // use old templates configuration
+      Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
+      if (templatesFolderLocation != null && Files.exists(templatesFolderLocation)) {
+        return templatesFolderLocation.toUri();
+      }
     }
     return findTemplates(cobigenHome);
   }
@@ -169,37 +176,30 @@ public class ConfigurationFinder {
     Path templatesPath = CobiGenPaths.getTemplatesFolderPath(home);
     Path templatesFolderPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
-    // 1. use old Cobigen_Templates folder
+    // 1. create/use new template sets folder
+    Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, false);
+
+    Path templateSetsAdaptedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path templateSetsDownloadedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+
+    // 2. check adapted and downloaded folder
+    if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
+      return templateSetsFolderPath.toUri();
+    }
+
+    // 3. use old Cobigen_Templates folder
     if (Files.exists(templatesFolderPath)) {
       return templatesFolderPath.toUri();
     }
 
-    // 2. use template jar
+    // 4. use template jar
     if (Files.exists(templatesPath)) {
       Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesPath);
       if (jarFilePath != null && Files.exists(jarFilePath)) {
         return jarFilePath.toUri();
       }
     }
-
-    // 3. create/use new template sets folder
-    Path templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, true);
-
-    Path templateSetsAdaptedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-    Path templateSetsDownloadedFolderPath = templateSetsFolderPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-
-    // 4. check adapted and downloaded folder
-    if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
-      return templateSetsFolderPath.toUri();
-    }
-
-    // 5. download template set jars
-
-    LOG.info("Could not find any templates in cobigen home directory {}. Downloading...",
-        CobiGenPaths.getCobiGenHomePath());
-
-    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesPath.toFile());
-    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesPath.toFile());
+    templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, true);
     return templateSetsFolderPath.toUri();
   }
 
