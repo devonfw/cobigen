@@ -85,10 +85,11 @@ public class ConfigurationFinder {
     }
 
     List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
-
+    List<MavenCoordinate> convertedMavenCoordinates = MavenCoordinateUtil.convertToMavenCoordinates(mavenCoordinates);
     ConfigurationFactory configurationFactory = new ConfigurationFactory(findTemplatesLocation());
 
-    ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds);
+    ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds,
+        convertedMavenCoordinates);
 
     return configurationFactory.retrieveTemplateSetConfiguration(configurationProperties);
   }

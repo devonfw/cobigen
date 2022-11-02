@@ -16,14 +16,19 @@ public class ConfigurationProperties {
   /** allow snapshots of template-sets */
   private boolean allowSnapshots;
 
+  /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
+  private List<MavenCoordinate> mavenCoordinates;
+
   /** variable to hide very specific template sets or versions of template sets */
   private List<MavenCoordinate> hideTemplates;
 
-  public ConfigurationProperties(List<String> groupIds, boolean allowSnapshots, List<MavenCoordinate> hideTemplates) {
+  public ConfigurationProperties(List<String> groupIds, boolean allowSnapshots, List<MavenCoordinate> hideTemplates,
+      List<MavenCoordinate> mavenCoordinates) {
 
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
     this.hideTemplates = hideTemplates;
+    this.mavenCoordinates = mavenCoordinates;
   }
 
   /**
@@ -72,6 +77,22 @@ public class ConfigurationProperties {
   public void setHideTemplates(List<MavenCoordinate> hideTemplates) {
 
     this.hideTemplates = hideTemplates;
+  }
+
+  /**
+   * @return mavenCoordinates
+   */
+  public List<MavenCoordinate> getMavenCoordinates() {
+
+    return this.mavenCoordinates;
+  }
+
+  /**
+   * @param mavenCoordinates new value of {@link #getmavenCoordinates}.
+   */
+  public void setMavenCoordinates(List<MavenCoordinate> mavenCoordinates) {
+
+    this.mavenCoordinates = mavenCoordinates;
   }
 
 }

@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -19,11 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
-import com.devonfw.cobigen.impl.util.MavenCoordinateUtil;
 import com.google.common.collect.Maps;
 
 /**
@@ -124,49 +121,6 @@ public class ConfigurationHolder {
       this.contextConfiguration = new ContextConfiguration(this.contextConfigurationPath);
     }
     return this.contextConfiguration;
-  }
-
-  /**
-   * Reads the {@link TemplateSetConfiguration} in the given Path
-   *
-   * @param path the configuration root path
-   * @return the {@link TemplateSetConfiguration}
-   */
-  public TemplateSetConfiguration readTemplateSetConfiguration(Path path) {
-
-    Properties props = new Properties();
-    try {
-      props = readConfigurationFile(path);
-    } catch (InvalidConfigurationException e) {
-      LOG.info("This path {} is invalid. The default Config values will be loaded instead.", path);
-    }
-
-    String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
-    String snapshot = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_SNAPSHOTS;
-    String hide = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_HIDE;
-    String disableLookup = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DISABLE_LOOKUP;
-    String defaultGroupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
-
-    List<String> groupIdsList = (props.getProperty(groupId) != null)
-        ? Arrays.asList(props.getProperty(groupId).split(","))
-        : new ArrayList<>();
-    // Creating a new ArrayList object which can be modified and prevents UnsupportedOperationException.
-    List<String> groupIds = new ArrayList<>(groupIdsList);
-    if (props.getProperty(disableLookup) == null || props.getProperty(disableLookup).equals("false"))
-      if (!groupIds.contains(defaultGroupId))
-        groupIds.add(defaultGroupId);
-
-    boolean useSnapshots = props.getProperty(snapshot) == null || props.getProperty(snapshot).equals("false") ? false
-        : true;
-    List<String> hiddenIdsString = (props.getProperty(hide) != null) ? Arrays.asList(props.getProperty(hide).split(","))
-        : new ArrayList<>();
-
-    List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
-    ConfigurationFactory configurationFactory = new ConfigurationFactory(this.configurationLocation);
-    this.configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds);
-    this.templateSetConfiguration = configurationFactory.retrieveTemplateSetConfiguration(this.configurationProperties);
-
-    return this.templateSetConfiguration;
   }
 
   /**
