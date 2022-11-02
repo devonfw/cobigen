@@ -44,7 +44,15 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
         new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
         Charset.forName("UTF-8"));
     List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
-    checkExsistingAnnotation(templates, cobiGen, input, tmpFolderCobiGen, LINE_SEPARATOR);
+    for (TemplateTo template : templates) {
+      if (template.getId().equals("generated.java")) {
+        // generate method with an additional boolean parameter set to true to avoid conflicts with existing tests
+        GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
+            false, true);
+        assertAnnotationReport(report, tmpFolderCobiGen, LINE_SEPARATOR);
+        break;
+      }
+    }
   }
 
   /*
@@ -72,35 +80,47 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
           new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
           Charset.forName("UTF-8"));
       List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
-
-      checkExsistingAnnotation(templates, cobiGen, input, tmpFolderCobiGen, LINE_SEPARATOR);
+      for (TemplateTo template : templates) {
+        if (template.getId().equals("generated.java")) {
+          // generate method which reads from the .cobigen file and add generated annotation
+          GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
+              false);
+          assertAnnotationReport(report, tmpFolderCobiGen, LINE_SEPARATOR);
+          break;
+        }
+      }
     });
   }
 
-  private void checkExsistingAnnotation(List<TemplateTo> templates, CobiGen cobiGen, Object input,
-      File tmpFolderCobiGen, String LINE_SEPARATOR) throws IOException {
+  /*
+   * method to assert the output file contains the generated annotation
+   *
+   * @param report
+   *
+   * @param tmpFolderCobiGen
+   *
+   * @param LINE_SEPARATOR
+   *
+   * @throws IOException
+   */
 
-    for (TemplateTo template : templates) {
-      if (template.getId().equals("generated.java")) {
-        GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
-            false, true);
-        assertThat(report).isSuccessful();
-        Path expectedFile = tmpFolderCobiGen.toPath().resolve("generated.java");
-        assertThat(expectedFile).exists();
-        String content = new String(Files.readAllBytes(Paths.get(expectedFile.toUri())));
-        assertThat(content.trim()).isEqualToIgnoringWhitespace(
-            "package com.example.domain.myapp.employeemanagement.common.api;" + LINE_SEPARATOR + LINE_SEPARATOR
-                + "import com.example.domain.myapp.general.common.api.ApplicationEntity;" + LINE_SEPARATOR
-                + "import javax.annotation.Generated;" + LINE_SEPARATOR + LINE_SEPARATOR
-                + "public interface Employee extends ApplicationEntity {" + LINE_SEPARATOR + LINE_SEPARATOR
-                + "@Generated(value={\"com.devon.CobiGen\"}," + LINE_SEPARATOR + "date=\"" + LocalDate.now() + "\")"
-                + LINE_SEPARATOR + "private string field;" + LINE_SEPARATOR + LINE_SEPARATOR
-                + "@Generated(value={\"com.devon.CobiGen\"}," + LINE_SEPARATOR + "date=\"" + LocalDate.now() + "\")"
-                + LINE_SEPARATOR + "public Employee() {}" + LINE_SEPARATOR + LINE_SEPARATOR
-                + "@Generated(value={\"com.devon.CobiGen\"}," + LINE_SEPARATOR + "date=\"" + LocalDate.now() + "\")"
-                + LINE_SEPARATOR + "public boolean equals(Object obj);" + LINE_SEPARATOR + LINE_SEPARATOR + "}");
-        break;
-      }
-    }
+  private void assertAnnotationReport(GenerationReportTo report, File tmpFolderCobiGen, String LINE_SEPARATOR)
+      throws IOException {
+
+    assertThat(report).isSuccessful();
+    Path expectedFile = tmpFolderCobiGen.toPath().resolve("generated.java");
+    assertThat(expectedFile).exists();
+    String content = new String(Files.readAllBytes(Paths.get(expectedFile.toUri())));
+    assertThat(content.trim())
+        .isEqualToIgnoringWhitespace("package com.example.domain.myapp.employeemanagement.common.api;" + LINE_SEPARATOR
+            + LINE_SEPARATOR + "import com.example.domain.myapp.general.common.api.ApplicationEntity;" + LINE_SEPARATOR
+            + "import javax.annotation.Generated;" + LINE_SEPARATOR + LINE_SEPARATOR
+            + "public interface Employee extends ApplicationEntity {" + LINE_SEPARATOR + LINE_SEPARATOR
+            + "@Generated(value={\"com.devon.CobiGen\"}," + LINE_SEPARATOR + "date=\"" + LocalDate.now() + "\")"
+            + LINE_SEPARATOR + "private string field;" + LINE_SEPARATOR + LINE_SEPARATOR
+            + "@Generated(value={\"com.devon.CobiGen\"}," + LINE_SEPARATOR + "date=\"" + LocalDate.now() + "\")"
+            + LINE_SEPARATOR + "public Employee() {}" + LINE_SEPARATOR + LINE_SEPARATOR
+            + "@Generated(value={\"com.devon.CobiGen\"}," + LINE_SEPARATOR + "date=\"" + LocalDate.now() + "\")"
+            + LINE_SEPARATOR + "public boolean equals(Object obj);" + LINE_SEPARATOR + LINE_SEPARATOR + "}");
   }
 }

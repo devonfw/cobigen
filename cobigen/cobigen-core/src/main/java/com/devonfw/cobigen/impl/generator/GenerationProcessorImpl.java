@@ -72,6 +72,19 @@ import com.google.common.collect.Maps;
  * Generation processor. Caches calculations and thus should be newly created on each request.
  */
 public class GenerationProcessorImpl implements GenerationProcessor {
+  public static void main(String[] args) {
+
+    Path cobigenPath = CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+    Properties prop = ConfigurationFinder.readConfigrationFile(cobigenPath);
+    prop.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
+
+    // String defaultGeneratdAnnotation = null;
+
+    // Properties props = ConfigurationFinder
+    // .readConfigrationFile(cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
+    // defaultGeneratdAnnotation = props.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
+
+  }
 
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(GenerationProcessorImpl.class);
@@ -606,24 +619,27 @@ public class GenerationProcessorImpl implements GenerationProcessor {
   private void generateTemplateAndWriteFile(File output, Template template, TextTemplateEngine templateEngine,
       Map<String, Object> model, String outputCharset, boolean addGeneratedAnnotation) {
 
-    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-    String defaultGeneratdAnnotation = null;
-    if (Files.exists(cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE))) {
-      Properties props = ConfigurationFinder
-          .readConfigrationFile(cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
-      defaultGeneratdAnnotation = props.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
-    }
+    String defaultGeneratedAnnotation = null;
     try (Writer out = new StringWriter()) {
       templateEngine.process(template, model, out, outputCharset);
       FileUtils.writeStringToFile(output, out.toString(), outputCharset);
-      // If the output file is of java type add @Generated annotation on fields, methods and constructors
-      if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null
-          && (addGeneratedAnnotation || StringUtils.equals("true", defaultGeneratdAnnotation))) {
-        Merger merger = PluginRegistry.getMerger(template.getMergeStrategy());
-        String generatedAnnotation = merger.merge(output, null, outputCharset);
-        FileUtils.writeStringToFile(output, generatedAnnotation, outputCharset);
+      // Check for add generated annotation to java code
+      if (output.getAbsolutePath().endsWith(".java") && template.getMergeStrategy() != null) {
+        // check if .cobigen properties file has add-generated annotation set to true
+        Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+        if (Files.exists(cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE))) {
+          Properties props = ConfigurationFinder
+              .readConfigrationFile(cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
+          defaultGeneratedAnnotation = props.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
+        }
+        // 2 conditions, first one checks if the default value true is in .cobigen file,
+        // and the second is for the previous tests so that they build without any problem
+        if (StringUtils.equals("true", defaultGeneratedAnnotation) || addGeneratedAnnotation) {
+          Merger merger = PluginRegistry.getMerger(template.getMergeStrategy());
+          String generatedAnnotation = merger.merge(output, null, outputCharset);
+          FileUtils.writeStringToFile(output, generatedAnnotation, outputCharset);
+        }
       }
-
     } catch (IOException e) {
       throw new CobiGenRuntimeException(
           "Could not write file while processing template " + template.getAbsoluteTemplatePath(), e);
