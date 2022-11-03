@@ -22,7 +22,7 @@ import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
@@ -104,7 +104,7 @@ public class CobiGenFactory {
     }
     // install Template Sets defined in .properties file
     if (configurationHolder.isTemplateSetConfiguration()) {
-      TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
+      ConfigurationProperties config = ConfigurationFinder.loadTemplateSetConfigurations(
           CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
       URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
       File downloadPath = new File(templatesLocation);

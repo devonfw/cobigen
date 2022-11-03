@@ -24,7 +24,6 @@ import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 
 /**
  * Utilities related to the cobigen configurations including:
@@ -43,7 +42,7 @@ public class ConfigurationFinder {
    * @param path to a .properties file
    * @return TemplateSetConfiguration instance
    */
-  public static TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
+  public static ConfigurationProperties loadTemplateSetConfigurations(Path path) {
 
     Properties props = new Properties();
     try {
@@ -91,7 +90,7 @@ public class ConfigurationFinder {
     ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds,
         convertedMavenCoordinates);
 
-    return configurationFactory.retrieveTemplateSetConfiguration(configurationProperties);
+    return configurationProperties;
   }
 
   /**
