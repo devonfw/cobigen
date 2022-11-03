@@ -1,6 +1,9 @@
 package com.devonfw.cobigen.retriever.reader;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -20,14 +23,15 @@ import jakarta.xml.bind.Unmarshaller;
  * Reader for human readable data extracted from template-set.xmls
  *
  */
-
 public class TemplateSetArtifactReader {
 
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(TemplateSetArtifactReader.class);
 
+  /** List of tag names */
   List<String> tagNames;
 
+  /** List of increment descriptions */
   List<String> incrementDescriptions;
 
   /**
@@ -55,35 +59,48 @@ public class TemplateSetArtifactReader {
   /**
    * Maps human readable parts of template-set to a Java class
    *
-   * @param template_set string
+   * @param templateSetFilePath string
    *
    * @return Java class, on which parts of the template-set is mapped to
    */
-  public static MavenTemplateSetConfiguration generateMavenTemplateSetConfiguration(String template_set) {
+  public static MavenTemplateSetConfiguration generateMavenTemplateSetConfiguration(Path templateSetFilePath) {
 
-    LOG.info("Unmarshal template-set.xml");
-    template_set = prepareXmlFile(template_set);
+    String templateSetFileContent = "";
+
     try {
-      StringReader reader = new StringReader(template_set);
+      LOG.debug("Trying to read template set artifact file at: {}", templateSetFilePath.toAbsolutePath());
+      templateSetFileContent = Files.readString(templateSetFilePath);
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Unable to read test template-set.xml file", e);
+    }
+
+    LOG.debug("Trying to unmarshall template set artifact file: {}", templateSetFilePath.getFileName());
+    templateSetFileContent = reduceXmlFile(templateSetFileContent);
+    try {
+
+      StringReader reader = new StringReader(templateSetFileContent);
       JAXBContext jaxbContext = JAXBContext.newInstance(MavenTemplateSetConfiguration.class);
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
       MavenTemplateSetConfiguration model = (MavenTemplateSetConfiguration) jaxbUnmarshaller.unmarshal(reader);
 
-      LOG.debug("Successfully unmarshalled template-set.xml");
+      LOG.debug("Successfully unmarshalled template set artifact file: {}", templateSetFilePath.getFileName());
       return model;
     } catch (JAXBException e) {
-      throw new CobiGenRuntimeException("Unable to unmarshal template-set.xml", e);
+      throw new CobiGenRuntimeException("CobiGen was unable to unmarshal the template set artifact file.", e);
     }
   }
 
   /**
-   * @param mavenSettings string of maven's settings.xml
+   * Removes the templateSetConfiguration tag from the xml string
    *
-   * @return string of prepared maven's settings, ready to be unmarshalled
+   * @param templateSetFileContent string of template set xml file
+   *
+   * @return string of prepared template set, ready to be unmarshalled
    */
-  private static String prepareXmlFile(String template_set) {
+  private static String reduceXmlFile(String templateSetFileContent) {
 
-    String preparedTemplateSet = template_set.substring(template_set.indexOf("<templateSetConfiguration"));
+    String preparedTemplateSet = templateSetFileContent
+        .substring(templateSetFileContent.indexOf("<templateSetConfiguration"));
     preparedTemplateSet = preparedTemplateSet.substring(preparedTemplateSet.indexOf(">") + 1);
     preparedTemplateSet = "<templateSetConfiguration>" + preparedTemplateSet;
     return preparedTemplateSet;

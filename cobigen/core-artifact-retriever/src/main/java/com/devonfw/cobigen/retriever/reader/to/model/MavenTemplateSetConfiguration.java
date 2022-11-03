@@ -4,19 +4,19 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
- * Class, which represents the templatesConfiguration of maven's settings.xml
+ * Class, which represents the templatesConfiguration of the template-set.xml
  *
  */
 @XmlRootElement(name = "templateSetConfiguration")
 public class MavenTemplateSetConfiguration {
 
   /**
-   * Represents the increments element of maven's settings.xml
+   * Represents the increments element of the template-set.xml
    */
   MavenSettingsIncrements increments;
 
   /**
-   * Represents the tags element of maven's settings.xml
+   * Represents the tags element of the template-set.xml
    */
   MavenSettingsTags tags;
 

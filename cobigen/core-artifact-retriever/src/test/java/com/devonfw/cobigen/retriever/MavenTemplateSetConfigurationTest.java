@@ -2,8 +2,6 @@ package com.devonfw.cobigen.retriever;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
 import com.devonfw.cobigen.retriever.reader.to.model.MavenSettingsIncrement;
 import com.devonfw.cobigen.retriever.reader.to.model.MavenSettingsTag;
@@ -42,13 +39,9 @@ public class MavenTemplateSetConfigurationTest {
     incrementsList = new ArrayList<>();
 
     MavenTemplateSetConfiguration model;
-    String content;
-    try {
-      content = Files.readString(Paths.get(testdataRoot).resolve("template-set.xml"));
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
-    }
-    model = TemplateSetArtifactReader.generateMavenTemplateSetConfiguration(content);
+
+    model = TemplateSetArtifactReader
+        .generateMavenTemplateSetConfiguration(Paths.get(testdataRoot).resolve("template-set.xml"));
 
     tagsList.addAll(model.getTags().getTagsList());
     incrementsList.addAll(model.getIncrements().getIncrementList());

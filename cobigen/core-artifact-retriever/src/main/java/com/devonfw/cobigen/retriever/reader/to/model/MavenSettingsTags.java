@@ -6,7 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  *
- * Represents the tag element of maven's settings.xml
+ * Represents the tag element of the template-set.xml
  *
  */
 

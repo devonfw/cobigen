@@ -6,7 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  *
- * Represents the increment element of maven's settings.xml
+ * Represents the increment element of the template-set.xml
  *
  */
 public class MavenSettingsIncrements {

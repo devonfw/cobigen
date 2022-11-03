@@ -4,7 +4,7 @@ import jakarta.xml.bind.annotation.XmlAttribute;
 
 /**
  *
- * Tag element of maven's settings.xml
+ * Tag element of the template-set.xml
  *
  */
 public class MavenSettingsTag {

@@ -3,7 +3,7 @@ package com.devonfw.cobigen.retriever.reader.to.model;
 import jakarta.xml.bind.annotation.XmlAttribute;
 
 /**
- * Increment element of maven's settings.xml
+ * Increment element of the template-set.xml
  *
  */
 public class MavenSettingsIncrement {

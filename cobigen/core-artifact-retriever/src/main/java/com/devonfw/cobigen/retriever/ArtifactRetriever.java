@@ -93,7 +93,7 @@ public class ArtifactRetriever {
   }
 
   /**
-   * Helper method to determine the machting server for a repository
+   * Helper method to determine the matching server for a repository
    *
    * @param servers from maven's settings.xml
    * @param repository for which a server is searched for
