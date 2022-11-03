@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="6.0">
+    <trigger id="entities" type="mockplugin" templateFolder="testTemplates">
+        <matcher type="fqn" value=".+">
+        </matcher>
+    </trigger>
+  <tags>
+    <tag name="bla" />
+  </tags>
+      <templates>
+        <template name="t1" destinationPath="generated.txt" templateFile="generated.txt.ftl" mergeStrategy="override"/>
+    </templates>
+    <increments>
+        <increment name="i1" description="the only increment">
+            <templateRef ref="t1"/>
+        </increment>
+    </increments>
+</templateSetConfiguration>

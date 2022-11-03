@@ -47,9 +47,14 @@ import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
 public class GenerationIT extends AbstractApiTest {
 
   /**
-   * Root path to all resources used in this test case
+   * Root path to the resources used in this test case with context.xml and templates.xml
    */
   private static String testFileRootPath = apiTestsRootPath + "GenerationTest/";
+
+  /**
+   * Root path to the resources used in this test case with template-set.xml
+   */
+  private static String testFileRootPathTemplateSetXml = apiTestsRootPath + "GenerationTestTemplateSetsXml/";
 
   /**
    * Tests that sources get overwritten if merge strategy override is configured.
@@ -66,6 +71,30 @@ public class GenerationIT extends AbstractApiTest {
     FileUtils.write(target, "base");
 
     CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "overrideMergeStrategy").toURI(), true);
+    List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+    assertThat(templates).hasSize(1);
+
+    GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
+
+    assertThat(report).isSuccessful();
+    assertThat(target).hasContent("overwritten");
+  }
+
+  /**
+   * Tests that sources get overwritten if merge strategy override is configured with template-set.xml
+   *
+   * @throws Exception test fails.
+   */
+  @Test
+  public void testOverrideMergeStrategyWithTemplateSetXml() throws Exception {
+
+    Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
+
+    File folder = this.tmpFolder.newFolder("GenerationTest");
+    File target = new File(folder, "generated.txt");
+    FileUtils.write(target, "base");
+
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPathTemplateSetXml + "template-sets").toURI());
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
     assertThat(templates).hasSize(1);
 

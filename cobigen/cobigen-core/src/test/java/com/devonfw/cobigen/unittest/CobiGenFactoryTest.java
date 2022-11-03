@@ -17,8 +17,8 @@ public class CobiGenFactoryTest {
   /**
    * Root path to all resources used in this test case
    */
-  private final static Path TEST_FILE_ROOT_PATH = Paths
-      .get("src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/");
+  private final static Path TEST_FILE_ROOT_PATH = Paths.get(
+      "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_adapted/template-sets");
 
   /**
    * Tests whether a valid configuration can be read from template-sets/adapted folder
@@ -29,7 +29,7 @@ public class CobiGenFactoryTest {
   public void testTemplateSetLoadedFromNewConfiguration() throws Exception {
 
     // TODO this test and also the whole class would be more suited in core-systemtest.
-    // CobiGenFactory.create((TEST_FILE_ROOT_PATH + "valid_template_sets_adapted"));
+    CobiGenFactory.create(TEST_FILE_ROOT_PATH.toUri());
   }
 
 }
