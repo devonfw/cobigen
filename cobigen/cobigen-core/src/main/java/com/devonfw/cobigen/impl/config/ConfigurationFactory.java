@@ -56,6 +56,12 @@ public class ConfigurationFactory {
     return new ContextConfiguration(this.configRoot);
   }
 
+  public void getReader(Path configRoot) {
+
+    // TODO we have to implement this method to know which reader to be used
+    // TemplateSetConfigurationReader or ContextConfigurationReader. Here or in ConfigurationHolder
+  }
+
   /**
    * @param groupIds property
    * @param allowSnapshots property
