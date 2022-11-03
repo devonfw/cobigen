@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus2;
+package com.devonfw.cobigen.retriever.mavensearch.to.model.nexus3;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,29 +8,30 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.retriever.mavensearch.exception.RestSearchResponseException;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.AbstractSearchResponse;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.ServerCredentials;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.AbstractSearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.ServerCredentials;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Json model for nexus2 Search REST API response
+ * Json model for nexus3 Search REST API response
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Nexus2SearchResponse extends AbstractSearchResponse {
+public class Nexus3SearchResponse extends AbstractSearchResponse {
 
   /** Logger instance. */
   @JsonIgnore
-  private static final Logger LOG = LoggerFactory.getLogger(Nexus2SearchResponse.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Nexus3SearchResponse.class);
 
-  /** data */
-  @JsonProperty("data")
-  private List<Nexus2SearchResponseData> data;
+  /** items */
+  @JsonProperty("items")
+  private List<Nexus3SearchResponseItem> items;
 
   @Override
   @JsonIgnore
@@ -38,21 +39,15 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
 
     List<URL> downloadLinks = new ArrayList<>();
 
-    if (this.data == null) {
+    if (this.items == null) {
       LOG.debug("The {} response was empty.", getRepositoryType());
       return downloadLinks;
     }
 
-    for (Nexus2SearchResponseData item : this.data) {
-      for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
-        for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
-          if (artifactLink.getClassifier() != null && artifactLink.getClassifier().equals("template-set")) {
-            downloadLinks.add(AbstractSearchResponse.createDownloadLink(
-                MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
-                    + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
-                item.getGroupId(), item.getArtifactId(), item.getVersion(),
-                "-" + artifactLink.getClassifier() + "." + artifactLink.getExtension()));
-          }
+    for (Nexus3SearchResponseItem item : this.items) {
+      for (Nexus3SearchResponseAsset asset : item.assets) {
+        if (asset.downloadUrl.endsWith(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)) {
+          downloadLinks.add(new URL(asset.downloadUrl));
         }
       }
     }
@@ -73,12 +68,13 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
   @Override
   public MavenSearchRepositoryType getRepositoryType() {
 
-    return MavenSearchRepositoryType.NEXUS2;
+    return MavenSearchRepositoryType.NEXUS3;
   }
 
   @Override
   public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
 
-    return repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_REST_SEARCH_API_PATH + "?q=" + groupId;
+    return repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS3_REST_SEARCH_API_PATH
+        + "?repository=maven-central" + "&group=" + groupId;
   }
 }

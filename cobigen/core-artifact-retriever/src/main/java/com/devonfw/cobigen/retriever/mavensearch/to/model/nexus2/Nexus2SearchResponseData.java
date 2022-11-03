@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus2;
+package com.devonfw.cobigen.retriever.mavensearch.to.model.nexus2;
 
 import java.util.List;
 

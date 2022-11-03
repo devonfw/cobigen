@@ -14,8 +14,8 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.retriever.mavensearch.exception.RestSearchResponseException;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.AbstractSearchResponse;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.ServerCredentials;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.AbstractSearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.ServerCredentials;
 import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 

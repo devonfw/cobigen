@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.retriever.mavensearch.util.to.model;
+package com.devonfw.cobigen.retriever.mavensearch.to.model;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

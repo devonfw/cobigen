@@ -10,10 +10,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.jfrog.JfrogSearchResponse;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.maven.MavenSearchResponse;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus2.Nexus2SearchResponse;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus3.Nexus3SearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.jfrog.JfrogSearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.maven.MavenSearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.nexus2.Nexus2SearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.nexus3.Nexus3SearchResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**

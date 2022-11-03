@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.retriever.mavensearch.util.to.model.maven;
+package com.devonfw.cobigen.retriever.mavensearch.to.model.maven;
 
 import java.util.List;
 

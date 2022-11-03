@@ -14,8 +14,8 @@ import java.nio.file.Paths;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.SearchResponseFactory;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.ServerCredentials;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.SearchResponseFactory;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.ServerCredentials;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 

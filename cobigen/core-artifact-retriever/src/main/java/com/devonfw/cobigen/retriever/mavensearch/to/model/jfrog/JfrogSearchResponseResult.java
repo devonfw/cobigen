@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.retriever.mavensearch.util.to.model.jfrog;
+package com.devonfw.cobigen.retriever.mavensearch.to.model.jfrog;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.retriever.mavensearch.util.to.model;
+package com.devonfw.cobigen.retriever.mavensearch.to.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryType;
 import com.devonfw.cobigen.retriever.mavensearch.exception.RestSearchResponseException;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.jfrog.JfrogSearchResponse;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.maven.MavenSearchResponse;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus2.Nexus2SearchResponse;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.nexus3.Nexus3SearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.jfrog.JfrogSearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.maven.MavenSearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.nexus2.Nexus2SearchResponse;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.nexus3.Nexus3SearchResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;

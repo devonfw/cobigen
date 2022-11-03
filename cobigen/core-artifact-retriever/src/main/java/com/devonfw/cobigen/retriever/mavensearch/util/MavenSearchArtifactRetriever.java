@@ -3,8 +3,8 @@ package com.devonfw.cobigen.retriever.mavensearch.util;
 import java.net.URL;
 import java.util.List;
 
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.SearchResponseFactory;
-import com.devonfw.cobigen.retriever.mavensearch.util.to.model.ServerCredentials;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.SearchResponseFactory;
+import com.devonfw.cobigen.retriever.mavensearch.to.model.ServerCredentials;
 
 /**
  * Class for handling the Maven REST Search API and the communication with it.
