@@ -20,7 +20,7 @@ import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetTag;
 public class TemplateSetArtifactReaderTest {
 
   /** Test data root path */
-  private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenReaderTest";
+  private static final String testdataRoot = "src/test/resources/testdata/unittest/TemplateSetArtifactReaderTest";
 
   /**
    * Test, whether the tags names of the tag elements are correctly mapped to a java class
