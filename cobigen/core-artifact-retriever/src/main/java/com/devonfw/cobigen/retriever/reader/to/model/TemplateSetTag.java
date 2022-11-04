@@ -3,11 +3,9 @@ package com.devonfw.cobigen.retriever.reader.to.model;
 import jakarta.xml.bind.annotation.XmlAttribute;
 
 /**
- *
  * Tag element of the template-set.xml
- *
  */
-public class MavenSettingsTag {
+public class TemplateSetTag {
 
   String name;
 

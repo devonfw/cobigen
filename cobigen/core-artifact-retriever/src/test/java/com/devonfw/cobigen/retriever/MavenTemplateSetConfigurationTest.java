@@ -10,9 +10,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
-import com.devonfw.cobigen.retriever.reader.to.model.MavenSettingsIncrement;
-import com.devonfw.cobigen.retriever.reader.to.model.MavenSettingsTag;
-import com.devonfw.cobigen.retriever.reader.to.model.MavenTemplateSetConfiguration;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetIncrement;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetTag;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetConfiguration;
 
 /**
  * Test for MavenTemplateSetConfiguration
@@ -24,10 +24,10 @@ public class MavenTemplateSetConfigurationTest {
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenReaderTest";
 
   /** Repositories on which the tests are performed on */
-  private static List<MavenSettingsTag> tagsList;
+  private static List<TemplateSetTag> tagsList;
 
   /** Mirrors on which the tests are performed on */
-  private static List<MavenSettingsIncrement> incrementsList;
+  private static List<TemplateSetIncrement> incrementsList;
 
   /**
    * Used to initialize data needed for the tests
@@ -38,7 +38,7 @@ public class MavenTemplateSetConfigurationTest {
     tagsList = new ArrayList<>();
     incrementsList = new ArrayList<>();
 
-    MavenTemplateSetConfiguration model;
+    TemplateSetConfiguration model;
 
     model = TemplateSetArtifactReader
         .generateMavenTemplateSetConfiguration(Paths.get(testdataRoot).resolve("template-set.xml"));

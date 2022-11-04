@@ -5,19 +5,16 @@ import java.util.List;
 import jakarta.xml.bind.annotation.XmlElement;
 
 /**
- *
  * Represents the tag element of the template-set.xml
- *
  */
+public class TemplateSetTags {
 
-public class MavenSettingsTags {
-
-  List<MavenSettingsTag> tagsList;
+  List<TemplateSetTag> tagsList;
 
   /**
    * @return tagsList
    */
-  public List<MavenSettingsTag> getTagsList() {
+  public List<TemplateSetTag> getTagsList() {
 
     return this.tagsList;
   }
@@ -26,7 +23,7 @@ public class MavenSettingsTags {
    * @param tagsList new value of {@link #gettagsList}.
    */
   @XmlElement(name = "tag")
-  public void setTagsList(List<MavenSettingsTag> tagsList) {
+  public void setTagsList(List<TemplateSetTag> tagsList) {
 
     this.tagsList = tagsList;
   }

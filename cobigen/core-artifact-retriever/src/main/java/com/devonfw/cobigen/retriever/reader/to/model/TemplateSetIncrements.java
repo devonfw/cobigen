@@ -5,18 +5,16 @@ import java.util.List;
 import jakarta.xml.bind.annotation.XmlElement;
 
 /**
- *
  * Represents the increment element of the template-set.xml
- *
  */
-public class MavenSettingsIncrements {
+public class TemplateSetIncrements {
 
-  List<MavenSettingsIncrement> incrementList;
+  List<TemplateSetIncrement> incrementList;
 
   /**
    * @return incrementList
    */
-  public List<MavenSettingsIncrement> getIncrementList() {
+  public List<TemplateSetIncrement> getIncrementList() {
 
     return this.incrementList;
   }
@@ -25,7 +23,7 @@ public class MavenSettingsIncrements {
    * @param incrementList new value of {@link #getincrementList}.
    */
   @XmlElement(name = "increment")
-  public void setIncrementList(List<MavenSettingsIncrement> incrementList) {
+  public void setIncrementList(List<TemplateSetIncrement> incrementList) {
 
     this.incrementList = incrementList;
   }

@@ -10,18 +10,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.retriever.reader.to.model.MavenSettingsIncrement;
-import com.devonfw.cobigen.retriever.reader.to.model.MavenSettingsTag;
-import com.devonfw.cobigen.retriever.reader.to.model.MavenTemplateSetConfiguration;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetIncrement;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetTag;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetConfiguration;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 
 /**
- *
  * Reader for human readable data extracted from template-set.xmls
- *
  */
 public class TemplateSetArtifactReader {
 
@@ -35,21 +33,20 @@ public class TemplateSetArtifactReader {
   List<String> incrementDescriptions;
 
   /**
-   *
    * The constructor. Initializes fields
    */
   public TemplateSetArtifactReader() {
 
-    MavenTemplateSetConfiguration templateSetConfiguration = new MavenTemplateSetConfiguration();
+    TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration();
 
     if (templateSetConfiguration.getTags() != null) {
-      for (MavenSettingsTag tag : templateSetConfiguration.getTags().getTagsList()) {
+      for (TemplateSetTag tag : templateSetConfiguration.getTags().getTagsList()) {
         this.tagNames.add(tag.getName());
       }
     }
 
     if (templateSetConfiguration.getIncrements() != null) {
-      for (MavenSettingsIncrement increment : templateSetConfiguration.getIncrements().getIncrementList()) {
+      for (TemplateSetIncrement increment : templateSetConfiguration.getIncrements().getIncrementList()) {
         this.incrementDescriptions.add(increment.getDescription());
       }
     }
@@ -63,7 +60,7 @@ public class TemplateSetArtifactReader {
    *
    * @return Java class, on which parts of the template-set is mapped to
    */
-  public static MavenTemplateSetConfiguration generateMavenTemplateSetConfiguration(Path templateSetFilePath) {
+  public static TemplateSetConfiguration generateMavenTemplateSetConfiguration(Path templateSetFilePath) {
 
     String templateSetFileContent = "";
 
@@ -79,9 +76,9 @@ public class TemplateSetArtifactReader {
     try {
 
       StringReader reader = new StringReader(templateSetFileContent);
-      JAXBContext jaxbContext = JAXBContext.newInstance(MavenTemplateSetConfiguration.class);
+      JAXBContext jaxbContext = JAXBContext.newInstance(TemplateSetConfiguration.class);
       Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-      MavenTemplateSetConfiguration model = (MavenTemplateSetConfiguration) jaxbUnmarshaller.unmarshal(reader);
+      TemplateSetConfiguration model = (TemplateSetConfiguration) jaxbUnmarshaller.unmarshal(reader);
 
       LOG.debug("Successfully unmarshalled template set artifact file: {}", templateSetFilePath.getFileName());
       return model;
