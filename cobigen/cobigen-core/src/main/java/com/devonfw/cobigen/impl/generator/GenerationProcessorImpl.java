@@ -72,19 +72,6 @@ import com.google.common.collect.Maps;
  * Generation processor. Caches calculations and thus should be newly created on each request.
  */
 public class GenerationProcessorImpl implements GenerationProcessor {
-  public static void main(String[] args) {
-
-    Path cobigenPath = CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-    Properties prop = ConfigurationFinder.readConfigrationFile(cobigenPath);
-    prop.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
-
-    // String defaultGeneratdAnnotation = null;
-
-    // Properties props = ConfigurationFinder
-    // .readConfigrationFile(cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
-    // defaultGeneratdAnnotation = props.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
-
-  }
 
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(GenerationProcessorImpl.class);
