@@ -15,7 +15,7 @@ import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.devonfw.cobigen.retriever.mavensearch.util.MavenSearchArtifactRetriever;
+import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**

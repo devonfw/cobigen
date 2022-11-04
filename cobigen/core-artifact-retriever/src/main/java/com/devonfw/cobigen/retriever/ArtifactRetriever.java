@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.devonfw.cobigen.retriever.mavensearch.util.MavenSearchArtifactRetriever;
+import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
 import com.devonfw.cobigen.retriever.settings.MavenProxy;
 import com.devonfw.cobigen.retriever.settings.MavenSettings;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;

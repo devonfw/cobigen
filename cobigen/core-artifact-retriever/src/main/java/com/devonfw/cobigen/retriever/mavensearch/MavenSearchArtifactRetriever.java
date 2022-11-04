@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.retriever.mavensearch.util;
+package com.devonfw.cobigen.retriever.mavensearch;
 
 import java.net.URL;
 import java.util.List;
