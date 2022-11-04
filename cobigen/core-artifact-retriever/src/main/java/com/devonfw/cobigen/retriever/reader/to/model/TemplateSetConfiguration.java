@@ -12,12 +12,15 @@ public class TemplateSetConfiguration {
   /**
    * Represents the triggers element of the template-set.xml
    */
-  TemplateSetTrigger triggers;
+  private TemplateSetTrigger triggers;
 
   /**
    * Represents the increments element of the template-set.xml
    */
-  TemplateSetIncrements increments;
+  private TemplateSetIncrements increments;
+
+  /** Represents the version of the template-set.xml */
+  private String version;
 
   /**
    * @return triggers
@@ -73,6 +76,22 @@ public class TemplateSetConfiguration {
   public void setTags(TemplateSetTags tags) {
 
     this.tags = tags;
+  }
+
+  /**
+   * @return version
+   */
+  public String getVersion() {
+
+    return this.version;
+  }
+
+  /**
+   * @param version new value of {@link #getversion}.
+   */
+  public void setVersion(String version) {
+
+    this.version = version;
   }
 
 }

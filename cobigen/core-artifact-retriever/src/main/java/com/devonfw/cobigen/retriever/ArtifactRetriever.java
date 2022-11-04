@@ -1,10 +1,16 @@
 package com.devonfw.cobigen.retriever;
 
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
+import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
 import com.devonfw.cobigen.retriever.settings.MavenProxy;
 import com.devonfw.cobigen.retriever.settings.MavenSettings;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
@@ -17,6 +23,8 @@ import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsServerModel;
  */
 public class ArtifactRetriever {
 
+  private static final Logger LOG = LoggerFactory.getLogger(ArtifactRetriever.class);
+
   /**
    * Retrieves a list of maven artifact download URLs
    *
@@ -25,7 +33,7 @@ public class ArtifactRetriever {
    * @return list of maven artifact download URLs
    *
    */
-  public static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
+  protected static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
 
     List<URL> downloadLinks = new ArrayList<>();
 
@@ -55,6 +63,27 @@ public class ArtifactRetriever {
 
     return downloadLinks;
 
+  }
+
+  /**
+   * Retrieves {@link TemplateSetArtifactReader}s taken from template-set files providing human readable data only
+   *
+   * @param templateSetFiles List of template set file paths
+   * @return List of {@link TemplateSetArtifactReader}s
+   */
+  public static List<TemplateSetArtifactReader> retrieveTemplateSetData(List<Path> templateSetFiles) {
+
+    List<TemplateSetArtifactReader> templateSetList = new ArrayList<>();
+    for (Path templateSetFile : templateSetFiles) {
+      if (!Files.exists(templateSetFile)) {
+
+        LOG.debug("Template set file was not found at: {}", templateSetFile);
+      }
+      TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
+      templateSetList.add(artifactReader);
+    }
+
+    return templateSetList;
   }
 
   /**

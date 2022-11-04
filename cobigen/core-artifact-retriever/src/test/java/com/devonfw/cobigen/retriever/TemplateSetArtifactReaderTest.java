@@ -2,56 +2,36 @@ package com.devonfw.cobigen.retriever;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetIncrement;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetTag;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetConfiguration;
 
 /**
  * Test for MavenTemplateSetConfiguration
  *
  */
-public class MavenTemplateSetConfigurationTest {
+public class TemplateSetArtifactReaderTest {
 
   /** Test data root path */
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenReaderTest";
-
-  /** Repositories on which the tests are performed on */
-  private static List<TemplateSetTag> tagsList;
-
-  /** Mirrors on which the tests are performed on */
-  private static List<TemplateSetIncrement> incrementsList;
-
-  /**
-   * Used to initialize data needed for the tests
-   */
-  @BeforeClass
-  public static void setUpClass() {
-
-    tagsList = new ArrayList<>();
-    incrementsList = new ArrayList<>();
-
-    TemplateSetConfiguration model;
-
-    model = TemplateSetArtifactReader
-        .generateMavenTemplateSetConfiguration(Paths.get(testdataRoot).resolve("template-set.xml"));
-
-    tagsList.addAll(model.getTags().getTagsList());
-    incrementsList.addAll(model.getIncrements().getIncrementList());
-  }
 
   /**
    * Test, whether the tags names of the tag elements are correctly mapped to a java class
    */
   @Test
   public void testGenerateMavenTemplateSetConfigurationTagsName() {
+
+    Path templateSetFile = Paths.get(testdataRoot).resolve("template-set.xml");
+    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
+    List<TemplateSetTag> tagsList = new ArrayList<>();
+    tagsList.addAll(artifactReader.getTemplateSetConfiguration().getTags().getTagsList());
 
     String tagsName1 = tagsList.get(0).getName();
     String tagsName2 = tagsList.get(1).getName();
@@ -66,11 +46,27 @@ public class MavenTemplateSetConfigurationTest {
   @Test
   public void testGenerateMavenTemplateSetIncrementsDescription() {
 
+    Path templateSetFile = Paths.get(testdataRoot).resolve("template-set.xml");
+    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
+
+    List<TemplateSetIncrement> incrementsList = new ArrayList<>();
+    incrementsList.addAll(artifactReader.getTemplateSetConfiguration().getIncrements().getIncrementList());
     String description1 = incrementsList.get(0).getDescription();
     String description2 = incrementsList.get(1).getDescription();
 
     assertThat(description1).isEqualTo("Description of increment 1");
     assertThat(description2).isEqualTo("Description of increment 2");
+  }
+
+  /**
+   * Test if the version of the template set can be retrieved from the file name
+   */
+  @Test
+  public void testRetrieveTemplateSetVersionFromFilename() {
+
+    Path templateSetFile = Paths.get(testdataRoot).resolve("crud-java-server-app-2021.08.001-template-set.xml");
+    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
+    assertThat(artifactReader.getTemplateSetVersion()).isEqualTo("2021.08.001");
   }
 
 }

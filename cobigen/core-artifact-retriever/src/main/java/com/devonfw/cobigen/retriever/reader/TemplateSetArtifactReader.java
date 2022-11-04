@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetIncrement;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetTag;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetConfiguration;
 
 import jakarta.xml.bind.JAXBContext;
@@ -26,31 +25,21 @@ public class TemplateSetArtifactReader {
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(TemplateSetArtifactReader.class);
 
-  /** List of tag names */
-  List<String> tagNames;
+  /** Version of the template set */
+  private String templateSetVersion;
 
-  /** List of increment descriptions */
-  List<String> incrementDescriptions;
+  /** {@link TemplateSetConfiguration} of the template set */
+  private TemplateSetConfiguration templateSetConfiguration;
 
   /**
-   * The constructor. Initializes fields
+   * The constructor. Initializes the template set version and the {@link TemplateSetConfiguration}
+   *
+   * @param templateSetFilePath Path to the template-set.xml
    */
-  public TemplateSetArtifactReader() {
+  public TemplateSetArtifactReader(Path templateSetFilePath) {
 
-    TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration();
-
-    if (templateSetConfiguration.getTags() != null) {
-      for (TemplateSetTag tag : templateSetConfiguration.getTags().getTagsList()) {
-        this.tagNames.add(tag.getName());
-      }
-    }
-
-    if (templateSetConfiguration.getIncrements() != null) {
-      for (TemplateSetIncrement increment : templateSetConfiguration.getIncrements().getIncrementList()) {
-        this.incrementDescriptions.add(increment.getDescription());
-      }
-    }
-
+    this.templateSetVersion = parseVersionFromTemplateSetFile(templateSetFilePath);
+    this.templateSetConfiguration = generateMavenTemplateSetConfiguration(templateSetFilePath);
   }
 
   /**
@@ -60,7 +49,7 @@ public class TemplateSetArtifactReader {
    *
    * @return Java class, on which parts of the template-set is mapped to
    */
-  public static TemplateSetConfiguration generateMavenTemplateSetConfiguration(Path templateSetFilePath) {
+  private TemplateSetConfiguration generateMavenTemplateSetConfiguration(Path templateSetFilePath) {
 
     String templateSetFileContent = "";
 
@@ -88,6 +77,24 @@ public class TemplateSetArtifactReader {
   }
 
   /**
+   * Parses the version number from the template-set.xml file
+   *
+   * @param templateSetFile Path to the template-set.xml
+   * @return String of version number
+   */
+  private String parseVersionFromTemplateSetFile(Path templateSetFile) {
+
+    Pattern pattern = Pattern.compile("[-][\\d]*[.][\\d]*[.][\\d]*[-]");
+    Matcher matcher = pattern.matcher(templateSetFile.getFileName().toString());
+    String templateSetversion = "";
+    if (matcher.find()) {
+      templateSetversion = matcher.group();
+    }
+
+    return templateSetversion.replace("-", "");
+  }
+
+  /**
    * Removes the templateSetConfiguration tag from the xml string
    *
    * @param templateSetFileContent string of template set xml file
@@ -104,18 +111,19 @@ public class TemplateSetArtifactReader {
   }
 
   /**
-   * @return tagNames
+   * @return templateSetVersion
    */
-  public List<String> getTagNames() {
+  public String getTemplateSetVersion() {
 
-    return this.tagNames;
+    return this.templateSetVersion;
   }
 
   /**
-   * @return incrementDescriptions
+   * @return templateSetConfiguration
    */
-  public List<String> getIncrementDescriptions() {
+  public TemplateSetConfiguration getTemplateSetConfiguration() {
 
-    return this.incrementDescriptions;
+    return this.templateSetConfiguration;
   }
+
 }
