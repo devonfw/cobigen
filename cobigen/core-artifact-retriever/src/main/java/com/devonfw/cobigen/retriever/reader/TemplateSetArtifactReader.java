@@ -55,7 +55,7 @@ public class TemplateSetArtifactReader {
 
     try {
       LOG.debug("Trying to read template set artifact file at: {}", templateSetFilePath.toAbsolutePath());
-      templateSetFileContent = Files.readString(templateSetFilePath);
+      templateSetFileContent = new String(Files.readAllBytes(templateSetFilePath));
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read test template-set.xml file", e);
     }

@@ -196,6 +196,8 @@ public class MavenUtil {
   }
 
   /**
+   * Returns maven's settings.xml as a string by using maven evaluate
+   *
    * @return the maven's settings.xml as string
    */
   public static String determineMavenSettings() {
