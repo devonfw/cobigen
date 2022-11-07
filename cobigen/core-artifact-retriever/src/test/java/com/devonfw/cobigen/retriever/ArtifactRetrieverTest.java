@@ -70,8 +70,8 @@ public class ArtifactRetrieverTest {
   public static void setUpClass() {
 
     try {
-      mavenSettingsNonProxy = Files.readString(Paths.get(testdataRoot).resolve("settingsNonProxy.xml"));
-      mavenSettingsProxy = Files.readString(Paths.get(testdataRoot).resolve("settingsProxy.xml"));
+      mavenSettingsNonProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsNonProxy.xml")));
+      mavenSettingsProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsProxy.xml")));
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
     }

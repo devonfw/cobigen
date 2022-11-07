@@ -41,7 +41,7 @@ public class MavenMirrorTest {
     MavenSettingsModel model;
     String content;
     try {
-      content = Files.readString(Paths.get(testdataRoot).resolve("settings.xml"));
+      content = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settings.xml")));
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
     }
