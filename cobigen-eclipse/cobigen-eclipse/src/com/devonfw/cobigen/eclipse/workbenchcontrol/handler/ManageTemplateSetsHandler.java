@@ -5,15 +5,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.IPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.eclipse.common.tools.ResourcesPluginUtil;
 import com.devonfw.cobigen.gui.AppLauncher;
 
 /**
- * TODO nneuhaus This type ...
+ * Handler for the Package-Explorer Event
  *
  */
 public class ManageTemplateSetsHandler extends AbstractHandler {
@@ -23,12 +21,10 @@ public class ManageTemplateSetsHandler extends AbstractHandler {
    */
   private static final Logger LOG = LoggerFactory.getLogger(ManageTemplateSetsHandler.class);
 
-  public AppLauncher launcher;
-
   /**
-   * Location of workspace root
+   * Launcher for GUI
    */
-  IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+  public AppLauncher launcher;
 
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -38,12 +34,15 @@ public class ManageTemplateSetsHandler extends AbstractHandler {
     try {
       wait(1337);
     } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
     while (this.launcher.app.window.isShowing()) {
-      TimeUnit.SECONDS.sleep(1);
+      try {
+        TimeUnit.SECONDS.sleep(1);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
 
     return null;

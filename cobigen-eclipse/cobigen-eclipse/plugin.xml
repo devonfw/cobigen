@@ -20,7 +20,7 @@
             name="Adapt Template">
       </command>
       <command
-            id="com.devonfw.cobigen.eclipseplugin.adapt_template"
+            id="com.devonfw.cobigen.eclipseplugin.manage_template_sets"
             name="Manage Template Sets">
       </command>
    </extension>

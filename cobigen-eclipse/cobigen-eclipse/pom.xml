@@ -13,8 +13,6 @@
 
   <properties>
     <license.skipAggregateDownloadLicenses>false</license.skipAggregateDownloadLicenses>
-    <skip.deployment>false</skip.deployment>
-    <enforcer.skip>true</enforcer.skip>
   </properties>
 
   <dependencies>

@@ -21,17 +21,17 @@ public class AppLauncher {
     this.app.printSomething();
   }
 
-  // public static void main(String[] args) {
-  //
-  // new Thread() {
-  // @Override
-  // public void run() {
-  //
-  // javafx.application.Application.launch(App.class);
-  // }
-  // }.start();
-  // App app = App.waitForApp();
-  // app.printSomething();
-  // }
+  public static void main(String[] args) {
+
+    new Thread() {
+      @Override
+      public void run() {
+
+        javafx.application.Application.launch(App.class);
+      }
+    }.start();
+    App app = App.waitForApp();
+    app.printSomething();
+  }
 
 }

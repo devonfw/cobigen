@@ -15,6 +15,7 @@
   <properties>
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
     <eclipse-repository>https://download.eclipse.org/releases/photon</eclipse-repository>
+    <java.version>11</java.version>
   </properties>
 
   <modules>
