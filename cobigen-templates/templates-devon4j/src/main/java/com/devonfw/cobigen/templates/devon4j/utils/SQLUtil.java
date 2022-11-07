@@ -31,24 +31,36 @@ public class SQLUtil extends CommonUtil {
 
   public String primaryKeyStatement(Map<String, ?> field) {
 
-    String fieldName;
+    String fieldName = getFieldName(field);
     Map<String, ?> annotations = getValue(field, "annotations");
-    fieldName = getValue(field, "name");
     String incrementType = "AUTO_INCREMENT";
     return String.format("%s BIGINT %s PRIMARY KEY", fieldName, incrementType);
   }
 
   public String foreignKeyStatement(Map<String, ?> field) {
+    Map<String, ?> annotations = getValue(field, "annotations");
+    Map<String, ?> joinColumnAnnotation = getValue(field, "javax_persistence_JoinColumn");
+    String fieldName = getValue(field, "name");
+    if (joinColumnAnnotation != null) {
 
+    }
+    return "";
+  }
+
+  public String basicTypeStatement(Map<String, ?> field) {
+    return "";
+  }
+
+  static private String getColumnConstraints(Map<String, ?> columnAnnotation) {
     return "";
   }
 
   /**
-   * Extracts the name of the field from the Map whilst checking for name-overriding annotations.
+   * Extracts the name of the field from the Map whilst checking for name-override in @Column annotation
    */
   static private String getFieldName(Map<String, ?> field) {
     String fieldName = chainAccess(field, new String[] { "annotations", "javax_persistence_Column", "name" });
-    if (fieldName != null) {
+    if (fieldName != null && !fieldName.equals("")) {
       return fieldName;
     } else {
       return getValue(field, "name");
@@ -56,7 +68,7 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Dynamic Helper function to navigate nested maps. Returns null on any type of error
+   * Helper function to navigate nested maps dynamically. Returns null on any type of error
    */
   static private <T> T chainAccess(Map<String, ?> map, String[] nestedFields) {
     try {

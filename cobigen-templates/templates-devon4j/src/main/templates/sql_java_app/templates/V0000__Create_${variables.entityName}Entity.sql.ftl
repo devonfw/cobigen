@@ -16,7 +16,18 @@ CREATE TABLE ${tableName} (
     <#--    Primary Key statement -->
     <#if field.annotations.javax_persistence_Id??>
         <#assign statements += [SQLUtil.primaryKeyStatement(field)]>
-    <#elseif field.annotations.javax_persistence_JoinColumn>
+    <#--    OneToOne statement -->
+    <#elseif field.annotations.javax_persistence_OneToOne>
+        <#--        Key mapped on other table, skip -->
+        <#if field.annotations.javax_persistence_OneToOne.mappedBy != "">
+            <#continue>
+        </#if>
+        <#assign statements += [SQLUtil.foreignKeyStatement(field)]>
+    <#--    OneToMany Foreign Keystatement -->
+    <#elseif field.annotations.javax_persistence_OneToMany>
+        <#assign statements += [SQLUtil.foreignKeyStatement(field)]>
+    <#else>
+        <#assign statements += [SQLUtil.basicTypeStatement(field)]>
     </#if>
 </#list>
 <#list statements as statement>

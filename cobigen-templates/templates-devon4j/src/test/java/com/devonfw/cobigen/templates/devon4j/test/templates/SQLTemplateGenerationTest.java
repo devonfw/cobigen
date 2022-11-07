@@ -2,6 +2,8 @@ package com.devonfw.cobigen.templates.devon4j.test.templates;
 
 import com.devonfw.cobigen.templates.devon4j.test.templates.testclasses.SQLTestEntity;
 import com.devonfw.cobigen.templates.devon4j.utils.SQLUtil;
+import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class SQLTemplateGenerationTest extends AbstractJavaTemplateTest {
