@@ -3,7 +3,6 @@ package com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest;
 import javax.persistence.Column;
 import javax.persistence.Id;
 
-import com.devonfw.cobigen.templates.devon4j.test.utils.SQLUtilTest.SQLAnnotationTest;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestAnotherSimpleEntity;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestNotSoSimpleEntity;
 import com.devonfw.cobigen.templates.devon4j.test.utils.resources.sqltest.entities.TestSimpleEntity;

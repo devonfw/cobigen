@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="4.0">
 
   <templates>
-    <templateExtension ref="${variables.entityName}Entity.sql" mergeStrategy="textmerge_override"/>
+    <templateExtension ref="V0000__Create_${variables.entityName}Entity.sql" mergeStrategy="textmerge_override"/>
   </templates>
   <!-- ${variables.entityName}Entity.java -->
 
@@ -13,7 +13,7 @@
 
   <increments>
     <increment name="sql_java_app" description="SQL Script creation by Entity" ><!-- explanation="Generates a SQL create table script based on provided java entity class." -->
-      <templateRef ref="${variables.entityName}Entity.sql" />
+      <templateRef ref="V0000__Create_${variables.entityName}Entity.sql" />
 <!-- ${variables.entityName}Entity.sql-->
     </increment>
   </increments>
