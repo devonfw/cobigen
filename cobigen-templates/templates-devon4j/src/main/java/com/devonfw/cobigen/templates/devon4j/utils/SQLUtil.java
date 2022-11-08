@@ -128,7 +128,7 @@ public class SQLUtil extends CommonUtil {
    * @param columnAnnotation Map for the Column and JoinColumn annotations
    */
   private static boolean isNullable(Map<String, ?> columnAnnotation) {
-    return Boolean.TRUE.equals(getValue(columnAnnotation, "unique"));
+    return Boolean.parseBoolean(getValue(columnAnnotation, "nullable"));
   }
 
   /**
@@ -136,7 +136,7 @@ public class SQLUtil extends CommonUtil {
    * @param columnAnnotation Map for the Column and JoinColumn annotations
    */
   private static boolean isUnique(Map<String, ?> columnAnnotation) {
-    return Boolean.TRUE.equals(getValue(columnAnnotation, "unique"));
+    return Boolean.parseBoolean(getValue(columnAnnotation, "unique"));
   }
 
   /**

@@ -13,10 +13,11 @@ public class SQLTestEntity {
     @Column(name = "VALUENAME")
     private Integer value;
 
-    @OneToOne
+    @OneToOne(mappedBy = "I_am_mapped!!_and_should_be_skipped!")
     private ReferenceEntity refEntity;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 420, name = "YES_EXCACTLY")
     private EnumForTest enumForTest;
 
     private List<ReferenceEntity> referenceEntities;
@@ -39,7 +40,7 @@ public class SQLTestEntity {
     }
 
     @OneToMany
-    @JoinColumn(name = "reference_entity_id")
+    @JoinColumn(name = "reference_entity_id", unique = true, nullable = false)
     public List<ReferenceEntity> getReferenceEntities() {
         return referenceEntities;
     }
