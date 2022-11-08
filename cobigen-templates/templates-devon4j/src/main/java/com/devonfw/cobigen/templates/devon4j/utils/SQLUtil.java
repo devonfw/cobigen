@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.templates.devon4j.utils;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Provides operations to identify and process SQL specific information
@@ -19,7 +20,7 @@ public class SQLUtil extends CommonUtil {
   /**
    * Debug function to set breakpoint to analyze some data passed to the freemarkertemplate
    */
-  public void debug(Map<String, Object> pojo) {
+  public void debug(Object obj) {
 
     System.out.println("DEBUG");
   }
@@ -33,37 +34,162 @@ public class SQLUtil extends CommonUtil {
 
     String fieldName = getFieldName(field);
     Map<String, ?> annotations = getValue(field, "annotations");
+    Map<String, ?> columnAnnotations = getValue(annotations, "javax_persistence_Column");
+    // Check for @Column to override default fieldname
+    if (columnAnnotations != null) {
+      String columnFieldName = getValue(columnAnnotations, "name");
+      if (columnFieldName != null)
+        fieldName = columnFieldName;
+    }
     String incrementType = "AUTO_INCREMENT";
     return String.format("%s BIGINT %s PRIMARY KEY", fieldName, incrementType);
   }
 
   public String foreignKeyStatement(Map<String, ?> field) {
+
     Map<String, ?> annotations = getValue(field, "annotations");
-    Map<String, ?> joinColumnAnnotation = getValue(field, "javax_persistence_JoinColumn");
-    String fieldName = getValue(field, "name");
+    Map<String, ?> joinColumnAnnotation = getValue(annotations, "javax_persistence_JoinColumn");
+    String fieldName = getValue(field, "name"), fieldType = "BIGINT",
+        refTable = Objects.requireNonNull(getValue(field, "type")), refField = "id";
+    Boolean unique = false, nullable = true;
+
+    // Try extracting tablename from type following devonfw naming conventions: AwdeEntity -> AWDE
+    refTable = refTable.replaceAll("(Collection)|(List)|<|>", "").replace("Entity", "").toUpperCase();
+
+    // Try autogenerating foreign key name through naming convention
+    fieldName = fieldName.replace("Entity", "").toUpperCase() + "_ID";
+
     if (joinColumnAnnotation != null) {
+      // Parse @JoinColumn values and override defaults
+      String nameOverride = getValue(joinColumnAnnotation, "name");
+      if (!Objects.equals(nameOverride, ""))
+        fieldName = nameOverride;
 
+      String tableOverride = getValue(joinColumnAnnotation, "table");
+      if (!Objects.equals(tableOverride, ""))
+        refTable = tableOverride;
+
+      unique = isUnique(joinColumnAnnotation);
+      nullable = isNullable(joinColumnAnnotation);
     }
-    return "";
+    // Build column definition
+    String columnDef = fieldName + " " + fieldType;
+    if (unique)
+      columnDef += " UNIQUE";
+    if (!nullable)
+      columnDef += " NOT NULL";
+    // Build Foreign Key constraint and append it to column definition
+    String foreignKeyDef = String.format("FOREIGN KEY (%s) REFERENCES %s(%s)", fieldName, refTable, refField);
+    return columnDef + ", " + foreignKeyDef;
   }
 
-  public String basicTypeStatement(Map<String, ?> field) {
-    return "";
+  public String basicStatement(Map<String, ?> field) {
+
+    Map<String, ?> columnAnnotation = chainAccess(field, new String[] {"annotations", "javax_persistence_Column"});
+    String fieldName = getFieldName(field),
+        typeString = Objects.requireNonNull(getValue(field, "type")),
+        fieldType = mapType(typeString);
+    Integer fieldLength = 255;
+    boolean nullable = true,
+            unique = false;
+    // Try to infer fieldType from possible annotations
+    Map<String, ?> enumerateAnnotation = chainAccess(field, new String[]{"annotations", "javax_persistence_Enumerated"});
+    if (enumerateAnnotation != null) {
+      String enumType = Objects.requireNonNull(getValue(enumerateAnnotation, "value"));
+      if (enumType.equals("STRING")) {
+        fieldType = "VARCHAR";
+      } else {
+        fieldType = "INTEGER";
+      }
+    }
+    // Parse @Column if present
+    if (columnAnnotation != null) {
+      Integer columnLength = Integer.parseInt(Objects.requireNonNull(getValue(columnAnnotation, "length")));
+      if (columnLength != null) fieldLength = columnLength;
+      nullable = isNullable(columnAnnotation);
+      unique = isUnique(columnAnnotation);
+    }
+
+    // If fieldType is still empty throw exception
+     if (fieldType == null) throw new IllegalArgumentException("Couldn't map Java type to SQL type for typeString: " + typeString);
+
+    // Add size to VARCHAR fields
+    if (fieldType.equals("VARCHAR")) {
+      fieldType = String.format("VARCHAR(%d)", fieldLength);
+    }
+    String statement = String.format("%s %s", fieldName, fieldType);
+    if (!nullable) statement += " NOT NULL";
+    if (unique) statement += " UNIQUE";
+    return statement;
   }
 
-  static private String getColumnConstraints(Map<String, ?> columnAnnotation) {
-    return "";
+  /**
+   * Extracts value of nullable from @Column and @JoinColumn annotations
+   * @param columnAnnotation Map for the Column and JoinColumn annotations
+   */
+  private static boolean isNullable(Map<String, ?> columnAnnotation) {
+    return Boolean.TRUE.equals(getValue(columnAnnotation, "unique"));
+  }
+
+  /**
+   * Extracts value of unique from @Column and @JoinColumn annotations
+   * @param columnAnnotation Map for the Column and JoinColumn annotations
+   */
+  private static boolean isUnique(Map<String, ?> columnAnnotation) {
+    return Boolean.TRUE.equals(getValue(columnAnnotation, "unique"));
+  }
+
+  /**
+   * Helper function to map simple SQL types, returns null on unmappable type
+   */
+  public static String mapType(String typeString) {
+    // Shortcut for case insensitive regex matching with start and ending ignore
+    Function<String, Boolean> match = (regex) -> typeString.matches(".*" + "(?i)" + regex + ".*");
+    if (match.apply("(integer)|(int)")) {
+      return "INTEGER";
+    } else if (match.apply("long")) {
+      return "BIGINT";
+    } else if (match.apply("short")) {
+      return "SMALLINT";
+    } else if (match.apply("BigDecimal")) {
+      return "NUMERIC";
+    } else if (match.apply("String")) {
+      return "VARCHAR";
+    } else if (match.apply("(char)|(Character)")) {
+      return "CHAR(1)";
+    } else if (match.apply("byte")) {
+      return "TINYINT";
+    } else if (match.apply("boolean")) {
+      return "BIT";
+    } else if (match.apply("Date")) {
+      return "DATE";
+    } else if (match.apply("Time")) {
+      return "TIME";
+    } else if (match.apply("(Timestamp)|(Calendar)")) {
+      return "TIMESTAMP";
+    } else if (match.apply("byte\\[\\]")) {
+      return "BLOB";
+    } else if (match.apply("blob")) {
+      return "BLOB";
+    } else if (match.apply("clob")) {
+      return "CLOB";
+    } else if (match.apply("(Class)|(Locale)|(TimeZone)|(Currency)")) {
+      return "VARCHAR";
+    }else {
+      return null;
+    }
   }
 
   /**
    * Extracts the name of the field from the Map whilst checking for name-override in @Column annotation
    */
   static private String getFieldName(Map<String, ?> field) {
+
     String fieldName = chainAccess(field, new String[] { "annotations", "javax_persistence_Column", "name" });
     if (fieldName != null && !fieldName.equals("")) {
       return fieldName;
     } else {
-      return getValue(field, "name");
+      return Objects.requireNonNull(getValue(field, "name"));
     }
   }
 
@@ -71,6 +197,7 @@ public class SQLUtil extends CommonUtil {
    * Helper function to navigate nested maps dynamically. Returns null on any type of error
    */
   static private <T> T chainAccess(Map<String, ?> map, String[] nestedFields) {
+
     try {
       for (int i = 0; i < nestedFields.length - 1; i++) {
         String key = nestedFields[i];
@@ -86,6 +213,7 @@ public class SQLUtil extends CommonUtil {
    * Parametrized helper function to dynamically extract data from a map. Returns null on casting errors
    */
   static private <T> T getValue(Map<String, ?> map, String key) {
+
     try {
       return (T) map.get(key);
     } catch (Exception ignored) {
