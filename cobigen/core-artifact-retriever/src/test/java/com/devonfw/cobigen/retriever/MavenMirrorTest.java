@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,7 +68,10 @@ public class MavenMirrorTest {
 
     List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(0)));
+    List<MavenSettingsMirrorModel> mirrorList = new ArrayList<>();
+    mirrorList.add(mirrorsList.get(0));
+
+    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, mirrorList);
 
     assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("http://0.0.0.0/");
     assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://0.0.0.0/");
@@ -82,7 +86,10 @@ public class MavenMirrorTest {
 
     List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(1)));
+    List<MavenSettingsMirrorModel> mirrorList = new ArrayList<>();
+    mirrorList.add(mirrorsList.get(1));
+
+    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, mirrorList);
 
     assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("http://1.1.1.1/");
     assertThat(repositoriesListForInjectionTest.get(1).getUrl())
@@ -99,7 +106,10 @@ public class MavenMirrorTest {
 
     List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(2)));
+    List<MavenSettingsMirrorModel> mirrorList = new ArrayList<>();
+    mirrorList.add(mirrorsList.get(2));
+
+    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, mirrorList);
 
     assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("http://2.2.2.2/");
     assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://2.2.2.2/");
@@ -115,8 +125,10 @@ public class MavenMirrorTest {
 
     List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(3)));
+    List<MavenSettingsMirrorModel> mirrorList = new ArrayList<>();
+    mirrorList.add(mirrorsList.get(3));
 
+    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, mirrorList);
     assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("localhost");
     assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://3.3.3.3/");
     assertThat(repositoriesListForInjectionTest.get(2).getUrl()).isEqualTo("http://3.3.3.3/");
@@ -130,7 +142,10 @@ public class MavenMirrorTest {
 
     List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(4)));
+    List<MavenSettingsMirrorModel> mirrorList = new ArrayList<>();
+    mirrorList.add(mirrorsList.get(4));
+
+    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, mirrorList);
 
     assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("localhost");
     assertThat(repositoriesListForInjectionTest.get(1).getUrl()).isEqualTo("http://4.4.4.4/");
@@ -145,7 +160,10 @@ public class MavenMirrorTest {
 
     List<MavenSettingsRepositoryModel> repositoriesListForInjectionTest = cloneList();
 
-    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, List.of(mirrorsList.get(5)));
+    List<MavenSettingsMirrorModel> mirrorList = new ArrayList<>();
+    mirrorList.add(mirrorsList.get(5));
+
+    MavenMirror.injectMirrorUrl(repositoriesListForInjectionTest, mirrorList);
 
     assertThat(repositoriesListForInjectionTest.get(0).getUrl()).isEqualTo("localhost");
     assertThat(repositoriesListForInjectionTest.get(1).getUrl())
