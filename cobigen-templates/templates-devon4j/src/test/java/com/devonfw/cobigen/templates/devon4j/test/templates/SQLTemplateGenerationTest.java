@@ -7,12 +7,18 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class SQLTemplateGenerationTest extends AbstractJavaTemplateTest {
-
   @Test
   public void generateSQLTest() {
+    String output = this.process(SQLTestEntity.class);
+  }
 
-    this.defaultInit("src/main/templates/sql_java_app/templates/V0000__Create_${variables.entityName}Entity.sql.ftl",
-        SQLTestEntity.class, new Class<?>[] { SQLUtil.class });
-    String output = this.process();
+  @Override
+  public Class<?>[] getUtils() {
+    return new Class<?>[] { SQLUtil.class };
+  }
+
+  @Override
+  public String getTemplatePath() {
+    return  "src/main/templates/sql_java_app/templates/V0000__Create_${variables.entityName}Entity.sql.ftl";
   }
 }

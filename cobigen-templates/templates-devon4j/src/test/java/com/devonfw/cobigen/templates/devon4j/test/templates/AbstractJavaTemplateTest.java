@@ -85,32 +85,33 @@ public abstract class AbstractJavaTemplateTest {
   }
 
   /**
-   * Consumes current test configuration to produce an output!
+   * Consumes the given class to produce the template
+   * @param modelClass Class to auto-generate reflective pojo model
    * @return Produced file
    */
-  public String process() {
-    StringWriter out = new StringWriter();
-    engine.process(template, model, out, "UTF-8");
-    return out.toString();
-  }
-
-  /**
-   * Auto initialization for test. For more fine-grained control initialize your own configuration with the
-   * helper methods.
-   * @param templatePath Path to the template relative to subproject source root
-   * @param utils Classes to auto-instanciate and inject into freemarker for the template
-   * @param modelClass Class to auto-generate reflective pojo model
-   */
-  public void defaultInit(String templatePath, Class<?> modelClass, Class<?>[] utils) {
-    Path tp = Paths.get(templatePath);
+  public String process(Class<?> modelClass) {
+    Path tp = Paths.get(getTemplatePath());
     String filename = tp.getFileName().toString();
     Path templateFolder = tp.getParent();
     model = new JavaInputReader().createModel(modelClass);
     template = createTemplate(filename, templateFolder);
     engine = new FreeMarkerTemplateEngine();
     engine.setTemplateFolder(templateFolder);
-    for (Class<?> utilClass : utils) {
+    for (Class<?> utilClass : getUtils()) {
       addUtil(utilClass);
     }
+    StringWriter out = new StringWriter();
+    engine.process(template, model, out, "UTF-8");
+    return out.toString();
   }
+
+  /**
+   * @return utils Classes to auto-instanciate and inject into freemarker for the template
+   */
+  abstract public Class<?>[] getUtils();
+
+  /**
+   * @return templatePath Path to the template relative to subproject source root
+   */
+  abstract public String getTemplatePath();
 }
