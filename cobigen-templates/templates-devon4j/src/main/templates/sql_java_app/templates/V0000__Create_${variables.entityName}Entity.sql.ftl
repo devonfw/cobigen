@@ -12,23 +12,24 @@ ${SQLUtil.debug(pojo)}
         <#continue>
     <#--    Primary Key statement -->
     <#elseif field.annotations.javax_persistence_Id??>
-        <#assign statements = statements + [SQLUtil.primaryKeyStatement(field)]>
+        <#assign statements += [SQLUtil.primaryKeyStatement(field)]>
     <#--    OneToOne statement -->
     <#elseif field.annotations.javax_persistence_OneToOne??>
     <#--        Key mapped on other table, skip -->
         <#if field.annotations.javax_persistence_OneToOne.mappedBy != "">
             <#continue>
         </#if>
-        <#assign statements = statements + [SQLUtil.foreignKeyStatement(field)]>
-    <#--    OneToMany Foreign Keystatement -->
+        <#assign statements += [SQLUtil.foreignKeyStatement(field)]>
+    <#--      Skip OneToMany as it's just a Foreign Key on a different table  -->
     <#elseif field.annotations.javax_persistence_OneToMany??>
-        <#assign statements = statements + [SQLUtil.foreignKeyStatement(field)]>
+        <#continue>
+    <#--    ManyToOne: create Foreign Keystatement from the field -->
     <#elseif field.annotations.javax_persistence_ManyToOne??>
-        <#--      Skip ManyToOne as it's just a Foreign Key on a different table  -->
-        <#continue>
+        <#assign statements += [SQLUtil.foreignKeyStatement(field)]>
+    <#--  TODO: Check if there is a JoinTable specified that should be created.      -->
     <#elseif field.annotations.javax_persistence_ManyToMany??>
-        <#--  Check if there is a JoinTable specified....      -->
         <#continue>
+    <#-- Try generating simple SQL statement from field -->
     <#else>
         <#assign statements += [SQLUtil.basicStatement(field)]>
     </#if>
@@ -38,8 +39,6 @@ CREATE TABLE ${tableName} (
     ${statement},
 </#list>
 );
-<#-- TODO: parse generated JoinTables (NOT SURE IF NECESSARY!
-  AS TICKET MAYBE IMPLIES 1 SQL FILE FOR EACH ENTITY.
--->
+<#-- TODO: parse generated JoinTables -->
 <#list joinTables as tb>
 </#list>

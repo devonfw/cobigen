@@ -11,13 +11,13 @@ public class SQLTestEntity {
     private Long id;
 
     @Column(name = "VALUENAME")
-    private Integer value;
+    private Integer integerValue;
 
-    @OneToOne(mappedBy = "I_am_mapped!!_and_should_be_skipped!")
+    @OneToOne
     private ReferenceEntity refEntity;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 420, name = "YES_EXCACTLY")
+    @Column(length = 420, name = "ENUM_TEST_FIELD_NAME_OVERRIDE")
     private EnumForTest enumForTest;
 
     private List<ReferenceEntity> referenceEntities;
@@ -30,17 +30,16 @@ public class SQLTestEntity {
         this.id = id;
     }
 
-    public Integer getValue() {
-        return value;
+    public Integer getIntegerValue() {
+        return integerValue;
     }
 
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public void setIntegerValue(Integer value) {
+        this.integerValue = value;
     }
 
-    @OneToMany
-    @JoinColumn(name = "reference_entity_id", unique = true, nullable = false)
+    @OneToMany(mappedBy = "I_SHALL_BE_SKIPPED")
     public List<ReferenceEntity> getReferenceEntities() {
         return referenceEntities;
     }
