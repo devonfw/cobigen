@@ -19,7 +19,7 @@ import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsRepositoryMo
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsServerModel;
 
 /**
- * Utils to obtain maven artifact download URLs
+ * Used to obtain maven artifact download URLs
  */
 public class ArtifactRetriever {
 
