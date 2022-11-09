@@ -31,7 +31,7 @@ public class SearchResponseFactory {
   /**
    * List of available {@link AbstractSearchResponse} implementations (add new search REST API responses here)
    */
-  private static final List<Object> SEARCH_RESPONSES = Lists.newArrayList(new MavenSearchResponse(),
+  private static final List<AbstractSearchResponse> SEARCH_RESPONSES = Lists.newArrayList(new MavenSearchResponse(),
       new JfrogSearchResponse(), new Nexus2SearchResponse(), new Nexus3SearchResponse());
 
   /**
@@ -63,23 +63,20 @@ public class SearchResponseFactory {
 
     LOG.debug("Starting search for REST APIs with repository URL: {} and groupId: {} ...", baseUrl, groupId);
 
-    for (Object searchResponse : SEARCH_RESPONSES) {
-      searchRepositoryType = ((AbstractSearchResponse) searchResponse).getRepositoryType();
-      searchRepositoryTargetLink = ((AbstractSearchResponse) searchResponse).retrieveRestSearchApiTargetLink(baseUrl,
-          groupId);
+    for (AbstractSearchResponse searchResponse : SEARCH_RESPONSES) {
+      searchRepositoryType = searchResponse.getRepositoryType();
+      searchRepositoryTargetLink = searchResponse.retrieveRestSearchApiTargetLink(baseUrl, groupId);
       try {
         LOG.debug("Trying to get a response from {} ...", searchRepositoryType);
 
-        String jsonResponse = ((AbstractSearchResponse) searchResponse).retrieveJsonResponse(serverCredentials,
-            groupId);
+        String jsonResponse = searchResponse.retrieveJsonResponse(serverCredentials, groupId);
 
         if (jsonResponse == null || jsonResponse.isEmpty()) {
           LOG.debug("The json response was empty.");
           return downloadLinks;
         }
 
-        AbstractSearchResponse response = (AbstractSearchResponse) mapper.readValue(jsonResponse,
-            searchResponse.getClass());
+        AbstractSearchResponse response = mapper.readValue(jsonResponse, searchResponse.getClass());
 
         LOG.debug("The search REST API was able to get a response from {}", searchRepositoryType);
 
@@ -91,8 +88,6 @@ public class SearchResponseFactory {
               groupId, searchRepositoryTargetLink);
           return new ArrayList<>();
         }
-
-        return downloadLinks;
 
       } catch (RestSearchResponseException e) {
         LOG.debug("The search REST API was unable to get a response from {}", searchRepositoryType);

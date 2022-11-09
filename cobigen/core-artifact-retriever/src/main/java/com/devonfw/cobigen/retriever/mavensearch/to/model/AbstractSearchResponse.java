@@ -32,11 +32,26 @@ import okhttp3.Route;
  */
 public abstract class AbstractSearchResponse {
 
+  /** The HTTP request write timeout */
+  private static final int WRITE_TIMEOUT = 30;
+
+  /** The HTTP request call timeout */
+  private static final int CALL_TIMEOUT = 30;
+
+  /** The HTTP request read timeout */
+  private static final int READ_TIMEOUT = 30;
+
+  /** The HTTP request connect timeout */
+  private static final int CONNECT_TIMEOUT = 10;
+
   /** Logger instance. */
   @JsonIgnore
   private static final Logger LOG = LoggerFactory.getLogger(AbstractSearchResponse.class);
 
   /**
+   * Getter for {@link MavenSearchRepositoryType} needs to be added to each implementing class to ensure that the
+   * repository type name is being used
+   *
    * @return the {@link MavenSearchRepositoryType} type
    */
   public abstract MavenSearchRepositoryType getRepositoryType();
@@ -114,10 +129,10 @@ public abstract class AbstractSearchResponse {
 
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-    builder.connectTimeout(10, TimeUnit.SECONDS);
-    builder.readTimeout(30, TimeUnit.SECONDS);
-    builder.callTimeout(30, TimeUnit.SECONDS);
-    builder.writeTimeout(30, TimeUnit.SECONDS);
+    builder.connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+    builder.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);
+    builder.callTimeout(CALL_TIMEOUT, TimeUnit.SECONDS);
+    builder.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
     builder.retryOnConnectionFailure(true);
 
     if (serverCredentials.getProxyAddress() != null && serverCredentials.getProxyPort() != 0) {

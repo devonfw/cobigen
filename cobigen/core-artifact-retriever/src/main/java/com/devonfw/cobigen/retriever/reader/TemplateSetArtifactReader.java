@@ -22,6 +22,9 @@ import jakarta.xml.bind.Unmarshaller;
  */
 public class TemplateSetArtifactReader {
 
+  /** Regular expression to detect the version number inside the file name of the template-set.xml properly */
+  private static final String VERSION_NUMBER_REGEX = "[-][\\d]*[.][\\d]*[.][\\d]*[-]";
+
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(TemplateSetArtifactReader.class);
 
@@ -84,7 +87,7 @@ public class TemplateSetArtifactReader {
    */
   private String parseVersionFromTemplateSetFile(Path templateSetFile) {
 
-    Pattern pattern = Pattern.compile("[-][\\d]*[.][\\d]*[.][\\d]*[-]");
+    Pattern pattern = Pattern.compile(VERSION_NUMBER_REGEX);
     Matcher matcher = pattern.matcher(templateSetFile.getFileName().toString());
     String templateSetversion = "";
     if (matcher.find()) {
