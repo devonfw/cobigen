@@ -4,24 +4,17 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents the profile element of the settings.xml
- *
  */
 public class MavenSettingsProfileModel {
 
-  /**
-   * Represents the repositories element in maven's settings.xml
-   */
-  MavenSettingsRepositoriesModel repositories;
+  /** Represents the repositories element in maven's settings.xml */
+  private MavenSettingsRepositoriesModel repositories;
 
-  /**
-   * Represents the activation element in maven's settings.xml
-   */
-  MavenSettingsActivationModel activation;
+  /** Represents the activation element in maven's settings.xml */
+  private MavenSettingsActivationModel activation;
 
-  /**
-   * Id of the profile
-   */
-  String id;
+  /** Id of the profile */
+  private String id;
 
   /**
    * @return repositories

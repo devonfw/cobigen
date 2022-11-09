@@ -4,39 +4,26 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents a proxy element of the settings.xml
- *
  */
 public class MavenSettingsProxyModel {
 
-  /**
-   * Represents the id element of a mirror
-   */
-  String id;
+  /** Represents the id element of a mirror */
+  private String id;
 
-  /**
-   * Represents the active element of a mirror
-   */
-  String active;
+  /** Represents the active element of a mirror */
+  private String active;
 
-  /**
-   * Represents the protocol element of a mirror
-   */
-  String protocol;
+  /** Represents the protocol element of a mirror */
+  private String protocol;
 
-  /**
-   * Represents the host element of a mirror
-   */
-  String host;
+  /** Represents the host element of a mirror */
+  private String host;
 
-  /**
-   * Represents the port element of a mirror
-   */
-  String port;
+  /** Represents the port element of a mirror */
+  private String port;
 
-  /**
-   * Represents the nonProxyHosts element of a mirror
-   */
-  String nonProxyHosts;
+  /** Represents the nonProxyHosts element of a mirror */
+  private String nonProxyHosts;
 
   /**
    * @return id

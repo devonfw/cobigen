@@ -6,14 +6,11 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents the proxies element of the settings.xml
- *
  */
 public class MavenSettingsProxiesModel {
 
-  /**
-   * List of proxy elements contained in the proxies element
-   */
-  List<MavenSettingsProxyModel> proxyList;
+  /** List of proxy elements contained in the proxies element */
+  private List<MavenSettingsProxyModel> proxyList;
 
   /**
    * @return proxyList

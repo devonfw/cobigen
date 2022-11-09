@@ -159,7 +159,7 @@ public class MavenSettingsTest {
   @Test
   public void testGetActiveProxy() {
 
-    MavenSettingsProxyModel result = MavenSettings.getActiveProxy(model);
+    MavenSettingsProxyModel result = MavenSettings.determineActiveProxy(model);
 
     assertThat(result.getId()).isEqualTo("example-proxy");
   }
@@ -170,7 +170,7 @@ public class MavenSettingsTest {
   @Test
   public void testGetRepositoriesFromMavenSettings() {
 
-    List<MavenSettingsRepositoryModel> result = MavenSettings.getRepositoriesFromMavenSettings(mavenSettings);
+    List<MavenSettingsRepositoryModel> result = MavenSettings.retrieveRepositoriesFromMavenSettings(mavenSettings);
     assertThat(result.size()).isEqualTo(3);
     assertThat(result.get(0).getId()).isEqualTo("123");
     assertThat(result.get(1).getId()).isEqualTo("repository");

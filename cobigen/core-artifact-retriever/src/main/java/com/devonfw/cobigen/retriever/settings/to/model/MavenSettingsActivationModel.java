@@ -4,11 +4,11 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents an activation element of maven's setting.xml
- *
  */
 public class MavenSettingsActivationModel {
 
-  String activeByDefault;
+  /** Represents the active by default element of an activation model */
+  private String activeByDefault;
 
   /**
    * @return activeByDefault

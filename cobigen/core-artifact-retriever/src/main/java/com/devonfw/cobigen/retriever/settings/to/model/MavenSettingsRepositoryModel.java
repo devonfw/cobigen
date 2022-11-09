@@ -4,25 +4,17 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents a repository element of the settings.xml
- *
  */
-
 public class MavenSettingsRepositoryModel {
 
-  /**
-   * Represents the id of a repository element in maven's settings.xml
-   */
-  String id;
+  /** Represents the id of a repository element in maven's settings.xml */
+  private String id;
 
-  /**
-   * Represents the name of a repository element in maven's settings.xml
-   */
-  String name;
+  /** Represents the name of a repository element in maven's settings.xml */
+  private String name;
 
-  /**
-   * Represents the url of a repository element in maven's settings.xml
-   */
-  String url;
+  /** Represents the url of a repository element in maven's settings.xml */
+  private String url;
 
   /**
    * The constructor.

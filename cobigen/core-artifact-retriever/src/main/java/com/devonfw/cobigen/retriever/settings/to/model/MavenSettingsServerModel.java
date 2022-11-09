@@ -4,24 +4,17 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents a server element of the settings.xml
- *
  */
 public class MavenSettingsServerModel {
 
-  /**
-   * Represents the id of a server element in maven's settings.xml
-   */
-  String id;
+  /** Represents the id of a server element in maven's settings.xml */
+  private String id;
 
-  /**
-   * Represents the username of a server element in maven's settings.xml
-   */
-  String username;
+  /** Represents the username of a server element in maven's settings.xml */
+  private String username;
 
-  /**
-   * Represents the password of a server element in maven's settings.xml
-   */
-  String password;
+  /** Represents the password of a server element in maven's settings.xml */
+  private String password;
 
   /**
    * @return id

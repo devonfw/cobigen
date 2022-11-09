@@ -6,14 +6,11 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents a profiles element of the settings.xml
- *
  */
 public class MavenSettingsProfilesModel {
 
-  /**
-   * Represents profile elements in maven's settings.xml
-   */
-  List<MavenSettingsProfileModel> profileList;
+  /** Represents profile elements in maven's settings.xml */
+  private List<MavenSettingsProfileModel> profileList;
 
   /**
    * @return profiles

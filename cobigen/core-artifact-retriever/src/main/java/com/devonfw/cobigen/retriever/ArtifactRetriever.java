@@ -40,10 +40,10 @@ public class ArtifactRetriever {
     MavenSettingsModel model = MavenSettings.generateMavenSettingsModel(mavenSettings);
 
     MavenSettingsProxyModel activeProxy = MavenSettings
-        .getActiveProxy(MavenSettings.generateMavenSettingsModel(mavenSettings));
+        .determineActiveProxy(MavenSettings.generateMavenSettingsModel(mavenSettings));
 
     List<MavenSettingsRepositoryModel> allActiveRepositories = MavenSettings
-        .getRepositoriesFromMavenSettings(mavenSettings);
+        .retrieveRepositoriesFromMavenSettings(mavenSettings);
 
     List<MavenSettingsRepositoryModel> repositoriesWhichAreUsingTheProxy = MavenProxy
         .obtainRepositories(allActiveRepositories, activeProxy, true);

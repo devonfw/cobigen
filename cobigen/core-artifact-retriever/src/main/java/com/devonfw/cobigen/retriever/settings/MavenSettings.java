@@ -26,7 +26,6 @@ import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Class to operate with maven's settings.xml
- *
  */
 public class MavenSettings {
 
@@ -34,16 +33,18 @@ public class MavenSettings {
   private static final Logger LOG = LoggerFactory.getLogger(MavenSettings.class);
 
   /**
+   * Retrieves a list of {@link MavenSettingsRepositoryModel} from active profiles with injected mirror URLs
+   *
    * @param mavenSettings maven's settings.xml as a string
-   * @return repositories from active profiles with injected mirror urls
+   * @return list of {@link MavenSettingsRepositoryModel} from active profiles with injected mirror URLs
    */
-  public static List<MavenSettingsRepositoryModel> getRepositoriesFromMavenSettings(String mavenSettings) {
+  public static List<MavenSettingsRepositoryModel> retrieveRepositoriesFromMavenSettings(String mavenSettings) {
 
     MavenSettingsModel model = generateMavenSettingsModel(mavenSettings);
 
     List<MavenSettingsRepositoryModel> activeRepos = new LinkedList<>();
 
-    activeRepos = getRepositoriesOfActiveProfiles(model);
+    activeRepos = retrieveRepositoriesOfActiveProfiles(model);
 
     if (model.getMirrors() == null) {
       return activeRepos;
@@ -55,21 +56,21 @@ public class MavenSettings {
   }
 
   /**
-   * @param model class, on which maven's settings.xml has been mapped on
-   * @return the active proxy or null if their is no active one
+   * Determines the active {@link MavenSettingsProxyModel} from the {@link MavenSettingsModel}
+   *
+   * @param model {@link MavenSettingsModel}, on which maven's settings.xml has been mapped on
+   * @return the active {@link MavenSettingsProxyModel} or null if their is no active one
    */
-  public static MavenSettingsProxyModel getActiveProxy(MavenSettingsModel model) {
+  public static MavenSettingsProxyModel determineActiveProxy(MavenSettingsModel model) {
 
-    MavenSettingsProxyModel proxy = null;
     if (model.getProxies() != null && model.getProxies().getProxyList() != null) {
-      for (MavenSettingsProxyModel p : model.getProxies().getProxyList()) {
-        if (p.getActive().equals("true")) {
-          proxy = p;
-          break;
+      for (MavenSettingsProxyModel proxy : model.getProxies().getProxyList()) {
+        if (proxy.getActive().equals("true")) {
+          return proxy;
         }
       }
     }
-    return proxy;
+    return null;
   }
 
   /**
@@ -111,11 +112,13 @@ public class MavenSettings {
   }
 
   /**
+   * Retrieves a list of active {@link MavenSettingsRepositoryModel}s
+   *
    * @param model Class, on which maven's settings.xml have been mapped to
    *
-   * @return List of repositories of active profiles in maven's settings.xml
+   * @return List of {@link MavenSettingsRepositoryModel} of active profiles in maven's settings.xml
    */
-  private static List<MavenSettingsRepositoryModel> getRepositoriesOfActiveProfiles(MavenSettingsModel model) {
+  private static List<MavenSettingsRepositoryModel> retrieveRepositoriesOfActiveProfiles(MavenSettingsModel model) {
 
     LOG.debug("Determining repositories of active profiles of maven's settings.xml");
 
@@ -135,17 +138,18 @@ public class MavenSettings {
 
     for (MavenSettingsProfileModel profile : profilesList) {
 
-      // Check if profile was activated by the activeProfiles element
-      if (activeProfileElementList.contains(profile.getId()) && profile.getRepositories() != null) {
-        repositoriesOfActiveProfiles.addAll(profile.getRepositories().getRepositoryList());
-        continue;
+      if (profile.getRepositories() != null) {
+        // Check if profile was activated by the activeProfiles element
+        if (activeProfileElementList.contains(profile.getId())) {
+          repositoriesOfActiveProfiles.addAll(profile.getRepositories().getRepositoryList());
+        }
+        // Check if profile was activated by default
+        else if (profile.getActivation() != null && profile.getActivation().getActiveByDefault() != null
+            && profile.getActivation().getActiveByDefault().equals("true")) {
+          repositoriesOfActiveProfiles.addAll(profile.getRepositories().getRepositoryList());
+        }
       }
-      // Check if profile was activated by default
-      if (profile.getActivation() != null && profile.getRepositories() != null
-          && profile.getActivation().getActiveByDefault() != null
-          && profile.getActivation().getActiveByDefault().equals("true")) {
-        repositoriesOfActiveProfiles.addAll(profile.getRepositories().getRepositoryList());
-      }
+
     }
     return repositoriesOfActiveProfiles;
   }

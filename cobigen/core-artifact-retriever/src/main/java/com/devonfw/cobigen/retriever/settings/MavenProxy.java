@@ -8,16 +8,17 @@ import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsProxyModel;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsRepositoryModel;
 
 /**
- * Class to operate with proxys specified in maven's settings.xml
+ * Class to operate with {@link MavenSettingsProxyModel}s specified in maven's settings.xml
  */
 public class MavenProxy {
 
   /**
+   * Obtains a list of {@link MavenSettingsRepositoryModel} which are using the given {@link MavenSettingsProxyModel}
    *
-   * @param repositories all active repositories
-   * @param proxy the active proxy
+   * @param repositories list of all active {@link MavenSettingsRepositoryModel}s
+   * @param proxy the active {@link MavenSettingsProxyModel}
    * @param withProxies boolean when set true it delivers repositories with proxies, when set false otherwise
-   * @return a list of all repositories, which are using the given proxy
+   * @return a list of all {@link MavenSettingsRepositoryModel}s, which are using the given proxy
    */
   public static List<MavenSettingsRepositoryModel> obtainRepositories(List<MavenSettingsRepositoryModel> repositories,
       MavenSettingsProxyModel proxy, boolean withProxies) {
@@ -25,14 +26,8 @@ public class MavenProxy {
     List<MavenSettingsRepositoryModel> result = new ArrayList<>();
 
     for (MavenSettingsRepositoryModel r : repositories) {
-      if (withProxies) {
-        if (!validateNonProxyHosts(proxy, r.getUrl())) {
-          result.add(r);
-        }
-      } else {
-        if (validateNonProxyHosts(proxy, r.getUrl())) {
-          result.add(r);
-        }
+      if (withProxies == !validateNonProxyHosts(proxy, r.getUrl())) {
+        result.add(r);
       }
     }
     return result;

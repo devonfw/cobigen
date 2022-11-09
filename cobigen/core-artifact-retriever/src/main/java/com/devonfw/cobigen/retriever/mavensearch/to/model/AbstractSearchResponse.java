@@ -174,7 +174,6 @@ public abstract class AbstractSearchResponse {
 
     if (jsonResponse.isEmpty()) {
       LOG.debug("{} {}", MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_EMPTY_JSON_RESPONSE, targetLink);
-      return jsonResponse;
     }
 
     return jsonResponse;

@@ -5,35 +5,24 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class, which represents the settings element of the settings.xml
- *
  */
 @XmlRootElement(name = "settings")
 public class MavenSettingsModel {
 
-  /**
-   * Represents the model element in maven's settings.xml
-   */
-  MavenSettingsProfilesModel profiles;
+  /** Represents the model element in maven's settings.xml */
+  private MavenSettingsProfilesModel profiles;
 
-  /**
-   * Represents the servers element in maven's settings.xml
-   */
-  MavenSettingsServersModel servers;
+  /** Represents the servers element in maven's settings.xml */
+  private MavenSettingsServersModel servers;
 
-  /**
-   * Represents the mirrors element in maven's settings.xml
-   */
-  MavenSettingsMirrorsModel mirrors;
+  /** Represents the mirrors element in maven's settings.xml */
+  private MavenSettingsMirrorsModel mirrors;
 
-  /**
-   * Represents the mirrors element in maven's settings.xml
-   */
-  MavenSettingsProxiesModel proxies;
+  /** Represents the mirrors element in maven's settings.xml */
+  private MavenSettingsProxiesModel proxies;
 
-  /**
-   * Represents the activeProfiles element in maven's settings.xml
-   */
-  MavenSettingsActiveProfilesModel activeProfiles;
+  /** Represents the activeProfiles element in maven's settings.xml */
+  private MavenSettingsActiveProfilesModel activeProfiles;
 
   /**
    * @return profiles

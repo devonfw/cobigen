@@ -4,29 +4,20 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents a mirror element of the settings.xml
- *
  */
 public class MavenSettingsMirrorModel {
 
-  /**
-   * Represents the mirrorOf element of a mirror
-   */
-  String mirrorOf;
+  /** Represents the mirrorOf element of a mirror */
+  private String mirrorOf;
 
-  /**
-   * Represents the url element of a mirror
-   */
-  String url;
+  /** Represents the url element of a mirror */
+  private String url;
 
-  /**
-   * Represents the id element of a mirror
-   */
-  String id;
+  /** Represents the id element of a mirror */
+  private String id;
 
-  /**
-   * Represents the blocked element of a mirror
-   */
-  String blocked;
+  /** Represents the blocked element of a mirror */
+  private String blocked;
 
   /**
    * @return mirrorOf

@@ -6,11 +6,11 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents the mirrors element of the settings.xml
- *
  */
 public class MavenSettingsMirrorsModel {
 
-  List<MavenSettingsMirrorModel> mirrorList;
+  /** Represents the mirror list element in maven's settings.xml */
+  private List<MavenSettingsMirrorModel> mirrorList;
 
   /**
    * @return mirrorList

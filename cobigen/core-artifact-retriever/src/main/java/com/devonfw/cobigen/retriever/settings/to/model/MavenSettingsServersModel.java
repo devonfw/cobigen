@@ -6,14 +6,11 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Class, which represents the servers element of the settings.xml
- *
  */
 public class MavenSettingsServersModel {
 
-  /**
-   * Represents server elements in maven's settings.xml
-   */
-  List<MavenSettingsServerModel> serverList;
+  /** Represents server elements in maven's settings.xml */
+  private List<MavenSettingsServerModel> serverList;
 
   /**
    * @return server
