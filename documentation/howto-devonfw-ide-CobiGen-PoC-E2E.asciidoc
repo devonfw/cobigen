@@ -9,6 +9,7 @@ Download and install devonfw IDE by this https://devonfw.com/website/pages/docs/
 
 == Steps to create a Sample Project using CobiGen
 The `HOW_TO` is divided in 2 parts:
+
 [arabic]
 . `BE`-Backend generator (`DB` + `DAO` + services)
 . `FE`-Frontend generator (Web App Angular + Ionic App)
@@ -21,7 +22,7 @@ So, ready to go! We’re going to start with the `BE` part.
 1.Under your path installation of devonfw, you can find the _eclipse-main.bat_ script. To run it, execute _installation_path_\eclipse-main.bat.This will open eclipse.
 
 [arabic]
-2.Create a project: Navigate in the folder containing devonfw installation and then to `*workspaces/main*`. Right-click and choose "_Open devonfw CMD shell here_". Next, launch this command in the shell:
+2.Create a project: Navigate in the folder containing the devonfw installation and then to `*workspaces/main*`. Right-click and choose "_Open devonfw CMD shell here_". Next, launch this command in the shell:
 
 [source, java]
 ----
@@ -207,7 +208,7 @@ image:images/howtos/e2e_gen/image74.png[devon dist folder]
 
 2.After downloading the `APP`, open the application in Eclipse. For this, right click on the left part of Eclipse and click "Import" +
 image:images/howtos/e2e_gen/image83.png[import]
-Then choose "Projects from Folder or Archive":
+Then choose "Projects from Folder or Archive": +
 image:images/howtos/e2e_gen/image82.png[import]
 Select the folder containing the Angular `FE` Application, under `_workspaces/main_`.Click on *Finish* after all dependencies have been loaded.
 image:images/howtos/e2e_gen/image84.png[import]
@@ -225,7 +226,7 @@ image:images/howtos/e2e_gen/image37.png[eclipse generate]
 image:images/howtos/e2e_gen/image39.png[angular `ee` layer]
 
 [arabic]
-IMPORTANT: The content of the *_app-routing.module.ts_* file (in src/app) should correspond to the code below:
+The *_app-routing.module.ts_* file (in src/app) should correspond to the code below, so copy the code and replace the existing content in your file with this:
 
 [source, ts]
 ----
@@ -282,7 +283,7 @@ export class AppRoutingModule {
 }
 ----
 
-5.To make  the Employee Grid in you `FE` application visible, you have to modify the `nav-bar.component.html` by adding the Employee grid in the section:
+5.To make  the Employee Grid in you `FE` application visible, you have to replace the code in `nav-bar.component.html` with the code below:
 
 [source, HTML]
 ----
