@@ -8,7 +8,6 @@ import com.devonfw.cobigen.retriever.mavensearch.to.model.ServerCredentials;
 
 /**
  * Class for handling the Maven REST Search API and the communication with it.
- *
  */
 public class MavenSearchArtifactRetriever {
 

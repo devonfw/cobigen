@@ -6,15 +6,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
  * Nexus search response artifacthits model
- *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Nexus2SearchResponseArtifactHits {
 
   /** artifactLinks */
   @JsonProperty("artifactLinks")
-  public List<Nexus2SearchResponeArtifactLinks> artifactLinks;
+  public List<Nexus2SearchResponseArtifactLinks> artifactLinks;
 
 }

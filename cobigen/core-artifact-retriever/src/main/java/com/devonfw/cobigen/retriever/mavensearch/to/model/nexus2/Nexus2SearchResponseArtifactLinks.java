@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
  * Nexus 2 search response artifact links model
- *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Nexus2SearchResponeArtifactLinks {
+class Nexus2SearchResponseArtifactLinks {
 
   @JsonProperty("extension")
   private String extension;

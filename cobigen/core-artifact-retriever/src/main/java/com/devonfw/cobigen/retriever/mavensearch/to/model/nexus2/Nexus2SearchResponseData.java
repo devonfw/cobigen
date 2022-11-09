@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
  * Nexus2 search response data model
- *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Nexus2SearchResponseData {

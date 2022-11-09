@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
  * Nexus3 search response item model
- *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Nexus3SearchResponseItem {

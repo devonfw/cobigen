@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
  * Jfrog search response result model
- *
  */
 class JfrogSearchResponseResult {
 

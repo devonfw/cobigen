@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Json model for jfrog Search REST API response
- *
  */
 public class JfrogSearchResponse extends AbstractSearchResponse {
 

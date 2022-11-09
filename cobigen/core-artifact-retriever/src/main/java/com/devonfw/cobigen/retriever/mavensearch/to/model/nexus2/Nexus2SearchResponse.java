@@ -45,7 +45,7 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
 
     for (Nexus2SearchResponseData item : this.data) {
       for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
-        for (Nexus2SearchResponeArtifactLinks artifactLink : artifactHit.artifactLinks) {
+        for (Nexus2SearchResponseArtifactLinks artifactLink : artifactHit.artifactLinks) {
           if (artifactLink.getClassifier() != null && artifactLink.getClassifier().equals("template-set")) {
             downloadLinks.add(AbstractSearchResponse.createDownloadLink(
                 MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"

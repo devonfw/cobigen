@@ -7,9 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- *
  * Maven search response doc model
- *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 class MavenSearchResponseDoc {

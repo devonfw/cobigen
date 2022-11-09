@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Json model for nexus3 Search REST API response
- *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Nexus3SearchResponse extends AbstractSearchResponse {

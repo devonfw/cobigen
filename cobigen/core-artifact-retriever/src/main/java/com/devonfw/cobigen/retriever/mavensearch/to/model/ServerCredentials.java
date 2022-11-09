@@ -1,9 +1,7 @@
 package com.devonfw.cobigen.retriever.mavensearch.to.model;
 
 /**
- *
  * Class for storing the server credentials
- *
  */
 public class ServerCredentials {
 
