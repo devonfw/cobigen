@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.templates.devon4j.utils;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -85,15 +86,14 @@ public class SQLUtil extends CommonUtil {
 
   public String basicStatement(Map<String, ?> field) {
 
-    Map<String, ?> columnAnnotation = chainAccess(field, new String[] {"annotations", "javax_persistence_Column"});
-    String fieldName = getFieldName(field),
-        typeString = Objects.requireNonNull(getValue(field, "type")),
+    Map<String, ?> columnAnnotation = chainAccess(field, new String[] { "annotations", "javax_persistence_Column" });
+    String fieldName = getFieldName(field), typeString = Objects.requireNonNull(getValue(field, "type")),
         fieldType = mapType(typeString);
     Integer fieldLength = 255;
-    boolean nullable = true,
-            unique = false;
+    boolean nullable = true, unique = false;
     // Try to infer fieldType from possible annotations
-    Map<String, ?> enumerateAnnotation = chainAccess(field, new String[]{"annotations", "javax_persistence_Enumerated"});
+    Map<String, ?> enumerateAnnotation = chainAccess(field,
+        new String[] { "annotations", "javax_persistence_Enumerated" });
     if (enumerateAnnotation != null) {
       String enumType = Objects.requireNonNull(getValue(enumerateAnnotation, "value"));
       if (enumType.equals("STRING")) {
@@ -105,37 +105,45 @@ public class SQLUtil extends CommonUtil {
     // Parse @Column if present
     if (columnAnnotation != null) {
       Integer columnLength = Integer.parseInt(Objects.requireNonNull(getValue(columnAnnotation, "length")));
-      if (columnLength != null) fieldLength = columnLength;
+      if (columnLength != null)
+        fieldLength = columnLength;
       nullable = isNullable(columnAnnotation);
       unique = isUnique(columnAnnotation);
     }
 
     // If fieldType is still empty throw exception
-     if (fieldType == null) throw new IllegalArgumentException("Couldn't map Java type to SQL type for typeString: " + typeString);
+    if (fieldType == null)
+      throw new IllegalArgumentException("Couldn't map Java type to SQL type for typeString: " + typeString);
 
     // Add size to VARCHAR fields
     if (fieldType.equals("VARCHAR")) {
       fieldType = String.format("VARCHAR(%d)", fieldLength);
     }
     String statement = String.format("%s %s", fieldName, fieldType);
-    if (!nullable) statement += " NOT NULL";
-    if (unique) statement += " UNIQUE";
+    if (!nullable)
+      statement += " NOT NULL";
+    if (unique)
+      statement += " UNIQUE";
     return statement;
   }
 
   /**
    * Extracts value of nullable from @Column and @JoinColumn annotations
+   *
    * @param columnAnnotation Map for the Column and JoinColumn annotations
    */
   private static boolean isNullable(Map<String, ?> columnAnnotation) {
+
     return Boolean.parseBoolean(getValue(columnAnnotation, "nullable"));
   }
 
   /**
    * Extracts value of unique from @Column and @JoinColumn annotations
+   *
    * @param columnAnnotation Map for the Column and JoinColumn annotations
    */
   private static boolean isUnique(Map<String, ?> columnAnnotation) {
+
     return Boolean.parseBoolean(getValue(columnAnnotation, "unique"));
   }
 
@@ -143,8 +151,9 @@ public class SQLUtil extends CommonUtil {
    * Helper function to map simple SQL types, returns null on unmappable type
    */
   public static String mapType(String typeString) {
+
     // Shortcut for case insensitive regex matching with start and ending ignore
-    Function<String, Boolean> match = (regex) -> typeString.matches(".*" + "(?i)" + regex + ".*");
+    Function<String, Boolean> match = (regex) -> typeString.matches("(?i).*" + regex + ".*");
     if (match.apply("(integer)|(int)")) {
       return "INTEGER";
     } else if (match.apply("long")) {
@@ -175,7 +184,7 @@ public class SQLUtil extends CommonUtil {
       return "CLOB";
     } else if (match.apply("(Class)|(Locale)|(TimeZone)|(Currency)")) {
       return "VARCHAR";
-    }else {
+    } else {
       return null;
     }
   }
