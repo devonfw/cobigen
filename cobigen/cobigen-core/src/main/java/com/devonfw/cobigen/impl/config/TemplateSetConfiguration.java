@@ -122,7 +122,7 @@ public class TemplateSetConfiguration {
    */
   public List<com.devonfw.cobigen.impl.config.entity.io.Trigger> getTrigger() {
 
-    return this.templateSetConfiguration.getTrigger();
+    return this.templateSetConfiguration.getContextConfiguration().getTrigger();
   }
 
   /**
