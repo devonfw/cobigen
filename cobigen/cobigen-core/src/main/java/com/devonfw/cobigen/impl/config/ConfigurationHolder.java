@@ -115,17 +115,12 @@ public class ConfigurationHolder {
    * @return the {@link ContextConfiguration}
    * @throws InvalidConfigurationException if the configuration is not valid
    */
-  public Object readContextConfiguration() {
+  public ContextConfiguration readContextConfiguration() {
 
-    // TODO
-    if (isTemplateSetConfiguration()) {
-      return new TemplateSetConfiguration(Paths.get(getConfigurationLocation()));
-    } else {
-      if (this.contextConfiguration == null) {
-        this.contextConfiguration = new ContextConfiguration(this.contextConfigurationPath);
-      }
-      return this.contextConfiguration;
+    if (this.contextConfiguration == null) {
+      this.contextConfiguration = new ContextConfiguration(this.contextConfigurationPath);
     }
+    return this.contextConfiguration;
   }
 
   /**
