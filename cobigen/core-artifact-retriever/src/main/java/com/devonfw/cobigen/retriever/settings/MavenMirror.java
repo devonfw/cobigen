@@ -18,10 +18,13 @@ public class MavenMirror {
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(MavenMirror.class);
 
+  /** Constant for the wildcard character */
   private static final String WILDCARD = "*";
 
+  /** Constant for the external wildcard */
   private static final String EXTERNAL_WILDCARD = "external:*";
 
+  /** Constant for the external http wildcard */
   private static final String EXTERNAL_HTTP_WILDCARD = "external:http:*";
 
   /**
