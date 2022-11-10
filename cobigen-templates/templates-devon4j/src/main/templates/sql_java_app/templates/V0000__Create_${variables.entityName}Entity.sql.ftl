@@ -37,7 +37,6 @@
         <#assign defaultFieldTable = SQLUtil.tableName(field.type)>
         <#list joinColumns as jcol>
             <#assign jcolAnnotation = jcol.javax_persistence_JoinColumn>
-            ${SQLUtil.debug(defaultFieldTable)}
             <#assign statements += [SQLUtil.parseJoinColumn(jcolAnnotation, defaultFieldTable)]>
         </#list>
 

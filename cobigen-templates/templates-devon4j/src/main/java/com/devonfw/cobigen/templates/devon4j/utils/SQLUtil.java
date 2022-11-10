@@ -18,31 +18,22 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Debug function to set breakpoint to analyze some data passed to the freemarkertemplate
-   */
-  public void debug(Object obj) {
-
-    System.out.println("DEBUG");
-  }
-
-  /**
    * Unwraps type to autogenerate a name for the table following devonf naming convention.
+   * 
    * @param entityType String that represents the entity class type
    * @return parsed table name
    */
   public String tableName(String entityType) {
-    return entityType.replaceFirst(".*<", "")
-            .replaceFirst(">.*", "")
-            .replace("Entity", "")
-            .toUpperCase();
+
+    return entityType.replaceFirst(".*<", "").replaceFirst(">.*", "").replace("Entity", "").toUpperCase();
   }
 
   /**
    * Parses a @JoinColumn annotation directly into a Foreign Key statement for a @JoinTable
    * 
    * @param joinColumnAnnotation
-   * @param defaultTableName Possible to pass TableName in case it's not specified in the annotation and has to be implied from
-   *        context
+   * @param defaultTableName Possible to pass TableName in case it's not specified in the annotation and has to be
+   *        implied from context
    * @return
    */
   public String parseJoinColumn(Map<String, ?> joinColumnAnnotation, String defaultTableName) {
@@ -209,7 +200,7 @@ public class SQLUtil extends CommonUtil {
   public static String mapType(String typeString) {
 
     // Shortcut for case insensitive regex matching with start and ending ignore
-    Function<String, Boolean> match = (regex) -> typeString.matches(".*" + "(?i)" + regex + ".*");
+    Function<String, Boolean> match = (regex) -> typeString.matches("(?i).*" + "(" + regex + ")" + ".*");
     if (match.apply("(integer)|(int)")) {
       return "INTEGER";
     } else if (match.apply("long")) {
@@ -222,24 +213,20 @@ public class SQLUtil extends CommonUtil {
       return "VARCHAR";
     } else if (match.apply("(char)|(Character)")) {
       return "CHAR(1)";
+    } else if (match.apply("byte\\[\\]")) {
+      return "BLOB";
     } else if (match.apply("byte")) {
       return "TINYINT";
     } else if (match.apply("boolean")) {
       return "BIT";
     } else if (match.apply("Date")) {
       return "DATE";
-    } else if (match.apply("Time")) {
-      return "TIME";
-    } else if (match.apply("(Timestamp)|(Calendar)")) {
-      return "TIMESTAMP";
-    } else if (match.apply("byte\\[\\]")) {
-      return "BLOB";
-    } else if (match.apply("blob")) {
-      return "BLOB";
-    } else if (match.apply("clob")) {
-      return "CLOB";
     } else if (match.apply("(Class)|(Locale)|(TimeZone)|(Currency)")) {
       return "VARCHAR";
+    } else if (match.apply("(Timestamp)|(Calendar)")) {
+      return "TIMESTAMP";
+    } else if (match.apply("Time")) {
+      return "TIME";
     } else {
       return null;
     }

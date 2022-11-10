@@ -2,8 +2,6 @@ package com.devonfw.cobigen.templates.devon4j.test.templates.testclasses;
 
 import java.math.BigDecimal;
 import java.security.Timestamp;
-import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Currency;
@@ -21,7 +19,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "SQLDataTypeTest")
-public class SQLTestEntityDataTypes {
+public class SQLTestDataTypesEntity {
 
   @Column()
   private int integer1;
@@ -68,14 +66,8 @@ public class SQLTestEntityDataTypes {
   @Column()
   private byte[] blob;
 
-  @Column()
-  private Blob blob2;
-
-  @Column()
-  private Clob clob;
-
-  // @Column()
-  // private Class<?> varchar2;
+   @Column()
+   private Class<?> varchar2;
 
   @Column()
   private Locale varchar3;
@@ -326,53 +318,24 @@ public class SQLTestEntityDataTypes {
     this.blob = blob;
   }
 
-  /**
-   * @return blob2
+
+
+
+   /**
+   * @return varchar2
    */
-  public Blob getBlob2() {
+   public Class<?> getVarchar2() {
 
-    return this.blob2;
-  }
+   return this.varchar2;
+   }
 
-  /**
-   * @param blob2 new value of {@link #getblob2}.
+   /**
+   * @param varchar2 new value of {@link #getvarchar2}.
    */
-  public void setBlob2(Blob blob2) {
+   public void setVarchar2(Class<?> varchar2) {
 
-    this.blob2 = blob2;
-  }
-
-  /**
-   * @return clob
-   */
-  public Clob getClob() {
-
-    return this.clob;
-  }
-
-  /**
-   * @param clob new value of {@link #getclob}.
-   */
-  public void setClob(Clob clob) {
-
-    this.clob = clob;
-  }
-
-  // /**
-  // * @return varchar2
-  // */
-  // public Class<?> getVarchar2() {
-  //
-  // return this.varchar2;
-  // }
-  //
-  // /**
-  // * @param varchar2 new value of {@link #getvarchar2}.
-  // */
-  // public void setVarchar2(Class<?> varchar2) {
-  //
-  // this.varchar2 = varchar2;
-  // }
+   this.varchar2 = varchar2;
+   }
 
   /**
    * @return varchar3

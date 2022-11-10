@@ -15,7 +15,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "SQLTEST")
-public class SQLTestEntityForeignKeys {
+public class SQLTestForeignKeysEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
