@@ -24,401 +24,402 @@ import javax.persistence.Table;
 public class SQLTestEntityDataTypes {
 
   @Column()
-  private int _integer1;
+  private int integer1;
 
   @Column()
-  private Integer _integer2;
+  private Integer integer2;
 
   @Column()
-  private long _bigint;
+  private long bigint;
 
   @Column()
-  private short _smallint;
+  private short smallint;
 
   @Column()
-  private BigDecimal _numeric;
+  private BigDecimal numeric;
 
   @Column()
-  private String _varchar;
+  private String varchar;
 
   @Column()
-  private char _char;
+  private char char1;
 
   @Column()
-  private Character _char2;
+  private Character char2;
 
   @Column()
-  private byte _tinyint;
+  private byte tinyint;
 
   @Column()
-  private boolean _bit;
+  private boolean bit;
 
   @Column()
-  private Date _date;
+  private Date date;
 
   @Column()
-  private Time _time;
+  private Time time;
 
   @Column()
-  private Timestamp _timestamp;
+  private Timestamp timestamp;
 
   @Column()
-  private Calendar _timestamp2;
+  private Calendar timestamp2;
 
   @Column()
-  private byte[] _blob;
+  private byte[] blob;
 
   @Column()
-  private Blob _blob2;
+  private Blob blob2;
 
   @Column()
-  private Clob _clob;
+  private Clob clob;
+
+  // @Column()
+  // private Class<?> varchar2;
 
   @Column()
-  private Class<?> _varchar2;
+  private Locale varchar3;
 
   @Column()
-  private Locale _varchar3;
-
-  private TimeZone _varchar4;
+  private TimeZone varchar4;
 
   @Column()
-  private Currency _varchar5;
+  private Currency varchar5;
 
   /**
-   * @return _integer1
+   * @return integer1
    */
-  public int get_integer1() {
+  public int getInteger1() {
 
-    return this._integer1;
+    return this.integer1;
   }
 
   /**
-   * @param _integer1 new value of {@link #get_integer1}.
+   * @param integer1 new value of {@link #getinteger1}.
    */
-  public void set_integer1(int _integer1) {
+  public void setInteger1(int integer1) {
 
-    this._integer1 = _integer1;
+    this.integer1 = integer1;
   }
 
   /**
-   * @return _integer2
+   * @return integer2
    */
-  public Integer get_integer2() {
+  public Integer getInteger2() {
 
-    return this._integer2;
+    return this.integer2;
   }
 
   /**
-   * @param _integer2 new value of {@link #get_integer2}.
+   * @param integer2 new value of {@link #getinteger2}.
    */
-  public void set_integer2(Integer _integer2) {
+  public void setInteger2(Integer integer2) {
 
-    this._integer2 = _integer2;
+    this.integer2 = integer2;
   }
 
   /**
-   * @return _bigint
+   * @return bigint
    */
-  public long get_bigint() {
+  public long getBigint() {
 
-    return this._bigint;
+    return this.bigint;
   }
 
   /**
-   * @param _bigint new value of {@link #get_bigint}.
+   * @param bigint new value of {@link #getbigint}.
    */
-  public void set_bigint(long _bigint) {
+  public void setBigint(long bigint) {
 
-    this._bigint = _bigint;
+    this.bigint = bigint;
   }
 
   /**
-   * @return _smallint
+   * @return smallint
    */
-  public short get_smallint() {
+  public short getSmallint() {
 
-    return this._smallint;
+    return this.smallint;
   }
 
   /**
-   * @param _smallint new value of {@link #get_smallint}.
+   * @param smallint new value of {@link #getsmallint}.
    */
-  public void set_smallint(short _smallint) {
+  public void setSmallint(short smallint) {
 
-    this._smallint = _smallint;
+    this.smallint = smallint;
   }
 
   /**
-   * @return _numeric
+   * @return numeric
    */
-  public BigDecimal get_numeric() {
+  public BigDecimal getNumeric() {
 
-    return this._numeric;
+    return this.numeric;
   }
 
   /**
-   * @param _numeric new value of {@link #get_numeric}.
+   * @param numeric new value of {@link #getnumeric}.
    */
-  public void set_numeric(BigDecimal _numeric) {
+  public void setNumeric(BigDecimal numeric) {
 
-    this._numeric = _numeric;
+    this.numeric = numeric;
   }
 
   /**
-   * @return _varchar
+   * @return varchar
    */
-  public String get_varchar() {
+  public String getVarchar() {
 
-    return this._varchar;
+    return this.varchar;
   }
 
   /**
-   * @param _varchar new value of {@link #get_varchar}.
+   * @param varchar new value of {@link #getvarchar}.
    */
-  public void set_varchar(String _varchar) {
+  public void setVarchar(String varchar) {
 
-    this._varchar = _varchar;
+    this.varchar = varchar;
   }
 
   /**
-   * @return _char
+   * @return char1
    */
-  public char get_char() {
+  public char getChar1() {
 
-    return this._char;
+    return this.char1;
   }
 
   /**
-   * @param _char new value of {@link #get_char}.
+   * @param char1 new value of {@link #getchar1}.
    */
-  public void set_char(char _char) {
+  public void setChar1(char char1) {
 
-    this._char = _char;
+    this.char1 = char1;
   }
 
   /**
-   * @return _character
+   * @return char2
    */
-  public Character get_character() {
+  public Character getChar2() {
 
-    return this._character;
+    return this.char2;
   }
 
   /**
-   * @param _character new value of {@link #get_character}.
+   * @param char2 new value of {@link #getchar2}.
    */
-  public void set_character(Character _character) {
+  public void setChar2(Character char2) {
 
-    this._character = _character;
+    this.char2 = char2;
   }
 
   /**
-   * @return _tinyint
+   * @return tinyint
    */
-  public byte get_tinyint() {
+  public byte getTinyint() {
 
-    return this._tinyint;
+    return this.tinyint;
   }
 
   /**
-   * @param _tinyint new value of {@link #get_tinyint}.
+   * @param tinyint new value of {@link #gettinyint}.
    */
-  public void set_tinyint(byte _tinyint) {
+  public void setTinyint(byte tinyint) {
 
-    this._tinyint = _tinyint;
+    this.tinyint = tinyint;
   }
 
   /**
-   * @return _bit
+   * @return bit
    */
-  public boolean is_bit() {
+  public boolean isBit() {
 
-    return this._bit;
+    return this.bit;
   }
 
   /**
-   * @param _bit new value of {@link #get_bit}.
+   * @param bit new value of {@link #getbit}.
    */
-  public void set_bit(boolean _bit) {
+  public void setBit(boolean bit) {
 
-    this._bit = _bit;
+    this.bit = bit;
   }
 
   /**
-   * @return _date
+   * @return date
    */
-  public Date get_date() {
+  public Date getDate() {
 
-    return this._date;
+    return this.date;
   }
 
   /**
-   * @param _date new value of {@link #get_date}.
+   * @param date new value of {@link #getdate}.
    */
-  public void set_date(Date _date) {
+  public void setDate(Date date) {
 
-    this._date = _date;
+    this.date = date;
   }
 
   /**
-   * @return _time
+   * @return time
    */
-  public Time get_time() {
+  public Time getTime() {
 
-    return this._time;
+    return this.time;
   }
 
   /**
-   * @param _time new value of {@link #get_time}.
+   * @param time new value of {@link #gettime}.
    */
-  public void set_time(Time _time) {
+  public void setTime(Time time) {
 
-    this._time = _time;
+    this.time = time;
   }
 
   /**
-   * @return _timestamp
+   * @return timestamp
    */
-  public Timestamp get_timestamp() {
+  public Timestamp getTimestamp() {
 
-    return this._timestamp;
+    return this.timestamp;
   }
 
   /**
-   * @param _timestamp new value of {@link #get_timestamp}.
+   * @param timestamp new value of {@link #gettimestamp}.
    */
-  public void set_timestamp(Timestamp _timestamp) {
+  public void setTimestamp(Timestamp timestamp) {
 
-    this._timestamp = _timestamp;
+    this.timestamp = timestamp;
   }
 
   /**
-   * @return _timestamp2
+   * @return timestamp2
    */
-  public Calendar get_timestamp2() {
+  public Calendar getTimestamp2() {
 
-    return this._timestamp2;
+    return this.timestamp2;
   }
 
   /**
-   * @param _timestamp2 new value of {@link #get_timestamp2}.
+   * @param timestamp2 new value of {@link #gettimestamp2}.
    */
-  public void set_timestamp2(Calendar _timestamp2) {
+  public void setTimestamp2(Calendar timestamp2) {
 
-    this._timestamp2 = _timestamp2;
+    this.timestamp2 = timestamp2;
   }
 
   /**
-   * @return _blob
+   * @return blob
    */
-  public byte[] get_blob() {
+  public byte[] getBlob() {
 
-    return this._blob;
+    return this.blob;
   }
 
   /**
-   * @param _blob new value of {@link #get_blob}.
+   * @param blob new value of {@link #getblob}.
    */
-  public void set_blob(byte[] _blob) {
+  public void setBlob(byte[] blob) {
 
-    this._blob = _blob;
+    this.blob = blob;
   }
 
   /**
-   * @return _blob2
+   * @return blob2
    */
-  public Blob get_blob2() {
+  public Blob getBlob2() {
 
-    return this._blob2;
+    return this.blob2;
   }
 
   /**
-   * @param _blob2 new value of {@link #get_blob2}.
+   * @param blob2 new value of {@link #getblob2}.
    */
-  public void set_blob2(Blob _blob2) {
+  public void setBlob2(Blob blob2) {
 
-    this._blob2 = _blob2;
+    this.blob2 = blob2;
   }
 
   /**
-   * @return _clob
+   * @return clob
    */
-  public Clob get_clob() {
+  public Clob getClob() {
 
-    return this._clob;
+    return this.clob;
   }
 
   /**
-   * @param _clob new value of {@link #get_clob}.
+   * @param clob new value of {@link #getclob}.
    */
-  public void set_clob(Clob _clob) {
+  public void setClob(Clob clob) {
 
-    this._clob = _clob;
+    this.clob = clob;
   }
 
   // /**
-  // * @return _varchar2
+  // * @return varchar2
   // */
-  // public Class get_varchar2() {
+  // public Class<?> getVarchar2() {
   //
-  // return this._varchar2;
+  // return this.varchar2;
   // }
-
+  //
   // /**
-  // * @param _varchar2 new value of {@link #get_varchar2}.
+  // * @param varchar2 new value of {@link #getvarchar2}.
   // */
-  // public void set_varchar2(Class _varchar2) {
+  // public void setVarchar2(Class<?> varchar2) {
   //
-  // this._varchar2 = _varchar2;
+  // this.varchar2 = varchar2;
   // }
 
   /**
-   * @return _varchar3
+   * @return varchar3
    */
-  public Locale get_varchar3() {
+  public Locale getVarchar3() {
 
-    return this._varchar3;
+    return this.varchar3;
   }
 
   /**
-   * @param _varchar3 new value of {@link #get_varchar3}.
+   * @param varchar3 new value of {@link #getvarchar3}.
    */
-  public void set_varchar3(Locale _varchar3) {
+  public void setVarchar3(Locale varchar3) {
 
-    this._varchar3 = _varchar3;
+    this.varchar3 = varchar3;
   }
 
   /**
-   * @return _varchar4
+   * @return varchar4
    */
-  public TimeZone get_varchar4() {
+  public TimeZone getVarchar4() {
 
-    return this._varchar4;
+    return this.varchar4;
   }
 
   /**
-   * @param _varchar4 new value of {@link #get_varchar4}.
+   * @param varchar4 new value of {@link #getvarchar4}.
    */
-  public void set_varchar4(TimeZone _varchar4) {
+  public void setVarchar4(TimeZone varchar4) {
 
-    this._varchar4 = _varchar4;
+    this.varchar4 = varchar4;
   }
 
   /**
-   * @return _carchar5
+   * @return varchar5
    */
-  public Currency get_carchar5() {
+  public Currency getVarchar5() {
 
-    return this._varchar5;
+    return this.varchar5;
   }
 
   /**
-   * @param _carchar5 new value of {@link #get_carchar5}.
+   * @param varchar5 new value of {@link #getvarchar5}.
    */
-  public void set_carchar5(Currency _carchar5) {
+  public void setVarchar5(Currency varchar5) {
 
-    this._varchar5 = _carchar5;
+    this.varchar5 = varchar5;
   }
 
 }

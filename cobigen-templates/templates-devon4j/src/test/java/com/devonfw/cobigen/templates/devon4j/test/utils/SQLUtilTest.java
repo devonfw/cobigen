@@ -6,6 +6,11 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.templates.devon4j.utils.SQLUtil;
 
+/**
+ *
+ * Test class for {@link SQLUtil}
+ *
+ */
 public class SQLUtilTest {
 
   @Test
