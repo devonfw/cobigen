@@ -98,12 +98,10 @@ public class SearchResponseFactory {
         LOG.debug("{} repository using the URL: {}",
             MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_UNABLE_TO_PARSE_JSON, searchRepositoryType,
             searchRepositoryTargetLink, e);
-        return downloadLinks;
       } catch (MalformedURLException e) {
         LOG.debug("{} {} repository using the URL: {}",
             MavenSearchRepositoryConstants.MAVEN_SEARCH_API_EXCEPTION_FAULTY_TARGET_URL, searchRepositoryType,
             searchRepositoryTargetLink, e);
-        return downloadLinks;
       }
     }
 
