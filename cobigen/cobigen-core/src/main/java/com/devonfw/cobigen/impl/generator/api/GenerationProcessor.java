@@ -24,10 +24,9 @@ public interface GenerationProcessor {
    *        (default: {@code false})
    * @param rawModel externally adapted model to be used for generation.
    * @param progressCallback expects the progress in percent as Integer
-   * @param generateAnnotation
    * @return {@link GenerationReportTo the GenerationReport}
    */
-  GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts, Path targetRootPath,
-      boolean forceOverride, Map<String, Object> rawModel, BiConsumer<String, Integer> progressCallback,
-      boolean generateAnnotation);
+  public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
+      Path targetRootPath, boolean forceOverride, Map<String, Object> rawModel,
+      BiConsumer<String, Integer> progressCallback);
 }

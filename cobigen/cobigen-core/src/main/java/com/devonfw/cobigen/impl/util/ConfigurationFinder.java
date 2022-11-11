@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.impl.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -42,7 +43,7 @@ public class ConfigurationFinder {
 
     if (configFile != null && Files.exists(configFile)) {
       LOG.debug("Custom cobigen configuration found at {}", configFile);
-      Properties props = readConfigrationFile(configFile);
+      Properties props = readConfigurationFile(configFile);
       String templatesLocation = props.getProperty(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH);
       if (StringUtils.isNotEmpty(templatesLocation)) {
         LOG.info("Custom templates path found. Taking templates from {}", templatesLocation);
@@ -72,7 +73,7 @@ public class ConfigurationFinder {
    * @param cobigenConfigFile cobigen configuration file
    * @return Properties containing configuration
    */
-  public static Properties readConfigrationFile(Path cobigenConfigFile) {
+  public static Properties readConfigurationFile(Path cobigenConfigFile) {
 
     Properties props = new Properties();
     try {
@@ -86,6 +87,37 @@ public class ConfigurationFinder {
       throw new CobiGenRuntimeException("An error occured while reading the config file " + cobigenConfigFile, e);
     }
     return props;
+  }
+
+  /**
+   * checks if .cobigen properties file contains any add-generated-annotation
+   *
+   * @return the value of add-generated-annotation
+   *
+   * @throws FileNotFoundException
+   */
+  public static boolean checkGeneratedAnnotationInProperties() throws FileNotFoundException {
+
+    Boolean defaultGeneratedAnnotation = true;
+    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+    Path propertiesPath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+
+    // check if .cobigen properties file has add-generated annotation set to true
+    if (Files.exists(propertiesPath)) {
+
+      Properties props = ConfigurationFinder.readConfigurationFile(propertiesPath);
+
+      if (props.containsKey(ConfigurationConstants.ADD_GENERATED_ANNOTATION))
+        defaultGeneratedAnnotation = Boolean.valueOf(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
+      else {
+        // add the default value in .cobigen properties
+        FileSystemUtil.writeOutputToFile(propertiesPath, ConfigurationConstants.ADD_GENERATED_ANNOTATION + "=true");
+      }
+    } else {
+      // add the default value in .cobigen properties
+      FileSystemUtil.writeOutputToFile(propertiesPath, ConfigurationConstants.ADD_GENERATED_ANNOTATION + "=true");
+    }
+    return defaultGeneratedAnnotation;
   }
 
   /**

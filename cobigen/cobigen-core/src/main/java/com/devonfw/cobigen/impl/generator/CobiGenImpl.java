@@ -76,14 +76,6 @@ public class CobiGenImpl implements CobiGen {
   }
 
   @Override
-  public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
-      boolean forceOverride, boolean generateAnnotation) {
-
-    return generate(input, generableArtifact, targetRootPath, forceOverride, null, (taskname, progress) -> {
-    }, generateAnnotation);
-  }
-
-  @Override
   public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
       Path targetRootPath, boolean forceOverride, BiConsumer<String, Integer> progressCallback) {
 
@@ -95,14 +87,6 @@ public class CobiGenImpl implements CobiGen {
       Path targetRootPath, boolean forceOverride, Map<String, Object> rawModel,
       BiConsumer<String, Integer> progressCallback) {
 
-    return generate(input, generableArtifacts, targetRootPath, forceOverride, rawModel, progressCallback, false);
-  }
-
-  @Override
-  public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-      Path targetRootPath, boolean forceOverride, Map<String, Object> rawModel,
-      BiConsumer<String, Integer> progressCallback, boolean generateAnnotation) {
-
     Objects.requireNonNull(input, "Input");
     Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
     if (generableArtifacts.contains(null)) {
@@ -113,7 +97,7 @@ public class CobiGenImpl implements CobiGen {
     Objects.requireNonNull(generableArtifacts, "List of Artifacts to be generated");
     Objects.requireNonNull(targetRootPath, "targetRootPath");
     return new GenerationProcessorImpl(this.configurationHolder, this.inputResolver).generate(input, generableArtifacts,
-        targetRootPath, forceOverride, rawModel, progressCallback, generateAnnotation);
+        targetRootPath, forceOverride, rawModel, progressCallback);
   }
 
   @Override
@@ -142,20 +126,11 @@ public class CobiGenImpl implements CobiGen {
   public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
       boolean forceOverride, Map<String, Object> rawModel, BiConsumer<String, Integer> progressCallback) {
 
-    return generate(input, generableArtifact, targetRootPath, forceOverride, rawModel, progressCallback, false);
-  }
-
-  @Override
-  public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
-      boolean forceOverride, Map<String, Object> rawModel, BiConsumer<String, Integer> progressCallback,
-      boolean generateAnnotation) {
-
     Objects.requireNonNull(input, "Input");
     Objects.requireNonNull(generableArtifact, "Artifact to be generated");
     Objects.requireNonNull(targetRootPath, "targetRootPath");
     return new GenerationProcessorImpl(this.configurationHolder, this.inputResolver).generate(input,
-        Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, rawModel, progressCallback,
-        generateAnnotation);
+        Lists.newArrayList(generableArtifact), targetRootPath, forceOverride, rawModel, progressCallback);
   }
 
   @Override

@@ -4,7 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
@@ -70,6 +73,18 @@ public class FileSystemUtil {
       }
     }
     return configFileSystem;
+  }
+
+  /**
+   * @param properties path to a properties file
+   * @param output string to be written in the properties
+   * @throws FileNotFoundException
+   */
+  public static void writeOutputToFile(Path properties, String output) throws FileNotFoundException {
+
+    try (PrintStream printer = new PrintStream(new FileOutputStream(properties.toString()))) {
+      printer.print(output);
+    }
   }
 
   /**

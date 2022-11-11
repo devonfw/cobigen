@@ -3,7 +3,7 @@
   <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
   <uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
     <packagedElement xmi:type="uml:Package" xmi:id="EAPK_329F83E4_CA77_40af_968A_101D9A0AB879" name="Model" visibility="public">
-      <packagedElement xmi:type="uml:Package" xmi:id="EAPK_9C189016_9A46_4c58_B9E3_4E25FA3ACA35" name="Class Model" visibility="public">
+      <packagedElement xmi:type="uml:Package" xmi:id="EAPK_9C189016_9A46_4c58_B9E3_4E25FA3ACA35" name="Model" visibility="public">
         <packagedElement xmi:type="uml:Package" xmi:id="EAPK_306CDA5C_B1A7_4c42_BA18_EE56F915E786" name="Schoolmanagement" visibility="public">
           <packagedElement xmi:type="uml:Class" xmi:id="EAID_1D7DCE81_651D_40f2_A6E5_A522CF6E0C64" name="Marks" visibility="public">
             <ownedAttribute xmi:type="uml:Property" xmi:id="EAID_74D55CAA_D22A_46b3_BE6E_7F074B8BDE5E" name="attributeExample" visibility="private" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">

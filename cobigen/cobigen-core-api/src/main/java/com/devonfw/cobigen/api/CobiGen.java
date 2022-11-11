@@ -144,32 +144,6 @@ public interface CobiGen extends ConfigurationInterpreter, InputInterpreter {
       boolean forceOverride, BiConsumer<String, Integer> progressCallback);
 
   /**
-   * @param addGeneratedAnnotation if true adds Generated Annotation to the new output file on generated methods and
-   *        fields
-   */
-  @SuppressWarnings("javadoc")
-  public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
-      boolean forceOverride, boolean addGeneratedAnnotation);
-
-  /**
-   * @param addGeneratedAnnotation if true adds Generated Annotation to the new output file on generated methods and
-   *        fields
-   */
-  @SuppressWarnings("javadoc")
-  public GenerationReportTo generate(Object input, GenerableArtifact generableArtifact, Path targetRootPath,
-      boolean forceOverride, Map<String, Object> rawModel, BiConsumer<String, Integer> progressCallback,
-      boolean addGeneratedAnnotation);
-
-  /**
-   * @param addGeneratedAnnotation if true adds Generated Annotation to the new output file on generated methods and
-   *        fields
-   */
-  @SuppressWarnings("javadoc")
-  public GenerationReportTo generate(Object input, List<? extends GenerableArtifact> generableArtifacts,
-      Path targetRootPath, boolean forceOverride, Map<String, Object> rawModel,
-      BiConsumer<String, Integer> progressCallback, boolean addGeneratedAnnotation);
-
-  /**
    * Generates code by processing the {@link GenerableArtifact} for the given input.
    *
    * @param input generator input object
