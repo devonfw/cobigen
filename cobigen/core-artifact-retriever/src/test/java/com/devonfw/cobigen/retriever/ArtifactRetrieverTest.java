@@ -19,7 +19,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
 import com.devonfw.cobigen.retriever.settings.MavenSettings;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
@@ -65,16 +64,15 @@ public class ArtifactRetrieverTest {
 
   /**
    * Used to initialize data needed for the tests
+   *
+   * @throws Exception if reading the maven settings fails
    */
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws Exception {
 
-    try {
-      mavenSettingsNonProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsNonProxy.xml")));
-      mavenSettingsProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsProxy.xml")));
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
-    }
+    mavenSettingsNonProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsNonProxy.xml")));
+    mavenSettingsProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsProxy.xml")));
+
     modelNonProxy = MavenSettings.generateMavenSettingsModel(mavenSettingsNonProxy);
     modelProxy = MavenSettings.generateMavenSettingsModel(mavenSettingsProxy);
   }

@@ -32,11 +32,10 @@ public class MavenMirror {
    *
    * @param repositories list of repositories of maven's settings.xml
    * @param mirrors list of mirrors of maven's settings.xml
-   */
-  /*
-   * Important: The order of the mirrors is important! There can be at most one mirror for a given repository. Maven
-   * will not aggregate the mirrors but simply picks the first match. Take a look here:
-   * https://maven.apache.org/guides/mini/guide-mirror-settings.html
+   *
+   *        Important: The order of the mirrors is important! There can be at most one mirror for a given repository.
+   *        Maven will not aggregate the mirrors but simply picks the first match. Take a look here:
+   *        https://maven.apache.org/guides/mini/guide-mirror-settings.html
    */
   public static void injectMirrorUrl(List<MavenSettingsRepositoryModel> repositories,
       List<MavenSettingsMirrorModel> mirrors) {
@@ -121,6 +120,8 @@ public class MavenMirror {
   }
 
   /**
+   * Code was taken from here:
+   * https://github.com/apache/maven/blob/c3cf29438e3d65d6ee5c5726f8611af99d9a649a/maven-compat/src/main/java/org/apache/maven/repository/DefaultMirrorSelector.java
    * Checks the URL to see if this repository refers to an external repository
    *
    * @param repository
@@ -136,12 +137,24 @@ public class MavenMirror {
     }
   }
 
+  /**
+   * Code was taken from here:
+   * https://github.com/apache/maven/blob/c3cf29438e3d65d6ee5c5726f8611af99d9a649a/maven-compat/src/main/java/org/apache/maven/repository/DefaultMirrorSelector.java
+   *
+   * Checks the host url to see if refers to a local address
+   *
+   * @param host
+   * @return true if host refers to a local address, false otherwise
+   */
   private static boolean isLocal(String host) {
 
     return "localhost".equals(host) || "127.0.0.1".equals(host);
   }
 
   /**
+   * Code was taken from here:
+   * https://github.com/apache/maven/blob/c3cf29438e3d65d6ee5c5726f8611af99d9a649a/maven-compat/src/main/java/org/apache/maven/repository/DefaultMirrorSelector.java
+   *
    * Checks the URL to see if this repository refers to a non-localhost repository using HTTP.
    *
    * @param repository

@@ -2,7 +2,6 @@ package com.devonfw.cobigen.retriever;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.retriever.settings.MavenMirror;
 import com.devonfw.cobigen.retriever.settings.MavenSettings;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsMirrorModel;
@@ -35,17 +33,16 @@ public class MavenMirrorTest {
 
   /**
    * Used to initialize data needed for the tests
+   *
+   * @throws Exception if reading the maven settings fails
    */
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws Exception {
 
     MavenSettingsModel model;
     String content;
-    try {
-      content = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settings.xml")));
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Unable to read test settings.xml", e);
-    }
+
+    content = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settings.xml")));
     model = MavenSettings.generateMavenSettingsModel(content);
 
     // Get all the repositories for the test
