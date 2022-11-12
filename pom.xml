@@ -44,7 +44,6 @@
     <module>cobigen</module>
     <module>cobigen-plugins</module>
     <module>cobigen-cli</module>
-    <module>cobigen-gui</module>
     <module>cobigen-eclipse</module>
     <module>cobigen-maven</module>
     <module>cobigen-templates</module>
