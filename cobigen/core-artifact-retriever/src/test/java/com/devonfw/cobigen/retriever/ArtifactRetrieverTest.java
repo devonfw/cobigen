@@ -19,7 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 import com.devonfw.cobigen.retriever.settings.MavenSettings;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -146,7 +146,7 @@ public class ArtifactRetrieverTest {
     templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set1.xml"));
     templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set2.xml"));
 
-    List<TemplateSetArtifactReader> templateSets = ArtifactRetriever.retrieveTemplateSetData(templateSetFiles);
+    List<TemplateSet> templateSets = ArtifactRetriever.retrieveTemplateSetData(templateSetFiles);
 
     assertThat(templateSets).size().isEqualTo(2);
   }

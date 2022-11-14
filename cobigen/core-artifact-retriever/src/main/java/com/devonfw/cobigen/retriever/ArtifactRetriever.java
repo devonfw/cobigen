@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 import com.devonfw.cobigen.retriever.settings.MavenProxy;
 import com.devonfw.cobigen.retriever.settings.MavenSettings;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
@@ -71,16 +72,16 @@ public class ArtifactRetriever {
    * @param templateSetFiles List of template set file paths
    * @return List of {@link TemplateSetArtifactReader}s
    */
-  public static List<TemplateSetArtifactReader> retrieveTemplateSetData(List<Path> templateSetFiles) {
+  public static List<TemplateSet> retrieveTemplateSetData(List<Path> templateSetFiles) {
 
-    List<TemplateSetArtifactReader> templateSetList = new ArrayList<>();
+    List<TemplateSet> templateSetList = new ArrayList<>();
     for (Path templateSetFile : templateSetFiles) {
       if (!Files.exists(templateSetFile)) {
 
         LOG.debug("Template set file was not found at: {}", templateSetFile);
       }
-      TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
-      templateSetList.add(artifactReader);
+      TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
+      templateSetList.add(artifactReader.retrieveTemplateSet(templateSetFile));
     }
 
     return templateSetList;

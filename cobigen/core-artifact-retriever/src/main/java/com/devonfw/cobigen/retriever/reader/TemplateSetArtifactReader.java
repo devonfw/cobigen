@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetConfiguration;
 
 import jakarta.xml.bind.JAXBContext;
@@ -28,21 +29,17 @@ public class TemplateSetArtifactReader {
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(TemplateSetArtifactReader.class);
 
-  /** Version of the template set */
-  private String templateSetVersion;
-
-  /** {@link TemplateSetConfiguration} of the template set */
-  private TemplateSetConfiguration templateSetConfiguration;
-
   /**
-   * The constructor. Initializes the template set version and the {@link TemplateSetConfiguration}
+   * Retrieves the {@link TemplateSet}
    *
    * @param templateSetFilePath Path to the template-set.xml
+   * @return the {@link TemplateSet}
    */
-  public TemplateSetArtifactReader(Path templateSetFilePath) {
+  public TemplateSet retrieveTemplateSet(Path templateSetFilePath) {
 
-    this.templateSetVersion = parseVersionFromTemplateSetFile(templateSetFilePath);
-    this.templateSetConfiguration = generateMavenTemplateSetConfiguration(templateSetFilePath);
+    String templateSetVersion = parseVersionFromTemplateSetFile(templateSetFilePath);
+    TemplateSetConfiguration templateSetConfiguration = generateTemplateSetConfiguration(templateSetFilePath);
+    return new TemplateSet(templateSetVersion, templateSetConfiguration);
   }
 
   /**
@@ -52,7 +49,7 @@ public class TemplateSetArtifactReader {
    *
    * @return Java class, on which parts of the template-set is mapped to
    */
-  private TemplateSetConfiguration generateMavenTemplateSetConfiguration(Path templateSetFilePath) {
+  private TemplateSetConfiguration generateTemplateSetConfiguration(Path templateSetFilePath) {
 
     String templateSetFileContent = "";
 
@@ -111,22 +108,6 @@ public class TemplateSetArtifactReader {
     preparedTemplateSet = preparedTemplateSet.substring(preparedTemplateSet.indexOf(">") + 1);
     preparedTemplateSet = "<templateSetConfiguration>" + preparedTemplateSet;
     return preparedTemplateSet;
-  }
-
-  /**
-   * @return templateSetVersion
-   */
-  public String getTemplateSetVersion() {
-
-    return this.templateSetVersion;
-  }
-
-  /**
-   * @return templateSetConfiguration
-   */
-  public TemplateSetConfiguration getTemplateSetConfiguration() {
-
-    return this.templateSetConfiguration;
   }
 
 }

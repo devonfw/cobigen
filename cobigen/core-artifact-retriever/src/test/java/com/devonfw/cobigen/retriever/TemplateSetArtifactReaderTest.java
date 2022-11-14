@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetIncrement;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetTag;
 
@@ -29,9 +30,13 @@ public class TemplateSetArtifactReaderTest {
   public void testGenerateMavenTemplateSetConfigurationTagsName() {
 
     Path templateSetFile = Paths.get(testdataRoot).resolve("template-set.xml");
-    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
+
+    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
+
+    TemplateSet templateSet = artifactReader.retrieveTemplateSet(templateSetFile);
+
     List<TemplateSetTag> tagsList = new ArrayList<>();
-    tagsList.addAll(artifactReader.getTemplateSetConfiguration().getContextConfiguration().getTags().getTagsList());
+    tagsList.addAll(templateSet.getTemplateSetConfiguration().getContextConfiguration().getTags().getTagsList());
 
     String tagsName1 = tagsList.get(0).getName();
     String tagsName2 = tagsList.get(1).getName();
@@ -47,11 +52,13 @@ public class TemplateSetArtifactReaderTest {
   public void testGenerateMavenTemplateSetIncrementsDescription() {
 
     Path templateSetFile = Paths.get(testdataRoot).resolve("template-set.xml");
-    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
+    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
+
+    TemplateSet templateSet = artifactReader.retrieveTemplateSet(templateSetFile);
 
     List<TemplateSetIncrement> incrementsList = new ArrayList<>();
     incrementsList.addAll(
-        artifactReader.getTemplateSetConfiguration().getTemplatesConfiguration().getIncrements().getIncrementList());
+        templateSet.getTemplateSetConfiguration().getTemplatesConfiguration().getIncrements().getIncrementList());
     String description1 = incrementsList.get(0).getDescription();
     String description2 = incrementsList.get(1).getDescription();
 
@@ -66,8 +73,10 @@ public class TemplateSetArtifactReaderTest {
   public void testRetrieveTemplateSetVersionFromFilename() {
 
     Path templateSetFile = Paths.get(testdataRoot).resolve("crud-java-server-app-2021.08.001-template-set.xml");
-    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
-    assertThat(artifactReader.getTemplateSetVersion()).isEqualTo("2021.08.001");
+    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
+
+    TemplateSet templateSet = artifactReader.retrieveTemplateSet(templateSetFile);
+    assertThat(templateSet.getTemplateSetVersion()).isEqualTo("2021.08.001");
   }
 
 }
