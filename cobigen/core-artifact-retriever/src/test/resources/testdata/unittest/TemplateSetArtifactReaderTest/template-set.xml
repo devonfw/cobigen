@@ -1,35 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.0">
-  <trigger id="crud_java_server_app" type="languageType">
-    <matcher type="fqn" value="*">
-    </matcher>
-  </trigger>
+  <contextConfiguration>
+    <trigger id="crud_java_server_app" type="java">
+      <matcher type="fqn" value="*">
+      </matcher>
+    </trigger>
 
-  <tags>
-    <tag name="Tag1"/>
-    <tag name="Tag2"/>
-  </tags>
+    <tags>
+      <tag name="Tag1"></tag>
+      <tag name="Tag2"></tag>
+    </tags>
+    <links>
+      <link
+        url="https://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/reference/html/repositories.html"></link>
+    </links>
+  </contextConfiguration>
 
-  <templates>
-    <template name="prefix_Foo2Class.java" destinationPath="src/main/java/foo/Foo2Class${variable}.java"
-      templateFile="foo/Foo2Class.java.ftl" mergeStrategy="javamerge"/>
-    <templateExtension ref="prefix2_FooClass.java" destinationPath="adapted/path/FooClass.java"
-      mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
-    <templateExtension ref="prefix2_Foo2Class.java"/>
-  </templates>
+  <templatesConfiguration>
+    <templates>
+      <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
+      <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
+    </templates>
 
-  <templateScans>
-    <templateScan templateNamePrefix="prefix2_" templatePath="bar" destinationPath="src/main/java/bar"/>
-  </templateScans>
+    <templateScans>
+      <templateScan templatePath="templates" destinationPath="src/main"/>
+    </templateScans>
 
-  <increments>
-    <increment name="increment1" description="Description of increment 1" explanation="Explanation of increment 1">
-      <templateRef ref="SomeImpl.java" />
-    </increment>
-    <increment name="increment2" description="Description of increment 2" explanation="Explanation of increment 2">
-      <templateRef ref="SomeAbstract.java" />
-    </increment>
-  </increments>
-
+    <increments>
+      <increment name="inrement1" description="Description of increment 1"
+        explanation="Explanation of increment 1">
+        <templateRef ref="${variables.entityName}Repository.java"/>
+      </increment>
+      <increment name="inrement2" description="Description of increment 2"
+        explanation="Explanation of increment 2">
+        <templateRef ref="${variables.entityName}Repository.java"/>
+      </increment>
+    </increments>
+  </templatesConfiguration>
 </templateSetConfiguration>

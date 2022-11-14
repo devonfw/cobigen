@@ -31,7 +31,7 @@ public class TemplateSetArtifactReaderTest {
     Path templateSetFile = Paths.get(testdataRoot).resolve("template-set.xml");
     TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
     List<TemplateSetTag> tagsList = new ArrayList<>();
-    tagsList.addAll(artifactReader.getTemplateSetConfiguration().getTags().getTagsList());
+    tagsList.addAll(artifactReader.getTemplateSetConfiguration().getContextConfiguration().getTags().getTagsList());
 
     String tagsName1 = tagsList.get(0).getName();
     String tagsName2 = tagsList.get(1).getName();
@@ -50,7 +50,8 @@ public class TemplateSetArtifactReaderTest {
     TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader(templateSetFile);
 
     List<TemplateSetIncrement> incrementsList = new ArrayList<>();
-    incrementsList.addAll(artifactReader.getTemplateSetConfiguration().getIncrements().getIncrementList());
+    incrementsList.addAll(
+        artifactReader.getTemplateSetConfiguration().getTemplatesConfiguration().getIncrements().getIncrementList());
     String description1 = incrementsList.get(0).getDescription();
     String description2 = incrementsList.get(1).getDescription();
 

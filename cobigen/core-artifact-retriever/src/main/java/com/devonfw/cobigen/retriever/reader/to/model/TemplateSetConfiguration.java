@@ -10,73 +10,17 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 public class TemplateSetConfiguration {
 
   /**
-   * Represents the triggers element of the template-set.xml
+   * Represents the contextConfiguration element of the template-set.xml
    */
-  private TemplateSetTrigger triggers;
+  private ContextConfiguration contextConfiguration;
 
   /**
-   * Represents the increments element of the template-set.xml
+   * Represents the templatesConfiguration element of the template-set.xml
    */
-  private TemplateSetIncrements increments;
+  private TemplatesConfiguration templatesConfiguration;
 
   /** Represents the version of the template-set.xml */
   private String version;
-
-  /**
-   * @return triggers
-   */
-  public TemplateSetTrigger getTriggers() {
-
-    return this.triggers;
-  }
-
-  /**
-   * @param triggers new value of {@link #gettriggers}.
-   */
-  @XmlElement(name = "trigger")
-  public void setTriggers(TemplateSetTrigger triggers) {
-
-    this.triggers = triggers;
-  }
-
-  /**
-   * Represents the tags element of the template-set.xml
-   */
-  TemplateSetTags tags;
-
-  /**
-   * @return increments
-   */
-  public TemplateSetIncrements getIncrements() {
-
-    return this.increments;
-  }
-
-  /**
-   * @param increments new value of {@link #getincrements}.
-   */
-  @XmlElement(name = "increments")
-  public void setIncrements(TemplateSetIncrements increments) {
-
-    this.increments = increments;
-  }
-
-  /**
-   * @return tags
-   */
-  public TemplateSetTags getTags() {
-
-    return this.tags;
-  }
-
-  /**
-   * @param tags new value of {@link #gettags}.
-   */
-  @XmlElement(name = "tags")
-  public void setTags(TemplateSetTags tags) {
-
-    this.tags = tags;
-  }
 
   /**
    * @return version
@@ -92,6 +36,40 @@ public class TemplateSetConfiguration {
   public void setVersion(String version) {
 
     this.version = version;
+  }
+
+  /**
+   * @return contextConfiguration
+   */
+  public ContextConfiguration getContextConfiguration() {
+
+    return this.contextConfiguration;
+  }
+
+  /**
+   * @param contextConfiguration new value of {@link #getcontextConfiguration}.
+   */
+  @XmlElement(name = "contextConfiguration")
+  public void setContextConfiguration(ContextConfiguration contextConfiguration) {
+
+    this.contextConfiguration = contextConfiguration;
+  }
+
+  /**
+   * @return templatesConfiguration
+   */
+  public TemplatesConfiguration getTemplatesConfiguration() {
+
+    return this.templatesConfiguration;
+  }
+
+  /**
+   * @param templatesConfiguration new value of {@link #gettemplatesConfiguration}.
+   */
+  @XmlElement(name = "templatesConfiguration")
+  public void setTemplatesConfiguration(TemplatesConfiguration templatesConfiguration) {
+
+    this.templatesConfiguration = templatesConfiguration;
   }
 
 }
