@@ -47,33 +47,19 @@ public class App extends Application {
   }
 
   @Override
-  public void start(Stage stage) throws IOException {
+  public void start(Stage primaryStage) throws IOException {
 
     this.window = new Stage();
+    Parent root = FXMLLoader.load(getClass().getResource("Primary.fxml"));
 
-    scene = new Scene(loadFXML("primary"));
-    scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+    App.scene = new Scene(root);
+    App.scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
     Image image = new Image(App.class.getResource("icons/devon-icon.jpg").toExternalForm());
-    this.window.getIcons().add(image);
     this.window.setTitle("Template Set Manager");
-
-    this.window.setScene(scene);
+    this.window.getIcons().add(image);
+    this.window.setScene(App.scene);
     this.window.showAndWait();
-    // stage.setScene(scene);
-    // stage.show();
-
-  }
-
-  static void setRoot(String fxml) throws IOException {
-
-    scene.setRoot(loadFXML(fxml));
-  }
-
-  private static Parent loadFXML(String fxml) throws IOException {
-
-    FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-    return fxmlLoader.load();
   }
 
 }

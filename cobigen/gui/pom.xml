@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
         <java.version>11</java.version>
-        <javafx.version>11</javafx.version>
+        <javafx.version>18</javafx.version>
         <javafx.maven.plugin.version>0.0.6</javafx.maven.plugin.version>
     </properties>
 
@@ -47,6 +47,12 @@
             <version>4.0.15-alpha</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.13.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -62,7 +68,15 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>${javafx.maven.plugin.version}</version>
                 <configuration>
-                    <mainClass>com.devonfw.cobigen.gui.Main</mainClass>
+                    <mainClass>com.devonfw.cobigen.gui.App</mainClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!--  allow to use unnamed modules -->
+                    <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
         </plugins>

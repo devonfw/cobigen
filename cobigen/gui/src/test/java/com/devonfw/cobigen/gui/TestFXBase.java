@@ -1,15 +1,20 @@
 package com.devonfw.cobigen.gui;
 
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -18,21 +23,49 @@ import javafx.stage.Stage;
  */
 public class TestFXBase extends ApplicationTest {
 
+  Pane mainRoot;
+
+  Stage mainStage;
+
+  Controller controller;
+
+  protected static ResourceBundle bundle;
+
+  /**
+   *
+   */
+  @BeforeClass
+  public static void setupHeadlessMode() {
+
+    if (Boolean.getBoolean("headless")) {
+      System.setProperty("testfx.robot", "glass");
+      System.setProperty("testfx.headless", "true");
+      System.setProperty("prism.order", "sw");
+      System.setProperty("prism.text", "t2k");
+      System.setProperty("java.awt.headless", "true");
+    }
+
+    // bundle = ResourceBundle.getBundle("Bundle");
+  }
+
   /**
    * @throws Exception
    */
-  @SuppressWarnings("javadoc")
   @Before
-  public void setUpClass() throws Exception {
+  public void setUp() throws Exception {
 
-    ApplicationTest.launch(App.class);
   }
 
   @Override
   public void start(Stage stage) throws Exception {
 
-    // TODO Auto-generated method stub
-
+    this.mainStage = stage;
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("Primary.fxml"));
+    this.mainRoot = loader.load();
+    this.controller = loader.getController();
+    stage.setScene(new Scene(this.mainRoot));
+    stage.show();
+    stage.toFront();
   }
 
   /**
