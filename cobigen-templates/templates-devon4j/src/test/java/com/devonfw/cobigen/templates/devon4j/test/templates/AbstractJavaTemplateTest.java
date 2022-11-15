@@ -16,6 +16,9 @@ public abstract class AbstractJavaTemplateTest {
    * Model used by freemarker
     */
   public Map<String, Object> model;
+  /**
+   * Engine that will generate output from model and template
+   */
   public FreeMarkerTemplateEngine engine;
   /**
    * Implementation of TextTemplate for template processing
@@ -24,10 +27,10 @@ public abstract class AbstractJavaTemplateTest {
 
   /**
    * Creates an anonymous TextTemplate object that works on the given template files
-   * 
    * @param relativePath Relative Path to the template from the /templates folder, most likely coincides with template
    *        filename
    * @param relativeAbsolutePath Relative path from source root to the template
+   * @return anonymous instance of TextTemplate that holds the data in Overridden interface methods
    */
   public TextTemplate createTemplate(String relativePath, Path relativeAbsolutePath) {
 
@@ -73,15 +76,6 @@ public abstract class AbstractJavaTemplateTest {
       throw new RuntimeException("Failed adding the Util to the Model, please check the error stacktrace and fix it or add the util manually!");
     }
 
-  }
-
-  /**
-   * Adds object to the model
-   * @param key
-   * @param instance
-   */
-  public void addObject(String key, Object instance) {
-    this.model.put(key, instance);
   }
 
   /**

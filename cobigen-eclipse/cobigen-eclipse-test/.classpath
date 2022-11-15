@@ -30,7 +30,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/system-lambda.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlunit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/zt-exec.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/awaitility.jar" sourcepath="C:/Users/mbrunnli/.m2/repository/org/awaitility/awaitility/4.1.1/awaitility-4.1.1-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/hamcrest.jar"/>
 	<classpathentry kind="output" path="eclipse-target/classes"/>
 </classpath>

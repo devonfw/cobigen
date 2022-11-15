@@ -9,6 +9,8 @@ import java.util.function.Function;
  */
 public class SQLUtil extends CommonUtil {
 
+  private static int DEFAULT_FIELD_LENGTH = 255;
+
   /**
    * The constructor.
    */
@@ -34,7 +36,7 @@ public class SQLUtil extends CommonUtil {
    * @param joinColumnAnnotation
    * @param defaultTableName Possible to pass TableName in case it's not specified in the annotation and has to be
    *        implied from context
-   * @return
+   * @return column + foreign key constraint for this @JoinColumn annotation
    */
   public String parseJoinColumn(Map<String, ?> joinColumnAnnotation, String defaultTableName) {
 
@@ -72,6 +74,11 @@ public class SQLUtil extends CommonUtil {
     return statement + ", " + foreignKeyDef;
   }
 
+  /**
+   * Generates a primary key statement from the given field
+   * @param field Dynamic hashmap containing field data
+   * @return SQL Primary key statement for table as String
+   */
   public String primaryKeyStatement(Map<String, ?> field) {
 
     String fieldName = getFieldName(field);
@@ -87,6 +94,11 @@ public class SQLUtil extends CommonUtil {
     return String.format("%s BIGINT %s PRIMARY KEY", fieldName, incrementType);
   }
 
+  /**
+   * Generates a foreign key statement from the given field
+   * @param field Dynamic hashmap containing field data
+   * @return SQL Foreign key statement as String
+   */
   public String foreignKeyStatement(Map<String, ?> field) {
 
     Map<String, ?> annotations = getValue(field, "annotations");
@@ -131,12 +143,17 @@ public class SQLUtil extends CommonUtil {
     return columnDef + ", " + foreignKeyDef;
   }
 
+  /**
+   * Basic SQL column statements derived from field hashmaps
+   * @param field Dynamic hashmap with field data
+   * @return Basic SQL statement as String
+   */
   public String basicStatement(Map<String, ?> field) {
 
     Map<String, ?> columnAnnotation = chainAccess(field, new String[] { "annotations", "javax_persistence_Column" });
     String fieldName = getFieldName(field), typeString = Objects.requireNonNull(getValue(field, "type")),
         fieldType = mapType(typeString);
-    Integer fieldLength = 255;
+    Integer fieldLength = DEFAULT_FIELD_LENGTH;
     boolean nullable = true, unique = false;
     // Try to infer fieldType from possible annotations
     Map<String, ?> enumerateAnnotation = chainAccess(field,
@@ -151,9 +168,7 @@ public class SQLUtil extends CommonUtil {
     }
     // Parse @Column if present
     if (columnAnnotation != null) {
-      Integer columnLength = Integer.parseInt(Objects.requireNonNull(getValue(columnAnnotation, "length")));
-      if (columnLength != null)
-        fieldLength = columnLength;
+      fieldLength = Integer.parseInt(Objects.requireNonNull(getValue(columnAnnotation, "length")));
       nullable = isNullable(columnAnnotation);
       unique = isUnique(columnAnnotation);
     }
@@ -195,7 +210,9 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Helper function to map simple SQL types, returns null on unmappable type
+   * Helper function to map simple Java types to SQL types, returns null on unmappable type
+   * @param typeString JavaType as String (int, Long, String...)
+   * @return SQLType as String
    */
   public static String mapType(String typeString) {
 
@@ -247,6 +264,9 @@ public class SQLUtil extends CommonUtil {
 
   /**
    * Helper function to navigate nested maps dynamically. Returns null on any type of error
+   * @param map Dynamic map from which to extract data
+   * @param nestedFields ordered array of fields that need to be navigated in the map
+   * @return value if found, null otherwise (both on casting errors and value not found)
    */
   static private <T> T chainAccess(Map<String, ?> map, String[] nestedFields) {
 
@@ -263,6 +283,9 @@ public class SQLUtil extends CommonUtil {
 
   /**
    * Parametrized helper function to dynamically extract data from a map. Returns null on casting errors
+   * @param map
+   * @param key
+   * @return value if found and cast succeeds, null otherwise
    */
   static private <T> T getValue(Map<String, ?> map, String key) {
 
