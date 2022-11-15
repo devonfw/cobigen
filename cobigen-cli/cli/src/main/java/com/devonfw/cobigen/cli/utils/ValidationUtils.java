@@ -76,28 +76,27 @@ public final class ValidationUtils {
    * Checks the generation report in order to find possible errors and warnings
    *
    * @param report the generation report returned by the CobiGen.generate method
+   * @return true if generation succeeded, false otherwise
    */
-  public static void checkGenerationReport(GenerationReportTo report) {
+  public static boolean checkGenerationReport(GenerationReportTo report) {
 
     for (String warning : report.getWarnings()) {
       LOG.debug("Warning: {}", warning);
     }
 
+    // Successful generation
     if (report.getErrors() == null || report.getErrors().isEmpty()) {
       LOG.info("Successful generation.");
-    } else {
-      if (LOG.isDebugEnabled() && report.getErrors().size() > 1) {
-        for (int i = 1; i < report.getErrors().size(); i++) {
-          LOG.error("Further reported error:", report.getErrors().get(i));
-        }
-      }
-      if (report.getErrors().get(0) instanceof CobiGenRuntimeException) {
-        throw report.getErrors().get(0);
-      } else {
-        throw new CobiGenRuntimeException("Generation failed. Enable debug mode to see the exceptions occurred.",
-            report.getErrors().get(0));
-      }
+      return true;
     }
+    // Unsuccesful generation, log error messages to user
+    // Log exceptions for devs in DEBUG
+    for (int i = 0; i < report.getErrors().size(); i++) {
+      RuntimeException e = report.getErrors().get(i);
+      LOG.error("Error: {}", e.getMessage());
+      if (LOG.isDebugEnabled()) e.printStackTrace();
+    }
+    return false;
   }
 
   /**

@@ -34,11 +34,18 @@ public class CobiGenCLI {
     LOG.debug("Current working directory: {}", System.getProperty("user.dir"));
     CommandLine commandLine = new CommandLine(new CobiGenCommand());
     commandLine.registerConverter(Path.class, s -> Paths.get(s));
+    CommandLine.IExecutionExceptionHandler exceptionHandler = new CommandLine.IExecutionExceptionHandler() {
+      @Override
+      public int handleExecutionException(Exception e, CommandLine commandLine, CommandLine.ParseResult parseResult) throws Exception {
+        LOG.error("An error occurred while executing CobiGen: {}", e.getMessage());
+        if (LOG.isDebugEnabled()) e.printStackTrace();
+        return 1;
+      }
+    };
+    commandLine.setExecutionExceptionHandler(exceptionHandler);
     int exitCode = commandLine.execute(args);
-    if (exitCode == 0) {
-      LOG.info("Success");
-    } else {
-      LOG.info("Failed");
+    if (exitCode != 0) {
+      LOG.error("Cobigen terminated in an unexpected manner, fore more info execute in verbose mode (-v).");
     }
     System.exit(exitCode);
   }

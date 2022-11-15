@@ -104,8 +104,9 @@ public class InputInterpreterImpl implements InputInterpreter {
           "Was not able to read input {} with inputreader '{}' although it was reported to be most likely readable. Trying next input reader...",
           path, triggerInterpreter, e);
     } catch (Throwable e) {
-      LOG.debug("While reading the input {} with the inputreader {}, an exception occured. Trying next input reader...",
-          path, triggerInterpreter, e);
+      LOG.warn("While reading the input {} with the inputreader {}, an exception occured: {} Trying next input reader...",
+              path, triggerInterpreter, e.getMessage());
+      if (LOG.isDebugEnabled()) e.printStackTrace();
     }
     return null;
   }

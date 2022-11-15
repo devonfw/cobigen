@@ -73,8 +73,14 @@ public class FreeMarkerTemplateEngine implements TextTemplateEngine {
         env.setLogTemplateExceptions(false); // no duplicate logging
         env.process();
       } catch (TemplateException e) {
+        String detailedCause = "";
+        if (e.getCause().getClass().getCanonicalName().contains("java.lang")) {
+          detailedCause = ". A problem with Reflection has likely occurred: "
+                  + e.getCause().toString()
+                  + ", please consider rebuilding your project as a possible fix.";
+        }
         throw new CobiGenRuntimeException("An error occurred while generating the template: "
-            + template.getAbsoluteTemplatePath() + " (FreeMarker v" + FreemarkerMetadata.VERSION + ")", e);
+            + template.getAbsoluteTemplatePath() + " (FreeMarker v" + FreemarkerMetadata.VERSION + ")" + detailedCause, e);
       } catch (Throwable e) {
         throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template: "
             + template.getAbsoluteTemplatePath() + " (FreeMarker v" + FreemarkerMetadata.VERSION + ")", e);
