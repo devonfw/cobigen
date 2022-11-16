@@ -16,7 +16,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -47,6 +46,9 @@ public class Controller implements Initializable {
 
   @FXML
   public TextField searchBar;
+
+  @FXML
+  public Button goSearch;
 
   // TODO: Transform to ListView<HBox>
   @FXML
@@ -89,9 +91,10 @@ public class Controller implements Initializable {
 
   /**
    * @param event
+   * @throws IOException
    */
   @FXML
-  public void search(KeyEvent event) {
+  public void search(javafx.event.ActionEvent event) throws IOException {
 
     this.searchResultsView.getItems().clear();
     this.searchResultsView.getItems().addAll(searchTemplateSets(this.searchBar.getText(), this.templateSets));

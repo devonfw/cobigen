@@ -3,191 +3,206 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1">
-	<VBox fx:id="searchResultsVBox" layoutY="25.0" prefHeight="409.0" prefWidth="211.0">
-                                 <children>
-                                    <HBox fx:id="searchResult" alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
-                                       <children>
-                                          <Label fx:id="searchResultTitle" alignment="CENTER" text="TemplateSet 1">
-                                             <HBox.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </HBox.margin>
-                                          </Label>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="35.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="*" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="~" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                       </children>
-                                    </HBox>
-                                    <Separator prefWidth="200.0" />
-                                    <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
-                                       <children>
-                                          <Label alignment="CENTER" text="TemplateSet 2">
-                                             <HBox.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </HBox.margin>
-                                          </Label>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="35.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="*" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="~" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                       </children>
-                                       <VBox.margin>
-                                          <Insets top="-3.0" />
-                                       </VBox.margin>
-                                    </HBox>
-                                    <Separator prefWidth="200.0" />
-                                    <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
-                                       <children>
-                                          <Label alignment="CENTER" text="TemplateSet 3">
-                                             <HBox.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </HBox.margin>
-                                          </Label>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="35.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="*" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="~" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                       </children>
-                                       <VBox.margin>
-                                          <Insets top="-3.0" />
-                                       </VBox.margin>
-                                    </HBox>
-                                    <Separator prefWidth="200.0" />
-                                    <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
-                                       <children>
-                                          <Label alignment="CENTER" text="TemplateSet 4">
-                                             <HBox.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </HBox.margin>
-                                          </Label>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="35.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="*" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="~" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                       </children>
-                                       <VBox.margin>
-                                          <Insets top="-3.0" />
-                                       </VBox.margin>
-                                    </HBox>
-                                    <Separator prefWidth="200.0" />
-                                    <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
-                                       <children>
-                                          <Label alignment="CENTER" text="TemplateSet 5">
-                                             <HBox.margin>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                             </HBox.margin>
-                                          </Label>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="35.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="*" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="~" textFill="WHITE">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
-                                             <HBox.margin>
-                                                <Insets left="5.0" />
-                                             </HBox.margin>
-                                          </Button>
-                                       </children>
-                                       <VBox.margin>
-                                          <Insets top="-3.0" />
-                                       </VBox.margin>
-                                    </HBox>
-                                    <Separator prefWidth="200.0" />
-                                 </children>
-                              </VBox>
+  <VBox fx:id="searchResultsVBox" layoutY="25.0" prefHeight="409.0" prefWidth="211.0">
+    <children>
+      <HBox fx:id="searchResult" alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
+        <children>
+          <Label fx:id="searchResultTitle" alignment="CENTER" text="TemplateSet 1">
+            <HBox.margin>
+              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </HBox.margin>
+          </Label>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="+" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="35.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="*" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="~" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+        </children>
+      </HBox>
+      <Separator prefWidth="200.0"/>
+      <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
+        <children>
+          <Label alignment="CENTER" text="TemplateSet 2">
+            <HBox.margin>
+              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </HBox.margin>
+          </Label>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="+" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="35.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="*" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="~" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+        </children>
+        <VBox.margin>
+          <Insets top="-3.0"/>
+        </VBox.margin>
+      </HBox>
+      <Separator prefWidth="200.0"/>
+      <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
+        <children>
+          <Label alignment="CENTER" text="TemplateSet 3">
+            <HBox.margin>
+              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </HBox.margin>
+          </Label>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="+" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="35.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="*" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="~" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+        </children>
+        <VBox.margin>
+          <Insets top="-3.0"/>
+        </VBox.margin>
+      </HBox>
+      <Separator prefWidth="200.0"/>
+      <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
+        <children>
+          <Label alignment="CENTER" text="TemplateSet 4">
+            <HBox.margin>
+              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </HBox.margin>
+          </Label>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="+" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="35.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="*" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="~" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+        </children>
+        <VBox.margin>
+          <Insets top="-3.0"/>
+        </VBox.margin>
+      </HBox>
+      <Separator prefWidth="200.0"/>
+      <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="211.0">
+        <children>
+          <Label alignment="CENTER" text="TemplateSet 5">
+            <HBox.margin>
+              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </HBox.margin>
+          </Label>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="+" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="35.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="*" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+          <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;"
+            text="~" textFill="WHITE">
+            <font>
+              <Font name="System Bold" size="12.0"/>
+            </font>
+            <HBox.margin>
+              <Insets left="5.0"/>
+            </HBox.margin>
+          </Button>
+        </children>
+        <VBox.margin>
+          <Insets top="-3.0"/>
+        </VBox.margin>
+      </HBox>
+      <Separator prefWidth="200.0"/>
+    </children>
+  </VBox>
 </AnchorPane>
 
