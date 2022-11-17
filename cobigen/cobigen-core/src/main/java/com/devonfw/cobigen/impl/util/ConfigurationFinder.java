@@ -16,15 +16,14 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
-import com.devonfw.cobigen.impl.config.ConfigurationFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 
 /**
  * Utilities related to the cobigen configurations including:
@@ -46,7 +45,7 @@ public class ConfigurationFinder {
    * @throws SAXException
    * @throws InvalidConfigurationException
    */
-  public static TemplateSetConfiguration loadTemplateSetConfigurations(Path propertiesPath, Path templatesPath)
+  public static ConfigurationProperties loadTemplateSetConfigurations(Path propertiesPath, Path templatesPath)
       throws InvalidConfigurationException {
 
     Properties props = new Properties();
@@ -92,12 +91,11 @@ public class ConfigurationFinder {
 
     List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
     List<MavenCoordinate> convertedMavenCoordinates = MavenCoordinateUtil.convertToMavenCoordinates(mavenCoordinates);
-    ConfigurationFactory configurationFactory = new ConfigurationFactory(templatesPath.toUri());
 
     ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds,
         convertedMavenCoordinates);
 
-    return configurationFactory.retrieveTemplateSetConfiguration(configurationProperties);
+    return configurationProperties;
   }
 
   /**

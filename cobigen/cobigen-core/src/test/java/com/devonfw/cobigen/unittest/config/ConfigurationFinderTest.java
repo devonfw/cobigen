@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
 /**
@@ -42,13 +42,12 @@ public class ConfigurationFinderTest {
     File folder = this.tmpFolder.newFolder("TemplateSetsTest");
     Path emptyConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/emptyConfigProperties/config.properties");
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(emptyConfiguration,
+    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(emptyConfiguration,
         folder.toPath());
 
-    assertThat(conf.getConfigurationProperties().getGroupIds())
-        .contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getConfigurationProperties().getHideTemplates()).isEmpty();
-    assertThat(conf.getConfigurationProperties().isAllowSnapshots()).isFalse();
+    assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
+    assertThat(conf.getHideTemplates()).isEmpty();
+    assertThat(conf.isAllowSnapshots()).isFalse();
   }
 
   /**
@@ -64,15 +63,15 @@ public class ConfigurationFinderTest {
     File folder = this.tmpFolder.newFolder("TemplateSetsTest1");
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/validConfigProperties/config.properties");
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration,
+    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration,
         folder.toPath());
 
-    assertThat(conf.getConfigurationProperties().getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd",
-        "blablob", ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getConfigurationProperties().isAllowSnapshots()).isTrue();
-    assertThat(conf.getConfigurationProperties().getHideTemplates().get(0).getArtifactId().equals("com.devonfw"));
-    assertThat(conf.getConfigurationProperties().getHideTemplates().get(0).getGroupId().equals("test-artifact"));
-    assertThat(conf.getConfigurationProperties().getHideTemplates().get(0).getVersion().equals("3.2.1-SNAPSHOT"));
+    assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob",
+        ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
+    assertThat(conf.isAllowSnapshots()).isTrue();
+    assertThat(conf.getHideTemplates().get(0).getArtifactId().equals("com.devonfw"));
+    assertThat(conf.getHideTemplates().get(0).getGroupId().equals("test-artifact"));
+    assertThat(conf.getHideTemplates().get(0).getVersion().equals("3.2.1-SNAPSHOT"));
   }
 
   /**
@@ -88,10 +87,10 @@ public class ConfigurationFinderTest {
     File folder = this.tmpFolder.newFolder("TemplateSetsTest2");
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/invalidConfigProperties/config.properties");
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration,
+    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration,
         folder.toPath());
 
-    assertTrue(conf.getConfigurationProperties().getHideTemplates().isEmpty());
+    assertTrue(conf.getHideTemplates().isEmpty());
     assertTrue(conf.getMavenCoordinates().isEmpty());
   }
 
@@ -108,11 +107,10 @@ public class ConfigurationFinderTest {
 
     File folder = this.tmpFolder.newFolder("TemplateSetsTest3");
     Path invalidPath = Paths.get("path/which/does/not/exist");
-    TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath, folder.toPath());
+    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath, folder.toPath());
 
-    assertThat(conf.getConfigurationProperties().getGroupIds())
-        .contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getConfigurationProperties().getHideTemplates()).isEmpty();
-    assertThat(conf.getConfigurationProperties().isAllowSnapshots()).isFalse();
+    assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
+    assertThat(conf.getHideTemplates()).isEmpty();
+    assertThat(conf.isAllowSnapshots()).isFalse();
   }
 }

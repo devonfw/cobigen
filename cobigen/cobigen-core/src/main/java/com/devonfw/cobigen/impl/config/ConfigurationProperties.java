@@ -17,21 +17,31 @@ public class ConfigurationProperties {
   private boolean allowSnapshots;
 
   /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
-  private List<MavenCoordinate> mavenCoordinates;
+  private List<MavenCoordinate> templatesInstalled;
 
   /** variable to hide very specific template sets or versions of template sets */
   private List<MavenCoordinate> hideTemplates;
 
+  /**
+   * The constructor. load properties from a given source
+   *
+   * @param groupIds groupID from key template-sets.groupIds
+   * @param allowSnapshots from key template-sets.allow-snapshot
+   * @param hideTemplates from key template-set.hide
+   * @param mavenCoordinates list of mavenCoordinate that define the templates that should be installed
+   */
   public ConfigurationProperties(List<String> groupIds, boolean allowSnapshots, List<MavenCoordinate> hideTemplates,
       List<MavenCoordinate> mavenCoordinates) {
 
     this.groupIds = groupIds;
     this.allowSnapshots = allowSnapshots;
     this.hideTemplates = hideTemplates;
-    this.mavenCoordinates = mavenCoordinates;
+    this.templatesInstalled = mavenCoordinates;
   }
 
   /**
+   * Returns a list of the saved groupIds
+   *
    * @return groupIds
    */
   public List<String> getGroupIds() {
@@ -40,6 +50,8 @@ public class ConfigurationProperties {
   }
 
   /**
+   * Sets a list of the groupIds from a source
+   *
    * @param groupIds new value of {@link #getgroupIds}.
    */
   public void setGroupIds(List<String> groupIds) {
@@ -48,6 +60,8 @@ public class ConfigurationProperties {
   }
 
   /**
+   * Returns a boolean which states if specific Snapshots should be allowed.
+   *
    * @return allowSnapshots
    */
   public boolean isAllowSnapshots() {
@@ -56,6 +70,8 @@ public class ConfigurationProperties {
   }
 
   /**
+   * Sets a value on the snapshot
+   *
    * @param allowSnapshots new value of {@link #getallowSnapshots}.
    */
   public void setAllowSnapshots(boolean allowSnapshots) {
@@ -64,6 +80,8 @@ public class ConfigurationProperties {
   }
 
   /**
+   * Returns a list of the saved templates to be hidden
+   *
    * @return hideTemplates
    */
   public List<MavenCoordinate> getHideTemplates() {
@@ -72,6 +90,8 @@ public class ConfigurationProperties {
   }
 
   /**
+   * Sets a list of the HideTemplate from a source
+   *
    * @param hideTemplates new value of {@link #gethideTemplates}.
    */
   public void setHideTemplates(List<MavenCoordinate> hideTemplates) {
@@ -80,19 +100,23 @@ public class ConfigurationProperties {
   }
 
   /**
-   * @return mavenCoordinates
+   * Returns a list of maven coordinates for the download of template sets
+   *
+   * @return maven coordinates
    */
   public List<MavenCoordinate> getMavenCoordinates() {
 
-    return this.mavenCoordinates;
+    return this.templatesInstalled;
   }
 
   /**
+   * Set a list of templates that should be installed at startup
+   *
    * @param mavenCoordinates new value of {@link #getmavenCoordinates}.
    */
   public void setMavenCoordinates(List<MavenCoordinate> mavenCoordinates) {
 
-    this.mavenCoordinates = mavenCoordinates;
+    this.templatesInstalled = mavenCoordinates;
   }
 
 }

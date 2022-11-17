@@ -54,9 +54,9 @@ public class ConfigurationFactory {
    * @param hideTemplates property
    * @return {@link TemplateSetConfiguration} instance
    */
-  public TemplateSetConfiguration retrieveTemplateSetConfiguration(ConfigurationProperties properties) {
+  public TemplateSetConfiguration retrieveTemplateSetConfiguration() {
 
-    TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(properties, this.configRoot);
+    TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(this.configRoot);
     return templateSetConfiguration;
   }
 
