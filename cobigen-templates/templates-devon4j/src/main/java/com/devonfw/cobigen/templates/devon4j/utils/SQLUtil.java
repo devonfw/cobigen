@@ -20,7 +20,7 @@ public class SQLUtil extends CommonUtil {
   }
 
   /**
-   * Unwraps type to autogenerate a name for the table following devonf naming convention.
+   * Unwraps type to autogenerate a name for the table following devonfw naming convention.
    * 
    * @param entityType String that represents the entity class type
    * @return parsed table name
@@ -251,6 +251,8 @@ public class SQLUtil extends CommonUtil {
 
   /**
    * Extracts the name of the field from the Map whilst checking for name-override in @Column annotation
+   * @param field Dynamic map for field
+   * @return simple name for field as String
    */
   static private String getFieldName(Map<String, ?> field) {
 

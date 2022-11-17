@@ -46,7 +46,7 @@ public class CommonUtil {
    * @param pojoClass {@link Class} the class object of the pojo
    * @param fieldName {@link String} the name of the field
    * @return true if the field is an instance of java.utils.Collections
-   * @throws NoSuchFieldException indicating something awefully wrong in the used model
+   * @throws NoSuchFieldException indicating something awfully wrong in the used model
    * @throws SecurityException if the field cannot be accessed.
    */
   public boolean isCollection(Class<?> pojoClass, String fieldName) throws NoSuchFieldException, SecurityException {

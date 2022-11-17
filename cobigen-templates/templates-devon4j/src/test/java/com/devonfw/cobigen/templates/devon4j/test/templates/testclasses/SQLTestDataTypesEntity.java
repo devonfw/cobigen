@@ -66,8 +66,8 @@ public class SQLTestDataTypesEntity {
   @Column()
   private byte[] blob;
 
-   @Column()
-   private Class<?> varchar2;
+  @Column()
+  private Class<?> varchar2;
 
   @Column()
   private Locale varchar3;
@@ -318,24 +318,21 @@ public class SQLTestDataTypesEntity {
     this.blob = blob;
   }
 
-
-
-
-   /**
+  /**
    * @return varchar2
    */
-   public Class<?> getVarchar2() {
+  public Class<?> getVarchar2() {
 
-   return this.varchar2;
-   }
+    return this.varchar2;
+  }
 
-   /**
+  /**
    * @param varchar2 new value of {@link #getvarchar2}.
    */
-   public void setVarchar2(Class<?> varchar2) {
+  public void setVarchar2(Class<?> varchar2) {
 
-   this.varchar2 = varchar2;
-   }
+    this.varchar2 = varchar2;
+  }
 
   /**
    * @return varchar3

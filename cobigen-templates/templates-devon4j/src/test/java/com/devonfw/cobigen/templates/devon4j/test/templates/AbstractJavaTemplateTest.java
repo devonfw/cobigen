@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.templates.devon4j.test.templates;
 
 import com.devonfw.cobigen.api.extension.TextTemplate;
+import com.devonfw.cobigen.api.extension.TextTemplateEngine;
 import com.devonfw.cobigen.javaplugin.inputreader.JavaInputReader;
 import com.devonfw.cobigen.tempeng.freemarker.FreeMarkerTemplateEngine;
 import org.junit.Before;
@@ -53,6 +54,7 @@ public abstract class AbstractJavaTemplateTest {
    * Creates a template engine for the given template path
    * 
    * @param templateFolderPath Relative path to template folder from project source root
+   * @return {@link TextTemplateEngine} implementation for Apache FreeMarker.
    */
   public FreeMarkerTemplateEngine createEngine(String templateFolderPath) {
 

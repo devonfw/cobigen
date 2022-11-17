@@ -13,34 +13,15 @@ import com.devonfw.cobigen.templates.devon4j.utils.SQLUtil;
  */
 public class SQLUtilTest {
 
+  /**
+   * Tests type mappings between simple Java types and corresponding SQL types
+   */
   @Test
-  public void testClassTypeMapping() {
-
+  public void testTypeMappings() {
     assertThat(SQLUtil.mapType("Class<?>")).isEqualTo("VARCHAR");
-  }
-
-  @Test
-  public void testByteArray() {
-
     assertThat(SQLUtil.mapType("byte[]")).isEqualTo("BLOB");
-  }
-
-  @Test
-  public void testTimestamp() {
-
     assertThat(SQLUtil.mapType("Timestamp")).isEqualTo("TIMESTAMP");
-  }
-
-  @Test
-  public void testTimeZone() {
-
     assertThat(SQLUtil.mapType("TimeZone")).isEqualTo("VARCHAR");
-  }
-
-  @Test
-  public void testCalendar() {
-
     assertThat(SQLUtil.mapType("Calendar")).isEqualTo("TIMESTAMP");
   }
-
 }
