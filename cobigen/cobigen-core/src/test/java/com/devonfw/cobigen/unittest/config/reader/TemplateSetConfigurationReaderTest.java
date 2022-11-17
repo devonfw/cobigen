@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -16,6 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -125,7 +127,26 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
 
       assertThat(
           testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())
-              .isEqualTo(3);
+              .isEqualTo(2);
+    });
+  }
+
+  /**
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testTemplateScans() throws Exception {
+
+    File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
+    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_adapted/");
+    FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
+      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+          folder.toPath().resolve("template-sets"));
+      TemplateSetConfigurationReader reader = templateSetConfiguration.getTemplateSetConfigurationReader();
+      Map<String, Template> map = reader.loadTemplates();
+      // TODO AssertThat something
     });
   }
 

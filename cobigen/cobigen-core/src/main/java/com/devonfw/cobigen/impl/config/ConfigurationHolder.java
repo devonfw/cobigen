@@ -37,14 +37,8 @@ public class ConfigurationHolder {
   /** Cached context configuration */
   private ContextConfiguration contextConfiguration;
 
-  /** Cached template-set configuration */
-  private TemplateSetConfiguration templateSetConfiguration;
-
   /** Root path of the configuration */
   private Path contextConfigurationPath;
-
-  /** Root path of the configuration */
-  private Path templateSetConfigurationPath;
 
   /** The OS filesystem path of the configuration */
   private URI configurationLocation;
