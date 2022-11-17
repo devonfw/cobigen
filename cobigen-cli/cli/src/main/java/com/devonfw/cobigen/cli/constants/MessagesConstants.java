@@ -76,4 +76,9 @@ public class MessagesConstants {
    * Message constant: description of the custom-location option
    */
   public static final String CUSTOM_LOCATION_OPTION_DESCRIPTION = "Custom location where the unpacked templates will be stored.";
+
+  /**
+   * Message constant: hint for verbose mode.
+   */
+  public static final String VERBOSE_HINT = "For more info execute in verbose mode (-v).";
 }

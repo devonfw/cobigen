@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class CobiGenCLI {
     commandLine.setExecutionExceptionHandler(exceptionHandler);
     int exitCode = commandLine.execute(args);
     if (exitCode != 0) {
-      LOG.error("Cobigen terminated in an unexpected manner, for more info execute in verbose mode (-v).");
+      LOG.error("Cobigen terminated in an unexpected manner." + MessagesConstants.VERBOSE_HINT);
     }
     System.exit(exitCode);
   }

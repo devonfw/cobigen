@@ -343,7 +343,7 @@ public class GenerateCommand extends CommandCommons {
         }
       }
     } else {
-      LOG.error("Generation not successful! For more info execute in verbose mode (-v).");
+      LOG.error("Generation not successful! " + MessagesConstants.VERBOSE_HINT);
     }
   }
 
