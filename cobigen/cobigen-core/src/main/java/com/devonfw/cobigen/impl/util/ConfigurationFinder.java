@@ -40,16 +40,20 @@ public class ConfigurationFinder {
    * load properties from .properties file into TemplateSetConfiguration if found valid properties otherwise load
    * default values
    *
-   * @param path to a .properties file
+   * @param propertiesPath to a .properties file
+   * @param templatesPath to the template-set, where the properties be loaded
    * @return TemplateSetConfiguration instance
+   * @throws SAXException
+   * @throws InvalidConfigurationException
    */
-  public static TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
+  public static TemplateSetConfiguration loadTemplateSetConfigurations(Path propertiesPath, Path templatesPath)
+      throws InvalidConfigurationException {
 
     Properties props = new Properties();
     try {
-      props = readConfigurationFile(path);
+      props = readConfigurationFile(propertiesPath);
     } catch (InvalidConfigurationException e) {
-      LOG.info("This path {} is invalid. The default Config values will be loaded instead.", path);
+      LOG.info("This path {} is invalid. The default Config values will be loaded instead.", propertiesPath);
     }
 
     String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
@@ -69,9 +73,11 @@ public class ConfigurationFinder {
       if (!groupIds.contains(defaultGroupId))
         groupIds.add(defaultGroupId);
 
-    boolean useSnapshots = false;
-    if (props.getProperty(snapshot) != null && props.getProperty(snapshot).equals("true")) {
-      useSnapshots = true;
+    boolean useSnapshots;
+    useSnapshots = false;
+    if (props.getProperty(snapshot) != null) {
+      if (props.getProperty(snapshot).equals("true"))
+        useSnapshots = true;
     }
 
     List<String> hiddenIdsString = new ArrayList<>();
@@ -86,7 +92,7 @@ public class ConfigurationFinder {
 
     List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
     List<MavenCoordinate> convertedMavenCoordinates = MavenCoordinateUtil.convertToMavenCoordinates(mavenCoordinates);
-    ConfigurationFactory configurationFactory = new ConfigurationFactory(findTemplatesLocation());
+    ConfigurationFactory configurationFactory = new ConfigurationFactory(templatesPath.toUri());
 
     ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds,
         convertedMavenCoordinates);

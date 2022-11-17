@@ -48,6 +48,22 @@ public class TemplateSetConfiguration {
   /** The reader to read the template-set.xml files */
   public TemplateSetConfigurationReader templateSetConfigurationReader;
 
+  /**
+   * @return templateSetConfigurationReader
+   */
+  public TemplateSetConfigurationReader getTemplateSetConfigurationReader() {
+
+    return this.templateSetConfigurationReader;
+  }
+
+  /**
+   * @param templateSetConfigurationReader new value of {@link #gettemplateSetConfigurationReader}.
+   */
+  private void setTemplateSetConfigurationReader(TemplateSetConfigurationReader templateSetConfigurationReader) {
+
+    this.templateSetConfigurationReader = templateSetConfigurationReader;
+  }
+
   /** Paths of the template set configuration files */
   public List<Path> templateSetFiles = new ArrayList<>();
 
@@ -94,7 +110,7 @@ public class TemplateSetConfiguration {
     for (Path templateSetFile : this.templateSetFiles) {
       this.templateSetConfigurationReader.templateSetFile = templateSetFile;
       this.templateSetConfigurationReader.readConfiguration();
-      // Fix this this.configurationPath = this.templateSetConfigurationReader.getContextRoot();
+      this.configRoot = this.templateSetConfigurationReader.getConfigRoot();
       this.triggers.putAll(this.templateSetConfigurationReader.loadTriggers());
       this.templates.putAll(this.templateSetConfigurationReader.loadTemplates());
     }
@@ -103,6 +119,7 @@ public class TemplateSetConfiguration {
     for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
       this.increments.putAll(this.templateSetConfigurationReader.loadIncrements(this.templates, trigger.getValue()));
     }
+    setTemplateSetConfigurationReader(this.templateSetConfigurationReader);
   }
 
   /**

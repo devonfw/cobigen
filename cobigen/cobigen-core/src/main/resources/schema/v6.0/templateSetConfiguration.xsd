@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://capgemini.com/devonfw/cobigen/TemplateSetTestConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
-xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  elementFormDefault="qualified" version="6.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  targetNamespace="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" elementFormDefault="qualified" version="6.0">
 
- <xs:import schemaLocation="../v5.0/templatesConfiguration.xsd"  namespace="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"/>
- <xs:import schemaLocation="../v3.0/contextConfiguration.xsd"  namespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration"/>
 
-<xs:element name="templateSetConfiguration"/>
+  <xs:import schemaLocation="../v3.0/contextConfiguration.xsd"
+    namespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration"/>
+  <xs:import schemaLocation="../v5.0/templatesConfiguration.xsd"
+    namespace="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"/>
 
-<xs:complexType name="templateSetConfiguration">
-<xs:sequence>
-<xs:element ref="tc:templatesConfiguration"/>
-<xs:element ref="cc:contextConfiguration"/>
-</xs:sequence>
- <xs:attribute name="version" use="required" type="xs:decimal" />
-</xs:complexType>
-
+  <xs:element name="templateSetConfiguration">
+    <xs:complexType>
+       <xs:all>
+        <xs:element ref="cc:contextConfiguration"/>
+        <xs:element ref="tc:templatesConfiguration"/>
+      </xs:all>
+      <xs:attribute name="version" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

@@ -118,7 +118,7 @@ public class ConfigurationHolder {
   public ContextConfiguration readContextConfiguration() {
 
     if (this.contextConfiguration == null) {
-      this.contextConfiguration = new ContextConfiguration(this.contextConfigurationPath);
+      this.contextConfiguration = new ContextConfiguration(this.contextConfigurationPath, isTemplateSetConfiguration());
     }
     return this.contextConfiguration;
   }

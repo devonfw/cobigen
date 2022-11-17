@@ -3,6 +3,7 @@ package com.devonfw.cobigen.impl.config.reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +19,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -130,7 +130,12 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       throw new IllegalArgumentException("Configuraion path cannot be null.");
 
     this.templateSetConfigurationDecorator = templateSetConfiguration;
-    Path templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    Path templateSetsDownloaded;
+    if (configRoot.endsWith(ConfigurationConstants.DOWNLOADED_FOLDER)) {
+      templateSetsDownloaded = configRoot;
+    } else {
+      templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    }
     Path templateSetsAdapted = configRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
     if (!Files.exists(templateSetsDownloaded) && !Files.exists(templateSetsAdapted)) {
@@ -147,7 +152,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       else if (Files.exists(templateSetsDownloaded)) {
         templateSetConfiguration.templateSetFiles
             .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
-        this.configRoot = configRoot.resolve("template-set.jar");
+        this.configRoot = templateSetsDownloaded.resolve("template-set.jar");
 
       }
 
@@ -167,24 +172,19 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
     this.configLocation = this.templateSetFile.getParent();
 
-    Path templateLocation;
     if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
-      this.configRoot = this.templateSetFile.getParent().resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
-      templateLocation = this.configRoot;
-      this.rootTemplateFolder = TemplateFolder.create(templateLocation.getParent().resolve("templates"));
+      this.configRoot = this.templateSetFile;
+      this.rootTemplateFolder = TemplateFolder.create(this.configLocation.resolve("templates"));
     }
 
     if (FileSystemUtil.isZipFile(this.configRoot.toUri())) {
-      templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
+      Path templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
       this.rootTemplateFolder = TemplateFolder
           .create(templateLocation.resolve(this.configLocation.resolve("templates")));
     }
 
     if (!Files.exists(this.templateSetFile)) {
       throw new InvalidConfigurationException(this.templateSetFile, "Could not find templates set configuration file.");
-    } else {
-      // Change this line to templatesLocation = rootTemplatePath if additional "templates" folder is removed
-      // templateLocation = this.configRoot.resolve(this.configLocation.toUri() + "/templates");
     }
 
     // workaround to make JAXB work in OSGi context by
@@ -226,12 +226,11 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
       // correct his failures
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
       TemplateSetConfigurationVersion templateSetVersion = TemplateSetConfigurationVersion.getLatest();
-      try (
-          InputStream schemaStream = getClass()
-              .getResourceAsStream("/schema/" + templateSetVersion + "/templateSetConfiguration.xsd");
-          InputStream configInputStream = Files.newInputStream(this.templateSetFile)) {
 
-        Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+      URL schemaStream = getClass().getResource("/schema/" + templateSetVersion + "/templateSetConfiguration.xsd");
+      try (InputStream configInputStream = Files.newInputStream(this.templateSetFile)) {
+
+        Schema schema = schemaFactory.newSchema(schemaStream);
         unmarschaller.setSchema(schema);
         rootNode = (com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration) unmarschaller
             .unmarshal(configInputStream);
@@ -265,6 +264,14 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   }
 
   /**
+   * @return the path to template-set.xml
+   */
+  public Path getConfigRoot() {
+
+    return this.configRoot;
+  }
+
+  /**
    * Loads all {@link Trigger}s of the static context into the local representation
    *
    * @return a {@link List} containing all the {@link Trigger}s
@@ -284,7 +291,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
         // prefer the adapted templates
         this.triggerTemplateSetLocations.put(trigger.getId(), this.configLocation);
         triggers.put(trigger.getId(),
-            new Trigger(trigger.getId(), trigger.getType(), ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER,
+            new Trigger(trigger.getId(), trigger.getType(), ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH,
                 Charset.forName(trigger.getInputCharset()), loadMatchers(trigger), loadContainerMatchers(trigger)));
       }
     }

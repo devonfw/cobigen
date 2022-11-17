@@ -49,14 +49,6 @@ public class ConfigurationFactory {
   }
 
   /**
-   * @return {@link ContextConfigurationDecorator} instance
-   */
-  public ContextConfiguration getContextConfiguration() {
-
-    return new ContextConfiguration(this.configRoot);
-  }
-
-  /**
    * @param groupIds property
    * @param allowSnapshots property
    * @param hideTemplates property

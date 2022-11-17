@@ -1,12 +1,17 @@
 package com.devonfw.cobigen.unittest.config.reader;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -21,6 +26,12 @@ import junit.framework.TestCase;
  */
 
 public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
+
+  /**
+   * JUnit Rule to temporarily create files and folders, which will be automatically removed after test execution
+   */
+  @Rule
+  public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   /**
    * Root path to all resources used in this test case
@@ -75,33 +86,47 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   /**
    * Tests if a template set configuration can be found from a template set jar file
    *
+   * @throws Exception
+   *
    */
   @Test
-  public void testTemplateSetsDownloaded() {
+  public void testTemplateSetsDownloaded() throws Exception {
 
-    Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets")
-        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve("downloaded");
-    TemplateSetConfiguration testDecorator = new TemplateSetConfiguration(templateSetPath);
-    assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(1);
+    File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
+    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_downloaded/");
+    FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
+
+      TemplateSetConfiguration testDecorator;
+      testDecorator = new TemplateSetConfiguration(folder.toPath().resolve("template-sets"));
+      assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(1);
+    });
   }
 
   /**
    * Tests if template-set configuration can be found in both adapted and downloaded folder of the template sets
    * directory
    *
+   * @throws Exception
+   *
    */
   @Test
-  public void testTemplateSetsAdaptedAndDownloaded() {
+  public void testTemplateSetsAdaptedAndDownloaded() throws Exception {
 
-    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH
-        .resolve("valid_template_sets/" + ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-    TemplateSetConfiguration testDecoratorAdapted = new TemplateSetConfiguration(templateSetPathAdapted);
-    Path templateSetPathDownloaded = TEST_FILE_ROOT_PATH.resolve("valid_template_sets")
-        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve("downloaded");
-    TemplateSetConfiguration testDecoratorDownloaded = new TemplateSetConfiguration(templateSetPathDownloaded);
+    File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
+    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets/");
+    FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
 
-    assertThat(testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())
-        .isEqualTo(3);
+      TemplateSetConfiguration testDecoratorAdapted = new TemplateSetConfiguration(
+          folder.toPath().resolve("template-sets"));
+      TemplateSetConfiguration testDecoratorDownloaded = new TemplateSetConfiguration(
+          folder.toPath().resolve("template-sets").resolve("downloaded"));
+
+      assertThat(
+          testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())
+              .isEqualTo(3);
+    });
   }
 
 }

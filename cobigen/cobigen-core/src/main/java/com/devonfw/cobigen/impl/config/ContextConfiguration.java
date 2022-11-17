@@ -38,6 +38,23 @@ public class ContextConfiguration {
   private ContextConfigurationReader contextConfigurationReader;
 
   /**
+   * The representation of the generated TemplateSetConfiguration file
+   */
+  private TemplateSetConfiguration templateSetConfiguration;
+
+  /**
+   * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
+   *
+   * @param configRoot root path for the configuration of CobiGen
+   * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
+   */
+  public ContextConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
+
+    this.configurationPath = configRoot;
+    readConfiguration(configRoot, isTemplateSet);
+  }
+
+  /**
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
    *
    * @param configRoot root path for the configuration of CobiGen
@@ -55,14 +72,28 @@ public class ContextConfiguration {
    * @param configRoot CobiGen configuration root path
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
-  private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
+  private void readConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
 
-    if (this.contextConfigurationReader == null) {
-      this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
+    if (isTemplateSet) {
+      if (this.templateSetConfiguration == null) {
+        this.templateSetConfiguration = new TemplateSetConfiguration(configRoot);
+      }
+
+      this.configurationPath = this.templateSetConfiguration.getTemplateSetConfigurationReader().getConfigRoot();
+      this.triggers = this.templateSetConfiguration.getTemplateSetConfigurationReader().loadTriggers();
+    } else {
+      if (this.contextConfigurationReader == null) {
+        this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
+      }
+
+      this.configurationPath = this.contextConfigurationReader.getContextRoot();
+      this.triggers = this.contextConfigurationReader.loadTriggers();
     }
+  }
 
-    this.configurationPath = this.contextConfigurationReader.getContextRoot();
-    this.triggers = this.contextConfigurationReader.loadTriggers();
+  private void readConfiguration(Path configRoot) {
+
+    readConfiguration(configRoot, false);
   }
 
   /**
@@ -124,6 +155,9 @@ public class ContextConfiguration {
    */
   public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
 
+    if (this.templateSetConfiguration != null) {
+      return this.templateSetConfiguration.getTemplateSetConfigurationReader().getConfigLocationForTrigger(triggerId);
+    }
     return this.contextConfigurationReader.getContextRoot();
   }
 }

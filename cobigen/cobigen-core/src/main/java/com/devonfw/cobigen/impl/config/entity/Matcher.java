@@ -10,11 +10,8 @@ public class Matcher extends AbstractMatcher {
   /** {@link VariableAssignment}s */
   private List<VariableAssignment> variableAssignments;
 
-  /** Old Accumulation type */
-  private com.devonfw.cobigen.impl.config.entity.io.v3_0.AccumulationType accumulationType;
-
   /** Accumulation type */
-  private com.devonfw.cobigen.impl.config.entity.io.AccumulationType accumulationTypeNew;
+  private String accumulationType;
 
   /**
    * Creates a new Matcher for a given type, with a given value to match against and the corresponding variable
@@ -29,7 +26,7 @@ public class Matcher extends AbstractMatcher {
       com.devonfw.cobigen.impl.config.entity.io.v3_0.AccumulationType accumulationType2) {
 
     super(type, value);
-    this.accumulationType = accumulationType2;
+    this.accumulationType = accumulationType2.name();
     this.variableAssignments = variableAssignments == null ? new LinkedList<>() : variableAssignments;
   }
 
@@ -46,7 +43,7 @@ public class Matcher extends AbstractMatcher {
       com.devonfw.cobigen.impl.config.entity.io.AccumulationType accumulationType2) {
 
     super(type, value);
-    this.accumulationTypeNew = accumulationType2;
+    this.accumulationType = accumulationType2.name();
     this.variableAssignments = variableAssignments == null ? new LinkedList<>() : variableAssignments;
   }
 
@@ -61,7 +58,7 @@ public class Matcher extends AbstractMatcher {
   /**
    * @return value of accumulationType
    */
-  public com.devonfw.cobigen.impl.config.entity.io.v3_0.AccumulationType getAccumulationType() {
+  public String getAccumulationType() {
 
     return this.accumulationType;
   }
@@ -76,6 +73,6 @@ public class Matcher extends AbstractMatcher {
   public String toString() {
 
     return getClass().getSimpleName() + "[type='" + getType() + "'/value='" + getValue() + "'/accuType='"
-        + this.accumulationType.name() + "']";
+        + this.accumulationType + "']";
   }
 }
