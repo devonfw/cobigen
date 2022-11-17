@@ -283,8 +283,8 @@ public class SQLUtil extends CommonUtil {
 
   /**
    * Parametrized helper function to dynamically extract data from a map. Returns null on casting errors
-   * @param map
-   * @param key
+   * @param map Dynamic map from which to extract data
+   * @param key key for the value
    * @return value if found and cast succeeds, null otherwise
    */
   static private <T> T getValue(Map<String, ?> map, String key) {
