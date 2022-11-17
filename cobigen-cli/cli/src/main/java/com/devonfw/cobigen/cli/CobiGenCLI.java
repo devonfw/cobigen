@@ -45,7 +45,7 @@ public class CobiGenCLI {
     commandLine.setExecutionExceptionHandler(exceptionHandler);
     int exitCode = commandLine.execute(args);
     if (exitCode != 0) {
-      LOG.error("Cobigen terminated in an unexpected manner, fore more info execute in verbose mode (-v).");
+      LOG.error("Cobigen terminated in an unexpected manner, for more info execute in verbose mode (-v).");
     }
     System.exit(exitCode);
   }
