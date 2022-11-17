@@ -16,28 +16,24 @@ public class SQLUtilTest {
   @Test
   public void testClassTypeMapping() {
 
-    // Test fails
     assertThat(SQLUtil.mapType("Class<?>")).isEqualTo("VARCHAR");
   }
 
   @Test
   public void testByteArray() {
 
-    // Test fails
     assertThat(SQLUtil.mapType("byte[]")).isEqualTo("BLOB");
   }
 
   @Test
   public void testTimestamp() {
 
-    // Test fails
     assertThat(SQLUtil.mapType("Timestamp")).isEqualTo("TIMESTAMP");
   }
 
   @Test
   public void testTimeZone() {
 
-    // Test fails
     assertThat(SQLUtil.mapType("TimeZone")).isEqualTo("VARCHAR");
   }
 

@@ -65,6 +65,9 @@ public class SQLTemplateGenerationTest extends AbstractJavaTemplateTest {
     assertThat(output).contains("test_id BIGINT, FOREIGN KEY (test_id) REFERENCES SQLTEST(MY_ID_FIELD)");
   }
 
+  /**
+   * Tests successful generation of a second CREATE TABLE statement from the @JoinTable annotation
+   */
   @Test
   public void testJoinTableGeneration() {
     String output = process(SQLTestJoinTableEntity.class);
