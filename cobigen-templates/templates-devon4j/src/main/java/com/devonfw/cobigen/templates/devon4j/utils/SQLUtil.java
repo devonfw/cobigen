@@ -7,7 +7,7 @@ import java.util.function.Function;
  * Provides operations to identify and process SQL specific information
  *
  */
-public class SQLUtil extends CommonUtil {
+public class SQLUtil {
 
   private static int DEFAULT_FIELD_LENGTH = 255;
 

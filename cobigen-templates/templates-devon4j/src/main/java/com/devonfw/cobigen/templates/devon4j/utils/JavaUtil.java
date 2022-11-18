@@ -3,15 +3,23 @@ package com.devonfw.cobigen.templates.devon4j.utils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides type operations, mainly checks and casts for Java Primitives, to be used in the templates
  *
  */
-public class JavaUtil extends CommonUtil {
+public class JavaUtil {
+
+  /**
+   * Logger for this class
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(JavaUtil.class);
 
   /**
    * The constructor.
@@ -54,7 +62,7 @@ public class JavaUtil extends CommonUtil {
 
     if (pojoClass == null) {
       throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+              "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
 
     if (equalsJavaPrimitive(pojoClass, fieldName)) {
@@ -114,7 +122,7 @@ public class JavaUtil extends CommonUtil {
    * @throws SecurityException if the field cannot be accessed.
    */
   public boolean equalsJavaPrimitive(Class<?> pojoClass, String fieldName)
-      throws NoSuchFieldException, SecurityException {
+          throws NoSuchFieldException, SecurityException {
 
     if (pojoClass == null) {
       return false;
@@ -161,10 +169,10 @@ public class JavaUtil extends CommonUtil {
    * @throws SecurityException if the field cannot be accessed.
    */
   public boolean equalsJavaPrimitiveIncludingArrays(Class<?> pojoClass, String fieldName)
-      throws NoSuchFieldException, SecurityException {
+          throws NoSuchFieldException, SecurityException {
 
     return equalsJavaPrimitive(pojoClass, fieldName) || (pojoClass.getDeclaredField(fieldName).getType().isArray()
-        && pojoClass.getDeclaredField(fieldName).getType().getComponentType().isPrimitive());
+            && pojoClass.getDeclaredField(fieldName).getType().getComponentType().isPrimitive());
   }
 
   /**
@@ -198,13 +206,38 @@ public class JavaUtil extends CommonUtil {
    * @throws SecurityException if the field cannot be accessed.
    */
   public String castJavaPrimitives(Class<?> pojoClass, String fieldName)
-      throws NoSuchFieldException, SecurityException {
+          throws NoSuchFieldException, SecurityException {
 
     if (equalsJavaPrimitive(pojoClass, fieldName)) {
       return String.format("((%1$s)%2$s)", boxJavaPrimitives(pojoClass, fieldName), fieldName);
     } else {
       return "";
     }
+  }
+
+  /**
+   * @param pojoClass {@link Class} the class object of the pojo
+   * @param fieldName {@link String} the name of the field
+   * @return true if the field is an instance of java.utils.Collections
+   * @throws NoSuchFieldException indicating something awefully wrong in the used model
+   * @throws SecurityException if the field cannot be accessed.
+   */
+  public boolean isCollection(Class<?> pojoClass, String fieldName) throws NoSuchFieldException, SecurityException {
+
+    if (pojoClass == null) {
+      return false;
+    }
+
+    Field field = pojoClass.getDeclaredField(fieldName);
+    if (field == null) {
+      field = pojoClass.getField(fieldName);
+    }
+    if (field == null) {
+      return false;
+    } else {
+      return Collection.class.isAssignableFrom(field.getType());
+    }
+
   }
 
   /**
@@ -301,7 +334,7 @@ public class JavaUtil extends CommonUtil {
 
     if (pojoClass == null) {
       throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+              "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
     String s = "-";
     Method method = findMethod(pojoClass, methodName);
@@ -324,11 +357,11 @@ public class JavaUtil extends CommonUtil {
    */
   @SuppressWarnings("unchecked")
   public String getReturnTypeOfMethodAnnotatedWith(Class<?> pojoClass, String annotatedClassName)
-      throws ClassNotFoundException {
+          throws ClassNotFoundException {
 
     if (pojoClass == null) {
       throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+              "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
 
     Method[] methods = pojoClass.getDeclaredMethods();
@@ -381,7 +414,7 @@ public class JavaUtil extends CommonUtil {
 
     if (pojoClass == null) {
       throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+              "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
     for (Method m : pojoClass.getMethods()) {
       if (m.getName().equals(methodName)) {
@@ -389,6 +422,22 @@ public class JavaUtil extends CommonUtil {
       }
     }
     return null;
+  }
+
+  /**
+   * Checks whether the class given by the full qualified name is an enum
+   *
+   * @param className full qualified class name
+   * @return <code>true</code> if the class is an enum, <code>false</code> otherwise
+   */
+  public boolean isEnum(String className) {
+
+    try {
+      return ClassUtils.getClass(className).isEnum();
+    } catch (ClassNotFoundException e) {
+      LOG.warn("{}: Could not find {}", e.getMessage(), className);
+      return false;
+    }
   }
 
   /**
