@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.gui;
+package com.devonfw.cobigen.gui.controllers;
 
 /**
  * TODO nneuhaus This type ...

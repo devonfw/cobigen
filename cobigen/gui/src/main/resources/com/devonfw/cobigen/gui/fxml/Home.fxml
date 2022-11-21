@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="homePane" prefHeight="459.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.HomeController">
+  <children>
+    <SplitPane fx:id="horizontalSplitPane" dividerPositions="0.1119186046511628" orientation="VERTICAL" prefHeight="459.0" prefWidth="450.0">
+      <items>
+        <AnchorPane fx:id="headerPane" minHeight="0.0" minWidth="0.0" prefHeight="57.0" prefWidth="429.0">
+          <children>
+            <Text fx:id="headersText" layoutX="5.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to CobiGen`s Template Set Manager!" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+              <font>
+                <Font name="Segoe UI" size="20.0" />
+              </font>
+            </Text>
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+          <children>
+            <Text layoutX="6.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search for template sets in the search bar on the left" wrappingWidth="340.80274963378906" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+            <Text layoutX="19.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Install Template Set" wrappingWidth="108.13612365722656" AnchorPane.leftAnchor="20.0" />
+            <Text layoutX="172.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Delete Template Set" wrappingWidth="108.13612365722656" />
+            <Text layoutX="305.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Update Template Set" wrappingWidth="114.13612365722656" AnchorPane.rightAnchor="20.0" />
+            <Text layoutX="6.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="How it Works" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="10.0">
+              <font>
+                <Font size="14.0" />
+              </font>
+            </Text>
+            <Separator layoutX="-2.0" layoutY="24.0" prefHeight="16.0" prefWidth="455.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+            <Button layoutX="58.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE" AnchorPane.leftAnchor="58.0">
+              <font>
+                <Font name="System Bold" size="12.0" />
+              </font>
+            </Button>
+            <Button layoutX="213.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="*" textFill="WHITE" AnchorPane.leftAnchor="211.0" AnchorPane.rightAnchor="211.0">
+              <font>
+                <Font name="System Bold" size="12.0" />
+              </font>
+            </Button>
+            <Button layoutX="348.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="~" textFill="WHITE" AnchorPane.rightAnchor="68.0">
+              <font>
+                <Font name="System Bold" size="12.0" />
+              </font>
+            </Button>
+            <Text layoutX="5.0" layoutY="161.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Template Set Structure">
+              <font>
+                <Font size="14.0" />
+              </font>
+            </Text>
+            <Separator layoutX="-2.0" layoutY="166.0" prefHeight="16.0" prefWidth="455.0" />
+            <AnchorPane layoutX="18.0" layoutY="182.0" prefHeight="120.0" prefWidth="427.0" AnchorPane.bottomAnchor="96.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="182.0">
+                     <children>
+                        <ScrollPane fitToWidth="true" prefHeight="124.0" prefWidth="427.0">
+                          <content>
+                            <AnchorPane fx:id="treeViewPane" minHeight="0.0" minWidth="0.0" prefHeight="152.0" prefWidth="411.0" />
+                          </content>
+                        </ScrollPane>
+                     </children></AnchorPane>
+            <Text layoutX="5.0" layoutY="342.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Wiki" AnchorPane.leftAnchor="5.0">
+              <font>
+                <Font size="14.0" />
+              </font>
+            </Text>
+            <Separator layoutX="-2.0" layoutY="348.0" prefHeight="16.0" prefWidth="455.0" />
+            <Text layoutX="6.0" layoutY="369.0" strokeType="OUTSIDE" strokeWidth="0.0" text="More information can be found in our Wiki:" wrappingWidth="246.13607788085938" AnchorPane.leftAnchor="10.0" />
+                  <Hyperlink fx:id="wikilink" layoutX="109.0" layoutY="374.0" onAction="#openWiki" text="https://github.com/devonfw/cobigen/wiki" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="109.0" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+  </children>
+</AnchorPane>

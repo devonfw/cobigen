@@ -50,7 +50,7 @@ public class App extends Application {
   public void start(Stage primaryStage) throws IOException {
 
     this.window = new Stage();
-    Parent root = FXMLLoader.load(getClass().getResource("Primary.fxml"));
+    Parent root = FXMLLoader.load(getClass().getResource("fxml/Primary.fxml"));
 
     App.scene = new Scene(root);
     App.scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());

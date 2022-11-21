@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import com.devonfw.cobigen.gui.controllers.HomeController;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,6 +23,9 @@ import javafx.scene.layout.AnchorPane;
  * Controller for the Template Set Management GUI
  */
 public class Controller implements Initializable {
+
+  @FXML
+  private HomeController homeController;
 
   ArrayList<String> templateSets = new ArrayList<>(Arrays.asList("templates-devon4j-tests", "templates-devon4j-utils",
       "crud-openapi-net", "crud-angular-client-app", "crud-ionic-client-app", "rest-documentation"));
@@ -50,14 +55,23 @@ public class Controller implements Initializable {
   @Override
   public void initialize(URL arg0, ResourceBundle arg1) {
 
+    try {
+      loadHome(null);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     this.searchResultsView.getItems().addAll(this.templateSets);
   }
 
+  /**
+   * @param actionEvent
+   * @throws IOException
+   */
   @FXML
   public void loadHome(javafx.event.ActionEvent actionEvent) throws IOException {
 
-    AnchorPane homePane = FXMLLoader.load(getClass().getResource("Home.fxml"));
-    this.detailsPane.getChildren().setAll(homePane);
+    this.homePane = FXMLLoader.load(getClass().getResource("fxml/Home.fxml"));
+    this.detailsPane.getChildren().setAll(this.homePane);
   }
 
   /**

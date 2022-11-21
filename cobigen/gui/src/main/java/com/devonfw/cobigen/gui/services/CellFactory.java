@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.gui;
+package com.devonfw.cobigen.gui.services;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;

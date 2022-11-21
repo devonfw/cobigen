@@ -60,7 +60,7 @@ public class TestFXBase extends ApplicationTest {
   public void start(Stage stage) throws Exception {
 
     this.mainStage = stage;
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("Primary.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("fxml/Primary.fxml"));
     this.mainRoot = loader.load();
     this.controller = loader.getController();
     stage.setScene(new Scene(this.mainRoot));
