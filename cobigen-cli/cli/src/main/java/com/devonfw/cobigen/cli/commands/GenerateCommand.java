@@ -333,17 +333,17 @@ public class GenerateCommand extends CommandCommons {
     boolean generationSuccess = ValidationUtils.checkGenerationReport(report);
     if (generationSuccess) {
       Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream().filter(e -> e.getFileName().endsWith(".java"))
-              .collect(Collectors.toSet());
+          .collect(Collectors.toSet());
       if (!generatedJavaFiles.isEmpty()) {
         try {
           ParsingUtils.formatJavaSources(generatedJavaFiles);
         } catch (FormatterException e) {
           LOG.warn(
-                  "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
+              "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
         }
       }
     } else {
-      LOG.error("Generation not successful! " + MessagesConstants.VERBOSE_HINT);
+      LOG.error("Generation not successful! " + (LOG.isDebugEnabled() ? MessagesConstants.VERBOSE_HINT : ""));
     }
   }
 

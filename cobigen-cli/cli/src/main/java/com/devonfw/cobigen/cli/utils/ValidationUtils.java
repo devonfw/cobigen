@@ -93,8 +93,11 @@ public final class ValidationUtils {
     // Log exceptions for devs in DEBUG
     for (int i = 0; i < report.getErrors().size(); i++) {
       RuntimeException e = report.getErrors().get(i);
-      LOG.error("Error: {}", e.getMessage());
-      if (LOG.isDebugEnabled()) e.printStackTrace();
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Encountered an exception: ", e);
+      } else {
+        LOG.error("Error: {}", e.getMessage());
+      }
     }
     return false;
   }

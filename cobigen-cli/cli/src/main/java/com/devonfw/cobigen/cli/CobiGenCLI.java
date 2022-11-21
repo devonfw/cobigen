@@ -38,15 +38,18 @@ public class CobiGenCLI {
     CommandLine.IExecutionExceptionHandler exceptionHandler = new CommandLine.IExecutionExceptionHandler() {
       @Override
       public int handleExecutionException(Exception e, CommandLine commandLine, CommandLine.ParseResult parseResult) throws Exception {
-        LOG.error("An error occurred while executing CobiGen: {}", e.getMessage());
-        if (LOG.isDebugEnabled()) e.printStackTrace();
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Cobigen exited with exception: ", e);
+        } else {
+          LOG.error("An error occurred while executing CobiGen: {}", e.getMessage());
+        }
         return 1;
       }
     };
     commandLine.setExecutionExceptionHandler(exceptionHandler);
     int exitCode = commandLine.execute(args);
     if (exitCode != 0) {
-      LOG.error("Cobigen terminated in an unexpected manner." + MessagesConstants.VERBOSE_HINT);
+      LOG.error("Cobigen terminated in an unexpected manner. " + MessagesConstants.VERBOSE_HINT);
     }
     System.exit(exitCode);
   }
