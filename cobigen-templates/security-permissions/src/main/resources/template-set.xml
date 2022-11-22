@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0"
+                              xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+                              xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+                              xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                              xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+    <cc:contextConfiguration version="3.0">
+        <cc:trigger id="constants_security_permissions" type="xml">
+            <cc:matcher type="nodename" value="access-control-schema">
+                <cc:variableAssignment type="constant" key="rootPackage" value="com.devonfw.gastronomy.restaurant"/>
+            </cc:matcher>
+        </cc:trigger>
+        <cc:tags>
+            <cc:tag name="Security"></cc:tag>
+            <cc:tag name="Permissions"></cc:tag>
+        </cc:tags>
+    </cc:contextConfiguration>
+    <tc:templatesConfiguration version="5.0">
+        <tc:templates>
+            <tc:template name="permission_constants" destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/PermissionConstants.java" templateFile="PermissionConstants.java.ftl" mergeStrategy="override" />
+        </tc:templates>
+        <tc:increments>
+            <tc:increment name="permission_constants" description="Permission Constants" explanation="Creates the PermissionConstants that can be used to secure REST API methods.">
+                <tc:templateRef ref="permission_constants" />
+            </tc:increment>
+        </tc:increments>
+    </tc:templatesConfiguration>
+
+</tns:templateSetConfiguration>
