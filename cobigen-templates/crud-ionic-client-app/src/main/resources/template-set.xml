@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
-	
-	 <cc:contextConfiguration version="3.0">
-  <cc:trigger id="crud_openapi_ionic_client_app" type="openapi">
-    <cc:containerMatcher type="element" value="openAPIFile" />
-    <cc:matcher type="element" value="EntityDef">
-      <cc:variableAssignment type="constant" key="domain" value="demo" />
-      <cc:variableAssignment type="property" key="component" value="componentName" />
-      <cc:variableAssignment type="property" key="etoName" value="name" />
+
+<cc:contextConfiguration version="3.0">
+  <cc:trigger id="crud_ionic_client_app" type="java">
+    <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
+      <cc:variableAssignment type="regex" key="rootPackage" value="1" />
+      <cc:variableAssignment type="regex" key="domain" value="3" />
+      <cc:variableAssignment type="regex" key="component" value="4" />
+      <cc:variableAssignment type="regex" key="etoName" value="5" />
     </cc:matcher>
   </cc:trigger>
   <cc:tags>
     <cc:tag name="Ionic"></cc:tag>
-    <cc:tag name="OpenAPI"></cc:tag>
     <cc:tag name="CRUD"></cc:tag>
     <cc:tag name="Client"></cc:tag>
     <cc:tag name="App"></cc:tag>
   </cc:tags>
   <cc:links>
-    <cc:link url="https://github.com/devonfw/cobigen/wiki/howto-devonfw-CobiGen-OpenAPI"></cc:link>
+    <cc:link url="https://github.com/devonfw/cobigen/wiki/howto_ionic-client-generation"></cc:link>
   </cc:links>
-   </cc:contextConfiguration>
-	
-	 <tc:templatesConfiguration version="5.0">
+</cc:contextConfiguration>
+<tc:templatesConfiguration version="5.0">
   <tc:templates>
     <tc:templateExtension ref="${variables.etoName#lower_case}-detail.page.ts" mergeStrategy="tsmerge" />
     <tc:templateExtension ref="${variables.etoName#lower_case}-list.page.ts" mergeStrategy="tsmerge_override" />
@@ -42,14 +40,11 @@
     <tc:templateExtension ref="${variables.etoName#lower_case}-list.page.html" mergeStrategy="html-ng*" />
     <tc:templateExtension ref="es.json" mergeStrategy="jsonmerge_override" />
     <tc:templateExtension ref="en.json" mergeStrategy="jsonmerge_override" />
-    <tc:templateExtension ref="it.json" mergeStrategy="jsonmerge_override" />
     <tc:templateExtension ref="business-operator.service.ts" mergeStrategy="tsmerge_override" />
   </tc:templates>
-
   <tc:templateScans>
-    <tc:templateScan name="ts_scan" templatePath="templates" destinationPath="" />
+    <tc:templateScan templatePath="templates" destinationPath="src/main/java" />
   </tc:templateScans>
-
   <tc:increments>
     <tc:increment name="devon4ng-app" description="CRUD devon4ng Ionic App" explanation="Creates Ionic stack CRUD service.">
       <tc:incrementRef ref="app_ionic_structure" />
@@ -69,7 +64,6 @@
     <tc:increment name="ionic_i18n" description="Ionic i18n">
       <tc:templateRef ref="es.json" />
       <tc:templateRef ref="en.json" />
-      <tc:templateRef ref="it.json" />
     </tc:increment>
     <tc:increment name="ionic_component" description="Ionic List">
       <tc:templateRef ref="${variables.etoName#lower_case}.ts" />

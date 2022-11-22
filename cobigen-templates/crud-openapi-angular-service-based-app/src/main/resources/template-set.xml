@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+ <cc:contextConfiguration version="3.0">
+  <cc:trigger id="crud_openapi_angular_service_based_app" type="openapi">
+    <cc:containerMatcher type="element" value="openAPIFile" />
+    <cc:matcher type="element" value="ComponentDef">
+      <cc:variableAssignment type="constant" key="domain" value="demo" />
+      <cc:variableAssignment type="property" key="component" value="name" />
+      <cc:variableAssignment type="property" key="etoName" value="name" />
+    </cc:matcher>
+  </cc:trigger>
+  <cc:tags>
+    <cc:tag name="Angular"></cc:tag>
+    <cc:tag name="OpenAPI"></cc:tag>
+    <cc:tag name="CRUD"></cc:tag>
+    <cc:tag name="Service"></cc:tag>
+    <cc:tag name="App"></cc:tag>
+  </cc:tags>
+  <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+   </cc:contextConfiguration>
+<tc:templatesConfiguration version="5.0">
+
+  <tc:templates>
+    <tc:templateExtension ref="${variables.component#lower_case}RestController.service.ts" mergeStrategy="tsmerge" />
+    <tc:templateExtension ref="api.ts" mergeStrategy="tsmerge" />
+    <tc:templateExtension ref="environment.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override" />
+  </tc:templates>
+
+  <tc:templateScans>
+    <tc:templateScan name="ts_scan" templatePath="templates" destinationPath="" />
+  </tc:templateScans>
+
+  <tc:increments>
+    <tc:increment name="devon4ng-app" description="CRUD devon4ng Service Based Angular" explanation="Creates Angular stack CRUD REST service for the (backends) server.">
+      <tc:incrementRef ref="app_angular_env" />
+      <tc:incrementRef ref="app_angular_devon4j_component" />
+    </tc:increment>
+    <tc:increment name="app_angular_env" description="Server URL Registration">
+      <tc:templateRef ref="environment.ts" />
+      <tc:templateRef ref="environment.prod.ts" />
+    </tc:increment>
+    <tc:increment name="app_angular_devon4j_component" description="API">
+      <tc:templateRef ref="${variables.component#lower_case}RestController.service.ts" />
+      <tc:templateRef ref="api.ts" />
+    </tc:increment>
+  </tc:increments>
+</tc:templatesConfiguration>
+</tns:templateSetConfiguration>
