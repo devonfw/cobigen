@@ -32,18 +32,18 @@ public class TreeViewBuilder {
   }
 
   /**
-   * @param listOfItems list to
-   * @return
+   * @param arrayOfItems to transform to tree
+   * @return the complete TreeView
    */
-  public static TreeView<String> buildTreeView(String[] listOfItems) {
+  public static TreeView<String> buildTreeView(String[] arrayOfItems) {
 
     TreeItem<String> rootItem = new TreeItem<>("Increments");
     rootItem.setExpanded(true);
 
-    for (int i = 0; i < listOfItems.length; i++) {
-      TreeItem<String> increment = new TreeItem<>(listOfItems[i]);
+    for (int i = 0; i < arrayOfItems.length; i++) {
+      TreeItem<String> increment = new TreeItem<>(arrayOfItems[i]);
       i++;
-      TreeItem<String> incrementDescription = new TreeItem<>(listOfItems[i]);
+      TreeItem<String> incrementDescription = new TreeItem<>(arrayOfItems[i]);
       increment.getChildren().add(incrementDescription);
       rootItem.getChildren().add(increment);
     }

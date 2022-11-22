@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.testfx.api.FxRobotException;
 import org.testfx.assertions.api.Assertions;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TreeItem;
@@ -76,7 +77,12 @@ public class HomePageTest extends TestFXBase {
     this.incrementsTreeView = (TreeView) this.mainRoot.lookup(TREEVIEW);
     TreeItem<String> root = this.incrementsTreeView.getRoot();
     Assertions.assertThat(root.isExpanded());
-    // TODO
+    ObservableList<TreeItem<String>> children = root.getChildren();
+    for (int i = 0; i < children.size(); i++) {
+      TreeItem<String> child = children.get(i);
+      Assertions.assertThat(!child.isExpanded());
+      Assertions.assertThat(child.getChildren().get(0).isLeaf());
+    }
   }
 
 }

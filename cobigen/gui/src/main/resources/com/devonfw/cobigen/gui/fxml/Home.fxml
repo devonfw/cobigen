@@ -28,12 +28,12 @@
             <Text layoutX="19.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Install Template Set" wrappingWidth="108.13612365722656" AnchorPane.leftAnchor="20.0" />
             <Text layoutX="172.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Delete Template Set" wrappingWidth="108.13612365722656" />
             <Text layoutX="305.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Update Template Set" wrappingWidth="114.13612365722656" AnchorPane.rightAnchor="20.0" />
-            <Text layoutX="6.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="How it Works" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="10.0">
+            <Text layoutX="6.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="How it Works" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
               <font>
                 <Font size="14.0" />
               </font>
             </Text>
-            <Separator layoutX="-2.0" layoutY="24.0" prefHeight="16.0" prefWidth="455.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+            <Separator layoutY="24.0" prefHeight="16.0" prefWidth="455.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0" />
             <Button layoutX="58.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE" AnchorPane.leftAnchor="58.0">
               <font>
                 <Font name="System Bold" size="12.0" />

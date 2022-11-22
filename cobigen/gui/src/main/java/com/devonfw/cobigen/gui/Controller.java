@@ -37,6 +37,9 @@ public class Controller implements Initializable {
   private AnchorPane homePane;
 
   @FXML
+  private AnchorPane templateSetDetailsPane;
+
+  @FXML
   public Button homeButton;
 
   @FXML
@@ -78,8 +81,10 @@ public class Controller implements Initializable {
    * @param actionEvent
    * @throws IOException
    */
-  public void details(javafx.event.ActionEvent actionEvent) throws IOException {
+  public void loadDetails(javafx.event.ActionEvent actionEvent) throws IOException {
 
+    this.templateSetDetailsPane = FXMLLoader.load(getClass().getResource("fxml/TemplateSetDetails.fxml"));
+    this.detailsPane.getChildren().setAll(this.templateSetDetailsPane);
   }
 
   /**
