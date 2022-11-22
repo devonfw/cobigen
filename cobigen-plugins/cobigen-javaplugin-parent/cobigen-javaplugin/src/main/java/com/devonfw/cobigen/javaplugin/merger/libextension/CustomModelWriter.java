@@ -434,13 +434,13 @@ public class CustomModelWriter implements ModelWriter {
           this.buffer.write(entry.getValue().toString());
         }
 
-      if (iterator.hasNext()) {
-        this.buffer.write(',');
-        this.buffer.newline();
+        if (iterator.hasNext()) {
+          this.buffer.write(',');
+          this.buffer.newline();
+        }
       }
-    }
-    this.buffer.write(')');
-    this.buffer.deindent();
+      this.buffer.write(')');
+      this.buffer.deindent();
     }
     this.buffer.newline();
     return this;
