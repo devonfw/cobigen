@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -73,6 +74,7 @@ public class GenerateCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());

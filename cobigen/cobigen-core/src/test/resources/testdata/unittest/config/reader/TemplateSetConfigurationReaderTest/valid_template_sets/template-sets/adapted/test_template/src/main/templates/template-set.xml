@@ -13,7 +13,7 @@
   <tc:templatesConfiguration version="5.0">
     <tc:templates>
       <tc:template name="prefix_Foo2Class.java"
-        destinationPath="src/main/java/foo/Foo2Class${variable}.java" templateFile="foo/Foo2Class.java.ftl"
+        destinationPath="src/main/java/foo/Foo2Class${variable}.java" templateFile="templates/foo/Foo2Class.java.ftl"
         mergeStrategy="javamerge"/>
       <tc:templateExtension ref="prefix2_FooClass.java"
         destinationPath="adapted/path/FooClass.java" mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
@@ -21,9 +21,9 @@
     </tc:templates>
 
     <tc:templateScans>
-      <tc:templateScan templateNamePrefix="prefix_" templatePath="foo"
+      <tc:templateScan templateNamePrefix="prefix_" templatePath="templates/foo"
         destinationPath="src/main/java/foo"/>
-      <tc:templateScan templateNamePrefix="prefix2_" templatePath="bar"
+      <tc:templateScan templateNamePrefix="prefix2_" templatePath="templates/bar"
         destinationPath="src/main/java/bar"/>
     </tc:templateScans>
   </tc:templatesConfiguration>

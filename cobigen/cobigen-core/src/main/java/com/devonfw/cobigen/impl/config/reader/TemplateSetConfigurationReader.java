@@ -110,6 +110,9 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
   /** The top-level folder where the templates are located. */
   private TemplateFolder rootTemplateFolder;
 
+  /** The child-level folder where the templates are located. */
+  private TemplateFolder childTemplatesFolder;
+
   /** The {@link ConfigurationHolder} used for reading templates folder **/
   private ConfigurationHolder configurationHolder;
 
@@ -174,13 +177,16 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
 
     if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
       this.configRoot = this.templateSetFile;
-      this.rootTemplateFolder = TemplateFolder.create(this.configLocation.resolve("templates"));
+      this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
+      this.childTemplatesFolder = TemplateFolder
+          .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
     }
 
     if (FileSystemUtil.isZipFile(this.configRoot.toUri())) {
       Path templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
-      this.rootTemplateFolder = TemplateFolder
-          .create(templateLocation.resolve(this.configLocation.resolve("templates")));
+      this.rootTemplateFolder = TemplateFolder.create(templateLocation.resolve(this.configLocation));
+      this.childTemplatesFolder = TemplateFolder
+          .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
     }
 
     if (!Files.exists(this.templateSetFile)) {
@@ -413,7 +419,8 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
               "Multiple template definitions found for ref='" + t.getName() + "'");
         }
         TemplatePath child = this.rootTemplateFolder.navigate(t.getTemplateFile());
-
+        if (child == null)
+          child = this.childTemplatesFolder.navigate(t.getTemplateFile());
         if ((child == null) || (child.isFolder())) {
           throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
               "no template file found for '" + t.getTemplateFile() + "'");
