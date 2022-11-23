@@ -14,16 +14,16 @@
                 <cc:variableAssignment type="property" key="entityName" value="name"/>
             </cc:matcher>
         </cc:trigger>
-        <cc:ags>
+        <cc:tags>
             <cc:tag name="Java"></cc:tag>
             <cc:tag name="OpenAPI"></cc:tag>
             <cc:tag name="CRUD"></cc:tag>
             <cc:tag name="Server"></cc:tag>
             <cc:tag name="App"></cc:tag>
-        </cc:ags>
-        <links>
-            <link url="https://github.com/devonfw/cobigen/wiki/howto-devonfw-ide-CobiGen-PoC-E2E"></link>
-        </links>
+        </cc:tags>
+        <cc:links>
+            <cc:link url="https://github.com/devonfw/cobigen/wiki/howto-devonfw-ide-CobiGen-PoC-E2E"></cc:link>
+        </cc:links>
     </cc:contextConfiguration>
     <tc:templatesConfiguration version="5.0">
         <tc:templates>

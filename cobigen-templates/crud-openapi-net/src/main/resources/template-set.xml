@@ -27,7 +27,7 @@
     <tc:templatesConfiguration version="5.0">
 
         <tc:templateScans>
-            <templateScan templatePath="templates" destinationPath=""/>
+            <tc:templateScan templatePath="templates" destinationPath=""/>
         </tc:templateScans>
         <tc:increments>
             <tc:increment name="server" description="CRUD devon4net Server"

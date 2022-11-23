@@ -19,6 +19,7 @@
   <cc:links>
     <cc:link url="https://rxjs.dev/api"></cc:link>
   </cc:links>
+  </cc:contextConfiguration>
 <tc:templatesConfiguration version="5.0">
 
   <tc:templates>

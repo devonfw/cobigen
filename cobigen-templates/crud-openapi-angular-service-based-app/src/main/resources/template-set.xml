@@ -16,7 +16,6 @@
     <cc:tag name="Service"></cc:tag>
     <cc:tag name="App"></cc:tag>
   </cc:tags>
-  <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
    </cc:contextConfiguration>
 <tc:templatesConfiguration version="5.0">
 
