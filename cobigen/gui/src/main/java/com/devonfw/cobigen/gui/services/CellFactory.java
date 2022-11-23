@@ -1,22 +1,17 @@
 package com.devonfw.cobigen.gui.services;
 
-import javafx.application.Application;
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
-public class CellFactory extends Application {
-  @Override
-  public void start(Stage stage) {
+public class CellFactory {
+  public static ListView<TemplateSetCell> getListView() {
 
     ObservableList<TemplateSetCell> wordsList = FXCollections.observableArrayList();
-    wordsList.add(new TemplateSetCell("First Word", "Definition of First Word"));
-    wordsList.add(new TemplateSetCell("Second Word", "Definition of Second Word"));
-    wordsList.add(new TemplateSetCell("Third Word", "Definition of Third Word"));
     ListView<TemplateSetCell> listViewOfWords = new ListView<>(wordsList);
     listViewOfWords.setCellFactory(param -> new ListCell<TemplateSetCell>() {
       @Override
@@ -31,8 +26,22 @@ public class CellFactory extends Application {
         }
       }
     });
-    stage.setScene(new Scene(listViewOfWords));
-    stage.show();
+
+    return listViewOfWords;
+  }
+
+  public static ArrayList<TemplateSetCell> getTestList() {
+
+    ArrayList<TemplateSetCell> testList = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      testList.add(createTemplateSetCell("TS" + i, "DF" + i));
+    }
+    return testList;
+  }
+
+  public static TemplateSetCell createTemplateSetCell(String word, String definition) {
+
+    return new TemplateSetCell(word, definition);
   }
 
   public static class TemplateSetCell extends HBox {
@@ -58,8 +67,4 @@ public class CellFactory extends Application {
     }
   }
 
-  public static void main(String[] args) {
-
-    launch(args);
-  }
 }

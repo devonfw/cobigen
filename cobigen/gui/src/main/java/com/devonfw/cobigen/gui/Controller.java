@@ -9,6 +9,8 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import com.devonfw.cobigen.gui.controllers.HomeController;
+import com.devonfw.cobigen.gui.services.CellFactory;
+import com.devonfw.cobigen.gui.services.CellFactory.TemplateSetCell;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,8 +28,11 @@ public class Controller implements Initializable {
   @FXML
   private HomeController homeController;
 
-  ArrayList<String> templateSets = new ArrayList<>(Arrays.asList("templates-devon4j-tests", "templates-devon4j-utils",
-      "crud-openapi-net", "crud-angular-client-app", "crud-ionic-client-app", "rest-documentation"));
+  // ArrayList<String> templateSets = new ArrayList<>(Arrays.asList("templates-devon4j-tests",
+  // "templates-devon4j-utils",
+  // "crud-openapi-net", "crud-angular-client-app", "crud-ionic-client-app", "rest-documentation"));
+
+  ArrayList<TemplateSetCell> templateSets = CellFactory.getTestList();
 
   @FXML
   private AnchorPane detailsPane;
@@ -52,7 +57,7 @@ public class Controller implements Initializable {
 
   // TODO: Transform to ListView<HBox>
   @FXML
-  public ListView<String> searchResultsView;
+  public ListView<TemplateSetCell> searchResultsView;
 
   /**
    * Initial View
@@ -65,6 +70,9 @@ public class Controller implements Initializable {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    this.searchResultsView = CellFactory.getListView();
+
     this.searchResultsView.getItems().addAll(this.templateSets);
   }
 
@@ -97,7 +105,7 @@ public class Controller implements Initializable {
   public void search(javafx.event.ActionEvent event) throws IOException {
 
     this.searchResultsView.getItems().clear();
-    this.searchResultsView.getItems().addAll(searchTemplateSets(this.searchBar.getText(), this.templateSets));
+    this.searchResultsView.getItems().addAll(getTemplateSetsSearchResults(this.searchBar.getText(), this.templateSets));
   }
 
   /**
@@ -123,6 +131,26 @@ public class Controller implements Initializable {
     return listOfStrings.stream().filter(input -> {
       return searchTemplateSetsArray.stream().allMatch(word -> input.toLowerCase().contains(word.toLowerCase()));
     }).collect(Collectors.toList());
+
   }
 
+  private List<TemplateSetCell> getTemplateSetsSearchResults(String searchWords,
+      List<TemplateSetCell> listOfTemplateSets) {
+
+    List<String> namesOfTemplateCells = new ArrayList<>();
+
+    for (TemplateSetCell ts : listOfTemplateSets) {
+      namesOfTemplateCells.add(ts.getWord());
+    }
+
+    List<String> resultNames = searchTemplateSets(searchWords, namesOfTemplateCells);
+    List<TemplateSetCell> resultCells = new ArrayList<>();
+
+    for (TemplateSetCell ts : listOfTemplateSets) {
+      if (resultNames.contains(ts.getWord())) {
+        resultCells.add(ts);
+      }
+    }
+    return resultCells;
+  }
 }
