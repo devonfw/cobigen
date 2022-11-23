@@ -56,14 +56,6 @@ public class TemplateSetConfiguration {
     return this.templateSetConfigurationReader;
   }
 
-  /**
-   * @param templateSetConfigurationReader new value of {@link #gettemplateSetConfigurationReader}.
-   */
-  private void setTemplateSetConfigurationReader(TemplateSetConfigurationReader templateSetConfigurationReader) {
-
-    this.templateSetConfigurationReader = templateSetConfigurationReader;
-  }
-
   /** Paths of the template set configuration files */
   public List<Path> templateSetFiles = new ArrayList<>();
 
@@ -119,7 +111,6 @@ public class TemplateSetConfiguration {
     for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
       this.increments.putAll(this.templateSetConfigurationReader.loadIncrements(this.templates, trigger.getValue()));
     }
-    setTemplateSetConfigurationReader(this.templateSetConfigurationReader);
   }
 
   /**

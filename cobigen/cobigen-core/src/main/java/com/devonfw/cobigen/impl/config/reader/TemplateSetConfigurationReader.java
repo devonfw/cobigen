@@ -176,17 +176,18 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
     this.configLocation = this.templateSetFile.getParent();
 
     if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
-      this.configRoot = this.templateSetFile;
-      this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
-      this.childTemplatesFolder = TemplateFolder
-          .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
+      this.configRoot = this.configLocation;
+      if (Files.exists(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)))
+        this.rootTemplateFolder = TemplateFolder
+            .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
+      else {
+        this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
+      }
     }
 
     if (FileSystemUtil.isZipFile(this.configRoot.toUri())) {
       Path templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
       this.rootTemplateFolder = TemplateFolder.create(templateLocation.resolve(this.configLocation));
-      this.childTemplatesFolder = TemplateFolder
-          .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
     }
 
     if (!Files.exists(this.templateSetFile)) {
@@ -419,8 +420,7 @@ public class TemplateSetConfigurationReader implements ContextConfigurationInter
               "Multiple template definitions found for ref='" + t.getName() + "'");
         }
         TemplatePath child = this.rootTemplateFolder.navigate(t.getTemplateFile());
-        if (child == null)
-          child = this.childTemplatesFolder.navigate(t.getTemplateFile());
+
         if ((child == null) || (child.isFolder())) {
           throw new InvalidConfigurationException(this.templateSetFile.toUri().toString(),
               "no template file found for '" + t.getTemplateFile() + "'");

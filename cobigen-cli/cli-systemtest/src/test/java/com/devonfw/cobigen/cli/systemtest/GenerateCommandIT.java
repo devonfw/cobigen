@@ -108,7 +108,6 @@ public class GenerateCommandIT extends AbstractCliTest {
   @Test
   public void generateFromEntityWithTemplateSetTest() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "templateSetsProject"), this.tmpProject.toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
     File templateSetsConfig = this.tmpProject.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).toFile();
     String args[] = new String[6];
