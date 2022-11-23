@@ -146,13 +146,7 @@ public class JavaMerger implements Merger {
     if (contentExist) {
       // checks if import is already present
       List<String> imports = baseClass.getSource().getImports();
-      boolean importPresent = false;
-      for (String imp : imports) {
-        if (imp.equals("javax.annotation.Generated")) {
-          importPresent = true;
-          break;
-        }
-      }
+      boolean importPresent = imports.contains("javax.annotation.Generated");
       if (!importPresent) {
         baseClass.getSource().getImports().add("javax.annotation.Generated");
       }
@@ -173,19 +167,17 @@ public class JavaMerger implements Merger {
   private void addAnnotationOn(List<? extends JavaAnnotatedElement> elements,
       List<JavaAnnotation> generatedAnnotation) {
 
-    if (!elements.isEmpty()) {
-      for (JavaAnnotatedElement element : elements) {
-        List<JavaAnnotation> annotations = element.getAnnotations();
-        boolean annotationAlreadyPresent = false;
-        for (JavaAnnotation annotation : annotations) {
-          if (annotation.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
-            annotationAlreadyPresent = true;
-            break;
-          }
+    for (JavaAnnotatedElement element : elements) {
+      List<JavaAnnotation> annotations = element.getAnnotations();
+      boolean annotationAlreadyPresent = false;
+      for (JavaAnnotation annotation : annotations) {
+        if (annotation.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
+          annotationAlreadyPresent = true;
+          break;
         }
-        if (!annotationAlreadyPresent)
-          ((AbstractBaseJavaEntity) element).setAnnotations(mergeAnnotation(annotations, generatedAnnotation));
       }
+      if (!annotationAlreadyPresent)
+        ((AbstractBaseJavaEntity) element).setAnnotations(mergeAnnotation(annotations, generatedAnnotation));
     }
   }
 

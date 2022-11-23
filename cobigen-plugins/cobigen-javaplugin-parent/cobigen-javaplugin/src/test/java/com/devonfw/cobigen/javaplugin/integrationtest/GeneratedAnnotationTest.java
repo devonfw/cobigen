@@ -7,13 +7,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Properties;
 
 import org.junit.Test;
 
@@ -28,21 +28,16 @@ import com.devonfw.cobigen.javaplugin.integrationtest.common.AbstractIntegration
 public class GeneratedAnnotationTest extends AbstractIntegrationTest {
 
   /*
-   * Test to check whether the entire generation process runs with new modifications in JavaMerger and merges the
-   * generated annotation
-   *
-   * @throws Exception
-   *
+   * Reads from .cobigen file which is not present in home folder and would dynamically be created will have
+   * add-generated-annotation set to true during runtime
    */
   @Test
-  public void testGenerateAddedGeneratedAnnotations() throws Exception {
+  public void generationTestWithoutPropertiesFile() throws Exception {
 
     File tmpProject = this.tmpFolder.newFolder("playground", "project");
-
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, tmpProject.toPath().toString()).execute(() -> {
       CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
       File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
-      String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
       Object input = cobiGen.read(
           new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
@@ -53,7 +48,7 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
           // generate method with an additional boolean parameter set to true to avoid conflicts with existing tests
           GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
               false);
-          assertAnnotationReportWithGeneratedAnnotation(report, tmpFolderCobiGen, LINE_SEPARATOR);
+          outputFileReportContainsGeneratedAnnotation(report, tmpFolderCobiGen);
           break;
         }
       }
@@ -61,36 +56,35 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
   }
 
   /*
-   * Test to check whether the entire generation process can be enabled by .cobigen properties, to add the generated
-   * annotation
+   * Reads from .cobigen file residing in cobigen home folder and has add-generated-annotation value set to true
    *
    * @throws Exception
    */
+
   @Test
-  public void testGenerateAddedGeneratedAnnotationsFromProperties() throws Exception {
+  public void addGeneratedAnnotationSetToTrue() throws Exception {
 
     File tmpProject = this.tmpFolder.newFolder("playground2", "project");
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, tmpProject.toPath().toString()).execute(() -> {
+      // setting up virtual .cobigen file in cobigen home folder
       Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-      Path propertiesPath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-      try (PrintStream out = new PrintStream(new FileOutputStream(propertiesPath.toString()))) {
-        // out.print(ConfigurationConstants.ADD_GENERATED_ANNOTATION + "=true");
-      }
+      Path dotCobigenFilePath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+      Properties props = new Properties();
+      props.setProperty("add-generated-annotation", "true");
+      props.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
+      // cobigen generation process
       CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
       File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
-      String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
-
       Object input = cobiGen.read(
           new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
           Charset.forName("UTF-8"));
       List<TemplateTo> templates = cobiGen.getMatchingTemplates(input);
       for (TemplateTo template : templates) {
         if (template.getId().equals("generated.java")) {
-          // generate method which reads from the .cobigen file and add generated annotation
           GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
               false);
-          assertAnnotationReportWithGeneratedAnnotation(report, tmpFolderCobiGen, LINE_SEPARATOR);
+          outputFileReportContainsGeneratedAnnotation(report, tmpFolderCobiGen);
           break;
         }
       }
@@ -98,28 +92,25 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
   }
 
   /*
-   * Test to check whether the entire generation process can be disabled by .cobigen properties, to not add the
-   * generated annotation
+   * Reads from the .cobigen file and add-generated-annotation value set to false
    *
    * @throws Exception
    */
-  /**
-   * @throws Exception
-   */
+
   @Test
-  public void testGenerateNoAddedGeneratedAnnotationsFromProperties() throws Exception {
+  public void addGeneratedAnnotationSetToFalse() throws Exception {
 
     File tmpProject = this.tmpFolder.newFolder("playground3", "project");
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, tmpProject.toPath().toString()).execute(() -> {
+      // Read from Cobigen file
       Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-      Path propertiesPath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-      try (PrintStream out = new PrintStream(new FileOutputStream(propertiesPath.toString()))) {
-        out.print(ConfigurationConstants.ADD_GENERATED_ANNOTATION + "=false");
-      }
+      Path dotCobigenFilePath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+      Properties props = new Properties();
+      props.setProperty("add-generated-annotation", "false");
+      props.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
       CobiGen cobiGen = CobiGenFactory.create(this.cobigenConfigFolder.toURI());
       File tmpFolderCobiGen = this.tmpFolder.newFolder("cobigen_output");
-      String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
       Object input = cobiGen.read(
           new File("src/test/resources/testdata/integrationtest/javaSources/EmployeeEntity.java").toPath(),
@@ -130,7 +121,7 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
           // generate method which reads from the .cobigen file and add generated annotation
           GenerationReportTo report = cobiGen.generate(input, template, Paths.get(tmpFolderCobiGen.getAbsolutePath()),
               false);
-          assertAnnotationReportWithoutGeneratedAnnotation(report, tmpFolderCobiGen, LINE_SEPARATOR);
+          outputFileReportWithoutgeneratedAnnotation(report, tmpFolderCobiGen);
           break;
         }
       }
@@ -138,20 +129,19 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
   }
 
   /*
-   * method to assert the output file contains the generated annotation
+   * Method to assert the output file with generated annotation
    *
    * @param report
    *
    * @param tmpFolderCobiGen
    *
-   * @param LINE_SEPARATOR
-   *
    * @throws IOException
    */
 
-  private void assertAnnotationReportWithGeneratedAnnotation(GenerationReportTo report, File tmpFolderCobiGen,
-      String LINE_SEPARATOR) throws IOException {
+  private void outputFileReportContainsGeneratedAnnotation(GenerationReportTo report, File tmpFolderCobiGen)
+      throws IOException {
 
+    String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
     assertThat(report).isSuccessful();
     Path expectedFile = tmpFolderCobiGen.toPath().resolve("generated.java");
     assertThat(expectedFile).exists();
@@ -170,20 +160,19 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
   }
 
   /*
-   * method to assert the output file
+   * Method to assert the output file without generated annotation
    *
    * @param report
    *
-   * @param tmpFolderCobiGen
-   *
-   * @param LINE_SEPARATOR
+   * @param tmpFolderCobiGen *
    *
    * @throws IOException
    */
 
-  private void assertAnnotationReportWithoutGeneratedAnnotation(GenerationReportTo report, File tmpFolderCobiGen,
-      String LINE_SEPARATOR) throws IOException {
+  private void outputFileReportWithoutgeneratedAnnotation(GenerationReportTo report, File tmpFolderCobiGen)
+      throws IOException {
 
+    String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
     assertThat(report).isSuccessful();
     Path expectedFile = tmpFolderCobiGen.toPath().resolve("generated.java");
     assertThat(expectedFile).exists();

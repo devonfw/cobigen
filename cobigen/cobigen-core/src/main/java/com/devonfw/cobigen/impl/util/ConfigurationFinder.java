@@ -1,7 +1,7 @@
 package com.devonfw.cobigen.impl.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -90,32 +90,48 @@ public class ConfigurationFinder {
   }
 
   /**
-   * checks if .cobigen properties file contains any add-generated-annotation
+   * Checks if .cobigen properties file contains any add-generated-annotation
    *
    * @return the value of add-generated-annotation
-   *
-   * @throws FileNotFoundException
+   * @throws IOException
    */
-  public static boolean checkGeneratedAnnotationInProperties() throws FileNotFoundException {
+  public static boolean checkGeneratedAnnotationInProperties() {
 
     Boolean defaultGeneratedAnnotation = true;
     Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-    Path propertiesPath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+    Path dotCobigenFilePath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
+    Properties dotCobigenProperties;
 
-    // check if .cobigen properties file has add-generated annotation set to true
-    if (Files.exists(propertiesPath)) {
-
-      Properties props = ConfigurationFinder.readConfigurationFile(propertiesPath);
-
-      if (props.containsKey(ConfigurationConstants.ADD_GENERATED_ANNOTATION))
-        defaultGeneratedAnnotation = Boolean.valueOf(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
-      else {
-        // add the default value in .cobigen properties
-        FileSystemUtil.writeOutputToFile(propertiesPath, ConfigurationConstants.ADD_GENERATED_ANNOTATION + "=true");
+    if (Files.exists(dotCobigenFilePath)) {
+      // read from the file
+      dotCobigenProperties = readConfigurationFile(dotCobigenFilePath);
+      if (dotCobigenProperties.containsKey(ConfigurationConstants.ADD_GENERATED_ANNOTATION)) {
+        String value = dotCobigenProperties.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
+        defaultGeneratedAnnotation = Boolean.valueOf(value);
       }
-    } else {
-      // add the default value in .cobigen properties
-      FileSystemUtil.writeOutputToFile(propertiesPath, ConfigurationConstants.ADD_GENERATED_ANNOTATION + "=true");
+      // if .cobigen file exist and do not have add-generated-annotation property present
+      // adding the property in file and setting the value to true
+      else {
+        dotCobigenProperties = new Properties();
+        dotCobigenProperties.setProperty("add-generated-annotation", "true");
+        try {
+          dotCobigenProperties.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
+        } catch (IOException e) {
+          throw new CobiGenRuntimeException(
+              "An error occured while reading the config file " + dotCobigenFilePath.toString(), e);
+        }
+      }
+    }
+    // if .cobigen file do not exist then create one and set add-generated-annotation to true
+    else {
+      dotCobigenProperties = new Properties();
+      dotCobigenProperties.setProperty("add-generated-annotation", "true");
+      try {
+        dotCobigenProperties.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
+      } catch (IOException e) {
+        throw new CobiGenRuntimeException(
+            "An error occured while reading the config file " + dotCobigenFilePath.toString(), e);
+      }
     }
     return defaultGeneratedAnnotation;
   }
