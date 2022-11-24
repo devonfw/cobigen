@@ -28,10 +28,10 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.Trigger;
-import com.devonfw.cobigen.impl.config.entity.io.v3_0.Link;
-import com.devonfw.cobigen.impl.config.entity.io.v3_0.Links;
-import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tag;
-import com.devonfw.cobigen.impl.config.entity.io.v3_0.Tags;
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.Link;
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.Links;
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.Tag;
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.Tags;
 
 import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBContext;
@@ -90,11 +90,11 @@ public class TemplateSetUpgrader {
    * @param Path {@link Path} to the templatesLocation
    *
    * @return {@link Map} collection that contains the upgraded v3.0
-   *         {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} as key and a {@link Path} for
+   *         {@link com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration} as key and a {@link Path} for
    *         the new location of the context.xml as value
    * @throws Exception if an issue occurred in directory copy operations
    */
-  public Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
+  public Map<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
       Path templatesLocation) throws Exception {
 
     Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
@@ -133,11 +133,11 @@ public class TemplateSetUpgrader {
     Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
     ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
 
-    List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> contextFiles = splitContext(
+    List<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
-    Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = new HashMap<>();
-    for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration cc : contextFiles) {
-      for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger : cc.getTrigger()) {
+    Map<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration, Path> contextMap = new HashMap<>();
+    for (com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration cc : contextFiles) {
+      for (com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger trigger : cc.getTrigger()) {
         Path triggerFolder = folderOfContextLocation.resolve(trigger.getTemplateFolder());
         Path newTriggerFolder = adapted.resolve(trigger.getTemplateFolder());
         Path utilsPath = folderOfContextLocation.getParent().resolve("java");
@@ -160,16 +160,17 @@ public class TemplateSetUpgrader {
         }
 
         // Read templates.xml then delete it
-        Path templatePath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).resolve("templates.xml");
-        TemplatesConfiguration tc = readTemplatesConfigurationV6(templatePath);
-        Files.delete(templatePath);
+        Path tcPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .resolve("templates.xml");
+        TemplatesConfiguration tcV6 = readTemplatesConfigurationV6(tcPath);
+        Files.delete(tcPath);
 
-        TemplateSetConfiguration templateSetConfiguration = buildTemplateSetConfigurationV6(tc, cc);
-        Path templateSetPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-                .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
-      try (OutputStream out = Files.newOutputStream(templateSetPath)) {
-        JAXB.marshal(templateSetConfiguration, out);
-      }
+        TemplateSetConfiguration tsc = buildTemplateSetConfigurationV6(tcV6, cc);
+        Path tscPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+        try (OutputStream out = Files.newOutputStream(tscPath)) {
+          JAXB.marshal(tsc, out);
+        }
 
         Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
@@ -203,12 +204,12 @@ public class TemplateSetUpgrader {
    *
    * @param cobigenTemplates {@link Path} to the CobiGen_Templates folder
    * @param cobigenTemplates {@link Path} to the split template folder
-   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger} to the related template folder
+   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger} to the related template folder
    * @throws IOException
    * @throws FileNotFoundException
    */
   private void writeNewPomFile(Path cobigenTemplates, Path newTemplateFolder,
-      com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) throws IOException, FileNotFoundException {
+      com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger trigger) throws IOException, FileNotFoundException {
 
     // Pom.xml creation
     try {
@@ -242,61 +243,67 @@ public class TemplateSetUpgrader {
   }
 
   /**
-   * Splits a contextConfiguration and converts a {@link Trigger} and his data to a v3_0 Trigger
+   * Splits a contextConfiguration and converts a {@link Trigger} and his data to a v6_0 Trigger
    *
    * @param monolitic {@link ContextConfiguration} of the monolithic context that will be split
-   * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} List of the split
+   * @return {@link com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration} List of the split
    *         contextConfiguration files
    */
-  private List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContext(
+  private List<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration> splitContext(
       ContextConfiguration monolitic) {
 
-    List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration> splitContexts = new ArrayList<>();
+    List<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration> splitContexts = new ArrayList<>();
     List<Trigger> triggerList = monolitic.getTrigger();
     for (Trigger trigger : triggerList) {
-      com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration();
-      com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger3_0 = new com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger();
-      trigger3_0.setId(trigger.getId());
-      trigger3_0.setInputCharset(trigger.getInputCharset());
-      trigger3_0.setType(trigger.getType());
-      trigger3_0.setTemplateFolder(trigger.getTemplateFolder());
+      com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration contextConfiguration6_0 = new com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration();
+      com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger trigger6_0 = new com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger();
+      trigger6_0.setId(trigger.getId());
+      trigger6_0.setInputCharset(trigger.getInputCharset());
+      trigger6_0.setType(trigger.getType());
+      trigger6_0.setTemplateFolder(trigger.getTemplateFolder());
 
-      List<com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher> v3MList = this.mapper.mapAsList(trigger.getMatcher(),
-          com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class);
-      List<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher> v3CMList = this.mapper.mapAsList(
-          trigger.getContainerMatcher(), com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class);
-      trigger3_0.getContainerMatcher().addAll(v3CMList);
-      trigger3_0.getMatcher().addAll(v3MList);
-      contextConfiguration3_0.getTrigger().add(trigger3_0);
+      List<com.devonfw.cobigen.impl.config.entity.io.v6_0.Matcher> v3MList = this.mapper.mapAsList(trigger.getMatcher(),
+          com.devonfw.cobigen.impl.config.entity.io.v6_0.Matcher.class);
+      List<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContainerMatcher> v3CMList = this.mapper.mapAsList(
+          trigger.getContainerMatcher(), com.devonfw.cobigen.impl.config.entity.io.v6_0.ContainerMatcher.class);
+      trigger6_0.getContainerMatcher().addAll(v3CMList);
+      trigger6_0.getMatcher().addAll(v3MList);
+      contextConfiguration6_0.getTrigger().add(trigger6_0);
       Tags tags = new Tags();
       Tag tag = new Tag();
       tag.setName(
           "PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER");
       tags.getTag().add(tag);
-      contextConfiguration3_0.setTags(tags);
+      contextConfiguration6_0.setTags(tags);
       Links links = new Links();
       Link link = new Link();
       link.setUrl(
           "PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER");
       links.getLink().add(link);
-      contextConfiguration3_0.setLinks(links);
-      contextConfiguration3_0.setVersion(new BigDecimal("3.0"));
-      splitContexts.add(contextConfiguration3_0);
+      contextConfiguration6_0.setLinks(links);
+      contextConfiguration6_0.setVersion(new BigDecimal("3.0"));
+      splitContexts.add(contextConfiguration6_0);
     }
     return splitContexts;
   }
 
-  private TemplateSetConfiguration buildTemplateSetConfigurationV6(TemplatesConfiguration tc, com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration cc) {
+  private TemplateSetConfiguration buildTemplateSetConfigurationV6(TemplatesConfiguration tcV6,
+      com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration ccV6) {
+
     TemplateSetConfiguration tsc = new TemplateSetConfiguration();
-    return null;
+    tsc.setTemplatesConfiguration(tcV6);
+    tsc.setContextConfiguration(ccV6);
+    return tsc;
   }
 
   /**
    * Reads templates.xml file
+   * 
    * @param templatesFile {@link Path} to the templates.xml file
    * @return {@link TemplatesConfiguration} V6 templates configuration object
    */
   private TemplatesConfiguration readTemplatesConfigurationV6(Path templatesFile) throws IOException, JAXBException {
+
     try (InputStream in = Files.newInputStream(templatesFile)) {
       Unmarshaller um = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
 

@@ -129,7 +129,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
           .map(Path::getFileName).collect(Collectors.toList());
 
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-      Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
+      Map<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
           .upgradeTemplatesToTemplateSets(this.templateLocation);
 
       Path newTemplatesPath = this.templateLocation.getParent().getParent()

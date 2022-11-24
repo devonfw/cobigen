@@ -73,9 +73,9 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         break;
       case v2_1:
         TemplateSetUpgrader templatesSetUpgrader = new TemplateSetUpgrader();
-        Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = templatesSetUpgrader
+        Map<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration, Path> contextMap = templatesSetUpgrader
             .upgradeTemplatesToTemplateSets(templatesLocation);
-        for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration context : contextMap.keySet()) {
+        for (com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration context : contextMap.keySet()) {
           ConfigurationUpgradeResult tempResult = new ConfigurationUpgradeResult();
           tempResult.setResultConfigurationJaxbRootNodeAndPath(context, contextMap.get(context));
           results.add(tempResult);
