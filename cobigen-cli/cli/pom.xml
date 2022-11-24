@@ -66,6 +66,13 @@
           <include>pom.xml</include>
         </includes>
       </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>pom.xml</include>
+        </includes>
+      </resource>
     </resources>
     <plugins>
 
@@ -90,7 +97,32 @@
           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-autocompletion-script</id>
+            <phase>package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>java</executable>
+          <arguments>
+            <argument>-Dpicocli.autocomplete.systemExitOnError</argument>
+            <argument>-cp</argument>
+            <classpath/>
+            <argument>picocli.AutoComplete</argument>
+            <argument>--force</argument><!-- overwrite if exists -->
+            <argument>--completionScript</argument>
+            <argument>${project.build.directory}/mycommand_completion.sh</argument>
+            <argument>com.devonfw.cobigen.cli.commands.CobiGenCommand</argument><!-- replace with your class -->
+          </arguments>
+        </configuration>
+      </plugin>
       <!-- Create a fat jar with all the dependencies -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

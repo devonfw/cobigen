@@ -3,52 +3,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/"/>
-	<classpathentry exported="true" kind="lib" path="lib/annotations.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ant-nodeps.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/checker-qual.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-compiler.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-compress.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-io.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-jxpath.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core-externalprocess-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/error_prone_annotations.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/failureaccess.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/gson.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/guava.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/istack-commons-runtime.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/j2objc-annotations.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-databind.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jakarta.activation.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jakarta.xml.bind-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/janino.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javaplugin-model.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/java-sizeof.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javassist.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.inject.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxb-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxb-impl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jcl-over-slf4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jsr305.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/kotlin-stdlib.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/kotlin-stdlib-common.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/listenablefuture.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-over-slf4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/logback-classic.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/logback-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mmm-util-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/okhttp.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/okio.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/orika-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/paranamer.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/txw2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/zt-exec.jar"/>
 	<classpathentry kind="output" path="eclipse-target/classes"/>
 </classpath>
