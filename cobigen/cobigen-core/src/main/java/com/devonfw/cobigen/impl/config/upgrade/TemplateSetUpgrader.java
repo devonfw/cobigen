@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplatesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,6 +148,7 @@ public class TemplateSetUpgrader {
           LOG.error("An error occurred while copying the template Folder", e);
           throw new CobiGenRuntimeException(e.getMessage(), e);
         }
+
         try {
           if (Files.exists(utilsPath)) {
             FileUtils.copyDirectory(utilsPath.toFile(),
@@ -155,6 +158,18 @@ public class TemplateSetUpgrader {
           LOG.error("An error occurred while copying the template utilities Folder", e);
           throw new CobiGenRuntimeException(e.getMessage(), e);
         }
+
+        // Read templates.xml then delete it
+        Path templatePath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).resolve("templates.xml");
+        TemplatesConfiguration tc = readTemplatesConfigurationV6(templatePath);
+        Files.delete(templatePath);
+
+        TemplateSetConfiguration templateSetConfiguration = buildTemplateSetConfigurationV6(tc, cc);
+        Path templateSetPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+                .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+      try (OutputStream out = Files.newOutputStream(templateSetPath)) {
+        JAXB.marshal(templateSetConfiguration, out);
+      }
 
         Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
@@ -186,9 +201,9 @@ public class TemplateSetUpgrader {
   /**
    * Writes a pom.xml file for the split context and template folder
    *
-   * @param Path {@link Path} to the CobiGen_Templates folder
-   * @param Path {@link Path} to the split template folder
-   * @param Trigger {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }to the related template folder
+   * @param cobigenTemplates {@link Path} to the CobiGen_Templates folder
+   * @param cobigenTemplates {@link Path} to the split template folder
+   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger} to the related template folder
    * @throws IOException
    * @throws FileNotFoundException
    */
@@ -229,7 +244,7 @@ public class TemplateSetUpgrader {
   /**
    * Splits a contextConfiguration and converts a {@link Trigger} and his data to a v3_0 Trigger
    *
-   * @param ContextConfiguration {@link ContextConfiguration} of the monolithic context that will be split
+   * @param monolitic {@link ContextConfiguration} of the monolithic context that will be split
    * @return {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} List of the split
    *         contextConfiguration files
    */
@@ -271,12 +286,37 @@ public class TemplateSetUpgrader {
     return splitContexts;
   }
 
+  private TemplateSetConfiguration buildTemplateSetConfigurationV6(TemplatesConfiguration tc, com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration cc) {
+    TemplateSetConfiguration tsc = new TemplateSetConfiguration();
+    return null;
+  }
+
+  /**
+   * Reads templates.xml file
+   * @param templatesFile {@link Path} to the templates.xml file
+   * @return {@link TemplatesConfiguration} V6 templates configuration object
+   */
+  private TemplatesConfiguration readTemplatesConfigurationV6(Path templatesFile) throws IOException, JAXBException {
+    try (InputStream in = Files.newInputStream(templatesFile)) {
+      Unmarshaller um = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
+
+      Object rootNode = um.unmarshal(in);
+      if (rootNode instanceof TemplatesConfiguration) {
+        return (TemplatesConfiguration) rootNode;
+      }
+    } catch (IOException e) {
+      throw new InvalidConfigurationException("Templates file could not be found", e);
+    } catch (JAXBException e) {
+      throw new InvalidConfigurationException("Templates file provided some XML errors", e);
+    }
+    return null;
+  }
+
   /**
    * Locates and returns the correct context file
    *
-   * @param path {@link Path} to the contextFile
+   * @param contextFile {@link Path} to the contextFile
    * @return {@link ContextConfiguration}
-   * @throws Exception
    */
   private ContextConfiguration getContextConfiguration(Path contextFile) throws Exception {
 

@@ -20,6 +20,11 @@ public class ConfigurationConstants {
   /** Templates configuration file name */
   public static final String TEMPLATES_CONFIG_FILENAME = "templates.xml";
 
+  /**
+   * Template-set configuration file name (File obtained after merging context.xml and templates.xml)
+   */
+  public static final String TEMPLATE_SET_CONFIG_FILENAME = "template-set.xml";
+
   /** Filename of the {@link Properties} used to customize cobigen properties and template relocation. */
   public static final String COBIGEN_PROPERTIES = "cobigen.properties";
 
