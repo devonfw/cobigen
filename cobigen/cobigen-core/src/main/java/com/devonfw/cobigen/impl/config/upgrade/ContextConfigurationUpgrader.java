@@ -12,6 +12,7 @@ import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
@@ -73,11 +74,11 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         break;
       case v2_1:
         TemplateSetUpgrader templatesSetUpgrader = new TemplateSetUpgrader();
-        Map<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration, Path> contextMap = templatesSetUpgrader
-            .upgradeTemplatesToTemplateSets(templatesLocation);
-        for (com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration context : contextMap.keySet()) {
+        Map<TemplateSetConfiguration, Path> templateSetMap = templatesSetUpgrader
+            .upgradeTemplatesToTemplateSetsV6(templatesLocation);
+        for (TemplateSetConfiguration templateSetConfiguration : templateSetMap.keySet()) {
           ConfigurationUpgradeResult tempResult = new ConfigurationUpgradeResult();
-          tempResult.setResultConfigurationJaxbRootNodeAndPath(context, contextMap.get(context));
+          tempResult.setResultConfigurationJaxbRootNodeAndPath(templateSetConfiguration, templateSetMap.get(templateSetConfiguration));
           results.add(tempResult);
         }
         break;

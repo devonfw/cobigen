@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -23,6 +22,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,7 +74,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-      templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
+      templateSetUpgrader.upgradeTemplatesToTemplateSetsV6(this.templateLocation);
 
       Path templateSetsPath = this.templateLocation.getParent().getParent()
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
@@ -99,7 +99,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-      templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
+      templateSetUpgrader.upgradeTemplatesToTemplateSetsV6(this.templateLocation);
 
       Path templateSetsPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
@@ -129,8 +129,8 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
           .map(Path::getFileName).collect(Collectors.toList());
 
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-      Map<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
-          .upgradeTemplatesToTemplateSets(this.templateLocation);
+      Map<TemplateSetConfiguration, Path> templateSetConfigurations = templateSetUpgrader
+          .upgradeTemplatesToTemplateSetsV6(this.templateLocation);
 
       Path newTemplatesPath = this.templateLocation.getParent().getParent()
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.ADAPTED_FOLDER);
@@ -138,10 +138,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
       assertEquals(OldTemplatesFileCount - 1, NewPathFilesSet.size());
 
-      for (Path contextpath : newContextConfigurations.values()) {
-        assertThat(contextpath).exists();
+      for (Path templateSetPath : templateSetConfigurations.values()) {
+        assertThat(templateSetPath).exists();
 
-        validateContextConfigurationFile(contextpath, "v3.0");
+        validateTemplateSetConfiguration(templateSetPath, "v6.0");
 
       }
       List<Path> backupFolderFiles = Files.walk(this.currentHome.resolve(ConfigurationConstants.BACKUP_FOLDER)
@@ -160,29 +160,24 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   /**
    * Validates a context configuration file with given xsd schema version and fails the test if the validation failed.
    *
-   * @param contextpath Path to context configuration file.
+   * @param templateSetPath Path to context configuration file.
    * @param schemaVersion String version to validate against f.e. : v2.2.
    * @throws SAXException if a fatal error is found.
    * @throws IOException if the underlying reader throws an IOException.
    */
-  private void validateContextConfigurationFile(Path contextpath, String schemaVersion)
+  private void validateTemplateSetConfiguration(Path templateSetPath, String schemaVersion)
       throws SAXException, IOException {
 
     SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    try (InputStream schemaStream = getClass()
-        .getResourceAsStream("/schema/" + schemaVersion + "/contextConfiguration.xsd")) {
-      StreamSource schemaSourceStream = new StreamSource(schemaStream);
-      Schema schema = schemaFactory.newSchema(schemaSourceStream);
-      Validator validator = schema.newValidator();
-      StreamSource contextStream = new StreamSource(contextpath.toFile());
-      try {
-        validator.validate(contextStream);
-      } catch (SAXException e) {
-        fail("Exception shows that validator has found an error with the context configuration file \n" + e);
-        contextStream.getInputStream().close();
-        schemaStream.close();
-      }
-      schemaStream.close();
+    Schema schema = schemaFactory
+        .newSchema(getClass().getResource("/schema/" + schemaVersion + "/templateSetConfiguration.xsd"));
+    Validator validator = schema.newValidator();
+    StreamSource contextStream = new StreamSource(templateSetPath.toFile());
+    try {
+      validator.validate(contextStream);
+    } catch (SAXException e) {
+      fail("Exception shows that validator has found an error with the template-set configuration file \n" + e);
+      contextStream.getInputStream().close();
     }
 
   }
@@ -209,11 +204,11 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
       newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 
       for (String s : newTemplatesPath.toFile().list()) {
-        Path newContextPath = newTemplatesPath.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-        newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        assertThat(newContextPath.toFile()).exists();
+        Path templateSetPath = newTemplatesPath.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+        templateSetPath = templateSetPath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+        assertThat(templateSetPath.toFile()).exists();
 
-        validateContextConfigurationFile(newContextPath, "v3.0");
+        validateTemplateSetConfiguration(templateSetPath, "v6.0");
       }
     });
   }

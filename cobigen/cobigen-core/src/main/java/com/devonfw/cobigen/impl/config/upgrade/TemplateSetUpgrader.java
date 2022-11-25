@@ -87,14 +87,14 @@ public class TemplateSetUpgrader {
    * Upgrades the ContextConfiguration from v2.1 to the new structure from v3.0. The monolithic pom and context files
    * will be split into multiple files corresponding to every template set that will be created.
    *
-   * @param Path {@link Path} to the templatesLocation
+   * @param templatesLocation {@link Path} to the templatesLocation
    *
    * @return {@link Map} collection that contains the upgraded v3.0
    *         {@link com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration} as key and a {@link Path} for
    *         the new location of the context.xml as value
    * @throws Exception if an issue occurred in directory copy operations
    */
-  public Map<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration, Path> upgradeTemplatesToTemplateSets(
+  public Map<TemplateSetConfiguration, Path> upgradeTemplatesToTemplateSetsV6(
       Path templatesLocation) throws Exception {
 
     Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
@@ -135,7 +135,7 @@ public class TemplateSetUpgrader {
 
     List<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
-    Map<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration, Path> contextMap = new HashMap<>();
+    Map<TemplateSetConfiguration, Path> templateSetMap = new HashMap<>();
     for (com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration cc : contextFiles) {
       for (com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger trigger : cc.getTrigger()) {
         Path triggerFolder = folderOfContextLocation.resolve(trigger.getTemplateFolder());
@@ -164,26 +164,19 @@ public class TemplateSetUpgrader {
             .resolve("templates.xml");
         TemplatesConfiguration tcV6 = readTemplatesConfigurationV6(tcPath);
         Files.delete(tcPath);
-
+        // Use templates.xml and context.xml to generate template-set.xml
         TemplateSetConfiguration tsc = buildTemplateSetConfigurationV6(tcV6, cc);
         Path tscPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
         try (OutputStream out = Files.newOutputStream(tscPath)) {
           JAXB.marshal(tsc, out);
         }
-
-        Path newContextPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        contextMap.put(cc, newContextPath);
-        // creates actual context configuration file
-        try (OutputStream out = Files.newOutputStream(newContextPath)) {
-          JAXB.marshal(cc, out);
-        }
+        // Figure out template-set.xml path in new folder structure
+        tscPath = templateSets.resolve(folderToRename.toPath().relativize(newTriggerFolder)
+                .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+                .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME));
+        templateSetMap.put(tsc, tscPath);
         writeNewPomFile(cobigenTemplatesFolder, newTriggerFolder, trigger);
-        newContextPath = templateSets.resolve(folderToRename.toPath().relativize(newTriggerFolder)
-            .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
-        contextMap.put(cc, newContextPath);
       }
     }
 
@@ -195,8 +188,7 @@ public class TemplateSetUpgrader {
     }
     folderToRename.renameTo(templateSets.toFile());
 
-    return contextMap;
-
+    return templateSetMap;
   }
 
   /**
@@ -291,6 +283,7 @@ public class TemplateSetUpgrader {
       com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration ccV6) {
 
     TemplateSetConfiguration tsc = new TemplateSetConfiguration();
+    tsc.setVersion(new BigDecimal("6.0"));
     tsc.setTemplatesConfiguration(tcV6);
     tsc.setContextConfiguration(ccV6);
     return tsc;
