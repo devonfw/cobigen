@@ -32,7 +32,7 @@ import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.google.common.collect.Maps;
@@ -96,12 +96,29 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   }
 
   /**
+   * The constructor.
+   *
+   * @param contextConfiguration
+   * @param contextRoot TODO
+   * @throws InvalidConfigurationException
+   */
+  public ContextConfigurationReader(ContextConfiguration contextConfiguration, Path contextRoot)
+      throws InvalidConfigurationException {
+
+    this.contextConfigurations = new HashMap<>();
+    this.contextRoot = contextRoot;
+    this.contextConfigurations.put(contextRoot, contextConfiguration);
+    loadConfig();
+
+  }
+
+  /**
    *
    */
   private void loadConfig() {
 
     for (Path p : this.contextConfigurations.keySet()) {
-      for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger t : this.contextConfigurations.get(p).getTrigger()) {
+      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : this.contextConfigurations.get(p).getTrigger()) {
         this.triggerConfigLocations.put(t.getId(), p);
       }
     }
@@ -250,7 +267,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
-      for (com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger t : contextConfiguration.getTrigger()) {
+      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
         // templateFolder property is optional in schema version 3.0. If not set take the path of the context.xml file
         String templateFolder = t.getTemplateFolder();
 

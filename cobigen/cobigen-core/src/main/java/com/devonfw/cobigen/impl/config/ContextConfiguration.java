@@ -74,21 +74,13 @@ public class ContextConfiguration {
    */
   private void readConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
 
-    if (isTemplateSet) {
-      if (this.templateSetConfiguration == null) {
-        this.templateSetConfiguration = new TemplateSetConfiguration(configRoot);
-      }
-
-      this.configurationPath = this.templateSetConfiguration.getTemplateSetConfigurationReader().getConfigRoot();
-      this.triggers = this.templateSetConfiguration.getTemplateSetConfigurationReader().loadTriggers();
-    } else {
-      if (this.contextConfigurationReader == null) {
-        this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
-      }
-
-      this.configurationPath = this.contextConfigurationReader.getContextRoot();
-      this.triggers = this.contextConfigurationReader.loadTriggers();
+    if (this.contextConfigurationReader == null) {
+      this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
     }
+
+    this.configurationPath = this.contextConfigurationReader.getContextRoot();
+    this.triggers = this.contextConfigurationReader.loadTriggers();
+
   }
 
   private void readConfiguration(Path configRoot) {
@@ -155,9 +147,6 @@ public class ContextConfiguration {
    */
   public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
 
-    if (this.templateSetConfiguration != null) {
-      return this.templateSetConfiguration.getTemplateSetConfigurationReader().getConfigLocationForTrigger(triggerId);
-    }
     return this.contextConfigurationReader.getContextRoot();
   }
 }

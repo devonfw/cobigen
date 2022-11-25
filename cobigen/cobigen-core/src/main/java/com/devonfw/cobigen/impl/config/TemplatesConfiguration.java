@@ -57,26 +57,16 @@ public class TemplatesConfiguration {
   public TemplatesConfiguration(Path configRoot, Trigger trigger, ConfigurationHolder configurationHolder)
       throws InvalidConfigurationException {
 
-    if (configurationHolder.isTemplateSetConfiguration()) {
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(configRoot);
-      this.templatesFolderName = trigger.getTemplateFolder();
+    TemplatesConfigurationReader reader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder(),
+        configurationHolder);
 
-      this.templates = templateSetConfiguration.getTemplateSetConfigurationReader().loadTemplates();
-      this.increments = templateSetConfiguration.getTemplateSetConfigurationReader().loadIncrements(this.templates,
-          trigger);
-      this.templateEngine = templateSetConfiguration.getTemplateSetConfigurationReader().getTemplateEngine();
-      this.trigger = trigger;
-    } else {
-      TemplatesConfigurationReader reader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder(),
-          configurationHolder);
+    this.templatesFolderName = trigger.getTemplateFolder();
 
-      this.templatesFolderName = trigger.getTemplateFolder();
+    this.templates = reader.loadTemplates(trigger);
+    this.increments = reader.loadIncrements(this.templates, trigger);
+    this.templateEngine = reader.getTemplateEngine();
+    this.trigger = trigger;
 
-      this.templates = reader.loadTemplates(trigger);
-      this.increments = reader.loadIncrements(this.templates, trigger);
-      this.templateEngine = reader.getTemplateEngine();
-      this.trigger = trigger;
-    }
   }
 
   /**

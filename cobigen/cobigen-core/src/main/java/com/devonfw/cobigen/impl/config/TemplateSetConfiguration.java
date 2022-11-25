@@ -15,8 +15,13 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Template;
+import com.devonfw.cobigen.impl.config.entity.TemplateFolder;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
+import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
 import com.google.common.collect.Maps;
 
 /**
@@ -47,6 +52,10 @@ public class TemplateSetConfiguration {
 
   /** The reader to read the template-set.xml files */
   public TemplateSetConfigurationReader templateSetConfigurationReader;
+
+  public TemplatesConfigurationReader templatesConfigurationReader;
+
+  public ContextConfigurationReader contextConfigurationReader;
 
   /**
    * @return templateSetConfigurationReader
@@ -88,28 +97,35 @@ public class TemplateSetConfiguration {
   /**
    * Reads the configuration from the given path
    *
-   * @param configRoot CobiGen configuration root path
+   * @param configurationPath CobiGen configuration root path
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
-
-  public void readConfiguration(Path configRoot) throws InvalidConfigurationException {
+  public void readConfiguration(Path configurationPath) throws InvalidConfigurationException {
 
     if (this.templateSetConfigurationReader == null) {
-      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configRoot, this);
+      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath, this);
     }
+
+    TemplatesConfiguration templatesConfiguration = this.templateSetConfigurationReader.getTemplatesConfiguration();
+    ContextConfiguration contextConfiguration = this.templateSetConfigurationReader.getContextConfiguration();
+    TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
+
+    TemplatesConfigurationReader templatesReader = new TemplatesConfigurationReader(templatesConfiguration,
+        templateFolder);
+    ContextConfigurationReader contextReader = new ContextConfigurationReader(contextConfiguration, configurationPath);
 
     this.increments = new HashMap<>();
     for (Path templateSetFile : this.templateSetFiles) {
       this.templateSetConfigurationReader.templateSetFile = templateSetFile;
-      this.templateSetConfigurationReader.readConfiguration();
-      this.configRoot = this.templateSetConfigurationReader.getConfigRoot();
-      this.triggers.putAll(this.templateSetConfigurationReader.loadTriggers());
-      this.templates.putAll(this.templateSetConfigurationReader.loadTemplates());
+      // this.templateSetConfigurationReader.readConfiguration();
+      this.configRoot = configurationPath;
+      this.triggers.putAll(contextReader.loadTriggers());
+      this.templates.putAll(templatesReader.loadTemplates(this.triggers.get(this.triggers.keySet().toArray()[0])));
     }
 
     // For every trigger put all increments depended on that trigger into the local increments hash map
     for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
-      this.increments.putAll(this.templateSetConfigurationReader.loadIncrements(this.templates, trigger.getValue()));
+      this.increments.putAll(templatesReader.loadIncrements(this.templates, trigger.getValue()));
     }
   }
 

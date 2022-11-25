@@ -6,9 +6,9 @@
   xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" elementFormDefault="qualified" version="6.0">
 
 
-  <xs:import schemaLocation="../v3.0/contextConfiguration.xsd"
+  <xs:import schemaLocation="contextConfiguration.xsd"
     namespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration"/>
-  <xs:import schemaLocation="../v5.0/templatesConfiguration.xsd"
+  <xs:import schemaLocation="templatesConfiguration.xsd"
     namespace="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"/>
 
   <xs:element name="templateSetConfiguration">
