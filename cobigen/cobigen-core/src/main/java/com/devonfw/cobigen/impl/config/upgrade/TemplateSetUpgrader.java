@@ -309,7 +309,9 @@ public class TemplateSetUpgrader {
 
       Object rootNode = um.unmarshal(in);
       if (rootNode instanceof TemplatesConfiguration) {
-        return (TemplatesConfiguration) rootNode;
+        TemplatesConfiguration tc = (TemplatesConfiguration) rootNode;
+        tc.setVersion(new BigDecimal("5.0"));
+        return tc;
       }
     } catch (IOException e) {
       throw new InvalidConfigurationException("Templates file could not be found", e);
