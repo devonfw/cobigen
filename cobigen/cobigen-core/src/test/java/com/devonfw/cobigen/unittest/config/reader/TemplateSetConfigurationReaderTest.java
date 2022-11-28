@@ -45,7 +45,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
       .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
 
   private final static Path VALID_CONFIGURATION_PATH = Paths.get(TEST_FILE_ROOT_PATH + "/valid_template_sets")
-      .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER + "/adapted/test-template");
+      .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve("adapted/test-template");
 
   /**
    * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
@@ -86,9 +86,28 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
+   * Tests if duplicated template sets using same trigger id and increment name were not loadable and an exception was
+   * thrown
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testTemplateSetsDuplicatedThrowsError() throws Exception {
+
+    File folder = this.tmpFolder.newFolder("TemplateSetsDuplicatedTest");
+    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_duplicated");
+    FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
+      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+          folder.toPath().resolve("template-sets"));
+      // TODO add check for proper exception message
+    });
+  }
+
+  /**
    * Tests if a template set configuration can be found from a template set jar file
    *
-   * @throws Exception
+   * @throws Exception test fails
    *
    */
   @Test
@@ -109,7 +128,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
    * Tests if template-set configuration can be found in both adapted and downloaded folder of the template sets
    * directory
    *
-   * @throws Exception
+   * @throws Exception test fails
    *
    */
   @Test
@@ -132,11 +151,12 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   }
 
   /**
+   * Tests if 2 template sets were properly loaded
    *
-   * @throws Exception
+   * @throws Exception test fails
    */
   @Test
-  public void testTemplateScans() throws Exception {
+  public void testLoad2TemplateSets() throws Exception {
 
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_adapted/");
@@ -146,7 +166,9 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
           folder.toPath().resolve("template-sets"));
 
       Map<String, Template> templates = templateSetConfiguration.getTemplates();
-      assertThat(templates).isNotNull().hasSize(1);
+      assertThat(templates).isNotNull().hasSize(2);
+
+      // TODO add more validation checks
 
     });
   }

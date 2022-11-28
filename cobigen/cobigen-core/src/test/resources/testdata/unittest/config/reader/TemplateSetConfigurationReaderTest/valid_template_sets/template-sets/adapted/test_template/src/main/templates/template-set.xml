@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
 
-  <cc:contextConfiguration version="3.0">
+  <cc:contextConfiguration version="6.0">
     <cc:trigger id="valid" type="java">
       <cc:matcher type="fqn" value="*"></cc:matcher>
     </cc:trigger>
@@ -10,7 +10,7 @@
     </cc:tags>
   </cc:contextConfiguration>
 
-  <tc:templatesConfiguration version="5.0">
+  <tc:templatesConfiguration version="6.0">
     <tc:templates>
       <tc:template name="prefix_Foo2Class.java"
         destinationPath="src/main/java/foo/Foo2Class${variable}.java" templateFile="foo/Foo2Class.java.ftl"
