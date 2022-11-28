@@ -74,12 +74,23 @@ public class ContextConfiguration {
    */
   private void readConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
 
-    if (this.contextConfigurationReader == null) {
-      this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
-    }
+    if (isTemplateSet) {
+      if (this.templateSetConfiguration == null) {
+        this.templateSetConfiguration = new TemplateSetConfiguration(configRoot);
+      }
 
-    this.configurationPath = this.contextConfigurationReader.getContextRoot();
-    this.triggers = this.contextConfigurationReader.loadTriggers();
+      this.configurationPath = this.templateSetConfiguration.getTemplateSetConfigurationReader()
+          .getContextConfigurationReader().getContextRoot();
+      this.triggers = this.templateSetConfiguration.getTemplateSetConfigurationReader().getContextConfigurationReader()
+          .loadTriggers();
+    } else {
+      if (this.contextConfigurationReader == null) {
+        this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
+      }
+
+      this.configurationPath = this.contextConfigurationReader.getContextRoot();
+      this.triggers = this.contextConfigurationReader.loadTriggers();
+    }
 
   }
 

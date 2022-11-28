@@ -56,15 +56,27 @@ public class TemplateSetConfigurationReader {
   /** XML Node 'template-set' of the template-set.xml files */
   protected TemplateSetConfiguration templateSetConfigurationDecorator;
 
-  protected TemplatesConfiguration templatesConfiguration;
+  protected TemplatesConfigurationReader templatesConfigurationReader;
 
   /**
    * @return templatesConfiguration
    */
-  public TemplatesConfiguration getTemplatesConfiguration() {
+  public TemplatesConfigurationReader getTemplatesConfigurationReader() {
 
-    return this.templatesConfiguration;
+    return this.templatesConfigurationReader;
   }
+
+  /**
+   * @return contextConfiguration
+   */
+  public ContextConfigurationReader getContextConfigurationReader() {
+
+    return this.contextConfigurationReader;
+  }
+
+  protected ContextConfigurationReader contextConfigurationReader;
+
+  protected com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
 
   /**
    * @return contextConfiguration
@@ -74,7 +86,15 @@ public class TemplateSetConfigurationReader {
     return this.contextConfiguration;
   }
 
-  protected com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
+  /**
+   * @return templatesConfiguration
+   */
+  public TemplatesConfiguration getTemplatesConfiguration() {
+
+    return this.templatesConfiguration;
+  }
+
+  protected TemplatesConfiguration templatesConfiguration;
 
   /** Root of the configuration */
   private Path configRoot;
@@ -215,8 +235,14 @@ public class TemplateSetConfigurationReader {
         rootNode = (com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration) unmarschaller
             .unmarshal(configInputStream);
         this.templateSetConfiguration = rootNode;
+
         this.templatesConfiguration = rootNode.getTemplatesConfiguration();
         this.contextConfiguration = rootNode.getContextConfiguration();
+        this.templatesConfigurationReader = new TemplatesConfigurationReader(rootNode.getTemplatesConfiguration(),
+            this.rootTemplateFolder);
+        this.contextConfigurationReader = new ContextConfigurationReader(rootNode.getContextConfiguration(),
+            this.configLocation);
+
       }
     } catch (JAXBException e) {
       // try getting SAXParseException for better error handling and user support

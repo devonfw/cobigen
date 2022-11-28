@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -16,6 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -142,18 +144,10 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
       TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
           folder.toPath().resolve("template-sets"));
-      TemplateSetConfigurationReader reader = templateSetConfiguration.getTemplateSetConfigurationReader();
-      // Map<String, Template> map = reader.loadTemplates();
-      // then
-      // assertThat(templates).isNotNull().hasSize(6);
-      //
-      // String templateIdFooClass = "prefix_FooClass.java";
-      // Template templateFooClass = templates.get(templateIdFooClass);
-      // assertThat(templateFooClass).isNotNull();
-      // assertThat(templateFooClass.getName()).isEqualTo(templateIdFooClass);
-      // assertThat(templateFooClass.getRelativeTemplatePath()).isEqualTo("foo/FooClass.java.ftl");
-      // assertThat(templateFooClass.getUnresolvedTargetPath()).isEqualTo("src/main/java/foo/FooClass.java");
-      // assertThat(templateFooClass.getMergeStrategy()).isNull();
+
+      Map<String, Template> templates = templateSetConfiguration.getTemplates();
+      assertThat(templates).isNotNull().hasSize(1);
+
     });
   }
 

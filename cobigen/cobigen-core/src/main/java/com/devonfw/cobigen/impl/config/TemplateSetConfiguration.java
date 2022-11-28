@@ -17,8 +17,6 @@ import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.TemplateFolder;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
-import com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
@@ -106,13 +104,11 @@ public class TemplateSetConfiguration {
       this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath, this);
     }
 
-    TemplatesConfiguration templatesConfiguration = this.templateSetConfigurationReader.getTemplatesConfiguration();
-    ContextConfiguration contextConfiguration = this.templateSetConfigurationReader.getContextConfiguration();
     TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
 
-    TemplatesConfigurationReader templatesReader = new TemplatesConfigurationReader(templatesConfiguration,
-        templateFolder);
-    ContextConfigurationReader contextReader = new ContextConfigurationReader(contextConfiguration, configurationPath);
+    TemplatesConfigurationReader templatesReader = this.templateSetConfigurationReader
+        .getTemplatesConfigurationReader();
+    ContextConfigurationReader contextReader = this.templateSetConfigurationReader.getContextConfigurationReader();
 
     this.increments = new HashMap<>();
     for (Path templateSetFile : this.templateSetFiles) {
@@ -120,7 +116,8 @@ public class TemplateSetConfiguration {
       // this.templateSetConfigurationReader.readConfiguration();
       this.configRoot = configurationPath;
       this.triggers.putAll(contextReader.loadTriggers());
-      this.templates.putAll(templatesReader.loadTemplates(this.triggers.get(this.triggers.keySet().toArray()[0])));
+      this.templates
+          .putAll(templatesReader.loadTemplates(this.triggers.get(this.triggers.keySet().toArray()[0])));
     }
 
     // For every trigger put all increments depended on that trigger into the local increments hash map

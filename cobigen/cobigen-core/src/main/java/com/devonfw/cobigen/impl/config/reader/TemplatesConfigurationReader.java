@@ -146,6 +146,7 @@ public class TemplatesConfigurationReader {
       throws InvalidConfigurationException {
 
     this.configNode = templatesConfiguration;
+    this.configFilePath = rootTemplateFolder.getPath().resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
     this.rootTemplateFolder = rootTemplateFolder;
   }
 
