@@ -69,13 +69,17 @@ public class TemplateSetConfiguration {
   /** Root of the configuration */
   public Path configRoot;
 
+  public ConfigurationHolder configurationHolder;
+
   /**
    * @param configRoot Root of the configuration
+   * @param configurationHolder TODO
    */
-  public TemplateSetConfiguration(Path configRoot) {
+  public TemplateSetConfiguration(Path configRoot, ConfigurationHolder configurationHolder) {
 
     this.triggers = Maps.newHashMap();
     this.templates = Maps.newHashMap();
+    this.configurationHolder = configurationHolder;
     readConfiguration(configRoot);
 
   }
@@ -88,7 +92,7 @@ public class TemplateSetConfiguration {
    */
   public TemplateSetConfiguration(ConfigurationProperties properties, Path configRoot) {
 
-    this(configRoot);
+    this(configRoot, null);
     setConfigurationProperties(properties);
   }
 
@@ -101,7 +105,8 @@ public class TemplateSetConfiguration {
   public void readConfiguration(Path configurationPath) throws InvalidConfigurationException {
 
     if (this.templateSetConfigurationReader == null) {
-      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath, this);
+      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath, this,
+          this.configurationHolder);
     }
 
     TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
@@ -116,8 +121,7 @@ public class TemplateSetConfiguration {
       // this.templateSetConfigurationReader.readConfiguration();
       this.configRoot = configurationPath;
       this.triggers.putAll(contextReader.loadTriggers());
-      this.templates
-          .putAll(templatesReader.loadTemplates(this.triggers.get(this.triggers.keySet().toArray()[0])));
+      this.templates.putAll(templatesReader.loadTemplates(this.triggers.get(this.triggers.keySet().toArray()[0])));
     }
 
     // For every trigger put all increments depended on that trigger into the local increments hash map

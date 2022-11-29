@@ -21,6 +21,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
+import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
@@ -56,7 +57,12 @@ public class TemplateSetConfigurationReader {
   /** XML Node 'template-set' of the template-set.xml files */
   protected TemplateSetConfiguration templateSetConfigurationDecorator;
 
+  /**
+   * The {@link TemplatesConfigurationReader}
+   */
   protected TemplatesConfigurationReader templatesConfigurationReader;
+
+  protected ConfigurationHolder configurationHolder;
 
   /**
    * @return templatesConfiguration
@@ -74,8 +80,14 @@ public class TemplateSetConfigurationReader {
     return this.contextConfigurationReader;
   }
 
+  /**
+   * The {@link ContextConfigurationReader}
+   */
   protected ContextConfigurationReader contextConfigurationReader;
 
+  /**
+   * The {@link com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration}
+   */
   protected com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
 
   /**
@@ -94,6 +106,9 @@ public class TemplateSetConfigurationReader {
     return this.templatesConfiguration;
   }
 
+  /**
+   * The {@link TemplatesConfiguration} to initialize
+   */
   protected TemplatesConfiguration templatesConfiguration;
 
   /** Root of the configuration */
@@ -118,10 +133,13 @@ public class TemplateSetConfigurationReader {
    *
    * @param configRoot Root of the configuration
    * @param templateSetConfiguration Wrapped configuration that's being read
+   * @param configurationHolder TODO
    * @throws InvalidConfigurationException if the configuration is not valid
    */
-  public TemplateSetConfigurationReader(Path configRoot, TemplateSetConfiguration templateSetConfiguration)
-      throws InvalidConfigurationException {
+  public TemplateSetConfigurationReader(Path configRoot, TemplateSetConfiguration templateSetConfiguration,
+      ConfigurationHolder configurationHolder) throws InvalidConfigurationException {
+
+    this.configurationHolder = configurationHolder;
 
     if (configRoot == null)
       throw new IllegalArgumentException("Configuraion path cannot be null.");
@@ -164,18 +182,21 @@ public class TemplateSetConfigurationReader {
 
   }
 
+  /**
+   * Reads the template set xml file and initializes the templates and context configurations and readers
+   */
   public void readConfiguration() {
 
     this.configLocation = this.templateSetFile.getParent();
 
     if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
       this.configRoot = this.configLocation;
-      if (Files.exists(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)))
-        this.rootTemplateFolder = TemplateFolder
-            .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
-      else {
-        this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
-      }
+      // if (Files.exists(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)))
+      // this.rootTemplateFolder = TemplateFolder
+      // .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
+      // else {
+      this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
+      // }
     }
 
     if (FileSystemUtil.isZipFile(this.configRoot.toUri())) {
@@ -236,10 +257,11 @@ public class TemplateSetConfigurationReader {
             .unmarshal(configInputStream);
         this.templateSetConfiguration = rootNode;
 
+        // TODO: Move into new method
         this.templatesConfiguration = rootNode.getTemplatesConfiguration();
         this.contextConfiguration = rootNode.getContextConfiguration();
         this.templatesConfigurationReader = new TemplatesConfigurationReader(rootNode.getTemplatesConfiguration(),
-            this.rootTemplateFolder);
+            this.rootTemplateFolder, null, this.templateSetFile);
         this.contextConfigurationReader = new ContextConfigurationReader(rootNode.getContextConfiguration(),
             this.configLocation);
 
@@ -270,17 +292,5 @@ public class TemplateSetConfigurationReader {
     }
 
   }
-
-  /**
-   * =========================================================================================================
-   * ****************************************TEMPLATES PART STARTS HERE***************************************
-   * =========================================================================================================
-   */
-
-  /**
-   * =========================================================================================================
-   * ****************************************INCREMENTS PART STARTS HERE**************************************
-   * =========================================================================================================
-   */
 
 }

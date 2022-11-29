@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tns:templateSetConfiguration version="6.0"
+  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:tns1="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  xmlns:tns2="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+    <tns1:contextConfiguration version="3.0">
+  <tns1:trigger id="entities2" type="mockplugin" templateFolder="templates">
+    <tns1:matcher type="fqn" value=".+">
+    </tns1:matcher>
+  </tns1:trigger>
+    <tns1:tags>
+      <tns1:tag name="bla"/>
+    </tns1:tags>
+      </tns1:contextConfiguration>
+       <tns2:templatesConfiguration version="5.0">
+    <tns2:templates>
+      <tns2:template name="t2" destinationPath="generated.txt" templateFile="generated.txt.ftl"
+        mergeStrategy="override"/>
+    </tns2:templates>
+    <tns2:increments>
+      <tns2:increment name="i2" description="the only increment">
+        <tns2:templateRef ref="t2"/>
+      </tns2:increment>
+    </tns2:increments>
+     </tns2:templatesConfiguration>
+  </tns:templateSetConfiguration>

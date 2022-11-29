@@ -142,11 +142,23 @@ public class TemplatesConfigurationReader {
     this.configurationHolder = configurationHolder;
   }
 
-  public TemplatesConfigurationReader(TemplatesConfiguration templatesConfiguration, TemplateFolder rootTemplateFolder)
-      throws InvalidConfigurationException {
+  /**
+   *
+   * The constructor which is being used by the {@link TemplateSetConfigurationReader}
+   *
+   * @param templatesConfiguration {@link TemplatesConfiguration} to initialize from
+   *        {@link TemplateSetConfigurationReader}
+   * @param rootTemplateFolder the root template folder
+   * @param configurationHolder The {@link ConfigurationHolder} used for reading templates folder
+   * @param templateSetConfigurationFile TODO
+   * @throws InvalidConfigurationException
+   */
+  public TemplatesConfigurationReader(TemplatesConfiguration templatesConfiguration, TemplateFolder rootTemplateFolder,
+      ConfigurationHolder configurationHolder, Path templateSetConfigurationFile) throws InvalidConfigurationException {
 
+    this.configurationHolder = configurationHolder;
     this.configNode = templatesConfiguration;
-    this.configFilePath = rootTemplateFolder.getPath().resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
+    this.configFilePath = templateSetConfigurationFile;
     this.rootTemplateFolder = rootTemplateFolder;
   }
 

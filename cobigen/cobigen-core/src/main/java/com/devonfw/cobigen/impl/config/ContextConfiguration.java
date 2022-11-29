@@ -30,7 +30,7 @@ public class ContextConfiguration {
   /**
    * This is the automatically generated ContextConfiguration
    */
-  private com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration contextConfiguration;
+  private com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
 
   /**
    * The reader to read the context.xml files
@@ -46,6 +46,7 @@ public class ContextConfiguration {
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
    *
    * @param configRoot root path for the configuration of CobiGen
+   * @param isTemplateSet check if the configuration is a {@link TemplateSetConfiguration}
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
   public ContextConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
@@ -67,16 +68,17 @@ public class ContextConfiguration {
   }
 
   /**
-   * Reads the configuration from the given path
+   * Reads the configuration from the given path and switches between template set and monolithic context configuration
    *
    * @param configRoot CobiGen configuration root path
+   * @param isTemplateSet check if the configuration is a {@link TemplateSetConfiguration}
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
   private void readConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
 
     if (isTemplateSet) {
       if (this.templateSetConfiguration == null) {
-        this.templateSetConfiguration = new TemplateSetConfiguration(configRoot);
+        this.templateSetConfiguration = new TemplateSetConfiguration(configRoot, null);
       }
 
       this.configurationPath = this.templateSetConfiguration.getTemplateSetConfigurationReader()
@@ -158,6 +160,6 @@ public class ContextConfiguration {
    */
   public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
 
-    return this.contextConfigurationReader.getContextRoot();
+    return this.configurationPath;
   }
 }

@@ -58,7 +58,7 @@ public class TemplatesConfiguration {
       throws InvalidConfigurationException {
 
     if (configurationHolder.isTemplateSetConfiguration()) {
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(configRoot);
+      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(configRoot, configurationHolder);
       this.templatesFolderName = trigger.getTemplateFolder();
 
       this.templates = templateSetConfiguration.getTemplateSetConfigurationReader().getTemplatesConfigurationReader()
