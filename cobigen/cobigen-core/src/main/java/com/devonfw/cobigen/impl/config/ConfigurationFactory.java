@@ -48,16 +48,4 @@ public class ConfigurationFactory {
     return templatesConfigurations.get(trigger.getId()).get(templateFolder);
   }
 
-  /**
-   * @param groupIds property
-   * @param allowSnapshots property
-   * @param hideTemplates property
-   * @return {@link TemplateSetConfiguration} instance
-   */
-  public TemplateSetConfiguration retrieveTemplateSetConfiguration() {
-
-    TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(this.configRoot);
-    return templateSetConfiguration;
-  }
-
 }
