@@ -9,15 +9,12 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import com.devonfw.cobigen.gui.controllers.HomeController;
-import com.devonfw.cobigen.gui.services.CellFactory;
-import com.devonfw.cobigen.gui.services.CellFactory.TemplateSetCell;
+import com.devonfw.cobigen.gui.controllers.MenuController;
+import com.devonfw.cobigen.gui.services.TemplateSetCell;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -28,36 +25,26 @@ public class Controller implements Initializable {
   @FXML
   private HomeController homeController;
 
+  @FXML
+  private MenuController menuController;
+
   // ArrayList<String> templateSets = new ArrayList<>(Arrays.asList("templates-devon4j-tests",
   // "templates-devon4j-utils",
   // "crud-openapi-net", "crud-angular-client-app", "crud-ionic-client-app", "rest-documentation"));
 
-  ArrayList<TemplateSetCell> templateSets = CellFactory.getTestList();
+  // ArrayList<TemplateSetCell> templateSets = CellFactory.getTestList();
+
+  @FXML
+  private AnchorPane leftPane;
+
+  @FXML
+  private AnchorPane searchPane;
+
+  @FXML
+  private AnchorPane rightPane;
 
   @FXML
   private AnchorPane detailsPane;
-
-  @FXML
-  private AnchorPane homePane;
-
-  @FXML
-  private AnchorPane templateSetDetailsPane;
-
-  @FXML
-  public Button homeButton;
-
-  @FXML
-  public Button clearSearchResultsButton;
-
-  @FXML
-  public TextField searchBar;
-
-  @FXML
-  public Button goSearch;
-
-  // TODO: Transform to ListView<HBox>
-  @FXML
-  public ListView<TemplateSetCell> searchResultsView;
 
   /**
    * Initial View
@@ -70,10 +57,7 @@ public class Controller implements Initializable {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
-    this.searchResultsView = CellFactory.getListView();
-
-    this.searchResultsView.getItems().addAll(this.templateSets);
+    this.menuController.injectController(this);
   }
 
   /**
@@ -83,8 +67,8 @@ public class Controller implements Initializable {
   @FXML
   public void loadHome(javafx.event.ActionEvent actionEvent) throws IOException {
 
-    this.homePane = FXMLLoader.load(getClass().getResource("fxml/Home.fxml"));
-    this.detailsPane.getChildren().setAll(this.homePane);
+    this.detailsPane = FXMLLoader.load(getClass().getResource("fxml/Home.fxml"));
+    this.rightPane.getChildren().setAll(this.detailsPane);
   }
 
   /**
@@ -93,30 +77,8 @@ public class Controller implements Initializable {
    */
   public void loadDetails(javafx.event.ActionEvent actionEvent) throws IOException {
 
-    this.templateSetDetailsPane = FXMLLoader.load(getClass().getResource("fxml/TemplateSetDetails.fxml"));
-    this.detailsPane.getChildren().setAll(this.templateSetDetailsPane);
-  }
-
-  /**
-   * @param event
-   * @throws IOException
-   */
-  @FXML
-  public void search(javafx.event.ActionEvent event) throws IOException {
-
-    this.searchResultsView.getItems().clear();
-    this.searchResultsView.getItems().addAll(getTemplateSetsSearchResults(this.searchBar.getText(), this.templateSets));
-  }
-
-  /**
-   * Called when clearSearchResultsButton is pressed
-   */
-  @FXML
-  public void clearSearchResults() {
-
-    this.searchBar.clear();
-    this.searchResultsView.getItems().clear();
-    this.searchResultsView.getItems().addAll(this.templateSets);
+    this.detailsPane = FXMLLoader.load(getClass().getResource("fxml/TemplateSetDetails.fxml"));
+    this.rightPane.getChildren().setAll(this.detailsPane);
   }
 
   /**
@@ -140,16 +102,16 @@ public class Controller implements Initializable {
     List<String> namesOfTemplateCells = new ArrayList<>();
 
     for (TemplateSetCell ts : listOfTemplateSets) {
-      namesOfTemplateCells.add(ts.getWord());
+      // namesOfTemplateCells.add(ts.getWord());
     }
 
     List<String> resultNames = searchTemplateSets(searchWords, namesOfTemplateCells);
     List<TemplateSetCell> resultCells = new ArrayList<>();
 
     for (TemplateSetCell ts : listOfTemplateSets) {
-      if (resultNames.contains(ts.getWord())) {
-        resultCells.add(ts);
-      }
+      // if (resultNames.contains(ts.getWord())) {
+      // resultCells.add(ts);
+      // }
     }
     return resultCells;
   }
