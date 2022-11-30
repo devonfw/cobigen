@@ -14,7 +14,7 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="312.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.MenuController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="312.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.MenuController">
   <children>
 
   <AnchorPane fx:id="menuPane" minHeight="0.0" minWidth="0.0" prefHeight="312.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -64,7 +64,7 @@
                 <Button fx:id="clearSearchResultsButton" mnemonicParsing="false" onAction="#clearSearchResults" prefHeight="25.0" prefWidth="27.0" style="-fx-background-color: TRANSPARENT;" text="x" textFill="#0000004d" AnchorPane.rightAnchor="0.0" />
                 <ScrollPane fitToWidth="true" prefHeight="436.0" prefWidth="211.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
                      <content>
-                        <ListView fx:id="searchResultsView" prefHeight="261.0" prefWidth="181.0" />
+                        <ListView id="searchResultsView" fx:id="searchResultsView" prefHeight="261.0" prefWidth="181.0" />
                      </content></ScrollPane>
                </children>
                   </AnchorPane>

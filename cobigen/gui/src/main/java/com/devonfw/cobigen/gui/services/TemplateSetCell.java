@@ -56,8 +56,8 @@ public class TemplateSetCell extends ListCell<TemplateSet> {
 
     super.updateItem(templateSet, empty);
     if (empty || templateSet == null) {
-      setText(null);
-      setContentDisplay(null);
+      setText("");
+      setGraphic(null);
     } else {
       if (this.loader == null) {
         // FXMLLoader(getClass().getResource("com/devonfw/cobigen/gui))
@@ -73,7 +73,7 @@ public class TemplateSetCell extends ListCell<TemplateSet> {
       }
 
       this.titleLabel.setText(templateSet.getName());
-
+      // setText(templateSet.getName());
       this.installButton.setOnAction(event -> {
         System.out.println("INSTALLIEREN!!!");
       });
