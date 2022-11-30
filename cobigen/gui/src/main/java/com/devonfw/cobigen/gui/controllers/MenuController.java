@@ -103,26 +103,12 @@ public class MenuController implements Initializable {
   }
 
   /**
-   * @param event
-   * @throws IOException
-   */
-  @FXML
-  public void search(javafx.event.ActionEvent event) throws IOException {
-
-    this.searchResultsView.getItems().clear();
-    // this.searchResultsView.getItems().addAll(getTemplateSetsSearchResults(this.searchBar.getText(),
-    // this.templateSets));
-  }
-
-  /**
    * Called when clearSearchResultsButton is pressed
    */
   @FXML
   public void clearSearchResults() {
 
     this.searchBar.clear();
-    this.searchResultsView.getItems().clear();
-    // this.searchResultsView.getItems().addAll(this.templateSets);
   }
 
 }

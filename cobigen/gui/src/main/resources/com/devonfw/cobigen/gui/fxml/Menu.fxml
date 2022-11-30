@@ -59,8 +59,7 @@
                   </AnchorPane>
                 <AnchorPane fx:id="searchPane" minHeight="0.0" minWidth="0.0" prefHeight="283.0" prefWidth="200.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
                <children>
-                <TextField id="searchBar" fx:id="searchBar" prefHeight="25.0" prefWidth="157.0" promptText="Search Template Sets" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="54.0" />
-              <Button fx:id="goSearch" ellipsisString="o-" mnemonicParsing="false" onAction="#search" prefHeight="9.0" prefWidth="27.0" text="o-" AnchorPane.rightAnchor="25.0" />
+                <TextField id="searchBar" fx:id="searchBar" prefHeight="25.0" prefWidth="174.0" promptText="Search Template Sets" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="26.0" />
                 <Button fx:id="clearSearchResultsButton" mnemonicParsing="false" onAction="#clearSearchResults" prefHeight="25.0" prefWidth="27.0" style="-fx-background-color: TRANSPARENT;" text="x" textFill="#0000004d" AnchorPane.rightAnchor="0.0" />
                 <ScrollPane fitToWidth="true" prefHeight="436.0" prefWidth="211.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="28.0">
                      <content>
