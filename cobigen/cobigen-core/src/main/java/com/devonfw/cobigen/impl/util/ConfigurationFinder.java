@@ -92,11 +92,10 @@ public class ConfigurationFinder {
    * Checks if .cobigen properties file contains any add-generated-annotation
    *
    * @return the value of add-generated-annotation
-   * @throws IOException
    */
   public static boolean checkGeneratedAnnotationInProperties() {
 
-    Boolean defaultGeneratedAnnotation = true;
+    Boolean defaultGeneratedAnnotation = false;
     Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
     Path dotCobigenFilePath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
     Properties dotCobigenProperties = null;
@@ -108,14 +107,6 @@ public class ConfigurationFinder {
         String value = dotCobigenProperties.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
         defaultGeneratedAnnotation = Boolean.valueOf(value);
       }
-      // add generated annotation set to true (default behaviour)
-      else {
-        FileSystemUtil.addGeneratedAnnotationProperty(dotCobigenProperties, dotCobigenFilePath);
-      }
-    }
-    // if .cobigen file do not exist then it creates one and set add-generated-annotation to true
-    else {
-      FileSystemUtil.addGeneratedAnnotationProperty(dotCobigenProperties, dotCobigenFilePath);
     }
     return defaultGeneratedAnnotation;
   }

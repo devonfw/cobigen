@@ -50,6 +50,8 @@ public class JavaMerger implements Merger {
    */
   private boolean patchOverrides;
 
+  private static final String GENERATED_ANNOTATION_CLASS = "javax.annotation.Generated";
+
   /**
    * Creates a new {@link JavaMerger}
    *
@@ -134,7 +136,6 @@ public class JavaMerger implements Merger {
    */
   private String addGeneratedAnnotation(JavaClass baseClass, JavaClass parsedAnnotationClass, String lineDelimiter) {
 
-    final String ANNOTATION_IMPORT = "javax.annotation.Generated";
     List<JavaAnnotation> generatedAnnotation = parsedAnnotationClass.getAnnotations();
     List<JavaConstructor> constructors = baseClass.getConstructors();
     List<JavaField> fields = baseClass.getFields();
@@ -147,9 +148,9 @@ public class JavaMerger implements Merger {
     if (contentExist) {
       // checks if import is already present
       List<String> imports = baseClass.getSource().getImports();
-      boolean importPresent = imports.contains(ANNOTATION_IMPORT);
+      boolean importPresent = imports.contains(GENERATED_ANNOTATION_CLASS);
       if (!importPresent) {
-        baseClass.getSource().getImports().add(ANNOTATION_IMPORT);
+        baseClass.getSource().getImports().add(GENERATED_ANNOTATION_CLASS);
       }
       addAnnotationOn(constructors, generatedAnnotation);
       addAnnotationOn(methods, generatedAnnotation);
@@ -172,7 +173,7 @@ public class JavaMerger implements Merger {
       List<JavaAnnotation> annotations = element.getAnnotations();
       boolean annotationAlreadyPresent = false;
       for (JavaAnnotation annotation : annotations) {
-        if (annotation.getType().getFullyQualifiedName().equals("javax.annotation.Generated")) {
+        if (annotation.getType().getFullyQualifiedName().equals(GENERATED_ANNOTATION_CLASS)) {
           annotationAlreadyPresent = true;
           break;
         }

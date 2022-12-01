@@ -1,13 +1,9 @@
 package com.devonfw.cobigen.eclipse.test;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
-import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -25,7 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
@@ -43,9 +38,6 @@ public class OpenAPITest extends SystemTest {
 
   /** Line separator, e.g. for windows '\r\n' */
   public static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
-
-  /** Current home directory */
-  protected Path currentHome;
 
   /**
    * Setup workbench appropriately for tests
@@ -69,85 +61,76 @@ public class OpenAPITest extends SystemTest {
   @Test
   public void testBasicOpenAPIGeneration() throws Exception {
 
-    this.currentHome = this.tmpFolderRule.newFolder("cobigen-test-home").toPath();
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
-      // disable Generated annotation
-      Path propertiesPath = this.currentHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-      try (PrintStream out = new PrintStream(new FileOutputStream(propertiesPath.toString()))) {
-        out.print(ConfigurationConstants.ADD_GENERATED_ANNOTATION + "=false");
-      }
+    // copy sample project to external location and import it into the workspace
+    String testProjName = "ExtTestProj";
+    IJavaProject project = this.tmpMavenProjectRule.createProject(testProjName);
+    FileUtils.copyFile(new File(resourcesRootPath + "input/devonfw.yml"),
+        project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
+    project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+    this.tmpMavenProjectRule.updateProject();
 
-      // copy sample project to external location and import it into the workspace
-      String testProjName = "ExtTestProj";
-      IJavaProject project = this.tmpMavenProjectRule.createProject(testProjName);
-      FileUtils.copyFile(new File(resourcesRootPath + "input/devonfw.yml"),
-          project.getUnderlyingResource().getLocation().append("devonfw.yml").toFile());
-      project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-      this.tmpMavenProjectRule.updateProject();
+    EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+    EclipseUtils.openErrorsTreeInProblemsView(bot);
 
-      EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
-      EclipseUtils.openErrorsTreeInProblemsView(bot);
+    // expand the new file in the package explorer
+    SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+    SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "devonfw.yml");
+    javaClassItem.select();
 
-      // expand the new file in the package explorer
-      SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
-      SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "devonfw.yml");
-      javaClassItem.select();
+    // execute CobiGen
+    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "CRUD REST services");
+    // increase timeout as the openAPI parser is slow on initialization
+    EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
 
-      // execute CobiGen
-      EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "CRUD REST services");
-      // increase timeout as the openAPI parser is slow on initialization
-      EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
+    // check assertions
+    bot.waitUntil(new AllJobsAreFinished(), 10000);
+    IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
+    IFile generationResult = proj.getFile(
+        "src/main/java/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
 
-      // check assertions
-      bot.waitUntil(new AllJobsAreFinished(), 10000);
-      IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
-      IFile generationResult = proj.getFile(
-          "src/main/java/com/devonfw/test/sampledatamanagement/service/api/rest/SampledatamanagementRestService.java");
+    try (InputStream in = generationResult.getContents()) {
+      assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
+          "package com.devonfw.test.sampledatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+              "import java.awt.PageAttributes.MediaType;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+              "public interface SampledatamanagementRestService {" + LINE_SEPARATOR + //
+              LINE_SEPARATOR + //
+              "    @GET" + LINE_SEPARATOR + //
+              "    @Path(\"/sampledata/custom/{id}/\")" + LINE_SEPARATOR + //
+              "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+              "    public SampleData customMethod(@PathParam(\"id\") @Max(100) @Min(0) long id);" + LINE_SEPARATOR + //
+              LINE_SEPARATOR + //
+              "    @DELETE" + LINE_SEPARATOR + //
+              "    @Path(\"/sampledata/custom/{id}/\")" + LINE_SEPARATOR + //
+              "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+              "    public Boolean deleteCustomSampleData(@PathParam(\"id\") @Max(100) @Min(0) long id);"
+              + LINE_SEPARATOR + //
+              LINE_SEPARATOR + //
+              "    @POST" + LINE_SEPARATOR + //
+              "    @Path(\"/sampledata/customSave/\")" + LINE_SEPARATOR + //
+              "    @Consumes(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+              "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+              "    public PaginatedListTo<SampleDataEto> saveCustomSampleData(SampleDataEto sampleData);"
+              + LINE_SEPARATOR + //
+              LINE_SEPARATOR + //
+              "    @POST" + LINE_SEPARATOR + //
+              "    @Path(\"/sampledata/customSearch/\")" + LINE_SEPARATOR + //
+              "    @Consumes(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
+              "    @Produces(MediaType.IMAGE_PNG_VALUE)" + LINE_SEPARATOR + //
+              "    public PaginatedListTo<SampleDataEto> findCustomSampleDataEtos(SampleDataSearchCriteriaTo criteria);"
+              + LINE_SEPARATOR + //
+              LINE_SEPARATOR + //
+              "}");
+    }
 
-      try (InputStream in = generationResult.getContents()) {
-        assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
-            "package com.devonfw.test.sampledatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
-                "import java.awt.PageAttributes.MediaType;" + LINE_SEPARATOR + LINE_SEPARATOR + //
-                "public interface SampledatamanagementRestService {" + LINE_SEPARATOR + //
-                LINE_SEPARATOR + //
-                "    @GET" + LINE_SEPARATOR + //
-                "    @Path(\"/sampledata/custom/{id}/\")" + LINE_SEPARATOR + //
-                "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
-                "    public SampleData customMethod(@PathParam(\"id\") @Max(100) @Min(0) long id);" + LINE_SEPARATOR + //
-                LINE_SEPARATOR + //
-                "    @DELETE" + LINE_SEPARATOR + //
-                "    @Path(\"/sampledata/custom/{id}/\")" + LINE_SEPARATOR + //
-                "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
-                "    public Boolean deleteCustomSampleData(@PathParam(\"id\") @Max(100) @Min(0) long id);"
-                + LINE_SEPARATOR + //
-                LINE_SEPARATOR + //
-                "    @POST" + LINE_SEPARATOR + //
-                "    @Path(\"/sampledata/customSave/\")" + LINE_SEPARATOR + //
-                "    @Consumes(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
-                "    @Produces(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
-                "    public PaginatedListTo<SampleDataEto> saveCustomSampleData(SampleDataEto sampleData);"
-                + LINE_SEPARATOR + //
-                LINE_SEPARATOR + //
-                "    @POST" + LINE_SEPARATOR + //
-                "    @Path(\"/sampledata/customSearch/\")" + LINE_SEPARATOR + //
-                "    @Consumes(MediaType.APPLICATION_JSON_VALUE)" + LINE_SEPARATOR + //
-                "    @Produces(MediaType.IMAGE_PNG_VALUE)" + LINE_SEPARATOR + //
-                "    public PaginatedListTo<SampleDataEto> findCustomSampleDataEtos(SampleDataSearchCriteriaTo criteria);"
-                + LINE_SEPARATOR + //
-                LINE_SEPARATOR + //
-                "}");
-      }
-
-      generationResult = proj.getFile(
-          "src/main/java/com/devonfw/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
-      try (InputStream in = generationResult.getContents()) {
-        assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
-            "package com.devonfw.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
-                "public interface MoredatamanagementRestService {" + LINE_SEPARATOR + //
-                LINE_SEPARATOR + //
-                "}");
-      }
-    });
+    generationResult = proj.getFile(
+        "src/main/java/com/devonfw/test/moredatamanagement/service/api/rest/MoredatamanagementRestService.java");
+    try (InputStream in = generationResult.getContents()) {
+      assertThat(IOUtils.toString(in).trim()).isEqualToIgnoringWhitespace(
+          "package com.devonfw.test.moredatamanagement.service.api.rest;" + LINE_SEPARATOR + LINE_SEPARATOR + //
+              "public interface MoredatamanagementRestService {" + LINE_SEPARATOR + //
+              LINE_SEPARATOR + //
+              "}");
+    }
   }
 
   /**

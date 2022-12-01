@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -13,7 +12,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Properties;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
@@ -105,21 +103,4 @@ public class FileSystemUtil {
     }
   }
 
-  /**
-   * This method adds property add-generated-annotation in .cobigen file in home folder ans set it to true
-   *
-   * @param property refers to add-generated-annotation
-   * @param path of cobigen properties file
-   */
-  public static void addGeneratedAnnotationProperty(Properties property, Path dotCobigenFilePath) {
-
-    property = new Properties();
-    property.setProperty("add-generated-annotation", "true");
-    try {
-      property.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException(
-          "An error occured while reading the config file " + dotCobigenFilePath.toString(), e);
-    }
-  }
 }
