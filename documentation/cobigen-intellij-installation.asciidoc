@@ -1,0 +1,62 @@
+:toc:
+toc::[]
+
+
+= Installation
+
+
+== IntelliJ setup
+
+If you want to use IntelliJ for CobiGen project, you can follow the steps below:
+
+. You can install and create script for IntelliJ as described in
+
+`https://github.com/devonfw/ide/blob/master/documentation/intellij.asciidoc`
+
+. After starting IntelliJ, you can import CobiGen as maven project
+
+. You need now to configure maven settings in IntelliJ as follows
+
+.. Go to File-> Settings -> Build, Execution, Deployment -> Build Tools -> Maven
+
+... Choose Maven home Path from your devonFolder -> devonProjects/software/Maven
+
+... Override user settings file -> devonProjects/conf/.m2/settings.xml
+
+... Override Local repository -> devonProjects/conf/.m2/repository
+
+
+image::images/howtos/intellij/maven-settings[Maven Settings]
+
+.. Now go to File -> Project structure -> Project Settings -> Project add java sdk version from -> devonProjects/software/java
+
+image::images/howtos/intellij/java-sdk.png[Java SDK]
+
+After you have finished your configuration, run maven install and maven clean. CobiGen should build without any errors.
+
+
+=== IntelliJ Testing and Debugging
+
+. Disable ArgLine: If there are any tests which does not work, you might want to disable argline. Go to  File-> Settings -> Build, Execution, Deployment -> Build Tools -> Maven -> Running Tests then uncheck ArgLine
+
+image::images/howtos/intellij/argline.png[Unchecked Argline]
+
+. CLI DEBUGGING
+If you want to debug an application in IntelliJ for example the CLI project, you can go to Run -> Edit Configurations. You can add a new configuration then configure the CLI as shown in the picture
+
+image::images/howtos/intellij/cli-debug.png[CLI Debug Configuration]
+
+
+=== Plugin installation
+
+You can easily install plugins in IntelliJ as described in
+
+`https://www.jetbrains.com/help/idea/managing-plugins.html`
+
+==== Adapter for Eclipse Code Formatter
+
+This plugin solves the problem of maintaining a common code style in team environments where both IDEA and Eclipse are used. Although it should be enabled and the config file location can be found in devon/workspaces/main as shown below
+
+image::images/howtos/intellij/adapter-plugin-settings.png[Eclipse Formatter Plugin]
+
+
