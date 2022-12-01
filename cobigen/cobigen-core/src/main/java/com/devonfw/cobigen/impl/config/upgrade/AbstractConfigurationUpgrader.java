@@ -27,12 +27,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.BackupPolicy;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
 import com.google.common.collect.Lists;
 
@@ -303,7 +305,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
       throw new InvalidConfigurationException(configurationFile.toUri().toString(),
           StringUtils.capitalize(this.configurationName) + " does not match any current or legacy schema definitions.");
     } else {
-      VERSIONS_TYPE latestVersion = versionsList.get(0);
+      VERSIONS_TYPE latestVersion = versionsList.get(versionsList.size() - 1);
       // increasing iteration of versions
       for (int i = 0; i < versionsList.size(); i++) {
         if (validatedVersion == latestVersion) {
@@ -328,7 +330,10 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
               try (OutputStream out = Files.newOutputStream(result.getConfigurationPath())) {
                 JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
               }
-
+              if (versionsList.get(i + 1) == latestVersion) {
+                this.configurationFilename = ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME;
+                this.configurationJaxbRootNode = TemplateSetConfiguration.class;
+              }
               // implicitly check upgrade step
               VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
               // if CobiGen does not understand the upgraded file... throw exception

@@ -79,22 +79,24 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests the valid upgrade of a context configuration from version v2.1 to v3.0. Please make sure that
-   * .../ContextConfigurationUpgraderTest/valid-v3.0 exists
+   * Tests the valid upgrade of a context configuration from version v2.1 to v6.0. This also includes a merge of a
+   * templateConfiguration v5.0 into a templateSetConfigration
    *
    * @throws Exception test fails
    */
   @Test
-  public void testCorrectUpgrade_v2_1_TO_v3_0() throws Exception {
+  public void testCorrectUpgrade_v2_1_TO_v6_0() throws Exception {
 
     File cobigen = this.tempFolder.newFolder(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, cobigen.toPath().toString()).execute(() -> {
       // preparation
       ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_1;
-      ContextConfigurationVersion targetVersion = ContextConfigurationVersion.v3_0;
+      ContextConfigurationVersion targetVersion = ContextConfigurationVersion.v6_0;
+
       String currentVersionPath = "valid-2.1";
       String targetVersionPath = "valid-v3.0";
+      String targetVersionPathTS = "valid-v6.0";
 
       Path templates = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
           .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
@@ -123,14 +125,15 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
       for (String s : newTemplatesLocation.toFile().list()) {
         Path newContextPath = newTemplatesLocation.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
-        version = sut.resolveLatestCompatibleSchemaVersion(newContextPath, targetVersion);
+        version = sut.resolveLatestCompatibleSchemaVersion(newContextPath, targetVersion); // error weil wir noch neuen
+                                                                                           // reader haben
         assertThat(version).as("Target version").isEqualTo(targetVersion);
 
-        newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        newContextPath = newContextPath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
         XMLUnit.setIgnoreWhitespace(true);
         try (
             Reader firstReader = new FileReader(contextTestFileRootPath + File.separator + targetVersionPath
-                + File.separator + s + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+                + File.separator + s + File.separator + ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
             Reader secondReader = new FileReader(newContextPath.toFile())) {
           new XMLTestCase() {
           }.assertXMLEqual(firstReader, secondReader);
@@ -156,6 +159,16 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
           .resolveLatestCompatibleSchemaVersion(context.toPath(), currentVersion);
       assertThat(version).isEqualTo(currentVersion);
     }
+  }
+
+  /**
+   * Tests if v6.0 templateSet configuration is compatible to v2.1 schema.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testCorrectV6_0SchemaDetection() throws Exception {
+
   }
 
   /**
@@ -186,7 +199,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   public void testCorrectV3_0SchemaDetection() throws Exception {
 
     // preparation
-    ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v3_0;
+    ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v6_0;
     File targetConfig = new File(contextTestFileRootPath + "/valid-" + currentVersion);
 
     for (File context : targetConfig.listFiles()) {
@@ -206,7 +219,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 
     // preparation
     ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_1;
-    ContextConfigurationVersion targetVersion = ContextConfigurationVersion.v3_0;
+    ContextConfigurationVersion targetVersion = ContextConfigurationVersion.v6_0;
     File targetConfig = new File(contextTestFileRootPath + "/valid-" + currentVersion);
 
     for (File context : targetConfig.listFiles()) {
