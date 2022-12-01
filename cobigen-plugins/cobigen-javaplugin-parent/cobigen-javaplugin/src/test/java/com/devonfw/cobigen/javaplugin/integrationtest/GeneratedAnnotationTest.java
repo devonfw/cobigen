@@ -34,7 +34,6 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
    *
    * @throws Exception
    */
-
   @Test
   public void generationTestWithoutPropertiesFile() throws Exception {
 
@@ -129,7 +128,6 @@ public class GeneratedAnnotationTest extends AbstractIntegrationTest {
    *
    * @throws Exception
    */
-
   @Test
   public void addGeneratedAnnotationSetToFalse() throws Exception {
 
