@@ -1,8 +1,12 @@
 package com.devonfw.cobigen.api.util;
 
+import java.awt.geom.IllegalPathStateException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -38,6 +42,9 @@ public class MavenUtil {
 
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(MavenUtil.class);
+
+  // maven repository
+  private static Path MAVEN_REPOSITORY = null;
 
   /**
    * Executes a Maven class path build command which will download all the transitive dependencies needed for the CLI
@@ -115,6 +122,9 @@ public class MavenUtil {
 
     Path cachedPomXml = outputPath.resolve("cached-pom.xml");
     try {
+      if (Files.exists(cachedPomXml)) {
+        Files.delete(cachedPomXml);
+      }
       Files.copy(pomFile, cachedPomXml);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to extract " + pomFile.toUri() + " from JAR to " + cachedPomXml, e);
@@ -143,7 +153,6 @@ public class MavenUtil {
     } else {
       LOG.debug("Taking cached class paths from: {}", classPathCacheFile);
     }
-
     try (Stream<String> fileLinesStream = Files.lines(classPathCacheFile)) {
       URL[] classPathEntries = fileLinesStream
           .flatMap(e -> Arrays.stream(e.split(SystemUtil.getOS().contains("win") ? ";" : ":"))).map(path -> {
@@ -154,10 +163,48 @@ public class MavenUtil {
             }
             return null;
           }).toArray(size -> new URL[size]);
-
+      try {
+        validateCachedClassPaths(classPathEntries);
+      } catch (FileNotFoundException | URISyntaxException | IllegalPathStateException e) {
+        cacheMavenClassPath(pomFile, classPathCacheFile);
+      }
       return new URLClassLoader(classPathEntries, parentClassLoader);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read " + classPathCacheFile, e);
+    }
+  }
+
+  /**
+   * Validating the cached classpath entries and resolving missing files and dependencies from a repository that is not
+   * the current maven repository with a update of the classpath cache
+   *
+   * @param classPathEntries URLs of the cached classPath entries
+   * @throws URISyntaxException
+   * @throws FileNotFoundException
+   * @throws MalformedURLException
+   */
+  private static void validateCachedClassPaths(URL[] classPathEntries)
+      throws URISyntaxException, FileNotFoundException, MalformedURLException {
+
+    URI repo = determineMavenRepositoryPath().toUri().toURL().toURI(); // to change /// to / in the URI
+    for (URL classPath : classPathEntries) {
+      try {
+        URI cp = classPath.toURI();
+        if (!Paths.get(cp).startsWith(Paths.get(repo))) {
+          LOG.warn(
+              "Cache {} pointing to another maven Repository, this could cause some problems, the dependencies will be resolved again",
+              cp.toString());
+          throw new IllegalPathStateException();
+        }
+        File cpFile = new File(cp);
+        if (!cpFile.exists()) {
+          LOG.warn("Cache {} is outdated, the dependencies will be resolved again", cp.toString());
+          throw new FileNotFoundException();
+        }
+      } catch (URISyntaxException e) {
+        LOG.error("Error while reading files from Cache");
+        throw e;
+      }
     }
   }
 
@@ -171,7 +218,10 @@ public class MavenUtil {
 
     String pomFileHash;
     try {
-      pomFileHash = ByteSource.wrap(Files.readAllBytes(pomFile)).hash(Hashing.murmur3_128()).toString();
+      // concat pom.xml and m2repo Path bytes
+      ByteSource m2repo = ByteSource.wrap(determineMavenRepositoryPath().toString().getBytes());
+      ByteSource m2repoAndPom = ByteSource.concat(m2repo, ByteSource.wrap(Files.readAllBytes(pomFile)));
+      pomFileHash = m2repoAndPom.hash(Hashing.murmur3_128()).toString();
     } catch (IOException e) {
       LOG.warn("Could not calculate hash of {}", pomFile.toUri());
       pomFileHash = "";
@@ -184,6 +234,9 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
+    if (MAVEN_REPOSITORY != null) {
+      return MAVEN_REPOSITORY;
+    }
     LOG.info("Determine maven repository path");
     String m2Repo = runCommand(SystemUtils.getUserHome().toPath(),
         Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "help:evaluate",
@@ -337,4 +390,5 @@ public class MavenUtil {
     LOG.debug("Project root could not be found.");
     return null;
   }
+
 }
