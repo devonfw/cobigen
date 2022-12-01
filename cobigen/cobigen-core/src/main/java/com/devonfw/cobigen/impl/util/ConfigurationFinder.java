@@ -110,12 +110,12 @@ public class ConfigurationFinder {
       }
       // add generated annotation set to true (default behaviour)
       else {
-        FileSystemUtil.addGeneratedAnnotationproperty(dotCobigenProperties, dotCobigenFilePath);
+        FileSystemUtil.addGeneratedAnnotationProperty(dotCobigenProperties, dotCobigenFilePath);
       }
     }
     // if .cobigen file do not exist then it creates one and set add-generated-annotation to true
     else {
-      FileSystemUtil.addGeneratedAnnotationproperty(dotCobigenProperties, dotCobigenFilePath);
+      FileSystemUtil.addGeneratedAnnotationProperty(dotCobigenProperties, dotCobigenFilePath);
     }
     return defaultGeneratedAnnotation;
   }
