@@ -134,6 +134,7 @@ public class JavaMerger implements Merger {
    */
   private String addGeneratedAnnotation(JavaClass baseClass, JavaClass parsedAnnotationClass, String lineDelimiter) {
 
+    final String ANNOTATION_IMPORT = "javax.annotation.Generated";
     List<JavaAnnotation> generatedAnnotation = parsedAnnotationClass.getAnnotations();
     List<JavaConstructor> constructors = baseClass.getConstructors();
     List<JavaField> fields = baseClass.getFields();
@@ -146,9 +147,9 @@ public class JavaMerger implements Merger {
     if (contentExist) {
       // checks if import is already present
       List<String> imports = baseClass.getSource().getImports();
-      boolean importPresent = imports.contains("javax.annotation.Generated");
+      boolean importPresent = imports.contains(ANNOTATION_IMPORT);
       if (!importPresent) {
-        baseClass.getSource().getImports().add("javax.annotation.Generated");
+        baseClass.getSource().getImports().add(ANNOTATION_IMPORT);
       }
       addAnnotationOn(constructors, generatedAnnotation);
       addAnnotationOn(methods, generatedAnnotation);

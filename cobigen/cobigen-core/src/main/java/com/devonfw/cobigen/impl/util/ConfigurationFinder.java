@@ -100,7 +100,7 @@ public class ConfigurationFinder {
     Boolean defaultGeneratedAnnotation = true;
     Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
     Path dotCobigenFilePath = cobigenHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
-    Properties dotCobigenProperties;
+    Properties dotCobigenProperties = null;
 
     if (Files.exists(dotCobigenFilePath)) {
       // read from the file
@@ -112,28 +112,32 @@ public class ConfigurationFinder {
       // if .cobigen file exist and do not have add-generated-annotation property present
       // adding the property in file and setting the value to true
       else {
-        dotCobigenProperties = new Properties();
-        dotCobigenProperties.setProperty("add-generated-annotation", "true");
-        try {
-          dotCobigenProperties.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
-        } catch (IOException e) {
-          throw new CobiGenRuntimeException(
-              "An error occured while reading the config file " + dotCobigenFilePath.toString(), e);
-        }
+        createDotCobigenFile(dotCobigenProperties, dotCobigenFilePath);
       }
     }
     // if .cobigen file do not exist then create one and set add-generated-annotation to true
     else {
-      dotCobigenProperties = new Properties();
-      dotCobigenProperties.setProperty("add-generated-annotation", "true");
-      try {
-        dotCobigenProperties.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException(
-            "An error occured while reading the config file " + dotCobigenFilePath.toString(), e);
-      }
+      createDotCobigenFile(dotCobigenProperties, dotCobigenFilePath);
     }
     return defaultGeneratedAnnotation;
+  }
+
+  /**
+   * This method creates a .cobigen file in home folder and set add-generated-annotation value to true
+   *
+   * @param dotCobigenProperties in cobigen file
+   * @param path of cobigen properties file
+   */
+  private static void createDotCobigenFile(Properties dotCobigenProperties, Path dotCobigenFilePath) {
+
+    dotCobigenProperties = new Properties();
+    dotCobigenProperties.setProperty("add-generated-annotation", "true");
+    try {
+      dotCobigenProperties.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException(
+          "An error occured while reading the config file " + dotCobigenFilePath.toString(), e);
+    }
   }
 
   /**
