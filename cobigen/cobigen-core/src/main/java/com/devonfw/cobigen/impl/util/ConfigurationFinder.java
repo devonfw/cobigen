@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.impl.util;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
@@ -109,35 +108,16 @@ public class ConfigurationFinder {
         String value = dotCobigenProperties.getProperty(ConfigurationConstants.ADD_GENERATED_ANNOTATION);
         defaultGeneratedAnnotation = Boolean.valueOf(value);
       }
-      // if .cobigen file exist and do not have add-generated-annotation property present
-      // adding the property in file and setting the value to true
+      // add generated annotation set to true (default behaviour)
       else {
-        createDotCobigenFile(dotCobigenProperties, dotCobigenFilePath);
+        FileSystemUtil.addGeneratedAnnotationproperty(dotCobigenProperties, dotCobigenFilePath);
       }
     }
-    // if .cobigen file do not exist then create one and set add-generated-annotation to true
+    // if .cobigen file do not exist then it creates one and set add-generated-annotation to true
     else {
-      createDotCobigenFile(dotCobigenProperties, dotCobigenFilePath);
+      FileSystemUtil.addGeneratedAnnotationproperty(dotCobigenProperties, dotCobigenFilePath);
     }
     return defaultGeneratedAnnotation;
-  }
-
-  /**
-   * This method creates a .cobigen file in home folder and set add-generated-annotation value to true
-   *
-   * @param dotCobigenProperties in cobigen file
-   * @param path of cobigen properties file
-   */
-  private static void createDotCobigenFile(Properties dotCobigenProperties, Path dotCobigenFilePath) {
-
-    dotCobigenProperties = new Properties();
-    dotCobigenProperties.setProperty("add-generated-annotation", "true");
-    try {
-      dotCobigenProperties.store(new FileOutputStream(dotCobigenFilePath.toString()), null);
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException(
-          "An error occured while reading the config file " + dotCobigenFilePath.toString(), e);
-    }
   }
 
   /**
