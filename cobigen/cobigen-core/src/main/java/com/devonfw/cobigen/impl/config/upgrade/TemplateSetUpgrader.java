@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
-import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplatesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +24,14 @@ import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
-import com.devonfw.cobigen.impl.config.entity.io.Trigger;
+import com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.v2_1.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.Link;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.Links;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.Tag;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.Tags;
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplatesConfiguration;
 
 import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBContext;
@@ -64,18 +64,18 @@ public class TemplateSetUpgrader {
     this.mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).mapNulls(true).build();
     this.mapperFactory
         .classMap(com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher.class,
-            com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class)
+            com.devonfw.cobigen.impl.config.entity.io.v6_0.ContainerMatcher.class)
         .field(
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
         .byDefault().register();
     this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.Trigger.class,
-        com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger.class).byDefault().register();
+        com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger.class).byDefault().register();
     this.mapperFactory.classMap(com.devonfw.cobigen.impl.config.entity.io.Matcher.class,
-        com.devonfw.cobigen.impl.config.entity.io.v3_0.Matcher.class).byDefault().register();
+        com.devonfw.cobigen.impl.config.entity.io.v6_0.Matcher.class).byDefault().register();
     this.mapperFactory
         .classMap(com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher.class,
-            com.devonfw.cobigen.impl.config.entity.io.v3_0.ContainerMatcher.class)
+            com.devonfw.cobigen.impl.config.entity.io.v6_0.ContainerMatcher.class)
         .field(
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}",
             "retrieveObjectsRecursively:{isRetrieveObjectsRecursively|setRetrieveObjectsRecursively(new Boolean(%s))|type=java.lang.Boolean}")
@@ -94,8 +94,7 @@ public class TemplateSetUpgrader {
    *         the new location of the context.xml as value
    * @throws Exception if an issue occurred in directory copy operations
    */
-  public Map<TemplateSetConfiguration, Path> upgradeTemplatesToTemplateSetsV6(
-      Path templatesLocation) throws Exception {
+  public Map<TemplateSetConfiguration, Path> upgradeTemplatesToTemplateSetsV6(Path templatesLocation) throws Exception {
 
     Path cobigenTemplatesFolder = CobiGenPaths.getPomLocation(templatesLocation);
     Path parentOfCobigenTemplates = cobigenTemplatesFolder.getParent();
@@ -173,8 +172,8 @@ public class TemplateSetUpgrader {
         }
         // Figure out template-set.xml path in new folder structure
         tscPath = templateSets.resolve(folderToRename.toPath().relativize(newTriggerFolder)
-                .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-                .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME));
+            .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME));
         templateSetMap.put(tsc, tscPath);
         writeNewPomFile(cobigenTemplatesFolder, newTriggerFolder, trigger);
       }
@@ -291,7 +290,7 @@ public class TemplateSetUpgrader {
 
   /**
    * Reads templates.xml file
-   * 
+   *
    * @param templatesFile {@link Path} to the templates.xml file
    * @return {@link TemplatesConfiguration} V6 templates configuration object
    */
