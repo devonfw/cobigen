@@ -66,7 +66,6 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         upgradedConfig_2_1 = mapper.map(previousConfigurationRootNode,
             com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class);
         upgradedConfig_2_1.setVersion(new BigDecimal("2.1"));
-        result.setConfigurationFilename(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
         result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig_2_1,
             configurationRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
         results.add(result);
@@ -80,7 +79,6 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
           ConfigurationUpgradeResult tempResult = new ConfigurationUpgradeResult();
           tempResult.setResultConfigurationJaxbRootNodeAndPath(templateSetConfiguration,
               templateSetMap.get(templateSetConfiguration));
-          tempResult.setConfigurationFilename(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
           results.add(tempResult);
         }
         break;

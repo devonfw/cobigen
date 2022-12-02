@@ -34,7 +34,7 @@ import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
-import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
 import com.google.common.collect.Lists;
 
@@ -330,9 +330,12 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
               try (OutputStream out = Files.newOutputStream(result.getConfigurationPath())) {
                 JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
               }
-              if (versionsList.get(i + 1) == latestVersion) {
+              if (result.getResultConfigurationJaxbRootNode().getClass().equals(TemplateSetConfiguration.class)) {
+                // changed class from context to templateSet, field has to be updated
                 this.configurationFilename = ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME;
                 this.configurationJaxbRootNode = TemplateSetConfiguration.class;
+                this.configurationName = "TemplateSet Configuration";
+                this.configurationXsdFilename = "templateSetConfiguration.xsd";
               }
               // implicitly check upgrade step
               VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
