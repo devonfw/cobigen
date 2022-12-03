@@ -49,7 +49,7 @@ public class CobiGenCLI {
     commandLine.setExecutionExceptionHandler(exceptionHandler);
     int exitCode = commandLine.execute(args);
     if (exitCode != 0) {
-      LOG.error("Cobigen terminated in an unexpected manner. " + MessagesConstants.VERBOSE_HINT);
+      LOG.error("Cobigen terminated in an unexpected manner. {}", (LOG.isDebugEnabled() ? "" : MessagesConstants.VERBOSE_HINT));
     }
     System.exit(exitCode);
   }

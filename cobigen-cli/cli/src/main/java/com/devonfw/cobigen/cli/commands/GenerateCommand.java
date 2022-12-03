@@ -343,7 +343,7 @@ public class GenerateCommand extends CommandCommons {
         }
       }
     } else {
-      LOG.error("Generation not successful! " + (LOG.isDebugEnabled() ? MessagesConstants.VERBOSE_HINT : ""));
+      LOG.error("Generation not successful! {}", (LOG.isDebugEnabled() ? "" : MessagesConstants.VERBOSE_HINT));
     }
   }
 
