@@ -9,8 +9,11 @@ import com.devonfw.cobigen.gui.services.TreeViewBuilder;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 
 /**
  * TODO nneuhaus This type ...
@@ -22,12 +25,23 @@ public class DetailsController implements Initializable {
   private List<String> INCREMENTS = new ArrayList<>();
 
   @FXML
+  Label titleLabel;
+
+  @FXML
+  Text descriptionText;
+
+  @FXML
+  Text installStatusText;
+
+  @FXML
+  Button installButton;
+
+  @FXML
   AnchorPane treeViewPane;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
-    showName();
     showVersion();
     showTreeView(TreeViewBuilder.buildTreeView(TreeViewBuilder.transformIncrementsToArray(this.INCREMENTS)));
 
@@ -36,9 +50,9 @@ public class DetailsController implements Initializable {
   /**
    *
    */
-  private void showName() {
+  public void showName(String name) {
 
-    // TODO: getName()
+    this.titleLabel.setText(name);
 
   }
 

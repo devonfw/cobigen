@@ -28,29 +28,6 @@ public class TemplateSetCell extends ListCell<TemplateSet> {
   @FXML
   private Button installButton;
 
-  // /**
-  // * The constructor.
-  // */
-  // public TemplateSetCell() {
-  //
-  // loadFXML();
-  // }
-  //
-  // /**
-  // *
-  // */
-  // private void loadFXML() {
-  //
-  // try {
-  // FXMLLoader loader = new FXMLLoader(getClass().getResource("templateSetCell.fxml"));
-  // loader.setController(this);
-  // loader.setRoot(this);
-  // loader.load();
-  // } catch (IOException e) {
-  // throw new RuntimeException(e);
-  // }
-  // }
-
   @Override
   protected void updateItem(TemplateSet templateSet, boolean empty) {
 

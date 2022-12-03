@@ -2,19 +2,15 @@ package com.devonfw.cobigen.gui;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
+import com.devonfw.cobigen.gui.controllers.DetailsController;
 import com.devonfw.cobigen.gui.controllers.HomeController;
 import com.devonfw.cobigen.gui.controllers.MenuController;
-import com.devonfw.cobigen.gui.services.TemplateSetCell;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -23,16 +19,19 @@ import javafx.scene.layout.AnchorPane;
 public class Controller implements Initializable {
 
   @FXML
-  private HomeController homeController;
+  private Parent home;
+
+  @FXML
+  private Parent details;
 
   @FXML
   private MenuController menuController;
 
-  // ArrayList<String> templateSets = new ArrayList<>(Arrays.asList("templates-devon4j-tests",
-  // "templates-devon4j-utils",
-  // "crud-openapi-net", "crud-angular-client-app", "crud-ionic-client-app", "rest-documentation"));
+  @FXML
+  private HomeController homeController;
 
-  // ArrayList<TemplateSetCell> templateSets = CellFactory.getTestList();
+  @FXML
+  private DetailsController detailsController;
 
   @FXML
   private AnchorPane leftPane;
@@ -52,11 +51,6 @@ public class Controller implements Initializable {
   @Override
   public void initialize(URL arg0, ResourceBundle arg1) {
 
-    try {
-      loadHome(null);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
     this.menuController.injectController(this);
   }
 
@@ -67,52 +61,24 @@ public class Controller implements Initializable {
   @FXML
   public void loadHome(javafx.event.ActionEvent actionEvent) throws IOException {
 
-    this.detailsPane = FXMLLoader.load(getClass().getResource("fxml/Home.fxml"));
-    this.rightPane.getChildren().setAll(this.detailsPane);
+    this.details.setVisible(false);
+    this.home.setVisible(true);
+    this.menuController.clearSearchResults();
+    this.menuController.searchResultsView.getSelectionModel().clearSelection();
   }
 
   /**
-   * @param actionEvent
    * @throws IOException
    */
-  public void loadDetails(javafx.event.ActionEvent actionEvent) throws IOException {
+  public void loadDetails() throws IOException {
 
-    this.detailsPane = FXMLLoader.load(getClass().getResource("fxml/TemplateSetDetails.fxml"));
-    this.rightPane.getChildren().setAll(this.detailsPane);
-  }
+    // TODO: getIncrements() for Tree View when #1517 is merged
+    // Add parameter Increments
 
-  /**
-   * @param text
-   * @param templateSets2
-   * @return
-   */
-  private List<String> searchTemplateSets(String searchWords, List<String> listOfStrings) {
+    this.home.setVisible(false);
+    this.details.setVisible(true);
+    String templateSetTitle = this.menuController.searchResultsView.getSelectionModel().getSelectedItem().getName();
+    this.detailsController.showName(templateSetTitle);
 
-    List<String> searchTemplateSetsArray = Arrays.asList(searchWords.trim().split(" "));
-
-    return listOfStrings.stream().filter(input -> {
-      return searchTemplateSetsArray.stream().allMatch(word -> input.toLowerCase().contains(word.toLowerCase()));
-    }).collect(Collectors.toList());
-
-  }
-
-  private List<TemplateSetCell> getTemplateSetsSearchResults(String searchWords,
-      List<TemplateSetCell> listOfTemplateSets) {
-
-    List<String> namesOfTemplateCells = new ArrayList<>();
-
-    for (TemplateSetCell ts : listOfTemplateSets) {
-      // namesOfTemplateCells.add(ts.getWord());
-    }
-
-    List<String> resultNames = searchTemplateSets(searchWords, namesOfTemplateCells);
-    List<TemplateSetCell> resultCells = new ArrayList<>();
-
-    for (TemplateSetCell ts : listOfTemplateSets) {
-      // if (resultNames.contains(ts.getWord())) {
-      // resultCells.add(ts);
-      // }
-    }
-    return resultCells;
   }
 }

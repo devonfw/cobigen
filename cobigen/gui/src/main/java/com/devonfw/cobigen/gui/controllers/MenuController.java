@@ -11,11 +11,13 @@ import com.devonfw.cobigen.gui.services.TemplateSetCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 
 /**
  * TODO nneuhaus This type ...
@@ -43,6 +45,9 @@ public class MenuController implements Initializable {
   @FXML
   public ListView<TemplateSet> searchResultsView;
 
+  /**
+   * The constructor.
+   */
   public MenuController() {
 
     this.templateSetObservableList = FXCollections.observableArrayList();
@@ -52,11 +57,17 @@ public class MenuController implements Initializable {
         new TemplateSet("Template Set 3"), new TemplateSet("Template Set 4"));
   }
 
+  /**
+   * Method to get a reference to the main controller
+   */
   public void injectController(Controller controller) {
 
     this.controller = controller;
   }
 
+  /**
+   * Initial method when controller gets activated
+   */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
@@ -66,12 +77,25 @@ public class MenuController implements Initializable {
       try {
         this.controller.loadHome(event);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     });
 
     this.searchResultsView.setItems(this.templateSetObservableList);
+
+    // Handle item selection
+    this.searchResultsView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+      @Override
+      public void handle(MouseEvent event) {
+
+        try {
+          MenuController.this.controller.loadDetails();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
 
     // Initialize filtered List
     ObservableList<TemplateSet> listCopy = this.templateSetObservableList;
@@ -103,12 +127,28 @@ public class MenuController implements Initializable {
   }
 
   /**
-   * Called when clearSearchResultsButton is pressed
+   * Update list view of template sets and their installation status
+   */
+  @FXML
+  public void refresh() {
+
+  }
+
+  /**
+   * Called when clearSearchResultsButton is clicked
    */
   @FXML
   public void clearSearchResults() {
 
     this.searchBar.clear();
+
+    // TODO: Should we show the Home Page when clearSearchResultsButton is clicked?
+    // try {
+    // this.controller.loadHome(null);
+    // } catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
   }
 
 }

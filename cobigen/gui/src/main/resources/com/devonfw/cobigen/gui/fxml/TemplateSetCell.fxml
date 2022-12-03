@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="gridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="31.0" prefWidth="153.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" >
+<GridPane fx:id="gridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="185.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="465.33331298828125" minWidth="10.0" prefWidth="95.33333333333331" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="243.66662597656244" minWidth="10.0" prefWidth="38.0" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.99999999999994" minWidth="10.0" prefWidth="39.333333333333314" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.6666870117187" minWidth="10.0" prefWidth="41.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.99999999999994" minWidth="10.0" prefWidth="34.666625976562486" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.6666870117187" minWidth="10.0" prefWidth="29.3333740234375" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label fx:id="titleLabel" text="Template Set" />
-      <Button fx:id="installButton" mnemonicParsing="false" text="X" GridPane.columnIndex="3" />
+      <Label fx:id="titleLabel" text="Template Set">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin></Label>
+      <Button fx:id="installButton" mnemonicParsing="false" text="X" GridPane.columnIndex="3">
+         <GridPane.margin>
+            <Insets right="5.0" />
+         </GridPane.margin></Button>
    </children>
 </GridPane>

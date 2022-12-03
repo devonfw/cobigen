@@ -3,9 +3,9 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="outerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="463.0" prefWidth="652.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.Controller">
+<AnchorPane fx:id="outerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="463.0" prefWidth="671.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.Controller">
    <children>
-      <SplitPane fx:id="verticalSplitPane" dividerPositions="0.33008213552361404" prefHeight="463.0" prefWidth="660.0">
+      <SplitPane fx:id="verticalSplitPane" dividerPositions="0.33008213552361404" prefHeight="463.0" prefWidth="669.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
           <AnchorPane fx:id="leftPane" minHeight="0.0" minWidth="0.0" prefHeight="260.0" prefWidth="200.0">
                <children>
@@ -13,15 +13,16 @@
                      <children>
                      </children>
                   </AnchorPane>
-                  <fx:include fx:id="menu" source="Menu.fxml" />
+                  <fx:include fx:id="menu" source="Menu.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
-          <AnchorPane fx:id="rightPane" minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="460.0">
+          <AnchorPane fx:id="rightPane" minHeight="0.0" minWidth="0.0" prefHeight="461.0" prefWidth="449.0">
                <children>
                   <AnchorPane fx:id="detailsPane" prefHeight="200.0" prefWidth="200.0">
                      <children>
                      </children>
                   </AnchorPane>
+                  <fx:include fx:id="details" source="Details.fxml" />
                   <fx:include fx:id="home" source="Home.fxml" />
                </children>
             </AnchorPane>
