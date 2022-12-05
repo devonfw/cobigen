@@ -1,49 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
   version="2.1">
-  
+
   <templateScans>
     <templateScan templatePath="templates" destinationPath=""/>
   </templateScans>
-  
+
   <increments>
     <increment name="server" description="CRUD devon4net Server">
-      <incrementRef ref="application"/>
-      <incrementRef ref="controllers"/>
-      <incrementRef ref="converter"/>
-      <incrementRef ref="dtos"/>
-      <incrementRef ref="exceptions"/>
-      <incrementRef ref="services"/>
-      <incrementRef ref="domain"/>
+            <incrementRef ref="application" />
+            <incrementRef ref="controllers" />
+            <incrementRef ref="converter" />
+            <incrementRef ref="dtos" />
+            <incrementRef ref="exceptions" />
+            <incrementRef ref="services" />
+            <incrementRef ref="domain" />
     </increment>
     <increment name="application" description="Application">
-        <templateRef ref="Startup.cs"/>
+        <templateRef ref="DevonConfiguration.cs"/>
         <templateRef ref="appsettings.Development.json"/>
     </increment>
-        <increment name="controllers" description="Controllers">
-        <templateRef ref= "${variables.component#cap_first}Controller.cs"/>
+    <increment name="controllers" description="Controllers">
+        <templateRef ref="${variables.component#cap_first}Controller.cs" />
     </increment>
     <increment name="converter" description="Converter">
-        <templateRef ref="${variables.component#cap_first}Converter.cs"/>
+        <templateRef ref="${variables.component#cap_first}Converter.cs" />
     </increment>
     <increment name="dtos" description="DTO's">
-        <templateRef ref="${variables.entityName#replace('Dto', '')#cap_first}Dto.cs"/>
-        <templateRef ref="${variables.entityName#replace('Dto', '')#cap_first}ResponseDto.cs"/>
+        <templateRef ref="${variables.entityName#replace('Dto', '')#cap_first}Dto.cs" />
     </increment>
     <increment name="exceptions" description="Exceptions">
-        <templateRef ref="${variables.entityName#cap_first}NotFoundException.cs"/>
-        <templateRef ref="${variables.entityName#cap_first}NotCreatedException.cs"/>
-        <templateRef ref="${variables.entityName#cap_first}NotDeletedException.cs"/>
+        <templateRef ref="${variables.entityName#cap_first}NotFoundException.cs" />
+        <templateRef ref="${variables.entityName#cap_first}NotCreatedException.cs" />
+        <templateRef ref="${variables.entityName#cap_first}NotDeletedException.cs" />
     </increment>
     <increment name="services" description="Services">
-        <templateRef ref="I${variables.component#cap_first}Service.cs"/>
-        <templateRef ref="${variables.component#cap_first}Service.cs"/>
+        <templateRef ref="I${variables.component#cap_first}Service.cs" />
+        <templateRef ref="${variables.component#cap_first}Service.cs" />
     </increment>
     <increment name="domain" description="Domain">
-        <templateRef ref="CobigenContext.cs"/>
-        <templateRef ref="${variables.entityName#cap_first}.cs"/>
-        <templateRef ref="I${variables.entityName#cap_first}Repository.cs"/>
-        <templateRef ref="${variables.entityName#cap_first}Repository.cs"/>
+        <templateRef ref="CobigenContext.cs" />
+        <templateRef ref="${variables.entityName#cap_first}.cs" />
+        <templateRef ref="I${variables.entityName#cap_first}Repository.cs" />
+        <templateRef ref="${variables.entityName#cap_first}Repository.cs" />
     </increment>
   </increments>
 </templatesConfiguration>
