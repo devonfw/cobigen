@@ -239,11 +239,14 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
-    // if (MAVEN_REPOSITORY != null) {
-    // LOG.debug("Determined {} as maven repository path.", MAVEN_REPOSITORY);
-    // return MAVEN_REPOSITORY;
-    // }
+    if (MAVEN_REPOSITORY != null) {
+      LOG.debug("Already determined {} as maven repository path.", MAVEN_REPOSITORY);
+      return MAVEN_REPOSITORY;
+    }
     LOG.info("Determine maven repository path");
+    if (System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE) != null) {
+      return Paths.get(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE));
+    }
     String m2Repo = runCommand(SystemUtils.getUserHome().toPath(),
         Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "help:evaluate",
             "-Dexpression=settings.localRepository", "-DforceStdout"));
