@@ -17,16 +17,16 @@
   </tns1:contextConfiguration>
   <tns2:templatesConfiguration version="6.0">
     <tns2:templates>
-      <tns2:templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
+      <tns2:templateExtension ref="environment2.ts" mergeStrategy="tsmerge_override"/>
     </tns2:templates>
 
     <tns2:templateScans>
-      <tns2:templateScan name="ts_scan" templatePath="src/environments" destinationPath=""/>
+      <tns2:templateScan name="ts_scan" templatePath="templates" destinationPath=""/>
     </tns2:templateScans>
 
     <tns2:increments>
       <tns2:increment name="template_set_increment2" description="Increment 2 description">
-        <tns2:templateRef ref="environment.ts"/>
+        <tns2:templateRef ref="environment2.ts"/>
       </tns2:increment>
     </tns2:increments>
   </tns2:templatesConfiguration>

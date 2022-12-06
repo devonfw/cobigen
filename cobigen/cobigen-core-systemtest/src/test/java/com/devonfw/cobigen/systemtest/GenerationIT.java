@@ -96,7 +96,11 @@ public class GenerationIT extends AbstractApiTest {
 
     CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPathTemplateSetXml + "template-sets").toURI());
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
-    assertThat(templates).hasSize(1);
+    List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
+    List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
+    assertThat(templates).hasSize(2);
+    assertThat(increments).hasSize(2);
+    assertThat(triggersIds).hasSize(2);
 
     GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
 

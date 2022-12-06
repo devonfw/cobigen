@@ -178,7 +178,7 @@ public class TemplateSetConfigurationReader {
 
     this.templateSetFile = templateSetConfiguration.templateSetFiles.get(0);
 
-    readConfiguration();
+    // readConfiguration();
 
   }
 
@@ -191,12 +191,12 @@ public class TemplateSetConfigurationReader {
 
     if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
       this.configRoot = this.configLocation;
-      // if (Files.exists(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)))
-      // this.rootTemplateFolder = TemplateFolder
-      // .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
-      // else {
-      this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
-      // }
+      if (Files.exists(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)))
+        this.rootTemplateFolder = TemplateFolder
+            .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
+      else {
+        this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
+      }
     }
 
     if (FileSystemUtil.isZipFile(this.configRoot.toUri())) {

@@ -111,22 +111,24 @@ public class TemplateSetConfiguration {
 
     TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
 
-    TemplatesConfigurationReader templatesReader = this.templateSetConfigurationReader
-        .getTemplatesConfigurationReader();
-    ContextConfigurationReader contextReader = this.templateSetConfigurationReader.getContextConfigurationReader();
-
     this.increments = new HashMap<>();
     for (Path templateSetFile : this.templateSetFiles) {
       this.templateSetConfigurationReader.templateSetFile = templateSetFile;
-      // this.templateSetConfigurationReader.readConfiguration();
+      this.templateSetConfigurationReader.readConfiguration();
+      TemplatesConfigurationReader templatesReader = this.templateSetConfigurationReader
+          .getTemplatesConfigurationReader();
+      ContextConfigurationReader contextReader = this.templateSetConfigurationReader.getContextConfigurationReader();
+      Map<String, Trigger> trigger = contextReader.loadTriggers();
       this.configRoot = configurationPath;
-      this.triggers.putAll(contextReader.loadTriggers());
-      this.templates.putAll(templatesReader.loadTemplates(this.triggers.get(this.triggers.keySet().toArray()[0])));
-    }
+      this.triggers.putAll(trigger);
+      // this.templates.putAll(getTemplates());
+      this.templates.putAll(templatesReader.loadTemplates(trigger.get(trigger.keySet().toArray()[0])));
 
+    }
     // For every trigger put all increments depended on that trigger into the local increments hash map
     for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
-      this.increments.putAll(templatesReader.loadIncrements(this.templates, trigger.getValue()));
+      this.increments.putAll(this.templateSetConfigurationReader.getTemplatesConfigurationReader()
+          .loadIncrements(this.templates, trigger.getValue()));
     }
   }
 
