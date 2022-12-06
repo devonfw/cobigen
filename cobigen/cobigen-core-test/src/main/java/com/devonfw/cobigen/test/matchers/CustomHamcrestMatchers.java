@@ -8,6 +8,7 @@ import java.util.List;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.IsCollectionContaining;
+import org.mockito.ArgumentMatcher;
 
 /**
  * These functions have been ported from hamcrest, whereas the signature has been customized
@@ -32,7 +33,7 @@ public class CustomHamcrestMatchers {
    */
   @Factory
   @SuppressWarnings("unchecked")
-  public static <T> Matcher<List<T>> hasItemsInList(Matcher<? super T>... itemMatchers) {
+  public static <T> ArgumentMatcher<T> hasItemsInList(Matcher<? super T>... itemMatchers) {
 
     List<Matcher<? super List<T>>> all = new ArrayList<>(itemMatchers.length);
 
@@ -41,6 +42,12 @@ public class CustomHamcrestMatchers {
       all.add(new IsCollectionContaining<>(elementMatcher));
     }
 
-    return allOf(all);
+    return new ArgumentMatcher<T>() {
+      @Override
+      public boolean matches(T argument) {
+
+        return allOf(all).matches(argument);
+      }
+    };
   }
 }

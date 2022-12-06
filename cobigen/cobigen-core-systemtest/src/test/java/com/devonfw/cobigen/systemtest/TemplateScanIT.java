@@ -10,20 +10,19 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
-import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
 
 /**
  * Test suite for template-scan related system tests
  */
-public class TemplateScanTest extends AbstractApiTest {
+public class TemplateScanIT extends AbstractApiTest {
 
   /**
    * Root path to all resources used in this test case
@@ -58,9 +57,8 @@ public class TemplateScanTest extends AbstractApiTest {
     target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
     // Validation
-    assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-        + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-        + "TestCOMP1" + SystemUtils.FILE_SEPARATOR + "CompONE.java")).exists();
+    assertThat(new File(generationRootFolder.getAbsolutePath() + File.separator + "src" + File.separator + "main"
+        + File.separator + "java" + File.separator + "TestCOMP1" + File.separator + "CompONE.java")).exists();
   }
 
   /**
@@ -111,9 +109,8 @@ public class TemplateScanTest extends AbstractApiTest {
     target.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
 
     // Validation
-    assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-        + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-        + "base" + SystemUtils.FILE_SEPARATOR + "Test.java")).exists();
+    assertThat(new File(generationRootFolder.getAbsolutePath() + File.separator + "src" + File.separator + "main"
+        + File.separator + "java" + File.separator + "base" + File.separator + "Test.java")).exists();
   }
 
   /**
@@ -145,9 +142,8 @@ public class TemplateScanTest extends AbstractApiTest {
     assertThat(report).isSuccessful();
 
     // Validation
-    assertThat(new File(generationRootFolder.getAbsolutePath() + SystemUtils.FILE_SEPARATOR + "src"
-        + SystemUtils.FILE_SEPARATOR + "main" + SystemUtils.FILE_SEPARATOR + "java" + SystemUtils.FILE_SEPARATOR
-        + "base" + SystemUtils.FILE_SEPARATOR + "MultiEmpty.java")).exists();
+    assertThat(new File(generationRootFolder.getAbsolutePath() + File.separator + "src" + File.separator + "main"
+        + File.separator + "java" + File.separator + "base" + File.separator + "MultiEmpty.java")).exists();
   }
 
 }

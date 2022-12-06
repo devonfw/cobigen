@@ -4,7 +4,7 @@ import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.
 import ${variables.rootPackage}.${variables.component}.logic.api.usecase.UcFind${variables.entityName};
 import ${variables.rootPackage}.${variables.component}.logic.base.usecase.Abstract${variables.entityName}Uc;
 import ${variables.rootPackage}.${variables.component}.dataaccess.api.${variables.entityName}Entity;
-import ${variables.rootPackage}.${variables.component}.logic.api.to.${variables.entityName}SearchCriteriaTo;
+import ${variables.rootPackage}.${variables.component}.common.api.${variables.entityName}SearchCriteriaTo;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
