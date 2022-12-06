@@ -220,6 +220,11 @@ public class MavenUtil {
     try {
       // concat pom.xml and m2repo Path bytes
       ByteSource m2repo = ByteSource.wrap(determineMavenRepositoryPath().toString().getBytes());
+      System.out.println(
+          "!!!!!!!!!!!!!!!!!!!!Ich habe das Repo m2 variable:" + System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE)
+              + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      System.out.println(
+          "!!!!!!!!!!!!!!!!!!!!!" + determineMavenRepositoryPath().toString() + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       ByteSource m2repoAndPom = ByteSource.concat(m2repo, ByteSource.wrap(Files.readAllBytes(pomFile)));
       pomFileHash = m2repoAndPom.hash(Hashing.murmur3_128()).toString();
     } catch (IOException e) {
@@ -263,7 +268,9 @@ public class MavenUtil {
     args.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"));
     args.add("-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN");
 
-    System.out.println(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE));
+    System.out.println(
+        "!!!!!!!!!!!!!!!!!!!!Ich habe das Repo gefunden:" + System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE)
+            + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
     try {
       StartedProcess process = new ProcessExecutor().readOutput(true).destroyOnExit().directory(execDir.toFile())
@@ -277,7 +284,9 @@ public class MavenUtil {
 
       Future<ProcessResult> future = process.getFuture();
       ProcessResult processResult = future.get();
-
+      System.out
+          .println("!!!!!!!!!!!!!!!!!!!!Ich habe das Repo zwei:" + System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE)
+              + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       if (processResult.getExitValue() != 0) {
         LOG.error("Error while getting all the needed transitive dependencies. Please check your internet connection.");
         throw new CobiGenRuntimeException("Unable to build cobigen dependencies");
