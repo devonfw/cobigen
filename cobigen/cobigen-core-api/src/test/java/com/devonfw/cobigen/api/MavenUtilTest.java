@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.api;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedWriter;
@@ -47,19 +48,21 @@ public class MavenUtilTest {
     FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
     File dependency1 = this.temp.newFile("playground/m2repo/dependency1.jar");
     File dependency2 = this.temp.newFile("playground/m2repo/dependency2.jar");
-    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, m2repo.getAbsolutePath());
-    String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"));
-    File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
-    String result = "" + dependency1.getAbsolutePath() + ";" + dependency2.getAbsolutePath() + ";";
-    try (FileWriter fw = new FileWriter(cache); BufferedWriter bw = new BufferedWriter(fw)) {
+    // this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, m2repo.getAbsolutePath());
+    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIBLE, m2repo.getAbsolutePath()).execute(() -> {
+      String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"));
+      File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
+      String result = "" + dependency1.getAbsolutePath() + ";" + dependency2.getAbsolutePath() + ";";
+      try (FileWriter fw = new FileWriter(cache); BufferedWriter bw = new BufferedWriter(fw)) {
 
-      bw.append(dependency1.getAbsolutePath() + ";");
-      bw.append(dependency2.getAbsolutePath() + ";");
-    }
+        bw.append(dependency1.getAbsolutePath() + ";");
+        bw.append(dependency2.getAbsolutePath() + ";");
+      }
 
-    MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
-        this.getClass().getClassLoader());
-    assertThat(Files.readAllLines(cache.toPath())).contains(result);
+      MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
+          this.getClass().getClassLoader());
+      assertThat(Files.readAllLines(cache.toPath())).contains(result);
+    });
   }
 
   /**
