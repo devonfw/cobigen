@@ -234,10 +234,10 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
-    if (MAVEN_REPOSITORY != null) {
-      LOG.debug("Determined {} as maven repository path.", MAVEN_REPOSITORY);
-      return MAVEN_REPOSITORY;
-    }
+    // if (MAVEN_REPOSITORY != null) {
+    // LOG.debug("Determined {} as maven repository path.", MAVEN_REPOSITORY);
+    // return MAVEN_REPOSITORY;
+    // }
     LOG.info("Determine maven repository path");
     String m2Repo = runCommand(SystemUtils.getUserHome().toPath(),
         Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "help:evaluate",
@@ -262,6 +262,8 @@ public class MavenUtil {
     args.add("-q");
     args.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"));
     args.add("-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN");
+
+    System.out.println(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE));
 
     try {
       StartedProcess process = new ProcessExecutor().readOutput(true).destroyOnExit().directory(execDir.toFile())

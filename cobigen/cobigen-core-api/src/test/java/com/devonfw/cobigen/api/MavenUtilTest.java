@@ -51,7 +51,7 @@ public class MavenUtilTest {
     File dependency1 = this.temp.newFile("playground/m2repo/dependency1.jar");
     File dependency2 = this.temp.newFile("playground/m2repo/dependency2.jar");
     // this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, m2repo.getAbsolutePath());
-    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIBLE, m2repo.getAbsolutePath()).execute(() -> {
+    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIABLE, m2repo.getAbsolutePath()).execute(() -> {
       String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"));
       File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
       String result = "" + dependency1.getAbsolutePath() + ";" + dependency2.getAbsolutePath() + ";";
@@ -83,7 +83,7 @@ public class MavenUtilTest {
     FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
     File dependency1 = this.temp.newFile("playground/m2repo/dependency1.jar");
     File dependency2 = this.temp.newFile("playground/m2repo/dependency2.jar");
-    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, secondM2Repo.getAbsolutePath());
+    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIABLE, secondM2Repo.getAbsolutePath());
     String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"));
     File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
     String result = "" + dependency1.getAbsolutePath() + ";" + dependency2.getAbsolutePath() + ";";
@@ -112,7 +112,7 @@ public class MavenUtilTest {
     FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
     File dependency1 = this.temp.newFile("playground/secondM2repo/dependency1.jar");
     Path dependencyP = dependency1.getParentFile().toPath().resolve("someFileThatNotExist.jar");
-    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, secondM2Repo.getAbsolutePath());
+    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIABLE, secondM2Repo.getAbsolutePath());
     String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"));
     File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
     try (FileWriter fw = new FileWriter(cache); BufferedWriter bw = new BufferedWriter(fw)) {
@@ -140,10 +140,10 @@ public class MavenUtilTest {
     FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), repo2.getParentFile());
     String[] hashes = new String[2];
     // this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo1.getAbsolutePath());
-    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo1.getAbsolutePath()).execute(() -> {
+    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIABLE, repo1.getAbsolutePath()).execute(() -> {
       hashes[0] = MavenUtil.generatePomFileHash(repo2.getParentFile().toPath().resolve("pom.xml"));
     });
-    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo2.getAbsolutePath()).execute(() -> {
+    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIABLE, repo2.getAbsolutePath()).execute(() -> {
       hashes[1] = MavenUtil.generatePomFileHash(repo2.getParentFile().toPath().resolve("pom.xml"));
     });
     // this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo2.getAbsolutePath());

@@ -9,7 +9,7 @@ public class MavenConstants {
   public static String CLASSPATH_CACHE_FILE = "pom-cp-%s.txt";
 
   /** Name of the enviromentvariable that will set the maven repository */
-  public static String M2_REPO_SYSTEMVARIBLE = "M2_REPO";
+  public static String M2_REPO_SYSTEMVARIABLE = "M2_REPO";
 
   /** pom.xml */
   public static String POM = "pom.xml";
