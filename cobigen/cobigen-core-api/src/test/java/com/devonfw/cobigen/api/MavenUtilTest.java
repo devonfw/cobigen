@@ -134,13 +134,19 @@ public class MavenUtilTest {
     File repo1 = this.temp.newFolder("playground", "repo1");
     File repo2 = this.temp.newFolder("playground", "repo2");
     FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), repo2.getParentFile());
-    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo1.getAbsolutePath());
-    String hash1 = MavenUtil.generatePomFileHash(repo2.getParentFile().toPath().resolve("pom.xml"));
-    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo2.getAbsolutePath());
-    String hash2 = MavenUtil.generatePomFileHash(repo2.getParentFile().toPath().resolve("pom.xml"));
-    assertThat(hash1).isNotEmpty();
-    assertThat(hash2).isNotEmpty();
-    assertThat(hash1).isNotEqualTo(hash2);
+    String[] hashes = new String[2];
+    // this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo1.getAbsolutePath());
+    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo1.getAbsolutePath()).execute(() -> {
+      hashes[0] = MavenUtil.generatePomFileHash(repo2.getParentFile().toPath().resolve("pom.xml"));
+    });
+    withEnvironmentVariable(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo2.getAbsolutePath()).execute(() -> {
+      hashes[1] = MavenUtil.generatePomFileHash(repo2.getParentFile().toPath().resolve("pom.xml"));
+    });
+    // this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIBLE, repo2.getAbsolutePath());
+    // String hash2 = MavenUtil.generatePomFileHash(repo2.getParentFile().toPath().resolve("pom.xml"));
+    assertThat(hashes[0]).isNotEmpty();
+    assertThat(hashes[1]).isNotEmpty();
+    assertThat(hashes[0]).isNotEqualTo(hashes[1]);
 
   }
 
