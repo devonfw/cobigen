@@ -31,6 +31,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
@@ -239,13 +240,18 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
+    System.out.println("Print of Systemvariables");
+    for (String s : System.getenv().keySet()) {
+      System.out.println(s);
+    }
     if (MAVEN_REPOSITORY != null) {
       LOG.debug("Already determined {} as maven repository path.", MAVEN_REPOSITORY);
       return MAVEN_REPOSITORY;
     }
     LOG.info("Determine maven repository path");
-    if (System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE) != null) {
-      return Paths.get(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE));
+    if (!Strings.isNullOrEmpty(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE))) {
+      MAVEN_REPOSITORY = Paths.get(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE));
+      return MAVEN_REPOSITORY;
     }
     String m2Repo = runCommand(SystemUtils.getUserHome().toPath(),
         Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "help:evaluate",
