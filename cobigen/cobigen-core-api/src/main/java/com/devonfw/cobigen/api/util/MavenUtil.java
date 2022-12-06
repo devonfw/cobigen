@@ -244,10 +244,10 @@ public class MavenUtil {
     for (String s : System.getenv().keySet()) {
       System.out.println(s);
     }
-    if (MAVEN_REPOSITORY != null) {
-      LOG.debug("Already determined {} as maven repository path.", MAVEN_REPOSITORY);
-      return MAVEN_REPOSITORY;
-    }
+    // if (MAVEN_REPOSITORY != null) {
+    // LOG.debug("Already determined {} as maven repository path.", MAVEN_REPOSITORY);
+    // return MAVEN_REPOSITORY;
+    // }
     LOG.info("Determine maven repository path");
     if (!Strings.isNullOrEmpty(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE))) {
       MAVEN_REPOSITORY = Paths.get(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE));
