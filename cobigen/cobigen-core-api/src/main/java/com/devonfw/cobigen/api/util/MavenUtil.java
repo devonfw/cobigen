@@ -235,6 +235,7 @@ public class MavenUtil {
   public static Path determineMavenRepositoryPath() {
 
     if (MAVEN_REPOSITORY != null) {
+      LOG.debug("Determined {} as maven repository path.", MAVEN_REPOSITORY);
       return MAVEN_REPOSITORY;
     }
     LOG.info("Determine maven repository path");
