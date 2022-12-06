@@ -161,6 +161,14 @@ public class TemplateSetConfiguration {
   }
 
   /**
+   * @return s the map of triggers
+   */
+  public Map<String, Trigger> getTriggers() {
+
+    return this.triggers;
+  }
+
+  /**
    * @return s the map of the templates
    */
   public Map<String, Template> getTemplates() {

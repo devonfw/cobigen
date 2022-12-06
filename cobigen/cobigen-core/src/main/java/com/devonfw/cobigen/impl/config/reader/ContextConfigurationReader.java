@@ -272,7 +272,8 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
         String templateFolder = t.getTemplateFolder();
 
         if (templateFolder.isEmpty() || templateFolder.equals("/")) {
-          templateFolder = contextFile.getParent().getFileName().toString();
+          // templateFolder = contextFile.getParent().getFileName().toString();
+          templateFolder = "";
         }
         triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder,
             Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));

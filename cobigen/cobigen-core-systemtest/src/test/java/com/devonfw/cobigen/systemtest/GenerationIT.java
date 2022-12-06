@@ -81,12 +81,13 @@ public class GenerationIT extends AbstractApiTest {
   }
 
   /**
-   * Tests that sources get overwritten if merge strategy override is configured with template-set.xml
+   * Tests that 2 template sets with templates, increments and triggers get read and generate of the 1st template is
+   * successful
    *
    * @throws Exception test fails.
    */
   @Test
-  public void testOverrideMergeStrategyWithTemplateSetXml() throws Exception {
+  public void testReadTwoTemplateSetXml() throws Exception {
 
     Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 

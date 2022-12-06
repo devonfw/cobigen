@@ -83,8 +83,10 @@ public class ContextConfiguration {
 
       this.configurationPath = this.templateSetConfiguration.getTemplateSetConfigurationReader()
           .getContextConfigurationReader().getContextRoot();
-      this.triggers = this.templateSetConfiguration.getTemplateSetConfigurationReader().getContextConfigurationReader()
-          .loadTriggers();
+      this.triggers = this.templateSetConfiguration.getTriggers();
+      // this.triggers =
+      // this.templateSetConfiguration.getTemplateSetConfigurationReader().getContextConfigurationReader()
+      // .loadTriggers();
     } else {
       if (this.contextConfigurationReader == null) {
         this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
@@ -159,6 +161,10 @@ public class ContextConfiguration {
    * @return the {@link Path} of the config location of the trigger
    */
   public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
+
+    if (this.templateSetConfiguration != null) {
+      return this.templateSetConfiguration.getTemplateSetConfigurationReader().getRootTemplateFolder().getPath();
+    }
 
     return this.configurationPath;
   }
