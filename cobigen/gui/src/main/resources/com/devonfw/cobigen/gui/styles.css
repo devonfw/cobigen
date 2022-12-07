@@ -1,1 +1,68 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+/* makes button and filter option white and borderless*/
+.root {
+  -fx-body-color : white;
+  -fx-outer-border : white;
+
+}
+.root * {
+    -fx-font: 11px Ubuntu;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-base: white;
+    -fx-accent: #0070AD;
+}
+
+.scroll-bar {
+  -fx-background-color: white;
+  -fx-block-increment: 1;
+}
+
+/* sets the color when cursor hovers over button*/
+color-picker:hover,
+.date-picker:hover > .arrow-button,
+.combo-box:hover,.choice-box:hover,
+.number-button:hover,.left-arrow-button:hover,.right-arrow-button:hover,
+.button:hover,.menu-button:hover,.toggle-button:hover,
+.font-menu-button:hover,
+.split-menu-button > .label:hover, .split-menu-button > .arrow-button:hover {
+  -fx-background-color: #ececec;
+ 
+}
+
+ /*pressed selected*/
+.color-picker:pressed,.color-picker:selected,
+.number-button:pressed,.number-button:selected,
+.date-picker:pressed > .arrow-button,
+.combo-box:pressed > .arrow-button,.combo-box:selected > .arrow-button,
+.choice-box:pressed > .arrow-button,.choice-box:selected > .arrow-button,
+.font-menu-button:pressed,.font-menu-button:selected,
+.left-arrow-button:pressed,.left-arrow-button:selected,
+.right-arrow-button:pressed,.right-arrow-button:selected,
+.button:pressed, .button:selected,.menu-button:pressed,.menu-button:selected
+,.toggle-button:pressed,.toggle-button:selected,
+.split-menu-button:pressed > .label, .split-menu-button > .arrow-button:pressed {
+  -fx-background-color: #D3D3D3
+  }
+ 
+ #menuBarPane{
+ -fx-background-color: white;
+ }
+ 
+ #templateSetsLabel{
+ -fx-background-color: transparent;
+ 
+ }
+ #headersText{
+ -fx-font-size: 20px;
+ }
+ 
+ #homeButtonIcon{
+  -fx-scale-x: 0.1;
+  -fx-scale-y: 0.1;
+ }
+ 
+ .menuButtons{
+ -fx-background-color: #2B0A3D
+ }

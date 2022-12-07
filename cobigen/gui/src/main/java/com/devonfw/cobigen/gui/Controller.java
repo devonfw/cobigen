@@ -75,10 +75,16 @@ public class Controller implements Initializable {
     // TODO: getIncrements() for Tree View when #1517 is merged
     // Add parameter Increments
 
-    this.home.setVisible(false);
-    this.details.setVisible(true);
-    String templateSetTitle = this.menuController.searchResultsView.getSelectionModel().getSelectedItem().getName();
-    this.detailsController.showName(templateSetTitle);
+    TemplateSet selectedItem = this.menuController.searchResultsView.getSelectionModel().getSelectedItem();
+
+    if (selectedItem == null) {
+      this.home.setVisible(true);
+      this.details.setVisible(false);
+    } else {
+      this.home.setVisible(false);
+      this.details.setVisible(true);
+      this.detailsController.showName(selectedItem.getName());
+    }
 
   }
 }

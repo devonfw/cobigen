@@ -12,9 +12,11 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="360.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.MenuController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="360.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.MenuController">
   <children>
 
   <AnchorPane fx:id="menuPane" minHeight="0.0" minWidth="0.0" prefHeight="358.0" prefWidth="200.0" AnchorPane.bottomAnchor="-45.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -22,17 +24,23 @@
                   <AnchorPane fx:id="menuBarPane" layoutY="1.0" prefHeight="25.0" prefWidth="207.0" styleClass="menu-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label fx:id="templateSetsLabel" text="Template Sets" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="4.0" />
-                        <Button fx:id="homeButton" layoutX="128.0" layoutY="-1.0" mnemonicParsing="false" text="#" AnchorPane.rightAnchor="84.0" AnchorPane.topAnchor="0.0">
+                        
+                        <Button fx:id="homeButton" layoutX="82.0" layoutY="2.0" maxHeight="15.0" maxWidth="15.0" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" AnchorPane.rightAnchor="86.0">
                            <tooltip>
                               <Tooltip fx:id="homeTooltip" text="Home" />
                            </tooltip>
+                           <graphic>
+                             <ImageView fx:id="homeButtonImageView" fitHeight="16.0" fitWidth="27.0" preserveRatio="true" styleClass="icon">
+                         <Image fx:id="homeButtonIcon" url="@../icons/home.png" />
+                        </ImageView>
+                        </graphic>
                         </Button>
-                        <Button fx:id="refreshButton" mnemonicParsing="false" text="+" onAction="#refresh" AnchorPane.rightAnchor="59.0" AnchorPane.topAnchor="0.0">
+                        <Button fx:id="refreshButton" layoutX="114.0" layoutY="1.0" maxHeight="15.0" maxWidth="15.0" mnemonicParsing="false" onAction="#refresh" prefHeight="15.0" prefWidth="15.0" text="+" AnchorPane.rightAnchor="62.0" AnchorPane.topAnchor="1.0">
                            <tooltip>
                               <Tooltip fx:id="refreshTooltip" text="Refresh" />
                            </tooltip>
                         </Button>
-                        <MenuButton fx:id="filterMenuButton" mnemonicParsing="false" text="Filter" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <MenuButton fx:id="filterMenuButton" layoutX="138.0" layoutY="1.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Filter" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="1.0">
                           <items>
                               <Menu fx:id="viewsMenu" mnemonicParsing="false" text="Views">
                                 <items>

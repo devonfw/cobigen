@@ -34,17 +34,17 @@
               </font>
             </Text>
             <Separator layoutY="24.0" prefHeight="16.0" prefWidth="455.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0" />
-            <Button layoutX="58.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="+" textFill="WHITE" AnchorPane.leftAnchor="58.0">
+            <Button styleClass= "menuButtons" layoutX="58.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0"  text="+" textFill="WHITE" AnchorPane.leftAnchor="58.0">
               <font>
                 <Font name="System Bold" size="12.0" />
               </font>
             </Button>
-            <Button layoutX="213.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="*" textFill="WHITE" AnchorPane.leftAnchor="211.0" AnchorPane.rightAnchor="211.0">
+            <Button styleClass= "menuButtons" layoutX="213.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0"  text="*" textFill="WHITE" AnchorPane.leftAnchor="211.0" AnchorPane.rightAnchor="211.0">
               <font>
                 <Font name="System Bold" size="12.0" />
               </font>
             </Button>
-            <Button layoutX="348.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" style="-fx-background-color: BLUE;" text="~" textFill="WHITE" AnchorPane.rightAnchor="68.0">
+            <Button styleClass= "menuButtons" layoutX="348.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" text="~" textFill="WHITE" AnchorPane.rightAnchor="68.0">
               <font>
                 <Font name="System Bold" size="12.0" />
               </font>
