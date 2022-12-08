@@ -31,7 +31,6 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
@@ -213,19 +212,15 @@ public class MavenUtil {
    * Generates a hash for the provided POM file
    *
    * @param pomFile to generate hash from
+   * @param m2RepoPath TODO
    * @return String generated hash
    */
-  public static String generatePomFileHash(Path pomFile) {
+  public static String generatePomFileHash(Path pomFile, Path m2RepoPath) {
 
     String pomFileHash;
     try {
       // concat pom.xml and m2repo Path bytes
-      ByteSource m2repo = ByteSource.wrap(determineMavenRepositoryPath().toString().getBytes());
-      System.out.println(
-          "!!!!!!!!!!!!!!!!!!!!Ich habe das Repo m2 variable:" + System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE)
-              + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      System.out.println(
-          "!!!!!!!!!!!!!!!!!!!!!" + determineMavenRepositoryPath().toString() + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      ByteSource m2repo = ByteSource.wrap(m2RepoPath.toString().getBytes());
       ByteSource m2repoAndPom = ByteSource.concat(m2repo, ByteSource.wrap(Files.readAllBytes(pomFile)));
       pomFileHash = m2repoAndPom.hash(Hashing.murmur3_128()).toString();
     } catch (IOException e) {
@@ -240,20 +235,8 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
-    System.out.println("Home:" + System.getenv("HOME"));
-    System.out.println("MVN ProjectBasedir:" + System.getenv("MAVEN_PROJECTBASEDIR"));
-    System.out.println("M2Repo:" + System.getenv("M2_REPO"));
-    System.out.println("M2:" + System.getenv("M2"));
-    System.out.println("MavenOpts:" + System.getenv("MAVEN_OPTS"));
-    System.out.println("MavencmdlineArgs:" + System.getenv("MAVEN_CMD_LINE_ARGS"));
-    // if (MAVEN_REPOSITORY != null) {
-    // LOG.debug("Already determined {} as maven repository path.", MAVEN_REPOSITORY);
-    // return MAVEN_REPOSITORY;
-    // }//
-    LOG.info("Determine maven repository path");
-    if (!Strings.isNullOrEmpty(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE))) {
-      MAVEN_REPOSITORY = Paths.get(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE));
-      LOG.debug("Determined {} as maven repository path.", MAVEN_REPOSITORY);
+    if (MAVEN_REPOSITORY != null) {
+      LOG.debug("Already determined {} as maven repository path.", MAVEN_REPOSITORY);
       return MAVEN_REPOSITORY;
     }
     String m2Repo = runCommand(SystemUtils.getUserHome().toPath(),
@@ -280,10 +263,6 @@ public class MavenUtil {
     args.add("-Dorg.slf4j.simpleLogger.defaultLogLevel=" + (LOG.isDebugEnabled() ? "DEBUG" : "INFO"));
     args.add("-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN");
 
-    System.out.println(
-        "!!!!!!!!!!!!!!!!!!!!Ich habe das Repo gefunden:" + System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE)
-            + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
     try {
       StartedProcess process = new ProcessExecutor().readOutput(true).destroyOnExit().directory(execDir.toFile())
           .environment("MAVEN_OPTS", replaceAllUnixPathsOnWin(System.getenv("MAVEN_OPTS")))
@@ -296,9 +275,6 @@ public class MavenUtil {
 
       Future<ProcessResult> future = process.getFuture();
       ProcessResult processResult = future.get();
-      System.out
-          .println("!!!!!!!!!!!!!!!!!!!!Ich habe das Repo zwei:" + System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE)
-              + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       if (processResult.getExitValue() != 0) {
         LOG.error("Error while getting all the needed transitive dependencies. Please check your internet connection.");
         throw new CobiGenRuntimeException("Unable to build cobigen dependencies");
