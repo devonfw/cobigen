@@ -251,6 +251,7 @@ public class MavenUtil {
     LOG.info("Determine maven repository path");
     if (!Strings.isNullOrEmpty(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE))) {
       MAVEN_REPOSITORY = Paths.get(System.getenv(MavenConstants.M2_REPO_SYSTEMVARIABLE));
+      LOG.debug("Determined {} as maven repository path.", MAVEN_REPOSITORY);
       return MAVEN_REPOSITORY;
     }
     String m2Repo = runCommand(SystemUtils.getUserHome().toPath(),
