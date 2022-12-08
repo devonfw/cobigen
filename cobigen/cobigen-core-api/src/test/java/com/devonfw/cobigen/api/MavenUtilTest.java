@@ -2,21 +2,16 @@ package com.devonfw.cobigen.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.rules.TemporaryFolder;
 
-import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.util.MavenUtil;
 
 /**
@@ -25,11 +20,8 @@ import com.devonfw.cobigen.api.util.MavenUtil;
 public class MavenUtilTest {
 
   /**
-   * Enviroment rule to set custom enviroment variables
+   * Temp folder for test execution
    */
-  @Rule
-  public EnvironmentVariables enviromentVariables = new EnvironmentVariables();
-
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
@@ -49,8 +41,8 @@ public class MavenUtilTest {
     FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
     String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), m2repo);
     File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
-    String result = Files.readString(Paths.get(testdataRoot + "/pom-cp.txt"));
-    Files.writeString(cache.toPath(), result);
+    MavenUtil.cacheMavenClassPath(cli_pom.toPath().resolve("pom.xml"), cache.toPath());
+    String result = FileUtils.readFileToString(cache, Charset.defaultCharset());
     MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
         this.getClass().getClassLoader());
     assertThat(Files.readString(cache.toPath())).contains(result);
@@ -63,29 +55,21 @@ public class MavenUtilTest {
    *
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testValidateCacheWrongRepository() throws Exception {
 
     File cli_pom = this.temp.newFolder("playground", "cli-pom");
-    File m2repo = this.temp.newFolder("playground", "m2repo");
-    File secondM2Repo = this.temp.newFolder("playground", "secondM2repo");
+    Path m2repo = MavenUtil.determineMavenRepositoryPath();
     FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
-    File dependency1 = this.temp.newFile("playground/m2repo/dependency1.jar");
-    File dependency2 = this.temp.newFile("playground/m2repo/dependency2.jar");
-    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIABLE, secondM2Repo.getAbsolutePath());
-    String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), null);
+    String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), m2repo);
     File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
-    String result = "" + dependency1.getAbsolutePath() + ";" + dependency2.getAbsolutePath() + ";";
-    try (FileWriter fw = new FileWriter(cache); BufferedWriter bw = new BufferedWriter(fw)) {
-
-      bw.append(dependency1.getAbsolutePath() + ";");
-      bw.append(dependency2.getAbsolutePath() + ";");
-    }
-    // the path to the files in the cache, should be removed after that
+    MavenUtil.cacheMavenClassPath(cli_pom.toPath().resolve("pom.xml"), cache.toPath());
+    String result = Files.readString(cache.toPath());
+    String cacheWithWrongRepo = result.replace(m2repo.getFileName().toString(), "WrongRepository");
+    Files.write(cache.toPath(), cacheWithWrongRepo.getBytes());
     MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
         this.getClass().getClassLoader());
-    assertThat(Files.readAllLines(cache.toPath())).doesNotContain(result);
+    assertThat(Files.readString(cache.toPath())).doesNotContain(cacheWithWrongRepo);
   }
 
   /**
@@ -93,26 +77,21 @@ public class MavenUtilTest {
    *
    * @throws Exception
    */
-  @Ignore
   @Test
   public void testValidateCacheFileNotExistend() throws Exception {
 
     File cli_pom = this.temp.newFolder("playground", "cli-pom");
-    File secondM2Repo = this.temp.newFolder("playground", "secondM2repo");
+    Path m2repo = MavenUtil.determineMavenRepositoryPath();
     FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
-    File dependency1 = this.temp.newFile("playground/secondM2repo/dependency1.jar");
-    Path dependencyP = dependency1.getParentFile().toPath().resolve("someFileThatNotExist.jar");
-    this.enviromentVariables.set(MavenConstants.M2_REPO_SYSTEMVARIABLE, secondM2Repo.getAbsolutePath());
-    String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), null);
+    String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), m2repo);
     File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
-    try (FileWriter fw = new FileWriter(cache); BufferedWriter bw = new BufferedWriter(fw)) {
-      bw.append(dependencyP.toString()); // file not existing
-
-    }
-    // the path to the files in the cache, should be removed after that
+    MavenUtil.cacheMavenClassPath(cli_pom.toPath().resolve("pom.xml"), cache.toPath());
+    String result = Files.readString(cache.toPath());
+    String cacheWithNotExistingFile = result + ";" + m2repo.toString() + "/SomeNonExistingFile.jar";
+    Files.write(cache.toPath(), cacheWithNotExistingFile.getBytes());
     MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
         this.getClass().getClassLoader());
-    assertThat(Files.readAllLines(cache.toPath())).doesNotContain(dependencyP.toString());
+    assertThat(Files.readString(cache.toPath())).doesNotContain("SomeNonExistingFile.jar");
 
   }
 
