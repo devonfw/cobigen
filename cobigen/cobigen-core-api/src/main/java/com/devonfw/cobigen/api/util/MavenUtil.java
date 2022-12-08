@@ -240,10 +240,12 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
-    System.out.println("Print of Systemvariables");
-    for (String s : System.getenv().keySet()) {
-      System.out.println(s);
-    }
+    System.out.println("Home:" + System.getenv("HOME"));
+    System.out.println("MVN ProjectBasedir:" + System.getenv("MAVEN_PROJECTBASEDIR"));
+    System.out.println("M2Repo:" + System.getenv("M2_REPO"));
+    System.out.println("M2:" + System.getenv("M2"));
+    System.out.println("MavenOpts:" + System.getenv("MAVEN_OPTS"));
+    System.out.println("MavencmdlineArgs:" + System.getenv("MAVEN_CMD_LINE_ARGS"));
     // if (MAVEN_REPOSITORY != null) {
     // LOG.debug("Already determined {} as maven repository path.", MAVEN_REPOSITORY);
     // return MAVEN_REPOSITORY;
