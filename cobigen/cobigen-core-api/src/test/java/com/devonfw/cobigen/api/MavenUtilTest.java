@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
@@ -45,7 +44,7 @@ public class MavenUtilTest {
     String result = FileUtils.readFileToString(cache, Charset.defaultCharset());
     MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
         this.getClass().getClassLoader());
-    assertThat(Files.readString(cache.toPath())).contains(result);
+    assertThat(FileUtils.readFileToString(cache, Charset.defaultCharset())).contains(result);
 
   }
 
@@ -64,12 +63,12 @@ public class MavenUtilTest {
     String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), m2repo);
     File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
     MavenUtil.cacheMavenClassPath(cli_pom.toPath().resolve("pom.xml"), cache.toPath());
-    String result = Files.readString(cache.toPath());
+    String result = FileUtils.readFileToString(cache, Charset.defaultCharset());
     String cacheWithWrongRepo = result.replace(m2repo.getFileName().toString(), "WrongRepository");
-    Files.write(cache.toPath(), cacheWithWrongRepo.getBytes());
+    FileUtils.writeStringToFile(cache, cacheWithWrongRepo, Charset.defaultCharset());
     MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
         this.getClass().getClassLoader());
-    assertThat(Files.readString(cache.toPath())).doesNotContain(cacheWithWrongRepo);
+    assertThat(FileUtils.readFileToString(cache, Charset.defaultCharset())).doesNotContain(cacheWithWrongRepo);
   }
 
   /**
@@ -86,12 +85,12 @@ public class MavenUtilTest {
     String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), m2repo);
     File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
     MavenUtil.cacheMavenClassPath(cli_pom.toPath().resolve("pom.xml"), cache.toPath());
-    String result = Files.readString(cache.toPath());
+    String result = FileUtils.readFileToString(cache, Charset.defaultCharset());
     String cacheWithNotExistingFile = result + ";" + m2repo.toString() + "/SomeNonExistingFile.jar";
-    Files.write(cache.toPath(), cacheWithNotExistingFile.getBytes());
+    FileUtils.writeStringToFile(cache, cacheWithNotExistingFile, Charset.defaultCharset());
     MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
         this.getClass().getClassLoader());
-    assertThat(Files.readString(cache.toPath())).doesNotContain("SomeNonExistingFile.jar");
+    assertThat(FileUtils.readFileToString(cache, Charset.defaultCharset())).doesNotContain("SomeNonExistingFile.jar");
 
   }
 
