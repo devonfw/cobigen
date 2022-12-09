@@ -19,7 +19,7 @@
       <tc:template name="t1" destinationPath="generated.txt" templateFile="generated.txt.ftl"
         mergeStrategy="override"/>
     </tc:templates>
-
+    
     <tc:increments>
       <tc:increment name="i1" description="the only increment">
         <tc:templateRef ref="t1"/>

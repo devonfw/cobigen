@@ -37,6 +37,11 @@ public class ConfigurationHolder {
   /** Cached context configuration */
   private ContextConfiguration contextConfiguration;
 
+  /** Cached templateSet configuration */
+  private Map<Path, TemplateSetConfiguration> templateSetConfigurations = Maps.newHashMap();
+
+  private Path templateSetConfigurationPath;
+
   /** Root path of the configuration */
   private Path contextConfigurationPath;
 
@@ -115,6 +120,17 @@ public class ConfigurationHolder {
       this.contextConfiguration = new ContextConfiguration(this.contextConfigurationPath, isTemplateSetConfiguration());
     }
     return this.contextConfiguration;
+  }
+
+  /**
+   * Reads the {@link TemplateSetConfiguration} from cache with the cached path.
+   *
+   * @return the [@link TemplateSetConfiguration}
+   */
+  public TemplateSetConfiguration readTemplateSetConfiguration() {
+
+    return this.configurationFactory.retrieveTemplateSetConfiguration(this.templateSetConfigurations,
+        this.templateSetConfigurationPath);
   }
 
   /**

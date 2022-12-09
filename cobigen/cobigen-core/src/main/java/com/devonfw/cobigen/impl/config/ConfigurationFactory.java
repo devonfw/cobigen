@@ -48,4 +48,15 @@ public class ConfigurationFactory {
     return templatesConfigurations.get(trigger.getId()).get(templateFolder);
   }
 
+  /**
+   * @param templateSetConfigurations Cached templateSet configurations
+   * @param templateSetFolder folder where to get the specific configuration from
+   * @return the {@link TemplateSetConfiguration} instance saved in the given map
+   */
+  public TemplateSetConfiguration retrieveTemplateSetConfiguration(
+      Map<Path, TemplateSetConfiguration> templateSetConfigurations, Path templateSetFolder) {
+
+    return templateSetConfigurations.get(templateSetFolder);
+  }
+
 }
