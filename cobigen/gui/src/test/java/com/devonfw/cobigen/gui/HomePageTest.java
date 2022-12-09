@@ -7,6 +7,7 @@ import org.testfx.assertions.api.Assertions;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -37,7 +38,7 @@ public class HomePageTest extends TestFXBase {
   @Test
   public void ensureHomePageIsShownOnStartUp() {
 
-    Assertions.assertThat(this.mainRoot.lookup("#homePane").getParent().equals(this.mainRoot.lookup("#detailsPane")));
+    Assertions.assertThat(this.home);
   }
 
   /**
@@ -46,12 +47,15 @@ public class HomePageTest extends TestFXBase {
   @Test
   public void ensureHomePageIsShownOnHomeButtonClicked() {
 
-    // TODO: Switch to a Template Set before switching back to Home
-    String TEMPLATE_SET = "#templateSet";
-    clickOn(TEMPLATE_SET);
-    String HOME_BUTTON = "#homeButton";
-    clickOn(HOME_BUTTON);
-    Assertions.assertThat(this.mainRoot.lookup("#homePane").getParent().equals(this.mainRoot.lookup("#detailsPane")));
+    ListView<TemplateSet> searchResultsView = find("#searchResultsView");
+    searchResultsView.getSelectionModel().select(0);
+    Assertions.assertThat(searchResultsView.getSelectionModel().getSelectedIndex() == 0);
+    Assertions.assertThat(this.details.isVisible());
+    Assertions.assertThat(!this.home.isVisible());
+    // Switch back to Home
+    clickOn("#homeButton");
+    Assertions.assertThat(this.home.isVisible());
+    Assertions.assertThat(!this.details.isVisible());
   }
 
   /**
@@ -61,7 +65,7 @@ public class HomePageTest extends TestFXBase {
   public void testLinkToCobigenWiki() {
 
     String COBIGEN_WIKI_LINK = "#wikilink";
-    this.wikilink = (Hyperlink) this.mainRoot.lookup(COBIGEN_WIKI_LINK);
+    this.wikilink = find(COBIGEN_WIKI_LINK);
     Assertions.assertThat(!this.wikilink.isPressed());
     clickOn(COBIGEN_WIKI_LINK);
     Assertions.assertThat(this.wikilink.isPressed());

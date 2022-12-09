@@ -11,6 +11,7 @@ import org.testfx.framework.junit.ApplicationTest;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -28,6 +29,10 @@ public class TestFXBase extends ApplicationTest {
   Stage mainStage;
 
   Controller controller;
+
+  Parent home;
+
+  Parent details;
 
   protected static ResourceBundle bundle;
 
@@ -66,6 +71,9 @@ public class TestFXBase extends ApplicationTest {
     stage.setScene(new Scene(this.mainRoot));
     stage.show();
     stage.toFront();
+
+    this.home = find("#home");
+    this.details = find("#details");
   }
 
   /**
