@@ -1,18 +1,18 @@
 package com.devonfw.cobigen.gui;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.Test;
 import org.testfx.api.FxRobotException;
-import org.testfx.assertions.api.Assertions;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
 /**
- * Tests for the Home Page of GUI
+ * Tests for the home page
  *
  */
 public class HomePageTest extends TestFXBase {
@@ -38,7 +38,7 @@ public class HomePageTest extends TestFXBase {
   @Test
   public void ensureHomePageIsShownOnStartUp() {
 
-    Assertions.assertThat(this.home);
+    assertThat(this.home);
   }
 
   /**
@@ -47,15 +47,14 @@ public class HomePageTest extends TestFXBase {
   @Test
   public void ensureHomePageIsShownOnHomeButtonClicked() {
 
-    ListView<TemplateSet> searchResultsView = find("#searchResultsView");
-    searchResultsView.getSelectionModel().select(0);
-    Assertions.assertThat(searchResultsView.getSelectionModel().getSelectedIndex() == 0);
-    Assertions.assertThat(this.details.isVisible());
-    Assertions.assertThat(!this.home.isVisible());
+    this.searchResultsView.getSelectionModel().select(0);
+    assertThat(this.searchResultsView.getSelectionModel().getSelectedIndex() == 0);
+    assertThat(this.details.isVisible());
+    assertThat(!this.home.isVisible());
     // Switch back to Home
     clickOn("#homeButton");
-    Assertions.assertThat(this.home.isVisible());
-    Assertions.assertThat(!this.details.isVisible());
+    assertThat(this.home.isVisible());
+    assertThat(!this.details.isVisible());
   }
 
   /**
@@ -66,9 +65,9 @@ public class HomePageTest extends TestFXBase {
 
     String COBIGEN_WIKI_LINK = "#wikilink";
     this.wikilink = find(COBIGEN_WIKI_LINK);
-    Assertions.assertThat(!this.wikilink.isPressed());
+    assertThat(!this.wikilink.isPressed());
     clickOn(COBIGEN_WIKI_LINK);
-    Assertions.assertThat(this.wikilink.isPressed());
+    assertThat(this.wikilink.isPressed());
   }
 
   /**
@@ -80,12 +79,12 @@ public class HomePageTest extends TestFXBase {
     String TREEVIEW = "#treeView";
     this.incrementsTreeView = (TreeView) this.mainRoot.lookup(TREEVIEW);
     TreeItem<String> root = this.incrementsTreeView.getRoot();
-    Assertions.assertThat(root.isExpanded());
+    assertThat(root.isExpanded());
     ObservableList<TreeItem<String>> children = root.getChildren();
     for (int i = 0; i < children.size(); i++) {
       TreeItem<String> child = children.get(i);
-      Assertions.assertThat(!child.isExpanded());
-      Assertions.assertThat(child.getChildren().get(0).isLeaf());
+      assertThat(!child.isExpanded());
+      assertThat(child.getChildren().get(0).isLeaf());
     }
   }
 

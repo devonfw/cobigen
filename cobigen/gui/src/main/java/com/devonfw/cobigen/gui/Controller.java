@@ -25,13 +25,13 @@ public class Controller implements Initializable {
   private Parent details;
 
   @FXML
-  private MenuController menuController;
+  public MenuController menuController;
 
   @FXML
   private HomeController homeController;
 
   @FXML
-  private DetailsController detailsController;
+  public DetailsController detailsController;
 
   @FXML
   private AnchorPane leftPane;

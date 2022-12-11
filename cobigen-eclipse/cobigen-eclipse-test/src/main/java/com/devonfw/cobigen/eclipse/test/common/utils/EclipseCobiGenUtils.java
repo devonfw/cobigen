@@ -417,12 +417,12 @@ public class EclipseCobiGenUtils {
 
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     view.bot().tree().contextMenu("CobiGen").menu("Manage Template Sets...").click();
-    bot.waitUntil(new AnyShellIsActive("Template Set Manager"), DEFAULT_TIMEOUT);
 
-    takeScreenshot(bot, "Template Set Manager");
-    SWTBotShell gui = bot.shell("Template Set Manager");
     // TODO
-    gui.bot().button("#").click();
+    // bot.waitUntil(new AnyShellIsActive("Template Set Manager"), DEFAULT_TIMEOUT);
+    // takeScreenshot(bot, "Template Set Manager");
+    // SWTBotShell gui = bot.shell("Template Set Manager");
+    // gui.bot().button("#homeButton").click();
 
   }
 

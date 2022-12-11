@@ -4,25 +4,31 @@ import java.util.ResourceBundle;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 
+import com.devonfw.cobigen.gui.controllers.DetailsController;
+import com.devonfw.cobigen.gui.controllers.MenuController;
+
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
- * TODO nneuhaus This type ...
+ * Base Test
  *
  */
 public class TestFXBase extends ApplicationTest {
+
+  final String BOGUS = "NOT EXISTING TEMPLATE SET";
 
   Pane mainRoot;
 
@@ -34,10 +40,18 @@ public class TestFXBase extends ApplicationTest {
 
   Parent details;
 
+  MenuController menuController;
+
+  DetailsController detailsController;
+
+  ListView<TemplateSet> searchResultsView;
+
+  ObservableList<TemplateSet> templateSetObservableList;
+
   protected static ResourceBundle bundle;
 
   /**
-   *
+   * Set up headless testing
    */
   @BeforeClass
   public static void setupHeadlessMode() {
@@ -54,13 +68,8 @@ public class TestFXBase extends ApplicationTest {
   }
 
   /**
-   * @throws Exception
+   * Start the GUI and set everything up
    */
-  @Before
-  public void setUp() throws Exception {
-
-  }
-
   @Override
   public void start(Stage stage) throws Exception {
 
@@ -74,12 +83,15 @@ public class TestFXBase extends ApplicationTest {
 
     this.home = find("#home");
     this.details = find("#details");
+    this.menuController = this.controller.menuController;
+    this.detailsController = this.controller.detailsController;
+    this.searchResultsView = find("#searchResultsView");
+    this.templateSetObservableList = this.menuController.templateSetObservableList;
   }
 
   /**
    * @throws TimeoutException
    */
-  @SuppressWarnings("javadoc")
   @After
   public void afterEachTest() throws TimeoutException {
 
