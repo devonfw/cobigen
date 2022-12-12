@@ -21,7 +21,7 @@
     </tns2:templates>
 
     <tns2:templateScans>
-      <tns2:templateScan name="ts_scan" templatePath="src/environments" destinationPath=""/>
+      <tns2:templateScan name="ts_scan" templatePath="templates" destinationPath=""/>
     </tns2:templateScans>
 
     <tns2:increments>

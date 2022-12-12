@@ -331,6 +331,12 @@ public class TemplatesConfigurationReader {
     String templatePath = scan.getTemplatePath();
     TemplatePath templateFolder = this.rootTemplateFolder.navigate(templatePath);
 
+    // TODO: fix hacky WIP way of template_scan conflict resolving
+    if (templatePath.equals("templates") && this.rootTemplateFolder.getPath().endsWith("templates/templates")) {
+      TemplateFolder newRootFolder = TemplateFolder.create(this.rootTemplateFolder.getPath().getParent());
+      templateFolder = newRootFolder.navigate(templatePath);
+    }
+
     if ((templateFolder == null) || templateFolder.isFile()) {
       throw new InvalidConfigurationException(this.configFilePath.toUri().toString(), "The templatePath '"
           + templatePath + "' of templateScan with name '" + scan.getName() + "' does not describe a directory.");
