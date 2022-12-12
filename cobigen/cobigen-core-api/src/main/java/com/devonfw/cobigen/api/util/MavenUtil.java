@@ -39,12 +39,6 @@ public class MavenUtil {
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(MavenUtil.class);
 
-  /** Stores the user home */
-  private static File userHome;
-
-  /** Stores the maven path */
-  private static Path mavenPath;
-
   /**
    * Executes a Maven class path build command which will download all the transitive dependencies needed for the CLI
    *
@@ -57,7 +51,7 @@ public class MavenUtil {
 
     LOG.info("Calculating class path for {} and downloading the needed maven dependencies. Please be patient...",
         pomFile);
-    List<String> args = Lists.newArrayList(determineMvnPath().toString(), "dependency:build-classpath",
+    List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:build-classpath",
         "-Dmdep.outputFile=" + cpFile.toString());
     if (pomFile.getFileSystem().provider().getClass().getSimpleName().equals("ZipFileSystemProvider")) {
       pomFile = createCachedPomFromJar(pomFile, cpFile.getParent());
@@ -80,7 +74,7 @@ public class MavenUtil {
     LOG.info(
         "Resolving maven dependencies for maven project {} to be able to make use of reflection in templates. Please be patient...",
         mvnProjectRoot);
-    List<String> args = Lists.newArrayList(determineMvnPath().toString(), "dependency:resolve");
+    List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "dependency:resolve");
     runCommand(mvnProjectRoot, args);
     LOG.debug("Downloaded dependencies successfully.");
   }
@@ -102,7 +96,7 @@ public class MavenUtil {
       pomFile = createCachedPomFromJar(pomFile, mvnProjectRoot);
     }
 
-    List<String> args = Lists.newArrayList(determineMvnPath().toString());
+    List<String> args = Lists.newArrayList(SystemUtil.determineMvnPath().toString());
     args.add("-f");
     args.add(pomFile.toString());
     args.add("dependency:resolve");
@@ -189,39 +183,14 @@ public class MavenUtil {
   }
 
   /**
-   * Determines maven home path if it was not set yet and returns it
-   *
-   * @return Path to maven home
-   */
-  private static Path determineMvnPath() {
-
-    if (mavenPath == null) {
-      mavenPath = SystemUtil.determineMvnPath();
-    }
-    return mavenPath;
-  }
-
-  /**
-   * Determines maven home path if it was not set yet and returns it
-   *
-   * @return File path to user home
-   */
-  private static File getUserHome() {
-
-    if (userHome == null) {
-      userHome = SystemUtils.getUserHome();
-    }
-    return userHome;
-  }
-
-  /**
    * @return the maven repository path
    */
   public static Path determineMavenRepositoryPath() {
 
     LOG.info("Determine maven repository path");
-    String m2Repo = runCommand(getUserHome().toPath(), Lists.newArrayList(determineMvnPath().toString(),
-        "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout"));
+    String m2Repo = runCommand(SystemUtils.getUserHome().toPath(),
+        Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "help:evaluate",
+            "-Dexpression=settings.localRepository", "-DforceStdout"));
     LOG.debug("Determined {} as maven repository path.", m2Repo);
     return Paths.get(m2Repo);
   }
@@ -234,8 +203,8 @@ public class MavenUtil {
   public static String determineMavenSettings() {
 
     LOG.info("Determine content of maven's settings.xml");
-    String mavenSettings = runCommand(getUserHome().toPath(),
-        Lists.newArrayList(determineMvnPath().toString(), "help:evaluate", "-Dexpression=settings", "-DforceStdout"));
+    String mavenSettings = runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(
+        SystemUtil.determineMvnPath().toString(), "help:evaluate", "-Dexpression=settings", "-DforceStdout"));
     return mavenSettings;
   }
 
