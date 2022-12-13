@@ -35,6 +35,7 @@ public class TemplateSetCell extends ListCell<TemplateSet> {
     if (empty || templateSet == null) {
       setText("");
       setGraphic(null);
+      setPrefHeight(45.0);
     } else {
       if (this.loader == null) {
         // FXMLLoader(getClass().getResource("com/devonfw/cobigen/gui))

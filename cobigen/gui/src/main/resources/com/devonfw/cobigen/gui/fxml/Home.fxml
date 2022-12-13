@@ -5,20 +5,19 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="459.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.HomeController">
+<AnchorPane prefHeight="459.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.HomeController">
   <children>
     <SplitPane fx:id="horizontalSplitPane" dividerPositions="0.1119186046511628" orientation="VERTICAL" prefHeight="459.0" prefWidth="450.0">
       <items>
         <AnchorPane fx:id="headerPane" minHeight="0.0" minWidth="0.0" prefHeight="57.0" prefWidth="429.0">
           <children>
             <Text fx:id="headersText" layoutX="5.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to CobiGen`s Template Set Manager!" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
-              <font>
-                <Font name="Segoe UI" size="20.0" />
-              </font>
             </Text>
           </children>
         </AnchorPane>
@@ -34,22 +33,44 @@
               </font>
             </Text>
             <Separator layoutY="24.0" prefHeight="16.0" prefWidth="455.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0" />
-            <Button styleClass= "menuButtons" layoutX="58.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0"  text="+" textFill="WHITE" AnchorPane.leftAnchor="58.0">
+            <Button layoutX="73.0" layoutY="67.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="34.0" styleClass="menuButtons" textFill="WHITE" AnchorPane.leftAnchor="73.0">
               <font>
                 <Font name="System Bold" size="12.0" />
               </font>
+                     <graphic>
+                        <ImageView fx:id="installButtonImageView" fitHeight="28.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true" smooth="false" styleClass="icon">
+                           <image>
+                              <Image url="@../icons/install.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+
             </Button>
-            <Button styleClass= "menuButtons" layoutX="213.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0"  text="*" textFill="WHITE" AnchorPane.leftAnchor="211.0" AnchorPane.rightAnchor="211.0">
+            <Button layoutX="209.0" layoutY="67.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="34.0" styleClass="menuButtons" textFill="WHITE" AnchorPane.leftAnchor="209.0" AnchorPane.rightAnchor="204.0">
               <font>
                 <Font name="System Bold" size="12.0" />
               </font>
+                     <graphic>
+                        <ImageView fitHeight="22.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true" smooth="false" styleClass="icon">
+                           <image>
+                              <Image url="@../icons/delete.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
             </Button>
-            <Button styleClass= "menuButtons" layoutX="348.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="7.0" text="~" textFill="WHITE" AnchorPane.rightAnchor="68.0">
+            <Button layoutX="339.0" layoutY="67.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="34.0" styleClass="menuButtons" textFill="WHITE" AnchorPane.rightAnchor="74.0">
               <font>
                 <Font name="System Bold" size="12.0" />
               </font>
+                     <graphic>
+                        <ImageView fitHeight="23.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                           <image>
+                              <Image url="@../icons/update.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
             </Button>
-            <Text layoutX="5.0" layoutY="161.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Template Set Structure">
+            <Text layoutX="5.0" layoutY="161.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subHeader" text="Template Set Structure">
               <font>
                 <Font size="14.0" />
               </font>
@@ -63,7 +84,7 @@
                           </content>
                         </ScrollPane>
                      </children></AnchorPane>
-            <Text layoutX="5.0" layoutY="342.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Wiki" AnchorPane.leftAnchor="5.0">
+            <Text layoutX="5.0" layoutY="342.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subHeader" text="Wiki" AnchorPane.leftAnchor="5.0">
               <font>
                 <Font size="14.0" />
               </font>
