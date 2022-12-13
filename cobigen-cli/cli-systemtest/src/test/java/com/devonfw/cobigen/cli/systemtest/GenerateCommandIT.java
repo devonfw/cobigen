@@ -10,6 +10,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.devonfw.cobigen.api.util.MavenUtil;
+import com.google.common.io.Files;
+
 /**
  * Tests the usage of the generate command.
  */
@@ -62,6 +65,32 @@ public class GenerateCommandIT extends AbstractCliTest {
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
         .exists();
+  }
+
+  /**
+   * Integration test of the generation of templates from a Java Entity. It does not specify the project to generate the
+   * folders to.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void generateFromEntityTestTwice() throws Exception {
+
+    Path repo = MavenUtil.determineMavenRepositoryPath();
+
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    String args[] = new String[4];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "springdata-repository";
+    execute(args, true);
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
+        .exists();
+    for (File f : Files.fileTraverser().breadthFirst(repo.toFile())) {
+      System.out.println(f.getPath());
+    }
   }
 
   /**
