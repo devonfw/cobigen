@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,6 +77,7 @@ public class GenerateCommandIT extends AbstractCliTest {
   @Test
   public void generateFromEntityTestTwice() throws Exception {
 
+    System.out.println("!!!! Cache Test !!!!");
     Path repo = MavenUtil.determineMavenRepositoryPath();
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
@@ -89,8 +91,13 @@ public class GenerateCommandIT extends AbstractCliTest {
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/dataaccess/api/repo"))
         .exists();
     for (File f : Files.fileTraverser().breadthFirst(repo.toFile())) {
-      System.out.println(f.getPath());
+      if (FilenameUtils.getExtension(f.getPath()) == "jar") {
+        f.delete();
+        System.out.println("!!!! DeleteFile !!!!");
+        break;
+      }
     }
+    execute(args, true);
   }
 
   /**
