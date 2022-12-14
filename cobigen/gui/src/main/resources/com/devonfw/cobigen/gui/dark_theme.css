@@ -1,13 +1,15 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+/*THIS IS ONLY A TEST FILE*/ 
+
 
 /* makes button and filter option white and borderless*/
 .root {
-  -fx-body-color : white;
-  -fx-outer-border : white;
+  -fx-body-color : black;
+  -fx-outer-border : black;
 
 }
 .root * {
-    -fx-font: 11px Ubuntu;
+    -fx-font: 11px Arial;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-base: white;
@@ -55,7 +57,7 @@ color-picker:hover,
  
  }
  #headersText{
- -fx-font-size: 16px;
+ -fx-font-size: 20px;
  }
  
  #homeButtonIcon{

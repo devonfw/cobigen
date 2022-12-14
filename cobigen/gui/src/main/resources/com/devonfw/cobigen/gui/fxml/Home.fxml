@@ -2,6 +2,8 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
@@ -19,6 +21,15 @@
           <children>
             <Text fx:id="headersText" layoutX="5.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to CobiGen`s Template Set Manager!" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
             </Text>
+                  <MenuButton fx:id="settingsMenu" ellipsisString="" layoutX="363.0" layoutY="5.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Theme">
+                    <items>
+                      <MenuItem fx:id="lightThemeButton" mnemonicParsing="false" onAction="#changeToLight" text="Light Theme" />
+                      <MenuItem fx:id="darkThemeButton" mnemonicParsing="false" onAction="#changeToDark" text="Dark Theme" />
+                    </items>
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </MenuButton>
           </children>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
