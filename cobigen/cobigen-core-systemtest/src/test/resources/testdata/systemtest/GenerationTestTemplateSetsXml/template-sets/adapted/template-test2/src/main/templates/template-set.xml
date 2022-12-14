@@ -6,7 +6,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
   <cc:contextConfiguration version="3.0">
-    <cc:trigger id="entities2" type="mockplugin">
+    <cc:trigger id="entities2" type="java">
       <cc:matcher type="fqn" value=".+">
       </cc:matcher>
     </cc:trigger>

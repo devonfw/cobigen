@@ -6,7 +6,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
   <cc:contextConfiguration version="3.0">
-    <cc:trigger id="entities" type="mockplugin">
+    <cc:trigger id="entities" type="java">
       <cc:matcher type="fqn" value=".+">
       </cc:matcher>
     </cc:trigger>
@@ -19,7 +19,7 @@
       <tc:template name="t1" destinationPath="generated.txt" templateFile="generated.txt.ftl"
         mergeStrategy="override"/>
     </tc:templates>
-    
+
     <tc:increments>
       <tc:increment name="i1" description="the only increment">
         <tc:templateRef ref="t1"/>

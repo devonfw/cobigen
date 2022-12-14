@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0"
+  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+  <cc:contextConfiguration version="3.0">
+    <cc:trigger id="testdata_builder" type="java">
+      <cc:containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"
+        retrieveObjectsRecursively="false"/>
+      <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+Entity)">
+        <cc:variableAssignment type="regex" key="rootPackage" value="1"/>
+        <cc:variableAssignment type="regex" key="domain" value="3"/>
+        <cc:variableAssignment type="regex" key="component" value="4"/>
+        <cc:variableAssignment type="regex" key="pojoName" value="5"/>
+      </cc:matcher>
+      <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+[E|C]to)">
+        <cc:variableAssignment type="regex" key="rootPackage" value="1"/>
+        <cc:variableAssignment type="regex" key="domain" value="3"/>
+        <cc:variableAssignment type="regex" key="component" value="4"/>
+        <cc:variableAssignment type="regex" key="pojoName" value="5"/>
+      </cc:matcher>
+      <cc:matcher type="expression" value="instanceof java.lang.Enum" accumulationType="NOT"/>
+      <cc:matcher type="expression" value="isAbstract" accumulationType="NOT"/>
+    </cc:trigger>
+    <cc:tags>
+      <cc:tag name="TestData"></cc:tag>
+      <cc:tag name="Builder"></cc:tag>
+    </cc:tags>
+    <cc:links>
+      <cc:link url="https://github.com/devonfw/cobigen/wiki/cobigen-usecases#test-data-builder-for-devon4j"></cc:link>
+    </cc:links>
+  </cc:contextConfiguration>
+  <tc:templatesConfiguration version="5.0">
+    <tc:templates>
+      <tc:template name="entityBuilder"
+        destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java"
+        templateFile="ObjectBuilder.java.ftl" mergeStrategy="javamerge"/>
+      <tc:template name="entityBuilder_customFunctions"
+        destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java"
+        templateFile="ObjectBuilder_customFunctions.java.ftl" mergeStrategy="javamerge"/>
+      <tc:template name="entityBuilder_fillMandatoryFields"
+        destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java"
+        templateFile="ObjectBuilder_fillMandatoryFields.java.ftl" mergeStrategy="javamerge_override"/>
+      <tc:template name="entityBuilder_persistable"
+        destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java"
+        templateFile="ObjectBuilder_persistable.java.ftl" mergeStrategy="javamerge"/>
+    </tc:templates>
+    <tc:increments>
+      <tc:increment name="testdata_builder" description="Testdata builder"
+        explanation="Creates a builder pattern for POJOs (Plain Old Java Objects).">
+        <tc:templateRef ref="entityBuilder"/>
+        <tc:templateRef ref="entityBuilder_fillMandatoryFields"/>
+        <tc:templateRef ref="entityBuilder_customFunctions"/>
+      </tc:increment>
+      <tc:increment name="testdata_builder_persistable" description="Testdata builder (persistable)">
+        <tc:templateRef ref="entityBuilder"/>
+        <tc:templateRef ref="entityBuilder_fillMandatoryFields"/>
+        <tc:templateRef ref="entityBuilder_customFunctions"/>
+        <tc:templateRef ref="entityBuilder_persistable"/>
+      </tc:increment>
+    </tc:increments>
+  </tc:templatesConfiguration>
+</tns:templateSetConfiguration>
