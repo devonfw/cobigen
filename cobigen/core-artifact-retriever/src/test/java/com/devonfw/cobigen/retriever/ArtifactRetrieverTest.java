@@ -151,4 +151,19 @@ public class ArtifactRetrieverTest {
     assertThat(templateSets).size().isEqualTo(2);
   }
 
+  /**
+   * Tests if an artifact can be retrieved while a missing file gets ignored
+   */
+  @Test
+  public void testRetrieveTemplateSetArtifactWithMissingFile() {
+
+    List<Path> templateSetFiles = new ArrayList<>();
+    templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set-non-existing.xml"));
+    templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set1.xml"));
+
+    List<TemplateSet> templateSets = ArtifactRetriever.retrieveTemplateSetData(templateSetFiles);
+
+    assertThat(templateSets).size().isEqualTo(1);
+  }
+
 }

@@ -76,10 +76,12 @@ public class ArtifactRetriever {
 
     List<TemplateSet> templateSetList = new ArrayList<>();
     for (Path templateSetFile : templateSetFiles) {
-      if (!Files.exists(templateSetFile)) {
 
-        LOG.debug("Template set file was not found at: {}", templateSetFile);
+      if (!Files.exists(templateSetFile)) {
+        LOG.debug("Template set file was ignored because it was not existing at: {}.", templateSetFile);
+        continue;
       }
+
       TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
       templateSetList.add(artifactReader.retrieveTemplateSet(templateSetFile));
     }
