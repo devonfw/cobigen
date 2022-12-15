@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
-  targetNamespace="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
-  xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
-  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" elementFormDefault="qualified" version="6.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://capgemini.com/devonfw/cobigen/templateSetConfiguration"
+targetNamespace="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" elementFormDefault="qualified" version="6.0">
+<xs:import namespace="http://capgemini.com/devonfw/cobigen/contextConfiguration" schemaLocation="contextConfiguration.xsd" />
+<xs:import namespace="http://capgemini.com/devonfw/cobigen/templateConfiguration" schemaLocation="templateConfiguration.xsd" />
+<!-- The complex type definition goes here -->
+</xs:schema>
 
 
-  <xs:import schemaLocation="../v3.0/contextConfiguration.xsd"
-    namespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration"/>
-  <xs:import schemaLocation="../v5.0/templatesConfiguration.xsd"
-    namespace="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"/>
-
-  <xs:element name="templateSetConfiguration">
-    <xs:complexType>
-       <xs:all>
-        <xs:element ref="cc:contextConfiguration"/>
-        <xs:element ref="tc:templatesConfiguration"/>
-      </xs:all>
+<xs:complexType name="contextConfigurationAndTemplateConfiguration">
+<xs:sequence>
+<xs:element name="contextConfiguration" minOccurs="0" type="tns:contextConfiguration" />
+<xs:element name="templateConfiguration" minOccurs="0" type="tns:templateConfiguration" />
+</xs:sequence>
       <xs:attribute name="version" use="required" type="xs:decimal"/>
-    </xs:complexType>
-  </xs:element>
+</xs:complexType>
+
+
+
+
 </xs:schema>

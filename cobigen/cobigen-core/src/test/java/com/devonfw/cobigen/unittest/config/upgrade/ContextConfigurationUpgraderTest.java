@@ -48,7 +48,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
     ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_0;
     ContextConfigurationVersion targetVersion = ContextConfigurationVersion.v2_1;
     String currentVersionPath = "valid-v2.0";
-    String targetVersionPath = "valid-v2.1";
+    String targetVersionPath = "valid-v6.0";
 
     Path cobigen = this.tempFolder.newFolder(ConfigurationConstants.COBIGEN_CONFIG_FILE).toPath();
     Path context = cobigen.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
@@ -169,6 +169,15 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   @Test
   public void testCorrectV6_0SchemaDetection() throws Exception {
 
+    // preparation
+    ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v6_0;
+    File targetConfig = new File(contextTestFileRootPath + "/valid-" + currentVersion);
+
+    for (File context : targetConfig.listFiles()) {
+      ContextConfigurationVersion version = new ContextConfigurationUpgrader()
+          .resolveLatestCompatibleSchemaVersion(context.toPath(), currentVersion);
+      assertThat(version).isEqualTo(currentVersion);
+    }
   }
 
   /**

@@ -272,7 +272,7 @@ public class TemplateSetUpgrader {
           "PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER");
       links.getLink().add(link);
       contextConfiguration6_0.setLinks(links);
-      contextConfiguration6_0.setVersion(new BigDecimal("3.0"));
+      contextConfiguration6_0.setVersion(new BigDecimal("6.0"));
       splitContexts.add(contextConfiguration6_0);
     }
     return splitContexts;

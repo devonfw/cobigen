@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
- xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
   targetNamespace="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" elementFormDefault="qualified" version="5.0">
 
   <xs:element name="templatesConfiguration">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="templates" minOccurs="0" type="tns:templates" />
-        <xs:element name="templateScans" minOccurs="0" type="tns:templateScans" />
-        <xs:element name="increments" minOccurs="0" type="tns:increments" />
+        <xs:element name="templates" minOccurs="0" type="templates" />
+        <xs:element name="templateScans" minOccurs="0" type="templateScans" />
+        <xs:element name="increments" minOccurs="0" type="increments" />
       </xs:sequence>
       <xs:attribute name="templateEngine" use="optional" type="xs:string" default="FreeMarker"/>
       <xs:attribute name="version" use="required" type="xs:decimal" />
@@ -17,14 +16,14 @@
 
   <xs:complexType name="templates">
     <xs:sequence>
-      <xs:element name="template" minOccurs="0" maxOccurs="unbounded" type="tns:template" />
-      <xs:element name="templateExtension" minOccurs="0" maxOccurs="unbounded" type="tns:templateExtension" />
+      <xs:element name="template" minOccurs="0" maxOccurs="unbounded" type="template" />
+      <xs:element name="templateExtension" minOccurs="0" maxOccurs="unbounded" type="templateExtension" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="templateScans">
     <xs:sequence maxOccurs="unbounded" minOccurs="0">
-      <xs:element name="templateScan" type="tns:templateScan" />
+      <xs:element name="templateScan" type="templateScan" />
     </xs:sequence>
   </xs:complexType>
 
@@ -54,15 +53,15 @@
 
   <xs:complexType name="increments">
     <xs:sequence maxOccurs="unbounded" minOccurs="1">
-      <xs:element name="increment" type="tns:increment" />
+      <xs:element name="increment" type="increment" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="increment">
     <xs:choice maxOccurs="unbounded" minOccurs="1">
-      <xs:element name="templateRef" type="tns:templateRef" />
-      <xs:element name="incrementRef" type="tns:incrementRef" />
-      <xs:element name="templateScanRef" type="tns:templateScanRef" />
+      <xs:element name="templateRef" type="templateRef" />
+      <xs:element name="incrementRef" type="incrementRef" />
+      <xs:element name="templateScanRef" type="templateScanRef" />
     </xs:choice>
     <xs:attribute name="name" use="required" type="xs:string" />
     <xs:attribute name="description" use="required" type="xs:string" />
