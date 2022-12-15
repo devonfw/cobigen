@@ -330,15 +330,19 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
               try (OutputStream out = Files.newOutputStream(result.getConfigurationPath())) {
                 JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
               }
+              VERSIONS_TYPE currentVersion;
               if (result.getResultConfigurationJaxbRootNode().getClass().equals(TemplateSetConfiguration.class)) {
                 // changed class from context to templateSet, field has to be updated
                 this.configurationFilename = ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME;
                 this.configurationJaxbRootNode = TemplateSetConfiguration.class;
                 this.configurationName = "TemplateSet Configuration";
                 this.configurationXsdFilename = "templateSetConfiguration.xsd";
+                currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath(), true,
+                    latestVersion);
+              } else {
+                // implicitly check upgrade step
+                currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
               }
-              // implicitly check upgrade step
-              VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
               // if CobiGen does not understand the upgraded file... throw exception
               if (currentVersion == null) {
                 throw new CobiGenRuntimeException("An error occurred while upgrading " + this.configurationName

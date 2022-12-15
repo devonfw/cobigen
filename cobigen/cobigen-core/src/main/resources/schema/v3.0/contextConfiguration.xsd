@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" targetNamespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration" elementFormDefault="qualified" version="3.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  targetNamespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration" elementFormDefault="qualified" version="3.0">
 
   <xs:element name="contextConfiguration">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="trigger" type="tns:trigger" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="tags" type="tns:tags" minOccurs="1" maxOccurs="1" />
-        <xs:element name="links" type="tns:links" minOccurs="0" maxOccurs="1" />
+        <xs:element name="trigger" type="cc:trigger" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="tags" type="cc:tags" minOccurs="1" maxOccurs="1" />
+        <xs:element name="links" type="cc:links" minOccurs="0" maxOccurs="1" />
       </xs:sequence>
       <xs:attribute name="version" use="required" type="xs:decimal" />
     </xs:complexType>
@@ -14,8 +16,8 @@
 
   <xs:complexType name="trigger">
     <xs:sequence>
-      <xs:element name="containerMatcher" type="tns:containerMatcher" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="matcher" type="tns:matcher" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="containerMatcher" type="cc:containerMatcher" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="matcher" type="cc:matcher" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="id" use="required" type="xs:NCName" />
     <xs:attribute name="type" use="required" type="xs:string" />
@@ -25,11 +27,11 @@
 
   <xs:complexType name="matcher">
     <xs:sequence>
-      <xs:element name="variableAssignment" type="tns:variableAssignment" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="variableAssignment" type="cc:variableAssignment" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
     <xs:attribute name="type" type="xs:string" use="required" />
     <xs:attribute name="value" type="xs:string" use="required" />
-    <xs:attribute name="accumulationType" type="tns:accumulationType" use="optional" default="OR" />
+    <xs:attribute name="accumulationType" type="cc:accumulationType" use="optional" default="OR" />
   </xs:complexType>
 
   <xs:complexType name="containerMatcher">
@@ -55,7 +57,7 @@
 
   <xs:complexType name="tags">
     <xs:sequence maxOccurs="unbounded" minOccurs="1">
-      <xs:element name="tag" type="tns:tag" />
+      <xs:element name="tag" type="cc:tag" />
     </xs:sequence>
   </xs:complexType>
 
@@ -65,7 +67,7 @@
 
   <xs:complexType name="links">
     <xs:sequence maxOccurs="unbounded" minOccurs="1">
-      <xs:element name="link" type="tns:link" />
+      <xs:element name="link" type="cc:link" />
     </xs:sequence>
   </xs:complexType>
 
