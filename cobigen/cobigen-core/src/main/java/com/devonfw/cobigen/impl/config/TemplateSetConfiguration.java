@@ -49,11 +49,20 @@ public class TemplateSetConfiguration {
   private com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration templateSetConfiguration;
 
   /** The reader to read the template-set.xml files */
-  public TemplateSetConfigurationReader templateSetConfigurationReader;
+  private TemplateSetConfigurationReader templateSetConfigurationReader;
 
-  public TemplatesConfigurationReader templatesConfigurationReader;
+  private TemplatesConfigurationReader templatesConfigurationReader;
 
-  public ContextConfigurationReader contextConfigurationReader;
+  private ContextConfigurationReader contextConfigurationReader;
+
+  /** Paths of the template set configuration files */
+  // TODO: Bitte private machen
+  private List<Path> templateSetFiles = new ArrayList<>();
+
+  /** Root of the configuration */
+  private Path configRoot;
+
+  private ConfigurationHolder configurationHolder;
 
   /**
    * @return templateSetConfigurationReader
@@ -62,14 +71,6 @@ public class TemplateSetConfiguration {
 
     return this.templateSetConfigurationReader;
   }
-
-  /** Paths of the template set configuration files */
-  public List<Path> templateSetFiles = new ArrayList<>();
-
-  /** Root of the configuration */
-  public Path configRoot;
-
-  public ConfigurationHolder configurationHolder;
 
   /**
    * @param configRoot Root of the configuration
@@ -113,8 +114,8 @@ public class TemplateSetConfiguration {
 
     this.increments = new HashMap<>();
     for (Path templateSetFile : this.templateSetFiles) {
-      this.templateSetConfigurationReader.templateSetFile = templateSetFile;
-      this.templateSetConfigurationReader.readConfiguration();
+      // this.templateSetConfigurationReader.templateSetFile = templateSetFile;
+      this.templateSetConfigurationReader.readConfiguration(templateSetFile);
       TemplatesConfigurationReader templatesReader = this.templateSetConfigurationReader
           .getTemplatesConfigurationReader();
       ContextConfigurationReader contextReader = this.templateSetConfigurationReader.getContextConfigurationReader();
@@ -160,6 +161,11 @@ public class TemplateSetConfiguration {
     return this.templateSetFiles;
   }
 
+  public void addTemplateSetFiles(List<Path> templateSets) {
+
+    this.templateSetFiles.addAll(templateSets);
+  }
+
   /**
    * @return s the map of triggers
    */
@@ -200,6 +206,10 @@ public class TemplateSetConfiguration {
   public void setConfigurationProperties(ConfigurationProperties configurationProperties) {
 
     this.configurationProperties = configurationProperties;
+  }
+
+  public void addTemplateSetConfiguration(TemplateSetConfiguration tsc) {
+
   }
 
 }

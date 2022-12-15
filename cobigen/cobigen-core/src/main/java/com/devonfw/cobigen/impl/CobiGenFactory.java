@@ -92,7 +92,7 @@ public class CobiGenFactory {
 
     Objects.requireNonNull(configFileOrFolder, "The URI pointing to the configuration could not be null.");
 
-    ConfigurationHolder configurationHolder = new ConfigurationHolder(configFileOrFolder);
+    ConfigurationHolder configurationHolder = ConfigurationHolder.getInstance(configFileOrFolder);
     BeanFactory beanFactory = new BeanFactory();
     beanFactory.addManuallyInitializedBean(configurationHolder);
     CobiGen createBean = beanFactory.createBean(CobiGen.class);

@@ -372,7 +372,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
 
     Path configPath = Paths.get(new File(testFileRootPath).toURI());
-    ConfigurationHolder configurationHolder = new ConfigurationHolder(configPath.toUri());
+    ConfigurationHolder configurationHolder = ConfigurationHolder.getInstance(configPath.toUri());
 
     TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
     Map<String, Increment> increments = templatesConfiguration.getIncrements();
@@ -406,7 +406,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
         new LinkedList<Matcher>(), new LinkedList<ContainerMatcher>());
 
     Path config = Paths.get(new File(testFileRootPath).toURI());
-    ConfigurationHolder configurationHolder = new ConfigurationHolder(config.toUri());
+    ConfigurationHolder configurationHolder = ConfigurationHolder.getInstance(config.toUri());
 
     TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
     Map<String, Increment> increments = templatesConfiguration.getIncrements();
@@ -440,7 +440,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     new ContextConfigurationReader(config);
 
     // given
-    ConfigurationHolder configurationHolder = new ConfigurationHolder(config.toUri());
+    ConfigurationHolder configurationHolder = ConfigurationHolder.getInstance(config.toUri());
 
     TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_invalid_external_incrementref", configurationHolder);
@@ -465,7 +465,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     new ContextConfigurationReader(config);
 
     // given
-    ConfigurationHolder configurationHolder = new ConfigurationHolder(config.toUri());
+    ConfigurationHolder configurationHolder = ConfigurationHolder.getInstance(config.toUri());
 
     TemplatesConfigurationReader target = new TemplatesConfigurationReader(new File(testFileRootPath).toPath(),
         "faulty_invalid_external_templateref", configurationHolder);

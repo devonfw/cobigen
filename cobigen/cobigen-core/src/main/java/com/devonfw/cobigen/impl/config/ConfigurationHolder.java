@@ -26,7 +26,7 @@ import com.google.common.collect.Maps;
 /**
  * Cached in-memory CobiGen configuration.
  */
-public class ConfigurationHolder {
+public final class ConfigurationHolder {
 
   /** Logger instance */
   private static final Logger LOG = LoggerFactory.getLogger(ConfigurationHolder.class);
@@ -54,12 +54,15 @@ public class ConfigurationHolder {
   /** Location where the properties are saved */
   private ConfigurationProperties configurationProperties;
 
+  private static ConfigurationHolder INSTANCE;
+
   /**
-   * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
+   * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration. Since this
+   * is a Singleton, this constructor is private
    *
    * @param configurationLocation the OS Filesystem path of the configuration location.
    */
-  public ConfigurationHolder(URI configurationLocation) {
+  private ConfigurationHolder(URI configurationLocation) {
 
     this.configurationLocation = configurationLocation;
     this.contextConfigurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
@@ -67,6 +70,18 @@ public class ConfigurationHolder {
 
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.contextConfigurationPath);
+  }
+
+  /**
+   * @param configurationLocation necessary field in order to initialize the holder
+   * @return the single instance of the {@link ConfigurationHolder}
+   */
+  public static ConfigurationHolder getInstance(URI configurationLocation) {
+
+    if (INSTANCE == null) {
+      INSTANCE = new ConfigurationHolder(configurationLocation);
+    }
+    return INSTANCE;
   }
 
   /**
@@ -134,6 +149,8 @@ public class ConfigurationHolder {
   }
 
   /**
+   * checks if this this a template set configuration or a templates configuration (true if templateSetConfiguraion)
+   *
    * @return return if the template folder structure consists of template sets or if the monolithic structure is used.
    */
   public boolean isTemplateSetConfiguration() {

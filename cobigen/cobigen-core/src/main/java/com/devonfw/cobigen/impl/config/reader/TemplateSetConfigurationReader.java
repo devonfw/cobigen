@@ -43,10 +43,13 @@ import jakarta.xml.bind.Unmarshaller;
 public class TemplateSetConfigurationReader {
 
   /** Path of the template set configuration file */
-  public Path templateSetFile;
+  private Path templateSetFile;
 
   /** Paths of the configuration location for a template-set.xml file */
   private Path configLocation;
+
+  /** Root of the configuration */
+  private Path configRoot;
 
   /** Map with the paths of the template set location for a trigger */
   private Map<String, Path> triggerTemplateSetLocations = new HashMap<>();
@@ -62,6 +65,9 @@ public class TemplateSetConfigurationReader {
    */
   protected TemplatesConfigurationReader templatesConfigurationReader;
 
+  /**
+   *
+   */
   protected ConfigurationHolder configurationHolder;
 
   /**
@@ -111,9 +117,6 @@ public class TemplateSetConfigurationReader {
    */
   protected TemplatesConfiguration templatesConfiguration;
 
-  /** Root of the configuration */
-  private Path configRoot;
-
   /** The top-level folder where the templates are located. */
   private TemplateFolder rootTemplateFolder;
 
@@ -157,36 +160,28 @@ public class TemplateSetConfigurationReader {
           "Could not find a folder in which to search for the template-set configuration file.");
     } else {
       if (Files.exists(templateSetsAdapted)) {
-        templateSetConfiguration.templateSetFiles
-            .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesAdapted(templateSetsAdapted));
+        templateSetConfiguration
+            .addTemplateSetFiles(this.templateSetConfigurationManager.loadTemplateSetFilesAdapted(templateSetsAdapted));
         this.configRoot = templateSetsAdapted;
 
       }
 
-      else if (Files.exists(templateSetsDownloaded)) {
-        templateSetConfiguration.templateSetFiles
-            .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
+      // if there are no adapted templates, there have to be downloaded templates
+      else {
+        templateSetConfiguration.addTemplateSetFiles(
+            this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
         this.configRoot = templateSetsDownloaded.resolve("template-set.jar");
-
-      }
-
-      if (templateSetConfiguration.templateSetFiles.isEmpty()) {
-        throw new InvalidConfigurationException(configRoot,
-            "Could not find any template-set configuration file in the given folder.");
       }
     }
-
-    this.templateSetFile = templateSetConfiguration.templateSetFiles.get(0);
-
-    // readConfiguration();
 
   }
 
   /**
    * Reads the template set xml file and initializes the templates and context configurations and readers
    */
-  public void readConfiguration() {
+  public void readConfiguration(Path templateSetFile) {
 
+    this.templateSetFile = templateSetFile;
     this.configLocation = this.templateSetFile.getParent();
 
     if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
