@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
 /**
  * Cached in-memory CobiGen configuration.
  */
-public final class ConfigurationHolder {
+public class ConfigurationHolder {
 
   /** Logger instance */
   private static final Logger LOG = LoggerFactory.getLogger(ConfigurationHolder.class);
@@ -39,7 +39,7 @@ public final class ConfigurationHolder {
   private Path templateSetConfigurationPath;
 
   /** Root path of the configuration */
-  private Path contextConfigurationPath;
+  private Path configurationPath;
 
   /** The OS filesystem path of the configuration */
   private URI configurationLocation;
@@ -47,24 +47,21 @@ public final class ConfigurationHolder {
   /** Location where the properties are saved */
   private ConfigurationProperties configurationProperties;
 
-  private static ConfigurationHolder INSTANCE;
-
   /**
    * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration. Since this
    * is a Singleton, this constructor is private
    *
    * @param configurationLocation the OS Filesystem path of the configuration location.
    */
-  private ConfigurationHolder(URI configurationLocation) {
+  public ConfigurationHolder(URI configurationLocation) {
 
     this.configurationLocation = configurationLocation;
-    this.contextConfigurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
+    this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
     this.configurationProperties = ConfigurationFinder.loadTemplateSetConfigurations(
-        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE),
-        this.contextConfigurationPath);
+        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE), this.configurationPath);
 
     // updates the root template path and informs all of its observers
-    PluginRegistry.notifyPlugins(this.contextConfigurationPath);
+    PluginRegistry.notifyPlugins(this.configurationPath);
   }
 
   /**
@@ -73,18 +70,6 @@ public final class ConfigurationHolder {
   public ConfigurationProperties getConfigurationProperties() {
 
     return this.configurationProperties;
-  }
-
-  /**
-   * @param configurationLocation necessary field in order to initialize the holder
-   * @return the single instance of the {@link ConfigurationHolder}
-   */
-  public static ConfigurationHolder getInstance(URI configurationLocation) {
-
-    if (INSTANCE == null) {
-      INSTANCE = new ConfigurationHolder(configurationLocation);
-    }
-    return INSTANCE;
   }
 
   /**
@@ -109,7 +94,7 @@ public final class ConfigurationHolder {
    */
   public Path getConfigurationPath() {
 
-    return this.contextConfigurationPath;
+    return this.configurationPath;
   }
 
   /**
@@ -134,7 +119,7 @@ public final class ConfigurationHolder {
   public ContextConfiguration readContextConfiguration() {
 
     if (this.contextConfiguration == null) {
-      this.contextConfiguration = new ContextConfiguration(this.contextConfigurationPath, isTemplateSetConfiguration());
+      this.contextConfiguration = new ContextConfiguration(this.configurationPath, isTemplateSetConfiguration());
     }
     return this.contextConfiguration;
   }
@@ -156,8 +141,8 @@ public final class ConfigurationHolder {
    */
   public boolean isTemplateSetConfiguration() {
 
-    if (this.contextConfigurationPath.toUri().getScheme().equals("jar") || !this.contextConfigurationPath.getFileName()
-        .toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
+    if (this.configurationPath.toUri().getScheme().equals("jar")
+        || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return false;
     }
     return true;
@@ -199,7 +184,7 @@ public final class ConfigurationHolder {
       ConfigurationHolder holder) {
 
     if (!templatesConfigurations.containsKey(trigger.getId())) {
-      TemplatesConfiguration config = new TemplatesConfiguration(this.contextConfigurationPath, trigger, holder);
+      TemplatesConfiguration config = new TemplatesConfiguration(this.configurationPath, trigger, holder);
       templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
 
       templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
