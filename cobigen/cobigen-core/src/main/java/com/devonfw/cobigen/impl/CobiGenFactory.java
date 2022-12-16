@@ -13,10 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
 import com.devonfw.cobigen.api.TemplateAdapter;
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
@@ -104,9 +102,7 @@ public class CobiGenFactory {
     }
     // install Template Sets defined in .properties file
     if (configurationHolder.isTemplateSetConfiguration()) {
-      ConfigurationProperties config = ConfigurationFinder.loadTemplateSetConfigurations(
-          CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE),
-          configurationHolder.getConfigurationPath());
+      ConfigurationProperties config = configurationHolder.getConfigurationProperties();
       URI templatesLocation = configurationHolder.getConfigurationPath().toUri();
       File downloadPath = new File(templatesLocation);
       TemplatesJarUtil.downloadTemplatesByMavenCoordinates(downloadPath.toPath(), config.getMavenCoordinates());

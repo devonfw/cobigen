@@ -1,25 +1,21 @@
 package com.devonfw.cobigen.impl.config;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
+import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 import com.google.common.collect.Maps;
 
@@ -48,9 +44,6 @@ public final class ConfigurationHolder {
   /** The OS filesystem path of the configuration */
   private URI configurationLocation;
 
-  /** The factory class which initializes new configurations */
-  private ConfigurationFactory configurationFactory;
-
   /** Location where the properties are saved */
   private ConfigurationProperties configurationProperties;
 
@@ -66,10 +59,20 @@ public final class ConfigurationHolder {
 
     this.configurationLocation = configurationLocation;
     this.contextConfigurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
-    this.configurationFactory = new ConfigurationFactory(configurationLocation);
+    this.configurationProperties = ConfigurationFinder.loadTemplateSetConfigurations(
+        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE),
+        this.contextConfigurationPath);
 
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.contextConfigurationPath);
+  }
+
+  /**
+   * @return configurationProperties
+   */
+  public ConfigurationProperties getConfigurationProperties() {
+
+    return this.configurationProperties;
   }
 
   /**
@@ -119,8 +122,7 @@ public final class ConfigurationHolder {
   public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
-    return this.configurationFactory.retrieveTemplatesConfiguration(this.templatesConfigurations, templateFolder,
-        trigger, this);
+    return retrieveTemplatesConfiguration(this.templatesConfigurations, templateFolder, trigger, this);
   }
 
   /**
@@ -144,8 +146,7 @@ public final class ConfigurationHolder {
    */
   public TemplateSetConfiguration readTemplateSetConfiguration() {
 
-    return this.configurationFactory.retrieveTemplateSetConfiguration(this.templateSetConfigurations,
-        this.templateSetConfigurationPath);
+    return retrieveTemplateSetConfiguration(this.templateSetConfigurations, this.templateSetConfigurationPath);
   }
 
   /**
@@ -186,26 +187,36 @@ public final class ConfigurationHolder {
   }
 
   /**
-   * This is a helper method to read a given cobigen configuration file
-   *
-   * @param cobigenConfigFile cobigen configuration file
-   * @throws InvalidConfigurationException if the file isn't present or the path is invalid
-   * @return Properties containing configuration
+   * @param templatesConfigurations Cached templates configurations. Trigger ID -> Configuration File URI ->
+   *        configuration instance
+   * @param templateFolder path to the templates folder
+   * @param trigger to get matcher declarations from
+   * @param holder holds the templatesConfigurations in the given list
+   * @return the {@link TemplatesConfiguration} instance saved in the given map
    */
-  private Properties readConfigurationFile(Path cobigenConfigFile) {
+  public TemplatesConfiguration retrieveTemplatesConfiguration(
+      Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations, Path templateFolder, Trigger trigger,
+      ConfigurationHolder holder) {
 
-    Properties props = new Properties();
-    try {
-      String configFileContents = Files.readAllLines(cobigenConfigFile, Charset.forName("UTF-8")).stream()
-          .collect(Collectors.joining("\n"));
-      configFileContents = configFileContents.replace("\\", "\\\\");
-      try (StringReader strReader = new StringReader(configFileContents)) {
-        props.load(strReader);
-      }
-    } catch (IOException e) {
-      throw new InvalidConfigurationException("An error occured while reading the config file " + cobigenConfigFile, e);
+    if (!templatesConfigurations.containsKey(trigger.getId())) {
+      TemplatesConfiguration config = new TemplatesConfiguration(this.contextConfigurationPath, trigger, holder);
+      templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
+
+      templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
     }
-    return props;
+
+    return templatesConfigurations.get(trigger.getId()).get(templateFolder);
+  }
+
+  /**
+   * @param templateSetConfigurations Cached templateSet configurations
+   * @param templateSetFolder folder where to get the specific configuration from
+   * @return the {@link TemplateSetConfiguration} instance saved in the given map
+   */
+  public TemplateSetConfiguration retrieveTemplateSetConfiguration(
+      Map<Path, TemplateSetConfiguration> templateSetConfigurations, Path templateSetFolder) {
+
+    return templateSetConfigurations.get(templateSetFolder);
   }
 
 }
