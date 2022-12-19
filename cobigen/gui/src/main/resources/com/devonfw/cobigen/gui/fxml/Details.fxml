@@ -11,60 +11,72 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.DetailsController">
-   <children>
-      <SplitPane dividerPositions="0.17514534883720928" orientation="VERTICAL" prefHeight="461.0" prefWidth="432.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <items>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-               <children>
-                  <Label fx:id="titleLabel" text="Template Set Title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
-                     <font>
-                        <Font name="Consolas Bold" size="24.0" />
-                     </font>
-                  </Label>
-                  <AnchorPane layoutX="256.0" layoutY="13.0" prefHeight="25.0" prefWidth="100.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="10.0">
-                     <children>
-                        <Text fx:id="installStatusText" fill="#949494c7" layoutX="9.0" layoutY="17.0" strokeType="OUTSIDE" strokeWidth="0.0" text="UNINSTALLED" textAlignment="CENTER">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Text>
-                     </children>
-                  </AnchorPane>
-                  <Button fx:id="installButton" layoutX="367.0" layoutY="13.0" mnemonicParsing="false" styleClass="menuButtons" text="Install" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Button>
-                  <Text fx:id="descriptionText" layoutX="14.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="&quot;Short Description in one sentence&quot;" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="45.0" />
-                  <SplitMenuButton fx:id="versionMenuButton" layoutX="328.0" layoutY="44.0" mnemonicParsing="false" text="Version" textFill="WHITE" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="42.0">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="v1.2" />
-                        <MenuItem mnemonicParsing="false" text="v3" />
-                     </items>
-                  </SplitMenuButton>
-               </children>
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="459.0" prefWidth="450.0"
+  xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="com.devonfw.cobigen.gui.controllers.DetailsController">
+  <children>
+    <SplitPane dividerPositions="0.17514534883720928" orientation="VERTICAL" prefHeight="461.0"
+      prefWidth="432.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+      <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0"
+          SplitPane.resizableWithParent="false">
+          <children>
+            <Label fx:id="titleLabel" text="Template Set Title" AnchorPane.leftAnchor="10.0"
+              AnchorPane.topAnchor="10.0"/>
+            <AnchorPane layoutX="256.0" layoutY="13.0" prefHeight="25.0" prefWidth="100.0"
+              AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="10.0">
+              <children>
+                <Text fx:id="installStatusText" fill="#949494c7" layoutX="9.0" layoutY="17.0" strokeType="OUTSIDE"
+                  strokeWidth="0.0" text="UNINSTALLED" textAlignment="CENTER">
+                  <font>
+                    <Font size="12.0"/>
+                  </font>
+                </Text>
+              </children>
             </AnchorPane>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-               <children>
-                  <Label layoutX="4.0" layoutY="14.0" text="Template Set Structure" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-                  <Separator layoutY="28.0" prefHeight="0.0" prefWidth="453.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
-                     <children>
-                        <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="433.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <content>
-                            <AnchorPane fx:id="treeViewPane" minHeight="0.0" minWidth="0.0" prefHeight="326.0" prefWidth="417.0" />
-                          </content>
-                        </ScrollPane>
-                     </children>
-                  </AnchorPane>
-               </children>
+            <Button fx:id="installButton" layoutX="367.0" layoutY="13.0" mnemonicParsing="false"
+              styleClass="menuButtons" text="Install" textFill="WHITE" AnchorPane.rightAnchor="10.0"
+              AnchorPane.topAnchor="10.0">
+              <font>
+                <Font size="12.0"/>
+              </font>
+            </Button>
+            <Text fx:id="descriptionText" layoutX="14.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0"
+              text="&quot;Short Description in one sentence&quot;" AnchorPane.leftAnchor="10.0"
+              AnchorPane.topAnchor="45.0"/>
+            <SplitMenuButton fx:id="versionMenuButton" layoutX="328.0" layoutY="44.0"
+              mnemonicParsing="false" text="Version" textFill="WHITE" AnchorPane.rightAnchor="10.0"
+              AnchorPane.topAnchor="42.0">
+              <items>
+                <MenuItem mnemonicParsing="false" text="v1.2"/>
+                <MenuItem mnemonicParsing="false" text="v3"/>
+              </items>
+            </SplitMenuButton>
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+          <children>
+            <Label layoutX="4.0" layoutY="14.0" text="Template Set Structure" AnchorPane.leftAnchor="5.0"
+              AnchorPane.topAnchor="5.0">
+            </Label>
+            <Separator layoutY="28.0" prefHeight="0.0" prefWidth="453.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0"/>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0"
+              AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+              <children>
+                <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="433.0"
+                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                  AnchorPane.topAnchor="0.0">
+                  <content>
+                    <AnchorPane fx:id="treeViewPane" minHeight="0.0" minWidth="0.0" prefHeight="326.0"
+                      prefWidth="417.0"/>
+                  </content>
+                </ScrollPane>
+              </children>
             </AnchorPane>
-         </items>
-      </SplitPane>
-   </children>
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+  </children>
 </AnchorPane>

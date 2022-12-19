@@ -6,13 +6,12 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<GridPane styleClass="listCell" fx:id="gridPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="185.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane fx:id="gridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="listCell" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="465.33331298828125" minWidth="10.0" prefWidth="95.33333333333331" />
-    <ColumnConstraints hgrow="SOMETIMES" maxWidth="243.66662597656244" minWidth="10.0" prefWidth="38.0" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.99999999999994" minWidth="10.0" prefWidth="34.666625976562486" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.6666870117187" minWidth="10.0" prefWidth="29.3333740234375" />
+    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="100" minWidth="10.0" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -22,9 +21,13 @@
          <GridPane.margin>
             <Insets left="5.0" />
          </GridPane.margin></Label>
-      <Button fx:id="installButton" mnemonicParsing="false" text="X" GridPane.columnIndex="3">
+      <Button fx:id="installButton" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER">
          <GridPane.margin>
             <Insets right="5.0" />
-         </GridPane.margin></Button>
+         </GridPane.margin>
+         <graphic>
+            <FontIcon iconLiteral="mdi-settings" />
+         </graphic>
+      </Button>
    </children>
 </GridPane>

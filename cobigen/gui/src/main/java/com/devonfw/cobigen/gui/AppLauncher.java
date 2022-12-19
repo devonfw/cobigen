@@ -18,7 +18,6 @@ public class AppLauncher {
       }
     }.start();
     this.app = App.waitForApp();
-    this.app.printSomething();
   }
 
   public static void main(String[] args) {
@@ -31,7 +30,6 @@ public class AppLauncher {
       }
     }.start();
     App app = App.waitForApp();
-    app.printSomething();
   }
 
 }

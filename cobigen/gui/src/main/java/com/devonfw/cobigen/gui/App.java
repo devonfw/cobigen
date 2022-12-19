@@ -10,16 +10,35 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+/**
+ * TODO nneuhaus This type ...
+ *
+ */
 public class App extends Application {
 
+  /**
+   * latch for waiting for the app
+   */
   public static final CountDownLatch latch = new CountDownLatch(1);
 
+  /**
+   * The app itself
+   */
   public static App app = null;
 
-  public Stage window;
-
+  /**
+   * The scene to set in the window
+   */
   private static Scene scene;
 
+  /**
+   * The window to show in the app
+   */
+  public Stage window;
+
+  /**
+   * @return the app when it is ready
+   */
   public static App waitForApp() {
 
     try {
@@ -30,20 +49,23 @@ public class App extends Application {
     return app;
   }
 
+  /**
+   * Sets the given app as the general app
+   *
+   * @param app0 gets set as the app
+   */
   public static void setApp(App app0) {
 
     app = app0;
     latch.countDown();
   }
 
+  /**
+   * The constructor.
+   */
   public App() {
 
     setApp(this);
-  }
-
-  public void printSomething() {
-
-    System.out.println("You called a method on the application");
   }
 
   @Override
@@ -58,6 +80,7 @@ public class App extends Application {
     Image image = new Image(App.class.getResource("icons/devon-icon.jpg").toExternalForm());
     this.window.setTitle("Template Set Manager");
     this.window.getIcons().add(image);
+
     this.window.setScene(App.scene);
     this.window.showAndWait();
   }

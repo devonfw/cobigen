@@ -1,124 +1,75 @@
-
-/*THIS IS ONLY A TEST FILE*/ 
-
-
-/* makes button and filter option white and borderless*/
 .root {
-  -fx-body-color : black;
-  -fx-outer-border : black;
-
-}
-.root * {
-    -fx-font: 11px Arial;
+    -fx-accent: #1e74c6;
+    -fx-body-color : white;
+    -fx-outer-border : black;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
-    -fx-base: white;
+    -fx-base: black;
     -fx-accent: #0070AD;
+    -fx-control-inner-background: derive(-fx-base, 35.0%);
+    -fx-control-inner-background-alt: -fx-control-inner-background ;
+}
+
+/* Text */
+Text {
+  -fx-font: 12px Ubuntu;
+  -fx-fill: white;
+  -fx-font-weight: 200;
+  -fx-font-smoothing-type: lcd;
+}
+
+.header {
+ -fx-font-weight: 400;
+ -fx-font-size: 16.0px;
+}
+
+.subheader {
+ -fx-font-weight: 300;
+ -fx-font-size: 14.0px;
+}
+
+/* Components */
+.label{
+    -fx-text-fill: lightgray;
+}
+
+.text-field {
+    -fx-prompt-text-fill: gray;
+}
+
+.button{
+    -fx-focus-traversable: false;
+}
+
+.button:default {
+    -fx-base: -fx-accent ;
+}
+
+.button:hover{
+    -fx-text-fill: white;
+}
+
+.separator *.line {
+    -fx-background-color: #3C3C3C;
+    -fx-border-style: solid;
+    -fx-border-width: 1.0px;
 }
 
 .scroll-bar {
-  -fx-background-color: white;
-  -fx-block-increment: 1;
+  -fx-background-color: derive(-fx-base,45.0%);
+  -fx-block-increment: 1.0;
 }
 
-/* sets the color when cursor hovers over button*/
-color-picker:hover,
-.date-picker:hover > .arrow-button,
-.combo-box:hover,.choice-box:hover,
-.number-button:hover,.left-arrow-button:hover,.right-arrow-button:hover,
-.button:hover,.menu-button:hover,.toggle-button:hover,
-.font-menu-button:hover,
-.split-menu-button > .label:hover, .split-menu-button > .arrow-button:hover {
-  -fx-background-color: #ececec;
- 
-}
-
- /*pressed selected*/
-.color-picker:pressed,.color-picker:selected,
-.number-button:pressed,.number-button:selected,
-.date-picker:pressed > .arrow-button,
-.combo-box:pressed > .arrow-button,.combo-box:selected > .arrow-button,
-.choice-box:pressed > .arrow-button,.choice-box:selected > .arrow-button,
-.font-menu-button:pressed,.font-menu-button:selected,
-.left-arrow-button:pressed,.left-arrow-button:selected,
-.right-arrow-button:pressed,.right-arrow-button:selected,
-.button:pressed, .button:selected,.menu-button:pressed,.menu-button:selected
-,.toggle-button:pressed,.toggle-button:selected,
-.split-menu-button:pressed > .label, .split-menu-button > .arrow-button:pressed {
-  -fx-background-color: #D3D3D3
-  }
- 
- #menuBarPane{
- -fx-background-color: white;
- }
- 
- #templateSetsLabel{
- -fx-background-color: transparent;
- 
- }
- #headersText{
- -fx-font-size: 20px;
- }
- 
- #homeButtonIcon{
-  -fx-scale-x: 0.1;
-  -fx-scale-y: 0.1;
- }
- 
- .menuButtons{
- -fx-background-color: #0070AD
- }
- .subHeader{
- -fx-font-size: 16px
- }
- 
- /* Items in the search panel*/
- .listCell{
-
- }
-.list-cell:filled:selected:focused, .list-cell:filled:selected {
-    -fx-background-color: #0070AD;
-    -fx-text-fill: white;
-}
-
-.list-cell:even { /* <=== changed to even */
-    -fx-background-color: white;
-}
-
-.list-cell:filled:hover {
-    -fx-background-color: #12B3DB;
-    -fx-text-fill: white;
-}
-
-list-view {
-    -fx-background-color: white;
-}
-
+.list-cell:even,
 .list-cell:odd {
--fx-background-color: white;
-
+    -fx-control-inner-background: derive(-fx-base, 15.0%);
 }
 
-.split-menu-button {
-    -fx-background-color: #0070AD, #0070AD;
+.list-cell:empty {
+    -fx-background-color: transparent;
+}
 
-}
-.split-menu-button > .label {
-    -fx-text-fill: white;
-    -fx-background-color: #0070AD, #0070AD;
-}
-.split-menu-button > .arrow-button {
-    -fx-background-color: #0070AD, #0070AD;
-
-}
-.split-menu-button:hover {
-    -fx-background-color: #0070AD;
-}
-.split-menu-button:hover > .label {
-    -fx-background-color: #0070AD, #0070AD, transparent, #0070AD;
-
-}
-.split-menu-button:hover > .arrow-button {
-    -fx-background-color: #ececec,  #ececec,  #ececec,  #ececec;
-
+.list-cell {
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color:transparent;
 }
