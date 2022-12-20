@@ -34,9 +34,15 @@ public class ConfigurationHolder {
   private ContextConfiguration contextConfiguration;
 
   /** Cached templateSet configuration */
-  private Map<Path, TemplateSetConfiguration> templateSetConfigurations = Maps.newHashMap();
+  private TemplateSetConfiguration templateSetConfiguration;
 
-  private Path templateSetConfigurationPath;
+  /**
+   * @return templateSetConfiguration
+   */
+  public TemplateSetConfiguration getTemplateSetConfiguration() {
+
+    return this.templateSetConfiguration;
+  }
 
   /** Root path of the configuration */
   private Path configurationPath;
@@ -119,19 +125,22 @@ public class ConfigurationHolder {
   public ContextConfiguration readContextConfiguration() {
 
     if (this.contextConfiguration == null) {
-      this.contextConfiguration = new ContextConfiguration(this.configurationPath, isTemplateSetConfiguration());
+      if (isTemplateSetConfiguration()) {
+        if (this.templateSetConfiguration == null) {
+          this.templateSetConfiguration = new TemplateSetConfiguration(this.configurationPath);
+
+        }
+        this.contextConfiguration = new ContextConfiguration(
+            this.templateSetConfiguration.getTemplateSetConfigurationReader().getContextConfiguration(),
+            this.configurationPath, this);
+
+      } else {
+
+        this.contextConfiguration = new ContextConfiguration(this.configurationPath, isTemplateSetConfiguration());
+      }
     }
+
     return this.contextConfiguration;
-  }
-
-  /**
-   * Reads the {@link TemplateSetConfiguration} from cache with the cached path.
-   *
-   * @return the [@link TemplateSetConfiguration}
-   */
-  public TemplateSetConfiguration readTemplateSetConfiguration() {
-
-    return retrieveTemplateSetConfiguration(this.templateSetConfigurations, this.templateSetConfigurationPath);
   }
 
   /**

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +50,19 @@ public class TemplateSetConfiguration {
   /** The reader to read the template-set.xml files */
   private TemplateSetConfigurationReader templateSetConfigurationReader;
 
+  /**
+   * The {@link TemplatesConfigurationReader} initially parsed by the template-set.xml (required to access template
+   * specific functionalities)
+   */
   private TemplatesConfigurationReader templatesConfigurationReader;
 
+  /**
+   * The {@link ContextConfigurationReader} initially parsed by the template-set.xml (required to access context.xml
+   * specific functionalities
+   */
   private ContextConfigurationReader contextConfigurationReader;
 
   /** Paths of the template set configuration files */
-  // TODO: Bitte private machen
   private List<Path> templateSetFiles = new ArrayList<>();
 
   /** Root of the configuration */
@@ -65,36 +71,22 @@ public class TemplateSetConfiguration {
   private ConfigurationHolder configurationHolder;
 
   /**
-   * @return templateSetConfigurationReader
+   * Map of the root template folders distinguished by their trigger ID
    */
-  public TemplateSetConfigurationReader getTemplateSetConfigurationReader() {
-
-    return this.templateSetConfigurationReader;
-  }
+  private Map<String, Path> rootTemplateFolders;
 
   /**
-   * @param configRoot Root of the configuration
-   * @param configurationHolder TODO
+   * The constructor.
+   *
+   * @param configurationPath CobiGen configuration root path
    */
-  public TemplateSetConfiguration(Path configRoot, ConfigurationHolder configurationHolder) {
+  public TemplateSetConfiguration(Path configurationPath) {
 
     this.triggers = Maps.newHashMap();
     this.templates = Maps.newHashMap();
-    this.configurationHolder = configurationHolder;
-    readConfiguration(configRoot);
-
-  }
-
-  /**
-   * The constructor. loads properties from a given source
-   *
-   * @param configRoot Root of the configuration
-   * @param properties the configuration properties
-   */
-  public TemplateSetConfiguration(ConfigurationProperties properties, Path configRoot) {
-
-    this(configRoot, null);
-    setConfigurationProperties(properties);
+    this.rootTemplateFolders = Maps.newHashMap();
+    this.configRoot = configurationPath;
+    readConfiguration(configurationPath);
   }
 
   /**
@@ -106,31 +98,51 @@ public class TemplateSetConfiguration {
   public void readConfiguration(Path configurationPath) throws InvalidConfigurationException {
 
     if (this.templateSetConfigurationReader == null) {
-      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath, this,
-          this.configurationHolder);
+      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath);
     }
 
-    TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
+    List<Path> templateSetFiles = this.templateSetConfigurationReader.getTemplateSetConfigurationPaths();
 
     this.increments = new HashMap<>();
-    for (Path templateSetFile : this.templateSetFiles) {
+    for (Path templateSetFile : templateSetFiles) {
+      // TODO: Fix this WIP block
       // this.templateSetConfigurationReader.templateSetFile = templateSetFile;
       this.templateSetConfigurationReader.readConfiguration(templateSetFile);
+      TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
       TemplatesConfigurationReader templatesReader = this.templateSetConfigurationReader
           .getTemplatesConfigurationReader();
       ContextConfigurationReader contextReader = this.templateSetConfigurationReader.getContextConfigurationReader();
       Map<String, Trigger> trigger = contextReader.loadTriggers();
+      this.rootTemplateFolders.put(trigger.get(trigger.keySet().toArray()[0]).getId(), templateFolder.getPath());
       this.configRoot = configurationPath;
       this.triggers.putAll(trigger);
       // this.templates.putAll(getTemplates());
-      this.templates.putAll(templatesReader.loadTemplates(trigger.get(trigger.keySet().toArray()[0])));
-
+      Map<String, Template> templates = templatesReader.loadTemplates(trigger.get(trigger.keySet().toArray()[0]));
+      this.templates.putAll(templates);
+      this.increments.putAll(this.templateSetConfigurationReader.getTemplatesConfigurationReader()
+          .loadIncrements(templates, trigger.get(trigger.keySet().toArray()[0])));
     }
     // For every trigger put all increments depended on that trigger into the local increments hash map
-    for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
-      this.increments.putAll(this.templateSetConfigurationReader.getTemplatesConfigurationReader()
-          .loadIncrements(this.templates, trigger.getValue()));
-    }
+    // for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
+    // this.increments.putAll(this.templateSetConfigurationReader.getTemplatesConfigurationReader()
+    // .loadIncrements(this.templates, trigger.getValue()));
+    // }
+  }
+
+  /**
+   * @return templateSetConfigurationReader
+   */
+  public TemplateSetConfigurationReader getTemplateSetConfigurationReader() {
+
+    return this.templateSetConfigurationReader;
+  }
+
+  /**
+   * @return rootTemplateFolders
+   */
+  public Map<String, Path> getRootTemplateFolders() {
+
+    return this.rootTemplateFolders;
   }
 
   /**
@@ -161,6 +173,11 @@ public class TemplateSetConfiguration {
     return this.templateSetFiles;
   }
 
+  /**
+   * Adds template set files to the list of template sets
+   *
+   * @param templateSets List of template sets
+   */
   public void addTemplateSetFiles(List<Path> templateSets) {
 
     this.templateSetFiles.addAll(templateSets);
@@ -206,10 +223,6 @@ public class TemplateSetConfiguration {
   public void setConfigurationProperties(ConfigurationProperties configurationProperties) {
 
     this.configurationProperties = configurationProperties;
-  }
-
-  public void addTemplateSetConfiguration(TemplateSetConfiguration tsc) {
-
   }
 
 }

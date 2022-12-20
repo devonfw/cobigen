@@ -1,13 +1,17 @@
 package com.devonfw.cobigen.impl.config.reader;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
@@ -21,8 +25,8 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.TemplateFolder;
@@ -51,14 +55,11 @@ public class TemplateSetConfigurationReader {
   /** Root of the configuration */
   private Path configRoot;
 
-  /** Map with the paths of the template set location for a trigger */
-  private Map<String, Path> triggerTemplateSetLocations = new HashMap<>();
-
-  /** JAXB root node of the configuration */
+  /** The static representation of the TemplateSetConfiguration */
   private com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration templateSetConfiguration;
 
-  /** XML Node 'template-set' of the template-set.xml files */
-  protected TemplateSetConfiguration templateSetConfigurationDecorator;
+  /** List with the paths of the configuration locations for the template-set.xml files */
+  private Map<Path, Path> configLocations = new HashMap<>();
 
   /**
    * The {@link TemplatesConfigurationReader}
@@ -66,7 +67,7 @@ public class TemplateSetConfigurationReader {
   protected TemplatesConfigurationReader templatesConfigurationReader;
 
   /**
-   *
+   * The {@link ConfigurationHolder}
    */
   protected ConfigurationHolder configurationHolder;
 
@@ -120,6 +121,59 @@ public class TemplateSetConfigurationReader {
   /** The top-level folder where the templates are located. */
   private TemplateFolder rootTemplateFolder;
 
+  /** The list of template set configuration paths */
+  private List<Path> templateSetConfigurationPaths;
+
+  // TODO: Use dependency injection here instead of the new operator
+  private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
+
+  /**
+   * The constructor.
+   *
+   * @param configRoot Path of the configuration root directory
+   */
+  public TemplateSetConfigurationReader(Path configRoot) {
+
+    if (configRoot == null) {
+      throw new IllegalArgumentException("Configuration path cannot be null.");
+    }
+
+    this.templateSetConfigurationPaths = new ArrayList<>();
+
+    Path templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    Path templateSetsAdapted = configRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+
+    if (!Files.exists(templateSetsDownloaded) && !Files.exists(templateSetsAdapted)) {
+      throw new InvalidConfigurationException(configRoot,
+          "Could not find any template-set configuration file in the given folder.");
+    } else {
+      if (Files.exists(templateSetsAdapted)) {
+        this.templateSetConfigurationPaths
+            .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesAdapted(templateSetsAdapted));
+      }
+
+      if (Files.exists(templateSetsDownloaded)) {
+        this.templateSetConfigurationPaths
+            .addAll(this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
+      }
+
+      if (this.templateSetConfigurationPaths.isEmpty()) {
+        throw new InvalidConfigurationException(configRoot,
+            "Could not find any template-set configuration file in the given folder.");
+      }
+    }
+
+    this.configRoot = configRoot;
+  }
+
+  /**
+   * @return templateSetConfigurationPaths
+   */
+  public List<Path> getTemplateSetConfigurationPaths() {
+
+    return this.templateSetConfigurationPaths;
+  }
+
   /**
    * @return rootTemplateFolder
    */
@@ -128,52 +182,77 @@ public class TemplateSetConfigurationReader {
     return this.rootTemplateFolder;
   }
 
-  // TODO: Use dependency injection here instead of the new operator
-  private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
+  /**
+   * Search for configuration files in the sub folder for adapted templates
+   *
+   * @param configurationRoot root directory of the configuration template-sets/adapted
+   * @return List of Paths to the adapted templateSetFiles
+   */
+  protected List<Path> loadTemplateSetFilesAdapted(Path configurationRoot) {
+
+    // We need to empty this list to prevent duplicates from being added
+    this.templateSetConfigurationPaths.clear();
+    List<Path> templateSetDirectories = new ArrayList<>();
+
+    try (Stream<Path> files = Files.list(configurationRoot)) {
+      files.forEach(path -> {
+        if (Files.isDirectory(path)) {
+          templateSetDirectories.add(path);
+        }
+      });
+    } catch (IOException e) {
+      throw new InvalidConfigurationException(configurationRoot, "Could not read configuration root directory.", e);
+    }
+
+    for (Path templateDirectory : templateSetDirectories) {
+      Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+          .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+
+      addConfigRoot(templateSetFilePath, templateDirectory, this.templateSetConfigurationPaths);
+    }
+
+    return this.templateSetConfigurationPaths;
+  }
 
   /**
-   * The constructor.
+   * Adds the path of a template-set.xml file to the list of all configuration files. Also adds the path of the
+   * template-set.xml file and its root directory to the configRoots map
    *
-   * @param configRoot Root of the configuration
-   * @param templateSetConfiguration Wrapped configuration that's being read
-   * @param configurationHolder TODO
-   * @throws InvalidConfigurationException if the configuration is not valid
+   * @param templateSetFilePath the {@link Path} to the template-set.xml file
+   * @param configRootPath the {@link Path} containing the configuration root directory for a template-set.xml
+   * @param templateSetPaths a list containing all paths to template-set.xml files
+   * @throws FileNotFoundException
    */
-  public TemplateSetConfigurationReader(Path configRoot, TemplateSetConfiguration templateSetConfiguration,
-      ConfigurationHolder configurationHolder) throws InvalidConfigurationException {
+  public void addConfigRoot(Path templateSetFilePath, Path configRootPath, List<Path> templateSetPaths) {
 
-    this.configurationHolder = configurationHolder;
-
-    if (configRoot == null)
-      throw new IllegalArgumentException("Configuraion path cannot be null.");
-
-    Path templateSetsDownloaded;
-    if (configRoot.endsWith(ConfigurationConstants.DOWNLOADED_FOLDER)) {
-      templateSetsDownloaded = configRoot;
-    } else {
-      templateSetsDownloaded = configRoot.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    if (Files.exists(templateSetFilePath)) {
+      templateSetPaths.add(templateSetFilePath);
+      this.configLocations.put(templateSetFilePath, configRootPath);
     }
-    Path templateSetsAdapted = configRoot.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+  }
 
-    if (!Files.exists(templateSetsDownloaded) && !Files.exists(templateSetsAdapted)) {
-      throw new InvalidConfigurationException(configRoot,
-          "Could not find a folder in which to search for the template-set configuration file.");
-    } else {
-      if (Files.exists(templateSetsAdapted)) {
-        templateSetConfiguration
-            .addTemplateSetFiles(this.templateSetConfigurationManager.loadTemplateSetFilesAdapted(templateSetsAdapted));
-        this.configRoot = templateSetsAdapted;
+  /**
+   * Search for configuration files in the subfolder for downloaded template jars
+   *
+   * @param configurationRoot root directory of the configuration template-sets/downloaded
+   * @return List of Paths to the downloaded templateSetFiles
+   */
+  protected List<Path> loadTemplateSetFilesDownloaded(Path configurationRoot) {
 
-      }
+    // We need to empty this list to prevent duplicates from being added
+    this.templateSetConfigurationPaths.clear();
+    List<Path> templateJars = TemplatesJarUtil.getJarFiles(configurationRoot);
+    if (templateJars != null) {
+      for (Path jarPath : templateJars) {
+        Path configurationPath = FileSystemUtil.createFileSystemDependentPath(jarPath.toUri());
+        Path templateSetFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
-      // if there are no adapted templates, there have to be downloaded templates
-      else {
-        templateSetConfiguration.addTemplateSetFiles(
-            this.templateSetConfigurationManager.loadTemplateSetFilesDownloaded(templateSetsDownloaded));
-        this.configRoot = templateSetsDownloaded.resolve("template-set.jar");
+        addConfigRoot(templateSetFilePath, jarPath, this.templateSetConfigurationPaths);
       }
     }
 
+    return this.templateSetConfigurationPaths;
   }
 
   /**
@@ -253,8 +332,10 @@ public class TemplateSetConfigurationReader {
         this.contextConfiguration = rootNode.getContextConfiguration();
         this.templatesConfigurationReader = new TemplatesConfigurationReader(rootNode.getTemplatesConfiguration(),
             this.rootTemplateFolder, null, this.templateSetFile);
+        // if (this.contextConfigurationReader == null) {
         this.contextConfigurationReader = new ContextConfigurationReader(rootNode.getContextConfiguration(),
             this.configLocation);
+        // }
 
       }
     } catch (JAXBException e) {
@@ -282,6 +363,14 @@ public class TemplateSetConfigurationReader {
       Thread.currentThread().setContextClassLoader(orig);
     }
 
+  }
+
+  /**
+   * @return templateSetConfigurations
+   */
+  public com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration getTemplateSetConfiguration() {
+
+    return this.templateSetConfiguration;
   }
 
   /**

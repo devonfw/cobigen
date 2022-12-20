@@ -63,7 +63,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     // when
     assertThatThrownBy(() -> {
 
-      new TemplateSetConfiguration(TEST_FILE_ROOT_PATH.resolve("faulty"), null);
+      new TemplateSetConfiguration(TEST_FILE_ROOT_PATH.resolve("faulty"));
 
     }).isInstanceOf(InvalidConfigurationException.class)
         .hasMessage(TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath() + ":\n"
@@ -83,7 +83,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
 
     assertThatThrownBy(() -> {
 
-      new TemplateSetConfiguration(INVALID_CONFIGURATION_PATH, null);
+      new TemplateSetConfiguration(INVALID_CONFIGURATION_PATH);
 
     }).isInstanceOf(InvalidConfigurationException.class).hasMessage(INVALID_CONFIGURATION_PATH.toAbsolutePath() + ":\n"
         + "Could not find any template-set configuration file in the given folder.");
@@ -104,7 +104,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
       TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
-          folder.toPath().resolve("template-sets"), null);
+          folder.toPath().resolve("template-sets"));
       // TODO add check for proper exception message
     });
   }
@@ -124,7 +124,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
 
       TemplateSetConfiguration testDecorator;
-      testDecorator = new TemplateSetConfiguration(folder.toPath().resolve("template-sets"), null);
+      testDecorator = new TemplateSetConfiguration(folder.toPath().resolve("template-sets"));
       assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(1);
     });
   }
@@ -145,9 +145,9 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
 
       TemplateSetConfiguration testDecoratorAdapted = new TemplateSetConfiguration(
-          folder.toPath().resolve("template-sets"), null);
+          folder.toPath().resolve("template-sets"));
       TemplateSetConfiguration testDecoratorDownloaded = new TemplateSetConfiguration(
-          folder.toPath().resolve("template-sets").resolve("downloaded"), null);
+          folder.toPath().resolve("template-sets").resolve("downloaded"));
 
       assertThat(
           testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())
@@ -170,7 +170,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     // ConfigurationHolder configurationHolder = new ConfigurationHolder(templateSetPathAdapted.toUri());
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
       TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
-          folder.toPath().resolve("template-sets"), null);
+          folder.toPath().resolve("template-sets"));
 
       Trigger trigger = new Trigger("", "asdf", "", Charset.forName("UTF-8"), new LinkedList<Matcher>(),
           new LinkedList<ContainerMatcher>());

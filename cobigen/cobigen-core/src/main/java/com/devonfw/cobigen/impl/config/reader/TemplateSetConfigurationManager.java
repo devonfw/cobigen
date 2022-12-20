@@ -22,14 +22,18 @@ import com.devonfw.cobigen.impl.util.FileSystemUtil;
 public class TemplateSetConfigurationManager {
 
   /** List with the paths of the configuration locations for the template-set.xml files */
-  private Map<Path, Path> configLocations = new HashMap<>();
+  private Map<Path, Path> configLocations;
 
-  List<Path> templateSetPaths = new ArrayList<>();
+  /** List of template set paths TODO: check if this is still needed */
+  List<Path> templateSetPaths;
 
   /**
    * The constructor.
    */
   public TemplateSetConfigurationManager() {
+
+    this.configLocations = new HashMap<>();
+    this.templateSetPaths = new ArrayList<>();
 
   }
 

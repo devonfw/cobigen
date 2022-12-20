@@ -43,6 +43,11 @@ public class ContextConfiguration {
   private TemplateSetConfiguration templateSetConfiguration;
 
   /**
+   * The {@link ConfigurationHolder}
+   */
+  private ConfigurationHolder configurationHolder;
+
+  /**
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
    *
    * @param configRoot root path for the configuration of CobiGen
@@ -52,7 +57,7 @@ public class ContextConfiguration {
   public ContextConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
 
     this.configurationPath = configRoot;
-    readConfiguration(configRoot, isTemplateSet);
+    readConfiguration(configRoot);
   }
 
   /**
@@ -68,39 +73,36 @@ public class ContextConfiguration {
   }
 
   /**
-   * Reads the configuration from the given path and switches between template set and monolithic context configuration
+   * Creates a new {@link ContextConfiguration} with the contents initially loaded from the template-set.xml
    *
-   * @param configRoot CobiGen configuration root path
-   * @param isTemplateSet check if the configuration is a {@link TemplateSetConfiguration}
-   * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
+   * @param contextConfiguration given by template-set reader
+   * @param configRoot root path for the configuration of CobiGen
+   * @param configurationHolder the {@link ConfigurationHolder} to initialize
    */
-  private void readConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
+  public ContextConfiguration(com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration,
+      Path configRoot, ConfigurationHolder configurationHolder) {
 
-    if (isTemplateSet) {
-      if (this.templateSetConfiguration == null) {
-        this.templateSetConfiguration = new TemplateSetConfiguration(configRoot, null);
-      }
-
-      this.configurationPath = this.templateSetConfiguration.getTemplateSetConfigurationReader()
-          .getContextConfigurationReader().getContextRoot();
-      this.triggers = this.templateSetConfiguration.getTriggers();
-      // this.triggers =
-      // this.templateSetConfiguration.getTemplateSetConfigurationReader().getContextConfigurationReader()
-      // .loadTriggers();
-    } else {
-      if (this.contextConfigurationReader == null) {
-        this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
-      }
-
-      this.configurationPath = this.contextConfigurationReader.getContextRoot();
-      this.triggers = this.contextConfigurationReader.loadTriggers();
-    }
-
+    this.configurationHolder = configurationHolder;
+    this.configurationPath = configRoot;
+    this.contextConfigurationReader = new ContextConfigurationReader(contextConfiguration, configRoot);
+    this.triggers = this.contextConfigurationReader.loadTriggers();
   }
 
-  private void readConfiguration(Path configRoot) {
+  /**
+   * Reads the configuration from the given path
+   *
+   * @param configRoot CobiGen configuration root path
+   * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
+   */
+  private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
-    readConfiguration(configRoot, false);
+    if (this.contextConfigurationReader == null) {
+      this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
+    }
+
+    this.configurationPath = this.contextConfigurationReader.getContextRoot();
+    this.triggers = this.contextConfigurationReader.loadTriggers();
+
   }
 
   /**
@@ -162,8 +164,10 @@ public class ContextConfiguration {
    */
   public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
 
-    if (this.templateSetConfiguration != null) {
-      return this.templateSetConfiguration.getTemplateSetConfigurationReader().getRootTemplateFolder().getPath();
+    if (this.configurationHolder != null) {
+      Map<String, Path> rootTemplateFolders = this.configurationHolder.getTemplateSetConfiguration()
+          .getRootTemplateFolders();
+      return rootTemplateFolders.get(triggerId);
     }
 
     return this.configurationPath;

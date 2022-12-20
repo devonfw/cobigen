@@ -51,7 +51,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   /** Map with XML Nodes 'context' of the context.xml files */
   protected Map<Path, ContextConfiguration> contextConfigurations;
 
-  /** Map with the paths of the config location for a trigger */
+  /** Map with the paths of the configuration location for a trigger */
   private Map<String, Path> triggerConfigLocations = new HashMap<>();
 
   /**
@@ -92,28 +92,31 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
     this.contextRoot = configRoot;
 
     readConfiguration();
-    loadConfig();
   }
 
   /**
-   * The constructor.
+   * Creates a new instance of the {@link ContextConfigurationReader} which already parsed the template-set.xml file
    *
-   * @param contextConfiguration
-   * @param contextRoot TODO
-   * @throws InvalidConfigurationException
+   * @param contextConfiguration the {@link ContextConfiguration} provided by the template-set
+   * @param contextRoot root directory of the configuration
+   * @throws InvalidConfigurationException if the configuration is not valid against its xsd specification
    */
   public ContextConfigurationReader(ContextConfiguration contextConfiguration, Path contextRoot)
       throws InvalidConfigurationException {
 
-    this.contextConfigurations = new HashMap<>();
+    if (this.contextConfigurations == null) {
+      this.contextConfigurations = new HashMap<>();
+    }
+
     this.contextRoot = contextRoot;
     this.contextConfigurations.put(contextRoot, contextConfiguration);
-    loadConfig();
+    // TODO: check if this is still needed
+    // loadConfig();
 
   }
 
   /**
-   *
+   * TODO: check if this is still needed
    */
   private void loadConfig() {
 
@@ -122,13 +125,11 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
         this.triggerConfigLocations.put(t.getId(), p);
       }
     }
-
   }
 
   /**
    * Reads the context configuration.
    */
-  @Override
   protected void readConfiguration() {
 
     // workaround to make JAXB work in OSGi context by
@@ -225,7 +226,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   }
 
   /**
-   * search for configuration Files in the subfolders of configRoot
+   * Searches for configuration Files in the sub folders of configRoot
    *
    * @param configRoot root directory of the configuration
    * @throws InvalidConfigurationException if the configuration is not valid against its xsd specification
@@ -268,29 +269,20 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
+        // TODO: check if 6.0 can be replaced with 3.0
         // templateFolder property is optional in schema version 3.0. If not set take the path of the context.xml file
         String templateFolder = t.getTemplateFolder();
 
+        // TODO: check if this is still needed
         if (templateFolder.isEmpty() || templateFolder.equals("/")) {
-          // templateFolder = contextFile.getParent().getFileName().toString();
           templateFolder = "";
         }
+        // TODO: check if template folder is still needed for template-sets
         triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder,
             Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
       }
     }
     return triggers;
-  }
-
-  /**
-   * Get the configuration location for a given trigger. Either a jar file or a folder
-   *
-   * @param triggerId the trigger id to search the config root for
-   * @return the {@link Path} of the config location for a trigger
-   */
-  public Path getConfigLocationForTrigger(String triggerId) {
-
-    return this.triggerConfigLocations.get(triggerId);
   }
 
 }

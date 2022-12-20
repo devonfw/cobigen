@@ -73,7 +73,7 @@ public class GenerationIT extends AbstractApiTest {
 
     CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "overrideMergeStrategy").toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
-    assertThat(templates).hasSize(1);
+    assertThat(templates).hasSize(2);
 
     GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
 
@@ -108,9 +108,11 @@ public class GenerationIT extends AbstractApiTest {
     // assertThat(increments).hasSize(2);
     // assertThat(triggersIds).hasSize(2);
 
-    GenerationReportTo report = cobigen.generate(
-        com.devonfw.cobigen.systemtest.testobjects.io.generator.logic.api.to.InputEto.class, increments.get(0),
-        Paths.get(folder.toURI()));
+    // GenerationReportTo report = cobigen.generate(
+    // com.devonfw.cobigen.systemtest.testobjects.io.generator.logic.api.to.InputEto.class, increments.get(0),
+    // Paths.get(folder.toURI()));
+
+    GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
 
     assertThat(report).isSuccessful();
     // assertThat(target).hasContent("overwritten");
