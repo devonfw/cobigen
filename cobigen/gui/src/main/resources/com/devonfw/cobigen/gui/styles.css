@@ -7,16 +7,52 @@
 
 }
 .root * {
-    -fx-font: 11px Ubuntu;
+    -fx-font: 11.0px Ubuntu;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
     -fx-base: white;
     -fx-accent: #0070AD;
+    -fx-control-inner-background: derive(-fx-base, 35.0%);
+    -fx-control-inner-background-alt: -fx-control-inner-background;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+   -fx-background-color: transparent;
+   -fx-padding: 0.0;
+}
+.split-pane:vertical > .split-pane-divider {
+   -fx-padding: 0.5;
 }
 
 .scroll-bar {
   -fx-background-color: white;
-  -fx-block-increment: 1;
+  -fx-block-increment: 1.0;
+}
+
+/* Text */
+Text {
+  -fx-font: 12.0px Ubuntu;
+  -fx-fill: black;
+  -fx-font-weight: 200;
+  -fx-font-smoothing-type: lcd;
+}
+.header {
+ -fx-font-size: 16.0px;
+ -fx-font-weight: 400;
+}
+.subheader {
+   -fx-font-weight: 300;
+ -fx-font-size: 14.0px;
+}
+
+.text-field {
+    -fx-background-color: -fx-text-box-border, -fx-background ;
+    -fx-background-insets: 0.0, 0.0 0.0 1.0 0.0 ;
+    -fx-background-radius: 0.0 ;
+    -fx-prompt-text-fill: gray;
+}
+.text-field:focused {
+    -fx-background-color: -fx-focus-color, -fx-background ;
 }
 
 /* sets the color when cursor hovers over button*/
@@ -54,9 +90,6 @@ color-picker:hover,
  -fx-background-color: transparent;
 
  }
- #headersText{
- -fx-font-size: 16px;
- }
 
  #homeButtonIcon{
   -fx-scale-x: 0.1;
@@ -66,14 +99,8 @@ color-picker:hover,
  .menuButtons{
  -fx-background-color: #0070AD
  }
- .subHeader{
- -fx-font-size: 16px
- }
 
  /* Items in the search panel*/
- .listCell{
-
- }
 .list-cell:filled:selected:focused, .list-cell:filled:selected {
     -fx-background-color: #0070AD;
     -fx-text-fill: white;
