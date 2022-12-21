@@ -75,17 +75,18 @@ public class ContextConfiguration {
   /**
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the template-set.xml
    *
-   * @param contextConfiguration given by template-set reader
+   * @param contextConfiguration provided by template-set reader
    * @param configRoot root path for the configuration of CobiGen
    * @param configurationHolder the {@link ConfigurationHolder} to initialize
+   * @param triggers the map of triggers
    */
   public ContextConfiguration(com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration,
-      Path configRoot, ConfigurationHolder configurationHolder) {
+      Path configRoot, ConfigurationHolder configurationHolder, Map<String, Trigger> triggers) {
 
     this.configurationHolder = configurationHolder;
     this.configurationPath = configRoot;
     this.contextConfigurationReader = new ContextConfigurationReader(contextConfiguration, configRoot);
-    this.triggers = this.contextConfigurationReader.loadTriggers();
+    this.triggers = triggers;
   }
 
   /**

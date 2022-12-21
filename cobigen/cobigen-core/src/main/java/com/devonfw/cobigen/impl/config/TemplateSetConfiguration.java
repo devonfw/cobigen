@@ -44,6 +44,14 @@ public class TemplateSetConfiguration {
   /** All available {@Link Increment} */
   private Map<String, Increment> increments;
 
+  /**
+   * @return increments
+   */
+  public Map<String, Increment> getIncrements() {
+
+    return this.increments;
+  }
+
   /** The automatically generated templateSetConfiguration this class wraps */
   private com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration templateSetConfiguration;
 

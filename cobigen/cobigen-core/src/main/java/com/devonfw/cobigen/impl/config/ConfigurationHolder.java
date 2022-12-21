@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.impl.config.entity.Increment;
+import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
@@ -113,7 +115,15 @@ public class ConfigurationHolder {
   public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
-    return retrieveTemplatesConfiguration(this.templatesConfigurations, templateFolder, trigger, this);
+    return retrieveTemplatesConfiguration(templateFolder, trigger);
+  }
+
+  /**
+   * @return templatesConfigurations
+   */
+  public Map<String, Map<Path, TemplatesConfiguration>> getTemplatesConfigurations() {
+
+    return this.templatesConfigurations;
   }
 
   /**
@@ -132,7 +142,7 @@ public class ConfigurationHolder {
         }
         this.contextConfiguration = new ContextConfiguration(
             this.templateSetConfiguration.getTemplateSetConfigurationReader().getContextConfiguration(),
-            this.configurationPath, this);
+            this.configurationPath, this, this.templateSetConfiguration.getTriggers());
 
       } else {
 
@@ -181,25 +191,31 @@ public class ConfigurationHolder {
   }
 
   /**
-   * @param templatesConfigurations Cached templates configurations. Trigger ID -> Configuration File URI ->
-   *        configuration instance
    * @param templateFolder path to the templates folder
    * @param trigger to get matcher declarations from
-   * @param holder holds the templatesConfigurations in the given list
    * @return the {@link TemplatesConfiguration} instance saved in the given map
    */
-  public TemplatesConfiguration retrieveTemplatesConfiguration(
-      Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations, Path templateFolder, Trigger trigger,
-      ConfigurationHolder holder) {
+  public TemplatesConfiguration retrieveTemplatesConfiguration(Path templateFolder, Trigger trigger) {
 
-    if (!templatesConfigurations.containsKey(trigger.getId())) {
-      TemplatesConfiguration config = new TemplatesConfiguration(this.configurationPath, trigger, holder);
-      templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
+    if (!this.templatesConfigurations.containsKey(trigger.getId())) {
+      TemplatesConfiguration config;
+      if (isTemplateSetConfiguration()) {
+        Map<String, Template> templates = getTemplateSetConfiguration().getTemplateSetConfigurationReader()
+            .getTemplatesConfigurationReader().loadTemplates(trigger);
+        Map<String, Increment> increments = getTemplateSetConfiguration().getIncrements();
+        String templateEngine = getTemplateSetConfiguration().getTemplateSetConfigurationReader()
+            .getTemplatesConfiguration().getTemplateEngine();
+        config = new TemplatesConfiguration(this.configurationPath, trigger, templates, increments, templateEngine);
+      } else {
+        config = new TemplatesConfiguration(this.configurationPath, trigger, this);
+      }
 
-      templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
+      this.templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
+
+      this.templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
     }
 
-    return templatesConfigurations.get(trigger.getId()).get(templateFolder);
+    return this.templatesConfigurations.get(trigger.getId()).get(templateFolder);
   }
 
   /**
