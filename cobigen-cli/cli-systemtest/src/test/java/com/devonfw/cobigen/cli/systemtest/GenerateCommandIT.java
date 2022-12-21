@@ -343,7 +343,13 @@ public class GenerateCommandIT extends AbstractCliTest {
     for (File f : cli.listFiles()) {
       if (f.getName().startsWith("pom-cp-")) {
         String dependenciesFromCache = FileUtils.readFileToString(f, Charset.defaultCharset());
-        String[] dependenciesFromCacheArray = dependenciesFromCache.split(";");
+        String osName = System.getProperty("os.name");
+        String[] dependenciesFromCacheArray;
+        if (osName.contains("Windows")) {
+          dependenciesFromCacheArray = dependenciesFromCache.split(";");
+        } else {
+          dependenciesFromCacheArray = dependenciesFromCache.split(":");
+        }
         for (int i = 0; i >= 0; i--) { // reverse
           if (dependenciesFromCacheArray[i].contains("javax.persistence")) {
             FileUtils.delete(new File(dependenciesFromCacheArray[i])); // delete a randomly picked dependency
