@@ -19,6 +19,7 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -43,6 +44,8 @@ public class TemplateSetConfiguration {
 
   /** All available {@Link Increment} */
   private Map<String, Increment> increments;
+
+  List<TemplatesConfiguration> templatesConfigurations;
 
   /**
    * @return increments
@@ -112,6 +115,7 @@ public class TemplateSetConfiguration {
     List<Path> templateSetFiles = this.templateSetConfigurationReader.getTemplateSetConfigurationPaths();
 
     this.increments = new HashMap<>();
+    this.templatesConfigurations = Lists.newLinkedList();
     for (Path templateSetFile : templateSetFiles) {
       // TODO: Fix this WIP block
       // this.templateSetConfigurationReader.templateSetFile = templateSetFile;
@@ -129,12 +133,25 @@ public class TemplateSetConfiguration {
       this.templates.putAll(templates);
       this.increments.putAll(this.templateSetConfigurationReader.getTemplatesConfigurationReader()
           .loadIncrements(templates, trigger.get(trigger.keySet().toArray()[0])));
+      String templateEngine = this.templateSetConfigurationReader.getTemplatesConfigurationReader().getTemplateEngine();
+
+      TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath,
+          trigger.get(trigger.keySet().toArray()[0]), templates, this.increments, templateEngine);
+      this.templatesConfigurations.add(templatesConfiguration);
     }
     // For every trigger put all increments depended on that trigger into the local increments hash map
     // for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
     // this.increments.putAll(this.templateSetConfigurationReader.getTemplatesConfigurationReader()
     // .loadIncrements(this.templates, trigger.getValue()));
     // }
+  }
+
+  /**
+   * @return templatesConfigurations
+   */
+  public List<TemplatesConfiguration> getTemplatesConfigurations() {
+
+    return this.templatesConfigurations;
   }
 
   /**

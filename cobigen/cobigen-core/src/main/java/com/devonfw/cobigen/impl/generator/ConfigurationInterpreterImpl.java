@@ -167,6 +167,13 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
 
     for (Trigger trigger : this.triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
+
+      // TemplatesConfiguration templatesConfiguration;
+      if (this.configurationHolder.isTemplateSetConfiguration()) {
+        return this.configurationHolder.getTemplateSetConfiguration().getTemplatesConfigurations();
+        // templatesConfiguration = this.configurationHolder.getTemplatesConfigurations().get(trigger.getId());
+      }
+
       TemplatesConfiguration templatesConfiguration = this.configurationHolder.readTemplatesConfiguration(trigger);
       if (templatesConfiguration != null) {
         if (!templateConfigurations.contains(templatesConfiguration)) {
