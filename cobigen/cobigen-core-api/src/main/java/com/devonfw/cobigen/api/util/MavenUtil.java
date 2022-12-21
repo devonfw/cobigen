@@ -41,9 +41,6 @@ public class MavenUtil {
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(MavenUtil.class);
 
-  // maven repository
-  private static Path MAVEN_LOCAL_REPOSITORY = null;
-
   /**
    * Executes a Maven class path build command which will download all the transitive dependencies needed for the CLI
    *
@@ -231,19 +228,12 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
-    if (MAVEN_LOCAL_REPOSITORY != null) {
-      if (!Files.exists(MAVEN_LOCAL_REPOSITORY)) {
-        LOG.debug("Maven local repository is outdated");
-      } else {
-        LOG.debug("Already determined {} as maven repository path.", MAVEN_LOCAL_REPOSITORY);
-        return MAVEN_LOCAL_REPOSITORY;
-      }
-    }
-    MAVEN_LOCAL_REPOSITORY = Paths
+    LOG.info("Determine maven repository path");
+    Path m2Repo = Paths
         .get(runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
             "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout")));
-    LOG.debug("Determined {} as maven repository path.", MAVEN_LOCAL_REPOSITORY);
-    return MAVEN_LOCAL_REPOSITORY;
+    LOG.debug("Determined {} as maven repository path.", determineMavenRepositoryPath());
+    return m2Repo;
   }
 
   /**
