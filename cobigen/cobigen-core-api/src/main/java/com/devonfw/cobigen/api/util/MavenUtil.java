@@ -27,9 +27,6 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.RestSearchResponseException;
-import com.devonfw.cobigen.api.util.to.SearchResponseFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
@@ -199,6 +196,19 @@ public class MavenUtil {
   }
 
   /**
+   * Returns maven's settings.xml as a string by using maven evaluate
+   *
+   * @return the maven's settings.xml as string
+   */
+  public static String determineMavenSettings() {
+
+    LOG.info("Determine content of maven's settings.xml");
+    String mavenSettings = runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(
+        SystemUtil.determineMvnPath().toString(), "help:evaluate", "-Dexpression=settings", "-DforceStdout"));
+    return mavenSettings;
+  }
+
+  /**
    * Execute any command in the given execution directory with the given arguments
    *
    * @param execDir the execution directory the command should run in
@@ -343,27 +353,4 @@ public class MavenUtil {
     LOG.debug("Project root could not be found.");
     return null;
   }
-
-  /**
-   * Retrieves a list of download URLs by groupId from the specified repository search REST API using authentication
-   * with bearer token
-   *
-   * @param baseUrl String of the repository server URL
-   * @param groupId the groupId to search for
-   * @param authToken bearer token to use for authentication
-   * @return List of artifact download URLS or null if an error occurred
-   */
-  public static List<URL> retrieveMavenArtifactsByGroupId(String baseUrl, String groupId, String authToken) {
-
-    try {
-
-      return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, groupId, authToken);
-    } catch (RestSearchResponseException | JsonProcessingException | MalformedURLException e) {
-      LOG.error("Unable to get artifacts from {} by groupId {}", baseUrl, groupId, e);
-      // TODO: Handle Eclipse, CLI and MavenPlugin here (f.e. with a new Exception)
-      return null;
-    }
-
-  }
-
 }

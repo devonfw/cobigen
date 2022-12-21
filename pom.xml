@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>master-parent</artifactId>
@@ -14,6 +14,7 @@
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
     <slf4j.version>1.7.30</slf4j.version>
+    <zeroturnaround.version>1.12</zeroturnaround.version>
     <skip.deployment>true</skip.deployment>
     <java.version>1.8</java.version>
     <tycho.version>1.6.0</tycho.version>
@@ -130,6 +131,11 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>30.1.1-jre</version>
+      </dependency>
+      <dependency>
+        <groupId>org.zeroturnaround</groupId>
+        <artifactId>zt-exec</artifactId>
+        <version>${zeroturnaround.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>

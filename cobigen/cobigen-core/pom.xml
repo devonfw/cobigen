@@ -57,12 +57,6 @@
       <version>1.3</version>
     </dependency>
 
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-util-core</artifactId>
-      <version>7.4.0</version>
-    </dependency>
-
     <!-- Needed for JDK 9+ -->
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
@@ -84,11 +78,18 @@
       <version>1.5.4</version>
     </dependency>
 
-	<dependency>
+    <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
       <version>3.8.5</version>
-	</dependency>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.m-m-m</groupId>
+      <artifactId>mmm-util-core</artifactId>
+      <version>7.4.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>
