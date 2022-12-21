@@ -228,11 +228,10 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
-    LOG.info("Determine maven repository path");
     Path m2Repo = Paths
         .get(runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
             "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout")));
-    LOG.debug("Determined {} as maven repository path.", determineMavenRepositoryPath());
+    LOG.debug("Determined {} as maven repository path.", m2Repo);
     return m2Repo;
   }
 
