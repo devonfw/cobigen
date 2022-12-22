@@ -26,7 +26,7 @@
             <Insets right="5.0" />
          </GridPane.margin>
          <graphic>
-            <FontIcon iconLiteral="mdi-settings" />
+            <FontIcon styleClass="icons" iconLiteral="mdi-settings" />
          </graphic>
       </Button>
    </children>

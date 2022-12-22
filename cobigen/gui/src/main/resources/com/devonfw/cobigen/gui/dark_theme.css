@@ -15,6 +15,7 @@
    -fx-padding: 0;
 }
 .split-pane:vertical > .split-pane-divider {
+
    -fx-padding: 0.5;
 }
 
@@ -51,8 +52,21 @@ Text {
 
 .button{
     -fx-focus-traversable: false;
+    -fx-background-color: -fx-control-inner-background, -fx-control-inner-background, -fx-control-inner-background;
 }
+#togglebutton{
+   -fx-background-color: transparent;
+}
+#filterMenuButton{
+  -fx-background-color: -fx-control-inner-background;
+}
+ .titleBarButtons{
+ -fx-background-color: transparent
+ }
 
+.icons{
+  -fx-icon-color: -fx-body-color;
+}
 .button:default {
     -fx-base: -fx-accent ;
 }
@@ -84,4 +98,8 @@ Text {
 .list-cell {
     -fx-border-color: transparent;
     -fx-table-cell-border-color:transparent;
+}
+
+#menuBarPane{
+  -fx-background-color: -fx-control-inner-background;
 }

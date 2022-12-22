@@ -8,10 +8,15 @@ import com.devonfw.cobigen.gui.controllers.DetailsController;
 import com.devonfw.cobigen.gui.controllers.HomeController;
 import com.devonfw.cobigen.gui.controllers.MenuController;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
  * Controller for the Template Set Management GUI
@@ -44,6 +49,22 @@ public class Controller implements Initializable {
 
   @FXML
   private AnchorPane detailsPane;
+
+  @FXML
+  private Pane topPane;
+
+  @FXML
+  private Button closeButton;
+
+  @FXML
+  private Button minButton;
+
+  @FXML
+  private Button minMaxButton;
+
+  private double xOffset = 0;
+
+  private double yOffset = 0;
 
   /**
    * Initial View
@@ -86,5 +107,65 @@ public class Controller implements Initializable {
       this.detailsController.showName(selectedItem.getName());
     }
 
+  }
+
+  /**
+   * @param event: click on the x Button
+   */
+  @FXML
+  protected void handleCloseAction(ActionEvent event) {
+
+    // get the current stage
+    Stage stage = (Stage) this.closeButton.getScene().getWindow();
+    // close the window
+    stage.close();
+  }
+
+  /**
+   * @param event : click on the Button to switch window view
+   */
+  @FXML
+  protected void handleMinMaxAction(ActionEvent event) {
+
+    // get the current stage
+    Stage stage = (Stage) this.minMaxButton.getScene().getWindow();
+    // if window is full screen, make it smaller
+    // if it is a small window, make it full screen
+    if (stage.isMaximized()) {
+      stage.setMaximized(false);
+    } else {
+      stage.setMaximized(true);
+    }
+
+  }
+
+  /**
+   * @param event : click on the minimize Button
+   */
+  @FXML
+  protected void handleMinAction(ActionEvent event) {
+
+    // this minimizes the window, can be reopened by clicking in the icon in the task bar
+    // TODO: fix animation if possible?
+    Stage stage = (Stage) this.minButton.getScene().getWindow();
+    stage.setIconified(true);
+
+  }
+
+  @FXML
+  protected void handleClickAction(MouseEvent event) {
+
+    Stage stage = (Stage) this.topPane.getScene().getWindow();
+    this.xOffset = stage.getX() - event.getScreenX();
+    this.yOffset = stage.getY() - event.getScreenY();
+  }
+
+  @FXML
+  protected void handleMovementAction(MouseEvent event) {
+
+    Stage stage = (Stage) this.topPane.getScene().getWindow();
+
+    stage.setX(event.getScreenX() + this.xOffset);
+    stage.setY(event.getScreenY() + this.yOffset);
   }
 }

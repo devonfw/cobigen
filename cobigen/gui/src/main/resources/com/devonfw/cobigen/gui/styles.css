@@ -99,6 +99,14 @@ color-picker:hover,
  .menuButtons{
  -fx-background-color: #0070AD
  }
+ 
+ .titleBarButtons{
+ -fx-background-color: transparent
+ }
+ 
+ #clearSearchButton{
+ -fx-background-color: transparent
+ }
 
  /* Items in the search panel*/
 .list-cell:filled:selected:focused, .list-cell:filled:selected {

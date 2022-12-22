@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * TODO nneuhaus This type ...
@@ -80,7 +81,8 @@ public class App extends Application {
     Image image = new Image(App.class.getResource("icons/devon-icon.jpg").toExternalForm());
     this.window.setTitle("Template Set Manager");
     this.window.getIcons().add(image);
-
+    this.window.initStyle(StageStyle.TRANSPARENT);
+    this.window.setResizable(true);
     this.window.setScene(App.scene);
     this.window.showAndWait();
   }
