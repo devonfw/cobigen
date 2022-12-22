@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.api.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -170,12 +169,11 @@ public class MavenUtil {
 
   /**
    * Validating the cached classpath entries and resolving missing files and dependencies from a repository that is not
-   * the current maven repository with a update of the classpath cache
+   * the current maven repository with a update of the classpath cache.
    *
    * @param classPathEntries URLs of the cached classPath entries
+   * @return true if files exists and they are located in the correct repository, otherwise false
    * @throws URISyntaxException
-   * @throws FileNotFoundException
-   * @throws MalformedURLException
    */
   private static boolean validateCachedClassPaths(URL[] classPathEntries) {
 
@@ -185,16 +183,16 @@ public class MavenUtil {
         Path cp = Paths.get(classPath.toURI());
         if (!cp.startsWith(repo)) {
           LOG.warn(
-              "Cache {} pointing to another maven Repository, this could cause some problems, the dependencies will be resolved again",
+              "Cached {} file pointing to another maven Repository, this could cause some problems, the dependencies will be resolved again",
               cp.toString());
           return false;
         }
         if (!Files.exists(cp)) {
-          LOG.warn("Cache {} is outdated, the dependencies will be resolved again", cp.toString());
+          LOG.warn("Cached {} file does not exist, the dependencies will be resolved again", cp.toString());
           return false;
         }
       } catch (URISyntaxException e) {
-        LOG.warn("Error while reading files from Cache, cache should ");
+        LOG.warn("Error while reading files from Cache, the dependencies will be resolved again");
         return false;
       }
     }
