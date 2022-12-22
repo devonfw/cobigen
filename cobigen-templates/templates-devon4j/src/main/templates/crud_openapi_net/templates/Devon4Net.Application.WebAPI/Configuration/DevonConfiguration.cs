@@ -1,4 +1,3 @@
-using Devon4Net.Application.WebAPI.Configuration;
 using Devon4Net.Application.WebAPI.Business.EmployeeManagement.Dto;
 using Devon4Net.Application.WebAPI.Business.EmployeeManagement.Validators;
 using Devon4Net.Application.WebAPI.Business.MediatRManagement.Commands;
@@ -18,13 +17,11 @@ using Devon4Net.Infrastructure.MediatR.Options;
 using Devon4Net.Infrastructure.MediatR.Samples.Handler;
 using Devon4Net.Infrastructure.MediatR.Samples.Model;
 using Devon4Net.Infrastructure.MediatR.Samples.Query;
+using Devon4Net.Infrastructure.RabbitMQ;
 using Devon4Net.Infrastructure.RabbitMQ.Options;
 using Devon4Net.Infrastructure.RabbitMQ.Samples.Handllers;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
