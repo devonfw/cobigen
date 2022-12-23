@@ -333,8 +333,7 @@ public class TemplatesConfigurationReader {
 
     // TODO: fix hacky WIP way of template_scan conflict resolving
     if (templatePath.equals("templates") && this.rootTemplateFolder.getPath().endsWith("templates/templates")) {
-      TemplateFolder newRootFolder = TemplateFolder.create(this.rootTemplateFolder.getPath().getParent());
-      templateFolder = newRootFolder.navigate(templatePath);
+      templateFolder = this.rootTemplateFolder;
     }
 
     if ((templateFolder == null) || templateFolder.isFile()) {
