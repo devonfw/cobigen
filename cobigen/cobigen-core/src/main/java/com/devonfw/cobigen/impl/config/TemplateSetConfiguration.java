@@ -61,18 +61,6 @@ public class TemplateSetConfiguration {
   /** The reader to read the template-set.xml files */
   private TemplateSetConfigurationReader templateSetConfigurationReader;
 
-  /**
-   * The {@link TemplatesConfigurationReader} initially parsed by the template-set.xml (required to access template
-   * specific functionalities)
-   */
-  private TemplatesConfigurationReader templatesConfigurationReader;
-
-  /**
-   * The {@link ContextConfigurationReader} initially parsed by the template-set.xml (required to access context.xml
-   * specific functionalities
-   */
-  private ContextConfigurationReader contextConfigurationReader;
-
   /** Paths of the template set configuration files */
   private List<Path> templateSetFiles = new ArrayList<>();
 
@@ -118,32 +106,41 @@ public class TemplateSetConfiguration {
     this.templatesConfigurations = Lists.newLinkedList();
     for (Path templateSetFile : templateSetFiles) {
       // TODO: Fix this WIP block
-      // this.templateSetConfigurationReader.templateSetFile = templateSetFile;
       this.templateSetConfigurationReader.readConfiguration(templateSetFile);
+
+      com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration templatesConfigurationStatic = this.templateSetConfigurationReader
+          .getTemplatesConfiguration();
+
+      com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfigurationStatic = this.templateSetConfigurationReader
+          .getContextConfiguration();
+
       TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
-      TemplatesConfigurationReader templatesReader = this.templateSetConfigurationReader
-          .getTemplatesConfigurationReader();
-      ContextConfigurationReader contextReader = this.templateSetConfigurationReader.getContextConfigurationReader();
-      Map<String, Trigger> trigger = contextReader.loadTriggers();
-      this.rootTemplateFolders.put(trigger.get(trigger.keySet().toArray()[0]).getId(), templateFolder.getPath());
+
+      TemplatesConfigurationReader templatesConfigurationReader = new TemplatesConfigurationReader(
+          templatesConfigurationStatic, templateFolder, this.configurationHolder, templateSetFile);
+
+      ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(contextConfigurationStatic,
+          templateSetFile);
+
+      Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
+      Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
+
+      this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
       this.configRoot = configurationPath;
       this.triggers.putAll(trigger);
-      // this.templates.putAll(getTemplates());
-      Map<String, Template> templates = templatesReader.loadTemplates(trigger.get(trigger.keySet().toArray()[0]));
-      this.templates.putAll(templates);
-      this.increments.putAll(this.templateSetConfigurationReader.getTemplatesConfigurationReader()
-          .loadIncrements(templates, trigger.get(trigger.keySet().toArray()[0])));
-      String templateEngine = this.templateSetConfigurationReader.getTemplatesConfigurationReader().getTemplateEngine();
+
+      Map<String, Template> loadedTemplates = templatesConfigurationReader.loadTemplates(activeTrigger);
+      this.templates.putAll(loadedTemplates);
+
+      Map<String, Increment> loadedIncrements = templatesConfigurationReader.loadIncrements(loadedTemplates,
+          activeTrigger);
+      this.increments.putAll(templatesConfigurationReader.loadIncrements(loadedTemplates, activeTrigger));
+      String templateEngine = templatesConfigurationReader.getTemplateEngine();
 
       TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath,
-          trigger.get(trigger.keySet().toArray()[0]), templates, this.increments, templateEngine);
+          trigger.get(trigger.keySet().toArray()[0]), loadedTemplates, loadedIncrements, templateEngine);
       this.templatesConfigurations.add(templatesConfiguration);
     }
-    // For every trigger put all increments depended on that trigger into the local increments hash map
-    // for (Entry<String, Trigger> trigger : this.triggers.entrySet()) {
-    // this.increments.putAll(this.templateSetConfigurationReader.getTemplatesConfigurationReader()
-    // .loadIncrements(this.templates, trigger.getValue()));
-    // }
   }
 
   /**

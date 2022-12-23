@@ -62,35 +62,9 @@ public class TemplateSetConfigurationReader {
   private Map<Path, Path> configLocations = new HashMap<>();
 
   /**
-   * The {@link TemplatesConfigurationReader}
-   */
-  protected TemplatesConfigurationReader templatesConfigurationReader;
-
-  /**
    * The {@link ConfigurationHolder}
    */
   protected ConfigurationHolder configurationHolder;
-
-  /**
-   * @return templatesConfiguration
-   */
-  public TemplatesConfigurationReader getTemplatesConfigurationReader() {
-
-    return this.templatesConfigurationReader;
-  }
-
-  /**
-   * @return contextConfiguration
-   */
-  public ContextConfigurationReader getContextConfigurationReader() {
-
-    return this.contextConfigurationReader;
-  }
-
-  /**
-   * The {@link ContextConfigurationReader}
-   */
-  protected ContextConfigurationReader contextConfigurationReader;
 
   /**
    * The {@link com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration}
@@ -327,15 +301,8 @@ public class TemplateSetConfigurationReader {
             .unmarshal(configInputStream);
         this.templateSetConfiguration = rootNode;
 
-        // TODO: Move into new method
         this.templatesConfiguration = rootNode.getTemplatesConfiguration();
         this.contextConfiguration = rootNode.getContextConfiguration();
-        this.templatesConfigurationReader = new TemplatesConfigurationReader(rootNode.getTemplatesConfiguration(),
-            this.rootTemplateFolder, null, this.templateSetFile);
-        // if (this.contextConfigurationReader == null) {
-        this.contextConfigurationReader = new ContextConfigurationReader(rootNode.getContextConfiguration(),
-            this.configLocation);
-        // }
 
       }
     } catch (JAXBException e) {
