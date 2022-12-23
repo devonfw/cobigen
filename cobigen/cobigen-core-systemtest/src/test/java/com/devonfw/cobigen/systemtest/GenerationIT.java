@@ -82,13 +82,13 @@ public class GenerationIT extends AbstractApiTest {
   }
 
   /**
-   * Tests that 2 template sets with templates, increments and triggers get read and generate of the 1st template is
-   * successful
+   * Tests that multiple template sets with templates, increments and triggers get read and generate of all matching
+   * templates is successful
    *
    * @throws Exception test fails.
    */
   @Test
-  public void testReadTwoTemplateSetXml() throws Exception {
+  public void testReadMultipleTemplateSetXmls() throws Exception {
 
     CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPathTemplateSetXml + "template-sets").toURI());
 
@@ -104,18 +104,17 @@ public class GenerationIT extends AbstractApiTest {
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
     List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
     List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
-    // assertThat(templates).hasSize(2);
-    // assertThat(increments).hasSize(2);
-    // assertThat(triggersIds).hasSize(2);
+    assertThat(templates).hasSize(3);
+    assertThat(increments).hasSize(3);
+    assertThat(triggersIds).hasSize(3);
 
-    // GenerationReportTo report = cobigen.generate(
-    // com.devonfw.cobigen.systemtest.testobjects.io.generator.logic.api.to.InputEto.class, increments.get(0),
-    // Paths.get(folder.toURI()));
+    GenerationReportTo report1 = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
+    GenerationReportTo report2 = cobigen.generate(input, templates.get(1), Paths.get(folder.toURI()));
+    GenerationReportTo report3 = cobigen.generate(input, templates.get(2), Paths.get(folder.toURI()));
 
-    GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
-
-    assertThat(report).isSuccessful();
-    // assertThat(target).hasContent("overwritten");
+    assertThat(report1).isSuccessful();
+    assertThat(report2).isSuccessful();
+    assertThat(report3).isSuccessful();
   }
 
   /**

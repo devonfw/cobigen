@@ -1,4 +1,3 @@
-<#include '/makros.ftl'>
 package ${variables.rootPackage}.common.builders;
 
 import java.util.LinkedList;

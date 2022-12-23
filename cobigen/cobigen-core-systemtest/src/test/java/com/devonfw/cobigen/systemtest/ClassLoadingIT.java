@@ -27,11 +27,9 @@ import com.devonfw.cobigen.api.matchers.MatcherToMatcher;
 import com.devonfw.cobigen.api.matchers.VariableAssignmentToMatcher;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
-import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
@@ -44,6 +42,11 @@ public class ClassLoadingIT extends AbstractApiTest {
    * Root path to all resources used in this test case
    */
   private static String testFileRootPath = apiTestsRootPath + "ClassLoadTest/";
+
+  /**
+   * Root path to all template-set resources used in this test case
+   */
+  private static String testTemplateSetFileRootPath = apiTestsRootPath + "ClassLoadTemplateSetTest/";
 
   /**
    * Tests the usage of sample logic classes to be used in a template.
@@ -67,6 +70,42 @@ public class ClassLoadingIT extends AbstractApiTest {
     // Execution
     GenerationReportTo report = target.generate(containerInput, templates.get(0),
         Paths.get(generationRootFolder.toURI()), false);
+
+    // Verification
+    File expectedResult = new File(testFileRootPath, "expected/Test.java");
+    File generatedFile = new File(generationRootFolder, "com/devonfw/Test.java");
+    assertThat(report).isSuccessful();
+    assertThat(generatedFile).exists();
+    assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
+  }
+
+  /**
+   * Tests the usage of sample logic classes to be used in a template-sets.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void callClassLoadingTemplateSetTest() throws Exception {
+
+    // Mocking
+    CobiGen cobigen = CobiGenFactory.create(new File(testTemplateSetFileRootPath + "template-sets").toURI());
+
+    Object input = cobigen.read(
+        new File("src/test/java/com/devonfw/cobigen/systemtest/testobjects/io/generator/logic/api/to/InputEto.java")
+            .toPath(),
+        Charset.forName("UTF-8"), getClass().getClassLoader());
+
+    // Useful to see generates if necessary, comment the generationRootFolder above then
+    File generationRootFolder = this.tmpFolder.newFolder("generationRootFolder");
+
+    // pre-processing
+    File templatesFolder = new File(testTemplateSetFileRootPath + "template-sets");
+    // CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
+    List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+
+    // Execution
+    GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(generationRootFolder.toURI()),
+        false);
 
     // Verification
     File expectedResult = new File(testFileRootPath, "expected/Test.java");
