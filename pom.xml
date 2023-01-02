@@ -16,8 +16,8 @@
     <slf4j.version>1.7.30</slf4j.version>
     <zeroturnaround.version>1.12</zeroturnaround.version>
     <skip.deployment>true</skip.deployment>
-    <java.version>1.8</java.version>
-    <tycho.version>1.6.0</tycho.version>
+    <java.version>11</java.version>
+    <tycho.version>2.7.5</tycho.version>
     <jaxb.version>3.0.1</jaxb.version>
     <jacoco.version>0.8.8</jacoco.version>
     <license.skipAggregateDownloadLicenses>${skip.deployment}</license.skipAggregateDownloadLicenses>
@@ -606,22 +606,6 @@
                   <name>p2.repository.build.dir.url</name>
                   <failIfNoMatch>false</failIfNoMatch>
                 </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <!-- plugins from profile -->
-          <!-- sets ${qualifiedVersion} for upload to update site -->
-          <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-packaging-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>build-qualifier</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>build-qualifier</goal>
-                </goals>
               </execution>
             </executions>
           </plugin>

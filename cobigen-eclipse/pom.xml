@@ -5,25 +5,22 @@
   <artifactId>eclipse-parent</artifactId>
   <name>CobiGen - Eclipse Plug-In Parent</name>
   <packaging>pom</packaging>
-
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>master-parent</artifactId>
     <version>${revision}</version>
   </parent>
-
   <properties>
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
-    <eclipse-repository>https://download.eclipse.org/releases/photon</eclipse-repository>
+    <!-- 2018-12 - first IDE version with java 11 support -->
+    <eclipse-repository>https://download.eclipse.org/releases/2018-12/</eclipse-repository>
   </properties>
-
   <modules>
     <module>cobigen-eclipse</module>
     <module>cobigen-eclipse-test</module>
     <module>cobigen-eclipse-feature</module>
     <module>cobigen-eclipse-updatesite</module>
   </modules>
-
   <build>
     <plugins>
       <!-- tycho-versions-plugin:set-version does not work properly as it always rewrites the pom.xml files, but we want
@@ -38,32 +35,29 @@
             <configuration>
               <target>
                 <taskdef resource="net/sf/antcontrib/antcontrib.properties"
-                  classpathref="maven.plugin.classpath"/>
-
+                  classpathref="maven.plugin.classpath" />
                 <propertyregex property="revision.p2" input="${revision}" regexp="-SNAPSHOT"
-                  replace=".qualifier" global="true" defaultValue="${revision}"/>
-
+                  replace=".qualifier" global="true" defaultValue="${revision}" />
                 <if>
-                  <available property="file.exists" file="./META-INF/MANIFEST.MF"/>
+                  <available property="file.exists" file="./META-INF/MANIFEST.MF" />
                   <then>
                     <replaceregexp file="./META-INF/MANIFEST.MF" match="(Bundle-Version:\s*)2[0-9a-z\.]+"
-                      replace="\1${revision.p2}" byline="true"/>
-                    <echo level="info" message="Set ./META-INF/MANIFEST.MF Bundle-Version to ${revision.p2}"/>
+                      replace="\1${revision.p2}" byline="true" />
+                    <echo level="info" message="Set ./META-INF/MANIFEST.MF Bundle-Version to ${revision.p2}" />
                   </then>
                   <else>
-                    <echo level="info" message="./META-INF/MANIFEST.MF does not exist"/>
+                    <echo level="info" message="./META-INF/MANIFEST.MF does not exist" />
                   </else>
                 </if>
-
                 <if>
-                  <available property="file.exists" file="./feature.xml"/>
+                  <available property="file.exists" file="./feature.xml" />
                   <then>
                     <replaceregexp file="./feature.xml" match="(version=&quot;)2[0-9a-z\.]+&quot;"
-                      replace="\1${revision.p2}&quot;" byline="true"/>
-                    <echo level="info" message="Set ./feature.xml version to ${revision.p2}"/>
+                      replace="\1${revision.p2}&quot;" byline="true" />
+                    <echo level="info" message="Set ./feature.xml version to ${revision.p2}" />
                   </then>
                   <else>
-                    <echo level="info" message="./feature.xml does not exist"/>
+                    <echo level="info" message="./feature.xml does not exist" />
                   </else>
                 </if>
               </target>
@@ -146,8 +140,8 @@
         <configuration>
           <useProjectSettings>true</useProjectSettings>
           <compilerArguments>
-            <inlineJSR/>
-            <enableJavadoc/>
+            <inlineJSR />
+            <enableJavadoc />
             <encoding>${project.build.sourceEncoding}</encoding>
           </compilerArguments>
         </configuration>
@@ -157,7 +151,7 @@
         <artifactId>target-platform-configuration</artifactId>
         <version>${tycho.version}</version>
         <configuration>
-          <executionEnvironment>JavaSE-1.8</executionEnvironment>
+          <executionEnvironment>JavaSE-11</executionEnvironment>
           <environments>
             <environment>
               <os>linux</os>
@@ -232,7 +226,6 @@
       </plugins>
     </pluginManagement>
   </build>
-
   <profiles>
     <profile>
       <id>p2-build</id>
@@ -290,7 +283,6 @@
       </repositories>
     </profile>
   </profiles>
-
   <repositories>
     <repository>
       <id>eclipse-repository</id>
@@ -298,7 +290,6 @@
       <layout>p2</layout>
     </repository>
   </repositories>
-
   <pluginRepositories>
     <pluginRepository>
       <id>tycho</id>
