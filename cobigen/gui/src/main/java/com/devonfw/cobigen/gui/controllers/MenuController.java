@@ -5,8 +5,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.devonfw.cobigen.gui.Controller;
-import com.devonfw.cobigen.gui.TemplateSet;
 import com.devonfw.cobigen.gui.services.TemplateSetCell;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -52,9 +52,18 @@ public class MenuController implements Initializable {
 
     this.templateSetObservableList = FXCollections.observableArrayList();
 
-    // Add the template sets, populate observable list ( before initialize)
-    this.templateSetObservableList.addAll(new TemplateSet("Template Set 1"), new TemplateSet("Template Set 2"),
-        new TemplateSet("Template Set 3"), new TemplateSet("Template Set 4"));
+    // Add the template sets, populate observable list (before initialize)
+    // this.templateSetObservableList.addAll(new TemplateSet("Template Set 1"), new TemplateSet("Template Set 2"),
+    // new TemplateSet("Template Set 3"), new TemplateSet("Template Set 4"));
+
+    // Path templateSetFile = Paths.get(testdataRoot).resolve("template-set.xml");
+    //
+    // TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
+    //
+    // TemplateSet templateSet = artifactReader.retrieveTemplateSet(templateSetFile);
+    //
+    // List<TemplateSetTag> tagsList = new ArrayList<>();
+    // tagsList.addAll(templateSet.getTemplateSetConfiguration().getContextConfiguration().getTags().getTagsList());
   }
 
   /**
@@ -110,14 +119,14 @@ public class MenuController implements Initializable {
 
         String searchKeyword = newValue.toLowerCase();
         // found a match in the name
-        if (templateSets.getName().toLowerCase().indexOf(searchKeyword) > -1) {
-          return true;
-        }
+        // if (templateSets.getName().toLowerCase().indexOf(searchKeyword) > -1) {
+        // return true;
+        // }
         // add more if statements of this form
         // if more search relevant attributes are added to the TemplateSet Class!
 
-        else
-          return false;
+        // else
+        return false;
       });
 
       this.searchResultsView.setItems(filteredData);

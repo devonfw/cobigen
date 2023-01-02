@@ -17,10 +17,7 @@
     <module>cobigen-core-test</module>
     <module>cobigen-core-systemtest</module>
     <module>core-externalprocess-api</module>
-<<<<<<< HEAD
-    <module>gui</module>
-=======
     <module>core-artifact-retriever</module>
->>>>>>> template-set-deployables
+    <module>gui</module>
   </modules>
 </project>

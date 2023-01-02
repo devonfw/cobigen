@@ -2,7 +2,7 @@ package com.devonfw.cobigen.gui.services;
 
 import java.io.IOException;
 
-import com.devonfw.cobigen.gui.TemplateSet;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -50,7 +50,8 @@ public class TemplateSetCell extends ListCell<TemplateSet> {
         }
       }
 
-      this.titleLabel.setText(templateSet.getName());
+      // TODO:
+      // this.titleLabel.setText(templateSet.getName());
       // setText(templateSet.getName());
       this.installButton.setOnAction(event -> {
         System.out.println("INSTALLIEREN!!!");

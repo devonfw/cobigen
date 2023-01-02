@@ -31,7 +31,6 @@ public class ManageCommand extends CommandCommons {
     try {
       wait(1337);
     } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 

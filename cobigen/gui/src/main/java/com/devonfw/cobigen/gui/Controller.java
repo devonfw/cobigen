@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import com.devonfw.cobigen.gui.controllers.DetailsController;
 import com.devonfw.cobigen.gui.controllers.HomeController;
 import com.devonfw.cobigen.gui.controllers.MenuController;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -104,7 +105,8 @@ public class Controller implements Initializable {
     } else {
       this.home.setVisible(false);
       this.details.setVisible(true);
-      this.detailsController.showName(selectedItem.getName());
+      // TODO
+      this.detailsController.showName(selectedItem.getTemplateSetVersion());
     }
 
   }

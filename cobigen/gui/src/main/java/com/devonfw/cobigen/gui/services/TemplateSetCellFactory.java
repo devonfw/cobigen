@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.gui.services;
 
-import com.devonfw.cobigen.gui.TemplateSet;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
