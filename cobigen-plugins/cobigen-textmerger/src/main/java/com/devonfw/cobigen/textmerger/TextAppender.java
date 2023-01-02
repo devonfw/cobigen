@@ -21,8 +21,6 @@ import com.devonfw.cobigen.textmerger.anchorextension.MergeUtil;
 
 /**
  * The {@link TextAppender} allows appending the patch to the base file
- *
- * @author mbrunnli (03.06.2014)
  */
 public class TextAppender implements Merger {
 
@@ -49,7 +47,6 @@ public class TextAppender implements Merger {
    * @param withNewLineBeforehand if <code>true</code> a new line will be inserted before each appended text if the
    *        appended text is not empty<br>
    *        <code>false</code>, otherwise.
-   * @author mbrunnli (03.06.2014)
    */
   public TextAppender(String type, boolean withNewLineBeforehand) {
 

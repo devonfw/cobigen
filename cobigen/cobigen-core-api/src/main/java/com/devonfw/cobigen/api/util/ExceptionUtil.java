@@ -7,9 +7,6 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
  * This class provides commonly interesting exception handling methods
- *
- * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
- * @version $Revision$
  */
 public class ExceptionUtil {
 

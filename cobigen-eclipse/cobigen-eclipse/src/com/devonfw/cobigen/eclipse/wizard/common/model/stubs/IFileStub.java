@@ -13,8 +13,6 @@ import org.eclipse.core.runtime.content.IContentDescription;
 
 /**
  * Stub for {@link IFile} in order to simulate resources in the generate wizard
- *
- * @author mbrunnli (06.04.2014)
  */
 public class IFileStub extends IResourceStub implements IFile {
 

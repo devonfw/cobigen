@@ -6,8 +6,6 @@ import com.google.common.collect.Maps;
 
 /**
  * Version steps of the templates configuration.
- *
- * @author mbrunnli (Jun 22, 2015)
  */
 public enum ContextConfigurationVersion {
 
@@ -61,7 +59,6 @@ public enum ContextConfigurationVersion {
 
   /**
    * @return the comparable float representation value of the version.
-   * @author mbrunnli (May 17, 2016)
    */
   public float getFloatRepresentation() {
 

@@ -10,10 +10,6 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.api.exception.MergeException;
 
-/**
- *
- * @author mbrunnli (03.06.2014)
- */
 public class TextAppenderTest {
 
   /**
@@ -25,7 +21,6 @@ public class TextAppenderTest {
    * Tests a merge without adding a new line before appending the patch
    *
    * @throws Exception if errors occur while merging
-   * @author mbrunnli (03.06.2014)
    */
   @Test
   public void testMerge_appendWithoutNewLineNoAnchors() throws Exception {
@@ -39,7 +34,6 @@ public class TextAppenderTest {
    * Tests a merge with adding a new line before appending the patch
    *
    * @throws Exception if errors occur while merging
-   * @author mbrunnli (03.06.2014)
    */
   @Test
   public void testMerge_appendWithNewLineNoAnchors() throws Exception {
@@ -54,7 +48,6 @@ public class TextAppenderTest {
    * Tests a merge with adding a new line before appending the patch
    *
    * @throws Exception if errors occur while merging
-   * @author mbrunnli (03.06.2014)
    */
   @Test
   public void testMerge_appendWithNewLineNoAnchors_onlyIfPathIsNotEmpty() throws Exception {
@@ -68,7 +61,6 @@ public class TextAppenderTest {
    * Tests a merge with adding a new line before appending the patch
    *
    * @throws Exception if errors occur while merging
-   * @author mbrunnli (03.06.2014)
    */
   @Test
   public void testMerge_override() throws Exception {

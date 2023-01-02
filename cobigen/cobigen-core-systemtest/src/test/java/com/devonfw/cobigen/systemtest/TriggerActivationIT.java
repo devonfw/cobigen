@@ -200,7 +200,6 @@ public class TriggerActivationIT extends AbstractApiTest {
    * Tests that a trigger will not be activated in case of one OR matcher but no AND matcher matches.
    *
    * @throws Exception test fails
-   * @author mbrunnli (22.02.2015)
    */
   @Test
   public void testNoActivation_1OR_0AND_MatcherMatches() throws Exception {

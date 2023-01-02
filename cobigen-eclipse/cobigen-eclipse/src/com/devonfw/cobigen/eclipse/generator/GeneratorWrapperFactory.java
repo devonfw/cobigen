@@ -46,8 +46,6 @@ import com.google.common.collect.Lists;
 /**
  * Generator creation factory, which creates a specific generator instance dependent on the current selection within the
  * eclipse IDE
- *
- * @author mbrunnli (03.12.2014)
  */
 public class GeneratorWrapperFactory {
 
