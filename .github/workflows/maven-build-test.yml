@@ -87,7 +87,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        javaVersion: [8]
+        javaVersion: [11]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
