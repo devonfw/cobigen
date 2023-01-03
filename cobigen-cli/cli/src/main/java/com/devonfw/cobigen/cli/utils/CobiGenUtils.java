@@ -55,11 +55,13 @@ public class CobiGenUtils {
   public static CobiGen initializeCobiGen(Path templatesProject, boolean allowMonolithicConfiguration) {
 
     registerPlugins();
+    CobiGen cg;
     if (templatesProject != null) {
       return CobiGenFactory.create(templatesProject.toUri(), allowMonolithicConfiguration);
     } else {
       return CobiGenFactory.create(allowMonolithicConfiguration);
     }
+    return cg;
   }
 
   /**
@@ -81,7 +83,7 @@ public class CobiGenUtils {
     Path rootCLIPath = getCliHomePath();
     File pomFile = extractArtificialPom();
 
-    String pomFileHash = MavenUtil.generatePomFileHash(pomFile.toPath());
+    String pomFileHash = MavenUtil.generatePomFileHash(pomFile.toPath(), MavenUtil.determineMavenRepositoryPath());
 
     Path cpFile = rootCLIPath.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
 
