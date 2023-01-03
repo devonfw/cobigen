@@ -31,7 +31,7 @@
     <dependency>
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
-      <version>4.6.2</version>
+      <version>4.7.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -45,7 +45,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
-      <version>1.6</version>
+      <version>1.10.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.googlejavaformat</groupId>

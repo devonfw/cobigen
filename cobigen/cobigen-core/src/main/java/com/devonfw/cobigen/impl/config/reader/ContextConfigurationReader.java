@@ -35,7 +35,6 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
-import com.google.common.collect.Maps;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -104,6 +103,8 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   public ContextConfigurationReader(ContextConfiguration contextConfiguration, Path contextRoot)
       throws InvalidConfigurationException {
 
+    super(contextRoot);
+
     if (this.contextConfigurations == null) {
       this.contextConfigurations = new HashMap<>();
     }
@@ -130,6 +131,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   /**
    * Reads the context configuration.
    */
+  @Override
   protected void readConfiguration() {
 
     // workaround to make JAXB work in OSGi context by
@@ -265,7 +267,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   @Override
   public Map<String, Trigger> loadTriggers() {
 
-    Map<String, Trigger> triggers = Maps.newHashMap();
+    Map<String, Trigger> triggers = new HashMap<>();
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
@@ -275,6 +277,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
 
         // TODO: check if this is still needed
         if (templateFolder.isEmpty() || templateFolder.equals("/")) {
+
           templateFolder = "";
         }
         // TODO: check if template folder is still needed for template-sets

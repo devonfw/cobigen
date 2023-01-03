@@ -17,8 +17,6 @@ import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Stub for {@link IPackageFragmentRoot} in order to simulate resources in the generate wizard
- *
- * @author mbrunnli (05.04.2014)
  */
 public class IPackageFragmentRootStub implements IPackageFragmentRoot {
 

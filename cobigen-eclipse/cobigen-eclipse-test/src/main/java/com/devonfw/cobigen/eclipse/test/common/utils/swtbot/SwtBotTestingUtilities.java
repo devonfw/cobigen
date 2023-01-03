@@ -34,8 +34,6 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotStyledText;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.hamcrest.Matcher;
 
-import com.google.common.collect.Iterables;
-
 /**
  * Provides helper methods to aid in SWTBot testing.
  */
@@ -227,7 +225,7 @@ public class SwtBotTestingUtilities {
       @Override
       public boolean test() throws Exception {
 
-        return Iterables.any(menuSupplier.get().menuItems(), matcher::matches);
+        return menuSupplier.get().menuItems().stream().anyMatch(matcher::matches);
       }
 
       @Override

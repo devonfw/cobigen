@@ -10,8 +10,6 @@ import com.thoughtworks.qdox.model.impl.DefaultJavaParameter;
 
 /**
  * Extension of the {@link JavaParameter} implementation in order to support modifiers
- *
- * @author mbrunnli (10.04.2014)
  */
 public class ExtendedJavaParameter extends DefaultJavaParameter {
 
@@ -32,7 +30,6 @@ public class ExtendedJavaParameter extends DefaultJavaParameter {
    * @param name of the parameter
    * @param modifiers list of modifiers of the parameter
    * @param varArgs of the parameter (??? see QDox)
-   * @author mbrunnli (10.04.2014)
    */
   public ExtendedJavaParameter(JavaClass type, String name, Set<String> modifiers, boolean varArgs) {
 
@@ -44,7 +41,6 @@ public class ExtendedJavaParameter extends DefaultJavaParameter {
    * Returns all modifiers of the parameter
    *
    * @return all modifiers of the parameter
-   * @author mbrunnli (10.04.2014)
    */
   public List<String> getModifiers() {
 

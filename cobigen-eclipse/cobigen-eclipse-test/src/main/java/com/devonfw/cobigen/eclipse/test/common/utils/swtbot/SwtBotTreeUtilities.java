@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import org.assertj.core.api.Assertions;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
@@ -39,9 +40,6 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 
 /** Utilities for manipulating trees. */
 public class SwtBotTreeUtilities {
@@ -126,7 +124,7 @@ public class SwtBotTreeUtilities {
           parentItem.expand();
           children = parentItem.getItems();
         }
-        return Iterables.any(parentItem.getNodes(), childMatcher::matches);
+        return parentItem.getNodes().stream().anyMatch(childMatcher::matches);
       }
     });
     for (SWTBotTreeItem child : parentItem.getItems()) {
@@ -215,7 +213,7 @@ public class SwtBotTreeUtilities {
    */
   public static SWTBotTreeItem select(SWTWorkbenchBot bot, SWTBotTree tree, String... nodeNames) {
 
-    Preconditions.checkArgument(nodeNames.length > 0, "no children to navigate");
+    Assertions.assertThat(nodeNames.length).isGreaterThan(0);
     int leafIndex = nodeNames.length - 1;
     waitUntilTreeHasItems(bot, tree);
 

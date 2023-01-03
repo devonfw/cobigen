@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 /**
  * This util provides JDT classpath operations
  *
- * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
 public class JavaClasspathUtil {

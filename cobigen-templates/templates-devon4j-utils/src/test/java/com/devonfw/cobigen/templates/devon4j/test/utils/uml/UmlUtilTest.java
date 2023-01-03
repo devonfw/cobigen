@@ -10,7 +10,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.xerces.dom.DeferredNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -88,7 +87,7 @@ public class UmlUtilTest {
       Node connector = connectors.item(i);
       NodeList attributes = connector.getChildNodes();
       for (int j = 0; j < attributes.getLength(); j++) {
-        DeferredNode attr = (DeferredNode) attributes.item(j);
+        Node attr = attributes.item(j);
         if (attr.getNodeName().equals("source")) {
           source = attr;
           NodeList sourceAttributes = attr.getChildNodes();

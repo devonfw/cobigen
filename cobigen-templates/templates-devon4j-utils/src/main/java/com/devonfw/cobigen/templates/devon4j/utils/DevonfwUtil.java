@@ -8,10 +8,10 @@ import java.util.regex.Pattern;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.devonfw.cobigen.templates.devon4j.constants.Field;
-import com.sun.org.apache.xerces.internal.dom.DeferredElementNSImpl;
 
 /**
  * A class for shared devon4j specific functions in the templates
@@ -58,7 +58,7 @@ public class DevonfwUtil {
 
     // If field comes from an UML file
     if (field.getClass().toGenericString().contains("freemarker.ext.beans.HashAdapter")) {
-      DeferredElementNSImpl umlNode = (DeferredElementNSImpl) field;
+      Node umlNode = (Node) field;
       return resolveIdGetter(umlNode, byObjectReference, component);
     }
     return "get" + resolveIdVariableNameOrSetterGetterSuffix(field, byObjectReference, true, component) + "()";
@@ -77,12 +77,12 @@ public class DevonfwUtil {
    * @return 'get' + {@link #resolveIdVariableNameOrSetterGetterSuffix(Map, boolean, boolean, String)} + '()' with
    *         capitalize=true
    */
-  public String resolveIdGetter(DeferredElementNSImpl field, boolean byObjectReference, String component) {
+  public String resolveIdGetter(Node field, boolean byObjectReference, String component) {
 
-    HashMap nodeHash = new HashMap<>();
+    HashMap<String, Object> nodeHash = new HashMap<>();
 
     // Putting the name of the attribute to the hash
-    nodeHash.put(Field.NAME.toString(), field.getAttribute("name"));
+    nodeHash.put(Field.NAME.toString(), field.getAttributes().getNamedItem("name"));
 
     // Putting the type of the attribute to the hash
     NodeList childs = field.getChildNodes();

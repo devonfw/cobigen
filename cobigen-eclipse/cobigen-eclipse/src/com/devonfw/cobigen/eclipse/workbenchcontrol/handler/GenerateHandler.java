@@ -18,8 +18,6 @@ import com.devonfw.cobigen.eclipse.common.tools.PlatformUIUtil;
 
 /**
  * Handler for the Package-Explorer Event
- *
- * @author mbrunnli (13.02.2013)
  */
 public class GenerateHandler extends AbstractHandler {
 

@@ -23,7 +23,7 @@ Basically, when a new input file was sent to CobiGen, it called the input reader
 
 Afterwards, the template engine generated a new file which had to be merged with the original one. All this code was implemented in Java.
 
-On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.Net, Node.js, Python...) it just needs to implement a REST API defined link:https://github.com/devonfw/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
+On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.NET, NodeJS, Python...) it just needs to implement a REST API defined link:https://github.com/devonfw/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
 
 image::images/howtos/todo-plugin/newCobiGen.png[New CobiGen,width="450"link="images/howtos/todo-plugin/newCobiGen.png"]
 
@@ -313,7 +313,7 @@ c. If that worked, now you can send any arguments to the CLI in order to generat
 3. Use the CLI jar to execute commands:
 
 +
-a. The `mvn clean install -DskipTests` command will have created a Cobigen.jar inside your target folder (_cobigen-cli/cli/target_). Open the jar with any unzipper and extract to the current location _class-loader-agent.jar_, _cobigen.bat_ and _cg.bat_:
+a. The `mvn clean install -DskipTests` command will have created a `cli.jar` inside your target folder (`cobigen-cli/cli/target`). Open the jar with any unzipper and extract to the current location `class-loader-agent.jar`, `cobigen.bat` and `cg.bat`:
 +
 image::images/howtos/todo-plugin/extractFilesCLI.png[Extract files,width="450"link="images/howtos/todo-plugin/extractFilesCLI.png"]
 +
