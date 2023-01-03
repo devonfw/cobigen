@@ -62,16 +62,16 @@ image:images/howtos/e2e_gen/image64.png[SQL file]
 
 [source]
 ----
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'John','Doe','john.doe@example.com');
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Tom','Smith', 'tom.smith@example.com');
-INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Joe','Schmoe', 'joe.schmoe@example.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (1, 1, 1, 'John', 'Doe', 'john.doe@example.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (2, 2, 2, 'Tom', 'Smith', 'tom.smith@example.com');
+INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) VALUES (3, 3, 3, 'Joe', 'Schmoe', 'joe.schmoe@example.com');
 ----
 
 image:images/howtos/e2e_gen/image65.png[SQL insert]
 
 [arabic]
 
-7.We will now create the Entity Class for the code generation. For this, create a package named ``*com.example.domain.myapp.employeemanagement.dataaccess.api*`` in the folder _`myapp-core/src/main/java`_. +
+7.We will now create the Entity Class for the code generation. For this, create a package named `com.example.domain.myapp.employeemanagement.dataaccess.api` in the folder _`myapp-core/src/main/java`_. +
 *_WARNING_*: It's important to follow this naming convention to ensure CobiGen is working properly.
 
 image:images/howtos/e2e_gen/image66.png[package]
@@ -226,7 +226,7 @@ image:images/howtos/e2e_gen/image37.png[eclipse generate]
 image:images/howtos/e2e_gen/image39.png[angular `ee` layer]
 
 [arabic]
-The *_app-routing.module.ts_* file (in src/app) should correspond to the code below, so copy the code and replace the existing content in your file with this:
+The *_app-routing.module.ts_* file (in `src/app`) should correspond to the code below, so copy the code and replace the existing content in your file with this:
 
 [source, ts]
 ----
@@ -335,7 +335,7 @@ export class AppRoutingModule {
 6.Open the devon CMD shell and execute `devon npm install` in `_workspaces/main/devon4ng-application-template_`, which will download all the required libraries.
 
 [arabic]
-7.Check in the file *environment.ts* (in src/app/environments) if the server path is correct.
+7.Check in the file *environment.ts* (in `src/app/environments`) if the server path is correct.
 
 image:images/howtos/e2e_gen/image42.png[environment]
 
