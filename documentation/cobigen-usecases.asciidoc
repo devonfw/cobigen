@@ -15,7 +15,7 @@ For the server, the required files for all architectural layers (data access, lo
 
 === CRUD client application for devon4ng
 
-Based on the REST services on the server, you can generate an link:https://angularjs.org/[Angular] client or even an link:https://ionicframework.com/[Ionic] mobile client based on link:https://github.com/devonfw/devon4ng[devon4ng]. With the help of link:https://nodejs.org/[Node.js], you have a working client application for displaying your entities within minutes!
+Based on the REST services on the server, you can generate an link:https://angularjs.org/[Angular] client or even an link:https://ionicframework.com/[Ionic] mobile client based on link:https://github.com/devonfw/devon4ng[devon4ng]. With the help of link:https://nodejs.org/[NodeJS], you have a working client application for displaying your entities within minutes!
 
 === Test data Builder for devon4j
 
