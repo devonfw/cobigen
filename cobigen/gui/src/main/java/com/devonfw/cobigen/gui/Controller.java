@@ -2,12 +2,15 @@ package com.devonfw.cobigen.gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import com.devonfw.cobigen.gui.controllers.DetailsController;
 import com.devonfw.cobigen.gui.controllers.HomeController;
 import com.devonfw.cobigen.gui.controllers.MenuController;
+import com.devonfw.cobigen.gui.services.TreeViewBuilder;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetIncrement;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -90,21 +93,31 @@ public class Controller implements Initializable {
   }
 
   /**
+   * Load increment from selected template-set from observable list
+   *
    * @throws IOException
    */
   public void loadDetails() throws IOException {
 
-    // TODO: getIncrements() for Tree View when #1517 is merged
-    // Add parameter Increments
-
+    // selected from observable list
     TemplateSet selectedItem = this.menuController.searchResultsView.getSelectionModel().getSelectedItem();
-
     if (selectedItem == null) {
       this.home.setVisible(true);
       this.details.setVisible(false);
     } else {
       this.home.setVisible(false);
       this.details.setVisible(true);
+
+      // Extract all increments from selected templateSet in list
+      List<TemplateSetIncrement> templatesetIncrements = selectedItem.getTemplateSetConfiguration()
+          .getTemplatesConfiguration().getIncrements().getIncrementList();
+
+      // icnrements converted to strings to make it ready for tree view builder
+      String[] increments = TreeViewBuilder.transformIncrementsToArray(templatesetIncrements);
+
+      // shows the tree view of increments of selected template set
+      this.detailsController.showTreeView(TreeViewBuilder.buildTreeView(increments));
+
       // TODO
       this.detailsController.showName(selectedItem.getTemplateSetVersion());
     }

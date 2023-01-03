@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.devonfw.cobigen.gui.services.TreeViewBuilder;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -42,8 +40,9 @@ public class DetailsController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
+    // increment section of the gui
     showVersion();
-    showTreeView(TreeViewBuilder.buildTreeView(TreeViewBuilder.transformIncrementsToArray(this.INCREMENTS)));
+    // showTreeView(TreeViewBuilder.buildTreeView(TreeViewBuilder.transformIncrementsToArray(this.INCREMENTS)));
 
   }
 
@@ -61,6 +60,7 @@ public class DetailsController implements Initializable {
    */
   private void showVersion() {
 
+    // is it the version used in templateSet or the snapshot version?
     // TODO: getVersion()
 
   }
@@ -84,6 +84,7 @@ public class DetailsController implements Initializable {
   @FXML
   public void installTemplateSet(javafx.event.ActionEvent actionEvent) {
 
+    // What does it exactly mean by installing and where
     // TODO
   }
 
@@ -93,6 +94,8 @@ public class DetailsController implements Initializable {
   @FXML
   public void updateTemplateSet(javafx.event.ActionEvent actionEvent) {
 
+    // what model is previous and whats the new one
+
     // TODO
   }
 
@@ -101,6 +104,8 @@ public class DetailsController implements Initializable {
    */
   @FXML
   public void uninstallTemplateSet(javafx.event.ActionEvent actionEvent) {
+
+    // what is referred to by the word uninstall.
 
     // TODO
   }

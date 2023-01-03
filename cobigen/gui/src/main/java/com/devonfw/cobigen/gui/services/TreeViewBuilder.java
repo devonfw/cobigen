@@ -2,6 +2,8 @@ package com.devonfw.cobigen.gui.services;
 
 import java.util.List;
 
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetIncrement;
+
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -12,21 +14,19 @@ import javafx.scene.control.TreeView;
 public class TreeViewBuilder {
 
   /**
+   * Extract template set increments detail
+   *
    * @param templateSetIncrements
-   * @return
+   * @return the string array of increment descriptions
    */
-  // TODO: Change type of parameter templateSetIncrements to List<TemplateSetIncrement>
-  // Add Description and Explanation?
-  public static String[] transformIncrementsToArray(List<String> templateSetIncrements) {
+  public static String[] transformIncrementsToArray(List<TemplateSetIncrement> templateSetIncrements) {
 
     String[] incrementsWithDescriptions = new String[templateSetIncrements.size() * 2];
 
-    for (int i = 0; i < incrementsWithDescriptions.length; i++) {
-      if (i % 2 == 0) {
-        // incrementsWithDescriptions[i] = templateSetIncrements.get(i).getName();
-      } else {
-        // incrementsWithDescriptions[i] = templateSetIncrements.get(i).getDescription();
-      }
+    for (int i = 0, j = 0; i < templateSetIncrements.size(); i++) {
+      incrementsWithDescriptions[j++] = templateSetIncrements.get(i).getName();
+
+      incrementsWithDescriptions[j++] = templateSetIncrements.get(i).getDescription();
     }
     return incrementsWithDescriptions;
   }

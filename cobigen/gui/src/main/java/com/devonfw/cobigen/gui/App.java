@@ -75,6 +75,7 @@ public class App extends Application {
     this.window = new Stage();
     Parent root = FXMLLoader.load(getClass().getResource("fxml/Primary.fxml"));
 
+    System.out.println(1);
     App.scene = new Scene(root);
     App.scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
@@ -83,6 +84,7 @@ public class App extends Application {
     this.window.getIcons().add(image);
     this.window.initStyle(StageStyle.TRANSPARENT);
     this.window.setResizable(true);
+
     this.window.setScene(App.scene);
     this.window.showAndWait();
   }

@@ -2,7 +2,7 @@ package com.devonfw.cobigen.gui.services;
 
 import java.io.IOException;
 
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+import com.devonfw.cobigen.gui.model.ModifyableTemplateSet;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +15,7 @@ import javafx.scene.layout.GridPane;
  * TODO nneuhaus This type ...
  *
  */
-public class TemplateSetCell extends ListCell<TemplateSet> {
+public class TemplateSetCell extends ListCell<ModifyableTemplateSet> {
 
   FXMLLoader loader;
 
@@ -28,8 +28,9 @@ public class TemplateSetCell extends ListCell<TemplateSet> {
   @FXML
   private Button installButton;
 
+  // when this method suppose to be called
   @Override
-  protected void updateItem(TemplateSet templateSet, boolean empty) {
+  protected void updateItem(ModifyableTemplateSet templateSet, boolean empty) {
 
     super.updateItem(templateSet, empty);
     if (empty || templateSet == null) {
@@ -38,7 +39,6 @@ public class TemplateSetCell extends ListCell<TemplateSet> {
       setPrefHeight(45.0);
     } else {
       if (this.loader == null) {
-        // FXMLLoader(getClass().getResource("com/devonfw/cobigen/gui))
         this.loader = new FXMLLoader(
             getClass().getClassLoader().getResource("com/devonfw/cobigen/gui/fxml/TemplateSetCell.fxml"));
         this.loader.setController(this);
@@ -49,10 +49,7 @@ public class TemplateSetCell extends ListCell<TemplateSet> {
           e.printStackTrace();
         }
       }
-
-      // TODO:
-      // this.titleLabel.setText(templateSet.getName());
-      // setText(templateSet.getName());
+      this.titleLabel.setText(templateSet.getName());
       this.installButton.setOnAction(event -> {
         System.out.println("INSTALLIEREN!!!");
       });
