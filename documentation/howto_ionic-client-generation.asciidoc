@@ -14,7 +14,7 @@ Before starting, make sure you have the following things already installed on yo
 
 - link:https://ionicframework.com/docs/installation/cli[Ionic]: follow the steps described on the Ionic page.
 It includes the installation of:
-** link:https://nodejs.org/en/[Node.js]: We have to use the `npm` package manager for downloading packages.
+** link:https://nodejs.org/en/[NodeJS]: We have to use the `npm` package manager for downloading packages.
 ** Ionic CLI.
 
 - link:https://capacitor.ionicframework.com/docs/getting-started/[Capacitor]: Necessary to access to native device features.
@@ -36,7 +36,7 @@ After that, please create a link:https://github.com/devonfw/devon4ng/wiki/tutori
 
 As you can see, `TableEto` contains 3 attributes: 2 of them are `Long` and the third one `TableState` is an enum that you will find 
 link:https://github.com/devonfw/devon4j/blob/develop/samples/core/src/main/java/io/devonfw/gastronomy/restaurant/tablemanagement/common/api/datatype/TableState.java[here]. 
-The Ionic generation works fine for any Java primitive attribute (Strings, floats, chars, boolean...) and enums. However, if you want to use your own objects, you should 
+The Ionic generation works fine for any Java primitive attribute (string, float, char, boolean...) and enums. However, if you want to use your own objects, you should 
 override the `toString()` method, as explained link:https://stackoverflow.com/questions/35361482/typescript-override-tostring[here]. 
 
 The attributes explained above will be used for generating a page that shows a list. Each item of that list 

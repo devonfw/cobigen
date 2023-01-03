@@ -268,7 +268,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         if (Files.exists(pomFile)) {
           LOG.debug("Found templates to be configured by maven.");
 
-          String pomFileHash = MavenUtil.generatePomFileHash(pomFile);
+          String pomFileHash = MavenUtil.generatePomFileHash(pomFile, MavenUtil.determineMavenRepositoryPath());
 
           if (this.configurationHolder.isJarConfig()) {
             cpCacheFile = configLocation
