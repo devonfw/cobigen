@@ -1,4 +1,3 @@
-:doctype: book
 :toc:
 toc::[]
 = End to End POC Code generation using Entity class
@@ -10,7 +9,6 @@ Download and install devonfw IDE by this https://devonfw.com/website/pages/docs/
 == Steps to create a Sample Project using CobiGen
 The `HOW_TO` is divided in 2 parts:
 
-[arabic]
 . `BE`-Backend generator (`DB` + `DAO` + services)
 . `FE`-Frontend generator (Web App Angular + Ionic App)
 
@@ -21,7 +19,6 @@ So, ready to go! We’re going to start with the `BE` part.
 === Backend
 1.Under your path installation of devonfw, you can find the _eclipse-main.bat_ script. To run it, execute _installation_path_\eclipse-main.bat.This will open eclipse.
 
-[arabic]
 2.Create a project: Navigate in the folder containing the devonfw installation and then to `*workspaces/main*`. Right-click and choose "_Open devonfw CMD shell here_". Next, launch this command in the shell:
 
 [source, java]
@@ -37,7 +34,6 @@ image:images/howtos/e2e_gen/image14.png[eclipse devon]
 
 image:images/howtos/e2e_gen/image15.png[eclipse package explorer]
 
-[arabic]
 5.Create a new *SQL* *file* `V0002__CreateTables_myapp.sql` inside _`myapp-core`_ , under the folder path _`/myapp-core/src/main/resources/db/migration/1.0`_ and insert the following script:
 
 [source]
@@ -57,7 +53,6 @@ PRIMARY KEY (employeeid)
 
 image:images/howtos/e2e_gen/image64.png[SQL file]
 
-[arabic]
 6.Create another SQL file analogously named `V0003__PopulateTables-myapp.sql` in the same folder and add following script about the INSERT to populate the table created before. Please note the warnings from the previous step here, as well.
 
 [source]
@@ -69,7 +64,6 @@ INSERT INTO EMPLOYEE (id, modificationCounter, employeeid, name, surname,email) 
 
 image:images/howtos/e2e_gen/image65.png[SQL insert]
 
-[arabic]
 
 7.We will now create the Entity Class for the code generation. For this, create a package named `com.example.domain.myapp.employeemanagement.dataaccess.api` in the folder _`myapp-core/src/main/java`_. +
 *_WARNING_*: It's important to follow this naming convention to ensure CobiGen is working properly.
@@ -105,12 +99,10 @@ public class EmployeeEntity {
 image:images/howtos/e2e_gen/image67.png[`getter & setter`]
 image:images/howtos/e2e_gen/image68.png[`getter & setter`]
 
-[arabic]
 9.Now we can use CobiGen to generate code! First, right-click in the package explorer on `EmployeeEntity.java` -> `CobiGen`  and select `Update Template`. Next, right-click on `EmployeeEntity.java` -> CobiGen -> Generate and tick the boxes as can be seen in the picture:
 
 image:images/howtos/e2e_gen/image20.png[CobiGen option selection]
 
-[arabic]
 10.Click on *Finish* to complete the process. *The entire [.underline]#`BE` layer# structure including `CRUD` operation methods was auto generated.* +
 Some classes are generated in the API part (_`myapp-api`)_, e.g. interfaces, as shown below:
 
@@ -120,7 +112,6 @@ Other classes are generated in the core part (_`myapp-core`)_, like implementati
 
 image:images/howtos/e2e_gen/image23.png[core folder]
 
-[arabic]
 11.The last step is to add the cross-domain process, as we are developing the JavaScript client and the server application separately. For this, we need to prepare the server side to accept requests from other domains, covering the following points:
 
 * Accept request from other domains.
@@ -195,7 +186,6 @@ image:images/howtos/e2e_gen/image73.png[postman]
 Let's start with the Frontend! We want to create an *Angular Web App*:
 
 
-[arabic]
 1.To generate angular structure, download or clone *devon4ng-application-template* from
 
 [source, URL]
@@ -203,7 +193,6 @@ https://github.com/devonfw/devon4ng-application-template
 
 image:images/howtos/e2e_gen/image74.png[devon dist folder]
 
-[arabic]
 *IMPORTANT* if you download the zip of the source code, the name of the app MUST BE *devon4ng-application-template*. Extract it into your devonfw folder, under `_workspaces/main_`.
 
 2.After downloading the `APP`, open the application in Eclipse. For this, right click on the left part of Eclipse and click "Import" +
@@ -215,17 +204,14 @@ image:images/howtos/e2e_gen/image84.png[import]
 Now, you should have a structure like this:
 image:images/howtos/e2e_gen/image86.png[import]
 
-[arabic]
 3.Right click on `EmployeeEto`.java file in the package `_com.example.domain.myapp.employeemanagement.logic.api.to_`, in the `BE` part (_`myapp-api_ module`). Choose `Cobigen -> Generate` and select the options as seen in the screenshot and click on *Finish*:
 
 image:images/howtos/e2e_gen/image37.png[eclipse generate]
 
-[arabic]
 4.The entire `ANGULAR` structure has been auto generated and the generated code was merged into already existing code.
 
 image:images/howtos/e2e_gen/image39.png[angular `ee` layer]
 
-[arabic]
 The *_app-routing.module.ts_* file (in `src/app`) should correspond to the code below, so copy the code and replace the existing content in your file with this:
 
 [source, ts]
@@ -331,10 +317,8 @@ export class AppRoutingModule {
 </div>
 ----
 
-[arabic]
 6.Open the devon CMD shell and execute `devon npm install` in `_workspaces/main/devon4ng-application-template_`, which will download all the required libraries.
 
-[arabic]
 7.Check in the file *environment.ts* (in `src/app/environments`) if the server path is correct.
 
 image:images/howtos/e2e_gen/image42.png[environment]
@@ -356,12 +340,10 @@ export const environment = {
 
 
 
-[arabic]
 8.For the last steps, the `BE` server should be running. Then run `*devon ng*` and then `*devon ng serve -o*` to start the Angular Application, in a CMD shell in your application folder (`_workspaces/main/devon4ng-application-template_`).
 
 image:images/howtos/e2e_gen/image75.png[ng serve command]
 
-[arabic]
 9.If the command execution is *successful*, the screen shown below will appear and you would be automatically redirected to the URL:
 
 [source, URL]
