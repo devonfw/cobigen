@@ -168,12 +168,11 @@ public class MavenUtil {
   }
 
   /**
-   * Validating the cached classpath entries and resolving missing files and dependencies from a repository that is not
-   * the current maven repository with a update of the classpath cache.
+   * Validates the cached classpath entries and resolves missing files and dependencies with an update of the classpath
+   * cache. Also, the dependencies are checked, if they belong to the correct local maven repository.
    *
    * @param classPathEntries URLs of the cached classPath entries
    * @return true if files exists and they are located in the correct repository, otherwise false
-   * @throws URISyntaxException
    */
   private static boolean validateCachedClassPaths(URL[] classPathEntries) {
 
