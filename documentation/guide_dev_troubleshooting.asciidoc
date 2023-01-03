@@ -31,7 +31,7 @@ ic (https://devon.s2-eu.capgemini.com/nexus/content/groups/public/): Not authori
 
 ==== Solution
 
-Please note the message Not authorized , ReasonPhrase: Unauthorized. -> [Help 2]!
+Please note the message `Not authorized , ReasonPhrase: Unauthorized. -> [Help 2]!`
 
 1. Please check, that you run the command by using the console.bat or a similar console initialized with the IDE environment variables.
 2. Please check your corporate login in the variables-customized.bat to be correct (`DEVON_NEXUS_USER` and `DEVON_NEXUS_PASSWD`). Make sure, that you restart the console.bat you are working in after changing the variables-customized.bat. Same holds for eclipse instances running. Please restart to make the new values accessible.
