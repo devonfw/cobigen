@@ -27,7 +27,7 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-    
+
     <!-- Proper process reader -->
     <dependency>
       <groupId>org.zeroturnaround</groupId>
