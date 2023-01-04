@@ -4,49 +4,6 @@
 == Document Description
 This document contains the documentation of the CobiGen core module as well as all CobiGen plug-ins and the CobiGen eclipse integration.
 
-[IMPORTANT]
---
-DISCLAIMER: All CobiGen plugins are compatible with the latest release of Devonfw unless otherwise denoted.
---
-
-**Current versions:**
-
-* CobiGen - Eclipse Plug-in v7.1.0
-* CobiGen - Maven Build Plug-in v7.1.0
-* CobiGen CLI v1.2.0
-
----
-
-* CobiGen v7.1.0
-* CobiGen - Java Plug-in v7.1.0
-* CobiGen - XML Plug-in v7.0.0
-* CobiGen - TypeScript Plug-in v7.1.0
-* CobiGen - Property Plug-in v7.1.0
-* CobiGen - Text Merger v7.1.1
-* CobiGen - JSON Plug-in v7.0.0
-* CobiGen - HTML Plug-in v7.0.0
-* CobiGen - Open API Plug-in v7.1.0
-* CobiGen - FreeMarker Template Engine v7.0.0
-* CobiGen - Velocity Template Engine v7.0.0
-
-**Authors:**
-
-```
-* Malte Brunnlieb
-* Jaime Diaz Gonzalez
-* Steffen Holzer
-* Ruben Diaz Martinez
-* Joerg Hohwiller
-* Fabian Kreis
-* Lukas Goerlach
-* Krati Shah
-* Christian Richter
-* Erik Grüner
-* Mike Schumacher
-* Marco Rose
-* Mohamed Ghanmi
-```
-
 include::Guide-to-the-Reader.asciidoc[leveloffset=3]
 
 include::Home.asciidoc[leveloffset=3]
