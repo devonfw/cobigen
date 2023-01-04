@@ -19,7 +19,8 @@ on:
       - '**.asciidoc'
 
 env:
-  MVN_BATCH_MODE: '-Djansi.force=true -Djansi.passthrough=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+  # if continuously builds exiting ramdomy, possibly add again -Djansi.force=true -Djansi.passthrough=true
+  MVN_BATCH_MODE: '-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
   # fixing random connection reset of maven downloads as proposed here: https://github.com/actions/virtual-environments/issues/2715#issuecomment-797388909
   MVN_HTTP_OPTIMIZATION: '-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120'
   MVN_TEST_COVERAGE: '-Dskip.code.coverage=false'
@@ -37,7 +38,7 @@ jobs:
           clone: false
       
       - name: Resolve non-cobigen dependencies
-        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -DexcludeGroupIds=com.devonfw.cobigen -T1C -P!p2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
+        run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
     
   build-and-test-core:
     needs: cache-dependencies
