@@ -17,9 +17,9 @@ Bundle-ClassPath: .,
  lib/system-lambda.jar,
  lib/logback-classic.jar,
  lib/logback-core.jar,
- lib/slf4j-api.jar,
  lib/jcl-over-slf4j.jar,
- lib/log4j-over-slf4j.jar
+ lib/log4j-over-slf4j.jar,
+ lib/slf4j-api.jar
 Require-Bundle: org.eclipse.swtbot.junit4_x;bundle-version="2.4.0",
  org.junit;bundle-version="4.12.0",
  org.eclipse.ui,

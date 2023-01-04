@@ -439,7 +439,6 @@ public class JavaMergerTest {
     JavaSource mergedSource = getMergedSource(base, patch, true);
     assertThat(mergedSource.getClasses().isEmpty()).isFalse();
     JavaClass mergedClass = mergedSource.getClasses().get(0);
-    // System.out.print(mergedSource.toString());
     assertThat(mergedClass.getFields()).as("Too much fields").hasSize(1);
     assertThat(mergedClass.getMethods().size()).as("Too much methods:\n" + mergedClass.getMethods().toString())
         .isEqualTo(1);

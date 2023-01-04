@@ -54,7 +54,6 @@ public class HealthCheckImpl implements HealthCheck {
   public HealthCheckReport upgradeTemplatesConfiguration(Path templatesConfigurationFolder, BackupPolicy backupPolicy) {
 
     LOG.info("Upgrade of the templates configuration in '{}' triggered.", templatesConfigurationFolder);
-    System.out.println(templatesConfigurationFolder.toString());
 
     TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
     try {
