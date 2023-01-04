@@ -157,12 +157,14 @@ jobs:
         with:
           path: ./**/target/repository/
           key: p2-plugins-${{ github.sha }} # key hit will not update cache
-
-      # There is no retry for jobs, just for steps, so doing the retry by hand
-      - name: Build Plugins
-        uses: GabrielBB/xvfb-action@v1.5
-        with:
-          run: mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
+          
+      - name: Run tests (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: xvfb-run -a mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
+        
+      - name: Run tests (Windows/Mac)
+        if: ${{ matrix.os != 'ubuntu-latest' }}
+        run: mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-maven-plugin:
     needs: build-and-test-plugins
