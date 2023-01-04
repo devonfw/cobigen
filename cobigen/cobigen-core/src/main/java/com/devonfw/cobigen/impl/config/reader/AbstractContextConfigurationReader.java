@@ -30,7 +30,6 @@ import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
-import com.google.common.collect.Lists;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -168,7 +167,7 @@ public abstract class AbstractContextConfigurationReader {
    */
   protected List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
 
-    List<ContainerMatcher> containerMatchers = Lists.newLinkedList();
+    List<ContainerMatcher> containerMatchers = new LinkedList<>();
     for (com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
       containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm.isRetrieveObjectsRecursively()));
     }

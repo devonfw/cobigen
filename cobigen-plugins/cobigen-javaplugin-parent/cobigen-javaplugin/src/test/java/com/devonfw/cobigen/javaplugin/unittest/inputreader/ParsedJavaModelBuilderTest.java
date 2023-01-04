@@ -411,7 +411,6 @@ public class ParsedJavaModelBuilderTest {
    * Tests whether the input type's extracted fields are complete (including annotations and javaDoc)
    *
    * @throws Exception test fails
-   * @author fkreis (08.05.2015)
    */
   @Test
   public void testExtractionOfMethodAccessibleFields_local() throws Exception {

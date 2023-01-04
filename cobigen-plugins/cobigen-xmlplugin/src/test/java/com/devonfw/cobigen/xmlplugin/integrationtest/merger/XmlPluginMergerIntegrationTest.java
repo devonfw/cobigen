@@ -122,7 +122,6 @@ public class XmlPluginMergerIntegrationTest {
   /**
    * Merges two Spring web flow documents.
    *
-   * @author sholzer (Aug 27, 2015)
    * @throws Exception hopefully never
    */
   @Test
@@ -153,7 +152,6 @@ public class XmlPluginMergerIntegrationTest {
    * Merges two xhtml documents
    *
    * @throws Exception test fails
-   * @author sholzer (Aug 28, 2015)
    */
   @Test
   public void xhtmlTest() throws Exception {
@@ -183,7 +181,6 @@ public class XmlPluginMergerIntegrationTest {
 
   /**
    * @throws Exception test fails
-   * @author sholzer (Aug 28, 2015)
    */
   @Test
   public void queryTest() throws Exception {

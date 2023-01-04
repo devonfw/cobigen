@@ -15,7 +15,6 @@ import com.devonfw.cobigen.impl.generator.InputInterpreterImpl;
 import com.devonfw.cobigen.impl.generator.InputResolverImpl;
 import com.devonfw.cobigen.impl.generator.MatcherEvaluatorImpl;
 import com.devonfw.cobigen.impl.generator.TriggerMatchingEvaluatorImpl;
-import com.google.common.collect.Lists;
 
 /**
  * AOP factory with a specific simple scope to not introduce any heavy weight frameworks and make separation of concerns
@@ -24,7 +23,7 @@ import com.google.common.collect.Lists;
 public class BeanFactory {
 
   /** Pre-configure known beans to be injectable to prevent from performance issues */
-  private static final List<Class<?>> KNOWN_BEANS = Lists.newArrayList(ConfigurationInterpreterImpl.class,
+  private static final List<Class<?>> KNOWN_BEANS = List.of(ConfigurationInterpreterImpl.class,
       GenerationProcessorImpl.class, InputInterpreterImpl.class, MatcherEvaluatorImpl.class, InputResolverImpl.class,
       TriggerMatchingEvaluatorImpl.class, CobiGenImpl.class);
 

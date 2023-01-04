@@ -2,8 +2,6 @@ package com.devonfw.cobigen.api.exception;
 
 /**
  * States that any logic has been triggered, which is currently not supported.
- *
- * @author mbrunnli (Jun 22, 2015)
  */
 public class NotYetSupportedException extends CobiGenRuntimeException {
 
@@ -16,7 +14,6 @@ public class NotYetSupportedException extends CobiGenRuntimeException {
    * Creates a new {@link NotYetSupportedException} with the given Message.
    *
    * @param msg error message
-   * @author mbrunnli (Jun 22, 2015)
    */
   public NotYetSupportedException(String msg) {
 

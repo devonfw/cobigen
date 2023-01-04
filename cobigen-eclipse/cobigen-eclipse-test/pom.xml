@@ -193,16 +193,5 @@
         </repository>
       </repositories>
     </profile>
-    <!-- see http://download.eclipse.org/tools/orbit/downloads/ for upgrades -->
-    <profile>
-      <id>p2-build-photon</id>
-      <repositories>
-        <repository>
-          <id>eclipse-photon-sr2-test</id>
-          <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository/</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
   </profiles>
 </project>

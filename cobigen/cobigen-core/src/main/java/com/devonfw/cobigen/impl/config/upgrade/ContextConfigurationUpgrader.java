@@ -19,15 +19,11 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 /**
  * This class encompasses all logic for legacy context configuration detection and upgrading these to the latest
  * supported version.
- *
- * @author mbrunnli (Jun 22, 2015)
  */
 public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<ContextConfigurationVersion> {
 
   /**
    * Creates a new {@link ContextConfigurationUpgrader} instance.
-   *
-   * @author mbrunnli (Jun 23, 2015)
    */
   public ContextConfigurationUpgrader() {
 

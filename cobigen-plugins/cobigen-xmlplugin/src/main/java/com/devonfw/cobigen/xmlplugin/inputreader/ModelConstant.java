@@ -5,8 +5,6 @@ import java.util.Map;
 
 /**
  * String constants of the xml object model for generation.
- *
- * @author fkreis (10.11.2014)
  */
 public class ModelConstant {
 

@@ -24,8 +24,6 @@ import junit.framework.AssertionFailedError;
 /**
  * This test suite includes all tests, which focus on the correct model creation including correct extraction of Java
  * inheritance, generic type resolving etc.
- *
- * @author mbrunnli (22.01.2015)
  */
 public class ModelCreationTest extends AbstractIntegrationTest {
 

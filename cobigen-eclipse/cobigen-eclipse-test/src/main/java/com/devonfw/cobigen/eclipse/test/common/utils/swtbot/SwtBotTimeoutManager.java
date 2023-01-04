@@ -20,9 +20,8 @@
 
 package com.devonfw.cobigen.eclipse.test.common.utils.swtbot;
 
+import org.assertj.core.api.Assertions;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Used to set the general SWTBot timeout. This class was originally to be thrown away, except that SWTBot doesn't
@@ -65,7 +64,7 @@ public class SwtBotTimeoutManager {
    */
   public static void setTimeout(long timeout) {
 
-    Preconditions.checkArgument(timeout > 0);
+    Assertions.assertThat(timeout).isGreaterThan(0);
     oldTimeoutSwtPrefs = getSwtBotPrefsTimeoutFieldValue();
     setSwtBotPrefsTimeoutFieldValue(timeout);
   }

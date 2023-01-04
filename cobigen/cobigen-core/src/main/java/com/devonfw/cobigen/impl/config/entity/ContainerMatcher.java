@@ -2,8 +2,6 @@ package com.devonfw.cobigen.impl.config.entity;
 
 /**
  * The {@link ContainerMatcher} type corresponds to the &lt;containerMatcher&gt; xml node
- *
- * @author mbrunnli (13.10.2014)
  */
 public class ContainerMatcher extends AbstractMatcher {
 
@@ -18,7 +16,6 @@ public class ContainerMatcher extends AbstractMatcher {
    * @param type of the matcher
    * @param value value to be processed by the matcher
    * @param retrieveObjectsRecursively states whether objects should be retrieved recursively or not
-   * @author mbrunnli (13.10.2014)
    */
   public ContainerMatcher(String type, String value, boolean retrieveObjectsRecursively) {
 
@@ -30,7 +27,6 @@ public class ContainerMatcher extends AbstractMatcher {
    * Returns the field 'retrieveObjectsRecursively'
    *
    * @return value of retrieveObjectsRecursively
-   * @author mbrunnli (18.01.2015)
    */
   public boolean isRetrieveObjectsRecursively() {
 

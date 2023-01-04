@@ -19,13 +19,13 @@ The merging of two Angular2 files will be processed as follows:
 
 The merge algorithm handles the following AST nodes:
 
-* md-nav-list
-* a
-* form
-* md-input-container
-* input
-* name (for name attribute)
-* ngIf
+* `md-nav-list`
+* `a`
+* `form`
+* `md-input-container`
+* `input`
+* `name` (for name attribute)
+* `ngIf`
 
 WARNING: Be aware, that the HTML merger is not generic and only handles the described tags needed for merging code of a basic Angular client implementation. For future versions, it is planned to implement a more generic solution.
 
