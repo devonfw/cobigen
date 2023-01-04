@@ -165,8 +165,8 @@ jobs:
         
       - name: Run tests (Windows/Mac)
         if: ${{ matrix.os != 'ubuntu-latest' }}
-        run: |
-          mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
+        shell: bash
+        run: mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
 
   build-and-test-maven-plugin:
     needs: build-and-test-plugins
