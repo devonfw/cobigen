@@ -23,15 +23,11 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 /**
  * This class encompasses all logic for legacy templates configuration detection and upgrading these to the latest
  * supported version.
- *
- * @author mbrunnli (Jun 22, 2015)
  */
 public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader<TemplatesConfigurationVersion> {
 
   /**
    * Creates a new {@link TemplateConfigurationUpgrader} instance.
-   *
-   * @author mbrunnli (Jun 23, 2015)
    */
   public TemplateConfigurationUpgrader() {
 

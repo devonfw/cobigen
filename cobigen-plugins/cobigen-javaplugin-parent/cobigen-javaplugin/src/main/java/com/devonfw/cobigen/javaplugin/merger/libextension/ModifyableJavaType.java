@@ -26,9 +26,6 @@ import com.thoughtworks.qdox.type.TypeResolver;
 
 /**
  * The default implementation for {@link JavaType}
- *
- * @author Robert Scholte
- * @since 2.0
  */
 public class ModifyableJavaType implements JavaClass, JavaType, Serializable {
 
@@ -314,19 +311,19 @@ public class ModifyableJavaType implements JavaClass, JavaType, Serializable {
    *   private T value;
    *
    *   public AbstractClass(T value) {
-   * 
+   *
    *     this.value = value;
    *   }
    *
    *   public T getValue() {
-   * 
+   *
    *     return value;
    *   }
    * }
    *
    * public class ConcreteClass extends AbstractClass&lt;String&gt; {
    *   public ConcreteClass(String s) {
-   * 
+   *
    *     super(s);
    *   }
    * }

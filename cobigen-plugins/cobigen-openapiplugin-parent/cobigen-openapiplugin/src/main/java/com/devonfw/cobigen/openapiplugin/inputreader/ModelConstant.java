@@ -3,7 +3,6 @@ package com.devonfw.cobigen.openapiplugin.inputreader;
 /**
  * String constants of the java object model for generation. Outcome of the JavaInputReader.
  *
- * @author <a href="m_brunnl@cs.uni-kl.de">Malte Brunnlieb</a>
  * @version $Revision$
  */
 public class ModelConstant {

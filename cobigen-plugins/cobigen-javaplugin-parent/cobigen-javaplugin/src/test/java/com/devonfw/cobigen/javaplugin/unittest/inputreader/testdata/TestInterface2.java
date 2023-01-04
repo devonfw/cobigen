@@ -6,8 +6,6 @@ import com.devonfw.cobigen.javaplugin.unittest.inputreader.ReflectedJavaModelBui
 /**
  * Interface without semantics for testcases in {@link ReflectedJavaModelBuilderTest} and
  * {@link ParsedJavaModelBuilderTest}
- *
- * @author fkreis (25.09.2014)
  */
 public interface TestInterface2 {
 

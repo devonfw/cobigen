@@ -187,7 +187,6 @@ public class JavaInputReader implements InputReader {
    * @param packageFolder the package's folder
    * @param recursively states whether the java source files should be retrieved recursively
    * @return the list of files contained in the package's folder
-   * @author mbrunnli (03.06.2014)
    */
   private List<File> retrieveAllJavaSourceFiles(File packageFolder, boolean recursively) {
 

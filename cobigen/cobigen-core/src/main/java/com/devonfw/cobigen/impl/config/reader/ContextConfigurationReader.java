@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -18,7 +19,6 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
-import com.google.common.collect.Maps;
 
 /** The {@link ContextConfigurationReader} reads the context xml */
 public class ContextConfigurationReader extends AbstractContextConfigurationReader {
@@ -124,7 +124,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   @Override
   public Map<String, Trigger> loadTriggers() {
 
-    Map<String, Trigger> triggers = Maps.newHashMap();
+    Map<String, Trigger> triggers = new HashMap<>();
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {

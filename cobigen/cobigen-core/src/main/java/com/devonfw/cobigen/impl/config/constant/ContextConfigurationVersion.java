@@ -1,13 +1,10 @@
 package com.devonfw.cobigen.impl.config.constant;
 
 import java.util.Map;
-
-import com.google.common.collect.Maps;
+import java.util.TreeMap;
 
 /**
  * Version steps of the templates configuration.
- *
- * @author mbrunnli (Jun 22, 2015)
  */
 public enum ContextConfigurationVersion {
 
@@ -61,7 +58,6 @@ public enum ContextConfigurationVersion {
 
   /**
    * @return the comparable float representation value of the version.
-   * @author mbrunnli (May 17, 2016)
    */
   public float getFloatRepresentation() {
 
@@ -93,7 +89,7 @@ public enum ContextConfigurationVersion {
    */
   public static Map<Float, Boolean> valuesSorted() {
 
-    Map<Float, Boolean> floatVersions = Maps.newTreeMap();
+    Map<Float, Boolean> floatVersions = new TreeMap<>();
     for (ContextConfigurationVersion v : values()) {
       floatVersions.put(v.getFloatRepresentation(), v.isBackwardCompatible());
     }

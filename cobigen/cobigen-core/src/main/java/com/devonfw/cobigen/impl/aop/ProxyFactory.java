@@ -3,6 +3,7 @@ package com.devonfw.cobigen.impl.aop;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.annotation.Cached;
 import com.devonfw.cobigen.api.annotation.ExceptionFacade;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.google.common.collect.Maps;
 
 /**
  * A factory for creating Proxy objects.
@@ -35,7 +35,7 @@ public final class ProxyFactory {
   private static Map<Object, Object> _cache = new WeakHashMap<>();
 
   static {
-    annotationToInterceptorMap = Maps.newHashMap();
+    annotationToInterceptorMap = new HashMap<>();
     annotationToInterceptorMap.put(Cached.class.getCanonicalName(), CachedInterceptor.class);
     annotationToInterceptorMap.put(ExceptionFacade.class.getCanonicalName(), ExceptionFacadeInterceptor.class);
   }

@@ -269,7 +269,8 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   private void extractArchive(Path sourcePath, Path targetPath) throws IOException {
 
     if (FileSystemUtil.isZipFile(sourcePath.toUri())) {
-      FileSystem fs = FileSystems.newFileSystem(sourcePath, null);
+      // Important cast for jdk 17 compatibility
+      FileSystem fs = FileSystems.newFileSystem(sourcePath, (ClassLoader) null);
 
       Path path = fs.getPath("/");
       Files.walkFileTree(path, new SimpleFileVisitor<Path>() {

@@ -26,7 +26,6 @@ public class MatcherTo {
    * @param type the matchers type
    * @param value to match against
    * @param target object to be matched
-   * @author mbrunnli (08.04.2014)
    */
   public MatcherTo(String type, String value, Object target) {
 
@@ -39,7 +38,6 @@ public class MatcherTo {
    * Returns the type
    *
    * @return the type
-   * @author mbrunnli (08.04.2014)
    */
   public String getType() {
 
@@ -50,7 +48,6 @@ public class MatcherTo {
    * Returns the value to match against
    *
    * @return the value to match against
-   * @author mbrunnli (08.04.2014)
    */
   public String getValue() {
 
@@ -61,7 +58,6 @@ public class MatcherTo {
    * Returns the target to be matched
    *
    * @return the target to be matched
-   * @author mbrunnli (08.04.2014)
    */
   public Object getTarget() {
 

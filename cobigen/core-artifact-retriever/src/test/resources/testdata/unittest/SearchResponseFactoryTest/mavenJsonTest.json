@@ -1,0 +1,37 @@
+{
+   "responseHeader":{
+      "status":0,
+      "QTime":1
+   },
+   "response":{
+      "numFound":4,
+      "start":0,
+      "docs":[
+		 {
+            "id":"com.devonfw.cobigen.templates:crud-java-server-app",
+            "g":"com.devonfw.cobigen.templates",
+            "a":"crud-java-server-app",
+            "latestVersion":"2021.08.001",
+            "repositoryId":"local",
+            "p":"xml",
+            "timestamp":1614380739000,
+            "versionCount":7,
+            "text":[
+               ".jar",
+               ".pom",
+			   ".xml"
+            ],
+            "ec":[
+               ".jar",
+               "-template-set.xml",
+               ".pom"
+            ]
+         }
+      ]
+   },
+   "spellcheck":{
+      "suggestions":[
+         
+      ]
+   }
+}

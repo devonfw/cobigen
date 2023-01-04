@@ -39,7 +39,6 @@ public class StringUtil {
    * @param codeBlock which should be consolidate
    * @param lineDelimiter the line delimiter of the file or null if none
    * @return the consolidated code block
-   * @author mbrunnli (04.06.2013)
    */
   public static String consolidateLineEndings(String codeBlock, String lineDelimiter) {
 

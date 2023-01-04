@@ -28,8 +28,6 @@ import com.thoughtworks.qdox.model.JavaType;
 
 /**
  * TestCase testing {@link JavaMerger}
- *
- * @author mbrunnli (04.04.2013)
  */
 public class JavaMergerTest {
 
@@ -42,7 +40,6 @@ public class JavaMergerTest {
    * Test of {@link JavaMerger} merging imports
    *
    * @throws Exception test fails
-   * @author mbrunnli (04.04.2013)
    */
   @Test
   public void testMergeImport_defaultNonOverride() throws Exception {
@@ -61,7 +58,6 @@ public class JavaMergerTest {
    * Test of {@link JavaMerger} merging fields
    *
    * @throws Exception test fails
-   * @author mbrunnli (04.04.2013)
    */
   @Test
   public void testMergeProperty_defaultNonOverride() throws Exception {
@@ -87,7 +83,6 @@ public class JavaMergerTest {
    * Test of {@link JavaMerger} merging methods
    *
    * @throws Exception test fails
-   * @author mbrunnli (04.04.2013)
    */
   @Test
   public void testMergeMethod_defaultNonOverride() throws Exception {
@@ -118,7 +113,6 @@ public class JavaMergerTest {
    * Test of {@link JavaMerger} merging classes recursively
    *
    * @throws Exception test fails
-   * @author mbrunnli (04.04.2013)
    */
   @Test
   public void testMergeInnerClasses_defaultNonOverride() throws Exception {
@@ -163,7 +157,6 @@ public class JavaMergerTest {
    * Test of {@link JavaMerger} merging imports
    *
    * @throws Exception test fails
-   * @author mbrunnli (04.04.2013)
    */
   @Test
   public void testMergeImport_Override() throws Exception {
@@ -182,7 +175,6 @@ public class JavaMergerTest {
    * Test of {@link JavaMerger} merging fields
    *
    * @throws Exception test fails
-   * @author mbrunnli (04.04.2013)
    */
   @Test
   public void testMergeProperty_Override() throws Exception {
@@ -208,7 +200,6 @@ public class JavaMergerTest {
    * Test of {@link JavaMerger} merging methods
    *
    * @throws Exception test fails
-   * @author mbrunnli (04.04.2013)
    */
   @Test
   public void testMergeMethod_Override() throws Exception {
@@ -239,7 +230,6 @@ public class JavaMergerTest {
    * Test of {@link JavaMerger} merging classes recursively
    *
    * @throws Exception test fails
-   * @author mbrunnli (04.04.2013)
    */
   @Test
   public void testMergeInnerClasses_Override() throws Exception {
@@ -285,7 +275,6 @@ public class JavaMergerTest {
    *
    * @throws IOException test fails
    * @throws MergeException test fails
-   * @author mbrunnli (12.04.2013)
    */
   @Test
   public void testReadingEncoding() throws IOException, MergeException {
@@ -314,7 +303,6 @@ public class JavaMergerTest {
    *
    * @throws IOException test fails
    * @throws MergeException test fails
-   * @author mbrunnli (04.06.2013)
    */
   @Test
   public void testConsistentLineEndings() throws IOException, MergeException {
@@ -354,7 +342,6 @@ public class JavaMergerTest {
    *
    * @throws IOException test fails
    * @throws MergeException test fails
-   * @author mbrunnli (17.06.2013)
    */
   @Test
   public void testMergeWithGenerics() throws IOException, MergeException {
@@ -410,7 +397,6 @@ public class JavaMergerTest {
    *
    * @throws IOException test fails
    * @throws MergeException test fails
-   * @author mbrunnli (29.09.2014)
    */
   @Test
   public void testMergeInheritanceRelation() throws IOException, MergeException {

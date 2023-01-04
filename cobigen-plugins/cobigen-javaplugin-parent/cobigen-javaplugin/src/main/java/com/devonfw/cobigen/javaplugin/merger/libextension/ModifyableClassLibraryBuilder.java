@@ -14,8 +14,6 @@ import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * {@link ClassLibraryBuilder} forwarding {@link #addSource(File)} to {@link ModifyableSourceLibrary#addSource(File)}
- *
- * @author mbrunnli (04.04.2013)
  */
 public class ModifyableClassLibraryBuilder extends OrderedClassLibraryBuilder {
 

@@ -4,8 +4,6 @@ import com.github.maybeec.lexeme.ConflictHandlingType;
 
 /**
  * Maps the ConflictHandlingTypes and the already used merge types
- *
- * @author sholzer (Dec 22, 2015)
  */
 public enum MergeType {
 
@@ -59,7 +57,6 @@ public enum MergeType {
    *
    * @param value the name of the merge mode
    * @param type the ConflictHandlingType
-   * @author sholzer (Dec 22, 2015)
    */
   private MergeType(String value, ConflictHandlingType type) {
 
@@ -71,7 +68,6 @@ public enum MergeType {
    * Returns the field 'type'
    *
    * @return value of type
-   * @author sholzer (Dec 22, 2015)
    */
   public ConflictHandlingType getType() {
 
@@ -82,7 +78,6 @@ public enum MergeType {
    * Returns the field 'value'
    *
    * @return value of value
-   * @author sholzer (Dec 22, 2015)
    */
   public String getValue() {
 

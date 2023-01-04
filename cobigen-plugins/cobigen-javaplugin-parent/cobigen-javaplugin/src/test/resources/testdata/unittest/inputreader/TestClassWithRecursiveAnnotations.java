@@ -10,7 +10,6 @@ public class TestClassWithRecursiveAnnotations {
     /**
      * Returns the field 'boolvalue'
      * @return value of boolvalue
-     * @author mbrunnli (05.12.2014)
      */
     @Action(fault = { @FaultAction(className = NullPointerException.class),
         @FaultAction(className = IndexOutOfBoundsException.class) })
@@ -22,7 +21,6 @@ public class TestClassWithRecursiveAnnotations {
      * Sets the field 'boolvalue'.
      * @param boolvalue
      *            new value of boolvalue
-     * @author mbrunnli (05.12.2014)
      */
     @Action(fault =  @FaultAction(className = NullPointerException.class))
     public void setBoolvalue(boolean boolvalue) {
