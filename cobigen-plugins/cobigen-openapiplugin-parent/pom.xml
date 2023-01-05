@@ -18,9 +18,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.networknt</groupId>
+      <groupId>com.github.maybeec</groupId>
       <artifactId>openapi-parser</artifactId>
-      <version>2.1.5</version>
+      <version>4.0.4</version>
     </dependency>
   </dependencies>
 </project>
