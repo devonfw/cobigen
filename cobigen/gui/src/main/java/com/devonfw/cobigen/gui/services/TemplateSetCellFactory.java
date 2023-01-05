@@ -1,6 +1,6 @@
 package com.devonfw.cobigen.gui.services;
 
-import com.devonfw.cobigen.gui.model.ModifyableTemplateSet;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -10,11 +10,10 @@ import javafx.util.Callback;
  * TODO nneuhaus This type ...
  *
  */
-public class TemplateSetCellFactory
-    implements Callback<ListView<ModifyableTemplateSet>, ListCell<ModifyableTemplateSet>> {
+public class TemplateSetCellFactory implements Callback<ListView<TemplateSet>, ListCell<TemplateSet>> {
 
   @Override
-  public ListCell<ModifyableTemplateSet> call(ListView<ModifyableTemplateSet> param) {
+  public ListCell<TemplateSet> call(ListView<TemplateSet> param) {
 
     return new TemplateSetCell();
   }

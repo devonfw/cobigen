@@ -67,6 +67,13 @@
       <artifactId>core-artifact-retriever</artifactId>
       <version>${revision}</version>
     </dependency>
+ <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core</artifactId>
+      <version>${revision}</version>
+    </dependency>
+
+
   </dependencies>
   <build>
     <plugins>

@@ -75,7 +75,6 @@ public class App extends Application {
     this.window = new Stage();
     Parent root = FXMLLoader.load(getClass().getResource("fxml/Primary.fxml"));
 
-    System.out.println(1);
     App.scene = new Scene(root);
     App.scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 

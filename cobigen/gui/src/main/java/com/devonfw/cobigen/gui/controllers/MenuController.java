@@ -5,19 +5,17 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.devonfw.cobigen.gui.Controller;
-import com.devonfw.cobigen.gui.model.ModifyableTemplateSet;
 import com.devonfw.cobigen.gui.model.TemplateSetModel;
 import com.devonfw.cobigen.gui.services.TemplateSetCell;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 
 /**
  * TODO nneuhaus This type ...
@@ -41,16 +39,15 @@ public class MenuController implements Initializable {
   public Button goSearch;
 
   @FXML
-  public ListView<ModifyableTemplateSet> searchResultsView;
-
-  private TemplateSetModel tsModel = new TemplateSetModel();
+  public ListView<TemplateSet> searchResultsView;
 
   /**
    * The constructor.
    */
   public MenuController() {
 
-    this.tsModel.loadallAvaliableTemplateSets();
+    TemplateSetModel.getInstance().loadallAvaliableTemplateSets();
+    // Where do we need tags
     // List<TemplateSetTag> tagsList = new ArrayList<>();
     // tagsList.addAll(templateSet.getTemplateSetConfiguration().getContextConfiguration().getTags().getTagsList());
   }
@@ -69,10 +66,9 @@ public class MenuController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
-    // the line sets up the template cells in observable list
+    // the line below sets up the template set cells in observable list
     this.searchResultsView.setCellFactory(resultsView -> new TemplateSetCell());
 
-    // home button brings back the previous state
     this.homeButton.setOnAction(event -> {
       try {
         this.controller.loadHome(event);
@@ -82,29 +78,27 @@ public class MenuController implements Initializable {
     });
 
     // binds the List with model
-    this.searchResultsView.setItems(this.tsModel.getTemplateSetObservableList());
+    this.searchResultsView.setItems(TemplateSetModel.getInstance().getTemplateSetObservableList());
 
     // Load increments of selected template set
-    this.searchResultsView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+    // call back functions
+    this.searchResultsView.setOnMouseClicked(event -> {
 
-      @Override
-      public void handle(MouseEvent event) {
-
-        try {
-          MenuController.this.controller.loadDetails();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+      try {
+        MenuController.this.controller.loadDetails();
+      } catch (IOException e) {
+        e.printStackTrace();
       }
+
     });
 
     // Initialize filtered List
 
-    ObservableList<ModifyableTemplateSet> listCopy = this.tsModel.getTemplateSetObservableList();
-    FilteredList<ModifyableTemplateSet> filteredData = new FilteredList<>(this.tsModel.getTemplateSetObservableList(),
-        b -> true);
+    ObservableList<TemplateSet> listCopy = TemplateSetModel.getInstance().getTemplateSetObservableList();
+    FilteredList<TemplateSet> filteredData = new FilteredList<>(
+        TemplateSetModel.getInstance().getTemplateSetObservableList(), b -> true);
 
-    // no idea what it does
+    // look after the searched text in search bar
     this.searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
       filteredData.setPredicate(templateSets -> {
         // if no search value, then display all records or whatever records it currently has, no changes

@@ -1,10 +1,12 @@
 package com.devonfw.cobigen.gui.model;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.retriever.ArtifactRetriever;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
@@ -12,51 +14,51 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * TODO alsaad This type ...
+ * Singleton Model Class
  *
  */
 public class TemplateSetModel {
-  private final ObservableList<ModifyableTemplateSet> templateSetObservableList;
+  private static TemplateSetModel tsModel;
 
-  private List<String> templatesetNames = new ArrayList<>();
+  private final ObservableList<TemplateSet> templateSetObservableList;
 
-  public TemplateSetModel() {
+  private TemplateSetModel() {
 
     this.templateSetObservableList = FXCollections.observableArrayList();
+  }
+
+  public static TemplateSetModel getInstance() {
+
+    if (tsModel == null) {
+      tsModel = new TemplateSetModel();
+    }
+
+    // returns the singleton object
+    return tsModel;
   }
 
   /**
    * @return templateSetObservableList
    */
-  public ObservableList<ModifyableTemplateSet> getTemplateSetObservableList() {
+  public ObservableList<TemplateSet> getTemplateSetObservableList() {
 
     return this.templateSetObservableList;
   }
 
   public void loadallAvaliableTemplateSets() {
 
-    // Load all the paths of template set from cobigen home folder or where?
-    // How to access paths of all template sets and load it here
-    /** Test data root path */
-    final String testdataRoot = "src/main/resources/com/devonfw/cobigen/gui/TemplateSetArtifactReaderTest";
-    List<ModifyableTemplateSet> mTS = new ArrayList<>();
-
+    // Load all the paths of template set from cobigen home folder
+    // all templates in template-set-list folder
+    File templatesetFolder = new File(CobiGenPaths.getCobiGenHomePath().resolve("template-set-list").toString());
+    File[] templatesetFileslist = templatesetFolder.listFiles();
     List<Path> templateSetFiles = new ArrayList<>();
-    templateSetFiles.add(Paths.get(testdataRoot).resolve("crud-java-server-app-2021.08.001-template-set.xml"));
-    this.templatesetNames.add(templateSetFiles.get(0).getFileName().toString());
-    templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set.xml"));
-    this.templatesetNames.add(templateSetFiles.get(1).getFileName().toString());
-
-    List<TemplateSet> templateSets = ArtifactRetriever.retrieveTemplateSetData(templateSetFiles);
-    int i = 0;
-    for (TemplateSet set : templateSets) {
-      ModifyableTemplateSet mts = new ModifyableTemplateSet(set.getTemplateSetVersion(),
-          set.getTemplateSetConfiguration(), this.templatesetNames.get(i++));
-      mTS.add(mts);
-
+    for (File file : templatesetFileslist) {
+      templateSetFiles.add(Paths.get(file.getPath()));
     }
 
-    this.templateSetObservableList.addAll(mTS);
+    List<TemplateSet> templateSets = ArtifactRetriever.retrieveTemplateSetData(templateSetFiles);
+
+    this.templateSetObservableList.addAll(templateSets);
   }
 
 }

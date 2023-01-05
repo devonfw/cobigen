@@ -2,7 +2,7 @@ package com.devonfw.cobigen.gui.services;
 
 import java.io.IOException;
 
-import com.devonfw.cobigen.gui.model.ModifyableTemplateSet;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +15,7 @@ import javafx.scene.layout.GridPane;
  * TODO nneuhaus This type ...
  *
  */
-public class TemplateSetCell extends ListCell<ModifyableTemplateSet> {
+public class TemplateSetCell extends ListCell<TemplateSet> {
 
   FXMLLoader loader;
 
@@ -30,7 +30,7 @@ public class TemplateSetCell extends ListCell<ModifyableTemplateSet> {
 
   // when this method suppose to be called
   @Override
-  protected void updateItem(ModifyableTemplateSet templateSet, boolean empty) {
+  protected void updateItem(TemplateSet templateSet, boolean empty) {
 
     super.updateItem(templateSet, empty);
     if (empty || templateSet == null) {
@@ -49,7 +49,9 @@ public class TemplateSetCell extends ListCell<ModifyableTemplateSet> {
           e.printStackTrace();
         }
       }
-      this.titleLabel.setText(templateSet.getName());
+      // name of template set. should not happen here
+      this.titleLabel
+          .setText(templateSet.getTemplateSetConfiguration().getContextConfiguration().getTriggers().getId());
       this.installButton.setOnAction(event -> {
         System.out.println("INSTALLIEREN!!!");
       });

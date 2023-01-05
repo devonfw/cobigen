@@ -1,12 +1,21 @@
 package com.devonfw.cobigen.gui.controllers;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeView;
@@ -21,6 +30,8 @@ public class DetailsController implements Initializable {
 
   // TODO: getIncrements()
   private List<String> INCREMENTS = new ArrayList<>();
+
+  private TemplateSet templateSet;
 
   @FXML
   Label titleLabel;
@@ -44,6 +55,26 @@ public class DetailsController implements Initializable {
     showVersion();
     // showTreeView(TreeViewBuilder.buildTreeView(TreeViewBuilder.transformIncrementsToArray(this.INCREMENTS)));
 
+  }
+
+  /**
+   * returns an instance of selected template Set to be operated on
+   *
+   * @return templateSet
+   */
+  public TemplateSet getTemplateSet() {
+
+    return this.templateSet;
+  }
+
+  /**
+   * Set the instance of selected template Set
+   *
+   * @param templateSet new value of {@link #gettemplateSet}.
+   */
+  public void setTemplateSet(TemplateSet templateSet) {
+
+    this.templateSet = templateSet;
   }
 
   /**
@@ -80,12 +111,30 @@ public class DetailsController implements Initializable {
 
   /**
    * @param actionEvent
+   * @throws IOException
    */
   @FXML
-  public void installTemplateSet(javafx.event.ActionEvent actionEvent) {
+  public void installTemplateSet(javafx.event.ActionEvent actionEvent) throws IOException {
 
-    // What does it exactly mean by installing and where
-    // TODO
+    // Retrieving trigger information and move the template set file to user folder
+    String triggerName = this.templateSet.getTemplateSetConfiguration().getContextConfiguration().getTriggers().getId();
+    String FileName = triggerName.replace("_", "-") + "-" + this.templateSet.getTemplateSetVersion()
+        + "-template-set.xml";
+    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
+    Path sourceFilePath = cobigenHome.resolve("template-set-list").resolve(FileName);
+    String destinationPath = "C:\\Users\\alsaad\\template-set-installed\\" + FileName;
+    Path destinationFilePath = Paths.get(destinationPath);
+    if (!Files.exists(destinationFilePath)) {
+      Files.copy(sourceFilePath, destinationFilePath);
+      System.out.println(sourceFilePath.toString());
+      System.out.println(destinationFilePath);
+    } else {
+      // Alert window if the file is already installed
+      Alert alert = new Alert(AlertType.CONFIRMATION);
+      alert.setTitle("Confirmation");
+      alert.setHeaderText("the selected template-set is already installed");
+      alert.show();
+    }
   }
 
   /**
@@ -95,6 +144,7 @@ public class DetailsController implements Initializable {
   public void updateTemplateSet(javafx.event.ActionEvent actionEvent) {
 
     // what model is previous and whats the new one
+    // new version rein packen
 
     // TODO
   }
@@ -106,6 +156,7 @@ public class DetailsController implements Initializable {
   public void uninstallTemplateSet(javafx.event.ActionEvent actionEvent) {
 
     // what is referred to by the word uninstall.
+    // Delete template set from user ordenr
 
     // TODO
   }

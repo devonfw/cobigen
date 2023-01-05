@@ -26,10 +26,15 @@ import javafx.stage.Stage;
  * Controller for the Template Set Management GUI
  */
 public class Controller implements Initializable {
-
+  /*
+   * home Controller to show home page
+   */
   @FXML
   private Parent home;
 
+  /*
+   * Details Controller for template set details
+   */
   @FXML
   private Parent details;
 
@@ -42,6 +47,7 @@ public class Controller implements Initializable {
   @FXML
   public DetailsController detailsController;
 
+  // deals with menu.fxml
   @FXML
   private AnchorPane leftPane;
 
@@ -54,6 +60,7 @@ public class Controller implements Initializable {
   @FXML
   private AnchorPane detailsPane;
 
+  // top bit of the gui
   @FXML
   private Pane topPane;
 
@@ -101,6 +108,7 @@ public class Controller implements Initializable {
 
     // selected from observable list
     TemplateSet selectedItem = this.menuController.searchResultsView.getSelectionModel().getSelectedItem();
+    // changing visibility between scenes
     if (selectedItem == null) {
       this.home.setVisible(true);
       this.details.setVisible(false);
@@ -108,7 +116,10 @@ public class Controller implements Initializable {
       this.home.setVisible(false);
       this.details.setVisible(true);
 
+      // Getting the tree view of increments of selected template set
+
       // Extract all increments from selected templateSet in list
+      // should not happen here
       List<TemplateSetIncrement> templatesetIncrements = selectedItem.getTemplateSetConfiguration()
           .getTemplatesConfiguration().getIncrements().getIncrementList();
 
@@ -120,6 +131,11 @@ public class Controller implements Initializable {
 
       // TODO
       this.detailsController.showName(selectedItem.getTemplateSetVersion());
+
+      // retrieving template-Set selected and pass it to details Controller
+      this.detailsController
+          .setTemplateSet(this.menuController.searchResultsView.getSelectionModel().getSelectedItem());
+
     }
 
   }
