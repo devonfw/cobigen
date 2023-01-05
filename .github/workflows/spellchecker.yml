@@ -1,6 +1,9 @@
 name: spellcheck 
 on:
   push:
+    paths:
+       - '**.asciidoc'
+       - '**.adoc'
   workflow_dispatch:
 jobs:
   spellchecker:
