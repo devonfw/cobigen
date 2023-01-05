@@ -1,0 +1,95 @@
+name: Sonar Analysis
+
+on:
+  workflow_run:
+    workflows: [CI/CD]
+    types: [completed]
+
+jobs:
+  sonar-analysis:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+
+      - name: Restore cli test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-cli # hit - restore
+          restore-keys: cobigen-dep-${{ hashFiles('**/pom.xml') }} # restore at least maven dependencies
+
+      # Restore other parallel results as well - seems that for any reason I could not reuse caches incrementally... need to restore all caches
+      - name: Restore eclipse test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-eclipse # hit - restore
+
+      - name: Restore core systemtest results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-core-systemtest # hit - restore
+      
+      - name: Restore core template test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-templates # hit - restore
+
+      - name: Restore core maven results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-maven # hit - restore
+
+      - name: Restore core plugin test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-plugins # hit - restore
+
+      - name: Restore core cli test results
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/*.exec
+            **/failsafe-reports/**/*
+            **/surefire-reports/**/*
+          key: Linux-11-jacoco-${{ github.sha }}-cli # hit - restore
+      
+      - name: SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          git fetch --unshallow
+          mvn verify sonar:sonar -DskipTests
