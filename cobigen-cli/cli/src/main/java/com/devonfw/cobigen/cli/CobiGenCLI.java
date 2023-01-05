@@ -12,6 +12,7 @@ import com.devonfw.cobigen.cli.logger.CLILogger;
 
 import picocli.CommandLine;
 
+//
 /**
  * Starting point of the CobiGen CLI. Contains the main method.
  */
