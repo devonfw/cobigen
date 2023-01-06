@@ -241,25 +241,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Prepare workflow context for transfer'
-      env:
-        # As a precaution, reference this value by an interpolated ENV var;
-        # instead of interpolating user controllable input directly in the shell script.
-        PR_TITLE: ${{ github.event.pull_request.title }}
-      run: |
-        # Save ENV for transfer
-        {
-          echo "PR_HEADSHA=${{ github.event.pull_request.head.sha }}"
-          echo "PR_NUMBER=${{ github.event.pull_request.number }}"
-          echo "PR_TITLE=${PR_TITLE}"
-        } >> workflow.env
-        tar --zstd -cf workflow.tar.zst workflow.env
-    
-    - name: 'Upload workflow context artifact'
-      uses: actions/upload-artifact@v3
-      with:
-        name: maven-build-test-workflow-context
-        path: workflow.tar.zst
-        retention-days: 1
+        env:
+          # As a precaution, reference this value by an interpolated ENV var;
+          # instead of interpolating user controllable input directly in the shell script.
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          # Save ENV for transfer
+          {
+            echo "PR_HEADSHA=${{ github.event.pull_request.head.sha }}"
+            echo "PR_NUMBER=${{ github.event.pull_request.number }}"
+            echo "PR_TITLE=${PR_TITLE}"
+          } >> workflow.env
+          tar --zstd -cf workflow.tar.zst workflow.env
+      
+      - name: 'Upload workflow context artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: maven-build-test-workflow-context
+          path: workflow.tar.zst
+          retention-days: 1
   
   release:
     needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
