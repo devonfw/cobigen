@@ -2,7 +2,7 @@ name: Sonar Analysis
 
 on:
   workflow_run:
-    workflows: [CI/CD]
+    workflows: ['CI/CD']
     types: [completed]
 
 jobs:
@@ -10,6 +10,29 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: 'Restore workflow context'
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          run_id: ${{ github.event.workflow_run.id }}
+          workflow: docs-preview-prepare.yml
+          name: preview-build
+
+      - name: 'Extract workflow context'
+        run: tar -xf workflow.tar.zst
+
+      - name: 'Restore workflow context'
+        run: cat workflow.env >> "${GITHUB_ENV}"
+
+      - name: 'Commit Status: Set Workflow Status as Pending'
+        uses: myrotvorets/set-commit-status-action@1.1.6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+          # Should match `env.PR_HEADSHA` when triggered by `pull_request` event workflow,
+          # Avoids failure of ENV being unavailable if job fails early:
+          sha: ${{ github.event.workflow_run.head_sha }}
+
       - name: Clone Repository
         uses: actions/checkout@v3
         with:
@@ -93,3 +116,27 @@ jobs:
         run: |
           git fetch --unshallow
           mvn verify sonar:sonar -DskipTests
+
+      # - name: 'Comment on PR: Sonar Analysis Result'
+      #   if: ${{ env.PR_NUMBER != '' }}
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   with:
+      #     number: ${{ env.PR_NUMBER }}
+      #     header: preview-comment
+      #     recreate: true
+      #     message: |
+      #       Sonar Analysis Results are available [here](${{ steps.preview.outputs.deploy-url }})! :tada:
+      #       Built with commit: ${{ env.PR_HEADSHA }}
+
+      - name: 'Commit Status: Set workflow result status'
+        uses: myrotvorets/set-commit-status-action@1.1.6
+        # Always run this step regardless of job failing early:
+        if: ${{ always() }}
+        env:
+          DEPLOY_SUCCESS: Quality gate passed.
+          DEPLOY_FAILURE: Failed to pass the quality gate!
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status == 'success' && 'success' || 'failure' }}
+          sha: ${{ github.event.workflow_run.head_sha }}
+          description: ${{ job.status == 'success' && env.DEPLOY_SUCCESS || env.DEPLOY_FAILURE }}
