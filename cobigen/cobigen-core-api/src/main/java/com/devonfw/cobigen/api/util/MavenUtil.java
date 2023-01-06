@@ -233,6 +233,7 @@ public class MavenUtil {
           runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
               "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout")));
       LOG.debug("Determined {} as maven repository path.", m2Repo);
+      MAVEN_REPO = m2Repo;
       return m2Repo;
     } else {
       LOG.debug("Using {} as cached maven repository path.", MAVEN_REPO);
