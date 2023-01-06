@@ -228,18 +228,16 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
-    if (MAVEN_REPO == null) {
-      Path m2Repo = Paths.get(
-          runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
-              "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout")));
-      LOG.debug("Determined {} as maven repository path.", m2Repo);
-      MAVEN_REPO = m2Repo;
-      return m2Repo;
-    } else {
+    if (MAVEN_REPO != null) {
       LOG.debug("Using {} as cached maven repository path.", MAVEN_REPO);
       return MAVEN_REPO;
     }
-
+    Path m2Repo = Paths
+        .get(runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
+            "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout")));
+    LOG.debug("Determined {} as maven repository path.", m2Repo);
+    MAVEN_REPO = m2Repo;
+    return m2Repo;
   }
 
   /**
