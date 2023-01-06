@@ -67,8 +67,27 @@ public class TemplateSetConfigurationManager {
 
     // We need to empty this list to prevent duplicates from being added
     this.templateSetPaths.clear();
-    List<Path> templateSetDirectories = new ArrayList<>();
 
+    List<Path> templateSetDirectories = retrieveTemplateSetDirectories(configRoot);
+
+    for (Path templateDirectory : templateSetDirectories) {
+      Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+          .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+
+      addConfigRoot(templateSetFilePath, templateDirectory, this.templateSetPaths);
+    }
+
+    return this.templateSetPaths;
+  }
+
+  /**
+   * Retrieves a list of template set directories
+   *
+   * @param configRoot List of template set directories
+   */
+  private List<Path> retrieveTemplateSetDirectories(Path configRoot) {
+
+    List<Path> templateSetDirectories = new ArrayList<>();
     try (Stream<Path> files = Files.list(configRoot)) {
       files.forEach(path -> {
         if (Files.isDirectory(path)) {
@@ -79,14 +98,7 @@ public class TemplateSetConfigurationManager {
       throw new InvalidConfigurationException(configRoot, "Could not read configuration root directory.", e);
     }
 
-    for (Path templateDirectory : templateSetDirectories) {
-      Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-          .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
-
-      addConfigRoot(templateSetFilePath, templateDirectory, this.templateSetPaths);
-    }
-
-    return this.templateSetPaths;
+    return templateSetDirectories;
   }
 
   /**
