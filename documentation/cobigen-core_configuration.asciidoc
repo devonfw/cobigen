@@ -98,9 +98,9 @@ configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `g
 
 * `template-sets.hide:` Hide very specific template sets or versions of template sets.
 
-* `template-sets.installed:` Template sets will be available at cobigen startup if template sets arent already adapted.
+* `template-sets.installed:` Template sets will be available at CobiGen startup if template sets are not already adapted.
 
-The key `template-sets.hide` and `template-sets.installed` accept maven coordinate with the following format: **groupID:artifactID:version** the version is optional and if omitted the **LATEST** version will be used. You can specify multiple maven coordinates seperated with *,*.
+The key `template-sets.hide` and `template-sets.installed` accept maven coordinate with the following format: `groupID:artifactID:version` the version is optional and if omitted the **LATEST** version will be used. You can specify multiple maven coordinates separated with *,*.
 
 * An example of how such a configuration should look like:
 
@@ -277,7 +277,7 @@ A template declaration consist of multiple information:
 ** `?lower_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_lower_case[FreeMarker]
 ** `?upper_case` analogue to http://freemarker.org/docs/ref_builtins_string.html#ref_builtin_upper_case[FreeMarker]
 ** `?replace(regex, replacement)` - Replaces all occurrences of the regular expression `regex` in the variable's value with the given `replacement` string. (since `cobigen-core v1.1.0`)
-** `?removeSuffix(suffix)` - Removes the given `suffix` in the variable's value iff the variable's value ends with the given `suffix`. Otherwise nothing will happen. (since `cobigen-core v1.1.0`)
+** `?removeSuffix(suffix)` - Removes the given `suffix` in the variable's value if and only if the variable's value ends with the given `suffix`. Otherwise nothing will happen. (since `cobigen-core v1.1.0`)
 ** `?removePrefix(prefix)` - Analogue to `?removeSuffix` but removes the prefix of the variable's value. (since `cobigen-core v1.1.0`)
 * The attribute `templateFile` describes the relative path dependent on the template folder specified in the xref:trigger-node[trigger] to the template file to be generated.
 * The attribute `mergeStrategy` _(optional)_ can be _optionally_ specified and declares the type of merge mechanism to be used, when the `destinationPath` points to an already existing file. CobiGen by itself just comes with a `mergeStrategy` `override`, which enforces file regeneration in total. Additional available merge strategies have to be obtained from the different plug-in's documentations (see here for link:cobigen-javaplugin#merger-extensions[java], link:cobigen-xmlplugin#merger-extensions[XML], link:cobigen-propertyplugin#merger-extensions[properties], and link:cobigen-textmerger#merger-extensions[text]). Default: _not set_ (means not mergeable)

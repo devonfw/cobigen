@@ -279,7 +279,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
           }
 
           if (Files.exists(pomFile)) {
-            String pomFileHash = MavenUtil.generatePomFileHash(pomFile);
+          String pomFileHash = MavenUtil.generatePomFileHash(pomFile, MavenUtil.determineMavenRepositoryPath());
 
             if (!this.configurationHolder.isTemplateSetConfiguration()) {
               if (this.configurationHolder.isJarConfig()) {
