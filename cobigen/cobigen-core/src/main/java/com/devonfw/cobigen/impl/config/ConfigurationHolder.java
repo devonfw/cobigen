@@ -204,7 +204,7 @@ public class ConfigurationHolder {
       List<Trigger> triggers = readContextConfiguration().getTriggers();
 
       for (Trigger trigger : triggers) {
-        Path configLocation = readContextConfiguration().getConfigLocationforTrigger(trigger.getId(), false);
+        Path configLocation = readContextConfiguration().retrieveTemplateSetUtilsLocationForTrigger(trigger.getId(), false);
         utilsLocationPaths.add(configLocation);
       }
     } else {

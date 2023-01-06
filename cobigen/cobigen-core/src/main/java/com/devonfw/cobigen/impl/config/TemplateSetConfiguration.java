@@ -75,6 +75,19 @@ public class TemplateSetConfiguration {
   private Map<String, Path> rootTemplateFolders;
 
   /**
+   * Map of the utility folders distinguished by their trigger ID
+   */
+  private Map<String, Path> utilFolders;
+
+  /**
+   * @return utilFolders
+   */
+  public Map<String, Path> getUtilFolders() {
+
+    return this.utilFolders;
+  }
+
+  /**
    * The constructor.
    *
    * @param configurationPath CobiGen configuration root path
@@ -84,6 +97,7 @@ public class TemplateSetConfiguration {
     this.triggers = Maps.newHashMap();
     this.templates = Maps.newHashMap();
     this.rootTemplateFolders = Maps.newHashMap();
+    this.utilFolders = Maps.newHashMap();
     this.configRoot = configurationPath;
     readConfiguration(configurationPath);
   }
@@ -124,6 +138,9 @@ public class TemplateSetConfiguration {
 
       Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
       Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
+
+      // TODO: WIP move this src/main/templates browsing to root template set folder into new method
+      this.utilFolders.put(activeTrigger.getId(), templateSetFile.getParent().getParent().getParent().getParent());
 
       this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
       this.configRoot = configurationPath;
