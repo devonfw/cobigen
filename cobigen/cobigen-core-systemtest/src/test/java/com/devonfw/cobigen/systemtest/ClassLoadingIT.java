@@ -104,12 +104,12 @@ public class ClassLoadingIT extends AbstractApiTest {
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
     // Execution
-    GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(generationRootFolder.toURI()),
+    GenerationReportTo report = cobigen.generate(input, templates.get(1), Paths.get(generationRootFolder.toURI()),
         false);
 
     // Verification
-    File expectedResult = new File(testFileRootPath, "expected/Test.java");
-    File generatedFile = new File(generationRootFolder, "com/devonfw/Test.java");
+    File expectedResult = new File(testTemplateSetFileRootPath, "expected/generated.txt");
+    File generatedFile = new File(generationRootFolder, "generated.txt");
     assertThat(report).isSuccessful();
     assertThat(generatedFile).exists();
     assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
