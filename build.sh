@@ -13,7 +13,7 @@ fi
 
 if [[ " ${COMPONENTS_TO_BUILD[*]} " =~ " core " ]]; then
   log_step "Build & Test Core"
-  #doRunCommand "mvn install $MVN_SETTINGS -f cobigen --projects !cobigen-core-systemtest $COVERAGE $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE"
+  doRunCommand "mvn install $MVN_SETTINGS -f cobigen --projects !cobigen-core-systemtest $COVERAGE $ENABLED_TEST $DEBUG $PARALLELIZED $BATCH_MODE"
 fi
 
 if [[ " ${COMPONENTS_TO_BUILD[*]} " =~ " plugins " ]]; then
