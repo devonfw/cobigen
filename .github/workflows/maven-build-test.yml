@@ -35,7 +35,7 @@ jobs:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       
       - name: Resolve non-cobigen dependencies
-        run: mvn -pl eclipse-test-plugin org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
+        run: mvn -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
 
   build:
     needs: cache-dependencies
