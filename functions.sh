@@ -6,101 +6,137 @@ trap popd EXIT ERR
 echo ""
 echo "##########################################"
 echo ""
-echo "Script config: "
-if [[ "$*" == *test* ]]
-then
-  ENABLED_TEST=""
-  echo -e "\e[92m  > With test execution\e[39m"
-else
-  ENABLED_TEST="-DskipTests"
-  echo "  * No test execution (pass 'test' as argument to enable)"
-fi
 
-if [[ "$*" == *repo-mvn-settings* ]]
-then
-  MVN_SETTINGS="-s .mvn/settings.xml"
-  echo -e "\e[92m  > Executing with .mvn/settings.xml \e[39m"
-else
-  MVN_SETTINGS=""
-  echo "  * Executing with individually configured settings.xml (pass 'repo-mvn-settings' as argument to enable execution with .mvn/settings.xml)"
-fi
+# all components
+ALL_COMPONENTS=(core plugins templates maven eclipse cli)
 
-if [[ "$*" == *batch* ]]
-then
-  # https://stackoverflow.com/a/66801171 # the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
-  BATCH_MODE="-Djansi.force=true -Djansi.passthrough=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
-  echo -e "\e[92m  > Running in batch mode\e[39m"
-else
-  BATCH_MODE=""
-  echo "  * No batch mode, showing all downloads + ascii colors (pass 'batch' as argument to enable)"
-fi
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-if [[ "$*" == *parallel* ]]
-then
-  PARALLELIZED="-T1C"
-  echo -e "\e[92m  > Parallel execution of 1 thread per core\e[39m"
-else
-  PARALLELIZED=""
-  echo "  * No parallel execution (pass 'parallel' as argument to enable)"
-fi
+function show_help() {
+cat << EOF  
 
-if [[ "$*" == *debug* ]]
-then
-  DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true -X" # set to false to see hidden exceptions
-  echo -e "\e[92m  > Debug Mode\e[39m"
-else
-  DEBUG=""
-  echo "  * No debug mode (pass 'debug' as argument to enable)"
-fi
+Usage of CobiGen build & deploy script  
 
-if [[ "$*" == *dryrun* ]]
-then
-  DRYRUN=true
-  echo -e "\e[92m  > Dryrun - No git push will be executed\e[39m"
-else
-  DRYRUN=false
-  echo "  * No dryrun (pass 'dryrun' as argument to enable)"
-fi
+  -b | --batch             Batch mode to prevent from issues like https://stackoverflow.com/a/66801171
+  -c | --coverage          Create code coverage report
+  -C | --components=       Components to build/deploy. By default all possible values $( IFS=$','; echo "${ALL_COMPONENTS[*]}" ). Can be multiple, commaseparated
+  -d | --dirty             Dirty execution running no maven clean before build
+  -g | --gpgkey=           GPG key name to be passed for code signing
+  -h | --help              Show help
+  -p | --parallel          Parallelize execution (1 Thread per Core)
+  -s | --repo-settings     Executing maven with .m2/settings.xml
+  -t | --test              Execute tests
+  -x | --debug             Run debug mode (highly verbose logs)
+  -y | --silent-confirm    Agree to all yes / no questions silently
+  -z | --dryrun            Dry run (no git push will be executed) - needed to test the release script
 
-if [[ "$*" == *silent* ]]
-then
-  SILENT=true
-  echo -e "\e[92m  > Silent execution \e[93m(accept all confirmations silently)\e[39m"
-else
-  SILENT=false
-  echo "  * No silent execution (pass 'silent' as argument to enable)"
-fi
+EOF
+}
 
-if [[ "$*" == *no-clean* ]]
-then
-  NO_CLEAN=true
-  echo -e "\e[92m  > Skip mvn clean\e[39m"
-else
-  NO_CLEAN=false
-  echo "  * Executing mvn clean before execution (pass 'no-clean' as argument to skip)"
-fi
-
-if [[ "$*" == *gpgkey=* ]]
-then
-  GPG_KEYNAME=$(echo "$*" | sed -r -E -n 's|.*gpgkey=([^ ]+).*|\1|p')
-  echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
-elif [[ -n "$GPG_KEY" ]]
+# defaults
+COMPONENTS_TO_BUILD=()
+ENABLED_TEST="-DskipTests"
+MVN_SETTINGS=""
+BATCH_MODE=""
+PARALLELIZED=""
+DEBUG=""
+DRYRUN=false
+NO_CLEAN=false
+GPG_KEYNAME=""
+if [[ -n "$GPG_KEY" ]]
 then
   GPG_KEYNAME=$GPG_KEY
   echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
-elif [[ $(basename $0) != "build.sh" ]]
+fi
+COVERAGE=""
+
+echo "Configuration: "
+echo -e "\e[91m"
+
+if ! options="$(getopt -l "batch,coverage,components:,dirty,gpgkey:,help,parallel,repo-settings,test,debug,silent-confirm,dryrun" -o "bcdg:hpstxyz" -- "$@")"; then
+  echo -e "\e[39m"
+  show_help
+  exit 1
+fi
+eval set -- "$options"
+
+#while getopts "h?ts" opt; do
+while true
+do
+  case "$1" in
+    -b|--batch)
+      # the latter will remove maven download logs / might cause https://stackoverflow.com/a/66801171 issues
+      BATCH_MODE="-Djansi.force=true -Djansi.passthrough=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+      echo -e "\e[92m  > Running in batch mode\e[39m"
+      ;;
+    -c|--coverage)
+      COVERAGE="-Dskip.code.coverage=false"
+      echo -e "\e[92m  > Creating Code Coverage report\e[39m"
+      ;;
+    -C|--components)
+      shift
+      IFS=',' read -r -a COMPONENTS <<< $1
+      COMPONENTS_TO_BUILD+=(${COMPONENTS[@]})
+      echo -e "\e[92m  > Build components $( IFS=$','; echo "${COMPONENTS[*]}" )\e[39m"
+      ;;
+    -d|--dirty)
+      NO_CLEAN=true
+      echo -e "\e[92m  > Skip mvn clean\e[39m"
+      ;;
+    -g|--gpgkey)
+      shift
+      GPG_KEYNAME=$1
+      echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    -p|--parallel)
+      PARALLELIZED="-T1C"
+      echo -e "\e[92m  > Parallel execution of 1 thread per core\e[39m"
+      ;;
+    -s|--repo-settings) 
+      MVN_SETTINGS="-s .mvn/settings.xml"
+      echo -e "\e[92m  > Executing maven with settings from .mvn/settings.xml \e[39m"
+      ;;
+    -t|--test) 
+      ENABLED_TEST=""
+      echo -e "\e[92m  > With test execution\e[39m"
+      ;;
+    -x|--debug)
+      DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true -X"
+      echo -e "\e[92m  > Running in debug mode\e[39m"
+      ;;
+    -y|--silent-confirm)
+      SILENT=true
+      echo -e "\e[92m  > Silent confirmation \e[93m(accept all confirmations silently)\e[39m"
+      ;;
+    -z|--dryrun)
+      DRYRUN=true
+      echo -e "\e[92m  > Dryrun - No git push will be executed\e[39m"
+      ;;
+    --)
+      shift
+      break
+    ;;
+  esac
+  shift
+done
+
+if [[ ${#COMPONENTS_TO_BUILD[@]} = 0 ]]
+then
+  echo -e "\e[92m  > Build all components\e[39m"
+  COMPONENTS_TO_BUILD=$ALL_COMPONENTS
+fi
+
+## VALIDATE
+
+if [[ $(basename $0) != "build.sh" ]]
 then
   echo -e "\e[91m  !ERR! Cannot sign artifacts without passing a gpg key for signing. Please pass gpgkey=<your key> as a parameter or GPG_KEY as secret.\e[39m"
   exit 1
-fi
-
-if [[ "$*" == *coverage* ]]
-then
-  COVERAGE="-Dskip.code.coverage=false"
-  echo -e "\e[92m  > Creating Code Coverage report\e[39m"
-else
-  COVERAGE=""
-  echo "  * No code coverage (pass 'coverage' as argument to enable)"
 fi
 
 DEPLOY_SIGN="-Poss -Dgpg.keyname=$GPG_KEYNAME -Dgpg.executable=gpg"

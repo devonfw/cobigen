@@ -29,215 +29,58 @@ jobs:
   cache-dependencies:
     runs-on: ubuntu-latest
     steps:      
-      - name: Clone Repository
-        uses: actions/checkout@v3
-
-      - uses: devonfw-actions/java-maven-setup@main
+      - name: Checkout & Prepare
+        uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
-          clone: false
       
       - name: Resolve non-cobigen dependencies
         run: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
-    
-  build-and-test-core:
+
+  build:
     needs: cache-dependencies
-    strategy:
-      fail-fast: false
-      matrix:
-        javaVersion: [11]
-        os: [windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-
+    runs-on: ubuntu-latest
     steps:
-      - uses: devonfw-actions/java-maven-setup@main
+      - name: Checkout & Prepare
+        uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }} # new key will cache
+          maven-cache-key: maven-${{ github.sha }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
-          java-version: ${{ matrix.javaVersion }}
-          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-test # new key will cache
 
-      - name: Build & Test Core
-        shell: bash
-        run: mvn install -f cobigen --projects !cobigen-core-systemtest ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
-
-  build-and-test-plugins:
-    needs: build-and-test-core
-    strategy:
-      fail-fast: false
-      matrix:
-        javaVersion: [11]
-        os: [windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: devonfw-actions/java-maven-setup@main
-        with:
-          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # new key will cache
-          maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}
-          java-version: ${{ matrix.javaVersion }}
-          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-plugins # new key will cache
-          jacoco-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-test # hit - restore
-
-      - name: Build & Test Plugins
-        shell: bash
-        run: mvn install -f cobigen-plugins ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
-
-  build-plugins-p2:
-    needs: build-and-test-plugins
-    strategy:
-      fail-fast: false
-      matrix:
-        javaVersion: [11]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: devonfw-actions/java-maven-setup@main
-        with:
-          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
-          java-version: ${{ matrix.javaVersion }}
-
-      - name: Cache p2 plugin repositories
+      - name: Cache built P2 repositories
         uses: actions/cache@v3
         with:
           path: ./**/target/repository/
-          key: p2-plugins-${{ github.sha }} # new key will cache
-
-      - name: Build Plugins UpdateSite
-        shell: bash
-        run: |
-          mvn package -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }}
-          mvn install -DskipTests -f cobigen-plugins bundle:bundle -Pp2-bundle p2:site --projects !cobigen-javaplugin-parent/cobigen-javaplugin-model,!cobigen-openapiplugin-parent/cobigen-openapiplugin-model,!:plugins-parent,!cobigen-javaplugin-parent,!cobigen-openapiplugin-parent,!cobigen-templateengines ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }}
-
-  run-core-systemtest:
-    needs: build-and-test-plugins
-    strategy:
-      fail-fast: false
-      matrix:
-        javaVersion: [11]
-        os: [windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: devonfw-actions/java-maven-setup@main
-        with:
-          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
-          java-version: ${{ matrix.javaVersion }}
-          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-core-systemtest # new key will cache
-
-      - name: Run Core Systemtest
-        shell: bash
-        run: mvn install -f cobigen/cobigen-core-systemtest ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
-
-  build-and-test-eclipse-plugin:
-    needs: build-plugins-p2
-    strategy:
-      fail-fast: false
-      matrix:
-        javaVersion: [11]
-        os: [windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: devonfw-actions/java-maven-setup@main
-        with:
-          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins # key hit will not update cache
-          java-version: ${{ matrix.javaVersion }}
-          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-eclipse # new key will cache
-        
-      - name: Cache Eclipse repository
-        uses: actions/cache@v3
-        with:
-          path: ./**/eclipse/target/repository/
-          key: p2-eclipse-${{ github.sha }} # new key will cache
+          key: p2-${{ github.sha }} # new key will cache
       
-      # After checkout we need to restore the built repositories
-      - name: Restore P2 plugins repositories
-        uses: actions/cache@v3
-        with:
-          path: ./**/target/repository/
-          key: p2-plugins-${{ github.sha }} # key hit will not update cache
-          
-      - name: Run tests (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run -a mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
-        
-      - name: Run tests (Windows/Mac)
-        if: ${{ matrix.os != 'ubuntu-latest' }}
-        shell: bash
-        run: mvn install -f cobigen-eclipse -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
-
-  build-and-test-maven-plugin:
-    needs: build-and-test-plugins
+      - name: Build all artifacts
+        run: ./build.sh -pb
+    
+  test:
+    needs: build
     strategy:
       fail-fast: false
       matrix:
         javaVersion: [11]
         os: [windows-latest, ubuntu-latest]
+        component: [core, plugins, templates, maven, eclipse, cli]
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven # new key will cache
-          maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-plugins
+          maven-cache-key: maven-${{ github.sha }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
-          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-maven # new key will cache
+          jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
 
-      - name: Build & Test Maven Plugin
+      - name: Test
         shell: bash
-        run: |
-          mvn install -f cobigen-maven ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
-
-  build-and-test-cli:
-    needs: build-and-test-templates
-    strategy:
-      fail-fast: false
-      matrix:
-        javaVersion: [11] # CLI does not support jdk 8 anymore
-        os: [windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: devonfw-actions/java-maven-setup@main
-        with:
-          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-cli # new key will cache
-          maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates
-          java-version: ${{ matrix.javaVersion }}
-          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-cli # new key will cache
-
-      - name: Build & Test CLI
-        shell: bash
-        run: |
-          mvn install -f cobigen-cli ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
-
-  build-and-test-templates:
-    needs: build-and-test-maven-plugin
-    strategy:
-      fail-fast: false
-      matrix:
-        javaVersion: [11]
-        os: [windows-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: devonfw-actions/java-maven-setup@main
-        with:
-          maven-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-templates # new key will cache
-          maven-cache-restore-key: ${{ runner.os }}-${{ matrix.javaVersion }}-maven-${{ github.sha }}-maven
-          java-version: ${{ matrix.javaVersion }}
-          jacoco-cache-key: ${{ runner.os }}-${{ matrix.javaVersion }}-jacoco-${{ github.sha }}-templates # new key will cache
-
-      - name: Build & Test Templates
-        shell: bash
-        run: |
-          mvn install -f cobigen-templates ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} ${{ env.MVN_TEST_COVERAGE }}
+        run: ./build.sh -dbtc
 
   # Sonar Analysis is done in separate workflow (https://github.com/devonfw/cobigen/blob/master/.github/workflows/sonar-analysis.yml)
   # as of a workaround of potential secret leaking on PRs (https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
   sonar-analysis-preparation:
-    needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - name: 'Prepare workflow context for transfer'
@@ -262,7 +105,7 @@ jobs:
           retention-days: 1
   
   release:
-    needs: [build-and-test-maven-plugin, build-and-test-templates, run-core-systemtest, build-and-test-eclipse-plugin, build-and-test-cli]
+    needs: [test]
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.repository, 'devonfw/') && github.ref == 'refs/heads/master' }}
     continue-on-error: true
