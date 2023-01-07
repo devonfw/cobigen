@@ -128,7 +128,7 @@ done
 if [[ ${#COMPONENTS_TO_BUILD[@]} = 0 ]]
 then
   echo -e "\e[92m  > Build all components\e[39m"
-  COMPONENTS_TO_BUILD=$ALL_COMPONENTS
+  COMPONENTS_TO_BUILD=${ALL_COMPONENTS[@]}
 fi
 
 ## VALIDATE
