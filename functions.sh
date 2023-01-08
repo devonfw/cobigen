@@ -46,6 +46,8 @@ NO_CLEAN=false
 GPG_KEYNAME=""
 COVERAGE=""
 
+echo "Configuration: "
+
 # Automatically get GPG key from env
 if [[ -n "$GPG_KEY" ]]
 then
@@ -55,13 +57,12 @@ fi
 
 MVN_DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true -X"
 # Automatically enable debug logging on github actions debug run
-if [[ "$ACTIONS_STEP_DEBUG" == "true" ]]
+if [[ "$ACTIONS_STEP_DEBUG" == true ]]
 then
   DEBUG="$MVN_DEBUG"
   echo -e "\e[92m  > Running in debug mode\e[39m"
 fi
 
-echo "Configuration: "
 echo -e "\e[91m"
 
 if ! options="$(getopt -l "batch,coverage,components:,dirty,gpgkey:,help,parallel,repo-settings,test,debug,silent-confirm,dryrun" -o "bcdg:hpstxyz" -- "$@")"; then
