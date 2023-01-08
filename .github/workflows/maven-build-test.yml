@@ -61,9 +61,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        component: [core, plugins, templates, maven, eclipse, cli]
         javaVersion: [11]
         os: [windows-latest, ubuntu-latest]
-        component: [core, plugins, templates, maven, eclipse, cli]
     runs-on: ${{ matrix.os }}
 
     steps:

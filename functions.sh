@@ -44,12 +44,22 @@ DEBUG=""
 DRYRUN=false
 NO_CLEAN=false
 GPG_KEYNAME=""
+COVERAGE=""
+
+# Automatically get GPG key from env
 if [[ -n "$GPG_KEY" ]]
 then
   GPG_KEYNAME=$GPG_KEY
   echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
 fi
-COVERAGE=""
+
+MVN_DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true -X"
+# Automatically enable debug logging on github actions debug run
+if [[ "$ACTIONS_STEP_DEBUG" == "true" ]]
+then
+  DEBUG="$MVN_DEBUG"
+  echo -e "\e[92m  > Running in debug mode\e[39m"
+fi
 
 echo "Configuration: "
 echo -e "\e[91m"
@@ -106,7 +116,7 @@ do
       echo -e "\e[92m  > With test execution\e[39m"
       ;;
     -x|--debug)
-      DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true -X"
+      DEBUG="$MVN_DEBUG"
       echo -e "\e[92m  > Running in debug mode\e[39m"
       ;;
     -y|--silent-confirm)
