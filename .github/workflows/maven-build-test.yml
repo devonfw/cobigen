@@ -52,6 +52,7 @@ jobs:
         with:
           path: ./**/target/repository/
           key: p2-${{ github.sha }} # new key will cache
+          enableCrossOsArchive: true
       
       - name: Build all artifacts
         run: ./build.sh -pb
