@@ -46,7 +46,7 @@ jobs:
       matrix:
         javaVersion: [11]
         os: [windows-latest, ubuntu-latest]
-      runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
@@ -73,7 +73,7 @@ jobs:
         component: [core, plugins, templates, maven, eclipse, cli]
         javaVersion: [11]
         os: [windows-latest, ubuntu-latest]
-      runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
