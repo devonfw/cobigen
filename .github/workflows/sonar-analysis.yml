@@ -15,8 +15,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           run_id: ${{ github.event.workflow_run.id }}
-          workflow: docs-preview-prepare.yml
-          name: preview-build
+          name: maven-build-test-workflow-context
 
       - name: 'Extract workflow context'
         run: tar -xf workflow.tar.zst
