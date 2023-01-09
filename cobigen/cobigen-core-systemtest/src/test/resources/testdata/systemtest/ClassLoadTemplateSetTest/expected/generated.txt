@@ -1,2 +1,4 @@
 Testing JarredClass:
 String is Something
+5
+generator

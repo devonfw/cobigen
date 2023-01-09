@@ -7,7 +7,10 @@
   xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
   <cc:contextConfiguration version="3.0">
     <cc:trigger id="entities" type="java">
-      <cc:matcher type="fqn" value=".+">
+      <!--  <cc:matcher type="fqn" value=".+">-->
+      <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
+        <cc:variableAssignment type="constant" key="etoName" value="5"/>
+        <cc:variableAssignment type="regex" key="etoName2" value="4" />
       </cc:matcher>
     </cc:trigger>
     <cc:tags>

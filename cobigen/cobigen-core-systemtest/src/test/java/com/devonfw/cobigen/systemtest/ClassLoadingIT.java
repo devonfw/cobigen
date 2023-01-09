@@ -104,7 +104,7 @@ public class ClassLoadingIT extends AbstractApiTest {
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
     // Execution
-    GenerationReportTo report = cobigen.generate(input, templates.get(1), Paths.get(generationRootFolder.toURI()),
+    GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(generationRootFolder.toURI()),
         false);
 
     // Verification

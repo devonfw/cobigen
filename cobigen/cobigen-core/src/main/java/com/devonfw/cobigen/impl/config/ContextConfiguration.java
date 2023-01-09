@@ -169,7 +169,11 @@ public class ContextConfiguration {
     if (this.configurationHolder != null) {
       Map<String, Path> rootTemplateFolders = this.configurationHolder.getTemplateSetConfiguration()
           .getRootTemplateFolders();
-      return rootTemplateFolders.get(triggerId);
+      Path rootTemplateFolder = rootTemplateFolders.get(triggerId);
+      if (fileSystemDependentPath && FileSystemUtil.isZipFile(rootTemplateFolder.toUri())) {
+        rootTemplateFolder = FileSystemUtil.createFileSystemDependentPath(rootTemplateFolder.toUri());
+      }
+      return rootTemplateFolder;
     }
 
     return this.configurationPath;
