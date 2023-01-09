@@ -75,7 +75,7 @@ jobs:
 
       - name: Test
         shell: bash
-        run: ./build.sh -dbtc --components ${{ matrix.component }}
+        run: ./build.sh -dbtcx --components ${{ matrix.component }}
 
   # Sonar Analysis is done in separate workflow (https://github.com/devonfw/cobigen/blob/master/.github/workflows/sonar-analysis.yml)
   # as of a workaround of potential secret leaking on PRs (https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
