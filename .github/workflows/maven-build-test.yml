@@ -40,7 +40,6 @@ jobs:
 
   build:
     needs: cache-dependencies
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
