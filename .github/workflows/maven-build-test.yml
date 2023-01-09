@@ -35,26 +35,34 @@ jobs:
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       
       - name: Resolve non-cobigen dependencies
+        shell: bash
         run: mvn -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
 
   build:
     needs: cache-dependencies
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        javaVersion: [11]
+        os: [windows-latest, ubuntu-latest]
+      runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-key: maven-${{ github.sha }} # new key will cache
+          maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
 
       - name: Cache built P2 repositories
         uses: actions/cache@v3
         with:
           path: ./**/target/repository/
-          key: p2-${{ github.sha }} # new key will cache
+          key: p2-${{ github.sha }}-${{ github.os }} # new key will cache
           enableCrossOsArchive: true
       
       - name: Build all artifacts
+        shell: bash
         run: ./build.sh -pb
     
   test:
@@ -70,7 +78,7 @@ jobs:
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-key: maven-${{ github.sha }} # match, restore only
+          maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
 
