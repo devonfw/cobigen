@@ -104,7 +104,6 @@ public class GenerateCommand extends CommandCommons {
     CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject);
 
     resolveTemplateDependencies();
-
     if (this.increments == null && this.templates != null) {
       Tuple<List<Object>, List<TemplateTo>> inputsAndArtifacts = preprocess(cg, TemplateTo.class);
       for (int i = 0; i < inputsAndArtifacts.getA().size(); i++) {
@@ -331,16 +330,20 @@ public class GenerateCommand extends CommandCommons {
         inputFile);
     report = cg.generate(input, generableArtifacts, this.outputRootPath.toAbsolutePath(), false, (task, progress) -> {
     });
-    ValidationUtils.checkGenerationReport(report);
-    Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream().filter(e -> e.getFileName().endsWith(".java"))
-        .collect(Collectors.toSet());
-    if (!generatedJavaFiles.isEmpty()) {
-      try {
-        ParsingUtils.formatJavaSources(generatedJavaFiles);
-      } catch (FormatterException e) {
-        LOG.warn(
-            "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
+    boolean generationSuccess = ValidationUtils.checkGenerationReport(report);
+    if (generationSuccess) {
+      Set<Path> generatedJavaFiles = report.getGeneratedFiles().stream().filter(e -> e.getFileName().endsWith(".java"))
+          .collect(Collectors.toSet());
+      if (!generatedJavaFiles.isEmpty()) {
+        try {
+          ParsingUtils.formatJavaSources(generatedJavaFiles);
+        } catch (FormatterException e) {
+          LOG.warn(
+              "Generation was successful but we were not able to format your code. Maybe you will see strange formatting.");
+        }
       }
+    } else {
+      LOG.error("Generation not successful! {}", (LOG.isDebugEnabled() ? "" : MessagesConstants.VERBOSE_HINT));
     }
   }
 

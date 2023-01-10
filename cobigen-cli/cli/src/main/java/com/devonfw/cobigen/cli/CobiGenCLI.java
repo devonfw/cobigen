@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +35,21 @@ public class CobiGenCLI {
     LOG.debug("Current working directory: {}", System.getProperty("user.dir"));
     CommandLine commandLine = new CommandLine(new CobiGenCommand());
     commandLine.registerConverter(Path.class, s -> Paths.get(s));
+    CommandLine.IExecutionExceptionHandler exceptionHandler = new CommandLine.IExecutionExceptionHandler() {
+      @Override
+      public int handleExecutionException(Exception e, CommandLine commandLine, CommandLine.ParseResult parseResult) throws Exception {
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Cobigen exited with exception: ", e);
+        } else {
+          LOG.error("An error occurred while executing CobiGen: {}", e.getMessage());
+        }
+        return 1;
+      }
+    };
+    commandLine.setExecutionExceptionHandler(exceptionHandler);
     int exitCode = commandLine.execute(args);
-    if (exitCode == 0) {
-      LOG.info("Success");
-    } else {
-      LOG.info("Failed");
+    if (exitCode != 0) {
+      LOG.error("Cobigen terminated in an unexpected manner. {}", (LOG.isDebugEnabled() ? "" : MessagesConstants.VERBOSE_HINT));
     }
     System.exit(exitCode);
   }

@@ -31,6 +31,8 @@ public abstract class CommandCommons implements Callable<Integer> {
 
     if (this.verbose) {
       CLILogger.setLevel(Level.DEBUG);
+    } else {
+      CLILogger.setLevel(Level.INFO);
     }
 
     return doAction();
