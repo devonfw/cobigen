@@ -25,7 +25,7 @@ Usage of CobiGen build & deploy script
   -g | --gpgkey=           GPG key name to be passed for code signing
   -h | --help              Show help
   -p | --parallel          Parallelize execution (1 Thread per Core)
-  -s | --repo-settings     Executing maven with .m2/settings.xml
+  -s | --ci-settings       Executing maven with .m2/ci-settings.xml
   -t | --test              Execute tests
   -x | --debug             Run debug mode (highly verbose logs)
   -y | --silent-confirm    Agree to all yes / no questions silently
@@ -109,7 +109,7 @@ do
       echo -e "\e[92m  > Parallel execution of 1 thread per core\e[39m"
       ;;
     -s|--repo-settings) 
-      MVN_SETTINGS="-s .mvn/settings.xml"
+      MVN_SETTINGS="-s .mvn/ci-settings.xml"
       echo -e "\e[92m  > Executing maven with settings from .mvn/settings.xml \e[39m"
       ;;
     -t|--test) 

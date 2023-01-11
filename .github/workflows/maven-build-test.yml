@@ -32,6 +32,7 @@ jobs:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
+          maven-cache-path: ./.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       
       - name: Resolve non-cobigen dependencies
@@ -50,6 +51,7 @@ jobs:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
+          maven-cache-path: ./.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           java-version: ${{ matrix.javaVersion }}
@@ -77,6 +79,7 @@ jobs:
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
+          maven-cache-path: ./.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
@@ -124,6 +127,7 @@ jobs:
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
+          maven-cache-path: ./.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
