@@ -57,7 +57,7 @@ fi
 
 MVN_DEBUG="-DtrimStackTrace=false -Dtycho.debug.resolver=true -X"
 # Automatically enable debug logging on github actions debug run
-if [[ "$ACTIONS_STEP_DEBUG" == true ]]
+if [[ "$RUNNER_DEBUG" == true ]]
 then
   DEBUG="$MVN_DEBUG"
   echo -e "\e[92m  > Running in debug mode\e[39m"

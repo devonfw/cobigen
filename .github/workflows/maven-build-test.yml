@@ -32,14 +32,12 @@ jobs:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ./.m2/repository
+          maven-cache-path: $GITHUB_WORKSPACE/.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       
       - name: Resolve non-cobigen dependencies
         shell: bash
-        run: |
-          env
-          mvn -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
+        run: mvn -s .m2/ci-settings.xml -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
 
   build:
     needs: cache-dependencies
@@ -53,7 +51,7 @@ jobs:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ./.m2/repository
+          maven-cache-path: $GITHUB_WORKSPACE/.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           java-version: ${{ matrix.javaVersion }}
@@ -67,7 +65,7 @@ jobs:
       
       - name: Build all artifacts
         shell: bash
-        run: ./build.sh -pbx
+        run: ./build.sh -spb
     
   test:
     needs: build
@@ -81,14 +79,14 @@ jobs:
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ./.m2/repository
+          maven-cache-path: $GITHUB_WORKSPACE/.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
 
       - name: Test
         shell: bash
-        run: ./build.sh -dbtcx --components ${{ matrix.component }}
+        run: ./build.sh -sdbtc --components ${{ matrix.component }}
 
   # Sonar Analysis is done in separate workflow (https://github.com/devonfw/cobigen/blob/master/.github/workflows/sonar-analysis.yml)
   # as of a workaround of potential secret leaking on PRs (https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
@@ -129,7 +127,7 @@ jobs:
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ./.m2/repository
+          maven-cache-path: $GITHUB_WORKSPACE/.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
@@ -148,7 +146,7 @@ jobs:
           BUILD_USER: ${{ secrets.BUILD_USER }}
           BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
           BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
-        run: ./release.sh silent skip-qa repo-mvn-settings
+        run: ./release.sh -sy skip-qa
           
       - name: 'Get release tag'
         id: get_tag
