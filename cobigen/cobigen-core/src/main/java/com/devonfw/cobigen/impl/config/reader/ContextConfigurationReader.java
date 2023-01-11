@@ -243,16 +243,16 @@ public class ContextConfigurationReader {
     Map<String, Trigger> triggers = Maps.newHashMap();
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
-      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
-        // templateFolder property is optional in schema version 2.2. If not set take the path of the context.xml file
-        String templateFolder = t.getTemplateFolder();
-        if (templateFolder.isEmpty() || templateFolder.equals("/")) {
-          templateFolder = contextFile.getParent().getFileName().toString();
-        }
-        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder,
-            Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
+      com.devonfw.cobigen.impl.config.entity.io.Trigger t = contextConfiguration.getTrigger();
+      // templateFolder property is optional in schema version 2.2. If not set take the path of the context.xml file
+      String templateFolder = t.getTemplateFolder();
+      if (templateFolder.isEmpty() || templateFolder.equals("/")) {
+        templateFolder = contextFile.getParent().getFileName().toString();
       }
+      triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder, Charset.forName(t.getInputCharset()),
+          loadMatchers(t), loadContainerMatchers(t)));
     }
+
     return triggers;
   }
 

@@ -39,7 +39,15 @@ public enum ContextConfigurationVersion {
    * <li>made templateFolder optional</li>
    * </ul>
    */
-  v2_2(2.2f, true);
+  v2_2(2.2f, true),
+
+  /**
+   * ChangeLog:
+   * <ul>
+   * <li>added options to add links, tags and a detailed description</li>
+   * </ul>
+   */
+  v2_3(2.3f, false);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;
