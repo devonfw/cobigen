@@ -164,7 +164,7 @@ public class ContextConfiguration {
    *        returned
    * @return the {@link Path} of the config location of the trigger
    */
-  public Path getConfigRootByTrigger(String triggerId, boolean fileSystemDependentPath) {
+  public Path retrieveConfigRootByTrigger(String triggerId, boolean fileSystemDependentPath) {
 
     if (this.configurationHolder != null) {
       Map<String, Path> rootTemplateFolders = this.configurationHolder.getTemplateSetConfiguration()
@@ -190,7 +190,6 @@ public class ContextConfiguration {
   public Path retrieveTemplateSetUtilsLocationByTrigger(String triggerId, boolean fileSystemDependentPath) {
 
     if (this.configurationHolder != null) {
-
       Map<String, Path> utilityFolders = this.configurationHolder.getTemplateSetConfiguration().getUtilFolders();
       Path utilityFolder = utilityFolders.get(triggerId);
       if (fileSystemDependentPath && FileSystemUtil.isZipFile(utilityFolder.toUri())) {
