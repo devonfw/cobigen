@@ -100,7 +100,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.REPOSITORY_PATH }}
-          ./build.sh -sp
+          ./build.sh -spb
     
   test:
     needs: build
@@ -134,7 +134,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.REPOSITORY_PATH }}
-          ./build.sh -sdtc --components ${{ matrix.component }}
+          ./build.sh -sdtcb --components ${{ matrix.component }}
 
   # Sonar Analysis is done in separate workflow (https://github.com/devonfw/cobigen/blob/master/.github/workflows/sonar-analysis.yml)
   # as of a workaround of potential secret leaking on PRs (https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
@@ -202,7 +202,7 @@ jobs:
           BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
         run: |
           cd ${{ env.REPOSITORY_PATH }}
-          ./release.sh -sy skip-qa
+          ./release.sh -syb skip-qa
           
       - name: 'Get release tag'
         id: get_tag
