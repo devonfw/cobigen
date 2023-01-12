@@ -88,7 +88,6 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    * @param version an arbitrary instance to perform reflection on during upgrading.
    * @param configurationJaxbRootNode JAXB root object class of the configuration for (un-)marshalling.
    * @param configurationFilename standardized file name of the configuration
-   * @author mbrunnli (Jun 23, 2015)
    */
   @SuppressWarnings("unchecked")
   AbstractConfigurationUpgrader(VERSIONS_TYPE version, Class<?> configurationJaxbRootNode,

@@ -11,8 +11,6 @@ import com.devonfw.cobigen.impl.config.resolver.PathExpressionResolver;
 
 /**
  * Test suite for {@link PathExpressionResolver}
- *
- * @author mbrunnli (16.09.2014)
  */
 public class PathExpressionResolverTest {
 

@@ -11,16 +11,12 @@ import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 
 /**
  * Test suite for {@link VersionValidator} class.
- *
- * @author mbrunnli (May 17, 2016)
  */
 public class VersionValidatorTest {
 
   /**
    * Testing the CobiGen version to be too old for the provided configuration version, which indicates to make an update
    * of CobiGen to read the configuration properly.
-   *
-   * @author mbrunnli (May 17, 2016)
    */
   @Test(expected = InvalidConfigurationException.class)
   public void testInvalidCobiGenVersion_tooOld_contextConfiguration() {
@@ -37,8 +33,6 @@ public class VersionValidatorTest {
   /**
    * Testing the CobiGen version to be too new for the provided configuration version, which indicates to make an update
    * of the configuration to read it properly.
-   *
-   * @author mbrunnli (May 17, 2016)
    */
   @Test(expected = DeprecatedMonolithicConfigurationException.class)
   public void testInvalidCobiGenVersion_tooNew_contextConfiguration() {

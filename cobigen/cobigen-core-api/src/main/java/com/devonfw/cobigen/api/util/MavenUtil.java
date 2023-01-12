@@ -3,6 +3,7 @@ package com.devonfw.cobigen.api.util;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -27,9 +28,6 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.exception.RestSearchResponseException;
-import com.devonfw.cobigen.api.util.to.SearchResponseFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
@@ -149,7 +147,6 @@ public class MavenUtil {
     } else {
       LOG.debug("Taking cached class paths from: {}", classPathCacheFile);
     }
-
     try (Stream<String> fileLinesStream = Files.lines(classPathCacheFile)) {
       URL[] classPathEntries = fileLinesStream
           .flatMap(e -> Arrays.stream(e.split(SystemUtil.getOS().contains("win") ? ";" : ":"))).map(path -> {
@@ -161,6 +158,9 @@ public class MavenUtil {
             return null;
           }).toArray(size -> new URL[size]);
 
+      if (!validateCachedClassPaths(classPathEntries)) {
+        cacheMavenClassPath(pomFile, classPathCacheFile);
+      }
       return new URLClassLoader(classPathEntries, parentClassLoader);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Unable to read " + classPathCacheFile, e);
@@ -168,16 +168,51 @@ public class MavenUtil {
   }
 
   /**
-   * Generates a hash for the provided POM file
+   * Validates the cached classpath entries and resolves missing files and dependencies with an update of the classpath
+   * cache. Also, the dependencies are checked, if they belong to the correct local maven repository.
+   *
+   * @param classPathEntries URLs of the cached classPath entries
+   * @return true if files exists and they are located in the correct repository, otherwise false
+   */
+  private static boolean validateCachedClassPaths(URL[] classPathEntries) {
+
+    Path repo = determineMavenRepositoryPath();
+    for (URL classPath : classPathEntries) {
+      try {
+        Path cp = Paths.get(classPath.toURI());
+        if (!cp.startsWith(repo)) {
+          LOG.warn(
+              "Cached {} file pointing to another maven Repository, this could cause some problems, the dependencies will be resolved again",
+              cp.toString());
+          return false;
+        }
+        if (!Files.exists(cp)) {
+          LOG.warn("Cached {} file does not exist, the dependencies will be resolved again", cp.toString());
+          return false;
+        }
+      } catch (URISyntaxException e) {
+        LOG.warn("Error while reading files from Cache, the dependencies will be resolved again");
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Generates a hash for the provided POM file and the current local maven repository
    *
    * @param pomFile to generate hash from
+   * @param m2RepoPath Path to the local maven repository
    * @return String generated hash
    */
-  public static String generatePomFileHash(Path pomFile) {
+  public static String generatePomFileHash(Path pomFile, Path m2RepoPath) {
 
     String pomFileHash;
     try {
-      pomFileHash = ByteSource.wrap(Files.readAllBytes(pomFile)).hash(Hashing.murmur3_128()).toString();
+      // concat pom.xml and m2repo Path bytes
+      ByteSource m2repo = ByteSource.wrap(m2RepoPath.toString().getBytes());
+      ByteSource m2repoAndPom = ByteSource.concat(m2repo, ByteSource.wrap(Files.readAllBytes(pomFile)));
+      pomFileHash = m2repoAndPom.hash(Hashing.murmur3_128()).toString();
     } catch (IOException e) {
       LOG.warn("Could not calculate hash of {}", pomFile.toUri());
       pomFileHash = "";
@@ -190,12 +225,24 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
-    LOG.info("Determine maven repository path");
-    String m2Repo = runCommand(SystemUtils.getUserHome().toPath(),
-        Lists.newArrayList(SystemUtil.determineMvnPath().toString(), "help:evaluate",
-            "-Dexpression=settings.localRepository", "-DforceStdout"));
+    Path m2Repo = Paths
+        .get(runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
+            "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout")));
     LOG.debug("Determined {} as maven repository path.", m2Repo);
-    return Paths.get(m2Repo);
+    return m2Repo;
+  }
+
+  /**
+   * Returns maven's settings.xml as a string by using maven evaluate
+   *
+   * @return the maven's settings.xml as string
+   */
+  public static String determineMavenSettings() {
+
+    LOG.info("Determine content of maven's settings.xml");
+    String mavenSettings = runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(
+        SystemUtil.determineMvnPath().toString(), "help:evaluate", "-Dexpression=settings", "-DforceStdout"));
+    return mavenSettings;
   }
 
   /**
@@ -227,7 +274,6 @@ public class MavenUtil {
 
       Future<ProcessResult> future = process.getFuture();
       ProcessResult processResult = future.get();
-
       if (processResult.getExitValue() != 0) {
         LOG.error("Error while getting all the needed transitive dependencies. Please check your internet connection.");
         throw new CobiGenRuntimeException("Unable to build cobigen dependencies");
@@ -342,28 +388,6 @@ public class MavenUtil {
     }
     LOG.debug("Project root could not be found.");
     return null;
-  }
-
-  /**
-   * Retrieves a list of download URLs by groupId from the specified repository search REST API using authentication
-   * with bearer token
-   *
-   * @param baseUrl String of the repository server URL
-   * @param groupId the groupId to search for
-   * @param authToken bearer token to use for authentication
-   * @return List of artifact download URLS or null if an error occurred
-   */
-  public static List<URL> retrieveMavenArtifactsByGroupId(String baseUrl, String groupId, String authToken) {
-
-    try {
-
-      return SearchResponseFactory.searchArtifactDownloadLinks(baseUrl, groupId, authToken);
-    } catch (RestSearchResponseException | JsonProcessingException | MalformedURLException e) {
-      LOG.error("Unable to get artifacts from {} by groupId {}", baseUrl, groupId, e);
-      // TODO: Handle Eclipse, CLI and MavenPlugin here (f.e. with a new Exception)
-      return null;
-    }
-
   }
 
 }

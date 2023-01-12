@@ -1,29 +1,17 @@
 package com.devonfw.cobigen.api;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import com.devonfw.cobigen.api.exception.RestSearchResponseException;
 import com.devonfw.cobigen.api.util.MavenUtil;
-import com.devonfw.cobigen.api.util.to.AbstractSearchResponse;
-import com.devonfw.cobigen.api.util.to.jfrog.JfrogSearchResponse;
-import com.devonfw.cobigen.api.util.to.maven.MavenSearchResponse;
-import com.devonfw.cobigen.api.util.to.nexus2.Nexus2SearchResponse;
-import com.devonfw.cobigen.api.util.to.nexus3.Nexus3SearchResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
  * Test class for maven utilities
@@ -31,300 +19,99 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 public class MavenUtilTest {
 
   /**
-   * WireMock rule to initialize
+   * Temp folder for test execution
    */
   @Rule
-  public WireMockRule wireMockRule = new WireMockRule(options().disableRequestJournal());
+  public TemporaryFolder temp = new TemporaryFolder();
 
   /** Testdata root path */
   private static final String testdataRoot = "src/test/resources/testdata/unittest/MavenUtilTest";
 
   /**
-   * Tests if retrieving maven artifacts with an invalid link returns null
-   */
-  public void testRetrieveMavenArtifactsWithInvalidLinkReturnsNull() {
-
-    assertThat(MavenUtil.retrieveMavenArtifactsByGroupId("this/is/not/a/link", "test", null)).isNull();
-  }
-
-  /**
-   * Tests if a {@link RestSearchResponseException} gets thrown when a faulty target link without a token was used
-   */
-  @Test
-  public void testWrongTargetLinkThrowsException() {
-
-    try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", null, null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The target URL was faulty.");
-    }
-  }
-
-  /**
-   * Tests if an exception gets thrown when a faulty target link and token was used
-   */
-  @Test
-  public void testWrongTargetLinkAndTokenThrowsException() {
-
-    try {
-      AbstractSearchResponse.retrieveJsonResponseWithAuthenticationToken("this/is/not/a/link", "thisisabadtoken", null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The target URL was faulty.");
-    }
-  }
-
-  /**
-   * Tests if a {@link RestSearchResponseException} gets thrown when a status code was not 200 but 400 instead
-   */
-  @Test
-  public void testWrongResponseStatusCodeThrowsException() {
-
-    try {
-      AbstractSearchResponse
-          .retrieveJsonResponseWithAuthenticationToken("https://search.maven.org/solrsearch/select?test", null, null);
-    } catch (RestSearchResponseException e) {
-      assertThat(e).hasMessage("The search REST API returned the unexpected status code: 400");
-    }
-  }
-
-  /**
-   * Tests if maven json response can properly be parsed and converted to a list of download URLs
+   * Tests to check if a correct cache will be validated right
    *
-   * @throws IOException if an error occurred while reading the test json file
+   * @throws Exception
    */
   @Test
-  public void testMavenParseDownloadLinks() throws IOException {
+  public void testValidateCacheSuccess() throws Exception {
 
-    // given
-    ObjectMapper mapper = new ObjectMapper();
-    MavenSearchResponse response = new MavenSearchResponse();
+    File cli_pom = this.temp.newFolder("playground", "cli-pom");
+    Path m2repo = MavenUtil.determineMavenRepositoryPath();
+    FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
+    String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), m2repo);
+    File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
+    MavenUtil.cacheMavenClassPath(cli_pom.toPath().resolve("pom.xml"), cache.toPath());
+    String result = FileUtils.readFileToString(cache, Charset.defaultCharset());
+    MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
+        this.getClass().getClassLoader());
+    assertThat(FileUtils.readFileToString(cache, Charset.defaultCharset())).contains(result);
 
-    String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("mavenJsonTest.json")));
-
-    response = mapper.readValue(jsonResponse, MavenSearchResponse.class);
-    // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
-
-    // then
-    assertThat(downloadLinks).contains(
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-bom/5.1.0/guice-bom-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-parent/5.1.0/guice-parent-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/jdk8-tests/5.0.1/jdk8-tests-5.0.1.jar"));
   }
 
   /**
-   * Tests if nexus2 json response can properly be parsed and converted to a list of download URLs
+   * Tests to check if a dependency in the cache pointing to a wrong repository will be detected and the cache will be
+   * updated
    *
-   * @throws IOException if an error occurred while reading the test json file
+   * @throws Exception
    */
   @Test
-  public void testNexus2ParseDownloadLinks() throws IOException {
+  public void testValidateCacheWrongRepository() throws Exception {
 
-    // given
-    ObjectMapper mapper = new ObjectMapper();
-    Nexus2SearchResponse response = new Nexus2SearchResponse();
-
-    String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus2JsonTest.json")));
-
-    response = mapper.readValue(jsonResponse, Nexus2SearchResponse.class);
-
-    // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
-
-    // then
-    assertThat(downloadLinks).contains(new URL(
-        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.005/openapiplugin-2021.12.005.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.005/openapiplugin-2021.12.005.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.006/jsonplugin-2021.12.006.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.006/jsonplugin-2021.12.006.jar"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.005/jsonplugin-2021.12.005.pom"),
-        new URL(
-            "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/jsonplugin/2021.12.005/jsonplugin-2021.12.005.jar"));
+    File cli_pom = this.temp.newFolder("playground", "cli-pom");
+    Path m2repo = MavenUtil.determineMavenRepositoryPath();
+    FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
+    String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), m2repo);
+    File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
+    MavenUtil.cacheMavenClassPath(cli_pom.toPath().resolve("pom.xml"), cache.toPath());
+    String result = FileUtils.readFileToString(cache, Charset.defaultCharset());
+    String cacheWithWrongRepo = result.replace(m2repo.getFileName().toString(), "WrongRepository");
+    FileUtils.writeStringToFile(cache, cacheWithWrongRepo, Charset.defaultCharset());
+    MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
+        this.getClass().getClassLoader());
+    assertThat(FileUtils.readFileToString(cache, Charset.defaultCharset())).doesNotContain(cacheWithWrongRepo);
   }
 
   /**
-   * Tests if nexus3 json response can properly be parsed and converted to a list of download URLs
+   * Tests to check if a missing dependency file from the cache will be detected and the cache will be updated
    *
-   * @throws IOException if an error occurred while reading the test json file
+   * @throws Exception
    */
   @Test
-  public void testNexus3ParseDownloadLinks() throws IOException {
+  public void testValidateCacheFileNotExistend() throws Exception {
 
-    // given
-    ObjectMapper mapper = new ObjectMapper();
-    Nexus3SearchResponse response = new Nexus3SearchResponse();
+    File cli_pom = this.temp.newFolder("playground", "cli-pom");
+    Path m2repo = MavenUtil.determineMavenRepositoryPath();
+    FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), cli_pom);
+    String hash = MavenUtil.generatePomFileHash(cli_pom.toPath().resolve("pom.xml"), m2repo);
+    File cache = this.temp.newFile("playground/cli-pom/pom-cp-" + hash + ".txt");
+    MavenUtil.cacheMavenClassPath(cli_pom.toPath().resolve("pom.xml"), cache.toPath());
+    String result = FileUtils.readFileToString(cache, Charset.defaultCharset());
+    String cacheWithNotExistingFile = result + ";" + m2repo.toString() + "/SomeNonExistingFile.jar";
+    FileUtils.writeStringToFile(cache, cacheWithNotExistingFile, Charset.defaultCharset());
+    MavenUtil.addURLsFromCachedClassPathsFile(cache.toPath(), cli_pom.toPath().resolve("pom.xml"),
+        this.getClass().getClassLoader());
+    assertThat(FileUtils.readFileToString(cache, Charset.defaultCharset())).doesNotContain("SomeNonExistingFile.jar");
 
-    String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")));
-
-    response = mapper.readValue(jsonResponse, Nexus3SearchResponse.class);
-
-    // when
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
-
-    // then
-    assertThat(downloadLinks).contains(new URL(
-        "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom"));
   }
 
   /**
-   * Tests if jfrog json response can properly be parsed and converted to a list of download URLs
+   * Testing if the current maven repository is taken into account to calculate the hash for the cache
    *
-   * @throws IOException if an error occurred while reading the test json file
+   * @throws Exception
+   *
    */
   @Test
-  public void testJfrogParseDownloadLinks() throws IOException {
+  public void testGeneratePomFileHash() throws Exception {
 
-    // given
-    ObjectMapper mapper = new ObjectMapper();
-    JfrogSearchResponse response = new JfrogSearchResponse();
+    File repo1 = this.temp.newFolder("playground", "repo1");
+    File repo2 = this.temp.newFolder("playground", "repo2");
+    FileUtils.copyFileToDirectory(new File(testdataRoot, "pom.xml"), repo2.getParentFile());
+    String hash1 = MavenUtil.generatePomFileHash(repo1.getParentFile().toPath().resolve("pom.xml"), repo1.toPath());
+    String hash2 = MavenUtil.generatePomFileHash(repo2.getParentFile().toPath().resolve("pom.xml"), repo2.toPath());
+    assertThat(hash1).isNotEmpty();
+    assertThat(hash2).isNotEmpty();
+    assertThat(hash1).isNotEqualTo(hash2);
 
-    String jsonResponse = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")));
-
-    // when
-    response = mapper.readValue(jsonResponse, JfrogSearchResponse.class);
-    List<URL> downloadLinks = response.retrieveDownloadURLs();
-
-    // then
-    assertThat(downloadLinks).contains(new URL(
-        "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifact/1.0/artifact-1.0-sources.jar"),
-        new URL(
-            "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifactB/1.0/artifactB-1.0-sources.jar"));
-  }
-
-  /**
-   * Tests if a request to maven search REST API returns a list of download URLs
-   *
-   * @throws IOException if an error occurred while reading the test json file
-   */
-  @Test
-  public void testMavenSearchRequestGetsValidDownloadLinks() throws IOException {
-
-    // given
-    List<URL> downloadList;
-
-    this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200)
-        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("mavenJsonTest.json")))));
-
-    this.wireMockRule
-        .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule
-        .stubFor(get(urlMatching("/service/local/lucene/search/.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
-
-    // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.google.inject", null);
-
-    // then
-    assertThat(downloadList).contains(
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice/5.1.0/guice-5.1.0.jar"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-bom/5.1.0/guice-bom-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/guice-parent/5.1.0/guice-parent-5.1.0.pom"),
-        new URL("https://repo1.maven.org/maven2/com/google/inject/jdk8-tests/5.0.1/jdk8-tests-5.0.1.jar"));
-  }
-
-  /**
-   * Tests if a request to nexus2 search REST API returns a list of download URLs
-   *
-   * @throws IOException if an error occurred while reading the test json file
-   */
-  @Test
-  public void testNexus2SearchRequestGetsValidDownloadLinks() throws IOException {
-
-    // given
-    List<URL> downloadList;
-
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule
-        .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule.stubFor(get(urlMatching("/service/local/lucene/search.*")).willReturn(aResponse().withStatus(200)
-        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus2JsonTest.json")))));
-
-    this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
-
-    // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
-
-    // then
-    assertThat(downloadList).contains(new URL(
-        "https://s01.oss.sonatype.org/service/local/repositories/releases/content/com/devonfw/cobigen/openapiplugin/2021.12.006/openapiplugin-2021.12.006.jar"));
-  }
-
-  /**
-   * Tests if a request to nexus3 search REST API returns a list of download URLs
-   *
-   * @throws IOException if an error occurred while reading the test json file
-   */
-  @Test
-  public void testNexus3SearchRequestGetsValidDownloadLinks() throws IOException {
-
-    // given
-    List<URL> downloadList;
-
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule
-        .stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule
-        .stubFor(get(urlMatching("/service/local/lucene/search/.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(200)
-        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("nexus3JsonTest.json")))));
-
-    // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
-
-    // then
-    assertThat(downloadList).contains(new URL(
-        "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar"),
-        new URL("http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom"));
-  }
-
-  /**
-   * Tests if a request to jfrog search REST API returns a list of download URLs
-   *
-   * @throws IOException if an error occurred while reading the test json file
-   */
-  @Test
-  public void testJfrogSearchRequestGetsValidDownloadLinks() throws IOException {
-
-    // given
-    List<URL> downloadList;
-
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/solrsearch/.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule.stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(200)
-        .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")))));
-
-    this.wireMockRule
-        .stubFor(get(urlMatching("/service/local/lucene/search/.*")).willReturn(aResponse().withStatus(404)));
-
-    this.wireMockRule.stubFor(get(urlMatching("/service/rest/v1/search.*")).willReturn(aResponse().withStatus(404)));
-
-    // when
-    downloadList = MavenUtil.retrieveMavenArtifactsByGroupId("http://localhost:8080", "com.devonfw.cobigen", null);
-
-    // then
-    assertThat(downloadList).contains(new URL(
-        "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifact/1.0/artifact-1.0-sources.jar"),
-        new URL(
-            "http://localhost:8081/artifactory/api/storage/libs-release-local/org/acme/artifactB/1.0/artifactB-1.0-sources.jar"));
   }
 
 }

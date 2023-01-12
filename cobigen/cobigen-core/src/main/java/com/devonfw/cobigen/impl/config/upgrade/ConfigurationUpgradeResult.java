@@ -4,8 +4,6 @@ import java.nio.file.Path;
 
 /**
  * Result object encompassing all results from a configuration upgrade step.
- *
- * @author mbrunnli (Jun 23, 2015)
  */
 public class ConfigurationUpgradeResult {
 
@@ -44,7 +42,6 @@ public class ConfigurationUpgradeResult {
    * Returns the field 'resultConfigurationJaxbRootNode'
    *
    * @return value of resultConfigurationJaxbRootNode
-   * @author mbrunnli (Jun 23, 2015)
    */
   public Object getResultConfigurationJaxbRootNode() {
 
@@ -56,7 +53,6 @@ public class ConfigurationUpgradeResult {
    *
    * @param resultConfigurationJaxbRootNode new value of resultConfigurationJaxbRootNode
    * @param {{@link Path} new value of configurationPath
-   * @author mbrunnli (Jun 23, 2015)
    */
   public void setResultConfigurationJaxbRootNodeAndPath(Object resultConfigurationJaxbRootNode,
       Path configurationPath) {
@@ -69,7 +65,6 @@ public class ConfigurationUpgradeResult {
    * Returns the field 'manualAdoptionsNecessary'
    *
    * @return value of manualAdoptionsNecessary
-   * @author mbrunnli (Jun 23, 2015)
    */
   public boolean areManualAdoptionsNecessary() {
 
@@ -80,7 +75,6 @@ public class ConfigurationUpgradeResult {
    * Sets the field 'manualAdoptionsNecessary'.
    *
    * @param manualAdoptionsNecessary new value of manualAdoptionsNecessary
-   * @author mbrunnli (Jun 23, 2015)
    */
   public void setManualAdoptionsNecessary(boolean manualAdoptionsNecessary) {
 

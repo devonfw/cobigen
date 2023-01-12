@@ -20,8 +20,6 @@ import com.google.common.collect.Lists;
 
 /**
  * Converts IDE selection objects to valid CobiGen inputs
- *
- * @author mbrunnli (06.12.2014)
  */
 public class FileInputConverter {
 

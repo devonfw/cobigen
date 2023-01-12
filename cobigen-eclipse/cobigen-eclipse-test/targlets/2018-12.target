@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="Eclipse 2018-12" sequenceNumber="51">
+<locations>
+  <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+    <repository location="http://download.eclipse.org/technology/swtbot/releases/latest/"/>
+    <unit id="org.eclipse.swtbot.eclipse.test.junit.feature.group" version="4.0.0.202206011610"/>
+    <unit id="org.eclipse.swtbot.feature.group" version="4.0.0.202206011610"/>
+    <unit id="org.eclipse.swtbot.eclipse.feature.group" version="4.0.0.202206011610"/>
+  </location>
+  <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+    <repository location="https://download.eclipse.org/releases/2018-12/"/>
+    <unit id="org.eclipse.jdt.feature.group" version="3.16.0.v20181206-1038"/>
+    <unit id="org.eclipse.m2e.feature.feature.group" version="1.10.0.20181127-2120"/>
+  </location>
+</locations>
+</target>

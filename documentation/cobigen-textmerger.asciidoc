@@ -59,7 +59,7 @@ _Remark:_ Only works with appending strategies, not merging/replacing ones. Thes
 == Usage Examples
 
 === General
-Below you can see how a file with anchors might look like (using Asciidoc comment tags), with examples of what you might want to use the different functions for.
+Below you can see how a file with anchors might look like (using AsciiDoc comment tags), with examples of what you might want to use the different functions for.
 
 --------
 // anchor:header:append:anchorend
@@ -75,7 +75,7 @@ Table entries
 // anchor:part2:nomerge:anchorend
 
 Document Separators
-Asciidoc table definitions
+AsciiDoc table definitions
 
 // anchor:part3:override:anchorend
 

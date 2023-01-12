@@ -39,7 +39,6 @@ public class TriggerExpressionResolver {
    * Creates a new {@link TriggerExpressionResolver} for the given pojo with its {@link ClassLoader}
    *
    * @param reflectionClass current triggered POJO {@link Class}
-   * @author mbrunnli (15.04.2013)
    */
   public TriggerExpressionResolver(Class<?> reflectionClass) {
 
@@ -50,7 +49,6 @@ public class TriggerExpressionResolver {
    * Creates a new {@link TriggerExpressionResolver} for the given parsed {@link JavaClass}
    *
    * @param parsedClass parsed {@link JavaClass}
-   * @author mbrunnli (24.02.2015)
    */
   public TriggerExpressionResolver(JavaClass parsedClass) {
 

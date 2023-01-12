@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+
+    <proxies>
+        <proxy>
+            <id>proxy1</id>
+            <active>false</active>
+            <protocol>http</protocol>
+            <host>proxy.example.com</host>
+            <port>8080</port>
+            <username>proxyuser</username>
+            <password>somepassword</password>
+            <nonProxyHosts>www.google.com|*.example.com</nonProxyHosts>
+        </proxy>
+        <proxy>
+            <id>proxy2</id>
+            <active>false</active>
+            <protocol>http</protocol>
+            <host>proxy.example.com</host>
+            <port>8080</port>
+            <username>proxyuser</username>
+            <password>somepassword</password>
+            <nonProxyHosts>*</nonProxyHosts>
+        </proxy>
+    </proxies>
+
+    <profiles>
+        <profile>
+            <id>profile1</id>
+            <repositories>
+                <repository>
+                    <id>repo1</id>
+                    <name>Test Repo 1</name>
+                    <url>localhost</url>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>profile2</id>
+            <repositories>
+                <repository>
+                    <id>repo2</id>
+                    <name>Test Repo 2</name>
+                    <url>www.google.com</url>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>profile3</id>
+            <repositories>
+                <repository>
+                    <id>repo3</id>
+                    <name>Test Repo 3</name>
+                    <url>test.example.com</url>
+                </repository>
+            </repositories>
+        </profile>
+      </profiles>
+</settings>

@@ -2,10 +2,6 @@ package com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata;
 
 import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.subpackage.SuperClass2;
 
-/**
- *
- * @author mbrunnli (14.11.2014)
- */
 public abstract class SuperClass1 extends SuperClass2 {
 
   private String superClass1Field;
@@ -18,7 +14,6 @@ public abstract class SuperClass1 extends SuperClass2 {
    * Returns the field 'setterVisibleByte'
    *
    * @return value of setterVisibleByte
-   * @author mbrunnli (14.11.2014)
    */
   public byte getSetterVisibleByte() {
 
@@ -29,7 +24,6 @@ public abstract class SuperClass1 extends SuperClass2 {
    * Sets the field 'setterVisibleByte'.
    *
    * @param setterVisibleByte new value of setterVisibleByte
-   * @author mbrunnli (14.11.2014)
    */
   public void setSetterVisibleByte(byte setterVisibleByte) {
 
@@ -40,10 +34,6 @@ public abstract class SuperClass1 extends SuperClass2 {
 
   }
 
-  /**
-   *
-   * @author mbrunnli (17.11.2014)
-   */
   private String getNoProperty() {
 
     return null;

@@ -135,7 +135,6 @@ public class JavaMatcher implements MatcherInterpreter {
    * @param variableAssignments variable assigments to be resolved
    * @return a {@link Map} from variable name to the resolved value
    * @throws InvalidConfigurationException if some of the matcher type and variable type combinations are not supported
-   * @author mbrunnli (15.04.2013)
    */
   public Map<String, String> getResolvedVariables(MatcherType matcherType, String matcherValue, String stringToMatch,
       List<VariableAssignmentTo> variableAssignments) throws InvalidConfigurationException {
@@ -165,7 +164,6 @@ public class JavaMatcher implements MatcherInterpreter {
    * @param va {@link VariableAssignmentTo} to be resolved
    * @return the resolved variable
    * @throws InvalidConfigurationException thrown if the matcher type and matcher value does not work in combination
-   * @author mbrunnli (08.04.2014)
    */
   private String resolveRegexValue(MatcherType matcherType, String matcherValue, String stringToMatch,
       VariableAssignmentTo va) throws InvalidConfigurationException {

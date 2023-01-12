@@ -16,7 +16,6 @@ import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
-import com.google.common.collect.Maps;
 
 /** The {@link ContextConfigurationSetReader} reads the context xml */
 public class ContextConfigurationSetReader extends AbstractContextConfigurationReader {
@@ -121,7 +120,7 @@ public class ContextConfigurationSetReader extends AbstractContextConfigurationR
   @Override
   public Map<String, Trigger> loadTriggers() {
 
-    Map<String, Trigger> triggers = Maps.newHashMap();
+    Map<String, Trigger> triggers = new HashMap<>();
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       Path configLocation = this.configLocations.get(contextFile);

@@ -23,7 +23,7 @@ Basically, when a new input file was sent to CobiGen, it called the input reader
 
 Afterwards, the template engine generated a new file which had to be merged with the original one. All this code was implemented in Java.
 
-On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.Net, Node.js, Python...) it just needs to implement a REST API defined link:https://github.com/devonfw/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
+On the new version, we have implemented a handler (`ExternalProcessHandler`) which connects through TCP/IP connection to a server (normally on localhost:5000). This server can be implemented in any language (.NET, NodeJS, Python...) it just needs to implement a REST API defined link:https://github.com/devonfw/cobigen-template-plugin/blob/master/APIContract.yml[here]. The most important services are the input reading and merging:
 
 image::images/howtos/todo-plugin/newCobiGen.png[New CobiGen,width="450"link="images/howtos/todo-plugin/newCobiGen.png"]
 
@@ -123,7 +123,7 @@ image::images/howtos/todo-plugin/pluginActivator.png[Plugin activator,width="450
 
 * Finally, we will change some properties from the `pom.xml` of the project. These properties define the server (external process) that is going to be used:
 
-.. Inside `pom.xml`, press _Ctrl + F_ to perform a find and replace operation. Replace all `todo` with your plugin name: 
+.. Inside `pom.xml`, press `Ctrl + F` to perform a find and replace operation. Replace all `todo` with your plugin name: 
 +
 image::images/howtos/todo-plugin/setPomProperties.png[Pom properties,width="550"link="images/howtos/todo-plugin/setPomProperties.png"]
 
@@ -131,17 +131,17 @@ image::images/howtos/todo-plugin/setPomProperties.png[Pom properties,width="550"
 
 ... `artifactId`: This is the name of your plug-in, that will be used for a future release on Maven Central.
 
-... plugin.name: does not need to be changed as it uses the property from the `artifactId`. When connecting to the server, it will send a request to `localhost:5000/{plugin.name}plugin/isConnectionReady`, that is why it is important to use an unique name for the plug-in.
+... `plugin.name`: does not need to be changed as it uses the property from the `artifactId`. When connecting to the server, it will send a request to `localhost:5000/{plugin.name}plugin/isConnectionReady`, that is why it is important to use an unique name for the plug-in.
 
-... server.name: This defines how the server executable (_.exe_) file will be named. This _.exe_ file contains all the needed resources for deploying the server. You can use any name you want.
+... `server.name`: This defines how the server executable (_.exe_) file will be named. This _.exe_ file contains all the needed resources for deploying the server. You can use any name you want.
 
-... server.version: You will specify here the server version that needs to be used. The _.exe_ file will be named as `{server.name}-{server.version}.exe`.
+... `server.version`: You will specify here the server version that needs to be used. The _.exe_ file will be named as `{server.name}-{server.version}.exe`.
 
-... server.url: This will define from where to download the server. We *really* recommend you using NPM which is a package manager we know it works well. We explain <<release_server, here>> how to release the server on NPM. This will download the _.exe_ file for Windows.
+... `server.url`: This will define from where to download the server. We *really* recommend you using NPM which is a package manager we know it works well. We explain <<release_server, here>> how to release the server on NPM. This will download the _.exe_ file for Windows.
 
-... server.url.linux: Same as before, but this should download the _.exe_ file for Linux systems. If you do not want to implement a Linux version of the plug-in, just use the same URL from Windows or MacOS.
+... `server.url.linux`: Same as before, but this should download the _.exe_ file for Linux systems. If you do not want to implement a Linux version of the plug-in, just use the same URL from Windows or MacOS.
 
-... server.url.macos: Same as before, but this should download the _.exe_ file for MacOS systems. If you do not want to implement a MacOS version of the plug-in, just use the same URL from Linux or Windows.
+... `server.url.macos`: Same as before, but this should download the _.exe_ file for MacOS systems. If you do not want to implement a MacOS version of the plug-in, just use the same URL from Linux or Windows.
 
 [[testing_phase]]
 == Testing phase
@@ -174,7 +174,7 @@ image::images/howtos/todo-plugin/useServerTemplate.png[Server CobiGen template,w
 
 * Name your repo as `cobigen-name-server` where `name` can be python, rust, go... In our case we will create a `nest` plug-in. It will create a repo with only one commit which contains all the needed files.
 
-* Clone your just created repo and go to folder `cobigen-todo-server`. It will just contain two files: _ExternalProcessContract.yml_ is the OpenAPI definition which you can modify with your own server definition (this step is optional), and _package.json_ is a file needed for NPM in order to define where to publish this package:
+* Clone your just created repo and go to folder `cobigen-todo-server`. It will just contain two files: `ExternalProcessContract.yml` is the OpenAPI definition which you can modify with your own server definition (this step is optional), and `package.json` is a file needed for NPM in order to define where to publish this package:
 +
 ```JSON
 {
@@ -252,7 +252,7 @@ image::images/howtos/todo-plugin/templatesProject.png[Templates project,width="4
 +
 image::images/howtos/todo-plugin/templatesInside.png[Templates project,width="450"link="images/howtos/todo-plugin/templatesInside.png"]
 
-* Start creating your own templates. Our default templates language is Freemarker, but you can also use Velocity. Add the extension to the file (`.ftl`) and start developing templates! You can find useful documentation link:https://github.com/devonfw/cobigen/wiki/cobigen-templates_helpful-links[here].
+* Start creating your own templates. Our default templates language is FreeMarker, but you can also use Velocity. Add the extension to the file (`.ftl`) and start developing templates! You can find useful documentation link:https://github.com/devonfw/cobigen/wiki/cobigen-templates_helpful-links[here].
 
 
 * After creating all the templates, you need to modify `context.xml` which is located on the root of `src/main/templates`. There you need to define a trigger, which is used for CobiGen to know when to trigger a plug-in. I recommend you to copy and paste the following trigger:
@@ -313,7 +313,7 @@ c. If that worked, now you can send any arguments to the CLI in order to generat
 3. Use the CLI jar to execute commands:
 
 +
-a. The `mvn clean install -DskipTests` command will have created a Cobigen.jar inside your target folder (_cobigen-cli/cli/target_). Open the jar with any unzipper and extract to the current location _class-loader-agent.jar_, _cobigen.bat_ and _cg.bat_:
+a. The `mvn clean install -DskipTests` command will have created a `cli.jar` inside your target folder (`cobigen-cli/cli/target`). Open the jar with any unzipper and extract to the current location `class-loader-agent.jar`, `cobigen.bat` and `cg.bat`:
 +
 image::images/howtos/todo-plugin/extractFilesCLI.png[Extract files,width="450"link="images/howtos/todo-plugin/extractFilesCLI.png"]
 +

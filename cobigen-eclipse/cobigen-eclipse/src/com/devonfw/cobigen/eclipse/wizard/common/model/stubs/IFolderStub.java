@@ -13,8 +13,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * Stub for {@link IFolder} in order to simulate resources in the generate wizard
- *
- * @author mbrunnli (06.04.2014)
  */
 public class IFolderStub extends IResourceStub implements IFolder {
 

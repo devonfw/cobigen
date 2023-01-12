@@ -6,7 +6,7 @@ toc::[]
 
 == General Installation Process
 
-. First of all you will have to https://devonfw.com/website/pages/docs/devonfw-guide_ide.wiki_setup.asciidoc.html[setup the devonfw IDE]. Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL. You can just press enter as no special settings are used. Following that, you will simply have to wait and follow any instructions given.
+. First of all you will have to https://devonfw.com/website/pages/docs/devonfw-guide_ide.wiki_setup.asciidoc.html[setup the devonfw IDE] with the following settings URL: https://github.com/devonfw/cobigen-ide-settings.git. Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL. You can just press enter as no special settings are used. Following that, you will simply have to wait and follow any instructions given.
 +
 After you have executed the steps mentioned above, your install location should look like the picture below.
 +
@@ -27,8 +27,8 @@ This downloads all the necessary files for CobiGen development.
 . Now open eclipse using the eclipse-main.bat file or by executing `devon eclipse` on the console and import the CobiGen projects.
 .. Switch to the "Project Explorer" view (Window->Show View->Project Explorer). This extra step is required because an import from the default view "Package Explorer" doesn't work properly.
 .. Now we need to re-import the CobiGen project. This extra step is required because the automatic project import from devonfw doesn't work properly.
-... Rightclick on your CobiGen root project and choose `Delete`.
-... Tick `Delete xx nested Projects` and make sure to untick `Delete project content on disc`
+... Right click on your CobiGen root project and choose `Delete`.
+... Tick `Delete xx nested Projects` and make sure to deselect `Delete project content on disc`
 .. Click on File->import...->Maven->Existing Maven Project and entering `<Install directory>/workspaces/main/cobigen` (Should be the default location when clicking on "Browse...")
 . After you have have finished your installation run a maven update. To do so right click on a project, select maven and afterwards update project. Select all projects and the checkbox Force Update of Snapshot/Releases.
 You might be asked to install some Tycho-plugins. You need those, if you want to debug eclipse-plugins. 	

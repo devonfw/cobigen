@@ -98,7 +98,6 @@ public class ContextVariableResolver {
    *
    * @param m {@link Matcher} to retrieve the {@link VariableAssignment}s from
    * @return a {@link List} of {@link VariableAssignmentTo}s
-   * @author mbrunnli (08.04.2014)
    */
   private List<VariableAssignmentTo> getVariableAssignments(Matcher m) {
 

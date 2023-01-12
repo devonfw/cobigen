@@ -1,8 +1,7 @@
 package com.devonfw.cobigen.impl.config.constant;
 
 import java.util.Map;
-
-import com.google.common.collect.Maps;
+import java.util.TreeMap;
 
 /** Version steps of the templates configuration. */
 public enum TemplatesConfigurationVersion {
@@ -97,7 +96,7 @@ public enum TemplatesConfigurationVersion {
    */
   public static Map<Float, Boolean> valuesSorted() {
 
-    Map<Float, Boolean> floatVersions = Maps.newTreeMap();
+    Map<Float, Boolean> floatVersions = new TreeMap<>();
     for (TemplatesConfigurationVersion v : values()) {
       floatVersions.put(v.getFloatRepresentation(), v.isBackwardCompatible());
     }

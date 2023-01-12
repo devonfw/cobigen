@@ -23,7 +23,6 @@ public class XmlTriggerInterpreter implements TriggerInterpreter {
    * creates a new {@link XmlTriggerInterpreter}
    *
    * @param type to be registered
-   * @author fkreis (18.11.2014)
    */
   public XmlTriggerInterpreter(String type) {
 
