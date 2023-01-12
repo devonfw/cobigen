@@ -29,6 +29,11 @@ jobs:
   cache-dependencies:
     runs-on: ubuntu-latest
     steps:
+      - name: Enable git support for long paths on Windows
+        if: ${{ runner.os == 'Windows' }}
+        shell: cmd
+        run: git config --system core.longpaths true
+
       - name: Clone Repository
         uses: actions/checkout@v3
 
@@ -52,6 +57,11 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Enable git support for long paths on Windows
+        if: ${{ runner.os == 'Windows' }}
+        shell: cmd
+        run: git config --system core.longpaths true
+        
       - name: Clone Repository
         uses: actions/checkout@v3
 
@@ -85,6 +95,11 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Enable git support for long paths on Windows
+        if: ${{ runner.os == 'Windows' }}
+        shell: cmd
+        run: git config --system core.longpaths true
+        
       - name: Clone Repository
         uses: actions/checkout@v3
 
