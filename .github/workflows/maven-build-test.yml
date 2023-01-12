@@ -50,7 +50,8 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.REPOSITORY_PATH }}
-          mvn -Dmaven.repo.local=${{ github.workspace }}/.m2/repository -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
+          mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve -Dmaven.repo.local=${{ github.workspace }}/.m2/repository -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
+          mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -Dmaven.repo.local=${{ github.workspace }}/.m2/repository -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
 
   build:
     needs: cache-dependencies
