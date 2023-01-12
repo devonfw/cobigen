@@ -37,7 +37,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v3
         with:
-          repository_path: ${{ env.REPOSITORY_PATH }}
+          path: ${{ env.REPOSITORY_PATH }}
 
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
@@ -70,7 +70,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v3
         with:
-          repository_path: ${{ env.REPOSITORY_PATH }}
+          path: ${{ env.REPOSITORY_PATH }}
 
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
@@ -121,7 +121,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v3
         with:
-          repository_path: ${{ env.REPOSITORY_PATH }}
+          path: ${{ env.REPOSITORY_PATH }}
 
       - uses: devonfw-actions/java-maven-setup@main
         with:
@@ -178,7 +178,7 @@ jobs:
       - name: Clone Repository
         uses: actions/checkout@v3
         with:
-          repository_path: ${{ env.REPOSITORY_PATH }}
+          path: ${{ env.REPOSITORY_PATH }}
 
       - uses: devonfw-actions/java-maven-setup@main
         with:
