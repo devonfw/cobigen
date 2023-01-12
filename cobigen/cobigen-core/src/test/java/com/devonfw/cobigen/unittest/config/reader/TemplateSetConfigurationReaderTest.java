@@ -60,7 +60,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
 
     }).isInstanceOf(InvalidConfigurationException.class)
         .hasMessage(TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath() + ":\n"
-            + "Could not find a folder in which to search for the template-set configuration file.");
+            + "Could not find any template-set configuration file in the given folder.");
 
   }
 
@@ -112,13 +112,13 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   public void testTemplateSetsDownloaded() throws Exception {
 
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
-    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_downloaded/");
-    FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
+    Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_downloaded/");
+    FileUtils.copyDirectory(templateSetPath.toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
 
-      TemplateSetConfiguration testDecorator;
-      testDecorator = new TemplateSetConfiguration(folder.toPath().resolve("template-sets"));
-      assertThat(testDecorator.getTemplateSetFiles().size()).isEqualTo(1);
+      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+          folder.toPath().resolve("template-sets"));
+      assertThat(templateSetConfiguration.getTemplateSetFiles().size()).isEqualTo(1);
     });
   }
 
@@ -133,18 +133,14 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   public void testTemplateSetsAdaptedAndDownloaded() throws Exception {
 
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
-    Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets/");
-    FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
+    Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets/");
+    FileUtils.copyDirectory(templateSetPath.toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
 
-      TemplateSetConfiguration testDecoratorAdapted = new TemplateSetConfiguration(
+      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
           folder.toPath().resolve("template-sets"));
-      TemplateSetConfiguration testDecoratorDownloaded = new TemplateSetConfiguration(
-          folder.toPath().resolve("template-sets").resolve("downloaded"));
 
-      assertThat(
-          testDecoratorAdapted.getTemplateSetFiles().size() + testDecoratorDownloaded.getTemplateSetFiles().size())
-              .isEqualTo(2);
+      assertThat(templateSetConfiguration.getTemplateSetFiles().size()).isEqualTo(2);
     });
   }
 

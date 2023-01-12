@@ -231,7 +231,10 @@ public class TemplateSetConfigurationReader {
 
   /**
    * Reads the template set xml file and initializes the templates and context configurations and readers
+   *
+   * @param templateSetFile Path to template-set xml file
    */
+  @SuppressWarnings("hiding")
   public void readConfiguration(Path templateSetFile) {
 
     this.templateSetFile = templateSetFile;
@@ -240,9 +243,7 @@ public class TemplateSetConfigurationReader {
     if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
       this.configRoot = this.configLocation;
       initializeTemplateSetTemplatesRoot();
-    }
-
-    if (FileSystemUtil.isZipFile(this.configRoot.toUri())) {
+    } else {
       Path templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
       this.rootTemplateFolder = TemplateFolder.create(templateLocation.resolve(this.configLocation));
       initializeTemplateSetTemplatesRoot();

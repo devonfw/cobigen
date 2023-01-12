@@ -114,11 +114,11 @@ public class TemplateSetConfiguration {
       this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath);
     }
 
-    List<Path> templateSetFiles = this.templateSetConfigurationReader.getTemplateSetConfigurationPaths();
+    this.templateSetFiles = this.templateSetConfigurationReader.getTemplateSetConfigurationPaths();
 
     this.increments = new HashMap<>();
     this.templatesConfigurations = Lists.newLinkedList();
-    for (Path templateSetFile : templateSetFiles) {
+    for (Path templateSetFile : this.templateSetFiles) {
       // TODO: Fix this WIP block
       this.templateSetConfigurationReader.readConfiguration(templateSetFile);
 
