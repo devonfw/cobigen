@@ -34,7 +34,7 @@ import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
-import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
 import com.google.common.collect.Lists;
 
@@ -331,7 +331,8 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
                 JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
               }
               VERSIONS_TYPE currentVersion;
-              if (result.getResultConfigurationJaxbRootNode().getClass().equals(TemplateSetConfiguration.class)) {
+              if (result.getResultConfigurationJaxbRootNode().getClass()
+                  .equals(com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration.class)) {
                 // changed class from context to templateSet, field has to be updated
                 this.configurationFilename = ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME;
                 this.configurationJaxbRootNode = TemplateSetConfiguration.class;
@@ -460,12 +461,21 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
     if (JvmUtil.isRunningJava9OrLater()) {
       Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
     }
-
+    StreamSource[] schemaArray;
+    if (this.configurationXsdFilename.equals("templateSetConfiguration.xsd")) {
+      schemaArray = new StreamSource[] {
+      new StreamSource(getClass().getResourceAsStream("/schema/" + lv.toString() + "/templatesConfiguration.xsd")),
+      new StreamSource(getClass().getResourceAsStream("/schema/" + lv.toString() + "/contextConfiguration.xsd")),
+      new StreamSource(
+          getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)) };
+    } else {
+      schemaArray = new StreamSource[] { new StreamSource(
+          getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)) };
+    }
     try {
       Unmarshaller unmarschaller = JAXBContext.newInstance(jaxbConfigurationClass).createUnmarshaller();
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      Schema schema = schemaFactory.newSchema(new StreamSource(
-          getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)));
+      Schema schema = schemaFactory.newSchema(schemaArray);
       unmarschaller.setSchema(schema);
       Object rootNode;
       try (InputStream in = Files.newInputStream(configurationFile)) {

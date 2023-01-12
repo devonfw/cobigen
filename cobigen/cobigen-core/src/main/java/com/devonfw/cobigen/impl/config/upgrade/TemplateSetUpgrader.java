@@ -302,7 +302,7 @@ public class TemplateSetUpgrader {
       Object rootNode = um.unmarshal(in);
       if (rootNode instanceof TemplatesConfiguration) {
         TemplatesConfiguration tc = (TemplatesConfiguration) rootNode;
-        tc.setVersion(new BigDecimal("5.0"));
+        tc.setVersion(new BigDecimal("6.0"));
         return tc;
       }
     } catch (IOException e) {
