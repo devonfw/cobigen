@@ -28,12 +28,16 @@ env:
 jobs:
   cache-dependencies:
     runs-on: ubuntu-latest
-    steps:      
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-path: ${{ github.workspace }}/.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
       
       - name: Resolve non-cobigen dependencies
         shell: bash
@@ -48,19 +52,23 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-path: ${{ github.workspace }}/.m2/repository
-          maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # new key will cache
+          maven-cache-key: maven-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           java-version: ${{ matrix.javaVersion }}
+          clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
 
       - name: Cache built P2 repositories
         uses: actions/cache@v3
         with:
           path: ./**/target/repository/
-          key: p2-${{ github.sha }}-${{ github.os }} # new key will cache
+          key: p2-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # new key will cache
           enableCrossOsArchive: true
       
       - name: Build all artifacts
@@ -77,12 +85,16 @@ jobs:
         os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+
       - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-path: ${{ github.workspace }}/.m2/repository
-          maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # match, restore only
+          maven-cache-key: maven-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
+          clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
 
       - name: Test
         shell: bash
@@ -125,6 +137,9 @@ jobs:
     outputs:
       release_tag: ${{ steps.get_tag.outputs.tag }}
     steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+
       - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-path: ${{ github.workspace }}/.m2/repository
@@ -134,6 +149,7 @@ jobs:
           BUILD_USER: ${{ secrets.BUILD_USER }}
           BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
           BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
+          clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
 
       - name: Release
         id: release
