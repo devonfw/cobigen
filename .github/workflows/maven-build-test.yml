@@ -74,6 +74,17 @@ jobs:
           java-version: ${{ matrix.javaVersion }}
           clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
 
+      - name: DEBUG filesystem
+        run: | 
+          echo "${{ github.workspace }}"
+          echo "$GITHUB_WORKSPACE"
+          echo "pwd" 
+          ls -al
+          echo "parent dir"
+          ls -al ../
+          echo "parent parent dir"
+          ls -al ../../
+
       - name: Cache built P2 repositories
         uses: actions/cache@v3
         with:
@@ -83,7 +94,7 @@ jobs:
       
       - name: Build all artifacts
         shell: bash
-        run: ./build.sh -spb
+        run: ./build.sh -sp
     
   test:
     needs: build
