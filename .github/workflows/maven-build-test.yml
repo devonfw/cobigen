@@ -32,12 +32,12 @@ jobs:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ env.GITHUB_WORKSPACE }}/.m2/repository
+          maven-cache-path: ${{ github.workspace }}/.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
       
       - name: Resolve non-cobigen dependencies
         shell: bash
-        run: mvn -s .mvn/ci-settings.xml -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
+        run: mvn -Dmaven.repo.local=${{ github.workspace }}/.m2/repository -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
 
   build:
     needs: cache-dependencies
@@ -51,7 +51,7 @@ jobs:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ env.GITHUB_WORKSPACE }}/.m2/repository
+          maven-cache-path: ${{ github.workspace }}/.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           java-version: ${{ matrix.javaVersion }}
@@ -79,7 +79,7 @@ jobs:
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ env.GITHUB_WORKSPACE }}/.m2/repository
+          maven-cache-path: ${{ github.workspace }}/.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ github.os }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
@@ -127,7 +127,7 @@ jobs:
     steps:
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ env.GITHUB_WORKSPACE }}/.m2/repository
+          maven-cache-path: ${{ github.workspace }}/.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

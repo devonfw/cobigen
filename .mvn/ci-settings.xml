@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <settings>
-  <localRepository>${ GITHUB_WORKSPACE }/.m2/repository</localRepository>
   <servers>
     <server>
       <id>sonartype.releases</id>
