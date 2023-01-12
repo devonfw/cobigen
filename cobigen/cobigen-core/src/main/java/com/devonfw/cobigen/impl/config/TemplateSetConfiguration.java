@@ -140,7 +140,7 @@ public class TemplateSetConfiguration {
       Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
 
       // TODO: WIP move this src/main/templates browsing to root template set folder into new method
-      this.utilFolders.put(activeTrigger.getId(), templateSetFile.getParent().getParent().getParent().getParent());
+      this.utilFolders.put(activeTrigger.getId(), getSourceFolder(templateSetFile));
 
       this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
       this.configRoot = configurationPath;
@@ -158,6 +158,18 @@ public class TemplateSetConfiguration {
           trigger.get(trigger.keySet().toArray()[0]), loadedTemplates, loadedIncrements, templateEngine);
       this.templatesConfigurations.add(templatesConfiguration);
     }
+  }
+
+  /**
+   *
+   * @return the source folder where (src/main/templates) is located
+   */
+  private Path getSourceFolder(Path path) {
+
+    int nameCount = path.getNameCount();
+
+    // return path.subpath(0, nameCount - 4); <--- This doesn't work because it cuts the absolute root path (Root drive)
+    return path.getParent().getParent().getParent().getParent();
   }
 
   /**

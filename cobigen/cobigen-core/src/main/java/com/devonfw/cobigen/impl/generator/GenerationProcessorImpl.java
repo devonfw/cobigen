@@ -428,7 +428,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
 
     templateEngine.setTemplateFolder(this.configurationHolder.readContextConfiguration()
-        .getConfigLocationforTrigger(trigger.getId(), true).resolve(trigger.getTemplateFolder()));
+        .retrieveConfigRootByTrigger(trigger.getId(), true).resolve(trigger.getTemplateFolder()));
 
     Template templateEty = tConfig.getTemplate(template.getId());
     if (templateEty == null) {

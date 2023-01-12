@@ -164,7 +164,7 @@ public class ContextConfiguration {
    *        returned
    * @return the {@link Path} of the config location of the trigger
    */
-  public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
+  public Path getConfigRootByTrigger(String triggerId, boolean fileSystemDependentPath) {
 
     if (this.configurationHolder != null) {
       Map<String, Path> rootTemplateFolders = this.configurationHolder.getTemplateSetConfiguration()
@@ -187,7 +187,7 @@ public class ContextConfiguration {
    *        returned
    * @return Path to utility folder
    */
-  public Path retrieveTemplateSetUtilsLocationForTrigger(String triggerId, boolean fileSystemDependentPath) {
+  public Path retrieveTemplateSetUtilsLocationByTrigger(String triggerId, boolean fileSystemDependentPath) {
 
     if (this.configurationHolder != null) {
 
