@@ -75,6 +75,7 @@ jobs:
           clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
 
       - name: DEBUG filesystem
+        shell: bash
         run: | 
           echo "${{ github.workspace }}"
           echo "$GITHUB_WORKSPACE"
