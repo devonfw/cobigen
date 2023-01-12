@@ -55,12 +55,7 @@ jobs:
 
   build:
     needs: cache-dependencies
-    strategy:
-      fail-fast: true
-      matrix:
-        javaVersion: [11]
-        os: [ubuntu-latest] #windows-latest, 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Enable git support for long paths on Windows
         if: ${{ runner.os == 'Windows' }}
@@ -76,24 +71,16 @@ jobs:
         uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-path: ${{ github.workspace }}/.m2/repository
-          maven-cache-key: maven-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # new key will cache
+          maven-cache-key: maven-${{ github.sha }}-${{ github.run_number }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles(format('{0}/**/pom.xml', env.REPOSITORY_PATH)) }}
-          java-version: ${{ matrix.javaVersion }}
+          java-version: 11
           clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
-
-      - name: DEBUG filesystem
-        shell: bash
-        run: | 
-          echo "${{ github.workspace }}"
-          echo "pwd" 
-          ls -al
-          ls -al ${{ env.REPOSITORY_PATH }}
 
       - name: Cache built P2 repositories
         uses: actions/cache@v3
         with:
           path: ./${{ env.REPOSITORY_PATH }}/**/target/repository/
-          key: p2-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # new key will cache
+          key: p2-${{ github.sha }}-${{ github.run_number }} # new key will cache
           enableCrossOsArchive: true
       
       - name: Build all artifacts
@@ -125,10 +112,17 @@ jobs:
       - uses: devonfw-actions/java-maven-setup@main
         with:
           maven-cache-path: ${{ github.workspace }}/.m2/repository
-          maven-cache-key: maven-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # match, restore only
+          maven-cache-key: maven-${{ github.sha }}-${{ github.run_number }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
           clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
+      
+      - name: Restore built P2 repositories
+        uses: actions/cache@v3
+        with:
+          path: ./${{ env.REPOSITORY_PATH }}/**/target/repository/
+          key: p2-${{ github.sha }}-${{ github.run_number }} # match, restore only
+          enableCrossOsArchive: true
 
       - name: Test
         shell: bash
