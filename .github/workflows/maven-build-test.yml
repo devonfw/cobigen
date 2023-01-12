@@ -41,7 +41,9 @@ jobs:
       
       - name: Overwrite maven settings
         shell: bash
-        run: cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
+        run: |
+          mkdir ~/.m2
+          cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
 
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
@@ -116,7 +118,9 @@ jobs:
       # need to overwrite global settings file to cath all mvn executions properly in tests
       - name: Overwrite maven settings
         shell: bash
-        run: cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
+        run: |
+          mkdir ~/.m2
+          cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
 
       - uses: devonfw-actions/java-maven-setup@main
         with:
