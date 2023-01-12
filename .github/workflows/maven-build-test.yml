@@ -49,7 +49,7 @@ jobs:
       - name: Resolve non-cobigen dependencies
         shell: bash
         run: |
-          cd $REPOSITORY_PATH
+          cd ${{ env.REPOSITORY_PATH }}
           mvn -Dmaven.repo.local=${{ github.workspace }}/.m2/repository -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
 
   build:
@@ -58,7 +58,7 @@ jobs:
       fail-fast: true
       matrix:
         javaVersion: [11]
-        os: [windows-latest, ubuntu-latest]
+        os: [ubuntu-latest] #windows-latest, 
     runs-on: ${{ matrix.os }}
     steps:
       - name: Enable git support for long paths on Windows
@@ -86,7 +86,7 @@ jobs:
           echo "${{ github.workspace }}"
           echo "pwd" 
           ls -al
-          ls -al $REPOSITORY_PATH
+          ls -al ${{ env.REPOSITORY_PATH }}
 
       - name: Cache built P2 repositories
         uses: actions/cache@v3
@@ -98,7 +98,7 @@ jobs:
       - name: Build all artifacts
         shell: bash
         run: |
-          cd $REPOSITORY_PATH
+          cd ${{ env.REPOSITORY_PATH }}
           ./build.sh -sp
     
   test:
@@ -132,7 +132,7 @@ jobs:
       - name: Test
         shell: bash
         run: |
-          cd $REPOSITORY_PATH
+          cd ${{ env.REPOSITORY_PATH }}
           ./build.sh -sdtc --components ${{ matrix.component }}
 
   # Sonar Analysis is done in separate workflow (https://github.com/devonfw/cobigen/blob/master/.github/workflows/sonar-analysis.yml)
@@ -200,7 +200,7 @@ jobs:
           BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
           BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
         run: |
-          cd $REPOSITORY_PATH
+          cd ${{ env.REPOSITORY_PATH }}
           ./release.sh -sy skip-qa
           
       - name: 'Get release tag'
