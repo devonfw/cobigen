@@ -23,6 +23,7 @@ env:
   MVN_BATCH_MODE: '-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
   # fixing random connection reset of maven downloads as proposed here: https://github.com/actions/virtual-environments/issues/2715#issuecomment-797388909
   MVN_HTTP_OPTIMIZATION: '-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120'
+  REPOSITORY_PATH: repo
 
 jobs:
   cache-dependencies:
@@ -35,17 +36,21 @@ jobs:
 
       - name: Clone Repository
         uses: actions/checkout@v3
+        with:
+          repository_path: ${{ env.REPOSITORY_PATH }}
 
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ github.workspace }}/../../.m2/repository
-          maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          maven-cache-path: ${{ github.workspace }}/.m2/repository
+          maven-cache-key: cobigen-dep-${{ hashFiles(format('{0}/**/pom.xml', env.REPOSITORY_PATH)) }}
           clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
       
       - name: Resolve non-cobigen dependencies
         shell: bash
-        run: mvn -Dmaven.repo.local=${{ github.workspace }}/../../.m2/repository -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
+        run: |
+          cd $REPOSITORY_PATH
+          mvn -Dmaven.repo.local=${{ github.workspace }}/.m2/repository -pl !com.devonfw.cobigen:com.devonfw.cobigen.eclipse.test org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve org.apache.maven.plugins:maven-dependency-plugin:3.1.2:resolve-plugins -DexcludeGroupIds=com.devonfw.cobigen -T1C -Pp2-build ${{ env.MVN_BATCH_MODE }} ${{ env.MVN_HTTP_OPTIMIZATION }} || true # never fail
 
   build:
     needs: cache-dependencies
@@ -63,13 +68,15 @@ jobs:
         
       - name: Clone Repository
         uses: actions/checkout@v3
+        with:
+          repository_path: ${{ env.REPOSITORY_PATH }}
 
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ github.workspace }}/../../.m2/repository
+          maven-cache-path: ${{ github.workspace }}/.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # new key will cache
-          maven-cache-restore-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          maven-cache-restore-key: cobigen-dep-${{ hashFiles(format('{0}/**/pom.xml', env.REPOSITORY_PATH)) }}
           java-version: ${{ matrix.javaVersion }}
           clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
 
@@ -77,24 +84,22 @@ jobs:
         shell: bash
         run: | 
           echo "${{ github.workspace }}"
-          echo "$GITHUB_WORKSPACE"
           echo "pwd" 
           ls -al
-          echo "parent dir"
-          ls -al ../
-          echo "parent parent dir"
-          ls -al ../../
+          ls -al $REPOSITORY_PATH
 
       - name: Cache built P2 repositories
         uses: actions/cache@v3
         with:
-          path: ./**/target/repository/
+          path: ./${{ env.REPOSITORY_PATH }}/**/target/repository/
           key: p2-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # new key will cache
           enableCrossOsArchive: true
       
       - name: Build all artifacts
         shell: bash
-        run: ./build.sh -sp
+        run: |
+          cd $REPOSITORY_PATH
+          ./build.sh -sp
     
   test:
     needs: build
@@ -113,10 +118,12 @@ jobs:
         
       - name: Clone Repository
         uses: actions/checkout@v3
+        with:
+          repository_path: ${{ env.REPOSITORY_PATH }}
 
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ github.workspace }}/../../.m2/repository
+          maven-cache-path: ${{ github.workspace }}/.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ matrix.os }}-${{ github.run_number }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
@@ -124,7 +131,9 @@ jobs:
 
       - name: Test
         shell: bash
-        run: ./build.sh -sdtc --components ${{ matrix.component }}
+        run: |
+          cd $REPOSITORY_PATH
+          ./build.sh -sdtc --components ${{ matrix.component }}
 
   # Sonar Analysis is done in separate workflow (https://github.com/devonfw/cobigen/blob/master/.github/workflows/sonar-analysis.yml)
   # as of a workaround of potential secret leaking on PRs (https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
@@ -165,11 +174,13 @@ jobs:
     steps:
       - name: Clone Repository
         uses: actions/checkout@v3
+        with:
+          repository_path: ${{ env.REPOSITORY_PATH }}
 
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ github.workspace }}/../../.m2/repository
-          maven-cache-key: cobigen-dep-${{ hashFiles('**/pom.xml') }}
+          maven-cache-path: ${{ github.workspace }}/.m2/repository
+          maven-cache-key: cobigen-dep-${{ hashFiles(format('{0}/**/pom.xml', env.REPOSITORY_PATH)) }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           BUILD_USER: ${{ secrets.BUILD_USER }}
@@ -188,7 +199,9 @@ jobs:
           BUILD_USER: ${{ secrets.BUILD_USER }}
           BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
           BUILD_USER_EMAIL: ${{ secrets.BUILD_USER_EMAIL }}
-        run: ./release.sh -sy skip-qa
+        run: |
+          cd $REPOSITORY_PATH
+          ./release.sh -sy skip-qa
           
       - name: 'Get release tag'
         id: get_tag
