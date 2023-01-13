@@ -48,7 +48,9 @@ jobs:
 
       - name: Overwrite maven settings
         shell: bash
-        run: cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
+        run: |
+          mkdir -p ~/.m2
+          cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
       
       - name: Resolve non-cobigen dependencies
         shell: bash
@@ -131,7 +133,9 @@ jobs:
       # need to overwrite global settings file to cath all mvn executions properly in tests
       - name: Overwrite maven settings
         shell: bash
-        run: cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
+        run: |
+          mkdir -p ~/.m2
+          cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
 
       - name: Test
         shell: bash
