@@ -38,12 +38,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: ${{ env.REPOSITORY_PATH }}
-      
-      - name: Overwrite maven settings
-        shell: bash
-        run: |
-          mkdir ~/.m2
-          cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
 
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
@@ -51,6 +45,12 @@ jobs:
           maven-cache-path: ${{ github.workspace }}/.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles(format('{0}/**/pom.xml', env.REPOSITORY_PATH)) }}
           clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
+
+      - name: Overwrite maven settings
+        shell: bash
+        run: |
+          mkdir ~/.m2
+          cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
       
       - name: Resolve non-cobigen dependencies
         shell: bash
@@ -114,13 +114,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: ${{ env.REPOSITORY_PATH }}
-      
-      # need to overwrite global settings file to cath all mvn executions properly in tests
-      - name: Overwrite maven settings
-        shell: bash
-        run: |
-          mkdir ~/.m2
-          cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
 
       - uses: devonfw-actions/java-maven-setup@main
         with:
@@ -136,12 +129,24 @@ jobs:
           path: ./${{ env.REPOSITORY_PATH }}/**/target/repository/
           key: p2-${{ github.sha }}-${{ github.run_number }} # match, restore only
           enableCrossOsArchive: true
+      
+      # need to overwrite global settings file to cath all mvn executions properly in tests
+      - name: Overwrite maven settings
+        shell: bash
+        run: |
+          mkdir ~/.m2
+          cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
 
       - name: Test
         shell: bash
         run: |
           cd ${{ env.REPOSITORY_PATH }}
-          ./build.sh -sdtcb --components ${{ matrix.component }}
+          if [[ "${{ matrix.component }}" == "eclipse" && "${{ matrix.os }}" == "ubuntu-latest" ]]
+          then
+            xvfb-run -a ./build.sh -sdtcb --components ${{ matrix.component }}
+          else
+            ./build.sh -sdtcb --components ${{ matrix.component }}
+          fi
 
   # Sonar Analysis is done in separate workflow (https://github.com/devonfw/cobigen/blob/master/.github/workflows/sonar-analysis.yml)
   # as of a workaround of potential secret leaking on PRs (https://securitylab.github.com/research/github-actions-preventing-pwn-requests/)
