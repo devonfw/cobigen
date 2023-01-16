@@ -80,7 +80,7 @@ public class ClassLoadingIT extends AbstractApiTest {
   }
 
   /**
-   * Tests the usage of sample logic classes to be used in a template-sets.
+   * Tests the usage of sample logic classes to be used in a template-set.
    *
    * @throws Exception test fails
    */
@@ -99,8 +99,6 @@ public class ClassLoadingIT extends AbstractApiTest {
     File generationRootFolder = this.tmpFolder.newFolder("generationRootFolder");
 
     // pre-processing
-    File templatesFolder = new File(testTemplateSetFileRootPath + "template-sets");
-    // CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
     // Execution
@@ -109,6 +107,41 @@ public class ClassLoadingIT extends AbstractApiTest {
 
     // Verification
     File expectedResult = new File(testTemplateSetFileRootPath, "expected/generated.txt");
+    File generatedFile = new File(generationRootFolder, "generated.txt");
+    assertThat(report).isSuccessful();
+    assertThat(generatedFile).exists();
+    assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
+  }
+
+  /**
+   * Tests the usage of sample logic classes to be used in different template set versions. Test resources use an equal
+   * utility class name with a different implementation to simulate a version a conflict
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void callClassLoadingTemplateSetTestWithVersionConflict() throws Exception {
+
+    // Mocking
+    CobiGen cobigen = CobiGenFactory.create(new File(testTemplateSetFileRootPath + "conflicted/template-sets").toURI());
+
+    Object input = cobigen.read(
+        new File("src/test/java/com/devonfw/cobigen/systemtest/testobjects/io/generator/logic/api/to/InputEto.java")
+            .toPath(),
+        Charset.forName("UTF-8"), getClass().getClassLoader());
+
+    // Useful to see generates if necessary, comment the generationRootFolder above then
+    File generationRootFolder = this.tmpFolder.newFolder("generationRootFolder");
+
+    // pre-processing
+    List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+
+    // Execution
+    GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(generationRootFolder.toURI()),
+        false);
+
+    // Verification
+    File expectedResult = new File(testTemplateSetFileRootPath, "expected-conflicted/generated.txt");
     File generatedFile = new File(generationRootFolder, "generated.txt");
     assertThat(report).isSuccessful();
     assertThat(generatedFile).exists();
