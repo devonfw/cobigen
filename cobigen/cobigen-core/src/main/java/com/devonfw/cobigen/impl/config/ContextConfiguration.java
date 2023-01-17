@@ -52,19 +52,6 @@ public class ContextConfiguration {
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
    *
    * @param configRoot root path for the configuration of CobiGen
-   * @param isTemplateSet check if the configuration is a {@link TemplateSetConfiguration}
-   * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
-   */
-  public ContextConfiguration(Path configRoot, boolean isTemplateSet) throws InvalidConfigurationException {
-
-    this.configurationPath = configRoot;
-    readConfiguration(configRoot);
-  }
-
-  /**
-   * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
-   *
-   * @param configRoot root path for the configuration of CobiGen
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
   public ContextConfiguration(Path configRoot) throws InvalidConfigurationException {

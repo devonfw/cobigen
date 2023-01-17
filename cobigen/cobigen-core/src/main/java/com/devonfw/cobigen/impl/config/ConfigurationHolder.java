@@ -170,7 +170,7 @@ public class ConfigurationHolder {
 
       } else {
 
-        this.contextConfiguration = new ContextConfiguration(this.configurationPath, isTemplateSetConfiguration());
+        this.contextConfiguration = new ContextConfiguration(this.configurationPath);
       }
     }
 
@@ -204,7 +204,8 @@ public class ConfigurationHolder {
       List<Trigger> triggers = readContextConfiguration().getTriggers();
 
       for (Trigger trigger : triggers) {
-        Path configLocation = readContextConfiguration().retrieveTemplateSetUtilsLocationByTrigger(trigger.getId(), false);
+        Path configLocation = readContextConfiguration().retrieveTemplateSetUtilsLocationByTrigger(trigger.getId(),
+            false);
         utilsLocationPaths.add(configLocation);
       }
     } else {
