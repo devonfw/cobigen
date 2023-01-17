@@ -112,7 +112,7 @@ public class ConfigurationHolder {
    */
   public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
 
-    Path configRoot = readContextConfiguration().retrieveConfigRootByTrigger(trigger.getId(), true);
+    Path configRoot = readContextConfiguration().retrieveConfigRootByTrigger(trigger.getId());
     Path templateFolder = Paths.get(trigger.getTemplateFolder());
 
     if (!this.templatesConfigurations.containsKey(trigger.getId())) {
@@ -204,8 +204,7 @@ public class ConfigurationHolder {
       List<Trigger> triggers = readContextConfiguration().getTriggers();
 
       for (Trigger trigger : triggers) {
-        Path configLocation = readContextConfiguration().retrieveTemplateSetUtilsLocationByTrigger(trigger.getId(),
-            false);
+        Path configLocation = readContextConfiguration().retrieveTemplateSetUtilsLocationByTrigger(trigger.getId());
         utilsLocationPaths.add(configLocation);
       }
     } else {

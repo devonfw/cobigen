@@ -16,13 +16,21 @@ import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
- * This class takes care of finding either adapted or dowloaded template-set files.
+ * This class takes care of finding either adapted or downloaded template-set files.
  *
  */
 public class TemplateSetConfigurationManager {
 
   /** List with the paths of the configuration locations for the template-set.xml files */
   private Map<Path, Path> configLocations;
+
+  /**
+   * @return configLocations
+   */
+  public Map<Path, Path> getConfigLocations() {
+
+    return this.configLocations;
+  }
 
   /** List of template set paths TODO: check if this is still needed */
   List<Path> templateSetPaths;

@@ -10,7 +10,6 @@ import java.util.Map;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
-import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -147,19 +146,14 @@ public class ContextConfiguration {
 
   /**
    * @param triggerId the trigger id to get the config location for
-   * @param fileSystemDependentPath if true and the configuration is a jar file, the file system dependent path is
-   *        returned
    * @return the {@link Path} of the config location of the trigger
    */
-  public Path retrieveConfigRootByTrigger(String triggerId, boolean fileSystemDependentPath) {
+  public Path retrieveConfigRootByTrigger(String triggerId) {
 
     if (this.configurationHolder != null) {
       Map<String, Path> rootTemplateFolders = this.configurationHolder.getTemplateSetConfiguration()
           .getRootTemplateFolders();
       Path rootTemplateFolder = rootTemplateFolders.get(triggerId);
-      if (fileSystemDependentPath && FileSystemUtil.isZipFile(rootTemplateFolder.toUri())) {
-        rootTemplateFolder = FileSystemUtil.createFileSystemDependentPath(rootTemplateFolder.toUri());
-      }
       return rootTemplateFolder;
     }
 
@@ -170,18 +164,13 @@ public class ContextConfiguration {
    * Retrieves the utility folder from the given trigger id
    *
    * @param triggerId String of triggerId to search for
-   * @param fileSystemDependentPath if true and the configuration is a jar file, the file system dependent path is
-   *        returned
    * @return Path to utility folder
    */
-  public Path retrieveTemplateSetUtilsLocationByTrigger(String triggerId, boolean fileSystemDependentPath) {
+  public Path retrieveTemplateSetUtilsLocationByTrigger(String triggerId) {
 
     if (this.configurationHolder != null) {
       Map<String, Path> utilityFolders = this.configurationHolder.getTemplateSetConfiguration().getUtilFolders();
       Path utilityFolder = utilityFolders.get(triggerId);
-      if (fileSystemDependentPath && FileSystemUtil.isZipFile(utilityFolder.toUri())) {
-        utilityFolder = FileSystemUtil.createFileSystemDependentPath(utilityFolder.toUri());
-      }
       return utilityFolder;
     }
     return this.configurationPath;

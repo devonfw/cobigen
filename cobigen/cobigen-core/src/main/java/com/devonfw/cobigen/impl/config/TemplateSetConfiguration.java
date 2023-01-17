@@ -114,56 +114,85 @@ public class TemplateSetConfiguration {
       this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath);
     }
 
-    this.templateSetFiles = this.templateSetConfigurationReader.getTemplateSetConfigurationPaths();
+    List<Path> templateSetsAdapted = this.templateSetConfigurationReader.getTemplateSetConfigurationPathsAdapted();
+    List<Path> templateSetsDownloaded = this.templateSetConfigurationReader
+        .getTemplateSetConfigurationPathsDownloaded();
 
     this.increments = new HashMap<>();
     this.templatesConfigurations = Lists.newLinkedList();
-    for (Path templateSetFile : this.templateSetFiles) {
-      // TODO: Fix this WIP block
-      this.templateSetConfigurationReader.readConfiguration(templateSetFile);
-
-      com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration templatesConfigurationStatic = this.templateSetConfigurationReader
-          .getTemplatesConfiguration();
-
-      com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfigurationStatic = this.templateSetConfigurationReader
-          .getContextConfiguration();
-
-      TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
-
-      TemplatesConfigurationReader templatesConfigurationReader = new TemplatesConfigurationReader(
-          templatesConfigurationStatic, templateFolder, this.configurationHolder, templateSetFile);
-
-      ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(contextConfigurationStatic,
-          templateSetFile);
-
-      Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
-      Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
-
-      this.utilFolders.put(activeTrigger.getId(), getSourceFolder(templateSetFile));
-
-      this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
-      this.configRoot = configurationPath;
-      this.triggers.putAll(trigger);
-
-      Map<String, Template> loadedTemplates = templatesConfigurationReader.loadTemplates(activeTrigger);
-      this.templates.putAll(loadedTemplates);
-
-      Map<String, Increment> loadedIncrements = templatesConfigurationReader.loadIncrements(loadedTemplates,
-          activeTrigger);
-      this.increments.putAll(templatesConfigurationReader.loadIncrements(loadedTemplates, activeTrigger));
-      String templateEngine = templatesConfigurationReader.getTemplateEngine();
-
-      TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath,
-          trigger.get(trigger.keySet().toArray()[0]), loadedTemplates, loadedIncrements, templateEngine);
-      this.templatesConfigurations.add(templatesConfiguration);
+    if (!templateSetsAdapted.isEmpty()) {
+      for (Path templateSetFile : templateSetsAdapted) {
+        initializeTemplateSets(false, configurationPath, templateSetFile);
+      }
     }
+
+    if (!templateSetsDownloaded.isEmpty()) {
+      for (Path templateSetFile : templateSetsDownloaded) {
+        initializeTemplateSets(true, configurationPath, templateSetFile);
+      }
+    }
+
   }
 
   /**
+   * Initializes template sets
+   *
+   * @param isZipFile boolean true if downloaded template-sets need to be processed
+   * @param configurationPath CobiGen configuration root path
+   * @param templateSetFile Path to template-set xml to be processed
+   */
+  private void initializeTemplateSets(boolean isZipFile, Path configurationPath, Path templateSetFile) {
+
+    this.templateSetConfigurationReader.readConfiguration(templateSetFile);
+
+    com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration templatesConfigurationStatic = this.templateSetConfigurationReader
+        .getTemplatesConfiguration();
+
+    com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfigurationStatic = this.templateSetConfigurationReader
+        .getContextConfiguration();
+
+    TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
+
+    TemplatesConfigurationReader templatesConfigurationReader = new TemplatesConfigurationReader(
+        templatesConfigurationStatic, templateFolder, this.configurationHolder, templateSetFile);
+
+    ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(contextConfigurationStatic,
+        templateSetFile);
+
+    Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
+    Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
+
+    if (isZipFile) {
+      Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
+      Path jarPath = configLocations.get(templateSetFile);
+      this.utilFolders.put(activeTrigger.getId(), jarPath);
+    } else {
+      this.utilFolders.put(activeTrigger.getId(), getUtilSourceFolder(templateSetFile));
+    }
+
+    this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
+    this.configRoot = configurationPath;
+    this.triggers.putAll(trigger);
+
+    Map<String, Template> loadedTemplates = templatesConfigurationReader.loadTemplates(activeTrigger);
+    this.templates.putAll(loadedTemplates);
+
+    Map<String, Increment> loadedIncrements = templatesConfigurationReader.loadIncrements(loadedTemplates,
+        activeTrigger);
+    this.increments.putAll(templatesConfigurationReader.loadIncrements(loadedTemplates, activeTrigger));
+    String templateEngine = templatesConfigurationReader.getTemplateEngine();
+
+    TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath,
+        trigger.get(trigger.keySet().toArray()[0]), loadedTemplates, loadedIncrements, templateEngine);
+    this.templatesConfigurations.add(templatesConfiguration);
+  }
+
+  /**
+   * Gets the source folder for utility classes
    *
    * @return the source folder where (src/main/templates) is located
    */
-  private Path getSourceFolder(Path path) {
+  private Path getUtilSourceFolder(Path path) {
 
     return path.getParent().getParent().getParent().getParent();
   }
