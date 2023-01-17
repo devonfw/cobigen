@@ -133,7 +133,8 @@ public class TemplateSetConfigurationReader {
       }
       this.configLocations = this.templateSetConfigurationManager.getConfigLocations();
 
-      if (this.templateSetConfigurationPathsAdapted.isEmpty()) {
+      if (this.templateSetConfigurationPathsAdapted.isEmpty()
+          && this.templateSetConfigurationPathsDownloaded.isEmpty()) {
         throw new InvalidConfigurationException(configRoot,
             "Could not find any template-set configuration file in the given folder.");
       }

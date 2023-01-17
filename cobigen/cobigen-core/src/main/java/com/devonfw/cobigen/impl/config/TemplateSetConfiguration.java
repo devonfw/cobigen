@@ -2,7 +2,6 @@ package com.devonfw.cobigen.impl.config;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,9 +59,6 @@ public class TemplateSetConfiguration {
 
   /** The reader to read the template-set.xml files */
   private TemplateSetConfigurationReader templateSetConfigurationReader;
-
-  /** Paths of the template set configuration files */
-  private List<Path> templateSetFiles = new ArrayList<>();
 
   /** Root of the configuration */
   private Path configRoot;
@@ -239,24 +235,6 @@ public class TemplateSetConfiguration {
   public List<com.devonfw.cobigen.impl.config.entity.io.Trigger> getTrigger() {
 
     return this.templateSetConfiguration.getContextConfiguration().getTrigger();
-  }
-
-  /**
-   * @return the list of the template set files
-   */
-  public List<Path> getTemplateSetFiles() {
-
-    return this.templateSetFiles;
-  }
-
-  /**
-   * Adds template set files to the list of template sets
-   *
-   * @param templateSets List of template sets
-   */
-  public void addTemplateSetFiles(List<Path> templateSets) {
-
-    this.templateSetFiles.addAll(templateSets);
   }
 
   /**

@@ -118,7 +118,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
 
       TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
           folder.toPath().resolve("template-sets"));
-      assertThat(templateSetConfiguration.getTemplateSetFiles().size()).isEqualTo(1);
+      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(1);
     });
   }
 
@@ -140,7 +140,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
       TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
           folder.toPath().resolve("template-sets"));
 
-      assertThat(templateSetConfiguration.getTemplateSetFiles().size()).isEqualTo(2);
+      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(2);
     });
   }
 
