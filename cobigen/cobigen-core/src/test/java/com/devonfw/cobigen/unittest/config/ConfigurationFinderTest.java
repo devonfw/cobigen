@@ -99,7 +99,7 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates without a existing templates or template-set folder, excepting to return a created
+   * Test of findTemplates without a existing templates or template-set folder, expecting to return a created
    * template-set folder
    */
   @Test
@@ -115,7 +115,7 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing template-set/adapted folder, excepting to return the template-set folder
+   * Test of findTemplates wit a existing template-set/adapted folder, expecting to return the template-set folder
    */
   @Test
   public void findTemplateSetAdaptedTest() throws Exception {
@@ -131,7 +131,7 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing template-set/downloaded folder, excepting to return the template-set folder
+   * Test of findTemplates wit a existing template-set/downloaded folder, expecting to return the template-set folder
    */
   @Test
   public void findTemplateSetDownloadedTest() throws Exception {
@@ -147,7 +147,7 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing templates folder with template jars , excepting to return the templates folder
+   * Test of findTemplates wit a existing templates folder with template jars , expecting to return a jar.
    */
   @Test
   public void findTemplatesJarsTest() throws Exception {
@@ -159,12 +159,12 @@ public class ConfigurationFinderTest {
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
       URI templates = ConfigurationFinder.findTemplatesLocation();
       assertThat(Paths.get(templates)).exists();
-      assertThat(Paths.get(templates).getFileName().toString()).isEqualTo(ConfigurationConstants.TEMPLATES_FOLDER);
+      assertThat(Paths.get(templates).getFileName().toString()).containsSequence("templates-devon4j-1.0");
     });
   }
 
   /**
-   * Test of findTemplates wit a existing templates folder without template jars , excepting to return a new created
+   * Test of findTemplates wit a existing templates folder without template jars , expecting to return a new created
    * template-Set folder
    */
   @Test
@@ -180,7 +180,7 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing templates folder with CobiGen_Templates, excepting to return the
+   * Test of findTemplates wit a existing templates folder with CobiGen_Templates, expecting to return the
    * CobiGen_Templates folder
    */
   @Test
@@ -198,7 +198,7 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing template-set folder with downloaded and adapted, excepting to return the
+   * Test of findTemplates wit a existing template-set folder with downloaded and adapted, expecting to return the
    * template-set folder
    */
   @Test
@@ -217,13 +217,12 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a templates value set in the cobigen file, excepting to return the value from the
+   * Test of findTemplates wit a templates value set in the cobigen file, expecting to return the value from the
    * .cobigen file
    */
   @Test
   public void findTemplatesWithProperties() throws Exception {
 
-    // is this the correct way?
     File userHome = this.tmpFolder.newFolder("user-home");
     File customTemplatesFolder = this.tmpFolder.newFolder("customTemplatesFolder",
         ConfigurationConstants.TEMPLATES_FOLDER);
@@ -239,8 +238,8 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a template-set value set in the cobigen file, the value is faulty and non exiting.
-   * Excepting to create a template-set folder in the COBIGEN_HOME home directory.
+   * Test of findTemplates with a template-set value set in the cobigen file, the value is faulty and the folder does
+   * not exist. Expecting to create a template-set folder in the COBIGEN_HOME home directory.
    */
   @Test
   public void findTemplateSetWithInvalidProperties() throws Exception {
@@ -249,7 +248,7 @@ public class ConfigurationFinderTest {
     File customTemplatesFolder = this.tmpFolder.newFolder("customTemplatesFolder");
     Path propertieFile = Files.createFile(userHome.toPath().resolve(".cobigen"));
     List<String> properties = Arrays
-        .asList("templates=" + customTemplatesFolder.getAbsolutePath().replaceFirst("custom", "nonExistend"));
+        .asList("template-sets=" + customTemplatesFolder.getAbsolutePath().replaceFirst("custom", "nonExistend"));
     Files.write(propertieFile, properties);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
@@ -261,13 +260,12 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a template-set value set in the cobigen file, excepting to return the value from the
+   * Test of findTemplates with a template-set value set in the cobigen file, expecting to return the value from the
    * .cobigen file
    */
   @Test
   public void findTemplateSetWithProperties() throws Exception {
 
-    // IS THIS the correct way?
     File userHome = this.tmpFolder.newFolder("user-home");
     File customTemplatesFolder = this.tmpFolder.newFolder("customTemplatesFolder",
         ConfigurationConstants.TEMPLATE_SETS_FOLDER);
@@ -284,13 +282,12 @@ public class ConfigurationFinderTest {
 
   /**
    *
-   * Test of findTemplates wit a templates value set in the cobigen file, the value is faulty and non exiting. Excepting
-   * to create a template-set folder in the COBIGEN_HOME home directory.
+   * Test of findTemplates with a templates value set in the cobigen file, the value is faulty and the folder does not
+   * exist. Expecting to create a template-set folder in the COBIGEN_HOME home directory and return the folder.
    */
   @Test
-  public void findTemplateSetsWithInvalidProperties() throws Exception {
+  public void findTemplatesWithInvalidProperties() throws Exception {
 
-    // is this the correct way?
     File userHome = this.tmpFolder.newFolder("user-home");
     File customTemplatesFolder = this.tmpFolder.newFolder("customTemplatesFolder");
     Path propertieFile = Files.createFile(userHome.toPath().resolve(".cobigen"));

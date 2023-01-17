@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 
 /**
  * Tests the usage of the adapt-templates command.
@@ -72,16 +73,13 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     Path cliSystemTestPath = new File(
         AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
             .getParentFile().toPath();
-    Path templateSourcesJar = cliSystemTestPath
-        .resolve("src/test/resources/testdata/templates-devon4j-1.0-sources.jar");
-    Path templateJar = cliSystemTestPath.resolve("src/test/resources/testdata/templates-devon4j-1.0.jar");
     Path templatesPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
     Path CobigenTemplatesPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
     if (!Files.exists(templatesPath)) {
       Files.createDirectories(templatesPath);
     }
-    Files.copy(templateSourcesJar, templatesPath.resolve(templateJar.getFileName()));
-    Files.copy(templateJar, templatesPath.resolve(templateSourcesJar.getFileName()));
+    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", false, templatesPath.toFile());
+    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", true, templatesPath.toFile());
 
     String args[] = new String[2];
     args[0] = "adapt-templates";

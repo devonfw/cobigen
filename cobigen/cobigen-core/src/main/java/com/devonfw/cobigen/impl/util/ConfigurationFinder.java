@@ -101,24 +101,25 @@ public class ConfigurationFinder {
 
       // use new template set configuration
       Path templateSetsFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templateSetsLocation);
-      if (templateSetsFolderLocation != null && Files.exists(templateSetsFolderLocation)) {
+      if (templateSetsFolderLocation != null) {
         if (!Files.exists(templateSetsFolderLocation)) {
           LOG.warn(
-              "The last value of the template-set path, does not exist. Using home directory:{} to search for templates",
+              "The value of the template-set path from the .cobigen file, does not exist. Using home directory:{} to search for templates",
               cobigenHome);
+        } else {
+          return templateSetsFolderLocation.toUri();
         }
-        return templateSetsFolderLocation.toUri();
       }
-
       // use old templates configuration
       Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
       if (templatesFolderLocation != null) {
         if (!Files.exists(templatesFolderLocation)) {
           LOG.warn(
-              "The last value of the template-set path, does not exist. Using home directory:{} to search for templates",
+              "The value of the templates path from the .cobigen file, does not exist. Using home directory:{} to search for templates",
               cobigenHome);
+        } else {
+          return templatesFolderLocation.toUri();
         }
-        return templatesFolderLocation.toUri();
       }
     }
     return findTemplates(cobigenHome);
@@ -206,7 +207,7 @@ public class ConfigurationFinder {
     if (Files.exists(templatesPath)) {
       Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesPath);
       if (jarFilePath != null && Files.exists(jarFilePath)) {
-        return templatesPath.toUri();
+        return jarFilePath.toUri();
       }
     }
     templateSetsFolderPath = CobiGenPaths.getTemplateSetsFolderPath(home, true);
