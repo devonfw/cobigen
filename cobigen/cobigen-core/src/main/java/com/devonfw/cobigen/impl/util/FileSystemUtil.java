@@ -12,6 +12,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
@@ -31,7 +33,7 @@ public class FileSystemUtil {
   public static Path createFileSystemDependentPath(URI targetUri) {
 
     URI workURI = URI.create(targetUri.toString());
-    if (FileSystemUtil.isZipFile(workURI)) {
+    if (isZipFile(workURI)) {
       // reformat URI to be loaded by the zip/jar file system provider
       workURI = URI.create("jar:file:" + new File(workURI).toURI().getPath());
     }
