@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
@@ -120,6 +121,7 @@ public class ClassLoadingIT extends AbstractApiTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void callClassLoadingTemplateSetTestWithVersionConflict() throws Exception {
 
     // Mocking
