@@ -158,6 +158,7 @@ jobs:
         with:
           path: ./**/target/repository/
           key: p2-plugins-${{ github.sha }} # key hit will not update cache
+          enableCrossOsArchive: true
           
       - name: Run tests (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
