@@ -34,11 +34,6 @@
           </templates>
         </configuration>
         <dependencies>
-        <dependency>
-            <groupId>com.devonfw.cobigen</groupId>
-            <artifactId>templates-devon4j</artifactId>
-            <version>20.08.002</version>
-        </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>tempeng-freemarker</artifactId>
@@ -48,6 +43,11 @@
             <groupId>com.devonfw.cobigen</groupId>
             <artifactId>openapiplugin</artifactId>
             <version>${pluginVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.devonfw.cobigen</groupId>
+            <artifactId>templates-devon4j</artifactId>
+            <version>20.08.002</version>
           </dependency>
           <dependency>
             <groupId>com.devonfw.cobigen</groupId>
