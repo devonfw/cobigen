@@ -42,7 +42,7 @@ jobs:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ github.workspace }}/.m2/repository
+          maven-cache-path: ./.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles(format('{0}/**/pom.xml', env.REPOSITORY_PATH)) }}
           clone: false # checkout in a separate / earlier step to allow eager evaluation of parameter expression like workspace or hashFiles
 
@@ -76,7 +76,7 @@ jobs:
       - name: Checkout & Prepare
         uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ github.workspace }}/.m2/repository
+          maven-cache-path: ./.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ github.run_number }} # new key will cache
           maven-cache-restore-key: cobigen-dep-${{ hashFiles(format('{0}/**/pom.xml', env.REPOSITORY_PATH)) }}
           java-version: 11
@@ -117,7 +117,7 @@ jobs:
 
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ github.workspace }}/.m2/repository
+          maven-cache-path: ./.m2/repository
           maven-cache-key: maven-${{ github.sha }}-${{ github.run_number }} # match, restore only
           java-version: ${{ matrix.javaVersion }}
           jacoco-cache-key: jacoco-${{ github.sha }}-${{ matrix.component }} # new key will cache
@@ -192,7 +192,7 @@ jobs:
 
       - uses: devonfw-actions/java-maven-setup@main
         with:
-          maven-cache-path: ${{ github.workspace }}/.m2/repository
+          maven-cache-path: ./.m2/repository
           maven-cache-key: cobigen-dep-${{ hashFiles(format('{0}/**/pom.xml', env.REPOSITORY_PATH)) }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
