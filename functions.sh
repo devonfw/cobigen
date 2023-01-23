@@ -25,6 +25,7 @@ Usage of CobiGen build & deploy script
   -g | --gpgkey=           GPG key name to be passed for code signing
   -h | --help              Show help
   -p | --parallel          Parallelize execution (1 Thread per Core)
+  -r | --coverage-report   Create coverage report (building sonar-report project)
   -s | --ci-settings       Executing maven with .m2/ci-settings.xml
   -t | --test              Execute tests
   -x | --debug             Run debug mode (highly verbose logs)
@@ -45,6 +46,7 @@ DRYRUN=false
 NO_CLEAN=false
 GPG_KEYNAME=""
 COVERAGE=""
+COV_REPORT=false
 
 echo "Configuration: "
 
@@ -65,7 +67,7 @@ fi
 
 echo -e "\e[91m"
 
-if ! options="$(getopt -l "batch,coverage,components:,dirty,gpgkey:,help,parallel,repo-settings,test,debug,silent-confirm,dryrun" -o "bcdg:hpstxyz" -- "$@")"; then
+if ! options="$(getopt -l "batch,coverage,components:,dirty,gpgkey:,help,parallel,coverage-report,repo-settings,test,debug,silent-confirm,dryrun" -o "bcC:dg:hprstxyz" -- "$@")"; then
   echo -e "\e[39m"
   show_help
   exit 1
@@ -107,6 +109,10 @@ do
     -p|--parallel)
       PARALLELIZED="-T1C"
       echo -e "\e[92m  > Parallel execution of 1 thread per core\e[39m"
+      ;;
+    -r|--coverage-report)
+      COV_REPORT=true
+      echo -e "\e[92m  > Create coverage report\e[39m"
       ;;
     -s|--repo-settings) 
       MVN_SETTINGS="-s .mvn/ci-settings.xml"

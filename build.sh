@@ -42,7 +42,7 @@ if [[ " ${COMPONENTS_TO_BUILD[*]} " =~ " eclipse " ]]; then
   doRunCommand "mvn install $MVN_SETTINGS -f cobigen-eclipse -Pp2-build $COVERAGE $ENABLED_TEST $DEBUG $BATCH_MODE"
 fi
 
-if [[ -n "$COVERAGE" ]]
+if [[ "$COV_REPORT" = true ]]
 then
   doRunCommand "mvn -DskipTests verify $COVERAGE $DEBUG $PARALLELIZED $BATCH_MODE"
 fi
