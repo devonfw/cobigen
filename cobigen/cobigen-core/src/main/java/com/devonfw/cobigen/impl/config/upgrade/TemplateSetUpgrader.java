@@ -84,7 +84,7 @@ public class TemplateSetUpgrader {
    * Upgrades the ContextConfiguration from v2.1 to the new structure from v3.0. The monolithic pom and context files
    * will be split into multiple files corresponding to every template set that will be created.
    *
-   * @param Path {@link Path} to the templatesLocation
+   * @param templatesLocation Path to the templates location
    *
    * @return {@link Map} collection that contains the upgraded v3.0
    *         {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration} as key and a {@link Path} for
@@ -187,11 +187,11 @@ public class TemplateSetUpgrader {
   /**
    * Writes a pom.xml file for the split context and template folder
    *
-   * @param Path {@link Path} to the CobiGen_Templates folder
-   * @param Path {@link Path} to the split template folder
-   * @param Trigger {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger }to the related template folder
-   * @throws IOException
-   * @throws FileNotFoundException
+   * @param cobigenTemplates Path to the CobiGen_Templates folder
+   * @param newTemplateFolder Path to the split template folder
+   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger} to the related template folder
+   * @throws IOException when an IOError occurred while reading the monolithic pom file
+   * @throws FileNotFoundException when a monolithic pom file could not be found
    */
   private void writeNewPomFile(Path cobigenTemplates, Path newTemplateFolder,
       com.devonfw.cobigen.impl.config.entity.io.v3_0.Trigger trigger) throws IOException, FileNotFoundException {
@@ -218,7 +218,7 @@ public class TemplateSetUpgrader {
       Files.write(newPom, content.getBytes(charset));
 
     } catch (FileNotFoundException e) {
-      LOG.error("Monolitic pom file could not be found", e);
+      LOG.error("Monolithic pom file could not be found", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
     } catch (IOException e) {
       LOG.error("IOError while reading the monolithic pom file", e);
@@ -275,7 +275,7 @@ public class TemplateSetUpgrader {
   /**
    * Locates and returns the correct context file
    *
-   * @param {@link Path} to the contextFile
+   * @param contextFile Path to the contextFile
    * @return {@link ContextConfigurationDecorator}
    * @throws Exception
    */
