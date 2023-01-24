@@ -3,10 +3,6 @@ SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 pushd "$SCRIPT_PATH"
 trap popd EXIT ERR
 
-echo ""
-echo "##########################################"
-echo ""
-
 # all components
 ALL_COMPONENTS=(core plugins templates maven eclipse cli)
 
@@ -14,6 +10,9 @@ ALL_COMPONENTS=(core plugins templates maven eclipse cli)
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 function show_help() {
+echo -e "\e[39m"
+echo "##########################################"
+echo ""
 cat << EOF  
 
 Usage of CobiGen build & deploy script  
@@ -48,6 +47,9 @@ GPG_KEYNAME=""
 COVERAGE=""
 COV_REPORT=false
 
+echo ""
+echo "##########################################"
+echo ""
 echo "Configuration: "
 
 # Automatically get GPG key from env
@@ -68,7 +70,6 @@ fi
 echo -e "\e[91m"
 
 if ! options="$(getopt -l "batch,coverage,components:,dirty,gpgkey:,help,parallel,coverage-report,repo-settings,test,debug,silent-confirm,dryrun" -o "bcC:dg:hprstxyz" -- "$@")"; then
-  echo -e "\e[39m"
   show_help
   exit 1
 fi
