@@ -44,7 +44,7 @@ PARALLELIZED=""
 DEBUG=""
 DRYRUN=false
 NO_CLEAN=false
-GPG_KEYNAME=""
+GPG_KEYNAME="" 
 COVERAGE=""
 COV_REPORT=false
 
@@ -85,7 +85,7 @@ do
       ;;
     -c|--coverage)
       COVERAGE="-Dskip.code.coverage=false"
-      echo -e "\e[92m  > Creating Code Coverage report\e[39m"
+      echo -e "\e[92m  > Enabled code coverage instrumentation\e[39m"
       ;;
     -C|--components)
       shift
