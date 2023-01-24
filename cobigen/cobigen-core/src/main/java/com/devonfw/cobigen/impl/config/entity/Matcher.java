@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import com.devonfw.cobigen.impl.config.entity.io.AccumulationType;
+
 /** The {@link Matcher} type corresponds to the &lt;matcher&gt; xml node */
 public class Matcher extends AbstractMatcher {
 
@@ -11,7 +13,7 @@ public class Matcher extends AbstractMatcher {
   private List<VariableAssignment> variableAssignments;
 
   /** Accumulation type */
-  private String accumulationType;
+  private AccumulationType accumulationType;
 
   /**
    * Creates a new Matcher for a given type, with a given value to match against and the corresponding variable
@@ -20,30 +22,13 @@ public class Matcher extends AbstractMatcher {
    * @param type matcher type
    * @param value to match against
    * @param variableAssignments of the matcher
-   * @param accumulationType2 of the matcher
+   * @param accumulationType of the matcher
    */
   public Matcher(String type, String value, List<VariableAssignment> variableAssignments,
-      com.devonfw.cobigen.impl.config.entity.io.v3_0.AccumulationType accumulationType2) {
+      AccumulationType accumulationType) {
 
     super(type, value);
-    this.accumulationType = accumulationType2.name();
-    this.variableAssignments = variableAssignments == null ? new LinkedList<>() : variableAssignments;
-  }
-
-  /**
-   * Creates a new Matcher for a given type, with a given value to match against and the corresponding variable
-   * assignments which should be resolvable
-   *
-   * @param type matcher type
-   * @param value to match against
-   * @param variableAssignments of the matcher
-   * @param accumulationType2 of the matcher
-   */
-  public Matcher(String type, String value, List<VariableAssignment> variableAssignments,
-      com.devonfw.cobigen.impl.config.entity.io.AccumulationType accumulationType2) {
-
-    super(type, value);
-    this.accumulationType = accumulationType2.name();
+    this.accumulationType = accumulationType;
     this.variableAssignments = variableAssignments == null ? new LinkedList<>() : variableAssignments;
   }
 
@@ -58,7 +43,7 @@ public class Matcher extends AbstractMatcher {
   /**
    * @return value of accumulationType
    */
-  public String getAccumulationType() {
+  public AccumulationType getAccumulationType() {
 
     return this.accumulationType;
   }
@@ -73,6 +58,6 @@ public class Matcher extends AbstractMatcher {
   public String toString() {
 
     return getClass().getSimpleName() + "[type='" + getType() + "'/value='" + getValue() + "'/accuType='"
-        + this.accumulationType + "']";
+        + this.accumulationType.name() + "']";
   }
 }

@@ -9,6 +9,7 @@ import com.devonfw.cobigen.api.annotation.Cached;
 import com.devonfw.cobigen.api.extension.TriggerInterpreter;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.impl.config.entity.Matcher;
+import com.devonfw.cobigen.impl.config.entity.io.AccumulationType;
 import com.devonfw.cobigen.impl.generator.api.MatcherEvaluator;
 
 /**
@@ -29,21 +30,20 @@ public class MatcherEvaluatorImpl implements MatcherEvaluator {
       MatcherTo matcherTo = new MatcherTo(matcher.getType(), matcher.getValue(), matcherInput);
       LOG.trace("Check {} ...", matcherTo);
       if (triggerInterpreter.getMatcher().matches(matcherTo)) {
-
         switch (matcher.getAccumulationType()) {
-          case "NOT":
+          case NOT:
             LOG.trace("NOT Matcher matches -> trigger match fails.");
             matcherSetMatches = false;
             break MATCHER_LOOP;
-          case "OR":
-          case "AND":
+          case OR:
+          case AND:
             LOG.trace("Matcher matches.");
             matcherSetMatches = true;
             break;
           default:
         }
       } else {
-        if (matcher.getAccumulationType() == "AND") {
+        if (matcher.getAccumulationType() == AccumulationType.AND) {
           LOG.trace("AND Matcher does not match -> trigger match fails.");
           matcherSetMatches = false;
           break MATCHER_LOOP;
