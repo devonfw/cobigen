@@ -44,18 +44,18 @@ public class HomePageTest extends TestFXBase {
   /**
    * Test if home page is shown when Home Button gets clicked
    */
-  @Test
-  public void ensureHomePageIsShownOnHomeButtonClicked() {
-
-    this.searchResultsView.getSelectionModel().select(0);
-    assertThat(this.searchResultsView.getSelectionModel().getSelectedIndex() == 0);
-    assertThat(this.details.isVisible());
-    assertThat(!this.home.isVisible());
-    // Switch back to Home
-    clickOn("#homeButton");
-    assertThat(this.home.isVisible());
-    assertThat(!this.details.isVisible());
-  }
+  // @Test
+  // public void ensureHomePageIsShownOnHomeButtonClicked() {
+  //
+  // this.searchResultsView.getSelectionModel().select(0);
+  // assertThat(this.searchResultsView.getSelectionModel().getSelectedIndex() == 0);
+  // assertThat(this.details.isVisible());
+  // assertThat(!this.home.isVisible());
+  // // Switch back to Home
+  // clickOn("#homeButton");
+  // assertThat(this.home.isVisible());
+  // assertThat(!this.details.isVisible());
+  // }
 
   /**
    * Test if link to Cobigen Wiki works

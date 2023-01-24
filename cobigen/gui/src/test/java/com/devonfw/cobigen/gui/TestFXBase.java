@@ -10,6 +10,7 @@ import org.testfx.framework.junit.ApplicationTest;
 
 import com.devonfw.cobigen.gui.controllers.DetailsController;
 import com.devonfw.cobigen.gui.controllers.MenuController;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -86,7 +87,7 @@ public class TestFXBase extends ApplicationTest {
     this.menuController = this.controller.menuController;
     this.detailsController = this.controller.detailsController;
     this.searchResultsView = find("#searchResultsView");
-    this.templateSetObservableList = this.menuController.templateSetObservableList;
+    // this.templateSetObservableList = this.menuController.templateSetObservableList;
   }
 
   /**

@@ -45,7 +45,7 @@ public class TemplateSetModel {
     return this.templateSetObservableList;
   }
 
-  public void loadallAvaliableTemplateSets() {
+  public void loadAllAvailableTemplateSets() {
 
     // Load all the paths of template set from cobigen home folder
     // all templates in template-set-list folder

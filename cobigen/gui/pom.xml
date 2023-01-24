@@ -67,14 +67,19 @@
       <artifactId>core-artifact-retriever</artifactId>
       <version>${revision}</version>
     </dependency>
- <dependency>
+    <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
       <version>${revision}</version>
     </dependency>
-
-
+    <dependency>
+      <groupId>com.github.stefanbirkner</groupId>
+      <artifactId>system-lambda</artifactId>
+      <version>1.2.0</version>
+      <scope>test</scope>
+  </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>

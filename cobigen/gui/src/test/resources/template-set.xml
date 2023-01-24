@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+ <cc:contextConfiguration version="3.0">
+  <cc:trigger id="crud_angular_client_app" type="java">
+    <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
+      <cc:variableAssignment type="regex" key="rootPackage" value="1" />
+      <cc:variableAssignment type="regex" key="domain" value="3" />
+      <cc:variableAssignment type="regex" key="component" value="4" />
+      <cc:variableAssignment type="regex" key="etoName" value="5" />
+    </cc:matcher>
+  </cc:trigger>
+  <cc:tags>
+    <cc:tag name="Angular"></cc:tag>
+    <cc:tag name="CRUD"></cc:tag>
+    <cc:tag name="Client"></cc:tag>
+    <cc:tag name="App"></cc:tag>
+  </cc:tags>
+  <cc:links>
+    <cc:link url="https://github.com/devonfw/cobigen/wiki/howto_angular-client-generation"></cc:link>
+  </cc:links>
+   </cc:contextConfiguration >
+
+<tc:templatesConfiguration version="5.0">
+  <tc:templates>
+    <tc:templateExtension ref="${variables.etoName#lower_case}-dialog.component.ts" mergeStrategy="tsmerge" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}-grid.component.ts" mergeStrategy="tsmerge" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}-alert.component.ts" mergeStrategy="tsmerge" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}.service.ts" mergeStrategy="tsmerge" />
+    <tc:templateExtension ref="app.module.ts" mergeStrategy="tsmerge" />
+    <tc:templateExtension ref="es.json" mergeStrategy="jsonmerge" />
+    <tc:templateExtension ref="en.json" mergeStrategy="jsonmerge" />
+    <tc:templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="nav-bar.component.html" mergeStrategy="html-ng*" />
+  </tc:templates>
+  <tc:templateScans>
+    <tc:templateScan name="ts_scan" templatePath="templates" destinationPath="" />
+  </tc:templateScans>
+  <tc:increments>
+    <tc:increment name="devon4ng-app" description="CRUD devon4ng Angular App" explanation="Creates Angular stack CRUD service.">
+      <tc:incrementRef ref="app_angular_i18n" />
+      <tc:incrementRef ref="app_angular_devon4ng_component" />
+    </tc:increment>
+    <tc:increment name="app_angular_i18n" description="Angular i18n">
+      <tc:templateRef ref="es.json" />
+      <tc:templateRef ref="en.json" />
+    </tc:increment>
+    <tc:increment name="app_angular_devon4ng_component" description="Angular devon4ng Component">
+      <tc:templateRef ref="${variables.etoName#lower_case}-dialog.component.html" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-dialog.component.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-dialog.component.spec.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-grid.component.html" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-grid.component.scss" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-grid.component.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-grid.component.spec.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-alert.component.html" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-alert.component.scss" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-alert.component.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-alert.component.spec.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}.service.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}.service.spec.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-routing.module.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}.module.ts" />
+      <tc:templateRef ref="app.module.ts" />
+      <tc:templateRef ref="app-routing.module.ts" />
+      <tc:templateRef ref="nav-bar.component.html" />
+    </tc:increment>
+  </tc:increments>
+</tc:templatesConfiguration>
+</tns:templateSetConfiguration>
