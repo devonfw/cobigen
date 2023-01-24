@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 public enum TemplateSetConfigurationVersion {
 
   /**
-   * Initial release.
+   * Initial release. Merges the content of the context.xml and the templates.xml into a new template-set.xml file.
    */
   v6_0(6f, false);
 
