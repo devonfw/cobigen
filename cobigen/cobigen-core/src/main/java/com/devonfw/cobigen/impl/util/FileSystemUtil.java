@@ -12,8 +12,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
