@@ -10,7 +10,7 @@ public enum TemplateSetConfigurationVersion {
   /**
    * Initial release.
    */
-  v6_0(1f, false);
+  v6_0(6f, false);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;
@@ -47,9 +47,9 @@ public enum TemplateSetConfigurationVersion {
   }
 
   /**
-   * Get latest context configuration version supported by this CobiGen release.
+   * Get latest template set version supported by this CobiGen release.
    *
-   * @return latest context configuration version supported by this CobiGen release.
+   * @return latest template set version supported by this CobiGen release.
    */
   public static TemplateSetConfigurationVersion getLatest() {
 
