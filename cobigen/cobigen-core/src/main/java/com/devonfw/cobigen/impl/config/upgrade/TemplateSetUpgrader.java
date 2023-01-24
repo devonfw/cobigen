@@ -276,11 +276,12 @@ public class TemplateSetUpgrader {
    * Locates and returns the correct context file
    *
    * @param contextFile Path to the contextFile
-   * @return {@link ContextConfigurationDecorator}
-   * @throws Exception
+   * @return {@link com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration} of the context.xml file
+   * @throws FileNotFoundException if no context.xml could be found
+   * @throws InvalidConfigurationException if context file provided some XML errors
    */
   private com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration getContextConfiguration(Path contextFile)
-      throws Exception {
+      throws FileNotFoundException, InvalidConfigurationException {
 
     if (contextFile == null) {
       throw new CobiGenRuntimeException("Templates location cannot be null!");
