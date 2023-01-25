@@ -75,7 +75,6 @@ if ! options="$(getopt -l "batch,coverage,components:,dirty,gpgkey:,help,paralle
 fi
 eval set -- "$options"
 
-#while getopts "h?ts" opt; do
 while true
 do
   case "$1" in

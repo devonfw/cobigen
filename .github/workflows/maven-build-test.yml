@@ -143,9 +143,9 @@ jobs:
           cd ${{ env.REPOSITORY_PATH }}
           if [[ "${{ matrix.component }}" == "eclipse" && "${{ matrix.os }}" == "ubuntu-latest" ]]
           then
-            xvfb-run -a ./build.sh -sdtcb --components ${{ matrix.component }}
+            xvfb-run -a ./build.sh -sdtcbx --components ${{ matrix.component }}
           else
-            ./build.sh -sdtcb --components ${{ matrix.component }}
+            ./build.sh -sdtcbx --components ${{ matrix.component }}
           fi
 
   # Sonar Analysis is done in separate workflow (https://github.com/devonfw/cobigen/blob/master/.github/workflows/sonar-analysis.yml)
