@@ -51,7 +51,7 @@ jobs:
         run: |
           mkdir -p ~/.m2
           cp -rf ${{ env.REPOSITORY_PATH }}/.mvn/ci-settings.xml ~/.m2/settings.xml
-      
+
       - name: Resolve non-cobigen dependencies
         shell: bash
         run: |
@@ -139,6 +139,8 @@ jobs:
 
       - name: Test
         shell: bash
+        env:
+          M2_REPO: ${{ github.workspace }}/.m2/repository # fix for https://github.com/m-m-m/code/issues/43
         run: |
           cd ${{ env.REPOSITORY_PATH }}
           if [[ "${{ matrix.component }}" == "eclipse" && "${{ matrix.os }}" == "ubuntu-latest" ]]
