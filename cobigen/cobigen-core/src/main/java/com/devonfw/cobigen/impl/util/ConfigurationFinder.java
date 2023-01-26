@@ -101,25 +101,14 @@ public class ConfigurationFinder {
 
       // use new template set configuration
       Path templateSetsFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templateSetsLocation);
-      if (templateSetsFolderLocation != null) {
-        if (!Files.exists(templateSetsFolderLocation)) {
-          LOG.warn(
-              "The value of the template-set path from the .cobigen file, does not exist. Using home directory:{} to search for templates",
-              cobigenHome);
-        } else {
-          return templateSetsFolderLocation.toUri();
-        }
+      if (templateSetsFolderLocation != null && Files.exists(templateSetsFolderLocation)) {
+        return templateSetsFolderLocation.toUri();
+
       }
       // use old templates configuration
       Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
-      if (templatesFolderLocation != null) {
-        if (!Files.exists(templatesFolderLocation)) {
-          LOG.warn(
-              "The value of the templates path from the .cobigen file, does not exist. Using home directory:{} to search for templates",
-              cobigenHome);
-        } else {
-          return templatesFolderLocation.toUri();
-        }
+      if (templatesFolderLocation != null && Files.exists(templatesFolderLocation)) {
+        return templatesFolderLocation.toUri();
       }
     }
     return findTemplates(cobigenHome);

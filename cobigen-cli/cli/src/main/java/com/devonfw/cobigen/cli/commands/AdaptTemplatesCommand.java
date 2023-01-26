@@ -38,7 +38,7 @@ public class AdaptTemplatesCommand extends CommandCommons {
   boolean adaptAll;
 
   /**
-   * allows usage of the old monolithic template structure instead of the new template sets structure.
+   * Allows usage of the old monolithic template structure instead of the new template sets structure.
    */
   @Option(names = { "--force-monolithic-configuration",
   "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)

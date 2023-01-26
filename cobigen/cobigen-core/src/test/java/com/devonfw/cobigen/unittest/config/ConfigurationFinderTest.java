@@ -26,9 +26,7 @@ import com.devonfw.cobigen.impl.util.ConfigurationFinder;
  */
 public class ConfigurationFinderTest {
 
-  /**
-   *
-   */
+  /** Temporary files rule to create temporary folders or files */
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
@@ -37,7 +35,7 @@ public class ConfigurationFinderTest {
    * values.
    */
   @Test
-  public void emptyConfigurationTest() {
+  public void testEmptyConfiguration() {
 
     Path emptyConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/emptyConfigProperties/config.properties");
@@ -53,7 +51,7 @@ public class ConfigurationFinderTest {
    * properties correctly.
    */
   @Test
-  public void validConfigurationTest() {
+  public void testValidConfiguration() {
 
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/validConfigProperties/config.properties");
@@ -72,7 +70,7 @@ public class ConfigurationFinderTest {
    * properties correctly.
    */
   @Test
-  public void invalidInputConfigurationTest() {
+  public void testInvalidInputConfiguration() {
 
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/invalidConfigProperties/config.properties");
@@ -88,7 +86,7 @@ public class ConfigurationFinderTest {
    *
    */
   @Test
-  public void invalidPathTest() {
+  public void testInvalidPath() {
 
     Path invalidPath = Paths.get("path/which/does/not/exist");
     TemplateSetConfiguration conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath);
@@ -99,11 +97,11 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates without a existing templates or template-set folder, expecting to return a created
+   * Test of findTemplates without an existing templates or template-set folder, expecting to return a created
    * template-set folder
    */
   @Test
-  public void findTemplateSetTest() throws Exception {
+  public void testFindTemplatesLocation_WithoutExistingFolders() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
@@ -115,10 +113,10 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing template-set/adapted folder, expecting to return the template-set folder
+   * Test of findTemplates with an existing template-set/adapted folder, expecting to return the template-set folder
    */
   @Test
-  public void findTemplateSetAdaptedTest() throws Exception {
+  public void testFindTemplateLocation_WithTemplateSetFolderContainingAdaptedFolder() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     this.tmpFolder.newFolder("user-home", ConfigurationConstants.TEMPLATE_SETS_FOLDER,
@@ -131,10 +129,10 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing template-set/downloaded folder, expecting to return the template-set folder
+   * Test of findTemplates with an existing template-set/downloaded folder, expecting to return the template-set folder
    */
   @Test
-  public void findTemplateSetDownloadedTest() throws Exception {
+  public void testFindTemplateLocation_WithTemplateSetFolderContainingDownloadedFolder() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     this.tmpFolder.newFolder("user-home", ConfigurationConstants.TEMPLATE_SETS_FOLDER,
@@ -147,10 +145,10 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing templates folder with template jars , expecting to return a jar.
+   * Test of findTemplates with an existing templates folder with template jars, expecting to return the path to a jar.
    */
   @Test
-  public void findTemplatesJarsTest() throws Exception {
+  public void testFindTemplateLocation_WithTemplatesFolderContainingJars() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     File templateS = this.tmpFolder.newFolder("user-home", ConfigurationConstants.TEMPLATES_FOLDER);
@@ -164,11 +162,11 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing templates folder without template jars , expecting to return a new created
+   * Test of findTemplates with an existing templates folder without template jars , expecting to return a newly created
    * template-Set folder
    */
   @Test
-  public void findTemplatesTest() throws Exception {
+  public void testFindTemplateLocation_WithTemplatesFolderWithoutJars() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     this.tmpFolder.newFolder("user-home", ConfigurationConstants.TEMPLATES_FOLDER);
@@ -180,11 +178,11 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing templates folder with CobiGen_Templates, expecting to return the
+   * Test of findTemplates with an existing templates/CobiGen_Templates folder, expecting to return the
    * CobiGen_Templates folder
    */
   @Test
-  public void findTemplatesCGTest() throws Exception {
+  public void testFindTemplateLocation_WithTemplatesFolderContainingCobiGenTemplatesFolder() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     this.tmpFolder.newFolder("user-home", ConfigurationConstants.TEMPLATES_FOLDER,
@@ -198,11 +196,11 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a existing template-set folder with downloaded and adapted, expecting to return the
-   * template-set folder
+   * Test of findTemplates with an existing template-set/downloaded folder and template-set/adapted folder, expecting to
+   * return the template-set folder
    */
   @Test
-  public void findTemplateSetDownloadedAndAdaptedTest() throws Exception {
+  public void testFindTemplateLocation_WithTemplateSetFolderContainingDownloadedAndAdaptedFolder() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     this.tmpFolder.newFolder("user-home", ConfigurationConstants.TEMPLATE_SETS_FOLDER,
@@ -217,11 +215,11 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates wit a templates value set in the cobigen file, expecting to return the value from the
-   * .cobigen file
+   * Test of findTemplates with templates value set in the cobigen file, expecting to return the value from the .cobigen
+   * file
    */
   @Test
-  public void findTemplatesWithProperties() throws Exception {
+  public void testFindTemplateLocation_WithTemplatesPropertySet() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     File customTemplatesFolder = this.tmpFolder.newFolder("customTemplatesFolder",
@@ -238,11 +236,11 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates with a template-set value set in the cobigen file, the value is faulty and the folder does
-   * not exist. Expecting to create a template-set folder in the COBIGEN_HOME home directory.
+   * Test of findTemplates with template-set value set in the cobigen file, the value is faulty and the folder does not
+   * exist. Expecting to create a template-set folder in the COBIGEN_HOME home directory.
    */
   @Test
-  public void findTemplateSetWithInvalidProperties() throws Exception {
+  public void testFindTemplateLocation_WithIvalidTemplateSetPropertySet() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     File customTemplatesFolder = this.tmpFolder.newFolder("customTemplatesFolder");
@@ -260,11 +258,11 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test of findTemplates with a template-set value set in the cobigen file, expecting to return the value from the
+   * Test of findTemplates with template-set value set in the cobigen file, expecting to return the value from the
    * .cobigen file
    */
   @Test
-  public void findTemplateSetWithProperties() throws Exception {
+  public void testFindTemplateLocation_WithTemplateSetPropertySet() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     File customTemplatesFolder = this.tmpFolder.newFolder("customTemplatesFolder",
@@ -282,11 +280,11 @@ public class ConfigurationFinderTest {
 
   /**
    *
-   * Test of findTemplates with a templates value set in the cobigen file, the value is faulty and the folder does not
+   * Test of findTemplates with templates value set in the cobigen file, the value is faulty and the folder does not
    * exist. Expecting to create a template-set folder in the COBIGEN_HOME home directory and return the folder.
    */
   @Test
-  public void findTemplatesWithInvalidProperties() throws Exception {
+  public void testFindTemplateLocation_WithIvalidTemplatesPropertySet() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     File customTemplatesFolder = this.tmpFolder.newFolder("customTemplatesFolder");
