@@ -10,7 +10,7 @@ toc::[]
 If you want to use IntelliJ for CobiGen project, you can follow the steps below:
 
 . You can easily install IntelliJ, create a launch script for it etc. as described in
-
++
 `https://github.com/devonfw/ide/blob/master/documentation/intellij.asciidoc`
 
 . After starting IntelliJ, you **need** to import the cobigen folder as maven project
@@ -18,32 +18,46 @@ If you want to use IntelliJ for CobiGen project, you can follow the steps below:
 . Next you **have** to configure the maven settings in IntelliJ as follows:
 
 .. Go to `File`-> `Settings` -> `Build, Execution, Deployment` -> `Build Tools` -> `Maven`
-
-... **Choose** `(Maven home Path)` from your devonFolder -> devonProjects/software/Maven
++
+--
+... **Choose** `(Maven home Path)` from your devonFolder -> devonProjects/software/maven
 
 ... **Override** `(user settings file)` -> devonProjects/conf/.m2/settings.xml
 
 ... **Override** `(Local repository)` -> devonProjects/conf/.m2/repository
-
-
+--
++
 image::images/howtos/intellij/maven-settings.png[Maven Settings]
 
-.. Now go to `File` -> `Project structure` -> `Project Settings` -> `Project add java sdk version from` -> `devonProjects/software/java`
-
+.. Now go to `File` -> `Project Structure` -> `Project Settings` -> `Project add java sdk version from` -> `devonProjects/software/java`. 
++
+Make sure you are using Java 11. If you have set up your devonfw-ide with this settings URL `https://github.com/devonfw/cobigen-ide-settings.git`, the correct version will be set automatically. If not, you can download Java 11 manually and place it into `devonProjects/software/java11`.
++
 image::images/howtos/intellij/java-sdk.png[Java SDK]
 
-After you have finished your configuration, run `maven install` and `maven clean` within IntelliJ. CobiGen should build without any errors.
+.. Go to the Maven tool window by clicking on `View` -> `Tool Windows` -> `Maven` and  toggle the "Skip Tests" mode.
+
+After you have finished your configuration, run `maven clean` and `maven install` within IntelliJ. CobiGen should build without any errors.
 
 
 === IntelliJ Testing and Debugging
 
-. Disable **ArgLine**: If there are any tests that do not work, you might want to disable argline. Go to  `File` -> `Setttings` -> `Build,Execution,Deployment` -> `Build Tools` -> `Maven` -> `Running Tests` then uncheck **ArgLine**
-
+. Disable **ArgLine**: 
++
+If there are any tests that do not work, you might want to disable argline. Go to  `File` -> `Settings` -> `Build, Execution, Deployment` -> `Build Tools` -> `Maven` -> `Running Tests` then uncheck **ArgLine**
++
 image::images/howtos/intellij/argline.png[Unchecked Argline]
 
-. **CLI DEBUGGING:**
-If you want to debug an application in IntelliJ, for example, the CLI project, you can go to `Run` -> `Edit Configurations`. Simply add a new configuration and configure the CLI as shown in the picture.
+. Delegate IDE build and run actions to Maven: 
++
+Go to `File` -> `Settings` -> `Build, Execution, Deployment` -> `Build Tools` -> `Maven` -> `Runner` and check `Delegate IDE build/run actions to Maven`.
++
+image::images/howtos/intellij/delegate-to-maven.png[Delegate build/run actions to Maven]
 
+. **CLI DEBUGGING:**
++
+If you want to debug an application in IntelliJ, for example, the CLI project, you can go to `Run` -> `Edit Configurations`. Simply add a new configuration and configure the CLI as shown in the picture.
++
 image::images/howtos/intellij/cli-debug.png[CLI Debug Configuration]
 
 
