@@ -43,7 +43,7 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 
 == Build
 
-`bash build.sh` (on windows use git bash)
+`./build.sh -h` (on windows use git bash)
 
 == Deploy
 
