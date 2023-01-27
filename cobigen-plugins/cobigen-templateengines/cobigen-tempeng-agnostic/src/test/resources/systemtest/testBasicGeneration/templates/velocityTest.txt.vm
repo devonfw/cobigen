@@ -1,0 +1,1 @@
+#{foreach}($field in ${pojo.fields})${field.type},#{end}

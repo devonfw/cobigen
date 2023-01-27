@@ -15,7 +15,7 @@
     <flatten.mode>ossrh</flatten.mode>
     <slf4j.version>1.7.30</slf4j.version>
     <skip.deployment>true</skip.deployment>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
     <tycho.version>1.6.0</tycho.version>
     <jaxb.version>3.0.1</jaxb.version>
     <jacoco.version>0.8.8</jacoco.version>
