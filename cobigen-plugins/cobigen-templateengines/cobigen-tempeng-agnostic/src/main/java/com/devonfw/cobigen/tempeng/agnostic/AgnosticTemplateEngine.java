@@ -28,7 +28,7 @@ import io.github.mmm.base.text.CaseSyntax;
  * choice can be used for auto-completion, refactoring, code-formatting, etc. In order to represent variables in the
  * template, you simply put them in a specific syntax that is compliant with any
  */
-@Name("Velocity")
+@Name("Agnostic")
 public class AgnosticTemplateEngine implements TextTemplateEngine {
 
   /** Logger instance. */
