@@ -69,9 +69,9 @@
       <version>3.8.5</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-util-core</artifactId>
-      <version>7.4.0</version>
+      <groupId>io.github.m-m-m</groupId>
+      <artifactId>mmm-base</artifactId>
+      <version>0.9.1</version>
     </dependency>
   </dependencies>
   <build>
