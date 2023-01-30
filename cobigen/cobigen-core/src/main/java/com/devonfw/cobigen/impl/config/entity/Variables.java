@@ -248,7 +248,7 @@ public class Variables {
   /**
    * @param string the {@link String} where to resolve all variables.
    * @return the given {@code string} with all variables (e.g. <code>${variableName#uncapfirst}</code> or
-   *         <code>$_VariableName_$</code>) replaced with those defined by this {@link Variables}.
+   *         <code>X_VariableName_X</code>) replaced with those defined by this {@link Variables}.
    */
   public String resolve(String string) {
 
@@ -261,7 +261,7 @@ public class Variables {
    * @param replacementForDot the character used as replacement for the dot character ('.') or '\0' for no replacement
    *        (remove dots according to case syntax).
    * @return the given {@code string} with all variables (e.g. <code>${variableName#uncapfirst}</code> or
-   *         <code>$_VariableName_$</code>) replaced with those defined by this {@link Variables}.
+   *         <code>X_VariableName_X</code>) replaced with those defined by this {@link Variables}.
    */
   public String resolve(String string, char replacementForDot) {
 
