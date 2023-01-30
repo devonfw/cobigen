@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
 
   <templates>
-    <templateExtension ref="$_EntityName_$2.java" destinationPath="$_EntityName_$2.java"/>
+    <templateExtension ref="X_EntityName_X2.java" destinationPath="X_EntityName_X2.java"/>
   </templates>
 
   <templateScans>

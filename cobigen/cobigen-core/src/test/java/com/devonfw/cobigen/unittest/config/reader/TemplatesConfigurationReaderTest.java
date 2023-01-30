@@ -518,11 +518,11 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
     // validation
     String staticRelocationPrefix = "../api/";
-    String scanRelTemplatePath = "$_rootpackage_$/$_component_$/common/api/";
-    Template template = verifyScannedTemplate(templates, "$_EntityName_$.java", scanRelTemplatePath,
+    String scanRelTemplatePath = "x_rootpackage_x/x_component_x/common/api/";
+    Template template = verifyScannedTemplate(templates, "X_EntityName_X.java", scanRelTemplatePath,
         templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
 
-    String templateName = "$_EntityName_$2.java";
+    String templateName = "X_EntityName_X2.java";
     template = templates.get(templateName);
     assertThat(template).isNotNull();
     String pathWithName = scanRelTemplatePath + templateName;
@@ -557,8 +557,8 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
 
     // validation
     String staticRelocationPrefix = "../api/";
-    String scanRelTemplatePath = "$_rootpackage_$/$_component_$/common/api/";
-    Template template = verifyScannedTemplate(templates, "$_EntityName_$.java", scanRelTemplatePath,
+    String scanRelTemplatePath = "x_rootpackage_x/x_component_x/common/api/";
+    Template template = verifyScannedTemplate(templates, "X_EntityName_X.java", scanRelTemplatePath,
         templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
 
     template = templates.get("ExplicitlyDefined");
@@ -567,7 +567,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
         .isEqualTo(templatesConfigurationRoot + "OuterTemplate.java");
     // the destination path has designed to match a relocated path during the scan by intention
-    String destinationPath = "src/main/java/$_rootpackage_$/$_component_$/common/api/ExplicitlyDefined.java";
+    String destinationPath = "src/main/java/x_rootpackage_x/x_component_x/common/api/ExplicitlyDefined.java";
     assertThat(template.getUnresolvedTemplatePath()).isEqualTo(destinationPath);
     assertThat(template.getUnresolvedTargetPath()).isEqualTo(destinationPath);
     assertThat(template.getVariables().asMap()).hasSize(0);
@@ -592,12 +592,12 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     assertThat(templates).hasSize(2);
 
     // assert
-    Template template = templates.get("$_Component_$.java");
+    Template template = templates.get("X_Component_X.java");
     assertThat(template).isNotNull();
     assertThat(template.getVariables().asMap()).isNotNull().containsEntry("foo", "root").containsEntry("bar",
         "barValue");
 
-    template = templates.get("$_EntityName_$Eto.java");
+    template = templates.get("X_EntityName_XEto.java");
     assertThat(template).isNotNull();
     assertThat(template.getVariables().asMap()).isNotNull().containsEntry("relocate", "../api2/${cwd}")
         .containsEntry("foo", "logic.api.to").containsEntry("bar", "barValue").containsEntry("local", "localValue");
@@ -625,10 +625,10 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     assertThat(templates).hasSize(1);
 
     String staticRelocationPrefix = "../server/";
-    String templateName = "$_Component_$Impl.java";
+    String templateName = "X_Component_XImpl.java";
     Template template = templates.get(templateName);
     assertThat(template).isNotNull();
-    String pathWithName = "$_rootpackage_$/$_component_$/logic/impl/" + templateName;
+    String pathWithName = "x_rootpackage_x/x_component_x/logic/impl/" + templateName;
     assertThat(template.getRelativeTemplatePath()).isEqualTo("templates/" + pathWithName + ".ftl");
     assertThat(template.getAbsoluteTemplatePath().toString().replace('\\', '/'))
         .isEqualTo(templatesConfigurationRoot + "templates/" + pathWithName + ".ftl");
@@ -661,14 +661,14 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     assertThat(templates).hasSize(3);
 
     String staticRelocationPrefix = "../api/";
-    verifyScannedTemplate(templates, "$_EntityName_$Entity.java", "$_rootpackage_$/$_component_$/dataaccess/api/",
+    verifyScannedTemplate(templates, "X_EntityName_XEntity.java", "x_rootpackage_x/x_component_x/dataaccess/api/",
         templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
 
     staticRelocationPrefix = "../api2/";
-    verifyScannedTemplate(templates, "$_EntityName_$Eto.java", "$_rootpackage_$/$_component_$/logic/api/to/",
+    verifyScannedTemplate(templates, "X_EntityName_XEto.java", "x_rootpackage_x/x_component_x/logic/api/to/",
         templatesConfigurationRoot, staticRelocationPrefix, templateScanDestinationPath);
 
-    verifyScannedTemplate(templates, "$_Component_$.java", "$_rootpackage_$/$_component_$/logic/api/",
+    verifyScannedTemplate(templates, "X_Component_X.java", "x_rootpackage_x/x_component_x/logic/api/",
         templatesConfigurationRoot, noRelocation, templateScanDestinationPath);
   }
 
