@@ -40,6 +40,19 @@ image::images/howtos/intellij/java-sdk.png[Java SDK]
 After you have finished your configuration, run `maven clean` and `maven install` within IntelliJ. CobiGen should build without any errors.
 
 
+=== Plugin installation
+
+You can easily install plugins in IntelliJ as described in
+
+`https://www.jetbrains.com/help/idea/managing-plugins.html`
+
+==== Adapter for Eclipse Code Formatter
+
+`**If you want to contribute to CobiGen, you must have this plugin installed so that the developer team can use the same coding style.**` This plugin solves the problem of maintaining a common code style in team environments where both IDEA and Eclipse are used. Although it should be enabled and the config file location can be found in devon/workspaces/main as shown below
+
+image::images/howtos/intellij/adapter-plugin-settings.png[Eclipse Formatter Plugin]
+
+
 === IntelliJ Testing and Debugging
 
 . Disable **ArgLine**: 
@@ -66,16 +79,5 @@ For more information please visit
 `https://www.jetbrains.com/help/idea/run-debug-configuration.html#share-configurations`
 
 
-=== Plugin installation
-
-You can easily install plugins in IntelliJ as described in
-
-`https://www.jetbrains.com/help/idea/managing-plugins.html`
-
-==== Adapter for Eclipse Code Formatter
-
-`**If you want to contribute to CobiGen, you must have this plugin installed so that the developer team can use the same coding style.**` This plugin solves the problem of maintaining a common code style in team environments where both IDEA and Eclipse are used. Although it should be enabled and the config file location can be found in devon/workspaces/main as shown below
-
-image::images/howtos/intellij/adapter-plugin-settings.png[Eclipse Formatter Plugin]
 
 
