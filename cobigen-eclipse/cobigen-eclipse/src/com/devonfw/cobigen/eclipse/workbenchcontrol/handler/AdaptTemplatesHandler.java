@@ -53,52 +53,68 @@ public class AdaptTemplatesHandler extends AbstractHandler {
 
     MDC.put(InfrastructureConstants.CORRELATION_ID, UUID.randomUUID().toString());
     IProject generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
+    IProject generatorProjOfTempltesSets = ResourcesPlugin.getWorkspace().getRoot()
+        .getProject(ResourceConstants.TEMPLATE_SETS_CONFIG_PROJECT_NAME);
 
-    if (generatorProj.exists()) {
-      MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Info!", null,
-          "CobiGen_Templates folder is already imported, click on Update templates button to update with latest. ",
-          MessageDialog.INFORMATION, new String[] { "Ok" }, 1);
-      dialog.setBlockOnOpen(true);
-      dialog.open();
+    if (generatorProjOfTempltesSets.exists()) {
+
+      // 1. TODO import project, do not adapt(no need to extract the jar files)
+    }
+
+    else if (ResourcesPluginUtil.getTemplateSetDirectory().exists()) {
+      // 2.TODO donwloaded exists? first adapt the jar file (files), then import project to eclipse
+      // 3. TODO downloaded does not exists? update command must be executed. then go to 2.
+      // (step 3 can be ignored for now until the new template-sets are deployed online.)
+      //
     } else {
-      MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Warning!", null,
-          "Clicking on ok button will override existing CobiGen_Templates in workspace.", MessageDialog.WARNING,
-          new String[] { "Ok", "Cancel" }, 1);
-      dialog.setBlockOnOpen(true);
-      int result = dialog.open();
+      if (generatorProj.exists()) {
+        MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Info!", null,
+            "CobiGen_Templates folder is already imported, click on Update templates button to update with latest. ",
+            MessageDialog.INFORMATION, new String[] { "Ok" }, 1);
+        dialog.setBlockOnOpen(true);
+        dialog.open();
+      } else {
 
-      if (result == 0) {
-        try {
-          String fileName = ResourcesPluginUtil.getJarPath(true);
-          if (fileName.equals("")) {
-            result = createUpdateTemplatesDialog();
-            if (result == 1) {
-              MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-                  "Templates have not been found, please download them!");
-              throw new NullPointerException("Templates have not been found!");
-            } else {
-              fileName = ResourcesPluginUtil.downloadJar(true);
+        MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Warning!", null,
+            "Clicking on ok button will override existing CobiGen_Templates in workspace.", MessageDialog.WARNING,
+            new String[] { "Ok", "Cancel" }, 1);
+        dialog.setBlockOnOpen(true);
+        int result = dialog.open();
+
+        if (result == 0) {
+          try {
+            String fileName = ResourcesPluginUtil.getJarPath(true);
+            if (fileName.equals("")) {
+              result = createUpdateTemplatesDialog();
+              if (result == 1) {
+                MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
+                    "Templates have not been found, please download them!");
+                throw new NullPointerException("Templates have not been found!");
+              } else {
+                fileName = ResourcesPluginUtil.downloadJar(true);
+              }
+
             }
+            ResourcesPluginUtil.processJar(fileName);
 
+            importProjectIntoWorkspace();
+            dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
+                "CobiGen_Templates folder is imported sucessfully", MessageDialog.INFORMATION, new String[] { "Ok" },
+                1);
+            dialog.setBlockOnOpen(true);
+            dialog.open();
+          } catch (MalformedURLException e) {
+            LOG.error("An exception with download url of maven central", e);
+            PlatformUIUtil.openErrorDialog("An exception with download url of maven central", e);
+          } catch (IOException e) {
+            LOG.error("An exception occurred while writing Jar files to .metadata folder", e);
+            PlatformUIUtil.openErrorDialog("An exception occurred while writing Jar files to .metadata folder", e);
+          } catch (Throwable e) {
+            ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
           }
-          ResourcesPluginUtil.processJar(fileName);
-
-          importProjectIntoWorkspace();
-          dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
-              "CobiGen_Templates folder is imported sucessfully", MessageDialog.INFORMATION, new String[] { "Ok" }, 1);
-          dialog.setBlockOnOpen(true);
-          dialog.open();
-        } catch (MalformedURLException e) {
-          LOG.error("An exception with download url of maven central", e);
-          PlatformUIUtil.openErrorDialog("An exception with download url of maven central", e);
-        } catch (IOException e) {
-          LOG.error("An exception occurred while writing Jar files to .metadata folder", e);
-          PlatformUIUtil.openErrorDialog("An exception occurred while writing Jar files to .metadata folder", e);
-        } catch (Throwable e) {
-          ExceptionHandler.handle(e, HandlerUtil.getActiveShell(event));
         }
+        MDC.remove(InfrastructureConstants.CORRELATION_ID);
       }
-      MDC.remove(InfrastructureConstants.CORRELATION_ID);
     }
     return null;
 

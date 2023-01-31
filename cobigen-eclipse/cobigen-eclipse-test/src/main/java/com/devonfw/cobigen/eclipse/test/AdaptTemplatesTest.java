@@ -4,6 +4,7 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironment
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
@@ -68,7 +69,10 @@ public class AdaptTemplatesTest extends SystemTest {
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
-    EclipseCobiGenUtils.runAndCaptureUpdateTemplates(bot);
+    /**
+     * TODO Before the templates are made available online, the update (download) command cannot be tested.
+     */
+    // EclipseCobiGenUtils.runAndCaptureUpdateTemplates(bot);
     EclipseCobiGenUtils.runAndCaptureAdaptTemplates(bot);
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
@@ -101,7 +105,14 @@ public class AdaptTemplatesTest extends SystemTest {
   @Test
   public void testAdaptTemplatesAndGenerate() throws Exception {
 
+    Path devTemplatesPath = new File(
+        AdaptTemplatesTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+            .getParentFile().toPath().resolve("cobigen-templates").resolve("crud-openapi-java-server-app")
+            .resolve("target").resolve("crud-openapi-java-server-app-2021.12.007-SNAPSHOT.jar");
+
     File tmpProject = this.tempFolder.newFolder("playground", "project");
+    File downloaded = this.tempFolder.newFolder("playground", "project", "template-sets", "downloaded");
+    FileUtils.copyFileToDirectory(devTemplatesPath.toFile(), downloaded);
     withEnvironmentVariable("COBIGEN_HOME", tmpProject.toPath().toString())
         .execute(() -> testBasicOpenAPIGenerationWithAdaptTemplates());
   }

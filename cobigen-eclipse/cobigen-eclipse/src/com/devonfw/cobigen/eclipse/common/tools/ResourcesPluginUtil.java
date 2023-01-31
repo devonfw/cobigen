@@ -219,7 +219,7 @@ public class ResourcesPluginUtil {
    *
    * @return the templateDirectory
    */
-  private static File getTemplateSetDirectory() {
+  public static File getTemplateSetDirectory() {
 
     return CobiGenPaths.getTemplateSetsFolderPath().toFile();
   }

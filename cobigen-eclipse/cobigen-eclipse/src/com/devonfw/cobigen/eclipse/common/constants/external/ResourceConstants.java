@@ -10,4 +10,9 @@ public class ResourceConstants {
    */
   public static final String CONFIG_PROJECT_NAME = "CobiGen_Templates";
 
+  /**
+   * Generator Configuration Project Name of template-sets
+   */
+  public static final String TEMPLATE_SETS_CONFIG_PROJECT_NAME = "template-sets";
+
 }
