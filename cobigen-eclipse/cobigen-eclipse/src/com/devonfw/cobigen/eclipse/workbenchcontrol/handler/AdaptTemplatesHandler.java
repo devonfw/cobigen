@@ -55,17 +55,27 @@ public class AdaptTemplatesHandler extends AbstractHandler {
     IProject generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
     IProject generatorProjOfTempltesSets = ResourcesPlugin.getWorkspace().getRoot()
         .getProject(ResourceConstants.TEMPLATE_SETS_CONFIG_PROJECT_NAME);
+    Path templateSet = ResourcesPluginUtil.getTemplateSetDirectory();
 
     if (generatorProjOfTempltesSets.exists()) {
+      // 1. the project is imported so, do not adapt(no need to extract the jar files) For now nothing to do.
 
-      // 1. TODO import project, do not adapt(no need to extract the jar files)
-    }
+    } else if (Files.exists(templateSet)) {
 
-    else if (ResourcesPluginUtil.getTemplateSetDirectory().exists()) {
-      // 2.TODO donwloaded exists? first adapt the jar file (files), then import project to eclipse
-      // 3. TODO downloaded does not exists? update command must be executed. then go to 2.
-      // (step 3 can be ignored for now until the new template-sets are deployed online.)
-      //
+      // 2. downloaded exists? first adapt the jar file (files), then import project to eclipse
+
+      Path downloadedPath = templateSet.resolve("downloaded");
+      Path adaptedPath = templateSet.resolve("adapted");
+
+      // A. adapt the jar files if not already adapted
+      if (Files.exists(downloadedPath) && !Files.exists(adaptedPath))
+        ResourcesPluginUtil.adaptTemplateSet(templateSet);
+
+      // B. TODO Import the project
+      /*
+       * 3. TODO downloaded does not exists? update command must be executed. then go to 2. // (step 3 can be ignored
+       * for now until the new template-sets are deployed online.)
+       */
     } else {
       if (generatorProj.exists()) {
         MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Info!", null,

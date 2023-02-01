@@ -401,6 +401,21 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Checks the CobiGen Adapt TemplateSets and takes screenshots of it.
+   *
+   * @param bot to process the Adapt Templates command
+   * @throws Exception test fails
+   */
+  public static void runAndCaptureAdaptTemplatesSets(SWTWorkbenchBot bot) throws Exception {
+
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), DEFAULT_TIMEOUT); // build might take some time
+
+    SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+    view.bot().tree().contextMenu("CobiGen").menu("Adapt Templates...").click();
+  }
+
+  /**
    * Takes a screenshot (*.jpeg) of the current screen encoding test method and class and appends the given identifier
    * to the file name
    *

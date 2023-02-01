@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
@@ -73,11 +72,8 @@ public class AdaptTemplatesTest extends SystemTest {
      * TODO Before the templates are made available online, the update (download) command cannot be tested.
      */
     // EclipseCobiGenUtils.runAndCaptureUpdateTemplates(bot);
-    EclipseCobiGenUtils.runAndCaptureAdaptTemplates(bot);
-    EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
-
+    EclipseCobiGenUtils.runAndCaptureAdaptTemplatesSets(bot);
     EclipseUtils.openErrorsTreeInProblemsView(bot);
-
     // expand the new file in the package explorer
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "adapt-templates.yml");
