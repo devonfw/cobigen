@@ -37,6 +37,13 @@ public class AdaptTemplatesCommand extends CommandCommons {
   @Option(names = { "--all" }, description = MessagesConstants.ADAPT_ALL_DESCRIPTION)
   boolean adaptAll;
 
+  /**
+   * Allows usage of the old monolithic template structure instead of the new template sets structure.
+   */
+  @Option(names = { "--force-monolithic-configuration",
+  "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
+  boolean forceMonolithicConfiguration;
+
   @Override
   public Integer doAction() throws Exception {
 
@@ -45,8 +52,7 @@ public class AdaptTemplatesCommand extends CommandCommons {
     try {
       templateAdapter.adaptTemplates();
     } catch (UpgradeTemplatesNotificationException e) {
-      if (askUserToContinueWithUpgrade(e)) {
-
+      if (!this.forceMonolithicConfiguration && askUserToContinueWithUpgrade(e)) {
         templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
       }
     } catch (TemplateSelectionForAdaptionException e) {

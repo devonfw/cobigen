@@ -118,8 +118,8 @@ public class ConfigurationFinder {
       Path templateSetsFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templateSetsLocation);
       if (templateSetsFolderLocation != null && Files.exists(templateSetsFolderLocation)) {
         return templateSetsFolderLocation.toUri();
-      }
 
+      }
       // use old templates configuration
       Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
       if (templatesFolderLocation != null && Files.exists(templatesFolderLocation)) {
