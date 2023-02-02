@@ -15,4 +15,14 @@ public class ResourceConstants {
    */
   public static final String TEMPLATE_SETS_CONFIG_PROJECT_NAME = "template-sets";
 
+  /**
+   * Name of template-sets/downloaded folder
+   */
+  public static final String TEMPLATE_SETS_DOWNLOADED = "downloaded";
+
+  /**
+   * Name of template-sets/adapted folder
+   */
+  public static final String TEMPLATE_SETS_ADAPTED = "adapted";
+
 }

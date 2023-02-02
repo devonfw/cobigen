@@ -285,8 +285,10 @@ public class ResourcesPluginUtil {
 
     try {
       TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateSetsLocation);
-      List<Path> jarFilePath = TemplatesJarUtil.getJarFiles(templateSetsLocation.resolve("downloaded"));
-      templateAdapter.adaptTemplateSets(jarFilePath, templateSetsLocation.resolve("adapted"), false);
+      List<Path> jarFilePath = TemplatesJarUtil
+          .getJarFiles(templateSetsLocation.resolve(ResourceConstants.TEMPLATE_SETS_DOWNLOADED));
+      templateAdapter.adaptTemplateSets(jarFilePath,
+          templateSetsLocation.resolve(ResourceConstants.TEMPLATE_SETS_ADAPTED), false);
 
     } catch (Exception e) {
       LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);

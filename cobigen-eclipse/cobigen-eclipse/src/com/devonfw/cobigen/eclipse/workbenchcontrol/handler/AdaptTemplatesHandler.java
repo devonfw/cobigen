@@ -64,14 +64,15 @@ public class AdaptTemplatesHandler extends AbstractHandler {
 
       // 2. downloaded exists? first adapt the jar file (files), then import project to eclipse
 
-      Path downloadedPath = templateSet.resolve("downloaded");
-      Path adaptedPath = templateSet.resolve("adapted");
+      Path downloadedPath = templateSet.resolve(ResourceConstants.TEMPLATE_SETS_DOWNLOADED);
+      Path adaptedPath = templateSet.resolve(ResourceConstants.TEMPLATE_SETS_ADAPTED);
 
       // A. adapt the jar files if not already adapted
       if (Files.exists(downloadedPath) && !Files.exists(adaptedPath))
         ResourcesPluginUtil.adaptTemplateSet(templateSet);
 
-      // B. TODO Import the project
+      // B. Import the project
+      importProjectIntoWorkspace(ResourceConstants.TEMPLATE_SETS_CONFIG_PROJECT_NAME, templateSet);
       /*
        * 3. TODO downloaded does not exists? update command must be executed. then go to 2. // (step 3 can be ignored
        * for now until the new template-sets are deployed online.)
@@ -107,7 +108,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             }
             ResourcesPluginUtil.processJar(fileName);
 
-            importProjectIntoWorkspace();
+            importProjectIntoWorkspace(ResourceConstants.CONFIG_PROJECT_NAME, null);
             dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
                 "CobiGen_Templates folder is imported sucessfully", MessageDialog.INFORMATION, new String[] { "Ok" },
                 1);
@@ -133,7 +134,7 @@ public class AdaptTemplatesHandler extends AbstractHandler {
   /**
    * CobiGen_Templates folder created at main folder using source jar will be imported into workspace
    */
-  private void importProjectIntoWorkspace() {
+  private void importProjectIntoWorkspace(String projectName, Path projectPath) {
 
     ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
 
@@ -143,9 +144,13 @@ public class AdaptTemplatesHandler extends AbstractHandler {
     progressMonitor.open();
     progressMonitor.getProgressMonitor().beginTask("Importing templates...", 0);
     try {
-      IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
+      IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
       IProjectDescription description = ResourcesPlugin.getWorkspace().newProjectDescription(project.getName());
-      description.setLocation(new org.eclipse.core.runtime.Path(this.ws.toPortableString() + "/CobiGen_Templates"));
+      if (projectName == ResourceConstants.TEMPLATE_SETS_CONFIG_PROJECT_NAME) {
+        description.setLocationURI(projectPath.toUri());
+      } else {
+        description.setLocation(new org.eclipse.core.runtime.Path(this.ws.toPortableString() + "/" + projectName));
+      }
       project.create(description, null);
 
       // We set the current project to be converted to a Maven project
@@ -153,16 +158,16 @@ public class AdaptTemplatesHandler extends AbstractHandler {
       mavenConverter.selectionChanged(null, sel);
 
       project.open(null);
-
       // Converts the current project to a Maven project
-      mavenConverter.run(null);
+      if (projectName == ResourceConstants.CONFIG_PROJECT_NAME)
+        mavenConverter.run(null);
       progressMonitor.close();
 
     } catch (CoreException e) {
       progressMonitor.close();
       e.printStackTrace();
       MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
-          "Some Exception occurred while importing CobiGen_Templates into workspace");
+          "Some Exception occurred while importing " + projectName + " into workspace");
     }
   }
 
