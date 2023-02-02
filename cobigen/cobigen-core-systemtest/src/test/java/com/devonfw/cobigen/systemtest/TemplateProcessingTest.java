@@ -26,6 +26,7 @@ import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
  */
 public class TemplateProcessingTest extends AbstractApiTest {
 
+  // TODO jars has to be updated
   /**
    * Root path to all resources used in tests that test the structure of the template sets.
    */
@@ -73,10 +74,8 @@ public class TemplateProcessingTest extends AbstractApiTest {
 
     FileUtils.copyDirectory(new File(testFileRootPathTemplateSets), this.cobiGenHomeTemplateSets.toFile());
 
-    Path templateSetsFolder = this.cobiGenHomeTemplateSets
-        .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH);
+    Path templateSetsFolder = this.cobiGenHomeTemplateSets.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     Path adaptedFolder = templateSetsFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateSetsFolder);
 
     Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
@@ -85,7 +84,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
 
     List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
     templateAdapter.adaptTemplateSets(templateSetJars, adaptedFolder, false);
-
+    // sources jar is needed or we remove the functionality
     Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1")
         .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
     Path extractedJar2 = adaptedFolder.resolve("template-test2-0.0.1")
