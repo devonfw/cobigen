@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -25,10 +27,6 @@ import com.devonfw.cobigen.impl.util.ConfigurationFinder;
  *
  */
 public class ConfigurationFinderTest {
-
-  /** Temporary files rule to create temporary folders or files */
-  @Rule
-  public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   /**
    * JUnit Rule to temporarily create files and folders, which will be automatically removed after test execution
