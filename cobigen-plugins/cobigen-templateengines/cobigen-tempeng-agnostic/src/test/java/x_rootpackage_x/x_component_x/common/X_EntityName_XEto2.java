@@ -27,16 +27,16 @@ public class X_EntityName_XEto2 extends X_DynamicEntityNameEtoParent_X implement
    * @return the x_fieldName_x.
    */
   @CobiGenForEach(value = CobiGenCollectionProviderFields.class, mapper = CobiGenModelMapperFieldsEto.class)
-  public X_FieldType_X getField() {
+  public X_FieldType_X x_fieldgetterprefix_xX_FieldName_X() {
 
     return this.x_fieldName_x;
   }
 
   /**
-   * @param x_fieldname_x the new value of {@link #getField()}.
+   * @param x_fieldname_x the new value of {@link #x_fieldgetterprefix_xX_FieldName_X()}.
    */
   @CobiGenForEach(value = CobiGenCollectionProviderFields.class, mapper = CobiGenModelMapperFieldsEto.class)
-  public void set(X_FieldType_X x_fieldname_x) {
+  public void setX_FieldName_X(X_FieldType_X x_fieldname_x) {
 
     this.x_fieldName_x = x_fieldname_x;
   }
