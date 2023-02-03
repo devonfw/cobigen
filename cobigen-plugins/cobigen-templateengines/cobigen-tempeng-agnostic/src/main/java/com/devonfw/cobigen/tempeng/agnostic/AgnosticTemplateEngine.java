@@ -9,16 +9,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.devonfw.cobigen.api.annotation.Name;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.extension.TextTemplate;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
+import com.devonfw.cobigen.api.model.CobiGenModel;
+import com.devonfw.cobigen.api.model.CobiGenModelDefault;
+import com.devonfw.cobigen.api.model.VariableSyntax;
 import com.devonfw.cobigen.tempeng.velocity.constant.VelocityMetadata;
-
-import io.github.mmm.base.text.CaseSyntax;
 
 /**
  * Template engine for language-agnostic-templates.<br>
@@ -31,10 +29,7 @@ import io.github.mmm.base.text.CaseSyntax;
 @Name("Agnostic")
 public class AgnosticTemplateEngine implements TextTemplateEngine {
 
-  /** Logger instance. */
-  private static final Logger LOG = LoggerFactory.getLogger(AgnosticTemplateEngine.class);
-
-  private static final Pattern PATTERN_VARIABLE = Pattern.compile("(\\.?)([xX]_([a-zA-Z][a-zA-Z0-9_$-]*)_[xX])");
+  private static final Pattern PATTERN_COBIGEN = Pattern.compile("CobiGen([\\p{L}0-9])*");
 
   /**
    * Constructor.
@@ -60,8 +55,7 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
   public void process(TextTemplate template, Map<String, Object> modelAsMap, Writer out, String outputEncoding) {
 
     try {
-      CobiGenModelImpl model = new CobiGenModelImpl();
-      model.addAll(modelAsMap);
+      CobiGenModelDefault model = new CobiGenModelDefault(modelAsMap);
       process(template, model, out);
     } catch (Throwable e) {
       throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template."
@@ -69,17 +63,19 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
     }
   }
 
-  private void process(TextTemplate template, CobiGenModel model, Writer out) {
+  private void process(TextTemplate template, CobiGenModel model, Writer code) {
 
     Path templatePath = template.getAbsoluteTemplatePath();
     try (BufferedReader reader = Files.newBufferedReader(templatePath)) {
       boolean todo = true;
       while (todo) {
         String line = reader.readLine();
-        line = processLine(line, model);
         if (line != null) {
-          out.write(line);
-          out.write('\n');
+          line = processLine(line, model, code);
+          if (line != null) {
+            code.write(line);
+            code.write('\n');
+          }
         } else {
           todo = false;
         }
@@ -89,39 +85,16 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
     }
   }
 
-  private String processLine(String line, CobiGenModel model) {
+  private String processLine(String line, CobiGenModel model, Writer code) {
 
-    if ((line == null) || line.contains("CobiGen")) {
+    Matcher matcher = PATTERN_COBIGEN.matcher(line);
+    if (matcher.find()) {
+      String cobiGenType = matcher.group();
+      if (!line.trim().startsWith("import ")) {
+        CobiGenAgnosticRegistry.get().generate(cobiGenType, line, model, code);
+      }
       return null;
     }
-    Matcher m = PATTERN_VARIABLE.matcher(line);
-    if (!m.find()) {
-      return line;
-    }
-    StringBuilder sb = new StringBuilder(line.length());
-    do {
-      String dot = m.group(1);
-      String var = m.group(3);
-      String replacement;
-      Object value = model.getValue(var);
-      if (value instanceof String) {
-        replacement = value.toString();
-        if (!replacement.isBlank()) {
-          CaseSyntax caseSyntax = CaseSyntax.ofExample(var, true);
-          if (caseSyntax != CaseSyntax.LOWERCASE) {
-            replacement = caseSyntax.convert(replacement);
-          }
-        }
-        if (!dot.isEmpty() && !replacement.isEmpty()) {
-          replacement = dot + replacement;
-        }
-      } else {
-        LOG.warn("Undefined variable {}", var);
-        replacement = m.group();
-      }
-      m.appendReplacement(sb, replacement);
-    } while (m.find());
-    m.appendTail(sb);
-    return sb.toString();
+    return model.resolve(line, '.', VariableSyntax.AGNOSTIC);
   }
 }

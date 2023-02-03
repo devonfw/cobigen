@@ -2,8 +2,6 @@ package com.devonfw.cobigen.unittest.config.resolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import net.sf.mmm.util.lang.api.CaseSyntax;
-
 import org.junit.Test;
 
 import com.devonfw.cobigen.impl.config.entity.Variables;
@@ -131,14 +129,14 @@ public class PathExpressionResolverTest {
   }
 
   /**
-   * Test of {@link PathExpressionResolver#evaluateExpressions(String)} using the {@link CaseSyntax} with arbitrary
-   * cases.
+   * Test of {@link PathExpressionResolver#evaluateExpressions(String)} using the
+   * {@link io.github.mmm.base.text.CaseSyntax} with arbitrary cases.
    */
   @Test
   public void testEvaluateExpressionCaseSyntax() {
 
-    assertThat(target.evaluateExpressions("foo-X__VariableName__X-bar-x__variableName__x-some"))
+    assertThat(target.evaluateExpressions("foo-X_VariableName_X-bar-x_variableName_x-some"))
         .isEqualTo("foo-PrefixValueSuffix-bar-prefixValueSuffix-some");
-    assertThat(target.evaluateExpressions("fooX__VariableName__Xbar")).isEqualTo("fooPrefixValueSuffixbar");
+    assertThat(target.evaluateExpressions("fooX_VariableName_Xbar")).isEqualTo("fooPrefixValueSuffixbar");
   }
 }

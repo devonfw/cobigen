@@ -33,10 +33,10 @@ public class AgnosticTemplateEngineTest {
   }
 
   /**
-   * Tests a basic velocity generation. Test design used from freemarker plugin
+   * Tests a basic agnostic generation.
    */
   @Test
-  public void testProcess() {
+  public void testGenerateUcFind() {
 
     // arrange
     final Path templateFolder = Paths.get("src/test/java/").toAbsolutePath();
@@ -100,6 +100,86 @@ public class AgnosticTemplateEngineTest {
         + "    } else {\n" //
         + "      return null;\n" //
         + "    }\n" //
+        + "  }\n" //
+        + "\n" //
+        + "}\n");
+  }
+
+  /**
+   * Tests a basic agnostic generation.
+   */
+  @Test
+  public void testGenerateEto() {
+
+    // arrange
+    final Path templateFolder = Paths.get("src/test/java/").toAbsolutePath();
+    TextTemplate template = new TextTemplate() {
+      @Override
+      public String getRelativeTemplatePath() {
+
+        return "x_rootpackage_x/x_component_x/common/X_EntityName_XEto.java";
+      }
+
+      @Override
+      public Path getAbsoluteTemplatePath() {
+
+        return templateFolder.resolve(getRelativeTemplatePath());
+      }
+    };
+    HashMap<String, Object> model = new HashMap<>();
+    model.put("rootpackage", "com.customer.app");
+    model.put("component", "mycomponent");
+    model.put("entityName", "MyExample");
+    model.put("classObject", MyExampleEntity.class);
+
+    // act
+    StringWriter out = new StringWriter();
+    this.engine.process(template, model, out, "UTF-8");
+
+    // assert
+    assertThat(out.toString()).isEqualTo("package com.customer.app.mycomponent.common;\n" //
+        + "\n" //
+        + "\n" //
+        + "import com.customer.app.general.common.AbstractEto;\n" //
+        + "\n" //
+        + "/**\n" //
+        + " * Implementation of {@link MyExample} as {@link AbstractEto ETO}.\n" //
+        + " */\n" //
+        + "public class MyExampleEto extends AbstractEto implements MyExample {\n" //
+        + "\n" //
+        + "\n" //
+        + "  private String name;\n" //
+        + "\n" //
+        + "  private java.time.LocalDate birthday;\n" //
+        + "\n" //
+        + "  /**\n" //
+        + "   * The constructor.\n" //
+        + "   */\n" //
+        + "  public MyExampleEto() {\n" //
+        + "\n" //
+        + "    super();\n" //
+        + "  }\n" //
+        + "\n" //
+        + "\n" //
+        + "  @Override\n" //
+        + "  public String getName() {\n" //
+        + "    return this.name;\n" //
+        + "  }\n" //
+        + "\n" //
+        + "  @Override\n" //
+        + "  public java.time.LocalDate getBirthday() {\n" //
+        + "    return this.birthday;\n" //
+        + "  }\n" //
+        + "\n" //
+        + "\n" //
+        + "  @Override\n" //
+        + "  public void setName(String name) {\n" //
+        + "    this.name = name;\n" //
+        + "  }\n" //
+        + "\n" //
+        + "  @Override\n" //
+        + "  public void setBirthday(java.time.LocalDate birthday) {\n" //
+        + "    this.birthday = birthday;\n" //
         + "  }\n" //
         + "\n" //
         + "}\n");
