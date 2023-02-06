@@ -16,10 +16,9 @@
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
     </dependency>
-    <!-- TODO can be removed once in core -->
     <dependency>
       <groupId>io.github.m-m-m</groupId>
-      <artifactId>mmm-base</artifactId>
+      <artifactId>mmm-code-java-impl</artifactId>
       <version>0.9.1</version>
     </dependency>
     <!-- TODO the following deps shall later be moved to templates -->

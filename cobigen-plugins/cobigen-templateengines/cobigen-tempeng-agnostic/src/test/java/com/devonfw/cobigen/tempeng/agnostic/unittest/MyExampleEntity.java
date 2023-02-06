@@ -22,7 +22,7 @@ public class MyExampleEntity extends ApplicationPersistenceEntity {
   }
 
   /**
-   * @param name new value of {@link #getname}.
+   * @param name new value of {@link #getName()}.
    */
   public void setName(String name) {
 
@@ -38,7 +38,7 @@ public class MyExampleEntity extends ApplicationPersistenceEntity {
   }
 
   /**
-   * @param birthday new value of {@link #getbirthday}.
+   * @param birthday new value of {@link #getBirthday()}.
    */
   public void setBirthday(LocalDate birthday) {
 

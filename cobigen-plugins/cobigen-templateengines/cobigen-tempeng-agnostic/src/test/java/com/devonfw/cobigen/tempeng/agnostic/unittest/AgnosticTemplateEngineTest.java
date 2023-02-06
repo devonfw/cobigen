@@ -185,4 +185,72 @@ public class AgnosticTemplateEngineTest {
         + "}\n");
   }
 
+  /**
+   * Tests a basic agnostic generation.
+   */
+  @Test
+  public void testGenerateEtoWithParentEntity() {
+
+    // arrange
+    final Path templateFolder = Paths.get("src/test/java/").toAbsolutePath();
+    TextTemplate template = new TextTemplate() {
+      @Override
+      public String getRelativeTemplatePath() {
+
+        return "x_rootpackage_x/x_component_x/common/X_EntityName_XEto.java";
+      }
+
+      @Override
+      public Path getAbsoluteTemplatePath() {
+
+        return templateFolder.resolve(getRelativeTemplatePath());
+      }
+    };
+    HashMap<String, Object> model = new HashMap<>();
+    model.put("rootpackage", "com.customer.app");
+    model.put("component", "mycomponent");
+    model.put("entityName", "FooBar");
+    model.put("classObject", FooBarEntity.class);
+
+    // act
+    StringWriter out = new StringWriter();
+    this.engine.process(template, model, out, "UTF-8");
+
+    // assert
+    assertThat(out.toString()).isEqualTo("package com.customer.app.mycomponent.common;\n" //
+        + "\n" //
+        + "\n" //
+        + "import com.customer.app.general.common.AbstractEto;\n" //
+        + "\n" //
+        + "/**\n" //
+        + " * Implementation of {@link FooBar} as {@link AbstractEto ETO}.\n" //
+        + " */\n" //
+        + "public class FooBarEto extends MyExampleEto implements FooBar {\n" //
+        + "\n" //
+        + "\n" //
+        + "  private String foo;\n" //
+        + "\n" //
+        + "  /**\n" //
+        + "   * The constructor.\n" //
+        + "   */\n" //
+        + "  public FooBarEto() {\n" //
+        + "\n" //
+        + "    super();\n" //
+        + "  }\n" //
+        + "\n" //
+        + "\n" //
+        + "  @Override\n" //
+        + "  public String getFoo() {\n" //
+        + "    return this.foo;\n" //
+        + "  }\n" //
+        + "\n" //
+        + "\n" //
+        + "  @Override\n" //
+        + "  public void setFoo(String foo) {\n" //
+        + "    this.foo = foo;\n" //
+        + "  }\n" //
+        + "\n" //
+        + "}\n");
+  }
+
 }

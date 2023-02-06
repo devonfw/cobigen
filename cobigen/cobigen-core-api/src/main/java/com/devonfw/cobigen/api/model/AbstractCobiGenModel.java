@@ -154,7 +154,7 @@ public abstract class AbstractCobiGenModel implements CobiGenModel {
    * @param modelAsMap the raw model as plain {@link Map}.
    * @see Map#putAll(Map)
    */
-  public void putAll(Map<String, Object> modelAsMap) {
+  public void putAll(Map<String, ?> modelAsMap) {
 
     putAll(modelAsMap, false);
   }
@@ -165,9 +165,9 @@ public abstract class AbstractCobiGenModel implements CobiGenModel {
    *        (e.g. from Constructor), {@code false} otherwise.
    * @see #putAll(Map)
    */
-  protected void putAll(Map<String, Object> modelAsMap, boolean skipOriginalMap) {
+  protected void putAll(Map<String, ?> modelAsMap, boolean skipOriginalMap) {
 
-    for (Entry<String, Object> entry : modelAsMap.entrySet()) {
+    for (Entry<String, ?> entry : modelAsMap.entrySet()) {
       String name = entry.getKey();
       Object value = entry.getValue();
       put(name, value, skipOriginalMap);

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.github.mmm.code.api.type.CodeType;
+
 /**
  * Central definition of {@link CobiGenVariableDefinition}s.
  */
@@ -38,5 +40,9 @@ public final class CobiGenVariableDefinitions {
   /** The {@link java.lang.reflect.Field#getType()}. */
   public static final CobiGenVariableDefinition<String> FIELD_TYPE_SIMPLE_NAME = CobiGenVariableDefinition
       .ofString("fieldtypeSimpeName");
+
+  /** The {@link CodeType} of the currently generated artifact (template). */
+  public static final CobiGenVariableDefinition<CodeType> GENERATED_TYPE = CobiGenVariableDefinition
+      .ofType("generatedType", CodeType.class);
 
 }
