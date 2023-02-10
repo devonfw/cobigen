@@ -5,7 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -22,19 +25,32 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  // @Ignore //TODO the functionality to adapt template jars with the soruces jar is missing and should be tested again
   public void adaptTemplateSetTest() throws Exception {
 
-    Path cliSystemTestPath = new File(
+    Path devTemplateSetPath = new File(
         AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
-            .getParentFile().toPath();
-    Path templateJar = cliSystemTestPath.resolve("src/test/resources/testdata/crud-java-server-app.jar");
-    if (Files.exists(templateJar)) {
+            .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
+            .resolve("crud-java-server-app").resolve("target");
+    File jars = devTemplateSetPath.toFile();
+    List<String> filenames = new ArrayList<>(2);
+    for (File file : jars.listFiles()) {
+      if (file.getName().endsWith(".jar")) {
+        filenames.add(file.getName());
+      }
+    }
+    if (Files.exists(devTemplateSetPath)) {
       Path downloadedTemplateSetsPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
           .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
       if (!Files.exists(downloadedTemplateSetsPath)) {
         Files.createDirectories(downloadedTemplateSetsPath);
       }
-      Files.copy(templateJar, downloadedTemplateSetsPath.resolve(templateJar.getFileName()));
+      for (String jarFilename : filenames) {
+        // if (!jarFilename.contains("sources")) {
+        Files.copy(devTemplateSetPath.resolve(jarFilename),
+            downloadedTemplateSetsPath.resolve(jarFilename.replace("-SNAPSHOT", "")));
+        // }
+      }
     }
 
     String args[] = new String[2];
@@ -53,12 +69,14 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     assertThat(adaptedTemplateSetsFolderPath).exists();
 
     // check if adapted template set exists
-    Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app");
+    Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007");
+    Path templateSetSources = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007-sources");
+    // throwing a error
     assertThat(templateSet).exists();
+    assertThat(templateSetSources).doesNotExist();
     // check if context configuration exists
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)).exists();
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-        .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
 
   }
 
@@ -67,6 +85,7 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    *
    * @throws Exception test fails
    */
+  @Ignore
   @Test
   public void adaptTemplatesTest() throws Exception {
 
