@@ -10,6 +10,8 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.customer.app.mycomponent.dataaccess.FooBarEntity;
+import com.customer.app.mycomponent.dataaccess.MyExampleEntity;
 import com.devonfw.cobigen.api.extension.TextTemplate;
 import com.devonfw.cobigen.tempeng.agnostic.AgnosticTemplateEngine;
 
@@ -181,7 +183,6 @@ public class AgnosticTemplateEngineTest {
         + "  public void setBirthday(java.time.LocalDate birthday) {\n" //
         + "    this.birthday = birthday;\n" //
         + "  }\n" //
-        + "\n" //
         + "}\n");
   }
 
@@ -221,6 +222,7 @@ public class AgnosticTemplateEngineTest {
         + "\n" //
         + "\n" //
         + "import com.customer.app.general.common.AbstractEto;\n" //
+        + "import com.customer.app.mycomponent.common.MyExampleEto;\n" //
         + "\n" //
         + "/**\n" //
         + " * Implementation of {@link FooBar} as {@link AbstractEto ETO}.\n" //
@@ -249,7 +251,6 @@ public class AgnosticTemplateEngineTest {
         + "  public void setFoo(String foo) {\n" //
         + "    this.foo = foo;\n" //
         + "  }\n" //
-        + "\n" //
         + "}\n");
   }
 

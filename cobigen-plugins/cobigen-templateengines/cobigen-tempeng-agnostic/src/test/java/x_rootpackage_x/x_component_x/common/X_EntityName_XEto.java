@@ -13,7 +13,7 @@ import x_rootpackage_x.general.common.AbstractEto;
  */
 public class X_EntityName_XEto extends @CobiGenDynamicType(CobiGenGeneratorJavaTypeEtoSuperClass.class) AbstractEto implements X_EntityName_X {
 
-  private CobiGenGeneratorJavaTypeFields fields;
+  private CobiGenGeneratorJavaTypeFields field;
 
   /**
    * The constructor.
@@ -23,8 +23,7 @@ public class X_EntityName_XEto extends @CobiGenDynamicType(CobiGenGeneratorJavaT
     super();
   }
 
-  public CobiGenGeneratorJavaTypeGetters get() { return null; }
+  private CobiGenGeneratorJavaTypeGetters getter;
 
-  public void set(CobiGenGeneratorJavaTypeSetters setter) {};
-
+  private CobiGenGeneratorJavaTypeSetters setter;
 }

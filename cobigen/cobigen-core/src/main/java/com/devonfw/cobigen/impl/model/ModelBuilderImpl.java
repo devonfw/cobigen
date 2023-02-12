@@ -103,6 +103,9 @@ public class ModelBuilderImpl implements ModelBuilder {
         .resolveVariables(triggerInterpreter, report).asMap();
     Map<String, Object> templateProperties = template.getVariables().asMap();
     Properties targetCobiGenProperties = CobiGenPropertiesReader.load(targetRootPath);
+    if (targetCobiGenProperties == null) {
+      targetCobiGenProperties = new Properties();
+    }
     // if there are properties overriding each other, throw an exception for better usability.
     // This is most probably a not intended mechanism such that we simply will not support it.
     Set<String> intersection = new HashSet<>(contextVariables.keySet());

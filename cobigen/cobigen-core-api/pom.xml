@@ -29,13 +29,6 @@
       <version>0.9.1</version>
     </dependency>
 
-    <!-- TODO to be discussed mmm-code -->
-    <dependency>
-      <groupId>io.github.m-m-m</groupId>
-      <artifactId>mmm-code-api</artifactId>
-      <version>0.9.1</version>
-    </dependency>
-
     <!-- Helper libraries, especially for java reflection -->
     <dependency>
       <groupId>com.google.guava</groupId>

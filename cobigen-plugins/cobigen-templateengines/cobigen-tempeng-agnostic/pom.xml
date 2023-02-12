@@ -16,11 +16,6 @@
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.github.m-m-m</groupId>
-      <artifactId>mmm-code-java-impl</artifactId>
-      <version>0.9.1</version>
-    </dependency>
     <!-- TODO the following deps shall later be moved to templates -->
     <dependency>
       <groupId>jakarta.platform</groupId>
@@ -59,22 +54,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <!-- Inject Velocity Properties in java-templates source folder -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>templating-maven-plugin</artifactId>
-        <version>1.0.0</version>
-        <executions>
-          <execution>
-            <id>generate-version-class</id>
-            <goals>
-              <goal>filter-sources</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

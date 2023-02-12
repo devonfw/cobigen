@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.tempeng.agnostic.unittest;
+package com.customer.app.mycomponent.dataaccess;
 
 /**
  *

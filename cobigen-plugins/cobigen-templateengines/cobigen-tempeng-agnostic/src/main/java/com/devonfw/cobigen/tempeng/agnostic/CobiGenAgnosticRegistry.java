@@ -1,7 +1,6 @@
 package com.devonfw.cobigen.tempeng.agnostic;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,16 +35,32 @@ public final class CobiGenAgnosticRegistry {
     this.generators.put(generator.getClass().getSimpleName(), generator);
   }
 
-  public void generate(String cobiGenType, String line, CobiGenModel model, Writer code) {
+  public String generate(String cobiGenType, String line, CobiGenModel model) {
+
+    StringBuilder sb = new StringBuilder();
+    generate(cobiGenType, line, model, sb);
+    return sb.toString();
+  }
+
+  public void generate(String cobiGenType, String line, CobiGenModel model, Appendable code) {
 
     try {
-      CobiGenGenerator generator = this.generators.get(cobiGenType);
-      if (generator != null) {
-        generator.generate(model, code);
-      }
+      CobiGenGenerator generator = getGenerator(cobiGenType);
+      // if (generator != null) {
+      generator.generate(model, code);
+      // }
     } catch (IOException e) {
       throw new IllegalStateException("I/O error whilst running " + cobiGenType, e);
     }
+  }
+
+  public CobiGenGenerator getGenerator(String cobiGenType) {
+
+    CobiGenGenerator generator = this.generators.get(cobiGenType);
+    if (generator == null) {
+      throw new IllegalArgumentException("Undefined generator " + cobiGenType);
+    }
+    return generator;
   }
 
   /**

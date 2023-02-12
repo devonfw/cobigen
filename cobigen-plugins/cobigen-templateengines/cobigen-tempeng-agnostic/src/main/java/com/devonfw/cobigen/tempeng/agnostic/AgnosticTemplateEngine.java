@@ -23,14 +23,9 @@ import com.devonfw.cobigen.api.model.CobiGenModelDefault;
 import com.devonfw.cobigen.api.model.CobiGenVariableDefinitions;
 import com.devonfw.cobigen.api.model.VariableSyntax;
 import com.devonfw.cobigen.api.template.generator.CobiGenGenerator;
-import com.devonfw.cobigen.tempeng.velocity.constant.VelocityMetadata;
-
-import io.github.mmm.base.text.CaseConversion;
-import io.github.mmm.code.base.BaseContext;
-import io.github.mmm.code.base.BaseFile;
-import io.github.mmm.code.base.BasePackage;
-import io.github.mmm.code.base.source.BaseSourceImpl;
-import io.github.mmm.code.base.type.BaseType;
+import com.devonfw.cobigen.api.template.out.AbstractCobiGenOutput;
+import com.devonfw.cobigen.api.template.out.CobiGenOutputFactory;
+import com.devonfw.cobigen.api.template.out.StreamingCobiGenOutput;
 
 /**
  * Template engine for language-agnostic-templates.<br>
@@ -87,105 +82,67 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
   }
 
   @Override
-  public void process(TextTemplate template, Map<String, Object> modelAsMap, Writer out, String outputEncoding) {
+  public void process(TextTemplate template, Map<String, Object> modelAsMap, Writer writer, String outputEncoding) {
 
     try {
       CobiGenModelDefault model = new CobiGenModelDefault(modelAsMap);
-      process(template, model, out);
+      process(template, model, writer);
     } catch (Throwable e) {
       throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template."
-          + template.getAbsoluteTemplatePath() + "(Agnostic v" + VelocityMetadata.VERSION + ")", e);
+          + template.getAbsoluteTemplatePath() + "(Agnostic)", e);
     }
   }
 
-  private void process(TextTemplate template, CobiGenModel model, Writer code) {
+  private void process(TextTemplate template, CobiGenModel model, Writer writer) {
 
-    BaseType type = createType(template, model);
+    String path = template.getRelativeTemplatePath();
+    path = model.resolve(path, '.', VariableSyntax.AGNOSTIC);
+    AbstractCobiGenOutput out = (AbstractCobiGenOutput) CobiGenOutputFactory.get().create(path);
     model = new CobiGenModelDefault(model);
-    CobiGenVariableDefinitions.GENERATED_TYPE.setValue(model, type);
-
-    ImportStatements importStatements = new ImportStatements(type.getFile(), this.classLoader);
+    CobiGenVariableDefinitions.OUT.setValue(model, out);
+    if (out instanceof StreamingCobiGenOutput) {
+      out = null;
+    }
+    AbstractCobiGenOutput currentOut = out;
     Path templatePath = template.getAbsoluteTemplatePath();
     try (BufferedReader reader = Files.newBufferedReader(templatePath)) {
       boolean todo = true;
       while (todo) {
         String line = reader.readLine();
         if (line != null) {
-          line = processLine(line, model, code, importStatements);
+          line = processLine(line, model, writer, out);
           if (line != null) {
-            code.write(line);
-            code.write('\n');
+            if (currentOut == null) {
+              writer.write(line);
+              writer.write('\n');
+            } else {
+              AbstractCobiGenOutput newOut = currentOut.addLine(line);
+              if (newOut != currentOut) {
+                currentOut = newOut;
+                model = new CobiGenModelDefault(model);
+                CobiGenVariableDefinitions.OUT.setValue(model, currentOut);
+              }
+            }
           }
         } else {
           todo = false;
         }
+      }
+      if (out != null) {
+        out.write(writer);
       }
     } catch (IOException e) {
       throw new IllegalStateException("I/O error while instantiation template.");
     }
   }
 
-  private BaseType createType(TextTemplate template, CobiGenModel model) {
-
-    String path = template.getRelativeTemplatePath();
-    path = model.resolve(path, '.', VariableSyntax.AGNOSTIC);
-    int lastDot = path.lastIndexOf('.');
-    String extension = "";
-    if (lastDot > 0) {
-      extension = CaseConversion.LOWER_CASE.convert(path.substring(lastDot + 1));
-      path = path.substring(0, lastDot);
-    } else {
-      LOG.warn("Missing file extension for template {}", path);
-    }
-    BaseSourceImpl source = new BaseSourceImpl(null, template.getAbsoluteTemplatePath().toFile(), "Fake-" + extension,
-        null, null);
-    try (BaseContext context = new FakeContext(new FakeLanguage(extension), source)) {
-      path = path.replace('/', '.');
-      lastDot = path.lastIndexOf('.');
-      String fileName = "";
-      if (lastDot > 0) {
-        fileName = path.substring(lastDot + 1);
-        path = path.substring(0, lastDot);
-      }
-      BasePackage rootPackage = new BasePackage(source);
-      BasePackage pkg = createPackage(path, rootPackage);
-      BaseFile file = new BaseFile(pkg, fileName);
-      BaseType type = new BaseType(file, null);
-      return type;
-    }
-  }
-
-  private BasePackage createPackage(String path, BasePackage rootPackage) {
-
-    if (path.startsWith("src/main/resources/")) {
-      path = path.substring(19);
-    }
-    if (path.startsWith("templates/")) {
-      path = path.substring(10);
-    }
-    path = path.replace('/', '.');
-    BasePackage pkg = rootPackage;
-    int start = 0;
-    while (true) {
-      int i = path.indexOf('.', start);
-      if (i > 0) {
-        String segment = path.substring(start, i);
-        pkg = new BasePackage(pkg, segment, null, null, false);
-        start = i + 1;
-      } else {
-        return pkg;
-      }
-    }
-  }
-
-  private String processLine(String line, CobiGenModel model, Writer code, ImportStatements imports)
+  private String processLine(String line, CobiGenModel model, Writer writer, AbstractCobiGenOutput out)
       throws IOException {
 
-    boolean isImport = imports.visitLine(line);
     Matcher matcher = PATTERN_COBIGEN.matcher(line);
     boolean cgFound = matcher.find();
     if (cgFound) {
-      if (isImport) {
+      if (line.trim().startsWith("import")) {
         return null;
       }
       StringBuilder sb = null;
@@ -201,8 +158,7 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
           Objects.requireNonNull(cobiGenArgs, cobiGenString);
           if (cobiGenType.equals(CobiGenDynamicType.class.getSimpleName())) {
             cobiGenArgs = cobiGenArgs.trim().replaceAll("value\\s*=", "").replace(".class", "").trim();
-            generator = imports.getGenerator(cobiGenArgs);
-            String replacement = generator.generate(model);
+            String replacement = CobiGenAgnosticRegistry.get().generate(cobiGenArgs, line, model);
             String typeName = matcher.group(4);
             if (typeName == null) {
               LOG.warn(
@@ -219,8 +175,19 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
             LOG.warn("Unsupported annotation {}", cobiGenString);
           }
         } else {
-          generator = imports.getGenerator(cobiGenType);
-          generator.generate(model, code);
+          generator = CobiGenAgnosticRegistry.get().getGenerator(cobiGenType);
+          if (out == null) {
+            generator.generate(model, writer);
+          } else {
+            String code = generator.generate(model);
+            if (code.indexOf('\n') >= 0) {
+              for (String codeLine : code.split("\n")) {
+                out.addLine(codeLine);
+              }
+            } else {
+              out.addLine(code);
+            }
+          }
           return null;
         }
       } while (matcher.find());

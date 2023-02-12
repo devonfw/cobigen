@@ -193,10 +193,14 @@ public abstract class AbstractCobiGenModel implements CobiGenModel {
       } else {
         replacement = syntax.resolve(variableValue, matcher, variableName);
       }
+      if (replacementForDot != '.') {
+        replacement = replacement.replace('.', replacementForDot);
+      }
       matcher.appendReplacement(sb, replacement);
     } while (matcher.find());
     matcher.appendTail(sb);
-    return sb.toString();
+    String resolved = sb.toString();
+    return resolved;
   }
 
   /**
