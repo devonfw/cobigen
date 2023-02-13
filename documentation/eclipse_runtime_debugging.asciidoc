@@ -1,0 +1,63 @@
+= Debugging CobiGen using Eclipse
+
+Debugging CobiGen using the Eclipse Integrated Development Environment (IDE) can be a powerful tool for identifying and fixing issues in your code. This guide will provide a detailed overview of how to set up and use the Eclipse runtime debugger for debugging CobiGen applications.
+
+===== Prerequisites
+
+Before we begin, make sure that you have the following:
+
+- Eclipse IDE installed on your machine (devonfw project).
++
++ +
++
+- CobiGen project set up in Eclipse.
+
+
+===== Step 1: Setting up the Debug Configuration
+
+To set up the debug configuration in Eclipse, follow these steps:
+
+- **Step 1.1:** Right-click on the CobiGen project in the Project Explorer and select Debug As > Java Application.
++
++ +
++
+- **Step 1.2:** If the debug configuration has not been created yet, you will be prompted to create a new one. Give the configuration a name and click Debug.
++
++ +
++
+- **Step 1.3:** The CobiGen application will start and you will be able to debug it using the Eclipse debugger.
+
+===== Step 2: Setting Breakpoints
+
+Breakpoints are a key feature of the Eclipse debugger, allowing you to stop the application at a specific line of code. To set a breakpoint in Eclipse, follow these steps:
+
+- **Step 2.1:** Open the file in which you want to set a breakpoint.
++
++ +
++
+- **Step 2.2:** Left-click in the gutter area to the left of the line number, or right-click on the line and select `Toggle Breakpoint`. A blue dot will appear, indicating that a breakpoint has been set at that line.
+
+===== Step 3: Debugging
+
+To start debugging your CobiGen application, follow these steps:
+
+- **Step 3.1:** Right-click on the CobiGen project in the Project Explorer and select `Debug As` > `Java Application`.
++
++ +
++
+- **Step 3.2:** If you have already created a debug configuration, select it from the list and click Debug. If not, create a new `debug` configuration as described in Step 1.
++
++ +
++
+- **Step 3.3:** The application will start and stop at the first breakpoint.
++
++ +
++
+- **Step 3.4:** You can now inspect variables, evaluate expressions, and step through the code using the Eclipse debugger. The Debug Perspective provides a variety of views for examining the state of the application, including the Variables, Expressions, and Breakpoints views.
++
++ +
++
+- **Step 3.5:** When you have finished debugging, you can terminate the debugger by clicking the red square button in the Debug Perspective, or by selecting `Terminate` from the Run menu.
++
++ +
++
