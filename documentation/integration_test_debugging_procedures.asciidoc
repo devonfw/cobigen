@@ -1,0 +1,120 @@
+
+= Integration test debugging procedures
+
+Debugging integration tests in the CobiGen project can be a complex process, as it involves multiple components working together. However, with the right tools and techniques, you can effectively debug your tests and resolve any issues that may arise.
+
+=====  •  System.out.println()
+
+One of the simplest techniques for debugging integration tests is to use `System.out.println()` statements. This technique allows you to see output in the console and determine what is happening during the execution of your tests.
+
+For example, if you have an integration test that tests the generation of code using CobiGen, you could add a `System.out.println()` statement to the method that generates the code, like this:
+
+[source,java]
+----
+public void testCodeGeneration() {
+    // setup code generation inputs
+    // ...
+
+    System.out.println("Before code generation");
+    codeGenerator.generateCode(inputs);
+    System.out.println("After code generation");
+}
+----
+
+This would allow you to see the output of the code generation process in the console, and determine if there are any issues with the generated code.
+
+=====  •  Breakpoints
+Another effective technique for debugging integration tests is to use breakpoints. Breakpoints allow you to pause the execution of your code at a specific line or lines of code. This allows you to examine variables and evaluate expressions, which can help you identify the source of an issue.
+
+For example, if you have an integration test that tests the generation of code using CobiGen, you could set a breakpoint on the line of code that invokes the code generation process, like this:
+
+[source,java]
+----
+public void testCodeGeneration() {
+    // setup code generation inputs
+    // ...
+
+    // set breakpoint here
+    codeGenerator.generateCode(inputs);
+}
+----
+
+When the breakpoint is hit, you could inspect the variables that are used by the code generation process, and determine if there are any issues with the input to the process.
+
+=====  •  Debugger
+
+Integration tests are an important part of the development process in CobiGen. They help to ensure that the various components of the system work together as expected. However, sometimes tests may fail, and it can be difficult to understand why. In these cases, using a debugger can be very helpful in identifying and fixing the issue.
+
+====== How to Use a Debugger for Integration Tests in CobiGen
+
+1. Start the debugger: To start the debugger, simply run the integration test that is failing. Your development environment will automatically start the debugger.
+
+2. Set a breakpoint: Set a breakpoint at the location where you suspect the error is occurring. The debugger will stop at this point and allow you to inspect the code.
+
+3. Check variable values: Check the values of variables and the call stack to see what is happening in the code.
+
+4. Step through the code: Use the "step through" option to go through the code one step at a time, allowing you to follow the execution.
+
+5. Troubleshoot: Inspect the code and fix the error if you find it.
+
+====== Example CobiGen Code
+
+Here is an example of how to use the debugger in CobiGen for an integration test:
+
+[source,java]
+
+-----
+public class CobiGenIntegrationTest {
+    @Test
+    public void testGeneration() {
+        // initialize input variables
+        String templatePath = "/path/to/template.ftl";
+        Map<String, Object> input = new HashMap<>();
+        input.put("variableName", "value");
+
+        // run the code generator
+        CodeGenerator codeGenerator = new CodeGenerator();
+        String generatedCode = codeGenerator.generate(templatePath, input);
+
+        // set breakpoint here
+        assertNotNull(generatedCode);
+    }
+}
+-----
+
+In this example, we have a simple integration test that checks the generation of code using the CobiGen code generator. By setting a breakpoint at the line where **generatedCode** is assigned, we can use the debugger to inspect the values of **templatePath**, **input**, and **generatedCode** and make sure that the code generator is working as expected.
+
+By using the debugger in CobiGen, you can inspect the state of the system at each step and quickly identify and fix any errors in the integration tests.
+
+=====  •  Logs and Error Messages
+
+It is important to review the logs and error messages produced by your integration tests. In CobiGen you can generate logs and error messages by using a logger instance. Here is an example how to use logs and error messages in an integration test:
+
+[source,java]
+
+----
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class CodeGenerationIntegrationTest {
+private static final Logger LOG = LoggerFactory.getLogger(CodeGenerationIntegrationTest.class);
+
+@Test
+public void testCodeGeneration() {
+     try {
+         // setup code generation inputs
+         // ...
+
+         codeGenerator.generateCode(inputs);
+     } catch (Exception e) {
+         LOG.error("An error occurred during code generation: {}", e.getMessage(), e);
+     }
+}
+}
+
+----
+
+In this example, a logger instance is associated with the CodeGenerationIntegrationTest class. If an exception occurred during the code generation process, an error message is written to the log with the exception description.
+
+This way you can check the logs if necessary and see if there were any problems with the code generation.
+.
