@@ -182,7 +182,7 @@ public class AdaptTemplatesTest extends SystemTest {
   @Test
   public void testAdaptMonolithicTemplatesAndGenerate() throws Exception {
 
-    File tmpProject = this.tempFolder.newFolder("playground", "project");
+    File tmpProject = this.tempFolder.newFolder("playground", "project", "templates");
     withEnvironmentVariable("COBIGEN_HOME", tmpProject.toPath().toString())
         .execute(() -> testBasicOpenAPIGenerationWithAdaptMonolithicTemplates());
   }
