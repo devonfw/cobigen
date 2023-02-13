@@ -1,0 +1,81 @@
+= Debugging the CLI Attach to Process Method in CobiGen
+
+Debugging the CLI Attach to Process Method in CobiGen involves attaching a debugger to a running process of the CobiGen command line interface (CLI). This allows you to inspect the state of the process and see what is causing an issue or error.
+
+
+===== Prerequisites
+
+Before we begin, make sure that you have the following:
+
+- A working knowledge of Java and the command-line interface.
+- A development environment set up for CobiGen, including all the required tools and libraries.
+
+
+Here are the steps to debug the CLI attach to process method in CobiGen:
+
+**Step 1:** Start the CobiGen application in debug mode
+
+In the terminal, navigate to the root directory of the CobiGen project and start the application with the following command:
+
+
+[source,bash]
+----
+java -jar cobigen.jar --debug
+----
+
+
+**Step 2:** Connect the debugger
+
+Once the application is running in debug mode, connect to it using your preferred debugger. In this example, we'll use the Java debugger (jdb) that comes with the Java Development Kit (JDK).
+
+
+[source,bash]
+----
+jdb -attach <pid>
+----
+where `<pid>` is the process ID of the running CobiGen process.
+
+**Step 3:**
+
+Set breakpoints in the code where you want to inspect the state of the process. For example, you can set a breakpoint in the code that is causing an issue or error.
+
+
+**Step 4:**
+
+Execute the desired command in the CobiGen CLI. The debugger will stop at the first breakpoint and you can inspect the state of the process.
+
+
+**Step 5:**
+
+Use the debugger commands to inspect variables, step through the code, and evaluate expressions. Some common commands in `jdb` include:
+
+  • `next` to execute the next line of code +
+  • `step` to step into a method +
+  • `where` to see the current stack trace +
+  • `print <variable>` to print the value of a variable +
+  • `continue` to resume execution until the next breakpoint is hit +
+
+
+Here's an example of setting a breakpoint in a specific line of code and then stepping through the code:
+
+`stop at mypackage.MyClass:42` +
+`run` +
+`step` +
+
+
+In this example, the breakpoint is set in line 42 of `MyClass` in the `mypackage` package. The `run` command starts the application, and the `step` command steps through the code, allowing you to inspect variables and view the application's behavior.
+
+
+**Step 6:**
+
+Repeat steps 4-5 as needed until you have found the root cause of the issue or error.
+
+
+**Step 7:**
+
+When finished debugging, you can exit the debugger by typing `quit` in the debugger terminal window.
+
+
+
+
+
