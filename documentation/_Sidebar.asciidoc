@@ -48,3 +48,8 @@
 * link:eclipse-plugin_development[Eclipse-Plugin Development]
 * link:cobigen-core_development[Core Development]
 * link:howto_create-a-new-plugin[Adding new plugin]
+
+==== CobiGen debugging methods
+* link:eclipse_runtime_debugging.asciidoc[Debugging CobiGen using Eclipse]
+* link:debugging_CLI_attach_to_process_method.asciidoc[Debugging the CLI Attach to Process Method in CobiGen]
+* link:integration_test_debugging:procedures.asciidoc[Integration test debugging procedures]
