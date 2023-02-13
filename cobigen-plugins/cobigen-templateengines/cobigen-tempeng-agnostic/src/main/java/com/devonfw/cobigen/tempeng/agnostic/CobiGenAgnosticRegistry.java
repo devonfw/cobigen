@@ -10,6 +10,7 @@ import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeEtoSup
 import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeFields;
 import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeGetters;
 import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeSetters;
+import com.devonfw.cobigen.api.template.generator.CobiGenGenertorJavaTypeEtoProperties;
 
 /**
  * Central registry for CobiGen constructs supported by language agnostic templates.
@@ -28,6 +29,7 @@ public final class CobiGenAgnosticRegistry {
     add(new CobiGenGeneratorJavaTypeFields());
     add(new CobiGenGeneratorJavaTypeGetters());
     add(new CobiGenGeneratorJavaTypeSetters());
+    add(new CobiGenGenertorJavaTypeEtoProperties());
   }
 
   private void add(CobiGenGenerator generator) {

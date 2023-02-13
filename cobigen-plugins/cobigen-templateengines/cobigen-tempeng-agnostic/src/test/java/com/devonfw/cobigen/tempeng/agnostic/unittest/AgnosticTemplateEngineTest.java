@@ -141,18 +141,17 @@ public class AgnosticTemplateEngineTest {
     // assert
     assertThat(out.toString()).isEqualTo("package com.customer.app.mycomponent.common;\n" //
         + "\n" //
-        + "\n" //
         + "import com.customer.app.general.common.AbstractEto;\n" //
+        + "import java.time.LocalDate;\n" //
         + "\n" //
         + "/**\n" //
         + " * Implementation of {@link MyExample} as {@link AbstractEto ETO}.\n" //
         + " */\n" //
         + "public class MyExampleEto extends AbstractEto implements MyExample {\n" //
         + "\n" //
-        + "\n" //
         + "  private String name;\n" //
         + "\n" //
-        + "  private java.time.LocalDate birthday;\n" //
+        + "  private LocalDate birthday;\n" //
         + "\n" //
         + "  /**\n" //
         + "   * The constructor.\n" //
@@ -162,17 +161,10 @@ public class AgnosticTemplateEngineTest {
         + "    super();\n" //
         + "  }\n" //
         + "\n" //
-        + "\n" //
         + "  @Override\n" //
         + "  public String getName() {\n" //
         + "    return this.name;\n" //
         + "  }\n" //
-        + "\n" //
-        + "  @Override\n" //
-        + "  public java.time.LocalDate getBirthday() {\n" //
-        + "    return this.birthday;\n" //
-        + "  }\n" //
-        + "\n" //
         + "\n" //
         + "  @Override\n" //
         + "  public void setName(String name) {\n" //
@@ -180,9 +172,15 @@ public class AgnosticTemplateEngineTest {
         + "  }\n" //
         + "\n" //
         + "  @Override\n" //
-        + "  public void setBirthday(java.time.LocalDate birthday) {\n" //
+        + "  public LocalDate getBirthday() {\n" //
+        + "    return this.birthday;\n" //
+        + "  }\n" //
+        + "\n" //
+        + "  @Override\n" //
+        + "  public void setBirthday(LocalDate birthday) {\n" //
         + "    this.birthday = birthday;\n" //
         + "  }\n" //
+        + "\n" //
         + "}\n");
   }
 
@@ -220,7 +218,6 @@ public class AgnosticTemplateEngineTest {
     // assert
     assertThat(out.toString()).isEqualTo("package com.customer.app.mycomponent.common;\n" //
         + "\n" //
-        + "\n" //
         + "import com.customer.app.general.common.AbstractEto;\n" //
         + "import com.customer.app.mycomponent.common.MyExampleEto;\n" //
         + "\n" //
@@ -228,7 +225,6 @@ public class AgnosticTemplateEngineTest {
         + " * Implementation of {@link FooBar} as {@link AbstractEto ETO}.\n" //
         + " */\n" //
         + "public class FooBarEto extends MyExampleEto implements FooBar {\n" //
-        + "\n" //
         + "\n" //
         + "  private String foo;\n" //
         + "\n" //
@@ -240,17 +236,16 @@ public class AgnosticTemplateEngineTest {
         + "    super();\n" //
         + "  }\n" //
         + "\n" //
-        + "\n" //
         + "  @Override\n" //
         + "  public String getFoo() {\n" //
         + "    return this.foo;\n" //
         + "  }\n" //
         + "\n" //
-        + "\n" //
         + "  @Override\n" //
         + "  public void setFoo(String foo) {\n" //
         + "    this.foo = foo;\n" //
         + "  }\n" //
+        + "\n" //
         + "}\n");
   }
 

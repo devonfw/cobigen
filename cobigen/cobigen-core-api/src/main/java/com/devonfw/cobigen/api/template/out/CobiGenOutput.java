@@ -42,6 +42,46 @@ public interface CobiGenOutput {
   }
 
   /**
+   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_INTERFACE interface}.
+   */
+  default boolean isInterface() {
+
+    return CATEGORY_INTERFACE.equals(getCategory());
+  }
+
+  /**
+   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_RECORD record}.
+   */
+  default boolean isRecord() {
+
+    return CATEGORY_RECORD.equals(getCategory());
+  }
+
+  /**
+   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_ENUMERATION enumeration}.
+   */
+  default boolean isEnumeration() {
+
+    return CATEGORY_ENUMERATION.equals(getCategory());
+  }
+
+  /**
+   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_ANNOTATION annotation}.
+   */
+  default boolean isAnnotation() {
+
+    return CATEGORY_ANNOTATION.equals(getCategory());
+  }
+
+  /**
+   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_CLASS class}.
+   */
+  default boolean isClass() {
+
+    return CATEGORY_CLASS.equals(getCategory());
+  }
+
+  /**
    * @return the {@link CobiGenCodeBlock} with the source-code of this output.
    */
   CobiGenCodeBlock getCode();

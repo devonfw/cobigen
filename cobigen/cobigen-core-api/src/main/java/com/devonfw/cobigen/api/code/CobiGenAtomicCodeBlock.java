@@ -43,6 +43,14 @@ public class CobiGenAtomicCodeBlock extends AbstractCobiGenCodeBlock {
   }
 
   @Override
+  public CobiGenAtomicCodeBlock insertNext(String blockName) {
+
+    CobiGenAtomicCodeBlock block = new CobiGenAtomicCodeBlock(blockName);
+    insertNext(block);
+    return block;
+  }
+
+  @Override
   public CobiGenAtomicCodeBlock addAtomicChild(String blockName) {
 
     return this;
@@ -52,8 +60,11 @@ public class CobiGenAtomicCodeBlock extends AbstractCobiGenCodeBlock {
   public CobiGenAtomicCodeBlock addLine(boolean raw, String line) {
 
     assert (line != null);
-    if (!raw && (this.indent != null)) {
-      line = this.indent + line;
+    if (!raw && !line.isEmpty()) {
+      String prefix = getIndentWithFallback();
+      if (prefix != null) {
+        line = prefix + line;
+      }
     }
     this.lines.add(line);
     return this;

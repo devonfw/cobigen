@@ -25,7 +25,16 @@ public class CobiGenCompositeCodeBlock extends AbstractCobiGenCodeBlock {
 
   void setChild(AbstractCobiGenCodeBlock child) {
 
+    adopt(child);
     this.child = child;
+  }
+
+  @Override
+  public CobiGenCompositeCodeBlock insertNext(String blockName) {
+
+    CobiGenCompositeCodeBlock composite = new CobiGenCompositeCodeBlock(blockName);
+    insertNext(composite);
+    return composite;
   }
 
   @Override
@@ -50,7 +59,7 @@ public class CobiGenCompositeCodeBlock extends AbstractCobiGenCodeBlock {
   private CobiGenAtomicCodeBlock getOrCreateLastAtomicChild() {
 
     if (this.child == null) {
-      return getOrCreateAtomicChild(NAME_CODE);
+      return addAtomicChild(NAME_CODE);
     }
     AbstractCobiGenCodeBlock lastChild = this.child.getLast();
     if (lastChild instanceof CobiGenAtomicCodeBlock) {
@@ -78,53 +87,15 @@ public class CobiGenCompositeCodeBlock extends AbstractCobiGenCodeBlock {
   }
 
   /**
-   * @param blockName the {@link #getName() name} of the requested {@link #getNext() child}.
-   * @param composite - {@code true} to create a composite block, {@code false} otherwise to create an atomic block.
-   * @return the first {@link CobiGenCodeBlock} with the given {@link #getName() name} from this
-   *         {@link CobiGenCodeBlock} recursively along its {@link #getNext() siblings}. If not found, it will be
-   *         created as {@link #getLast() last} {@link #getNext() sibling}.
-   * @see #getOrCreateNext(String, boolean)
-   */
-  public AbstractCobiGenCodeBlock getOrCreateChild(String blockName, boolean composite) {
-
-    if (this.child == null) {
-      if (composite) {
-        this.child = new CobiGenCompositeCodeBlock(blockName);
-      } else {
-        this.child = new CobiGenAtomicCodeBlock(blockName);
-      }
-      return this.child;
-    } else {
-      return this.child.getOrCreateNext(blockName, composite);
-    }
-  }
-
-  /**
-   * @param blockName the {@link #getName() name} of the requested {@link #getNext() child}.
-   * @return the first {@link CobiGenCodeBlock} with the given {@link #getName() name} from this
-   *         {@link CobiGenCodeBlock} recursively along its {@link #getNext() siblings}. If not found, it will be
-   *         created as {@link #getLast() last} {@link #getNext() sibling}.
-   * @see #getOrCreateChild(String, boolean)
-   */
-  public CobiGenAtomicCodeBlock getOrCreateAtomicChild(String blockName) {
-
-    return (CobiGenAtomicCodeBlock) getOrCreateChild(blockName, false);
-  }
-
-  /**
    * @param lastChild the {@link AbstractCobiGenCodeBlock} to append as {@link #getLast() last} {@link #getChild()
    *        child} so to the end of this block.
-   * @see #appendLast(AbstractCobiGenCodeBlock)
    */
   public void appendChild(AbstractCobiGenCodeBlock lastChild) {
 
-    if (lastChild.indent == null) {
-      lastChild.indent = this.indent;
-    }
     if (this.child == null) {
-      this.child = lastChild;
+      setChild(lastChild);
     } else {
-      this.child.appendLast(lastChild);
+      this.child.getLast().insertNext(lastChild);
     }
   }
 

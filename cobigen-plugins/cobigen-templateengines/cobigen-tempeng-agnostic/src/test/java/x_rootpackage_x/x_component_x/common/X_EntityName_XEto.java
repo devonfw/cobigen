@@ -5,6 +5,7 @@ import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeEtoSup
 import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeFields;
 import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeGetters;
 import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeSetters;
+import com.devonfw.cobigen.api.template.generator.CobiGenGenertorJavaTypeEtoProperties;
 
 import x_rootpackage_x.general.common.AbstractEto;
 
@@ -13,7 +14,7 @@ import x_rootpackage_x.general.common.AbstractEto;
  */
 public class X_EntityName_XEto extends @CobiGenDynamicType(CobiGenGeneratorJavaTypeEtoSuperClass.class) AbstractEto implements X_EntityName_X {
 
-  private CobiGenGeneratorJavaTypeFields field;
+  private CobiGenGenertorJavaTypeEtoProperties field;
 
   /**
    * The constructor.
@@ -23,7 +24,5 @@ public class X_EntityName_XEto extends @CobiGenDynamicType(CobiGenGeneratorJavaT
     super();
   }
 
-  private CobiGenGeneratorJavaTypeGetters getter;
 
-  private CobiGenGeneratorJavaTypeSetters setter;
 }

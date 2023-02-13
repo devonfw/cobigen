@@ -128,25 +128,41 @@ public abstract class CobiGenOutputCode extends AbstractCobiGenOutput {
 
     CobiGenCompositeCodeBlock start;
     CobiGenCompositeCodeBlock current;
+    int widthMain = 0;
     AbstractCobiGenOutput parent = getParent();
     if (parent == null) {
       start = new CobiGenCompositeCodeBlock(CobiGenCodeBlock.NAME_HEADER);
       current = start;
-      current = current.insert(CobiGenCodeBlock.NAME_PACKAGE);
-      current = current.insert(CobiGenCodeBlock.NAME_IMPORTS);
-      current = current.insert(CobiGenCodeBlock.NAME_DECLARATION);
+      current = current.insertNext(CobiGenCodeBlock.NAME_PACKAGE);
+      current = current.insertNext(CobiGenCodeBlock.NAME_IMPORTS);
+      current = current.insertNext(CobiGenCodeBlock.NAME_DECLARATION);
     } else {
       current = (CobiGenCompositeCodeBlock) parent.code.getNext(CobiGenCodeBlock.NAME_NESTS);
+      widthMain = current.getIndentFallbackWidth();
       start = current.addCompositeChild(CobiGenCodeBlock.NAME_DECLARATION);
       current = start;
     }
-    current = current.insert(CobiGenCodeBlock.NAME_FIELDS);
-    current = current.insert(CobiGenCodeBlock.NAME_CONSTRUCTORS);
-    current = current.insert(CobiGenCodeBlock.NAME_GETTERS); // mix getterns and setters by default
-    current = current.insert(CobiGenCodeBlock.NAME_METHODS);
-    current = current.insert(CobiGenCodeBlock.NAME_NESTS);
-    current = current.insert(CobiGenCodeBlock.NAME_FOOTER);
+    int widthBody = widthMain + 2;
+    current = appendBlock(current, CobiGenCodeBlock.NAME_FIELDS, widthBody);
+    current = appendBlock(current, CobiGenCodeBlock.NAME_CONSTRUCTORS, widthBody);
+    current = appendBlock(current, CobiGenCodeBlock.NAME_GETTERS, widthBody); // mix getterns and setters by default
+    current = appendBlock(current, CobiGenCodeBlock.NAME_METHODS, widthBody);
+    current = appendBlock(current, CobiGenCodeBlock.NAME_NESTS, widthBody);
+    current = appendBlock(current, CobiGenCodeBlock.NAME_FOOTER, widthMain);
     return start;
+  }
+
+  /**
+   * @param current the current {@link CobiGenCompositeCodeBlock} to append to.
+   * @param blockName the {@link CobiGenCompositeCodeBlock#getName() block name}.
+   * @param width the indent width (number of spaces).
+   * @return the created and appended {@link CobiGenCompositeCodeBlock}.
+   */
+  protected CobiGenCompositeCodeBlock appendBlock(CobiGenCompositeCodeBlock current, String blockName, int width) {
+
+    current = current.insertNext(blockName);
+    current.setIndentFallbackWidth(width);
+    return current;
   }
 
   /**
@@ -161,46 +177,6 @@ public abstract class CobiGenOutputCode extends AbstractCobiGenOutput {
   public String getCategory() {
 
     return this.category;
-  }
-
-  /**
-   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_INTERFACE interface}.
-   */
-  protected boolean isInterface() {
-
-    return CATEGORY_INTERFACE.equals(this.category);
-  }
-
-  /**
-   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_RECORD record}.
-   */
-  protected boolean isRecord() {
-
-    return CATEGORY_RECORD.equals(this.category);
-  }
-
-  /**
-   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_ENUMERATION enumeration}.
-   */
-  protected boolean isEnumeration() {
-
-    return CATEGORY_ENUMERATION.equals(this.category);
-  }
-
-  /**
-   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_ANNOTATION annotation}.
-   */
-  protected boolean isAnnotation() {
-
-    return CATEGORY_ANNOTATION.equals(this.category);
-  }
-
-  /**
-   * @return {@code true} if {@link #getCategory() category} is {@link CobiGenOutput#CATEGORY_CLASS class}.
-   */
-  protected boolean isClass() {
-
-    return CATEGORY_CLASS.equals(this.category);
   }
 
   /**
@@ -229,14 +205,17 @@ public abstract class CobiGenOutputCode extends AbstractCobiGenOutput {
   public void addProperty(String name, QualifiedName type, String description, boolean addImport, boolean addField,
       boolean addGetter, boolean addSetter) {
 
-    if (addImport) {
-      addImport(type);
-    }
     String typeSimpleName = type.getSimpleName();
     if (isImportRequired(type)) {
-      ImportStatement importStatement = getImport(typeSimpleName);
-      if ((importStatement == null) || !importStatement.getTarget().equals(type.getQualifiedName())) {
-        typeSimpleName = type.getQualifiedName();
+      boolean imported = false;
+      if (addImport) {
+        imported = addImport(type);
+      }
+      if (!imported) {
+        ImportStatement importStatement = getImport(typeSimpleName);
+        if ((importStatement == null) || !importStatement.getTarget().equals(type.getQualifiedName())) {
+          typeSimpleName = type.getQualifiedName();
+        }
       }
     }
     if (addField) {
@@ -261,12 +240,13 @@ public abstract class CobiGenOutputCode extends AbstractCobiGenOutput {
       LOG.warn("Interface can not declare fields - omitting field {}", name);
       return;
     }
-    CobiGenCodeBlock fields = this.code.getNext(CobiGenCodeBlock.NAME_FIELDS);
+    CobiGenCodeBlock fields = this.code.getNext(CobiGenCodeBlock.NAME_FIELDS).addAtomicChild(name);
+    fields.addLine("");
     if (isAnnotation()) {
       addGetterDoc(description, fields);
-      fields.addAtomicChild(type + " " + name + "();");
+      fields.addLine(type + " " + name + "();");
     } else {
-      fields.addAtomicChild("private " + type + " " + name + ";");
+      fields.addLine("private " + type + " " + name + ";");
     }
   }
 
@@ -277,31 +257,32 @@ public abstract class CobiGenOutputCode extends AbstractCobiGenOutput {
    */
   protected void addGetter(String name, String type, String description) {
 
-    CobiGenCodeBlock getters = this.code.getNext(CobiGenCodeBlock.NAME_GETTERS);
-    getters.addAtomicChild("");
+    String methodPrefix = "get";
+    if ("boolean".equals(type)) {
+      methodPrefix = "is";
+    }
+    String methodName = methodPrefix + StringUtil.capFirst(name);
+    CobiGenCodeBlock getters = this.code.getNext(CobiGenCodeBlock.NAME_GETTERS).addAtomicChild(methodName);
+    getters.addLine("");
     if (description == null) {
       if (isClass()) {
-        getters.addAtomicChild("@Override");
+        getters.addLine("@Override");
       }
     } else if (!description.isEmpty()) {
       addGetterDoc(description, getters);
     }
     String visibility = "public ";
     if (isAnnotation()) {
-      getters.addAtomicChild(type + " " + name + "();");
+      getters.addLine(type + " " + name + "();");
       return;
     } else if (isInterface()) {
       visibility = "";
-    }
-    String methodPrefix = "get";
-    if ("boolean".equals(type)) {
-      methodPrefix = "is";
     }
     String signatureSuffix = ";";
     if (!isInterface()) {
       signatureSuffix = " {";
     }
-    getters.addAtomicChild(visibility + type + " " + methodPrefix + StringUtil.capFirst(name) + "()" + signatureSuffix);
+    getters.addLine(visibility + type + " " + methodName + "()" + signatureSuffix);
     if (!isInterface()) {
       getters.addLines("  return this." + name + ";", "}");
     }
@@ -318,17 +299,18 @@ public abstract class CobiGenOutputCode extends AbstractCobiGenOutput {
       LOG.warn("Annotation can not declare setter - omitting property {}.", name);
       return;
     }
-    CobiGenCodeBlock setters = this.code.getNext(CobiGenCodeBlock.NAME_SETTERS);
+    String methodName = "set" + StringUtil.capFirst(name);
+    CobiGenCodeBlock setters = this.code.getNext(CobiGenCodeBlock.NAME_SETTERS).addAtomicChild(methodName);
+    setters.addLine("");
     String visibility = "public ";
     if ((description == null) && isClass()) {
-      setters.addAtomicChild("@Override");
+      setters.addLine("@Override");
     }
     String signatureSuffix = ";";
     if (!isInterface()) {
       signatureSuffix = " {";
     }
-    setters.addAtomicChild(
-        visibility + "void set" + StringUtil.capFirst(name) + "(" + type + " " + name + ")" + signatureSuffix);
+    setters.addLine(visibility + "void " + methodName + "(" + type + " " + name + ")" + signatureSuffix);
     if (!isInterface()) {
       setters.addLines("  this." + name + " = " + name + ";", "}");
     }
@@ -494,7 +476,13 @@ public abstract class CobiGenOutputCode extends AbstractCobiGenOutput {
       return this;
     }
     String token = tokenizer.next();
-    if (token.isEmpty() || "//".equals(token)) {
+    if (token.isEmpty()) {
+      // omit multiple empty lines in a row
+      if (this.buffer.isEmpty() || !this.buffer.get(this.buffer.size() - 1).isEmpty()) {
+        this.buffer.add(line);
+      }
+      return this;
+    } else if ("//".equals(token)) {
       this.buffer.add(line);
       return this;
     } else if (token.startsWith("/*")) {
@@ -541,6 +529,9 @@ public abstract class CobiGenOutputCode extends AbstractCobiGenOutput {
       type.category = cat;
       type.typeName = className;
       type.addLine2Block(CobiGenCodeBlock.NAME_DECLARATION, line, firstNonSpace, className);
+      if (line.trim().endsWith("{")) {
+        this.block = (CobiGenCompositeCodeBlock) this.block.getNext();
+      }
       return type;
     } else if (token.startsWith("@")) {
       this.buffer.add(line);

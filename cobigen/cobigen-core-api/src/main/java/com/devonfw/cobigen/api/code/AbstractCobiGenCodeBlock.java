@@ -10,12 +10,35 @@ import java.util.List;
  */
 public abstract class AbstractCobiGenCodeBlock implements CobiGenCodeBlock {
 
+  private static final String[] INDENTS = { //
+  " ", // 1 space
+  "  ", // 2 spaces
+  "   ", // 3 spaces
+  "    ", // 4 spaces
+  "     ", // 5 spaces
+  "      ", // 6 spaces
+  "       ", // 7 spaces
+  "        ", // 8 spaces
+  "         ", // 9 spaces
+  "          ", // 10 spaces
+  "           ", // 11 spaces
+  "            ", // 12 spaces
+  "             ", // 13 spaces
+  "              ", // 14 spaces
+  "               ", // 15 spaces
+  "                ", // 16 spaces
+  };
+
   private final String name;
 
-  private AbstractCobiGenCodeBlock next;
+  /** @see #getNext() */
+  protected AbstractCobiGenCodeBlock next;
 
-  /** The default indent for this block or {@code null} if lines shall be added raw. */
+  /** @see #getIndent() */
   protected String indent;
+
+  /** @see #getIndentFallbackWidth() */
+  int indentFallbackWidth;
 
   /**
    * The constructor.
@@ -53,6 +76,41 @@ public abstract class AbstractCobiGenCodeBlock implements CobiGenCodeBlock {
     this.indent = indent;
   }
 
+  String getIndentWithFallback() {
+
+    if (this.indent != null) {
+      return this.indent;
+    }
+    if (this.indentFallbackWidth > 0) {
+      int i = this.indentFallbackWidth - 1;
+      if (i < INDENTS.length) {
+        return INDENTS[i];
+      }
+      char[] spaces = new char[this.indentFallbackWidth * 2];
+      for (i = 0; i < spaces.length; i++) {
+        spaces[i] = ' ';
+      }
+      return new String(spaces);
+    }
+    return null;
+  }
+
+  /**
+   * @return the indent width to use if {@link #getIndent() indent} is {@code null}.
+   */
+  public int getIndentFallbackWidth() {
+
+    return this.indentFallbackWidth;
+  }
+
+  /**
+   * @param width the new value of {@link #getIndentFallbackWidth()}.
+   */
+  public void setIndentFallbackWidth(int width) {
+
+    this.indentFallbackWidth = width;
+  }
+
   @Override
   public AbstractCobiGenCodeBlock getNext() {
 
@@ -76,33 +134,6 @@ public abstract class AbstractCobiGenCodeBlock implements CobiGenCodeBlock {
       }
     }
     return block;
-  }
-
-  /**
-   * @param blockName the {@link #getName() name} of the requested {@link #getNext() sibling}.
-   * @param composite - {@code true} to create a composite block, {@code false} otherwise to create an atomic block.
-   * @return the first {@link CobiGenCodeBlock} with the given {@link #getName() name} from this
-   *         {@link CobiGenCodeBlock} recursively along its {@link #getNext() siblings}. If not found, it will be
-   *         created as {@link #getLast() last} {@link #getNext() sibling}.
-   * @see CobiGenCompositeCodeBlock#getOrCreateChild(String, boolean)
-   */
-  public AbstractCobiGenCodeBlock getOrCreateNext(String blockName, boolean composite) {
-
-    AbstractCobiGenCodeBlock block = this;
-    while (true) {
-      if (block.getName().equals(blockName)) {
-        return block;
-      }
-      if (block.next == null) {
-        if (composite) {
-          block.next = new CobiGenCompositeCodeBlock(blockName);
-        } else {
-          block.next = new CobiGenAtomicCodeBlock(blockName);
-        }
-        return block.next;
-      }
-      block = block.next;
-    }
   }
 
   @Override
@@ -187,13 +218,26 @@ public abstract class AbstractCobiGenCodeBlock implements CobiGenCodeBlock {
    * @param blockName the {@link #getName() name} of the next block to insert.
    * @return the new {@link CobiGenCompositeCodeBlock} that has been inserted.
    */
-  public CobiGenCompositeCodeBlock insert(String blockName) {
+  public abstract AbstractCobiGenCodeBlock insertNext(String blockName);
 
-    CobiGenCompositeCodeBlock composite = new CobiGenCompositeCodeBlock(blockName);
-    AbstractCobiGenCodeBlock block = composite;
+  /**
+   * @param block the {@link AbstractCobiGenCodeBlock} to insert as {@link #getNext() next sibling}.
+   */
+  protected void insertNext(AbstractCobiGenCodeBlock block) {
+
     block.next = this.next;
-    this.next = composite;
-    return composite;
+    this.next = block;
+    adopt(block);
+  }
+
+  void adopt(AbstractCobiGenCodeBlock block) {
+
+    if (block.indent == null) {
+      block.indent = this.indent;
+    }
+    if (block.indentFallbackWidth == 0) {
+      block.indentFallbackWidth = this.indentFallbackWidth;
+    }
   }
 
   /**
