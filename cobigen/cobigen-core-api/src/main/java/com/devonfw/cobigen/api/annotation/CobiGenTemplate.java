@@ -13,11 +13,6 @@ import java.lang.annotation.Target;
 public @interface CobiGenTemplate {
 
   /**
-   * @return the tags of this template.
-   */
-  String[] tags() default {};
-
-  /**
    * @return the unique identifier of what is currently called "increment" in CobiGen. I would propose to use I18N for
    *         mapping this ID to a display title for CobiGen UI and template collections can ship with individual
    *         resource bundle properties providing these titles. Define a central type in your template collection

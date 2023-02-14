@@ -2,51 +2,41 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>templates-devon4j</artifactId>
+  <artifactId>templates-devonfw-java</artifactId>
   <packaging>jar</packaging>
-  <name>CobiGen - devon4j Templates</name>
-
+  <name>CobiGen - devonfw Java Templates</name>
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>templates-parent</artifactId>
     <version>${revision}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-
-   <properties>
+  <properties>
     <skip.deployment>false</skip.deployment>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
-
   <dependencies>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-rest-webmvc</artifactId>
-      <version>3.0.9.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.12.2</version>
+      <groupId>jakarta.platform</groupId>
+      <artifactId>jakarta.jakartaee-api</artifactId>
+      <version>8.0.0</version>
     </dependency>
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>javax.persistence-api</artifactId>
-      <version>2.2</version>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+      <version>2.7.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>1.4.2.Final</version>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
@@ -55,17 +45,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/templates</directory>
-        <targetPath>src/main/templates</targetPath>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -90,7 +70,7 @@
                 <replace file="./pom_patch.xml" value="${maven.compiler.target}" token="{maven.compiler.target}"></replace>
                 <!-- Adding content -->
                 <concat destfile=".flattened-pom.xml" append="true">
-                  <filelist dir="." files="pom_patch.xml"/>
+                  <filelist dir="." files="pom_patch.xml" />
                 </concat>
                 <!-- Restoring the patch file -->
                 <replace file="./pom_patch.xml" value="{maven.compiler.source}" token="${maven.compiler.source}"></replace>

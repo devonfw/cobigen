@@ -2,7 +2,7 @@ package com.customer.app.mycomponent.dataaccess;
 
 import java.time.LocalDate;
 
-import x_rootpackage_x.general.dataaccess.ApplicationPersistenceEntity;
+import x_rootpackage_x.general.dataaccess.x_scope_x.ApplicationPersistenceEntity;
 
 /**
  *

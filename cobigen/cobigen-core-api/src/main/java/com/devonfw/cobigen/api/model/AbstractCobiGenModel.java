@@ -189,7 +189,7 @@ public abstract class AbstractCobiGenModel implements CobiGenModel {
       String replacement;
       if (variableValue == null) {
         LOG.warn("Undefined variable {}", variableName);
-        replacement = matcher.group();
+        replacement = "";
       } else {
         replacement = syntax.resolve(variableValue, matcher, variableName);
       }
@@ -200,6 +200,10 @@ public abstract class AbstractCobiGenModel implements CobiGenModel {
     } while (matcher.find());
     matcher.appendTail(sb);
     String resolved = sb.toString();
+    if (replacementForDot == '/') {
+      // Cleanup empty path segments
+      resolved = resolved.replaceAll("/+", "/");
+    }
     return resolved;
   }
 

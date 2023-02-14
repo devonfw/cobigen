@@ -50,23 +50,12 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
       // 1....................2...3...........4
       "@?(CobiGen[\\p{L}0-9]*)(\\(([^)]*)\\))?(\\s+[\\p{L}0-9]+)?");
 
-  private ClassLoader classLoader;
-
   /**
    * The constructor.
    */
   public AgnosticTemplateEngine() {
 
-    this(null);
-  }
-
-  /**
-   * Constructor.
-   */
-  public AgnosticTemplateEngine(ClassLoader classLoader) {
-
     super();
-    this.classLoader = classLoader;
   }
 
   @Override
@@ -129,7 +118,7 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
         out.write(writer);
       }
     } catch (IOException e) {
-      throw new IllegalStateException("I/O error while instantiation template.");
+      throw new IllegalStateException("I/O error while instantiation template.", e);
     }
   }
 
@@ -147,30 +136,35 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
         String cobiGenString = matcher.group();
         String cobiGenType = matcher.group(1);
         if (cobiGenString.startsWith("@")) {
-          if (sb == null) {
-            sb = new StringBuilder(line.length());
-          }
-          String cobiGenArgs = matcher.group(3);
-          Objects.requireNonNull(cobiGenArgs, cobiGenString);
-          if (cobiGenType.equals(CobiGenDynamicType.class.getSimpleName())) {
-            cobiGenArgs = cobiGenArgs.trim().replaceAll("value\\s*=", "").replace(".class", "").trim();
-            String replacement = CobiGenGeneratorProvider.get().generate(cobiGenArgs, model);
-            String typeName = matcher.group(4);
-            if (typeName == null) {
-              LOG.warn(
-                  "Missing type when replacing '{}' with '{}' - check your auto-formatter and prevent line-wrapping between annotation and type.",
-                  cobiGenString, replacement);
-            } else {
-              if ((replacement == null) || replacement.isBlank()) {
-                replacement = typeName; // fallback to parent type if generator result is empty
-              }
-              LOG.debug("Replacing '{}' with '{}'.", cobiGenString, replacement);
+          if (cobiGenType.equals("CobiGenDynamicType")) {
+            if (sb == null) {
+              sb = new StringBuilder(line.length());
             }
-            matcher.appendReplacement(sb, replacement);
+            String cobiGenArgs = matcher.group(3);
+            Objects.requireNonNull(cobiGenArgs, cobiGenString);
+            if (cobiGenType.equals(CobiGenDynamicType.class.getSimpleName())) {
+              cobiGenArgs = cobiGenArgs.trim().replaceAll("value\\s*=", "").replace(".class", "").trim();
+              String replacement = CobiGenGeneratorProvider.get().generate(cobiGenArgs, model);
+              String typeName = matcher.group(4);
+              if (typeName == null) {
+                LOG.warn(
+                    "Missing type when replacing '{}' with '{}' - check your auto-formatter and prevent line-wrapping between annotation and type.",
+                    cobiGenString, replacement);
+              } else {
+                if ((replacement == null) || replacement.isBlank()) {
+                  replacement = typeName; // fallback to parent type if generator result is empty
+                }
+                LOG.debug("Replacing '{}' with '{}'.", cobiGenString, replacement);
+              }
+              matcher.appendReplacement(sb, replacement);
+            } else {
+              LOG.warn("Unsupported annotation {}", cobiGenString);
+            }
           } else {
             LOG.warn("Unsupported annotation {}", cobiGenString);
+            return null;
           }
-        } else {
+        } else if (cobiGenString.startsWith("CobiGenGenerator")) {
           if (out == null) {
             CobiGenGeneratorProvider.get().generate(cobiGenType, model, writer);
           } else {
@@ -183,6 +177,8 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
               out.addLine(code);
             }
           }
+          return null;
+        } else {
           return null;
         }
       } while (matcher.find());

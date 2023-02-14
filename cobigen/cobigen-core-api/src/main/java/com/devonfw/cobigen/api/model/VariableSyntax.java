@@ -165,16 +165,16 @@ public enum VariableSyntax {
       if (value.isEmpty()) {
         // TODO this should actually depend on the location of the variable and the CaseSyntax
         // So looking at the following example:
-        // package x_rootpackage_x.x_component_x.dataaccess.x_detail_x;
-        // In case that the variable "detail" resolves to the empty string, then this package segment shall be omitted
-        // however resolving only the variable to the empty String would result in a trailing dot at the end:
-        // com.customer.app.mycomponent.dataaccess.;
+        // package x_rootpackage_x.x_component_x.dataaccess.x_scope_x.x_detail_x;
+        // In case that the variable "scope" or "detail" resolves to the empty string, then this package segment shall
+        // be omitted however resolving only the variable to the empty String would result in trailing dots at the end:
+        // com.customer.app.mycomponent.dataaccess..;
         // As we already have another edge-case for package segment variables that if the variable contains dots
         // (e.g. rootpackage="com.customer.app") then CaseSyntax.LOWER_CASE would remove the dot as undesired separators
         // As I implemented CaseSyntax mainly for CobiGen and Language-Agnostic-Templates I am more than happy to change
         // it (even incompatible) to fit CobiGen's needs. So if the first character is a special character (no letter)
         // then separators should be preserved. Therefore we would then need to write this instead:
-        // package x__rootpackage_x.x__component_x.dataaccess.x__detail_x;
+        // package x__rootpackage_x.x__component_x.dataaccess.x__scope_x.x__detail_x;
         // Even though kind of cryptic, but still easy to hanlde once you learned how to do it in Java packages.
         // This is IMHO better than writing this (causing variables split across folder names):
         // package x__root.package_x.x_component_x.dataaccess.x_det.ail_x;

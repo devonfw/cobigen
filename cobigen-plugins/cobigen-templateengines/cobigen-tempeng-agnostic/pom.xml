@@ -16,31 +16,9 @@
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
     </dependency>
-    <!-- TODO the following deps shall later be moved to templates -->
-    <dependency>
-      <groupId>jakarta.platform</groupId>
-      <artifactId>jakarta.jakartaee-api</artifactId>
-      <version>8.0.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-      <version>2.7.7</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mapstruct</groupId>
-      <artifactId>mapstruct</artifactId>
-      <version>1.4.2.Final</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- End TODO deps -->
-
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core-api</artifactId>
-      <type>test-jar</type>
+      <artifactId>templates-devonfw-java</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
