@@ -5,7 +5,12 @@ import java.io.IOException;
 import com.devonfw.cobigen.api.model.CobiGenModel;
 
 /**
- * Interface for a code generator of a specific aspect. E.g. generation of getters and setters.
+ * Interface for a code generator of a specific aspect such as generation of properties (fields, getters, setters).
+ * Lines in a template referencing a {@link CobiGenGenerator} will be replaced with the {@link #generate(CobiGenModel)
+ * generated output}. Implementations have to be stateless.
+ *
+ * @see CobiGenGeneratorProvider
+ * @see CobiGenOutputGenerator
  */
 public interface CobiGenGenerator {
 

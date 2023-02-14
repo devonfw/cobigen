@@ -22,7 +22,7 @@ import com.devonfw.cobigen.api.model.CobiGenModel;
 import com.devonfw.cobigen.api.model.CobiGenModelDefault;
 import com.devonfw.cobigen.api.model.CobiGenVariableDefinitions;
 import com.devonfw.cobigen.api.model.VariableSyntax;
-import com.devonfw.cobigen.api.template.generator.CobiGenGenerator;
+import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorProvider;
 import com.devonfw.cobigen.api.template.out.AbstractCobiGenOutput;
 import com.devonfw.cobigen.api.template.out.CobiGenOutputFactory;
 import com.devonfw.cobigen.api.template.out.StreamingCobiGenOutput;
@@ -149,7 +149,6 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
       do {
         String cobiGenString = matcher.group();
         String cobiGenType = matcher.group(1);
-        CobiGenGenerator generator;
         if (cobiGenString.startsWith("@")) {
           if (sb == null) {
             sb = new StringBuilder(line.length());
@@ -158,7 +157,7 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
           Objects.requireNonNull(cobiGenArgs, cobiGenString);
           if (cobiGenType.equals(CobiGenDynamicType.class.getSimpleName())) {
             cobiGenArgs = cobiGenArgs.trim().replaceAll("value\\s*=", "").replace(".class", "").trim();
-            String replacement = CobiGenAgnosticRegistry.get().generate(cobiGenArgs, line, model);
+            String replacement = CobiGenGeneratorProvider.get().generate(cobiGenArgs, model);
             String typeName = matcher.group(4);
             if (typeName == null) {
               LOG.warn(
@@ -175,11 +174,10 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
             LOG.warn("Unsupported annotation {}", cobiGenString);
           }
         } else {
-          generator = CobiGenAgnosticRegistry.get().getGenerator(cobiGenType);
           if (out == null) {
-            generator.generate(model, writer);
+            CobiGenGeneratorProvider.get().generate(cobiGenType, model, writer);
           } else {
-            String code = generator.generate(model);
+            String code = CobiGenGeneratorProvider.get().generate(cobiGenType, model);
             if (code.indexOf('\n') >= 0) {
               for (String codeLine : code.split("\n")) {
                 out.addLine(codeLine);
