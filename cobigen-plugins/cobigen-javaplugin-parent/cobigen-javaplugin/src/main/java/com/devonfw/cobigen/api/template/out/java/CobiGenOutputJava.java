@@ -7,14 +7,14 @@ import com.devonfw.cobigen.api.template.out.QualifiedName;
 /**
  * Implementation of {@link com.devonfw.cobigen.api.template.out.CobiGenOutput} for Java.
  */
-public class JavaCobiGenOutput extends CobiGenOutputCode {
+public class CobiGenOutputJava extends CobiGenOutputCode {
 
   /**
    * The constructor.
    *
    * @param parent the parent type output.
    */
-  public JavaCobiGenOutput(JavaCobiGenOutput parent) {
+  public CobiGenOutputJava(CobiGenOutputJava parent) {
 
     super(parent);
   }
@@ -24,15 +24,15 @@ public class JavaCobiGenOutput extends CobiGenOutputCode {
    *
    * @param filename the {@link #getFilename() filename}.
    */
-  public JavaCobiGenOutput(String filename) {
+  public CobiGenOutputJava(String filename) {
 
     super(filename);
   }
 
   @Override
-  protected JavaCobiGenOutput createChild() {
+  protected CobiGenOutputJava createChild() {
 
-    return new JavaCobiGenOutput(this);
+    return new CobiGenOutputJava(this);
   }
 
   @Override

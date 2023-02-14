@@ -25,7 +25,7 @@ import com.devonfw.cobigen.api.model.VariableSyntax;
 import com.devonfw.cobigen.api.template.generator.CobiGenGeneratorProvider;
 import com.devonfw.cobigen.api.template.out.AbstractCobiGenOutput;
 import com.devonfw.cobigen.api.template.out.CobiGenOutputFactory;
-import com.devonfw.cobigen.api.template.out.StreamingCobiGenOutput;
+import com.devonfw.cobigen.api.template.out.CobiGenOutputFallback;
 
 /**
  * Template engine for language-agnostic-templates.<br>
@@ -96,13 +96,10 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
   private void process(TextTemplate template, CobiGenModel model, Writer writer) {
 
     String path = template.getRelativeTemplatePath();
-    path = model.resolve(path, '.', VariableSyntax.AGNOSTIC);
+    path = model.resolve(path, '/', VariableSyntax.AGNOSTIC);
     AbstractCobiGenOutput out = (AbstractCobiGenOutput) CobiGenOutputFactory.get().create(path);
     model = new CobiGenModelDefault(model);
-    CobiGenVariableDefinitions.OUT.setValue(model, out);
-    if (out instanceof StreamingCobiGenOutput) {
-      out = null;
-    }
+    CobiGenVariableDefinitions.OUT.setValue(model, (out != null) ? out : new CobiGenOutputFallback(path));
     AbstractCobiGenOutput currentOut = out;
     Path templatePath = template.getAbsoluteTemplatePath();
     try (BufferedReader reader = Files.newBufferedReader(templatePath)) {
@@ -161,7 +158,7 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
             String typeName = matcher.group(4);
             if (typeName == null) {
               LOG.warn(
-                  "Missing type when replacing '{}' with '{}' check your auto-formatter and prevent line-wrapping between annotation and type.",
+                  "Missing type when replacing '{}' with '{}' - check your auto-formatter and prevent line-wrapping between annotation and type.",
                   cobiGenString, replacement);
             } else {
               if ((replacement == null) || replacement.isBlank()) {

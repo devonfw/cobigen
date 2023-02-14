@@ -4,14 +4,14 @@ package com.devonfw.cobigen.api.template.out;
  * Dummy implementation of {@link AbstractCobiGenOutput} to indicate that {@link #addLine(String) lines} shall not be
  * buffered but directly written to the output.
  */
-public class StreamingCobiGenOutput extends AbstractCobiGenOutput {
+public class CobiGenOutputFallback extends AbstractCobiGenOutput {
 
   /**
    * The constructor.
    *
    * @param filename the {@link #getFilename() filename}.
    */
-  public StreamingCobiGenOutput(String filename) {
+  public CobiGenOutputFallback(String filename) {
 
     super(filename);
   }
