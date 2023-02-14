@@ -108,7 +108,8 @@ public class AdaptTemplatesHandler extends AbstractHandler {
             }
             ResourcesPluginUtil.processJar(fileName);
 
-            importProjectIntoWorkspace(ResourceConstants.CONFIG_PROJECT_NAME, null);
+            importProjectIntoWorkspace(ResourceConstants.CONFIG_PROJECT_NAME,
+                ResourcesPluginUtil.getTemplatesDirectory().toPath());
             dialog = new MessageDialog(Display.getDefault().getActiveShell(), "Information", null,
                 "CobiGen_Templates folder is imported sucessfully", MessageDialog.INFORMATION, new String[] { "Ok" },
                 1);

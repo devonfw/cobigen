@@ -3,6 +3,7 @@ package com.devonfw.cobigen.eclipse.test.common.utils;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -359,7 +360,8 @@ public class EclipseCobiGenUtils {
    */
   public static void runAndCaptureUpdateTemplates(SWTWorkbenchBot bot) throws Exception {
 
-    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    workspace.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), DEFAULT_TIMEOUT); // build might take some time
 
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);

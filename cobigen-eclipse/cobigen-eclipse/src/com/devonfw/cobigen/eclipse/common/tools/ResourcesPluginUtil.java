@@ -212,7 +212,7 @@ public class ResourcesPluginUtil {
    *
    * @return the templateDirectory
    */
-  private static File getTemplatesDirectory() {
+  public static File getTemplatesDirectory() {
 
     return CobiGenPaths.getTemplatesFolderPath().toFile();
   }
@@ -239,6 +239,7 @@ public class ResourcesPluginUtil {
 
     String pathForCobigenTemplates = "";
     IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+    Path templateDirectory = ResourcesPluginUtil.getTemplatesDirectory().toPath();
 
     try {
       pathForCobigenTemplates = ws.toPortableString()
@@ -264,8 +265,8 @@ public class ResourcesPluginUtil {
     }
 
     try {
-      TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenFolderPath);
-      templateAdapter.adaptMonolithicTemplates(cobigenFolderPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES),
+      TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateDirectory);
+      templateAdapter.adaptMonolithicTemplates(templateDirectory.resolve(ConfigurationConstants.COBIGEN_TEMPLATES),
           false);
     } catch (Exception e) {
       LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
