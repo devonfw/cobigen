@@ -16,7 +16,7 @@
   </cc:contextConfiguration>
   <tc:templatesConfiguration version="5.0">
     <tc:templates>
-      <tc:template name="t2" destinationPath="generated.txt" templateFile="generated.txt.ftl"
+      <tc:template name="t2" destinationPath="generated.txt" templateFile="templates/generated.txt.ftl"
         mergeStrategy="override"/>
     </tc:templates>
 
