@@ -188,12 +188,12 @@ public class TemplateSetConfigurationReader {
 
     if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
       this.configRoot = this.configLocation;
-      initializeTemplateSetTemplatesRoot();
     } else {
       Path templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
       this.rootTemplateFolder = TemplateFolder.create(templateLocation.resolve(this.configLocation));
-      initializeTemplateSetTemplatesRoot();
+
     }
+    this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
 
     if (!Files.exists(this.templateSetFile)) {
       throw new InvalidConfigurationException(this.templateSetFile, "Could not find templates set configuration file.");
@@ -285,19 +285,6 @@ public class TemplateSetConfigurationReader {
   public com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration getTemplateSetConfiguration() {
 
     return this.templateSetConfiguration;
-  }
-
-  /**
-   * Initializes the template set templates root path (workaround for template/templates path)
-   */
-  private void initializeTemplateSetTemplatesRoot() {
-
-    if (Files.exists(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)))
-      this.rootTemplateFolder = TemplateFolder
-          .create(this.configLocation.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH));
-    else {
-      this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
-    }
   }
 
 }
