@@ -36,3 +36,4 @@ objectdb
 *.iml
 /cobigen/cobigen-core/src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_downloaded/template-sets/downloaded/crud-java-server-app-test.jar
 /cobigen/cobigen-core/src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets/template-sets/downloaded/crud-java-server-app-test.jar
+/cobigen-cli/cli-systemtest/src/test/resources/testdata/templatesproject/template-sets/downloaded/crud-java-server-app-test.jar
