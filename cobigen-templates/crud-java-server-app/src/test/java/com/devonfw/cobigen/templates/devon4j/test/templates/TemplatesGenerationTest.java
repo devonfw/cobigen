@@ -76,7 +76,7 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
       for (Path path : devTemplateSets) {
         if (Files.isDirectory(path)) {
           Path resourcesFolder = path.resolve("src/main/resources");
-          Path templatesFolder = path.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+          Path templatesFolder = path.resolve(ConfigurationConstants.RESOURCE_FOLDER);
           if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
             try {
               Files.move(resourcesFolder, templatesFolder);
