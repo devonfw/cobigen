@@ -16,6 +16,7 @@
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core</artifactId>
     </dependency>
+
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>templates-devonfw-java</artifactId>
