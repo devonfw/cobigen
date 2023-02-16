@@ -48,10 +48,21 @@
   <build>
     <resources>
       <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
         <directory>src/main/java</directory>
+        <!-- temporary hack to allow legacy support -->
+        <targetPath>${project.build.outputDirectory}/src/main/resources</targetPath>
         <includes>
           <include>**/*.java</include>
         </includes>
+        <excludes>
+          <exclude>com/**/*</exclude>
+        </excludes>
       </resource>
     </resources>
     <plugins>

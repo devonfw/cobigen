@@ -19,7 +19,7 @@
   </templates>
 
   <templateScans>
-    <templateScan templatePath="" destinationPath=""/>
+    <templateScan templatePath="." destinationPath="src/main/java"/>
   </templateScans>
 
   <increments>
