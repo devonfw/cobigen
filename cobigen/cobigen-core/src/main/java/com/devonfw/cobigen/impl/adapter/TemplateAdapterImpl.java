@@ -60,7 +60,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     if (templatesLocation == null) {
       URI templatesLocationPath = ConfigurationFinder.findTemplatesLocation();
       if (Files.exists(Paths.get(templatesLocationPath))) {
-        this.templatesLocation = Paths.get(templatesLocationPath);
+        this.templatesLocation = Paths.get(templatesLocationPath).getParent();
       }
     } else {
       this.templatesLocation = templatesLocation;

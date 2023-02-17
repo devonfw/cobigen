@@ -3,8 +3,6 @@ package com.devonfw.cobigen.eclipse.test.common.utils;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 
-import java.util.concurrent.TimeoutException;
-
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -18,6 +16,8 @@ import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+import org.eclipse.swtbot.swt.finder.widgets.TimeoutException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.CobiGenDialogConstants;

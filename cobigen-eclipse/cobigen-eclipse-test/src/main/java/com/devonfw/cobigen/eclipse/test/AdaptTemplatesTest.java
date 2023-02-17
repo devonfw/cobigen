@@ -80,7 +80,8 @@ public class AdaptTemplatesTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, 25000, "CRUD devon4j Server>CRUD REST services");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "CRUD devon4j Server>CRUD REST services");
+
     bot.waitUntil(new AllJobsAreFinished(), 10000);
     // increase timeout as the openAPI parser is slow on initialization
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
