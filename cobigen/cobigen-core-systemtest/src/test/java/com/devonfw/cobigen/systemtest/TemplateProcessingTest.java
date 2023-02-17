@@ -73,6 +73,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
    * @throws Exception test fails
    */
   @Test
+  // TODO call getJar methods in test
   public void extractTemplateSetsTest() throws IOException, Exception {
 
     Path devTemplateSetPath = new File(
