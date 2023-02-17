@@ -7,11 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -20,7 +20,6 @@ import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
-import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 
@@ -71,47 +70,52 @@ public class TemplateProcessingTest extends AbstractApiTest {
    * Tests if template sets can be extracted properly
    *
    * @throws IOException if an Exception occurs
+   * @throws Exception test fails
    */
   @Test
-  public void extractTemplateSetsTest() throws IOException {
+  public void extractTemplateSetsTest() throws IOException, Exception {
 
-    // FileUtils.copyDirectory(new File(testFileRootPathTemplateSets), this.cobiGenHomeTemplateSets.toFile());
-
-    Path templatesPath = this.cobiGenHomeTemplateSets.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
-    Path CobigenTemplatesPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-    if (!Files.exists(templatesPath)) {
-      Files.createDirectories(templatesPath);
+    Path devTemplateSetPath = new File(
+        TemplateProcessingTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+            .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
+            .resolve("crud-java-server-app").resolve("target");
+    File jars = devTemplateSetPath.toFile();
+    List<String> filenames = new ArrayList<>(2);
+    for (File file : jars.listFiles()) {
+      if (file.getName().endsWith(".jar")) {
+        filenames.add(file.getName());
+      }
     }
-    Path templateSetsFolder = this.cobiGenHomeTemplateSets
-        .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH);
-    Path adaptedFolder = templateSetsFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-    TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateSetsFolder);
-
-    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", false, templatesPath.toFile());
-    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", true, templatesPath.toFile());
-
-    Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
-      templateAdapter.adaptTemplates();
-    });
-
-    List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
-    templateAdapter.adaptTemplateSets(templateSetJars, adaptedFolder, false);
-
-    // Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1")
-    // .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-    // Path extractedJar2 = adaptedFolder.resolve("template-test2-0.0.1")
-    // .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-    // assertThat(extractedJar1).exists().isDirectory();
-    // assertThat(extractedJar2).exists().isDirectory();
-
-    assertThat(CobigenTemplatesPath).exists();
-    /////////////////////////////
+    if (Files.exists(devTemplateSetPath)) {
+      Path downloadedTemplateSetsPath = this.cobiGenHomeTemplateSets
+          .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+      if (!Files.exists(downloadedTemplateSetsPath)) {
+        Files.createDirectories(downloadedTemplateSetsPath);
+      }
+      for (String jarFilename : filenames) {
+        Files.copy(devTemplateSetPath.resolve(jarFilename),
+            downloadedTemplateSetsPath.resolve(jarFilename.replace("-SNAPSHOT", "")));
+      }
+    }
 
     Path cobigenTemplateSetsFolderPath = this.cobiGenHomeTemplateSets
         .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     Path downloadedTemplateSetsFolderPath = cobigenTemplateSetsFolderPath
         .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     Path adaptedTemplateSetsFolderPath = cobigenTemplateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+
+    if (!Files.exists(cobigenTemplateSetsFolderPath)) {
+      Files.createDirectories(cobigenTemplateSetsFolderPath);
+    }
+
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenTemplateSetsFolderPath);
+
+    Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
+      templateAdapter.adaptTemplates();
+    });
+
+    List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
+    templateAdapter.adaptTemplateSets(templateSetJars, adaptedTemplateSetsFolderPath, false);
 
     assertThat(cobigenTemplateSetsFolderPath).exists();
     assertThat(downloadedTemplateSetsFolderPath).exists();
@@ -122,10 +126,16 @@ public class TemplateProcessingTest extends AbstractApiTest {
     Path templateSetSources = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007-sources");
     // throwing a error
     assertThat(templateSet).exists();
-    assertThat(templateSetSources).doesNotExist();
+    assertThat(templateSetSources).exists();
     // check if context configuration exists
     assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
     assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    // validate correct folder structure
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    // validate maven specific contents
+    assertThat(templateSet.resolve("pom.xml")).exists();
   }
 
   /**
@@ -133,7 +143,6 @@ public class TemplateProcessingTest extends AbstractApiTest {
    *
    * @throws IOException if an Exception occurs
    */
-  @Ignore
   @Test
   public void extractTemplatesWithOldConfiguration() throws IOException {
 
