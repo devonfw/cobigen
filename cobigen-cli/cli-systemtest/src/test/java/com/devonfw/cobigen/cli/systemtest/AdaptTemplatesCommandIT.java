@@ -25,7 +25,6 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  // @Ignore //TODO the functionality to adapt template jars with the soruces jar is missing and should be tested again
   public void adaptTemplateSetTest() throws Exception {
 
     Path devTemplateSetPath = new File(
@@ -46,10 +45,8 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
         Files.createDirectories(downloadedTemplateSetsPath);
       }
       for (String jarFilename : filenames) {
-        // if (!jarFilename.contains("sources")) {
         Files.copy(devTemplateSetPath.resolve(jarFilename),
             downloadedTemplateSetsPath.resolve(jarFilename.replace("-SNAPSHOT", "")));
-        // }
       }
     }
 
@@ -71,12 +68,18 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     // check if adapted template set exists
     Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007");
     Path templateSetSources = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007-sources");
-    // throwing a error
+    // check if template and sources exist
     assertThat(templateSet).exists();
-    assertThat(templateSetSources).doesNotExist();
+    assertThat(templateSetSources).exists();
     // check if context configuration exists
     assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
     assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    // validate correct folder structure
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    // validate maven specific contents
+    assertThat(templateSet.resolve("pom.xml")).exists();
 
   }
 
