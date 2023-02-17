@@ -79,7 +79,7 @@ public class TemplateSetConfigurationManager {
     List<Path> templateSetDirectories = retrieveTemplateSetDirectories(configRoot);
 
     for (Path templateDirectory : templateSetDirectories) {
-      Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+      Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.RESOURCE_FOLDER)
           .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
       addConfigRoot(templateSetFilePath, templateDirectory, this.templateSetPaths);
@@ -123,8 +123,7 @@ public class TemplateSetConfigurationManager {
     if (templateJars != null) {
       for (Path jarPath : templateJars) {
         Path configurationPath = FileSystemUtil.createFileSystemDependentPath(jarPath.toUri());
-        Path templateSetFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-            .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+        Path templateSetFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
         addConfigRoot(templateSetFilePath, jarPath, this.templateSetPaths);
       }

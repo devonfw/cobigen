@@ -11,7 +11,10 @@
   </parent>
   <properties>
     <skip.deployment>false</skip.deployment>
+    <valid.templateset.test.path>src\test\resources\testdata\unittest\config\reader\TemplateSetConfigurationReaderTest\valid_template_sets\template-sets\downloaded\crud-java-server-app</valid.templateset.test.path>
+    <valid.templateset.downloaded.test.path>src\test\resources\testdata\unittest\config\reader\TemplateSetConfigurationReaderTest\valid_template_sets_downloaded\template-sets\downloaded\crud-java-server-app</valid.templateset.downloaded.test.path>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
@@ -290,6 +293,51 @@
             <version>2.0.1</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>Install test valid template set test project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${valid.templateset.downloaded.test.path}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>Install valid downloaded template set project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${valid.templateset.test.path}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

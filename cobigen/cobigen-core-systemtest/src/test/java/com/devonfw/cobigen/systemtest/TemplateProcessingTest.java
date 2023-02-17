@@ -29,6 +29,7 @@ import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
  */
 public class TemplateProcessingTest extends AbstractApiTest {
 
+  // TODO jars has to be updated
   /**
    * Root path to all resources used in tests that test the structure of the template sets.
    */
@@ -84,7 +85,6 @@ public class TemplateProcessingTest extends AbstractApiTest {
     Path templateSetsFolder = this.cobiGenHomeTemplateSets
         .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH);
     Path adaptedFolder = templateSetsFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateSetsFolder);
 
     TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", false, templatesPath.toFile());
