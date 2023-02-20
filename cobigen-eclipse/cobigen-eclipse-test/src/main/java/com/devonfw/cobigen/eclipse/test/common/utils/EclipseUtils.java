@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
+import com.devonfw.cobigen.eclipse.test.common.swtbot.HasBeenBuilt;
 import com.devonfw.cobigen.eclipse.test.common.utils.swtbot.SwtBotProjectActions;
 
 /**
@@ -103,7 +105,12 @@ public class EclipseUtils {
     bot.waitUntil(shellCloses(popup));
     ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
-    bot.waitUntil(new AllJobsAreFinished());
+    for (IProject p : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+      IJavaProject jp = JavaCore.create(p);
+      if (jp != null) {
+        bot.waitUntil(new HasBeenBuilt(jp));
+      }
+    }
   }
 
   /**
