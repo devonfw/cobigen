@@ -64,6 +64,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
         if (this.templatesLocation.getFileName().toString().contains(".jar")) {
 
           this.templatesLocation = this.templatesLocation.getParent();
+
         }
 
       }
