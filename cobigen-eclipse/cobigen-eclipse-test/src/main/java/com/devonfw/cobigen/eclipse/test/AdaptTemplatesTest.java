@@ -91,6 +91,7 @@ public class AdaptTemplatesTest extends SystemTest {
         "src/main/java/com/devonfw/test/sampledatamanagement/service/impl/rest/SampledatamanagementRestServiceImpl.java");
 
     assertThat(generationResult.exists()).isTrue();
+
   }
 
   /**
