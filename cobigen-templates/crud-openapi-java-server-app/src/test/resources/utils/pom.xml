@@ -3,11 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen.templates</groupId>
-  <artifactId>templates-devon4j-utils</artifactId>
+  <artifactId>crud-openapi-java-server-app</artifactId>
   <version>2021.12.007-SNAPSHOT</version>
-  <name>CobiGen Devon4j Templates Utils</name>
+  <name>CRUD OpenApi Java Server App</name>
   <description>A Code-based incremental Generator</description>
-  <url>https://github.com/devonfw/cobigen/templates-parent/templates-devon4j-utils</url>
   <licenses>
     <license>
       <name>Apache Software License 2.0</name>

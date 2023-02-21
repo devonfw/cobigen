@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
@@ -22,7 +19,7 @@ import com.devonfw.cobigen.templates.devon4j.config.constant.MavenMetadata;
 /**
  * Smoke tests of all templates.
  */
-public class TemplatesGenerationTest extends AbstractMavenTest {
+public class CrudOpenApiJavaServerAppGenerationTest extends AbstractMavenTest {
 
   /** Root of all test resources of this test suite */
   public static final String TEST_RESOURCES_ROOT = "src/test/resources/testdata/templatetest/";
@@ -47,10 +44,10 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
   public static void setupDevTemplates() throws URISyntaxException, IOException {
 
     templatesProject = new File(
-        TemplatesGenerationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+        CrudOpenApiJavaServerAppGenerationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
             .getParentFile().toPath();
 
-    Path utilsPom = new File(TemplatesGenerationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+    Path utilsPom = new File(CrudOpenApiJavaServerAppGenerationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
         .getParentFile().getParentFile().toPath().resolve("src/test/resources/utils/pom.xml");
 
     // create a temporary directory cobigen-templates/template-sets/adapted containing the template sets
@@ -64,40 +61,23 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
       Files.createDirectory(templatesProjectTemporary);
       Files.createDirectory(templateSetsAdaptedFolder);
 
-      FileUtils.copyDirectory(templatesProject.toFile(), templateSetsAdaptedFolder.resolve("template-set1").toFile());
+      Path templateSetPath = templateSetsAdaptedFolder.resolve("template-set");
+      FileUtils.copyDirectory(templatesProject.toFile(), templateSetPath.toFile());
 
-      List<Path> devTemplateSets = new ArrayList<>();
-      try (Stream<Path> files = Files.list(templateSetsAdaptedFolder)) {
-        files.forEach(path -> {
-          devTemplateSets.add(path);
-        });
-      }
+      if (Files.isDirectory(templateSetPath)) {
 
-      for (Path path : devTemplateSets) {
-        if (Files.isDirectory(path)) {
-          Path resourcesFolder = path.resolve("src/main/resources");
-          Path templatesFolder = path.resolve(ConfigurationConstants.RESOURCE_FOLDER);
-          if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
-            try {
-              Files.move(resourcesFolder, templatesFolder);
-            } catch (IOException e) {
-              throw new IOException("Error moving directory " + resourcesFolder, e);
-            }
+        // Replace the pom.xml in the template sets. Needed so that the project in the temp directory is build
+        // properly
+        if (Files.exists(templateSetPath.resolve("pom.xml"))) {
+          try {
+            Files.delete(templateSetPath.resolve("pom.xml"));
+          } catch (IOException e) {
+            throw new IOException("Error deleting file " + templateSetPath.resolve("pom.xml"), e);
           }
-
-          // Replace the pom.xml in the template sets. Needed so that the project in the temp directory is build
-          // properly
-          if (Files.exists(path.resolve("pom.xml"))) {
-            try {
-              Files.delete(path.resolve("pom.xml"));
-            } catch (IOException e) {
-              throw new IOException("Error deleting file " + path.resolve("pom.xml"), e);
-            }
-            try {
-              Files.copy(utilsPom, path.resolve("pom.xml"));
-            } catch (IOException e) {
-              throw new IOException("Error copying file " + utilsPom, e);
-            }
+          try {
+            Files.copy(utilsPom, templateSetPath.resolve("pom.xml"));
+          } catch (IOException e) {
+            throw new IOException("Error copying file " + utilsPom, e);
           }
         }
       }
@@ -105,15 +85,15 @@ public class TemplatesGenerationTest extends AbstractMavenTest {
   }
 
   /**
-   * Test successful generation of all templates based on an entity
+   * Test successful generation of all templates based on an ETO
    *
    * @throws Exception test fails
    */
   @Test
-  public void testAllTemplatesGeneration_EntityInput() throws Exception {
+  public void testAllTemplatesGeneration_OpenApiInput() throws Exception {
 
-    File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesEntityInput/");
-    runMavenInvoker(testProject, templatesProjectTemporary.toFile(), MavenMetadata.LOCAL_REPO, false);
+    File testProject = new File(TEST_RESOURCES_ROOT + "TestAllTemplatesOpenApiInput/");
+    runMavenInvoker(testProject, templatesProjectTemporary.toFile(), MavenMetadata.LOCAL_REPO);
   }
 
 }
