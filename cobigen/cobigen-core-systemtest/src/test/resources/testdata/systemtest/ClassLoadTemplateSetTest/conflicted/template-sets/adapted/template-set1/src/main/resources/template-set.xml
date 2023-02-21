@@ -6,7 +6,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
   <cc:contextConfiguration version="3.0">
-    <cc:trigger id="entities2" type="java">
+    <cc:trigger id="entities" type="java">
       <!--  <cc:matcher type="fqn" value=".+">-->
       <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
         <cc:variableAssignment type="constant" key="etoName" value="5"/>
@@ -19,13 +19,13 @@
   </cc:contextConfiguration>
   <tc:templatesConfiguration version="5.0">
     <tc:templates>
-      <tc:template name="t2" destinationPath="generated.txt" templateFile="generated.txt.ftl"
+      <tc:template name="t1" destinationPath="generated.txt" templateFile="templates/generated.txt.ftl"
         mergeStrategy="override"/>
     </tc:templates>
 
     <tc:increments>
-      <tc:increment name="i2" description="the only increment">
-        <tc:templateRef ref="t2"/>
+      <tc:increment name="i1" description="the only increment">
+        <tc:templateRef ref="t1"/>
       </tc:increment>
     </tc:increments>
   </tc:templatesConfiguration>
