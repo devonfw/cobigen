@@ -104,17 +104,21 @@ public class GenerationIT extends AbstractApiTest {
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
     List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
     List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
-    assertThat(templates).hasSize(3);
-    assertThat(increments).hasSize(3);
-    assertThat(triggersIds).hasSize(3);
+    assertThat(templates).hasSize(5);
+    assertThat(increments).hasSize(5);
+    assertThat(triggersIds).hasSize(5);
 
     GenerationReportTo report1 = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
     GenerationReportTo report2 = cobigen.generate(input, templates.get(1), Paths.get(folder.toURI()));
     GenerationReportTo report3 = cobigen.generate(input, templates.get(2), Paths.get(folder.toURI()));
+    GenerationReportTo report4 = cobigen.generate(input, templates.get(3), Paths.get(folder.toURI()));
+    GenerationReportTo report5 = cobigen.generate(input, templates.get(4), Paths.get(folder.toURI()));
 
     assertThat(report1).isSuccessful();
     assertThat(report2).isSuccessful();
     assertThat(report3).isSuccessful();
+    assertThat(report4).isSuccessful();
+    assertThat(report5).isSuccessful();
   }
 
   /**
