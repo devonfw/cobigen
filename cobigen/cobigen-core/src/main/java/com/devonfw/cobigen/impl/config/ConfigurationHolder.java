@@ -164,7 +164,7 @@ public class ConfigurationHolder {
           this.templateSetConfiguration = new TemplateSetConfiguration(this.configurationPath);
 
         }
-        this.contextConfiguration = new ContextConfiguration(
+        return new ContextConfiguration(
             this.templateSetConfiguration.getTemplateSetConfigurationReader().getContextConfiguration(),
             this.configurationPath, this, this.templateSetConfiguration.getTriggers());
 
