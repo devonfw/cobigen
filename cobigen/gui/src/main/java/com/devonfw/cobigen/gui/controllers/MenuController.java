@@ -46,7 +46,7 @@ public class MenuController implements Initializable {
    */
   public MenuController() {
 
-    TemplateSetModel.getInstance().loadallAvaliableTemplateSets();
+    // TemplateSetModel.getInstance().loadAllAvailableTemplateSets();
     // Where do we need tags
     // List<TemplateSetTag> tagsList = new ArrayList<>();
     // tagsList.addAll(templateSet.getTemplateSetConfiguration().getContextConfiguration().getTags().getTagsList());

@@ -111,7 +111,10 @@ public class TestFXBase extends ApplicationTest {
   @SuppressWarnings("unchecked")
   public <T extends Node> T find(final String query) {
 
-    return (T) lookup(query).queryAll().iterator().next();
+    // temporary 'fix' because lookup(#home)... throws error
+    return (T) this.mainStage.getScene().lookup(query);
+
+    // return (T) lookup(query).queryAll().iterator().next();
   }
 
 }
