@@ -79,7 +79,7 @@ public class TemplateSetConfigurationManager {
     List<Path> templateSetDirectories = retrieveTemplateSetDirectories(configRoot);
 
     for (Path templateDirectory : templateSetDirectories) {
-      Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.RESOURCE_FOLDER)
+      Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER)
           .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
       addConfigRoot(templateSetFilePath, templateDirectory, this.templateSetPaths);
