@@ -111,21 +111,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
 
     this.contextRoot = contextRoot;
     this.contextConfigurations.put(contextRoot, contextConfiguration);
-    // TODO: check if this is still needed
-    // loadConfig();
 
-  }
-
-  /**
-   * TODO: check if this is still needed
-   */
-  private void loadConfig() {
-
-    for (Path p : this.contextConfigurations.keySet()) {
-      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : this.contextConfigurations.get(p).getTrigger()) {
-        this.triggerConfigLocations.put(t.getId(), p);
-      }
-    }
   }
 
   /**
