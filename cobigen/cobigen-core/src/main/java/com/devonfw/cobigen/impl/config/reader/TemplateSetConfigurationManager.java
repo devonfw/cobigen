@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.impl.config.reader;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +16,6 @@ import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
  * This class takes care of finding either adapted or downloaded template-set files.
- *
  */
 public class TemplateSetConfigurationManager {
 
@@ -32,8 +30,8 @@ public class TemplateSetConfigurationManager {
     return this.configLocations;
   }
 
-  /** List of template set paths TODO: check if this is still needed */
-  List<Path> templateSetPaths;
+  /** List of template set paths */
+  private List<Path> templateSetPaths;
 
   /**
    * The constructor.
@@ -52,7 +50,6 @@ public class TemplateSetConfigurationManager {
    * @param templateSetFilePath the {@link Path} to the template-set.xml file
    * @param configRootPath the {@link Path} containing the config root directory for a template-set.xml
    * @param templateSetPaths a list containing all paths to template-set.xml files
-   * @throws FileNotFoundException
    */
   public void addConfigRoot(Path templateSetFilePath, Path configRootPath, List<Path> templateSetPaths) {
 
@@ -61,9 +58,6 @@ public class TemplateSetConfigurationManager {
       this.configLocations.put(templateSetFilePath, configRootPath);
     }
   }
-
-  // TODO: Save adapted and downloaded template sets in different lists, so we can treat them individually
-  // (Because of the path problems with jars)
 
   /**
    * Search for configuration files in the sub folder for adapted templates
