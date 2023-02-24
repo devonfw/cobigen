@@ -47,6 +47,10 @@ public class Trigger {
     this.id = id;
     this.type = type;
     this.templateFolder = templateFolder;
+    // required because template folder field is optional in template set triggers
+    if (templateFolder.isEmpty() || templateFolder.equals("/")) {
+      this.templateFolder = "";
+    }
     this.inputCharset = inputCharset;
     this.matchers = matcher == null ? new LinkedList<>() : matcher;
     this.containerMatchers = containerMatchers == null ? new LinkedList<>() : containerMatchers;
