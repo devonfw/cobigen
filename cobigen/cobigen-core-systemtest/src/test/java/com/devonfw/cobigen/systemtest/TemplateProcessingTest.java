@@ -20,6 +20,7 @@ import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 
@@ -109,6 +110,16 @@ public class TemplateProcessingTest extends AbstractApiTest {
       Files.createDirectories(cobigenTemplateSetsFolderPath);
     }
 
+    List<Path> jarPaths = TemplatesJarUtil.getJarFiles(downloadedTemplateSetsFolderPath);
+    List<Path> filteredJars = new ArrayList<>();
+    for (Path jarPath : jarPaths) {
+      if (jarPath.toString().contains("sources")) {
+        filteredJars.add(TemplatesJarUtil.getJarFile(true, downloadedTemplateSetsFolderPath));
+      } else {
+        filteredJars.add(TemplatesJarUtil.getJarFile(false, downloadedTemplateSetsFolderPath));
+      }
+
+    }
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenTemplateSetsFolderPath);
 
     Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
@@ -138,6 +149,8 @@ public class TemplateProcessingTest extends AbstractApiTest {
     // validate maven specific contents
     assertThat(templateSet.resolve("pom.xml")).exists();
   }
+
+  // Get jar util extern testen
 
   /**
    * Test of extract templates with old CobiGen_Templates project existing

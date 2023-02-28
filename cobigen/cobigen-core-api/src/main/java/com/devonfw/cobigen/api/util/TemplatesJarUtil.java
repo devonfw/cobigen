@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -274,6 +275,7 @@ public class TemplatesJarUtil {
    *
    * @return file of the jar downloaded or null if it was not found
    */
+  // TODO: add check to validate template set ja pairs with default parameter for normal templates
   public static List<Path> getJarFiles(Path templatesDirectory) {
 
     ArrayList<Path> jarPaths = new ArrayList<>();
@@ -324,4 +326,16 @@ public class TemplatesJarUtil {
     }
   }
 
+  public static boolean getTemplateSetJarFile(boolean isSource, Path templateSetDirectory) {
+
+    boolean isValid = false;
+    Predicate<String> isValidTemplateSetJarPair;
+
+    return isValid;
+
+  }
+
+  // TODO: templateset jar muss prüfen ob sources zur nicht sources passt
+  // TODO: templateset adapter anpassen sodas die neue templateset get jar file methode benutzt wird, wenn exception
+  // geworfen wurde
 }
