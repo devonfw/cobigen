@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.retriever;
 
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,28 +27,24 @@ public class ArtifactRetriever {
   private static final Logger LOG = LoggerFactory.getLogger(ArtifactRetriever.class);
 
   /**
-   * Retrieves a list of maven artifact download URLs by given groupIds and maven settings file
+   * Retrieves a list of maven artifact download URLs
    *
    * @param groupIdsList grouIds for template-sets
-   * @param mavenSettingsFile Path to maven's settings.xml
+   * @param mavenSettings string of maven's settings.xml
    * @return list of maven artifact download URLs
-   * @throws IOException if an error occurred while reading the settings file
    *
    */
-  protected static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, Path mavenSettingsFile)
-      throws IOException {
-
-    String mavenSettingsString = new String(Files.readAllBytes(mavenSettingsFile));
+  protected static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
 
     List<URL> downloadLinks = new ArrayList<>();
 
-    MavenSettingsModel model = MavenSettings.generateMavenSettingsModel(mavenSettingsString);
+    MavenSettingsModel model = MavenSettings.generateMavenSettingsModel(mavenSettings);
 
     MavenSettingsProxyModel activeProxy = MavenSettings
-        .determineActiveProxy(MavenSettings.generateMavenSettingsModel(mavenSettingsString));
+        .determineActiveProxy(MavenSettings.generateMavenSettingsModel(mavenSettings));
 
     List<MavenSettingsRepositoryModel> allActiveRepositories = MavenSettings
-        .retrieveRepositoriesFromMavenSettings(mavenSettingsString);
+        .retrieveRepositoriesFromMavenSettings(mavenSettings);
 
     List<MavenSettingsRepositoryModel> repositoriesWhichAreUsingTheProxy = MavenProxy
         .obtainRepositories(allActiveRepositories, activeProxy, true);

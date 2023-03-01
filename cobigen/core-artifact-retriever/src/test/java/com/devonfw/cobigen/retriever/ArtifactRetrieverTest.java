@@ -15,10 +15,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+import com.devonfw.cobigen.retriever.settings.MavenSettings;
+import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -34,10 +37,45 @@ public class ArtifactRetrieverTest {
   private final static String testdataRoot = "src/test/resources/testdata/unittest/ArtifactRetrieverTest";
 
   /**
+   * {@link MavenSettingsModel} without a proxy
+   */
+  private static MavenSettingsModel modelNonProxy;
+
+  /**
+   * {@link MavenSettingsModel} with a proxy
+   */
+  private static MavenSettingsModel modelProxy;
+
+  /**
+   * Maven settings string without a proxy
+   */
+  private static String mavenSettingsNonProxy;
+
+  /**
+   * Maven settings string without a proxy
+   */
+  private static String mavenSettingsProxy;
+
+  /**
    * WireMock rule to initialize
    */
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(options().disableRequestJournal());
+
+  /**
+   * Used to initialize data needed for the tests
+   *
+   * @throws Exception if reading the maven settings fails
+   */
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+
+    mavenSettingsNonProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsNonProxy.xml")));
+    mavenSettingsProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsProxy.xml")));
+
+    modelNonProxy = MavenSettings.generateMavenSettingsModel(mavenSettingsNonProxy);
+    modelProxy = MavenSettings.generateMavenSettingsModel(mavenSettingsProxy);
+  }
 
   /**
    * Tests a retrieval of download URLs using using a settings.xml and basic authentication
@@ -53,9 +91,7 @@ public class ArtifactRetrieverTest {
 
     List<String> groupIds = Arrays.asList("com.devonfw.cobigen.templates");
 
-    List<URL> downloadUrls = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds,
-        Paths.get(testdataRoot).resolve("settingsNonProxy.xml"));
-
+    List<URL> downloadUrls = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds, mavenSettingsNonProxy);
     assertThat(downloadUrls).contains(new URL(
         "http://localhost:8080/artifactory/api/storage/libs-release-local/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
@@ -73,9 +109,7 @@ public class ArtifactRetrieverTest {
 
     List<String> groupIds = Arrays.asList("com.devonfw.cobigen.templates");
 
-    List<URL> downloadUrls = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds,
-        Paths.get(testdataRoot).resolve("settingsNonProxy.xml"));
-
+    List<URL> downloadUrls = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds, mavenSettingsNonProxy);
     assertThat(downloadUrls).contains(new URL(
         "http://localhost:8080/artifactory/api/storage/libs-release-local/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
@@ -97,9 +131,7 @@ public class ArtifactRetrieverTest {
 
     List<String> groupIds = Arrays.asList("com.devonfw.cobigen.templates");
 
-    List<URL> downloadUrls = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds,
-        Paths.get(testdataRoot).resolve("settingsProxy.xml"));
-
+    List<URL> downloadUrls = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds, mavenSettingsProxy);
     assertThat(downloadUrls).contains(new URL(
         "http://localhost:8080/artifactory/api/storage/libs-release-local/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
   }
