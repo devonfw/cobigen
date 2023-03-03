@@ -17,7 +17,7 @@ import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.collections.FXCollections;
-import javafx.scene.text.Text;
+import javafx.scene.control.Button;
 
 /**
  * TODO
@@ -43,12 +43,12 @@ public class ProcessTemplateSetTest extends TestFXBase {
 
   /**
    * Tests if a selected template set can be installed (template-set class jar file gets added to
-   * template-sets/downloaded folder) and UNINSTALLED text changes to INSTALLED
+   * template-sets/downloaded folder) and the text of the install button changed from Install to Installed
    *
    * @throws Exception Test fails
    */
   @Test
-  public void testGetAllTemplateSetsDownloaded() throws Exception {
+  public void testInstallTemplateSet() throws Exception {
 
     // preparation
     File userHome = this.tmpFolder.newFolder("UserHome");
@@ -70,7 +70,8 @@ public class ProcessTemplateSetTest extends TestFXBase {
 
     this.searchResultsView.setItems(this.templateSetObservableList);
 
-    Text installStatustext = find("#installStatusText");
+    Button installButton = find("#installButton");
+    String installButtonText = installButton.getText();
 
     sleep(1000);
 
@@ -88,8 +89,13 @@ public class ProcessTemplateSetTest extends TestFXBase {
 
       assertThat(downloaded.toPath().resolve("crud-java-server-app-2021.12.007.jar")).exists();
 
-      assertThat(installStatustext.getText()).isEqualTo("INSTALLED");
+      assertThat(installButtonText).isEqualTo("Installed");
     });
+
+  }
+
+  @Test
+  public void testGetAllTemplateSetsDownloaded() throws Exception {
 
   }
 

@@ -136,6 +136,9 @@ public class Controller implements Initializable {
       this.detailsController
           .setTemplateSet(this.menuController.searchResultsView.getSelectionModel().getSelectedItem());
 
+      // updates the install button text
+      this.detailsController.updateTemplateSetInstallStatus();
+
     }
 
   }

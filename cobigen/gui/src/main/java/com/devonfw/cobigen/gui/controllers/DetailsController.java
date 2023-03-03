@@ -47,9 +47,6 @@ public class DetailsController implements Initializable {
   Text descriptionText;
 
   @FXML
-  Text installStatusText;
-
-  @FXML
   Button installButton;
 
   @FXML
@@ -61,6 +58,20 @@ public class DetailsController implements Initializable {
     // increment section of the gui
     showVersion();
     // showTreeView(TreeViewBuilder.buildTreeView(TreeViewBuilder.transformIncrementsToArray(this.INCREMENTS)));
+
+  }
+
+  /**
+   * Sets text of install button to Installed
+   */
+  public void updateTemplateSetInstallStatus() {
+
+    Path templateSetPath = retrieveJarPathFromTemplateSet();
+    if (Files.exists(templateSetPath)) {
+      this.installButton.setText("Installed");
+    } else {
+      this.installButton.setText("Install");
+    }
 
   }
 
@@ -117,6 +128,26 @@ public class DetailsController implements Initializable {
   }
 
   /**
+   * Retrieves the jar file path from the selected template set
+   *
+   * @return Path to template set jar
+   */
+  private Path retrieveJarPathFromTemplateSet() {
+
+    // Retrieve template set name information from trigger
+    String triggerName = this.templateSet.getTemplateSetConfiguration().getContextConfiguration().getTriggers().getId();
+    String mavenArtfifactId = triggerName.replace("_", "-");
+    String templateSetVersion = this.templateSet.getTemplateSetVersion();
+    Path templateSetsPath = CobiGenPaths.getTemplateSetsFolderPath();
+
+    // Adjust file name
+    String FileName = mavenArtfifactId + "-" + templateSetVersion + ".jar";
+    Path jarFilePath = templateSetsPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER).resolve(FileName);
+
+    return jarFilePath;
+  }
+
+  /**
    * Installs a template set into the template-sets/downloaded folder
    *
    * @param actionEvent the action event
@@ -132,20 +163,22 @@ public class DetailsController implements Initializable {
     // Adjust file name
     String FileName = mavenArtfifactId + "-" + templateSetVersion + ".jar";
 
+    Path templateSetsPath = CobiGenPaths.getTemplateSetsFolderPath();
+
     // prepare MavenCoordinate list for download
     MavenCoordinate mavenCoordinate = new MavenCoordinate(
         ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID, mavenArtfifactId, templateSetVersion);
     List<MavenCoordinate> mavenCoordinateList = new ArrayList<>();
     mavenCoordinateList.add(mavenCoordinate);
 
-    Path templateSetsPath = CobiGenPaths.getTemplateSetsFolderPath();
+    Path expectedJarFilePath = templateSetsPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER).resolve(FileName);
 
-    Path destinationFilePath = templateSetsPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER).resolve(FileName);
-
-    if (!Files.exists(destinationFilePath.resolve(FileName))) {
+    if (!Files.exists(expectedJarFilePath)) {
       // Download template set class file into downloaded folder
       TemplatesJarUtil.downloadTemplatesByMavenCoordinates(
           templateSetsPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER), mavenCoordinateList);
+      // TODO: update installButton title to Installed and save this state
+      updateTemplateSetInstallStatus();
     } else {
       // Alert window if the file is already installed
       Alert alert = new Alert(AlertType.CONFIRMATION);
