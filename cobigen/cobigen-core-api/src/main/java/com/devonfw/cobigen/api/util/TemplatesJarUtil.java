@@ -15,13 +15,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -275,7 +275,7 @@ public class TemplatesJarUtil {
    *
    * @return file of the jar downloaded or null if it was not found
    */
-  // TODO: add check to validate template set ja pairs with default parameter for normal templates
+  // TODO: add check to validate template set jar pairs with default parameter for normal templates
   public static List<Path> getJarFiles(Path templatesDirectory) {
 
     ArrayList<Path> jarPaths = new ArrayList<>();
@@ -326,12 +326,150 @@ public class TemplatesJarUtil {
     }
   }
 
-  public static boolean getTemplateSetJarFile(boolean isSource, Path templateSetDirectory) {
+  /**
+   * This MavenCoordinateState extends the dataholder MavenCoordinate to process information about a MavenCoordinate
+   * across Cobigen.
+   */
+  public static class MavenCoordinateState extends MavenCoordinate {
 
-    boolean isValid = false;
-    Predicate<String> isValidTemplateSetJarPair;
+    /**
+     * present status of MavenCoordinate
+     */
+    private boolean isPresent;
 
-    return isValid;
+    /**
+     * adapted status of MavenCoordinate
+     */
+    private boolean isAdapted;
+
+    /**
+     * the local path to a MavenCoordinate
+     */
+    private Path mavenCoordinateLocalPath;
+
+    /**
+     * The default constructor. By default all MavenCoordinates are not present.
+     *
+     * @param groupId the groupId of the maven artifact
+     * @param artifactId the artifactId of the maven artifact
+     * @param version the version of the maven artifact
+     */
+    public MavenCoordinateState(String groupId, String artifactId, String version) {
+
+      super(groupId, artifactId, version);
+      this.isPresent = false;
+      this.isAdapted = false;
+    }
+
+    /**
+     * The constructor with a local path to a MavenCoordinate. By default all MavenCoordinates are not present.
+     *
+     * @param mavenCoordinatePath the local path to a MavenCoordinate
+     * @param groupId the groupId of the maven artifact
+     * @param artifactId the artifactId of the maven artifact
+     * @param version the version of the maven artifact
+     */
+    public MavenCoordinateState(Path mavenCoordinatePath, String groupId, String artifactId, String version) {
+
+      super(groupId, artifactId, version);
+      this.mavenCoordinateLocalPath = mavenCoordinatePath;
+      this.isPresent = false;
+      this.isAdapted = false;
+
+    }
+
+    public String retrieveMavenCoordinateArtifactId() {
+
+      return "";
+    }
+
+    public String retrieveMavenCoordinateVersion() {
+
+      return "";
+    }
+
+    /**
+     * @return get the local path to a MavenCoordinate
+     */
+    public Path getMavenCoordinateLocalPath() {
+
+      return this.mavenCoordinateLocalPath;
+    }
+
+    /**
+     * @return whether the MavenCoordinate is present or not
+     */
+    public boolean isPresent() {
+
+      return this.isPresent;
+    }
+
+    /**
+     * @return whether the MavenCoordinate is adapted or not
+     */
+    public boolean isAdapted() {
+
+      return this.isAdapted;
+    }
+
+    /**
+     * @param mavenCoordinateLocalPath the local path to a MavenCoordinate
+     */
+    public void setMavenCoordinateLocalPath(Path mavenCoordinateLocalPath) {
+
+      this.mavenCoordinateLocalPath = mavenCoordinateLocalPath;
+    }
+
+    /**
+     * @param isAdapted updates the adapted state of MavenCoordinate
+     */
+    public void setAdapted(boolean isAdapted) {
+
+      this.isAdapted = isAdapted;
+    }
+
+    /**
+     * @param isPresent updates the present state of MavenCoordinate
+     */
+    public void setPresent(boolean isPresent) {
+
+      this.isPresent = isPresent;
+    }
+  }
+
+  /**
+   * @param templateSetDirectory
+   * @return thisMap
+   */
+  public static List<Pair<MavenCoordinateState, MavenCoordinateState>> getTemplateSetJarFolderStructure(
+      Path templateSetDirectory) {
+
+    // ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
+    // Get the Jar Paths
+    List<Path> jarPaths = getJarFiles(templateSetDirectory);
+
+    // Iterate Jar Paths
+
+    // Extract GroupID, ArtifactID and Version
+
+    //
+    // getMatchingTemplates
+    // Check if sources is available
+
+    MavenCoordinateState mavenCoordinate = new MavenCoordinateState(templateSetDirectory, "", "", "");
+
+    Pair<MavenCoordinateState, MavenCoordinateState> thisMap = Pair.with(null, null);
+    List<Pair<MavenCoordinateState, MavenCoordinateState>> thisList = new ArrayList<>();
+    // Get jars from current folder structure
+    // iterate folder structure
+
+    // collect tuples
+    // extend mavenCoordinate with field isPresent
+
+    // boolean isValid = false;
+    // Predicate<String> isValidTemplateSetJarPair;
+
+    return thisList;
 
   }
 
