@@ -41,6 +41,12 @@ public class ProcessTemplateSetTest extends TestFXBase {
 
   }
 
+  /**
+   * Tests if a selected template set can be installed (template-set class jar file gets added to
+   * template-sets/downloaded folder) and UNINSTALLED text changes to INSTALLED
+   *
+   * @throws Exception Test fails
+   */
   @Test
   public void testGetAllTemplateSetsDownloaded() throws Exception {
 
@@ -82,7 +88,7 @@ public class ProcessTemplateSetTest extends TestFXBase {
 
       assertThat(downloaded.toPath().resolve("crud-java-server-app-2021.12.007.jar")).exists();
 
-      assertThat(installStatustext.getText()).contains("INSTALLED");
+      assertThat(installStatustext.getText()).isEqualTo("INSTALLED");
     });
 
   }
