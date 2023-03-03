@@ -3,15 +3,13 @@ package com.devonfw.cobigen.cli.systemtest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 
 /**
  * Tests the usage of the adapt-templates command.
@@ -19,13 +17,12 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 public class AdaptTemplatesCommandIT extends AbstractCliTest {
 
   /**
-   * Simulate the download of the template set jars, as this not yet implemented. This method can be removed later
+   * Checks if adapt-templates command successfully created adapted folder and its sub folders
    *
-   * @throws URISyntaxException if the path could not be created properly
-   * @throws IOException if accessing a directory or file fails
+   * @throws Exception test fails
    */
-  @Before
-  public void initAdaptTemplatesTest() throws URISyntaxException, IOException {
+  @Test
+  public void adaptTemplateSetTest() throws Exception {
 
     Path cliSystemTestPath = new File(
         AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
@@ -39,15 +36,6 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
       }
       Files.copy(templateJar, downloadedTemplateSetsPath.resolve(templateJar.getFileName()));
     }
-  }
-
-  /**
-   * Checks if adapt-templates command successfully created cobigen templates folder and its sub folders
-   *
-   * @throws Exception test fails
-   */
-  @Test
-  public void adaptTemplatesTest() throws Exception {
 
     String args[] = new String[2];
     args[0] = "adapt-templates";
@@ -70,6 +58,49 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     // check if context configuration exists
     assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)).exists();
     assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)).exists();
+        .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+
+  }
+
+  /**
+   * Checks if adapt-templates command successfully created cobigen templates folder and its sub folders
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void adaptTemplatesTest() throws Exception {
+
+    Path cliSystemTestPath = new File(
+        AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+            .getParentFile().toPath();
+    Path templatesPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+    Path CobigenTemplatesPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    if (!Files.exists(templatesPath)) {
+      Files.createDirectories(templatesPath);
+    }
+    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", false, templatesPath.toFile());
+    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", true, templatesPath.toFile());
+
+    String args[] = new String[2];
+    args[0] = "adapt-templates";
+    args[1] = "--all";
+
+    execute(args, false, false, true);
+
+    assertThat(CobigenTemplatesPath).exists();
+
+    Path templateRoot = CobigenTemplatesPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+
+    // check if context configuration exists
+    assertThat(templateRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)).exists();
+
+    Path template = templateRoot.resolve("crud_java_server_app");
+    Path templateComplex = templateRoot.resolve("crud_java_server_app_complex");
+    // check if templates exists
+    assertThat(template).exists();
+    assertThat(templateComplex).exists();
+    // check if template.xml exists
+    assertThat(template.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME)).exists();
+    assertThat(templateComplex.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME)).exists();
   }
 }

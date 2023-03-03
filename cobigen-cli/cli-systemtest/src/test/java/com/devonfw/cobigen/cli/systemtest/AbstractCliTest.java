@@ -241,7 +241,6 @@ public class AbstractCliTest {
     // enable jacoco coverage monitoring for external processes (especially for CI/CD)
     if (!StringUtils.isEmpty(MavenMetadata.JACOCO_AGENT_ARGS)
         && !StringUtils.startsWith(MavenMetadata.JACOCO_AGENT_ARGS, "$")) {
-      System.out.println(System.getenv(JAVA_TOOL_OPTIONS));
       pe.environment(JAVA_TOOL_OPTIONS, MavenMetadata.JACOCO_AGENT_ARGS
 
           // .replaceFirst("destfile=[^,]+(,)?", "")

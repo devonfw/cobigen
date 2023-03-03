@@ -2,7 +2,7 @@
 
 = CobiGen (Code-based incremental Generator)
 
-image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/cobigen-maven-plugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/cobigen-maven-plugin] image:https://github.com/devonfw/cobigen/actions/workflows/maven-build-test.yml/badge.svg?branch=master&event=push["Build Status", link="https://github.com/devonfw/cobigen/actions/workflows/maven-build-test.yml"]
+image:https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/cobigen-maven-plugin/badge.svg[https://maven-badges.herokuapp.com/maven-central/com.devonfw.cobigen/cobigen-maven-plugin] image:https://github.com/devonfw/cobigen/actions/workflows/maven-build-test.yml/badge.svg?branch=master&event=push["Build Status", link="https://github.com/devonfw/cobigen/actions/workflows/maven-build-test.yml?query=branch%3Amaster"]
 
 == Usage
 
@@ -43,7 +43,7 @@ The CobiGen repository is organized in a one-branch-per-plugin schema. By that, 
 
 == Build
 
-`bash build.sh` (on windows use git bash)
+`./build.sh -h` (on windows use git bash)
 
 == Deploy
 
