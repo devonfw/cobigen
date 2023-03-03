@@ -77,7 +77,12 @@
       <artifactId>system-lambda</artifactId>
       <version>1.2.0</version>
       <scope>test</scope>
-  </dependency>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-test</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

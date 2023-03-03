@@ -4,13 +4,20 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironment
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.testfx.util.WaitForAsyncUtils;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
+import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+
+import javafx.collections.FXCollections;
+import javafx.scene.text.Text;
 
 /**
  * TODO
@@ -21,6 +28,9 @@ public class ProcessTemplateSetTest extends TestFXBase {
   /** Temporary files rule to create temporary folders or files */
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
+
+  /** Test data root path */
+  private static final String testdataRoot = "src/test/resources/testdata/integrationtests/ProcessTemplateSetTest";
 
   @Test
   public void testGetAllTemplateSetsAdapted() throws Exception {
@@ -34,17 +44,47 @@ public class ProcessTemplateSetTest extends TestFXBase {
   @Test
   public void testGetAllTemplateSetsDownloaded() throws Exception {
 
+    // preparation
     File userHome = this.tmpFolder.newFolder("UserHome");
-    File templateSets = this.tmpFolder.newFolder("UserHome", ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     File downloaded = this.tmpFolder.newFolder("UserHome", ConfigurationConstants.TEMPLATE_SETS_FOLDER,
         ConfigurationConstants.DOWNLOADED_FOLDER);
-    // TODO: Create Dummy jar in resources
-    File jar = new File("");
-    FileUtils.copyFile(jar, downloaded.toPath().resolve("template-test.jar").toFile());
+
+    // simulate template-set-list folder for downloaded template-set.xml files to be used in GUI
+    this.tmpFolder.newFolder("UserHome", "template-set-list");
+
+    Path templateSetXmlFile = Paths.get(testdataRoot).resolve("crud-java-server-app-2021.12.007-template-set.xml");
+
+    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
+
+    TemplateSet templateSet = artifactReader.retrieveTemplateSet(templateSetXmlFile);
+
+    // adds template set to GUI
+    this.templateSetObservableList = FXCollections.observableArrayList();
+    this.templateSetObservableList.addAll(templateSet);
+
+    this.searchResultsView.setItems(this.templateSetObservableList);
+
+    Text installStatustext = find("#installStatusText");
+
+    sleep(1000);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
 
+      // clicks on first element of searchResultsView
+      clickOn(this.searchResultsView.getItems().get(0).getTemplateSetConfiguration().getContextConfiguration()
+          .getTriggers().getId());
+
+      sleep(1000);
+
+      clickOn("Install");
+
+      WaitForAsyncUtils.waitForFxEvents();
+
+      assertThat(downloaded.toPath().resolve("crud-java-server-app-2021.12.007.jar")).exists();
+
+      assertThat(installStatustext.getText()).contains("INSTALLED");
     });
+
   }
 
   @Test

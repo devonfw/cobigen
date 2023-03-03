@@ -1,15 +1,20 @@
 package com.devonfw.cobigen.gui.controllers;
 
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.retriever.ArtifactRetriever;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.fxml.FXML;
@@ -27,6 +32,8 @@ import javafx.scene.text.Text;
  *
  */
 public class DetailsController implements Initializable {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ArtifactRetriever.class);
 
   // TODO: getIncrements()
   private List<String> INCREMENTS = new ArrayList<>();
@@ -110,29 +117,40 @@ public class DetailsController implements Initializable {
   }
 
   /**
-   * @param actionEvent
-   * @throws IOException
+   * Installs a template set into the template-sets/downloaded folder
+   *
+   * @param actionEvent the action event
    */
   @FXML
-  public void installTemplateSet(javafx.event.ActionEvent actionEvent) throws IOException {
+  public void installTemplateSet(javafx.event.ActionEvent actionEvent) {
 
-    // Retrieving trigger information and move the template set file to user folder
+    // Retrieve template set name information from trigger
     String triggerName = this.templateSet.getTemplateSetConfiguration().getContextConfiguration().getTriggers().getId();
-    String FileName = triggerName.replace("_", "-") + "-" + this.templateSet.getTemplateSetVersion()
-        + "-template-set.xml";
-    Path cobigenHome = CobiGenPaths.getCobiGenHomePath();
-    Path sourceFilePath = cobigenHome.resolve("template-set-list").resolve(FileName);
-    String destinationPath = "C:\\Users\\alsaad\\template-set-installed\\" + FileName;
-    Path destinationFilePath = Paths.get(destinationPath);
-    if (!Files.exists(destinationFilePath)) {
-      Files.copy(sourceFilePath, destinationFilePath);
-      System.out.println(sourceFilePath.toString());
-      System.out.println(destinationFilePath);
+    String mavenArtfifactId = triggerName.replace("_", "-");
+    String templateSetVersion = this.templateSet.getTemplateSetVersion();
+
+    // Adjust file name
+    String FileName = mavenArtfifactId + "-" + templateSetVersion + ".jar";
+
+    // prepare MavenCoordinate list for download
+    MavenCoordinate mavenCoordinate = new MavenCoordinate(
+        ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID, mavenArtfifactId, templateSetVersion);
+    List<MavenCoordinate> mavenCoordinateList = new ArrayList<>();
+    mavenCoordinateList.add(mavenCoordinate);
+
+    Path templateSetsPath = CobiGenPaths.getTemplateSetsFolderPath();
+
+    Path destinationFilePath = templateSetsPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER).resolve(FileName);
+
+    if (!Files.exists(destinationFilePath.resolve(FileName))) {
+      // Download template set class file into downloaded folder
+      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(
+          templateSetsPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER), mavenCoordinateList);
     } else {
       // Alert window if the file is already installed
       Alert alert = new Alert(AlertType.CONFIRMATION);
       alert.setTitle("Confirmation");
-      alert.setHeaderText("the selected template-set is already installed");
+      alert.setHeaderText("The selected template-set is already installed!");
       alert.show();
     }
   }
