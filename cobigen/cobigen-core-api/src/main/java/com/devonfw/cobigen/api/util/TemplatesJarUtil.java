@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -353,6 +354,11 @@ public class TemplatesJarUtil {
     private Path mavenCoordinateLocalPath;
 
     /**
+     * Whether the object is a valid MavenCoordinate or not
+     */
+    private boolean isValidMavenCoordinate;
+
+    /**
      * The default constructor. By default all MavenCoordinates are neither source, present nor adapted.
      *
      * @param groupId the groupId of the maven artifact
@@ -365,6 +371,7 @@ public class TemplatesJarUtil {
       this.isSource = false;
       this.isPresent = false;
       this.isAdapted = false;
+      setValidMavenCoordinate(false);
     }
 
     /**
@@ -383,6 +390,7 @@ public class TemplatesJarUtil {
       this.isSource = false;
       this.isPresent = false;
       this.isAdapted = false;
+      setValidMavenCoordinate(false);
 
     }
 
@@ -400,10 +408,12 @@ public class TemplatesJarUtil {
         boolean isSource) {
 
       super(groupId, artifactId, version);
+
       this.mavenCoordinateLocalPath = mavenCoordinatePath;
       this.isSource = isSource;
       this.isPresent = false;
       this.isAdapted = false;
+      setValidMavenCoordinate(false);
 
     }
 
@@ -454,6 +464,45 @@ public class TemplatesJarUtil {
 
       this.isPresent = isPresent;
     }
+
+    /**
+     * @return isValidMavenCoordinate
+     */
+    public boolean isValidMavenCoordinate() {
+
+      return this.isValidMavenCoordinate;
+    }
+
+    /**
+     * @param isValidMavenCoordinate new value of {@link #getisValidMavenCoordinate}.
+     */
+    public void setValidMavenCoordinate(boolean isValidMavenCoordinate) {
+
+      this.isValidMavenCoordinate = isValidMavenCoordinate;
+    }
+  }
+
+  /**
+   * Creates a shallow MavenCoordinateState object and only if the path matches the regex pattern the present flag for
+   * the object will be set.
+   *
+   * @param jar the local path to a jar file
+   * @param regex the pattern that is supposed to match the path
+   * @param isSource whether the jar is meant to be a sources jar or not
+   * @return mavenCoordinateState
+   */
+  private static MavenCoordinateState createMavenCoordinateState(Path jar, String regex, boolean isSource) {
+
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(jar.toString());
+    String artifactID = matcher.group(TemplateSetsJarConstants.ARTIFACT_ID_REGEX_GROUP);
+    String version = matcher.group(TemplateSetsJarConstants.VERSION_REGEX_GROUP);
+    MavenCoordinateState mavenCoordinateState = new MavenCoordinateState(jar, null, artifactID, version, isSource);
+    if (matcher.find()) {
+      mavenCoordinateState.setPresent(true);
+      mavenCoordinateState.setValidMavenCoordinate(true);
+    }
+    return mavenCoordinateState;
   }
 
   /**
@@ -463,55 +512,25 @@ public class TemplatesJarUtil {
   public static List<Pair<MavenCoordinateState, MavenCoordinateState>> getTemplateSetJarFolderStructure(
       Path templateSetDirectory) {
 
-    Pattern templateSetJar = Pattern.compile(TemplateSetsJarConstants.MAVEN_COORDINATE_JAR_PATTERN);
-    Pattern templateSetSourcesJar = Pattern.compile(TemplateSetsJarConstants.MAVEN_COORDINATE_SOURCES_JAR_PATTERN);
-
     List<Path> jarFiles = getJarFiles(templateSetDirectory);
+    List<MavenCoordinateState> mavenCoordinateStates = new ArrayList<>();
+    Map<String, Boolean> patternToIsSourcesJar = Map.of(TemplateSetsJarConstants.MAVEN_COORDINATE_JAR_PATTERN, false,
+        TemplateSetsJarConstants.MAVEN_COORDINATE_SOURCES_JAR_PATTERN, true);
 
     if (jarFiles == null) {
       // TODO: handle
     } else {
-      List<MavenCoordinateState> mavenCoordinateJars = new ArrayList<>();
-      List<MavenCoordinateState> mavenCoordinateSourcesJars = new ArrayList<>();
+
       for (Path jar : jarFiles) {
-        Matcher templateSetJarMatcher = templateSetJar.matcher(jar.toString());
-        Matcher templateSetSourcesJarMatcher = templateSetSourcesJar.matcher(jar.toString());
+        patternToIsSourcesJar.forEach((pattern, isSource) -> {
+          mavenCoordinateStates.add(createMavenCoordinateState(jar, pattern, isSource));
+        });
 
-        String groupID = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID;
-        String artifactID = "";
-        String version = "";
-        if (templateSetJarMatcher.find() || templateSetSourcesJarMatcher.find()) {
-          if (templateSetJarMatcher.find()) {
-            artifactID = templateSetJarMatcher.group(0);
-            version = templateSetJarMatcher.group(1);
-            MavenCoordinateState templateSetJarCoordinate = new MavenCoordinateState(jar, groupID, artifactID, version,
-                false);
-            mavenCoordinateJars.add(templateSetJarCoordinate);
-          }
-          if (templateSetSourcesJarMatcher.find()) {
-            artifactID = templateSetSourcesJarMatcher.group(0);
-            version = templateSetSourcesJarMatcher.group(1);
-            MavenCoordinateState templateSetSourcesJarCoordinate = new MavenCoordinateState(jar, groupID, artifactID,
-                version, true);
-            mavenCoordinateSourcesJars.add(templateSetSourcesJarCoordinate);
-
-          }
-        } else {
-          // TODO: handle
-        }
-        // TODO: update fields
-        if (mavenCoordinateJars.size() != 0 && mavenCoordinateSourcesJars.size() != 0) {
-
-        } else {
-
-        }
       }
     }
 
-    // Populate tuple list
-    MavenCoordinateState mavenCoordinate = new MavenCoordinateState(templateSetDirectory, "", "", "");
-
     Pair<MavenCoordinateState, MavenCoordinateState> thisMap = Pair.with(null, null);
+
     List<Pair<MavenCoordinateState, MavenCoordinateState>> thisList = new ArrayList<>();
 
     return thisList;
