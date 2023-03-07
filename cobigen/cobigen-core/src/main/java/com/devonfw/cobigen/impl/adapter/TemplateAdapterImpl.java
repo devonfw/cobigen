@@ -269,6 +269,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
    * @param targetPath Path of the target directory to unpack the source archive to
    * @throws IOException if an error occurred while processing the jar or its target directory
    */
+  // TODO: geht die auch für template sets
   private void extractArchive(Path sourcePath, Path targetPath) throws IOException {
 
     if (FileSystemUtil.isZipFile(sourcePath.toUri())) {

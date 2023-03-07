@@ -21,8 +21,8 @@ import org.xml.sax.SAXException;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 
 /**

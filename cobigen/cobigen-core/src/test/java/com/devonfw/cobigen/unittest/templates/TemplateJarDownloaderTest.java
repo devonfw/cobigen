@@ -15,8 +15,8 @@ import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
-import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 /**

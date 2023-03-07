@@ -1,4 +1,4 @@
-package com.devonfw.cobigen.api.util;
+package com.devonfw.cobigen.api.util.mavencoordinate;
 
 import java.util.Objects;
 

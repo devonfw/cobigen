@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
-import com.devonfw.cobigen.api.util.MavenCoordinate;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
 
 /**
  * Converts a list of maven coordinates in String form to an actual List of maven Coordinates

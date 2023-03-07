@@ -2,7 +2,7 @@ package com.devonfw.cobigen.impl.config;
 
 import java.util.List;
 
-import com.devonfw.cobigen.api.util.MavenCoordinate;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
 
 /**
  * Data wrapper for configuration Properties. The properties are groupIds, hideTemplates and allowSnapshots
