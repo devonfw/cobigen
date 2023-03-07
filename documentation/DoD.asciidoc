@@ -1,0 +1,28 @@
+:toc:
+toc::[]
+
+= definition of done
+
+Before a pull request (PR) for devonfw-ide is ready for review, this _definition of done_ (DoD) should be satisfied.
+Please note that external contributors are not strictly required to address all of these points as we love to get contributions and do not want to scare people from contributing with too much constraints.
+However, chances to get your change merged quickly are higher if you address all the following points.
+
+* [ ] Create PR draft and link feature branch from your fork while working on the issue.
+** [ ] Check implemented features in the issue checklist.
+* [ ] Your PR Draft and the issue follows our best-practices:
+** [ ] PR Draft title is of the form `#«issue-id»: «brief summary»` (e.g. `#921: fixed setup.bat`).
+** [ ] PR Draft top-level comment summarizes what has been done following the template and also contains link to addressed issue(s).
+** [ ] PR Draft is linked with the issue(s) that it implements and resolves (see sidebar, click on `Development` and enter issue ID).
+** [ ] PR Draft and issue(s) have suitable labels (module-specific like `comp:core`, `app:cli`, or `app:eclipse` as well as other aspects like `bug`, `research`, `good first issue`, or workflow specifc labels such as `prio:high` or `proc:split`).
+** [ ] Issue is assigned to you (should actually be done before you start your implementation).
+* [ ] All checks have passed. Otherwise if a check failed (red cross) you need to click the `Details` link, read the logs and fix the problem.
+** [ ] The build and all automated tests (including shellcheck) succeeded. If failed and you clicked on `Details` scroll up and search for log lines like `Error:  Failed running test #`.
+** [ ] The contributors license agreement (CLA) is signed by all contributors of the PR.
+** [ ] Git-Guardian did not report any security issue.
+** [ ] Resolve the issues reported by sonatype-lift.
+* [ ] The feature branch of the PR is up-to-date with the `master` branch. If you see `This branch is out-of-date with the base branch` in the PR click the `Update branch` button to fix (or manually merge with the `master` from upstream locally and push your changes). In case you see `This branch has conflicts that must be resolved` instead, you need to resolve conflicts. Very simple conficts may be resolved in the browser on github but as a general recommendation you should resolve the conflicts locally with proper merge tool support and rerun tests before you push the merged changes.
+* [ ] You followed all [coding conventions](https://github.com/devonfw/devon4j/wiki/coding-conventions).
+* [ ] After all checks have passed the draft is ready to review and can be converted to a PR.
+** [ ] Request reviews directly through sidebar (click on reviewers and enter the names from [team members](https://github.com/orgs/devonfw/teams/cobigen_templates/members)).
+** [ ] Implement changes requested by the reviewers.
+* [ ] If there are no more changes requested the pr is ready for merge.
