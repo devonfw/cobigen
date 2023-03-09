@@ -21,6 +21,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinatePair;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 
@@ -74,7 +75,6 @@ public class TemplateProcessingTest extends AbstractApiTest {
    * @throws Exception test fails
    */
   @Test
-  // TODO call getJar methods in test
   public void extractTemplateSetsTest() throws IOException, Exception {
 
     Path devTemplateSetPath = new File(
@@ -151,6 +151,93 @@ public class TemplateProcessingTest extends AbstractApiTest {
   }
 
   // Get jar util extern testen
+
+  /**
+   * Tests if template sets can be extracted properly
+   *
+   * @throws IOException if an Exception occurs
+   * @throws Exception test fails
+   */
+  @Test
+  public void extractTemplateSetsTestWithTemplateSetJarFolderStructure() throws IOException, Exception {
+
+    Path devTemplateSetPath = new File(
+        TemplateProcessingTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+            .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
+            .resolve("crud-java-server-app").resolve("target");
+    File jars = devTemplateSetPath.toFile();
+    List<String> filenames = new ArrayList<>(2);
+    for (File file : jars.listFiles()) {
+      if (file.getName().endsWith(".jar")) {
+        filenames.add(file.getName());
+      }
+    }
+    if (Files.exists(devTemplateSetPath)) {
+      Path downloadedTemplateSetsPath = this.cobiGenHomeTemplateSets
+          .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+      if (!Files.exists(downloadedTemplateSetsPath)) {
+        Files.createDirectories(downloadedTemplateSetsPath);
+      }
+      for (String jarFilename : filenames) {
+        Files.copy(devTemplateSetPath.resolve(jarFilename),
+            downloadedTemplateSetsPath.resolve(jarFilename.replace("-SNAPSHOT", "")));
+      }
+    }
+
+    Path cobigenTemplateSetsFolderPath = this.cobiGenHomeTemplateSets
+        .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    Path downloadedTemplateSetsFolderPath = cobigenTemplateSetsFolderPath
+        .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    Path adaptedTemplateSetsFolderPath = cobigenTemplateSetsFolderPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+
+    if (!Files.exists(cobigenTemplateSetsFolderPath)) {
+      Files.createDirectories(cobigenTemplateSetsFolderPath);
+    }
+
+    List<MavenCoordinatePair> mavenCoordinatePairs = TemplatesJarUtil
+        .getTemplateSetJarFolderStructure(downloadedTemplateSetsFolderPath);
+
+    for (MavenCoordinatePair pair : mavenCoordinatePairs) {
+      // check if MavenCoordinateState specific attributes are set
+      assertThat(pair.isValidJarAndSourcesJarPair()).isTrue();
+      assertThat(pair.getValue0().getMavenCoordinateLocalPath()).exists();
+      assertThat(pair.getValue1().getMavenCoordinateLocalPath()).exists();
+      assertThat(pair.getValue0().isPresent()).isTrue();
+      assertThat(pair.getValue1().isPresent()).isTrue();
+      assertThat(pair.getValue0().isValidMavenCoordinate()).isTrue();
+      assertThat(pair.getValue1().isValidMavenCoordinate()).isTrue();
+
+    }
+
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenTemplateSetsFolderPath);
+
+    Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
+      templateAdapter.adaptTemplates();
+    });
+
+    List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
+    templateAdapter.adaptTemplateSets(templateSetJars, adaptedTemplateSetsFolderPath, false);
+
+    assertThat(cobigenTemplateSetsFolderPath).exists();
+    assertThat(downloadedTemplateSetsFolderPath).exists();
+    assertThat(adaptedTemplateSetsFolderPath).exists();
+
+    // check if adapted template set exists
+    Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007");
+    Path templateSetSources = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007-sources");
+    // throwing a error
+    assertThat(templateSet).exists();
+    assertThat(templateSetSources).exists();
+    // check if context configuration exists
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    // validate correct folder structure
+    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    // validate maven specific contents
+    assertThat(templateSet.resolve("pom.xml")).exists();
+  }
 
   /**
    * Test of extract templates with old CobiGen_Templates project existing

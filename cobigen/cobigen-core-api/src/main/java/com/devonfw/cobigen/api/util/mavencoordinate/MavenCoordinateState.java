@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.api.util.mavencoordinate;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * This MavenCoordinateState extends the dataholder MavenCoordinate to process information about a MavenCoordinate
@@ -171,4 +172,27 @@ public class MavenCoordinateState extends MavenCoordinate {
 
     return getGroupId() + ":" + getArtifactId() + ":" + getVersion();
   }
+
+  /**
+   * Uses the {@linkplain Objects#equals(Object)} method to enhance the identity of {@linkplain MavenCoordinate} by the
+   * {@linkplain #isSource()} attribute.
+   *
+   */
+  @Override
+  public boolean equals(Object obj) {
+
+    if (this == obj)
+      return true;
+
+    if (!(obj instanceof MavenCoordinateState))
+      return false;
+
+    if (!super.equals(obj))
+      return false;
+
+    MavenCoordinateState other = (MavenCoordinateState) obj;
+    return Objects.equals(this.isSource, other.isSource());
+
+  }
+
 }

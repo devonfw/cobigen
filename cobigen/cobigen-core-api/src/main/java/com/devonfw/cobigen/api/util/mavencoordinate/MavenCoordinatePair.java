@@ -7,21 +7,30 @@ import java.util.Objects;
 import org.javatuples.Pair;
 
 /**
- * The wrapper class MavenCoordinatePair that wraps a Pair of MavenCoordinateStates and provides extensive utility to
- * interact with the data structure.
+ * The wrapper class MavenCoordinatePair that wraps a pair of {@linkplain MavenCoordinateState MavenCoordinateStates}
+ * and provides extensive utility to interact with the data structure.
  *
  */
 public class MavenCoordinatePair implements Iterable<MavenCoordinateState> {
+
+  /**
+   * The data holder for a given pair of {@linkplain MavenCoordinateState MavenCoordinateStates}
+   */
   private Pair<MavenCoordinateState, MavenCoordinateState> pair;
 
   /**
-   * Initialize a MavenCoordinatePair with the given values.
+   * Initialize a MavenCoordinatePair with the given values. Ensures that the {@linkplain MavenCoordinateState} with a
+   * truly {@linkplain MavenCoordinateState#isSource isSource} flag is the first element of the pair.
    *
    * @param value0 any MavenCoordinateState
    * @param value1 any MavenCoordinateState
    */
   public MavenCoordinatePair(MavenCoordinateState value0, MavenCoordinateState value1) {
 
+    if (!value0.isSource() && value1.isSource()) {
+      this.pair = Pair.with(value1, value0);
+      return;
+    }
     this.pair = Pair.with(value0, value1);
   }
 

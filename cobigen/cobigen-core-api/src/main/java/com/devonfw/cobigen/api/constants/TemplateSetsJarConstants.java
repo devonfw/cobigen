@@ -5,9 +5,15 @@ package com.devonfw.cobigen.api.constants;
  */
 public class TemplateSetsJarConstants {
 
-  public static final int ARTIFACT_ID_REGEX_GROUP = 0;
+  /**
+   * Used to denote the first regex group index of the artifactId
+   */
+  public static final int ARTIFACT_ID_REGEX_GROUP = 1;
 
-  public static final int VERSION_REGEX_GROUP = 1;
+  /**
+   * Used to denote the second regex group index of the version
+   */
+  public static final int VERSION_REGEX_GROUP = 2;
 
   //@formatter:off
   /**
@@ -17,7 +23,7 @@ public class TemplateSetsJarConstants {
    * Group 3: snapshot or latest
    */
   //@formatter:on
-  public static final String MAVEN_COORDINATE_JAR_PATTERN = "^([a-zA-Z-]+)-([\\d.]+)-(SNAPSHOT|LATEST)\\.jar$";
+  public static final String MAVEN_COORDINATE_JAR_PATTERN = "([a-zA-Z-]+)-([\\d.]+)(-SNAPSHOT|-LATEST)?\\.jar";
 
   //@formatter:off
   /**
@@ -27,6 +33,6 @@ public class TemplateSetsJarConstants {
    * Group 3: snapshot or latest
    */
   //@formatter:on
-  public static final String MAVEN_COORDINATE_SOURCES_JAR_PATTERN = "^([a-zA-Z-]+)-([\\d.]+)-(Sources)\\.jar$";
+  public static final String MAVEN_COORDINATE_SOURCES_JAR_PATTERN = "([a-zA-Z-]+)-([\\d.]+)(-sources)\\.jar";
 
 }
