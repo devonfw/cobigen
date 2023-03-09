@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -161,27 +163,48 @@ public class TemplateProcessingTest extends AbstractApiTest {
   @Test
   public void extractTemplateSetsTestWithTemplateSetJarFolderStructure() throws IOException, Exception {
 
-    Path devTemplateSetPath = new File(
+    // Given
+    Path devTemplateSetPath1 = new File(
         TemplateProcessingTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
             .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
             .resolve("crud-java-server-app").resolve("target");
-    File jars = devTemplateSetPath.toFile();
-    List<String> filenames = new ArrayList<>(2);
-    for (File file : jars.listFiles()) {
-      if (file.getName().endsWith(".jar")) {
-        filenames.add(file.getName());
+    Path devTemplateSetPath2 = new File(
+        TemplateProcessingTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+            .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
+            .resolve("crud-openapi-net").resolve("target");
+    Path devTemplateSetPath3 = new File(
+        TemplateProcessingTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
+            .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
+            .resolve("crud-openapi-ionic-client-app").resolve("target");
+
+    Map<Path, List<String>> filemap = Map.of(devTemplateSetPath1, new ArrayList<>(), devTemplateSetPath2,
+        new ArrayList<>(), devTemplateSetPath3, new ArrayList<>());
+
+    filemap.forEach((dir, filenames) -> {
+      for (File file : dir.toFile().listFiles()) {
+        if (file.getName().endsWith(".jar")) {
+          filenames.add(file.getName());
+        }
       }
-    }
-    if (Files.exists(devTemplateSetPath)) {
+    });
+
+    if (Files.exists(devTemplateSetPath1) && Files.exists(devTemplateSetPath2) && Files.exists(devTemplateSetPath3)) {
       Path downloadedTemplateSetsPath = this.cobiGenHomeTemplateSets
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
       if (!Files.exists(downloadedTemplateSetsPath)) {
         Files.createDirectories(downloadedTemplateSetsPath);
       }
-      for (String jarFilename : filenames) {
-        Files.copy(devTemplateSetPath.resolve(jarFilename),
-            downloadedTemplateSetsPath.resolve(jarFilename.replace("-SNAPSHOT", "")));
-      }
+
+      filemap.forEach((dir, filenames) -> {
+        for (String jarFilename : filenames) {
+          try {
+            Files.copy(dir.resolve(jarFilename),
+                downloadedTemplateSetsPath.resolve(jarFilename.replace("-SNAPSHOT", "")));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      });
     }
 
     Path cobigenTemplateSetsFolderPath = this.cobiGenHomeTemplateSets
@@ -221,22 +244,34 @@ public class TemplateProcessingTest extends AbstractApiTest {
     assertThat(cobigenTemplateSetsFolderPath).exists();
     assertThat(downloadedTemplateSetsFolderPath).exists();
     assertThat(adaptedTemplateSetsFolderPath).exists();
+    // TODO: fix this test
 
-    // check if adapted template set exists
-    Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007");
-    Path templateSetSources = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007-sources");
-    // throwing a error
-    assertThat(templateSet).exists();
-    assertThat(templateSetSources).exists();
-    // check if context configuration exists
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
-    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
-    // validate correct folder structure
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
-    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
-    // validate maven specific contents
-    assertThat(templateSet.resolve("pom.xml")).exists();
+    // Output
+    List<List<String>> adaptedTemplates = new ArrayList<>(
+        Arrays.asList(Arrays.asList("crud-java-server-app-2021.12.007", "crud-java-server-app-2021.12.007-sources"),
+            Arrays.asList("crud-openapi-ionic-client-app-2021.12.007.jar",
+                "crud-openapi-ionic-client-app-2021.12.007-sources.jar"),
+            Arrays.asList("crud-openapi-net-2021.12.007.jar", "crud-openapi-net-2021.12.007-sources.jar")));
+
+    for (List<String> adapted : adaptedTemplates) {
+      // check if adapted template set exists
+      Path templateSet = adaptedTemplateSetsFolderPath.resolve(adapted.get(0));
+      Path templateSetSources = adaptedTemplateSetsFolderPath.resolve(adapted.get(1));
+      // throwing a error
+      assertThat(templateSet).exists();
+      assertThat(templateSetSources).exists();
+      // check if context configuration exists
+      assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
+      assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+      assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+      // validate correct folder structure
+      assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+      assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME))
+          .exists();
+      // validate maven specific contents
+      assertThat(templateSet.resolve("pom.xml")).exists();
+    }
+
   }
 
   /**
