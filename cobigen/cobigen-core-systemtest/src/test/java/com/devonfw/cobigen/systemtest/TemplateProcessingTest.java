@@ -152,10 +152,8 @@ public class TemplateProcessingTest extends AbstractApiTest {
     assertThat(templateSet.resolve("pom.xml")).exists();
   }
 
-  // Get jar util extern testen
-
   /**
-   * Tests if template sets can be extracted properly
+   * Tests if template sets can be extracted properly by making use of the new MavenCoordinatePair data structure
    *
    * @throws IOException if an Exception occurs
    * @throws Exception test fails
@@ -171,11 +169,11 @@ public class TemplateProcessingTest extends AbstractApiTest {
     Path devTemplateSetPath2 = new File(
         TemplateProcessingTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
             .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
-            .resolve("crud-openapi-net").resolve("target");
+            .resolve("crud-java-server-app-complex").resolve("target");
     Path devTemplateSetPath3 = new File(
         TemplateProcessingTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
             .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
-            .resolve("crud-openapi-ionic-client-app").resolve("target");
+            .resolve("crud-openapi-java-server-app").resolve("target");
 
     Map<Path, List<String>> filemap = Map.of(devTemplateSetPath1, new ArrayList<>(), devTemplateSetPath2,
         new ArrayList<>(), devTemplateSetPath3, new ArrayList<>());
@@ -244,14 +242,12 @@ public class TemplateProcessingTest extends AbstractApiTest {
     assertThat(cobigenTemplateSetsFolderPath).exists();
     assertThat(downloadedTemplateSetsFolderPath).exists();
     assertThat(adaptedTemplateSetsFolderPath).exists();
-    // TODO: fix this test
 
     // Output
-    List<List<String>> adaptedTemplates = new ArrayList<>(
-        Arrays.asList(Arrays.asList("crud-java-server-app-2021.12.007", "crud-java-server-app-2021.12.007-sources"),
-            Arrays.asList("crud-openapi-ionic-client-app-2021.12.007.jar",
-                "crud-openapi-ionic-client-app-2021.12.007-sources.jar"),
-            Arrays.asList("crud-openapi-net-2021.12.007.jar", "crud-openapi-net-2021.12.007-sources.jar")));
+    List<List<String>> adaptedTemplates = new ArrayList<>(Arrays.asList(
+        Arrays.asList("crud-java-server-app-2021.12.007", "crud-java-server-app-2021.12.007-sources"),
+        Arrays.asList("crud-java-server-app-complex-2021.12.007", "crud-java-server-app-complex-2021.12.007-sources"),
+        Arrays.asList("crud-openapi-java-server-app-2021.12.007", "crud-openapi-java-server-app-2021.12.007-sources")));
 
     for (List<String> adapted : adaptedTemplates) {
       // check if adapted template set exists
