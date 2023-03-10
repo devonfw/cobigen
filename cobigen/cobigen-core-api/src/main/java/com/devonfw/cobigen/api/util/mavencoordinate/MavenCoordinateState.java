@@ -2,6 +2,10 @@ package com.devonfw.cobigen.api.util.mavencoordinate;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.devonfw.cobigen.api.constants.TemplateSetsJarConstants;
 
 /**
  * This MavenCoordinateState extends the dataholder MavenCoordinate to process information about a MavenCoordinate
@@ -30,6 +34,11 @@ public class MavenCoordinateState extends MavenCoordinate {
   private Path mavenCoordinateLocalPath;
 
   /**
+   * status if this MavenCoordinate should be adapted during the adapted process
+   */
+  private boolean toBeAdapted;
+
+  /**
    * Whether the object is a valid MavenCoordinate or not
    */
   private boolean isValidMavenCoordinate;
@@ -47,6 +56,7 @@ public class MavenCoordinateState extends MavenCoordinate {
     this.isSource = false;
     this.isPresent = false;
     this.isAdapted = false;
+    setToBeAdapted(false);
     setValidMavenCoordinate(false);
   }
 
@@ -66,6 +76,7 @@ public class MavenCoordinateState extends MavenCoordinate {
     this.isSource = false;
     this.isPresent = false;
     this.isAdapted = false;
+    setToBeAdapted(false);
     setValidMavenCoordinate(false);
 
   }
@@ -87,8 +98,9 @@ public class MavenCoordinateState extends MavenCoordinate {
 
     this.mavenCoordinateLocalPath = mavenCoordinatePath;
     this.isSource = isSource;
-    this.isPresent = false;
+    this.isPresent = false; // this field might be obsolete
     this.isAdapted = false;
+    setToBeAdapted(false);
     setValidMavenCoordinate(false);
 
   }
@@ -166,11 +178,36 @@ public class MavenCoordinateState extends MavenCoordinate {
   }
 
   /**
-   * @return
+   * @return returns a string that reflects a directory name of the given MavenCoordinate
+   */
+  public String getRealDirectoryName() {
+
+    String name = getArtifactId() + "-" + getVersion();
+    return isSource() ? name + "-sources" : name;
+  }
+
+  /**
+   * @return an identifier for maps
    */
   public String getGroupArtifactVersion() {
 
     return getGroupId() + ":" + getArtifactId() + ":" + getVersion();
+  }
+
+  /**
+   * @return toBeAdapted
+   */
+  public boolean isToBeAdapted() {
+
+    return this.toBeAdapted;
+  }
+
+  /**
+   * @param toBeAdapted new value of {@link #isToBeAdapted()}.
+   */
+  public void setToBeAdapted(boolean toBeAdapted) {
+
+    this.toBeAdapted = toBeAdapted;
   }
 
   /**
@@ -192,6 +229,34 @@ public class MavenCoordinateState extends MavenCoordinate {
 
     MavenCoordinateState other = (MavenCoordinateState) obj;
     return Objects.equals(this.isSource, other.isSource());
+
+  }
+
+  /**
+   * Creates a MavenCoordinateState object that exposes situational information.
+   *
+   * @param jar the local path to a jar file
+   * @param regex the pattern that is supposed to match the path
+   * @param isSource whether the jar is meant to be a sources jar or not
+   * @return mavenCoordinateState or null when the pattern does not match the given path
+   */
+  public static MavenCoordinateState createMavenCoordinateState(Path jar, String regex, boolean isSource) {
+
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(jar.getFileName().toString().strip());
+
+    if (matcher.find()) {
+      String artifactID = matcher.group(TemplateSetsJarConstants.ARTIFACT_ID_REGEX_GROUP);
+      String version = matcher.group(TemplateSetsJarConstants.VERSION_REGEX_GROUP);
+      MavenCoordinateState mavenCoordinateState = new MavenCoordinateState(jar, null, artifactID, version, isSource);
+      if (artifactID != null && version != null) {
+        mavenCoordinateState.setPresent(true);
+        mavenCoordinateState.setValidMavenCoordinate(true);
+      }
+      return mavenCoordinateState;
+    } else {
+      return null;
+    }
 
   }
 

@@ -25,7 +25,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinatePair;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 
@@ -226,15 +226,16 @@ public class TemplateProcessingTest extends AbstractApiTest {
       Files.createDirectories(cobigenTemplateSetsFolderPath);
     }
 
+    // When
     // Gather information about download directory
-    List<MavenCoordinatePair> mavenCoordinatePairs = TemplatesJarUtil
+    List<MavenCoordinateStatePair> mavenCoordinateStatePairs = TemplatesJarUtil
         .getTemplateSetJarFolderStructure(downloadedTemplateSetsFolderPath);
 
     List<String> flatAdaptedTemplates = adaptedTemplates.stream().flatMap(list -> list.stream())
         .collect(Collectors.toList());
 
     // Check if the data structure aligns with the given files
-    for (MavenCoordinatePair pair : mavenCoordinatePairs) {
+    for (MavenCoordinateStatePair pair : mavenCoordinateStatePairs) {
       // check if MavenCoordinateState specific attributes are set
       assertThat(pair.isValidJarAndSourcesJarPair()).isTrue();
       assertThat(pair.getValue0().getMavenCoordinateLocalPath()).exists();
@@ -266,7 +267,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
     List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
     templateAdapter.adaptTemplateSets(templateSetJars, adaptedTemplateSetsFolderPath, false);
 
-    // Run extensive checks
+    // Then
     assertThat(cobigenTemplateSetsFolderPath).exists();
     assertThat(downloadedTemplateSetsFolderPath).exists();
     assertThat(adaptedTemplateSetsFolderPath).exists();

@@ -11,7 +11,7 @@ import org.javatuples.Pair;
  * and provides extensive utility to interact with the data structure.
  *
  */
-public class MavenCoordinatePair implements Iterable<MavenCoordinateState> {
+public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> {
 
   /**
    * The data holder for a given pair of {@linkplain MavenCoordinateState MavenCoordinateStates}
@@ -25,7 +25,7 @@ public class MavenCoordinatePair implements Iterable<MavenCoordinateState> {
    * @param value0 any MavenCoordinateState
    * @param value1 any MavenCoordinateState
    */
-  public MavenCoordinatePair(MavenCoordinateState value0, MavenCoordinateState value1) {
+  public MavenCoordinateStatePair(MavenCoordinateState value0, MavenCoordinateState value1) {
 
     if (!value0.isSource() && value1.isSource()) {
       this.pair = Pair.with(value1, value0);
@@ -96,10 +96,10 @@ public class MavenCoordinatePair implements Iterable<MavenCoordinateState> {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof MavenCoordinatePair)) {
+    if (!(obj instanceof MavenCoordinateStatePair)) {
       return false;
     }
-    MavenCoordinatePair other = (MavenCoordinatePair) obj;
+    MavenCoordinateStatePair other = (MavenCoordinateStatePair) obj;
 
     return getValue0().equals(other.getValue0()) && getValue1().equals(other.getValue1());
   }

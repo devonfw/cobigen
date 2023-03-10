@@ -1,7 +1,8 @@
 package com.devonfw.cobigen.api.exception;
 
-import java.nio.file.Path;
 import java.util.List;
+
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 
 /**
  * Exception that indicates that a new template structure is available. For asking which template sets should be
@@ -13,25 +14,26 @@ public class TemplateSelectionForAdaptionException extends Exception {
   private static final long serialVersionUID = 1;
 
   /** List of available template sets. */
-  private List<Path> templateSets;
+  private List<MavenCoordinateStatePair> templateSetMavenCoordinateStatePairs;
 
   /**
    * Creates a new {@link TemplateSelectionForAdaptionException}
    *
-   * @param templateSets A list with available template sets to adapt.
+   * @param templateSetMavenCoordinateStatePairs A list with available template sets to adapt. Template sets are wrapped
+   *        into a pair of MavenCoordinateStates.
    *
    */
-  public TemplateSelectionForAdaptionException(List<Path> templateSets) {
+  public TemplateSelectionForAdaptionException(List<MavenCoordinateStatePair> templateSetMavenCoordinateStatePairs) {
 
     super("Select the template sets you want to adapt.");
-    this.templateSets = templateSets;
+    this.templateSetMavenCoordinateStatePairs = templateSetMavenCoordinateStatePairs;
   }
 
   /**
    * @return templateSets All available template sets.
    */
-  public List<Path> getTemplateSets() {
+  public List<MavenCoordinateStatePair> getTemplateSetMavenCoordinateStatePairs() {
 
-    return this.templateSets;
+    return this.templateSetMavenCoordinateStatePairs;
   }
 }

@@ -30,7 +30,7 @@ import com.devonfw.cobigen.api.constants.TemplateSetsJarConstants;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinatePair;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
 
 /**
@@ -330,43 +330,15 @@ public class TemplatesJarUtil {
   }
 
   /**
-   * Creates a MavenCoordinateState object that exposes situational information.
-   *
-   * @param jar the local path to a jar file
-   * @param regex the pattern that is supposed to match the path
-   * @param isSource whether the jar is meant to be a sources jar or not
-   * @return mavenCoordinateState or null when the pattern does not match the given path
-   */
-  private static MavenCoordinateState createMavenCoordinateState(Path jar, String regex, boolean isSource) {
-
-    Pattern pattern = Pattern.compile(regex);
-    Matcher matcher = pattern.matcher(jar.getFileName().toString().strip());
-
-    if (matcher.find()) {
-      String artifactID = matcher.group(TemplateSetsJarConstants.ARTIFACT_ID_REGEX_GROUP);
-      String version = matcher.group(TemplateSetsJarConstants.VERSION_REGEX_GROUP);
-      MavenCoordinateState mavenCoordinateState = new MavenCoordinateState(jar, null, artifactID, version, isSource);
-      if (artifactID != null && version != null) {
-        mavenCoordinateState.setPresent(true);
-        mavenCoordinateState.setValidMavenCoordinate(true);
-      }
-      return mavenCoordinateState;
-    } else {
-      return null;
-    }
-
-  }
-
-  /**
    * Processes the jars in a given directory and organizes them into a data structure for extended logic.
    *
    * @param templateSetDirectory {@linkplain Path templateSetDirectory} the path to a directory with present Template
    *        Sets
-   * @return {@linkplain MavenCoordinatePair mavenCoordinatePair} the pair containing {@linkplain MavenCoordinateState
+   * @return {@linkplain MavenCoordinateStatePair mavenCoordinatePair} the pair containing {@linkplain MavenCoordinateState
    *         MavenCoordinateStates} where the first value is a non-sources {@linkplain MavenCoordinateState} and the
    *         second value is a sources {@linkplain MavenCoordinateState}
    */
-  public static List<MavenCoordinatePair> getTemplateSetJarFolderStructure(Path templateSetDirectory) {
+  public static List<MavenCoordinateStatePair> getTemplateSetJarFolderStructure(Path templateSetDirectory) {
 
     List<Path> jarFiles = getJarFiles(templateSetDirectory);
     List<MavenCoordinateState> mavenCoordinateStates = new ArrayList<>();
@@ -378,12 +350,10 @@ public class TemplatesJarUtil {
           templateSetDirectory);
       return null;
     } else {
-
       for (Path jar : jarFiles) {
         patternToIsSourcesJar.forEach((pattern, isSource) -> {
-          mavenCoordinateStates.add(createMavenCoordinateState(jar, pattern, isSource));
+          mavenCoordinateStates.add(MavenCoordinateState.createMavenCoordinateState(jar, pattern, isSource));
         });
-
       }
 
       Map<String, List<MavenCoordinateState>> groupedByGroupArtifactVersion = mavenCoordinateStates.stream()
@@ -394,11 +364,11 @@ public class TemplatesJarUtil {
           .forEach(entry -> LOG.warn("Duplicate MavenCoordinateState objects for groupArtifactVersion {}: {}",
               entry.getKey(), entry.getValue()));
 
-      List<MavenCoordinatePair> mavenCoordinatePair = groupedByGroupArtifactVersion.entrySet().stream()
-          .map(entry -> new MavenCoordinatePair(entry.getValue().get(0), entry.getValue().get(1)))
+      List<MavenCoordinateStatePair> mavenCoordinateStatePair = groupedByGroupArtifactVersion.entrySet().stream()
+          .map(entry -> new MavenCoordinateStatePair(entry.getValue().get(0), entry.getValue().get(1)))
           .filter(pair -> pair.getValue0() != null && pair.getValue1() != null).collect(Collectors.toList());
 
-      return mavenCoordinatePair;
+      return mavenCoordinateStatePair;
     }
 
   }

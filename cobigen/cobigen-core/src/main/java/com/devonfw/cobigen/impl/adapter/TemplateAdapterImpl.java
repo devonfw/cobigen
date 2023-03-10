@@ -30,6 +30,8 @@ import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.AbstractConfigurationUpgrader;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
@@ -79,23 +81,24 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       adaptMonolithicTemplates(destinationPath, false);
       throw new UpgradeTemplatesNotificationException();
     } else {
-      throw new TemplateSelectionForAdaptionException(getTemplateSetJars());
+      throw new TemplateSelectionForAdaptionException(getTemplateSetMavenCoordinateStatePairs());
     }
   }
 
   @Override
-  public void adaptTemplateSets(List<Path> templateSetJars, boolean forceOverride) throws IOException {
+  public void adaptTemplateSets(List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs, boolean forceOverride)
+      throws IOException {
 
     Path destinationPath = this.templatesLocation.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-    adaptTemplateSets(templateSetJars, destinationPath, forceOverride);
+    adaptTemplateSets(templateSetMavenCoordinatePairs, destinationPath, forceOverride);
   }
 
   @Override
-  public void adaptTemplateSets(List<Path> templateSetJars, Path destinationPath, boolean forceOverride)
-      throws IOException {
+  public void adaptTemplateSets(List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs, Path destinationPath,
+      boolean forceOverride) throws IOException {
 
     try {
-      processTemplateSetJars(templateSetJars, destinationPath, forceOverride);
+      processTemplateSetJars(templateSetMavenCoordinatePairs, destinationPath, forceOverride);
       LOG.info("Successfully extracted templates to @ {}", destinationPath);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Not able to extract templates to " + destinationPath, e);
@@ -106,15 +109,18 @@ public class TemplateAdapterImpl implements TemplateAdapter {
    * Extracts a specified set of template jars to the specified target. The list is specified by the user in CLI or
    * Eclipse module.
    *
-   * @param templateSetJarsToAdapt A {@link List} of {@link Path} with the template jars to adapt.
+   * @param templateSetMavenCoordinatePairs A {@link java.util.List List} of {@link MavenCoordinateStatePair
+   *        MavenCoordinateStatePairs}
    * @param destinationPath The {@link Path} where the jars should be extracted to
    * @param forceOverride Indicator whether an already adapted template set should be overridden
    * @throws IOException If CobiGen is not able to extract the jar file to the destination folder
    */
-  private void processTemplateSetJars(List<Path> templateSetJarsToAdapt, Path destinationPath, boolean forceOverride)
-      throws IOException {
+  private void processTemplateSetJars(List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs,
+      Path destinationPath, boolean forceOverride) throws IOException {
 
-    for (Path templateSetJar : templateSetJarsToAdapt) {
+    // TODO: write adapter to new data structure
+    // TODO: fix current tests
+    for (MavenCoordinateStatePair mavenCoordinateStatePair : templateSetMavenCoordinatePairs) {
       LOG.debug("Processing jar file @ {}", templateSetJar);
       String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
       Path destination = destinationPath.resolve(fileName);
@@ -218,14 +224,14 @@ public class TemplateAdapterImpl implements TemplateAdapter {
 
   // TODO implement new method
   @Override
-  public List<Path> getTemplateSetJars() {
+  public List<MavenCoordinateStatePair> getTemplateSetMavenCoordinateStatePairs() {
 
     Path downloadedJarsFolder = this.templatesLocation.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     if (!Files.exists(downloadedJarsFolder)) {
       LOG.info("No template set jars found. Folder {} does not exist.", downloadedJarsFolder);
       return null;
     }
-    return TemplatesJarUtil.getJarFiles(downloadedJarsFolder);
+    return TemplatesJarUtil.getTemplateSetJarFolderStructure(downloadedJarsFolder);
   }
 
   @Override
@@ -250,14 +256,19 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   }
 
   @Override
-  public boolean isTemplateSetAlreadyAdapted(Path templateSetJar) {
+  public boolean isTemplateSetAlreadyAdapted(MavenCoordinateState mavenCoordinateState) {
 
-    if (templateSetJar != null && Files.exists(templateSetJar)) {
-      Path adaptedFolder = this.templatesLocation.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-      if (Files.exists(adaptedFolder)
-          && Files.exists(adaptedFolder.resolve(templateSetJar.getFileName().toString().replace(".jar", "")))) {
-        return true;
+    if (mavenCoordinateState != null) {
+      if (mavenCoordinateState.getMavenCoordinateLocalPath() != null
+          && Files.exists(mavenCoordinateState.getMavenCoordinateLocalPath())) {
+        Path adaptedFolder = this.templatesLocation.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+        if (Files.exists(adaptedFolder) && Files.exists(adaptedFolder.resolve(
+            mavenCoordinateState.getMavenCoordinateLocalPath().getFileName().toString().replace(".jar", "")))) {
+          mavenCoordinateState.setAdapted(true);
+          return true;
+        }
       }
+      mavenCoordinateState.setAdapted(false);
     }
     return false;
   }
