@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -175,6 +177,13 @@ public class TemplateProcessingTest extends AbstractApiTest {
             .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
             .resolve("crud-openapi-java-server-app").resolve("target");
 
+    // Output
+    List<List<String>> adaptedTemplates = new ArrayList<>(Arrays.asList(
+        Arrays.asList("crud-java-server-app-2021.12.007", "crud-java-server-app-2021.12.007-sources"),
+        Arrays.asList("crud-java-server-app-complex-2021.12.007", "crud-java-server-app-complex-2021.12.007-sources"),
+        Arrays.asList("crud-openapi-java-server-app-2021.12.007", "crud-openapi-java-server-app-2021.12.007-sources")));
+
+    // Map to process jars
     Map<Path, List<String>> filemap = Map.of(devTemplateSetPath1, new ArrayList<>(), devTemplateSetPath2,
         new ArrayList<>(), devTemplateSetPath3, new ArrayList<>());
 
@@ -186,6 +195,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
       }
     });
 
+    // Copy given files to the test directories
     if (Files.exists(devTemplateSetPath1) && Files.exists(devTemplateSetPath2) && Files.exists(devTemplateSetPath3)) {
       Path downloadedTemplateSetsPath = this.cobiGenHomeTemplateSets
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
@@ -205,6 +215,7 @@ public class TemplateProcessingTest extends AbstractApiTest {
       });
     }
 
+    // Prepare the test directories
     Path cobigenTemplateSetsFolderPath = this.cobiGenHomeTemplateSets
         .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
     Path downloadedTemplateSetsFolderPath = cobigenTemplateSetsFolderPath
@@ -215,9 +226,14 @@ public class TemplateProcessingTest extends AbstractApiTest {
       Files.createDirectories(cobigenTemplateSetsFolderPath);
     }
 
+    // Gather information about download directory
     List<MavenCoordinatePair> mavenCoordinatePairs = TemplatesJarUtil
         .getTemplateSetJarFolderStructure(downloadedTemplateSetsFolderPath);
 
+    List<String> flatAdaptedTemplates = adaptedTemplates.stream().flatMap(list -> list.stream())
+        .collect(Collectors.toList());
+
+    // Check if the data structure aligns with the given files
     for (MavenCoordinatePair pair : mavenCoordinatePairs) {
       // check if MavenCoordinateState specific attributes are set
       assertThat(pair.isValidJarAndSourcesJarPair()).isTrue();
@@ -227,9 +243,20 @@ public class TemplateProcessingTest extends AbstractApiTest {
       assertThat(pair.getValue1().isPresent()).isTrue();
       assertThat(pair.getValue0().isValidMavenCoordinate()).isTrue();
       assertThat(pair.getValue1().isValidMavenCoordinate()).isTrue();
+      // Check if the data structure contains the specific output
+      Optional<String> notSourcesJar = flatAdaptedTemplates.stream()
+          .filter(str -> str.equals(pair.getValue0().getArtifactId() + "-" + pair.getValue0().getVersion())
+              && pair.getValue0().isSource())
+          .findFirst();
+      Optional<String> sourcesJar = flatAdaptedTemplates.stream()
+          .filter(str -> str.equals(pair.getValue1().getArtifactId() + "-" + pair.getValue1().getVersion())
+              && !pair.getValue1().isSource())
+          .findFirst();
+      assertThat(notSourcesJar.isPresent() && sourcesJar.isPresent());
 
     }
 
+    // Adapt the templates
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenTemplateSetsFolderPath);
 
     Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
@@ -239,20 +266,17 @@ public class TemplateProcessingTest extends AbstractApiTest {
     List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
     templateAdapter.adaptTemplateSets(templateSetJars, adaptedTemplateSetsFolderPath, false);
 
+    // Run extensive checks
     assertThat(cobigenTemplateSetsFolderPath).exists();
     assertThat(downloadedTemplateSetsFolderPath).exists();
     assertThat(adaptedTemplateSetsFolderPath).exists();
 
-    // Output
-    List<List<String>> adaptedTemplates = new ArrayList<>(Arrays.asList(
-        Arrays.asList("crud-java-server-app-2021.12.007", "crud-java-server-app-2021.12.007-sources"),
-        Arrays.asList("crud-java-server-app-complex-2021.12.007", "crud-java-server-app-complex-2021.12.007-sources"),
-        Arrays.asList("crud-openapi-java-server-app-2021.12.007", "crud-openapi-java-server-app-2021.12.007-sources")));
-
     for (List<String> adapted : adaptedTemplates) {
+      String notSourceDir = adapted.get(0);
+      String sourceDir = adapted.get(1);
       // check if adapted template set exists
-      Path templateSet = adaptedTemplateSetsFolderPath.resolve(adapted.get(0));
-      Path templateSetSources = adaptedTemplateSetsFolderPath.resolve(adapted.get(1));
+      Path templateSet = adaptedTemplateSetsFolderPath.resolve(notSourceDir);
+      Path templateSetSources = adaptedTemplateSetsFolderPath.resolve(sourceDir);
       // throwing a error
       assertThat(templateSet).exists();
       assertThat(templateSetSources).exists();
