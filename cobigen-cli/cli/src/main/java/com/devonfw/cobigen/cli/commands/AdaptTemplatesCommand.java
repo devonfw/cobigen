@@ -2,8 +2,6 @@ package com.devonfw.cobigen.cli.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,8 +86,9 @@ public class AdaptTemplatesCommand extends CommandCommons {
       List<MavenCoordinateStatePair> templateSetMavenCoordinateStatePairs) {
 
     if (templateSetMavenCoordinateStatePairs != null && templateSetMavenCoordinateStatePairs.size() > 0) {
-      List<MavenCoordinateState> listViewOfPairs = templateSetMavenCoordinateStatePairs.stream()
-          .flatMap(pair -> Stream.of(pair.getValue0(), pair.getValue1())).collect(Collectors.toList());
+
+      List<MavenCoordinateState> listViewOfPairs = MavenCoordinateStatePair
+          .flattenPairs(templateSetMavenCoordinateStatePairs);
       printJarsForSelection(templateAdapter, templateSetMavenCoordinateStatePairs, listViewOfPairs);
 
       List<String> userSelection = new ArrayList<>();

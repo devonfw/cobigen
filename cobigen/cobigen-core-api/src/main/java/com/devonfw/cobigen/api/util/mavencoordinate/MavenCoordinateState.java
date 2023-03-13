@@ -182,8 +182,7 @@ public class MavenCoordinateState extends MavenCoordinate {
    */
   public String getRealDirectoryName() {
 
-    String name = getArtifactId() + "-" + getVersion();
-    return isSource() ? name + "-sources" : name;
+    return getMavenCoordinateLocalPath().getFileName().toString().replace(".jar", "");
   }
 
   /**

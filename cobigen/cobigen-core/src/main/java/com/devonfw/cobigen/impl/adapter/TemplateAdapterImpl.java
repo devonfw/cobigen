@@ -118,31 +118,34 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   private void processTemplateSetJars(List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs,
       Path destinationPath, boolean forceOverride) throws IOException {
 
-    // TODO: write adapter to new data structure
-    // TODO: fix current tests
     for (MavenCoordinateStatePair mavenCoordinateStatePair : templateSetMavenCoordinatePairs) {
-      LOG.debug("Processing jar file @ {}", templateSetJar);
-      String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
-      Path destination = destinationPath.resolve(fileName);
+      for (MavenCoordinateState member : mavenCoordinateStatePair) { // Maximum of two iterations for each pair
+        Path path = member.getMavenCoordinateLocalPath();
 
-      boolean extract = false;
-      try {
-        extract = validatePaths(destination, forceOverride);
-      } catch (IOException e) {
-        LOG.info("Unable to extract template jar file to {}", destination);
-      }
-
-      if (extract) {
-        if (Files.exists(destination) && forceOverride) {
-          LOG.info("Override the existing destination folder {}", destination);
-          deleteDirectoryRecursively(destination);
+        LOG.debug("Processing jar file @ {}", path);
+        Path destination = destinationPath.resolve(member.getRealDirectoryName());
+        boolean extract = false;
+        try {
+          extract = validatePaths(destination, forceOverride);
+        } catch (IOException e) {
+          LOG.info("Unable to extract template jar file to {}", destination);
         }
 
-        extractArchive(templateSetJar, destination);
-        // com folder with precompiled util classes is not needed. The utils compiled at first generation into the
-        // target folder
-        if (Files.exists(destination.resolve("com"))) {
-          FileUtils.deleteDirectory(destination.resolve("com").toFile());
+        if (extract) {
+          if (Files.exists(destination) && forceOverride) {
+            LOG.info("Override the existing destination folder {}", destination);
+            deleteDirectoryRecursively(destination);
+          }
+
+          if (extractArchive(path, destination)) {
+            member.setAdapted(true);
+          }
+          member.setAdapted(true);
+          // com folder with precompiled util classes is not needed. The utils compiled at first generation into the
+          // target folder
+          if (Files.exists(destination.resolve("com"))) {
+            FileUtils.deleteDirectory(destination.resolve("com").toFile());
+          }
         }
       }
     }
@@ -222,7 +225,6 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     LOG.info("Successfully extracted templates to @ {}", destinationPath);
   }
 
-  // TODO implement new method
   @Override
   public List<MavenCoordinateStatePair> getTemplateSetMavenCoordinateStatePairs() {
 
@@ -279,9 +281,9 @@ public class TemplateAdapterImpl implements TemplateAdapter {
    * @param sourcePath Path of the archive to unpack
    * @param targetPath Path of the target directory to unpack the source archive to
    * @throws IOException if an error occurred while processing the jar or its target directory
+   * @return success status
    */
-  // TODO: geht die auch für template sets
-  private void extractArchive(Path sourcePath, Path targetPath) throws IOException {
+  private boolean extractArchive(Path sourcePath, Path targetPath) throws IOException {
 
     if (FileSystemUtil.isZipFile(sourcePath.toUri())) {
       // Important cast for jdk 17 compatibility
@@ -310,8 +312,10 @@ public class TemplateAdapterImpl implements TemplateAdapter {
           return FileVisitResult.CONTINUE;
         }
       });
+      return true;
     } else {
       LOG.info("Source path is not a ZIP file {}", sourcePath);
+      return false;
     }
   }
 

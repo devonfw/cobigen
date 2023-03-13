@@ -14,11 +14,13 @@ import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 
 /**
  * Tests for {@link TemplateAdapterImpl}
  */
+// TODO: fix tests for new structure
 public class TemplateAdapterTest {
 
   /**
@@ -87,7 +89,7 @@ public class TemplateAdapterTest {
   public void testGetTemplateJarsToAdapt() {
 
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(rootTestPathTemplateSets);
-    List<Path> templateJars = templateAdapter.getTemplateSetJars();
+    List<MavenCoordinateStatePair> templateJars = templateAdapter.getTemplateSetMavenCoordinateStatePairs();
     assertThat(templateJars.size()).isEqualTo(2);
   }
 
