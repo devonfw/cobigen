@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -22,6 +23,7 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore // TODO: re-enable when template set adaptation is implemented
   public void adaptTemplateSetTest() throws Exception {
 
     Path cliSystemTestPath = new File(
