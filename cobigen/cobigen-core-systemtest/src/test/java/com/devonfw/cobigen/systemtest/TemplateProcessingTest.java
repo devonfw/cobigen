@@ -130,7 +130,8 @@ public class TemplateProcessingTest extends AbstractApiTest {
       templateAdapter.adaptTemplates();
     });
 
-    List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
+    List<MavenCoordinateStatePair> templateSetJars = ((TemplateSelectionForAdaptionException) exception)
+        .getTemplateSetMavenCoordinateStatePairs();
     templateAdapter.adaptTemplateSets(templateSetJars, adaptedTemplateSetsFolderPath, false);
 
     assertThat(cobigenTemplateSetsFolderPath).exists();
@@ -264,7 +265,8 @@ public class TemplateProcessingTest extends AbstractApiTest {
       templateAdapter.adaptTemplates();
     });
 
-    List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
+    List<MavenCoordinateStatePair> templateSetJars = ((TemplateSelectionForAdaptionException) exception)
+        .getTemplateSetMavenCoordinateStatePairs();
     templateAdapter.adaptTemplateSets(templateSetJars, adaptedTemplateSetsFolderPath, false);
 
     // Then

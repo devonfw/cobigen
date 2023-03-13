@@ -1,8 +1,11 @@
 package com.devonfw.cobigen.api.util.mavencoordinate;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.javatuples.Pair;
 
@@ -56,6 +59,15 @@ public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> 
   public boolean isValidJarAndSourcesJarPair() {
 
     return !getValue0().isSource() && getValue1().isSource() || getValue0().isSource() && !getValue1().isSource();
+  }
+
+  /**
+   * @param pairs a list of MavenCoordinatePairs
+   * @return returns a flattened list of all the individual MavenCoordinateState objects
+   */
+  public static List<MavenCoordinateState> flattenPairs(List<MavenCoordinateStatePair> pairs) {
+
+    return pairs.stream().flatMap(pair -> Stream.of(pair.getValue0(), pair.getValue1())).collect(Collectors.toList());
   }
 
   @Override
