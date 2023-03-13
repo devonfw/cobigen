@@ -20,6 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
@@ -68,7 +70,9 @@ public class AdaptTemplatesTest extends SystemTest {
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
-    EclipseCobiGenUtils.runAndCaptureUpdateTemplates(bot);
+    File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesDirectory);
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesDirectory);
     EclipseCobiGenUtils.runAndCaptureAdaptTemplates(bot);
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
