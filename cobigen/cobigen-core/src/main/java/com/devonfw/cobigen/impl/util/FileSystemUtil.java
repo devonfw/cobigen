@@ -31,7 +31,7 @@ public class FileSystemUtil {
   public static Path createFileSystemDependentPath(URI targetUri) {
 
     URI workURI = URI.create(targetUri.toString());
-    if (FileSystemUtil.isZipFile(workURI)) {
+    if (isZipFile(workURI)) {
       // reformat URI to be loaded by the zip/jar file system provider
       workURI = URI.create("jar:file:" + new File(workURI).toURI().getPath());
     }

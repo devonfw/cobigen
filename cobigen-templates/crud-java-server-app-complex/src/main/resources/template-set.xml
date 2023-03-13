@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+<cc:contextConfiguration version="3.0">
+  <cc:trigger id="crud_java_server_app_complex" type="java">
+    <cc:containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api" retrieveObjectsRecursively="false" />
+    <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+)Entity">
+      <cc:variableAssignment type="regex" key="rootPackage" value="1" />
+      <cc:variableAssignment type="regex" key="domain" value="3" />
+      <cc:variableAssignment type="regex" key="component" value="4" />
+      <cc:variableAssignment type="regex" key="entityName" value="5" />
+    </cc:matcher>
+  </cc:trigger>
+  <cc:tags>
+    <cc:tag name="Java"></cc:tag>
+    <cc:tag name="CRUD"></cc:tag>
+    <cc:tag name="Server"></cc:tag>
+    <cc:tag name="App"></cc:tag>
+  </cc:tags>
+
+</cc:contextConfiguration>
+
+<tc:templatesConfiguration version="5.0">
+
+  <tc:templates>
+    <tc:templateExtension ref="crud_complex_${variables.component#cap_first}.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="crud_complex_${variables.component#cap_first}Impl.java" mergeStrategy="javamerge" />
+
+    <tc:templateExtension ref="crud_complex_UcFind${variables.entityName}.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="crud_complex_UcFind${variables.entityName}Impl.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="crud_complex_UcManage${variables.entityName}.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="crud_complex_UcManage${variables.entityName}Impl.java" mergeStrategy="javamerge" />
+
+    <!-- CTOs specific increments -->
+    <tc:templateExtension ref="crud_complex_UcFind${variables.entityName}Ctos.java" destinationPath="../api/src/main/java/${variables.rootPackage}/${variables.component}/logic/api/usecase/UcFind${variables.entityName}.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="crud_complex_UcFind${variables.entityName}ImplCtos.java" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/usecase/UcFind${variables.entityName}Impl.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="crud_complex_${variables.component#cap_first}ImplCtos.java" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/logic/impl/${variables.component#cap_first}Impl.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="crud_complex_${variables.component#cap_first}Ctos.java" destinationPath="../api/src/main/java/${variables.rootPackage}/${variables.component}/logic/api/${variables.component#cap_first}.java" mergeStrategy="javamerge" />
+
+    <tc:templateExtension ref="crud_complex_AbstractLogic.java" mergeStrategy="javamerge" />
+
+
+  </tc:templates>
+
+  <tc:templateScans>
+    <tc:templateScan templateNamePrefix="crud_complex_" templatePath="templates" destinationPath="src/main" />
+  </tc:templateScans>
+
+  <tc:increments>
+    <tc:increment name="logic_impl_complex" description="CRUD UC logic" explanation="Creates the logic layer for java application.">
+      <tc:templateRef ref="crud_complex_AbstractBeanMapperSupport.java" />
+      <tc:templateRef ref="crud_complex_${variables.component#cap_first}.java" />
+      <tc:templateRef ref="crud_complex_Abstract${variables.entityName}Uc.java" />
+      <tc:templateRef ref="crud_complex_AbstractUc.java" />
+      <tc:templateRef ref="crud_complex_AbstractLogic.java" />
+      <tc:templateRef ref="crud_complex_${variables.component#cap_first}Impl.java" />
+      <tc:templateRef ref="crud_complex_UcFind${variables.entityName}.java" />
+      <tc:templateRef ref="crud_complex_UcManage${variables.entityName}.java" />
+      <tc:templateRef ref="crud_complex_UcFind${variables.entityName}Impl.java" />
+      <tc:templateRef ref="crud_complex_UcManage${variables.entityName}Impl.java" />
+    </tc:increment>
+    <tc:increment name="logic_complex_ctos" description="CRUD UC logic (CTOs)">
+      <tc:templateRef ref="crud_complex_AbstractUc.java" />
+      <tc:templateRef ref="crud_complex_Abstract${variables.entityName}Uc.java" />
+      <tc:templateRef ref="crud_complex_UcFind${variables.entityName}Ctos.java" />
+      <tc:templateRef ref="crud_complex_UcFind${variables.entityName}ImplCtos.java" />
+      <tc:templateRef ref="crud_complex_${variables.component#cap_first}Ctos.java" />
+      <tc:templateRef ref="crud_complex_${variables.component#cap_first}ImplCtos.java" />
+    </tc:increment>
+  </tc:increments>
+</tc:templatesConfiguration>
+</tns:templateSetConfiguration>

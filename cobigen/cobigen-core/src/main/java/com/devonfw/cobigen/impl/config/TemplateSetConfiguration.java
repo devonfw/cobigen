@@ -1,136 +1,256 @@
 package com.devonfw.cobigen.impl.config;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
+import com.devonfw.cobigen.impl.config.entity.Increment;
+import com.devonfw.cobigen.impl.config.entity.Template;
+import com.devonfw.cobigen.impl.config.entity.TemplateFolder;
+import com.devonfw.cobigen.impl.config.entity.Trigger;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
- * This Class is used to set specific properties. These properties are groupIds, allowSnapshots and hideTemplates.
+ * This is the readable and persistent representation of the automatically generated TemplateSetConfiguration file
  */
 public class TemplateSetConfiguration {
 
   /** Logger instance */
   private static final Logger LOG = LoggerFactory.getLogger(TemplateSetConfiguration.class);
 
-  /** variable for template-set artifacts */
-  private List<String> groupIds;
-
-  /** allow snapshots of template-sets */
-  private boolean allowSnapshots;
-
-  /** variable to hide very specific template sets or versions of template sets */
-  private List<MavenCoordinate> hideTemplates;
+  /** The stored properties are groupIds, allowSnapshots and hideTemplates */
+  private ConfigurationProperties configurationProperties;
 
   /** List of mavenCoordinates for the template sets that should be installed at cobigen startup */
   private List<MavenCoordinate> mavenCoordinates;
 
-  /**
-   * The constructor. load properties from a given source
-   *
-   * @param groupIds groupID from key template-sets.groupIds
-   * @param allowSnapshots from key template-sets.allow-snapshot
-   * @param hideTemplates from key template-set.hide
-   * @param mavenCoordinates list of mavenCoordinate that define the templates that should be installed
-   */
-  public TemplateSetConfiguration(List<String> groupIds, boolean allowSnapshots, List<String> hideTemplates,
-      List<String> mavenCoordinates) {
+  /** All available {@link Trigger}s */
+  private Map<String, Trigger> triggers;
 
-    super();
-    this.groupIds = groupIds;
-    this.allowSnapshots = allowSnapshots;
-    this.hideTemplates = convertToMavenCoordinates(hideTemplates);
-    this.mavenCoordinates = convertToMavenCoordinates(mavenCoordinates);
+  /** All available {@Link Template}s */
+  private Map<String, Template> templates;
+
+  /** All available {@Link Increment} */
+  private Map<String, Increment> increments;
+
+  List<TemplatesConfiguration> templatesConfigurations;
+
+  /**
+   * @return increments
+   */
+  public Map<String, Increment> getIncrements() {
+
+    return this.increments;
+  }
+
+  /** The automatically generated templateSetConfiguration this class wraps */
+  private com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration templateSetConfiguration;
+
+  /** The reader to read the template-set.xml files */
+  private TemplateSetConfigurationReader templateSetConfigurationReader;
+
+  /** Root of the configuration */
+  private Path configRoot;
+
+  private ConfigurationHolder configurationHolder;
+
+  /**
+   * Map of the root template folders distinguished by their trigger ID
+   */
+  private Map<String, Path> rootTemplateFolders;
+
+  /**
+   * Map of the utility folders distinguished by their trigger ID
+   */
+  private Map<String, Path> utilFolders;
+
+  /**
+   * @return utilFolders
+   */
+  public Map<String, Path> getUtilFolders() {
+
+    return this.utilFolders;
   }
 
   /**
-   * Takes a string with multiple maven coordinates separates them and checks if they meet the maven naming conventions
-   * and are therefore valid.
+   * The constructor.
    *
-   * @param mavenCoordinatesString a String that contains maven coordinates
-   * @return List with {@link MavenCoordinate}
+   * @param configurationPath CobiGen configuration root path
    */
-  private List<MavenCoordinate> convertToMavenCoordinates(List<String> mavenCoordinatesString) {
+  public TemplateSetConfiguration(Path configurationPath) {
 
-    List<MavenCoordinate> result = new ArrayList<>();
-    for (String mavenCoordinate : mavenCoordinatesString) {
-      mavenCoordinate = mavenCoordinate.trim();
-      if (!mavenCoordinate.matches(TemplatesJarConstants.MAVEN_COORDINATES_CHECK)) {
-        LOG.warn("configuration key:" + mavenCoordinate + " in .cobigen for "
-            + "template-sets.installed or template-sets.hide doesnt match the specification and could not be used");
-      } else {
-        String[] split = mavenCoordinate.split(":");
-        String groupID = split[0];
-        String artifactID = split[1];
-        String version = split.length > 2 ? split[2] : null;
-        result.add(new MavenCoordinate(groupID, artifactID, version));
+    this.triggers = Maps.newHashMap();
+    this.templates = Maps.newHashMap();
+    this.rootTemplateFolders = Maps.newHashMap();
+    this.utilFolders = Maps.newHashMap();
+    this.configRoot = configurationPath;
+    readConfiguration(configurationPath);
+  }
+
+  /**
+   * Reads the configuration from the given path
+   *
+   * @param configurationPath CobiGen configuration root path
+   * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
+   */
+  public void readConfiguration(Path configurationPath) throws InvalidConfigurationException {
+
+    if (this.templateSetConfigurationReader == null) {
+      this.templateSetConfigurationReader = new TemplateSetConfigurationReader(configurationPath);
+    }
+
+    List<Path> templateSetsAdapted = this.templateSetConfigurationReader.getTemplateSetConfigurationPathsAdapted();
+    List<Path> templateSetsDownloaded = this.templateSetConfigurationReader
+        .getTemplateSetConfigurationPathsDownloaded();
+
+    this.increments = new HashMap<>();
+    this.templatesConfigurations = Lists.newLinkedList();
+    if (!templateSetsAdapted.isEmpty()) {
+      for (Path templateSetFile : templateSetsAdapted) {
+        initializeTemplateSets(false, configurationPath, templateSetFile);
       }
     }
-    return result;
+
+    if (!templateSetsDownloaded.isEmpty()) {
+      for (Path templateSetFile : templateSetsDownloaded) {
+        initializeTemplateSets(true, configurationPath, templateSetFile);
+      }
+    }
+
   }
 
   /**
-   * Returns a list of the saved groupIds
+   * Initializes template sets
    *
-   * @return groupIds
+   * @param isZipFile boolean true if downloaded template-sets need to be processed
+   * @param configurationPath CobiGen configuration root path
+   * @param templateSetFile Path to template-set xml to be processed
    */
-  public List<String> getGroupIds() {
+  private void initializeTemplateSets(boolean isZipFile, Path configurationPath, Path templateSetFile) {
 
-    return this.groupIds;
+    this.templateSetConfigurationReader.readConfiguration(templateSetFile);
+
+    com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration templatesConfigurationStatic = this.templateSetConfigurationReader
+        .getTemplatesConfiguration();
+
+    com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfigurationStatic = this.templateSetConfigurationReader
+        .getContextConfiguration();
+
+    TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
+
+    TemplatesConfigurationReader templatesConfigurationReader = new TemplatesConfigurationReader(
+        templatesConfigurationStatic, templateFolder, this.configurationHolder, templateSetFile);
+
+    ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(contextConfigurationStatic,
+        templateSetFile);
+
+    Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
+    Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
+
+    if (isZipFile) {
+      Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
+      Path jarPath = configLocations.get(templateSetFile);
+      this.utilFolders.put(activeTrigger.getId(), jarPath);
+    } else {
+      this.utilFolders.put(activeTrigger.getId(), getUtilSourceFolder(templateSetFile));
+    }
+
+    this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
+    this.configRoot = configurationPath;
+    this.triggers.putAll(trigger);
+
+    Map<String, Template> loadedTemplates = templatesConfigurationReader.loadTemplates(activeTrigger);
+    this.templates.putAll(loadedTemplates);
+
+    Map<String, Increment> loadedIncrements = templatesConfigurationReader.loadIncrements(loadedTemplates,
+        activeTrigger);
+    this.increments.putAll(templatesConfigurationReader.loadIncrements(loadedTemplates, activeTrigger));
+    String templateEngine = templatesConfigurationReader.getTemplateEngine();
+
+    TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath,
+        trigger.get(trigger.keySet().toArray()[0]), loadedTemplates, loadedIncrements, templateEngine);
+    this.templatesConfigurations.add(templatesConfiguration);
   }
 
   /**
-   * Sets a list of the groupIds from a source
+   * Gets the source folder for utility classes
    *
-   * @param groupIds new value of {@link #getgroupIds}.
+   * @return the source folder where (src/main/templates) is located
    */
-  public void setGroupIds(List<String> groupIds) {
+  private Path getUtilSourceFolder(Path path) {
 
-    this.groupIds = groupIds;
+    return path.getParent().getParent().getParent().getParent();
   }
 
   /**
-   * Returns a boolean which states if specific Snapshots should be allowed.
-   *
-   * @return allowSnapshots
+   * @return templatesConfigurations
    */
-  public boolean isAllowSnapshots() {
+  public List<TemplatesConfiguration> getTemplatesConfigurations() {
 
-    return this.allowSnapshots;
+    return this.templatesConfigurations;
   }
 
   /**
-   * Sets a value on the snapshot
-   *
-   * @param allowSnapshots new value of {@link #getallowSnapshots}.
+   * @return templateSetConfigurationReader
    */
-  public void setAllowSnapshots(boolean allowSnapshots) {
+  public TemplateSetConfigurationReader getTemplateSetConfigurationReader() {
 
-    this.allowSnapshots = allowSnapshots;
+    return this.templateSetConfigurationReader;
   }
 
   /**
-   * Returns a list of the saved templates to be hidden
-   *
-   * @return hideTemplates
+   * @return rootTemplateFolders
    */
-  public List<MavenCoordinate> getHideTemplates() {
+  public Map<String, Path> getRootTemplateFolders() {
 
-    return this.hideTemplates;
+    return this.rootTemplateFolders;
   }
 
   /**
-   * Sets a list of the HideTemplate from a source
+   * Reloads the configuration from source. This function might be called if the configuration file has changed in a
+   * running system
    *
-   * @param hideTemplates new value of {@link #gethideTemplates}.
+   * @param configRoot CobiGen configuration root path
+   * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the template-set.xsd
    */
-  public void setHideTemplates(List<MavenCoordinate> hideTemplates) {
+  public void reloadConfigurationFromFile(Path configRoot) throws InvalidConfigurationException {
 
-    this.hideTemplates = hideTemplates;
+    readConfiguration(configRoot);
+  }
+
+  /**
+   * @return Trigger from wrapped templateSetConfiguration
+   */
+  public List<com.devonfw.cobigen.impl.config.entity.io.Trigger> getTrigger() {
+
+    return this.templateSetConfiguration.getContextConfiguration().getTrigger();
+  }
+
+  /**
+   * @return s the map of triggers
+   */
+  public Map<String, Trigger> getTriggers() {
+
+    return this.triggers;
+  }
+
+  /**
+   * @return s the map of the templates
+   */
+  public Map<String, Template> getTemplates() {
+
+    return this.templates;
   }
 
   /**
@@ -141,6 +261,22 @@ public class TemplateSetConfiguration {
   public List<MavenCoordinate> getMavenCoordinates() {
 
     return this.mavenCoordinates;
+  }
+
+  /**
+   * @return configurationProperties
+   */
+  public ConfigurationProperties getConfigurationProperties() {
+
+    return this.configurationProperties;
+  }
+
+  /**
+   * @param configurationProperties new value of {@link #getconfigurationProperties}.
+   */
+  public void setConfigurationProperties(ConfigurationProperties configurationProperties) {
+
+    this.configurationProperties = configurationProperties;
   }
 
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0"
+  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+  <cc:contextConfiguration version="3.0">
+    <cc:trigger id="testdata_builder" type="java">
+      <cc:containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api"
+        retrieveObjectsRecursively="false"/>
+      <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+[E|C]to)">
+        <cc:variableAssignment type="regex" key="rootPackage" value="1"/>
+        <cc:variableAssignment type="regex" key="domain" value="3"/>
+        <cc:variableAssignment type="regex" key="component" value="4"/>
+        <cc:variableAssignment type="regex" key="pojoName" value="5"/>
+      </cc:matcher>
+    </cc:trigger>
+    <cc:tags>
+      <cc:tag name="TestData"></cc:tag>
+    </cc:tags>
+    <cc:links>
+      <cc:link url="url-test"></cc:link>
+    </cc:links>
+  </cc:contextConfiguration>
+  <tc:templatesConfiguration version="5.0">
+    <tc:templates>
+      <tc:template name="entityBuilder"
+        destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java"
+        templateFile="ObjectBuilder.java.ftl" mergeStrategy="javamerge"/>
+    </tc:templates>
+    <tc:increments>
+      <tc:increment name="testdata_builder" description="Testdata builder"
+        explanation="Creates a builder pattern for POJOs (Plain Old Java Objects).">
+        <tc:templateRef ref="entityBuilder"/>
+      </tc:increment>
+    </tc:increments>
+  </tc:templatesConfiguration>
+</tns:templateSetConfiguration>
