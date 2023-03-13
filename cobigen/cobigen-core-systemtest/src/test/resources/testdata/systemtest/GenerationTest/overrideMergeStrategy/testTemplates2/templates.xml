@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="2.1">
+    <templates>
+        <template name="t2" destinationPath="generated.txt" templateFile="generated.txt.ftl" mergeStrategy="override"/>
+    </templates>
+    <increments>
+        <increment name="i2" description="the only increment">
+            <templateRef ref="t2"/>
+        </increment>
+    </increments>
+</templatesConfiguration>

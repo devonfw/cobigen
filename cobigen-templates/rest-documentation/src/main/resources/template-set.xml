@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0"
+                              xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+                              xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+                              xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                              xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+    <cc:contextConfiguration version="3.0">
+        <cc:trigger id="REST_Docs" type="java">
+            <cc:containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.api\.rest"
+                                 retrieveObjectsRecursively="false"/>
+            <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.service\.api\.rest\.([^\.]+)RestService">
+                <cc:variableAssignment type="regex" key="rootPackage" value="1"/>
+                <cc:variableAssignment type="regex" key="domain" value="3"/>
+                <cc:variableAssignment type="regex" key="component" value="4"/>
+            </cc:matcher>
+        </cc:trigger>
+        <cc:tags>
+            <cc:tag name="REST"></cc:tag>
+            <cc:tag name="Documentation"></cc:tag>
+        </cc:tags>
+    </cc:contextConfiguration>
+    <tc:templatesConfiguration version="5.0">
+
+        <tc:templates>
+            <tc:templateExtension ref="Documentation.adoc" mergeStrategy="textmerge_append"/>
+        </tc:templates>
+
+        <tc:templateScans>
+            <tc:templateScan templatePath="templates" destinationPath=""/>
+        </tc:templateScans>
+
+        <tc:increments>
+            <tc:increment name="Rest_Docs" description="Documentation"
+                          explanation="Contains information about the operations of the REST application.">
+                <tc:templateRef ref="Documentation.adoc"/>
+            </tc:increment>
+        </tc:increments>
+    </tc:templatesConfiguration>
+</tns:templateSetConfiguration>
