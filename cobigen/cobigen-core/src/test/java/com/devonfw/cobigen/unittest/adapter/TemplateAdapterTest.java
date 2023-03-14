@@ -14,6 +14,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
 import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 
@@ -104,11 +105,14 @@ public class TemplateAdapterTest {
 
     Path templateJarAdapted = rootTestPathTemplateSets.resolve(ConfigurationConstants.DOWNLOADED_FOLDER)
         .resolve("template-set-1.jar");
+    MavenCoordinateState templateJarAdaptedState = new MavenCoordinateState(templateJarAdapted, null, null, null);
+
     Path templateJarNotAdapted = rootTestPathTemplateSets.resolve(ConfigurationConstants.DOWNLOADED_FOLDER)
         .resolve("template-set-2.jar");
+    MavenCoordinateState templateJarNotAdaptedState = new MavenCoordinateState(templateJarNotAdapted, null, null, null);
 
-    assertThat(templateAdapter.isTemplateSetAlreadyAdapted(templateJarAdapted)).isTrue();
-    assertThat(templateAdapter.isTemplateSetAlreadyAdapted(templateJarNotAdapted)).isFalse();
+    assertThat(templateAdapter.isTemplateSetAlreadyAdapted(templateJarAdaptedState)).isTrue();
+    assertThat(templateAdapter.isTemplateSetAlreadyAdapted(templateJarNotAdaptedState)).isFalse();
   }
 
 }

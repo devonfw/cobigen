@@ -126,6 +126,11 @@ public class TemplateProcessingTest extends AbstractApiTest {
     }
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenTemplateSetsFolderPath);
 
+    Path templateSetsFolder = this.cobiGenHomeTemplateSets.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    Path adaptedFolder = templateSetsFolder.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateSetsFolder);
+
+
     Exception exception = assertThrows(TemplateSelectionForAdaptionException.class, () -> {
       templateAdapter.adaptTemplates();
     });
@@ -294,6 +299,17 @@ public class TemplateProcessingTest extends AbstractApiTest {
       // validate maven specific contents
       assertThat(templateSet.resolve("pom.xml")).exists();
     }
+
+
+    List<Path> templateSetJars = ((TemplateSelectionForAdaptionException) exception).getTemplateSets();
+    templateAdapter.adaptTemplateSets(templateSetJars, adaptedFolder, false);
+    // sources jar is needed or we remove the functionality
+    Path extractedJar1 = adaptedFolder.resolve("template-test1-0.0.1")
+        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    Path extractedJar2 = adaptedFolder.resolve("template-test2-0.0.1")
+        .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    assertThat(extractedJar1).exists().isDirectory();
+    assertThat(extractedJar2).exists().isDirectory();
 
   }
 
