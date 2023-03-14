@@ -14,8 +14,8 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.retriever.ArtifactRetriever;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -38,7 +38,7 @@ public class DetailsController implements Initializable {
   // TODO: getIncrements()
   private List<String> INCREMENTS = new ArrayList<>();
 
-  private TemplateSet templateSet;
+  private TemplateSetConfiguration templateSet;
 
   @FXML
   Label titleLabel;
@@ -80,7 +80,7 @@ public class DetailsController implements Initializable {
    *
    * @return templateSet
    */
-  public TemplateSet getTemplateSet() {
+  public TemplateSetConfiguration getTemplateSet() {
 
     return this.templateSet;
   }
@@ -90,7 +90,7 @@ public class DetailsController implements Initializable {
    *
    * @param templateSet new value of {@link #gettemplateSet}.
    */
-  public void setTemplateSet(TemplateSet templateSet) {
+  public void setTemplateSet(TemplateSetConfiguration templateSet) {
 
     this.templateSet = templateSet;
   }
@@ -135,9 +135,9 @@ public class DetailsController implements Initializable {
   private Path retrieveJarPathFromTemplateSet() {
 
     // Retrieve template set name information from trigger
-    String triggerName = this.templateSet.getTemplateSetConfiguration().getContextConfiguration().getTriggers().getId();
+    String triggerName = this.templateSet.getContextConfiguration().getTrigger().get(0).getId();
     String mavenArtfifactId = triggerName.replace("_", "-");
-    String templateSetVersion = this.templateSet.getTemplateSetVersion();
+    String templateSetVersion = this.templateSet.getVersion().toString();
     Path templateSetsPath = CobiGenPaths.getTemplateSetsFolderPath();
 
     // Adjust file name
@@ -156,9 +156,9 @@ public class DetailsController implements Initializable {
   public void installTemplateSet(javafx.event.ActionEvent actionEvent) {
 
     // Retrieve template set name information from trigger
-    String triggerName = this.templateSet.getTemplateSetConfiguration().getContextConfiguration().getTriggers().getId();
+    String triggerName = this.templateSet.getContextConfiguration().getTrigger().get(0).getId();
     String mavenArtfifactId = triggerName.replace("_", "-");
-    String templateSetVersion = this.templateSet.getTemplateSetVersion();
+    String templateSetVersion = this.templateSet.getVersion().toString();
 
     // Adjust file name
     String FileName = mavenArtfifactId + "-" + templateSetVersion + ".jar";

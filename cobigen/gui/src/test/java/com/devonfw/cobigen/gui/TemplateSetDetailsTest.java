@@ -7,8 +7,8 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 
 import javafx.collections.FXCollections;
 
@@ -18,8 +18,11 @@ import javafx.collections.FXCollections;
  */
 public class TemplateSetDetailsTest extends TestFXBase {
 
-  /** Test data root path */
-  private static final String testdataRoot = "src/test/resources/testdata/unittests/TemplateSetDetailsTest";
+  /**
+   * Root path to all resources used in this test case
+   */
+  private final static Path TEST_FILE_ROOT_PATH = Paths
+      .get("src/test/resources/testdata/unittests/TemplateSetDetailsTest");
 
   /**
   *
@@ -47,22 +50,25 @@ public class TemplateSetDetailsTest extends TestFXBase {
   @Test
   public void testTemplateSetNameIsShownCorrectly() {
 
-    Path templateSetXmlFile = Paths.get(testdataRoot).resolve("template-set.xml");
+    Path templateSetXmlFile = TEST_FILE_ROOT_PATH.resolve("template-set.xml");
 
-    // TODO replace with template set reader
-    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
+    // initialize template set reader
+    TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader();
 
-    TemplateSet templateSet = artifactReader.retrieveTemplateSet(templateSetXmlFile);
+    // read template set xml file/files
+    reader.readConfiguration(templateSetXmlFile);
+
+    TemplateSetConfiguration templateSetConfiguration = reader.getTemplateSetConfiguration();
 
     // adds template set to GUI
     this.templateSetObservableList = FXCollections.observableArrayList();
-    this.templateSetObservableList.addAll(templateSet);
+    this.templateSetObservableList.addAll(templateSetConfiguration);
 
     this.searchResultsView.setItems(this.templateSetObservableList);
 
-    String triggerName = templateSet.getTemplateSetConfiguration().getContextConfiguration().getTriggers().getId();
-    String templateSetNameInMenu = this.searchResultsView.getItems().get(0).getTemplateSetConfiguration()
-        .getContextConfiguration().getTriggers().getId();
+    String triggerName = templateSetConfiguration.getContextConfiguration().getTrigger().get(0).getId();
+    String templateSetNameInMenu = this.searchResultsView.getItems().get(0).getContextConfiguration().getTrigger()
+        .get(0).getId();
 
     assertThat(templateSetNameInMenu).isEqualTo(triggerName);
   }

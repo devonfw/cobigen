@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.0">
-  <contextConfiguration>
-    <trigger id="crud_java_server_app" type="java">
-      <matcher type="fqn" value="*">
-      </matcher>
-    </trigger>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
 
-    <tags>
-      <tag name="Tag1"></tag>
-      <tag name="Tag2"></tag>
-    </tags>
-    <links>
-      <link
-        url="https://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/reference/html/repositories.html"></link>
-    </links>
-  </contextConfiguration>
+  <cc:contextConfiguration version="6.0">
+    <cc:trigger id="valid" type="java">
+      <cc:matcher type="fqn" value="*"></cc:matcher>
+    </cc:trigger>
+    <cc:tags>
+      <cc:tag name="bla"/>
+    </cc:tags>
+  </cc:contextConfiguration>
 
-  <templatesConfiguration>
-    <templates>
-      <templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge"/>
-      <templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge"/>
-    </templates>
+  <tc:templatesConfiguration version="6.0">
+    <tc:templates>
+      <tc:template name="prefix_Foo2Class.java"
+        destinationPath="src/main/java/foo/Foo2Class${variable}.java" templateFile="templates/foo/Foo2Class.java.ftl"
+        mergeStrategy="javamerge"/>
+      <tc:templateExtension ref="prefix2_FooClass.java"
+        destinationPath="adapted/path/FooClass.java" mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
+      <tc:templateExtension ref="prefix2_Foo2Class.java"/>
+    </tc:templates>
 
-    <templateScans>
-      <templateScan templatePath="templates" destinationPath="src/main"/>
-    </templateScans>
+    <tc:templateScans>
+      <tc:templateScan templateNamePrefix="prefix_" templatePath="templates/foo"
+        destinationPath="src/main/java/foo"/>
+      <tc:templateScan templateNamePrefix="prefix2_" templatePath="templates/bar"
+        destinationPath="src/main/java/bar"/>
+    </tc:templateScans>
+    <tc:increments>
+    <tc:increment name="increment1" description="Increment1 description" explanation="Creates necessary interfaces and methods for the SpringData Repository to interact with the database.">
+      <tc:templateRef ref="${variables.entityName}Repository.java" />
+    </tc:increment>
+    <tc:increment name="increment2" description="Increment2 description" explanation="Creates necessary interfaces and methods for the SpringData Repository to interact with the database.">
+      <tc:templateRef ref="${variables.entityName}Repository.java" />
+    </tc:increment>
+  </tc:increments>
+  </tc:templatesConfiguration>
 
-    <increments>
-      <increment name="inrement1" description="Description of increment 1"
-        explanation="Explanation of increment 1">
-        <templateRef ref="${variables.entityName}Repository.java"/>
-      </increment>
-      <increment name="inrement2" description="Description of increment 2"
-        explanation="Explanation of increment 2">
-        <templateRef ref="${variables.entityName}Repository.java"/>
-      </increment>
-    </increments>
-  </templatesConfiguration>
-</templateSetConfiguration>
+</tns:templateSetConfiguration>

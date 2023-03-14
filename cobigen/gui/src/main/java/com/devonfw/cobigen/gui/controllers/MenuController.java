@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 import com.devonfw.cobigen.gui.Controller;
 import com.devonfw.cobigen.gui.model.TemplateSetModel;
 import com.devonfw.cobigen.gui.services.TemplateSetCell;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -39,7 +39,7 @@ public class MenuController implements Initializable {
   public Button goSearch;
 
   @FXML
-  public ListView<TemplateSet> searchResultsView;
+  public ListView<TemplateSetConfiguration> searchResultsView;
 
   /**
    * The constructor.
@@ -94,8 +94,8 @@ public class MenuController implements Initializable {
 
     // Initialize filtered List
 
-    ObservableList<TemplateSet> listCopy = TemplateSetModel.getInstance().getTemplateSetObservableList();
-    FilteredList<TemplateSet> filteredData = new FilteredList<>(
+    ObservableList<TemplateSetConfiguration> listCopy = TemplateSetModel.getInstance().getTemplateSetObservableList();
+    FilteredList<TemplateSetConfiguration> filteredData = new FilteredList<>(
         TemplateSetModel.getInstance().getTemplateSetObservableList(), b -> true);
 
     // look after the searched text in search bar

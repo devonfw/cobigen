@@ -9,8 +9,8 @@ import com.devonfw.cobigen.gui.controllers.DetailsController;
 import com.devonfw.cobigen.gui.controllers.HomeController;
 import com.devonfw.cobigen.gui.controllers.MenuController;
 import com.devonfw.cobigen.gui.services.TreeViewBuilder;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSetIncrement;
+import com.devonfw.cobigen.impl.config.entity.io.Increment;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -107,7 +107,7 @@ public class Controller implements Initializable {
   public void loadDetails() throws IOException {
 
     // selected from observable list
-    TemplateSet selectedItem = this.menuController.searchResultsView.getSelectionModel().getSelectedItem();
+    TemplateSetConfiguration selectedItem = this.menuController.searchResultsView.getSelectionModel().getSelectedItem();
     // changing visibility between scenes
     if (selectedItem == null) {
       this.home.setVisible(true);
@@ -119,18 +119,13 @@ public class Controller implements Initializable {
       // Getting the tree view of increments of selected template set
 
       // Extract all increments from selected templateSet in list
-      // should not happen here
-      List<TemplateSetIncrement> templatesetIncrements = selectedItem.getTemplateSetConfiguration()
-          .getTemplatesConfiguration().getIncrements().getIncrementList();
-
-      // icnrements converted to strings to make it ready for tree view builder
-      String[] increments = TreeViewBuilder.transformIncrementsToArray(templatesetIncrements);
+      List<Increment> templatesetIncrements = selectedItem.getTemplatesConfiguration().getIncrements().getIncrement();
 
       // shows the tree view of increments of selected template set
-      this.detailsController.showTreeView(TreeViewBuilder.buildTreeView(increments));
+      this.detailsController.showTreeView(TreeViewBuilder.buildTreeView(templatesetIncrements));
 
       // TODO
-      this.detailsController.showName(selectedItem.getTemplateSetVersion());
+      this.detailsController.showName(selectedItem.getVersion().toString());
 
       // retrieving template-Set selected and pass it to details Controller
       this.detailsController

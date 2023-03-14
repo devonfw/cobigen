@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.retriever.ArtifactRetriever;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,7 +19,7 @@ import javafx.collections.ObservableList;
 public class TemplateSetModel {
   private static TemplateSetModel tsModel;
 
-  private final ObservableList<TemplateSet> templateSetObservableList;
+  private final ObservableList<TemplateSetConfiguration> templateSetObservableList;
 
   private TemplateSetModel() {
 
@@ -40,7 +39,7 @@ public class TemplateSetModel {
   /**
    * @return templateSetObservableList
    */
-  public ObservableList<TemplateSet> getTemplateSetObservableList() {
+  public ObservableList<TemplateSetConfiguration> getTemplateSetObservableList() {
 
     return this.templateSetObservableList;
   }
@@ -56,9 +55,10 @@ public class TemplateSetModel {
       templateSetFiles.add(Paths.get(file.getPath()));
     }
 
-    List<TemplateSet> templateSets = ArtifactRetriever.retrieveTemplateSetData(templateSetFiles);
+    // List<com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration> templateSets = ArtifactRetriever
+    // .retrieveTemplateSetData(templateSetFiles);
 
-    this.templateSetObservableList.addAll(templateSets);
+    // this.templateSetObservableList.addAll(templateSets);
   }
 
 }

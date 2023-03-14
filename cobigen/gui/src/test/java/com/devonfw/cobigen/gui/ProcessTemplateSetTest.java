@@ -13,8 +13,8 @@ import org.junit.rules.TemporaryFolder;
 import org.testfx.util.WaitForAsyncUtils;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
@@ -29,8 +29,11 @@ public class ProcessTemplateSetTest extends TestFXBase {
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-  /** Test data root path */
-  private static final String testdataRoot = "src/test/resources/testdata/integrationtests/ProcessTemplateSetTest";
+  /**
+   * Root path to all resources used in this test case
+   */
+  private final static Path TEST_FILE_ROOT_PATH = Paths
+      .get("src/test/resources/testdata/integrationtests/ProcessTemplateSetTest");
 
   @Test
   public void testGetAllTemplateSetsAdapted() throws Exception {
@@ -58,15 +61,19 @@ public class ProcessTemplateSetTest extends TestFXBase {
     // simulate template-set-list folder for downloaded template-set.xml files to be used in GUI
     this.tmpFolder.newFolder("UserHome", "template-set-list");
 
-    Path templateSetXmlFile = Paths.get(testdataRoot).resolve("crud-java-server-app-2021.12.007-template-set.xml");
+    Path templateSetXmlFile = TEST_FILE_ROOT_PATH.resolve("crud-java-server-app-2021.12.007-template-set.xml");
 
-    TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
+    // initialize template set reader
+    TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader();
 
-    TemplateSet templateSet = artifactReader.retrieveTemplateSet(templateSetXmlFile);
+    // read template set xml file/files
+    reader.readConfiguration(templateSetXmlFile);
 
-    // adds template set to GUI
+    TemplateSetConfiguration templateSetConfiguration = reader.getTemplateSetConfiguration();
+
+    // pass TemplateSetConfiguration to GUI
     this.templateSetObservableList = FXCollections.observableArrayList();
-    this.templateSetObservableList.addAll(templateSet);
+    this.templateSetObservableList.addAll(templateSetConfiguration);
 
     this.searchResultsView.setItems(this.templateSetObservableList);
 
@@ -78,8 +85,7 @@ public class ProcessTemplateSetTest extends TestFXBase {
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
 
       // clicks on first element of searchResultsView
-      clickOn(this.searchResultsView.getItems().get(0).getTemplateSetConfiguration().getContextConfiguration()
-          .getTriggers().getId());
+      clickOn(this.searchResultsView.getItems().get(0).getContextConfiguration().getTrigger().get(0).getId());
 
       sleep(1000);
 
