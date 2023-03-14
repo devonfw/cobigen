@@ -70,7 +70,7 @@ public class ProcessTemplateSetTest extends TestFXBase {
         StandardCopyOption.REPLACE_EXISTING);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
-      List<TemplateSetConfiguration> templateSetConfigurations = ArtifactRetriever.retrieveArtifactsFromCobiGen();
+      List<TemplateSetConfiguration> templateSetConfigurations = ArtifactRetriever.retrieveArtifactsFromCache();
 
       // pass TemplateSetConfigurations to GUI
       this.templateSetObservableList = FXCollections.observableArrayList();

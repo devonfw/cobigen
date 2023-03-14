@@ -96,11 +96,11 @@ public class ArtifactRetriever {
   }
 
   /**
-   * Retrieves a list of {@link TemplateSetConfiguration} from the template-set-list folder
+   * Retrieves a list of {@link TemplateSetConfiguration} from the template set artifact cache
    *
    * @return List of {@link TemplateSetConfiguration}
    */
-  public static List<TemplateSetConfiguration> retrieveArtifactsFromCobiGen() {
+  public static List<TemplateSetConfiguration> retrieveArtifactsFromCache() {
 
     Path templateSetFolder = CobiGenPaths.getTemplateSetsFolderPath();
 
