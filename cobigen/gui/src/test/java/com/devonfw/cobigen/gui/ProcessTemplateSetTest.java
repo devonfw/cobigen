@@ -4,8 +4,11 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironment
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,7 +17,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
-import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
+import com.devonfw.cobigen.retriever.ArtifactRetriever;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
@@ -59,21 +62,22 @@ public class ProcessTemplateSetTest extends TestFXBase {
         ConfigurationConstants.DOWNLOADED_FOLDER);
 
     // simulate template-set-list folder for downloaded template-set.xml files to be used in GUI
-    this.tmpFolder.newFolder("UserHome", "template-set-list");
+    File artifactCacheFolder = this.tmpFolder.newFolder("UserHome", "template-sets", "template-set-list");
 
     Path templateSetXmlFile = TEST_FILE_ROOT_PATH.resolve("crud-java-server-app-2021.12.007-template-set.xml");
+    Files.copy(templateSetXmlFile,
+        artifactCacheFolder.toPath().resolve("crud-java-server-app-2021.12.007-template-set.xml"),
+        StandardCopyOption.REPLACE_EXISTING);
 
-    // initialize template set reader
-    TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader();
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
+      List<TemplateSetConfiguration> templateSetConfigurations = ArtifactRetriever.retrieveArtifactsFromCobiGen();
 
-    // read template set xml file/files
-    reader.readConfiguration(templateSetXmlFile);
-
-    TemplateSetConfiguration templateSetConfiguration = reader.getTemplateSetConfiguration();
-
-    // pass TemplateSetConfiguration to GUI
-    this.templateSetObservableList = FXCollections.observableArrayList();
-    this.templateSetObservableList.addAll(templateSetConfiguration);
+      // pass TemplateSetConfigurations to GUI
+      this.templateSetObservableList = FXCollections.observableArrayList();
+      for (TemplateSetConfiguration configuration : templateSetConfigurations) {
+        this.templateSetObservableList.addAll(configuration);
+      }
+    });
 
     this.searchResultsView.setItems(this.templateSetObservableList);
 

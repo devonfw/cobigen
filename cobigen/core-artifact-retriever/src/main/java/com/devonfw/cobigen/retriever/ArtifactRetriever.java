@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.retriever;
 
+import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,6 +10,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
@@ -87,6 +93,34 @@ public class ArtifactRetriever {
     }
 
     return templateSetList;
+  }
+
+  /**
+   * Retrieves a list of {@link TemplateSetConfiguration} from the template-set-list folder
+   *
+   * @return List of {@link TemplateSetConfiguration}
+   */
+  public static List<TemplateSetConfiguration> retrieveArtifactsFromCobiGen() {
+
+    Path templateSetFolder = CobiGenPaths.getTemplateSetsFolderPath();
+
+    Path artifactCacheFolder = templateSetFolder.resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER);
+
+    List<TemplateSetConfiguration> templateSetConfigurations = new ArrayList<>();
+    if (Files.exists(artifactCacheFolder)) {
+      for (File file : artifactCacheFolder.toFile().listFiles()) {
+        TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader();
+        reader.readConfiguration(file.toPath());
+
+        TemplateSetConfiguration templateSetConfiguration = reader.getTemplateSetConfiguration();
+        templateSetConfigurations.add(templateSetConfiguration);
+      }
+    } else {
+      throw new CobiGenRuntimeException("No artifact cache folder found, cancelling!");
+    }
+
+    return templateSetConfigurations;
+
   }
 
   /**
