@@ -83,12 +83,12 @@ public class GenerationIT extends AbstractApiTest {
 
   /**
    * Tests that multiple template sets with templates, increments and triggers get read and generate of all matching
-   * templates is successful
+   * (java) templates is successful
    *
    * @throws Exception test fails.
    */
   @Test
-  public void testReadMultipleTemplateSetXmls() throws Exception {
+  public void testReadMultipleTemplateSetsWithJavaInput() throws Exception {
 
     CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPathTemplateSetXml + "template-sets").toURI());
 
@@ -104,17 +104,51 @@ public class GenerationIT extends AbstractApiTest {
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
     List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
     List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
-    assertThat(templates).hasSize(3);
-    assertThat(increments).hasSize(3);
-    assertThat(triggersIds).hasSize(3);
+    assertThat(templates).hasSize(4);
+    assertThat(increments).hasSize(4);
+    assertThat(triggersIds).hasSize(4);
 
     GenerationReportTo report1 = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
     GenerationReportTo report2 = cobigen.generate(input, templates.get(1), Paths.get(folder.toURI()));
     GenerationReportTo report3 = cobigen.generate(input, templates.get(2), Paths.get(folder.toURI()));
+    GenerationReportTo report4 = cobigen.generate(input, templates.get(3), Paths.get(folder.toURI()));
 
     assertThat(report1).isSuccessful();
     assertThat(report2).isSuccessful();
     assertThat(report3).isSuccessful();
+    assertThat(report4).isSuccessful();
+  }
+
+  /**
+   * Tests that multiple template sets with templates, increments and triggers get read and generate of one matching
+   * template set (OpenAPI) is successful
+   *
+   * @throws Exception test fails.
+   */
+  @Test
+  public void testReadMultipleTemplateSetsWithOpenApiInputOnly() throws Exception {
+
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPathTemplateSetXml + "template-sets").toURI());
+
+    Object input = cobigen
+        .read(new File("src/test/java/com/devonfw/cobigen/systemtest/testobjects/io/generator/logic/api/to/test.yaml")
+            .toPath(), Charset.forName("UTF-8"), getClass().getClassLoader());
+
+    File folder = this.tmpFolder.newFolder("GenerationTest");
+    File target = new File(folder, "generated.txt");
+    FileUtils.write(target, "base");
+
+    List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+    List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
+    List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
+    assertThat(templates).hasSize(1);
+    assertThat(increments).hasSize(1);
+    assertThat(triggersIds).hasSize(1);
+
+    GenerationReportTo report1 = cobigen.generate(input, templates.get(0), Paths.get(folder.toURI()));
+
+    assertThat(report1).isSuccessful();
+
   }
 
   /**

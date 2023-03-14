@@ -111,21 +111,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
 
     this.contextRoot = contextRoot;
     this.contextConfigurations.put(contextRoot, contextConfiguration);
-    // TODO: check if this is still needed
-    // loadConfig();
 
-  }
-
-  /**
-   * TODO: check if this is still needed
-   */
-  private void loadConfig() {
-
-    for (Path p : this.contextConfigurations.keySet()) {
-      for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : this.contextConfigurations.get(p).getTrigger()) {
-        this.triggerConfigLocations.put(t.getId(), p);
-      }
-    }
   }
 
   /**
@@ -271,17 +257,7 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
-        // TODO: check if 6.0 can be replaced with 3.0
-        // templateFolder property is optional in schema version 3.0. If not set take the path of the context.xml file
-        String templateFolder = t.getTemplateFolder();
-
-        // TODO: check if this is still needed
-        if (templateFolder.isEmpty() || templateFolder.equals("/")) {
-
-          templateFolder = "";
-        }
-        // TODO: check if template folder is still needed for template-sets
-        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder,
+        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), t.getTemplateFolder(),
             Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
       }
     }

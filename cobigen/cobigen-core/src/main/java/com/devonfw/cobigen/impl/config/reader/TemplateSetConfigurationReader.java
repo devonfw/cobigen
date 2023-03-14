@@ -30,7 +30,6 @@ import com.devonfw.cobigen.impl.config.entity.TemplateFolder;
 import com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
-import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -186,13 +185,6 @@ public class TemplateSetConfigurationReader {
     this.templateSetFile = templateSetFile;
     this.configLocation = this.templateSetFile.getParent();
 
-    if (!FileSystemUtil.isZipFile(this.configRoot.toUri())) {
-      this.configRoot = this.configLocation;
-    } else {
-      Path templateLocation = FileSystemUtil.createFileSystemDependentPath(this.configRoot.toUri());
-      this.rootTemplateFolder = TemplateFolder.create(templateLocation.resolve(this.configLocation));
-
-    }
     this.rootTemplateFolder = TemplateFolder.create(this.configLocation);
 
     if (!Files.exists(this.templateSetFile)) {

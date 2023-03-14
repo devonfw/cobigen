@@ -98,7 +98,7 @@ public class AbstractCliTest {
       for (Path path : devTemplateSets) {
         if (Files.isDirectory(path)) {
           Path resourcesFolder = path.resolve("src/main/resources");
-          Path templatesFolder = path.resolve(ConfigurationConstants.RESOURCE_FOLDER);
+          Path templatesFolder = path.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
           if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
             try {
               Files.move(resourcesFolder, templatesFolder);

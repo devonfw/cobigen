@@ -35,9 +35,8 @@ public class ConfigurationConstants {
   /** Resource folder containing util classes */
   public static final String UTIL_RESOURCE_FOLDER = "src/main/java";
 
-  /** Resource folder containing resources */
-  // TODO make this a better fitting name
-  public static final String RESOURCE_FOLDER = "src/main/resources";
+  /** Resource folder containing maven configuration resources */
+  public static final String MAVEN_CONFIGURATION_RESOURCE_FOLDER = "src/main/resources";
 
   /** Resource folder containing merge schemas */
   public static final String MERGE_SCHEMA_RESOURCE_FOLDER = "src/main/resources/mergeSchemas";
