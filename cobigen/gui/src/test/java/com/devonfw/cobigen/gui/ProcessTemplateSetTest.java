@@ -64,9 +64,13 @@ public class ProcessTemplateSetTest extends TestFXBase {
     // simulate template-set-list folder for downloaded template-set.xml files to be used in GUI
     File artifactCacheFolder = this.tmpFolder.newFolder("UserHome", "template-sets", "template-set-list");
 
-    Path templateSetXmlFile = TEST_FILE_ROOT_PATH.resolve("crud-java-server-app-2021.12.007-template-set.xml");
-    Files.copy(templateSetXmlFile,
+    Path templateSetXmlFile1 = TEST_FILE_ROOT_PATH.resolve("crud-java-server-app-2021.12.007-template-set.xml");
+    Files.copy(templateSetXmlFile1,
         artifactCacheFolder.toPath().resolve("crud-java-server-app-2021.12.007-template-set.xml"),
+        StandardCopyOption.REPLACE_EXISTING);
+    Path templateSetXmlFile2 = TEST_FILE_ROOT_PATH.resolve("crud-openapi-server-app-2021.12.007-template-set.xml");
+    Files.copy(templateSetXmlFile2,
+        artifactCacheFolder.toPath().resolve("crud-openapi-server-app-2021.12.007-template-set.xml"),
         StandardCopyOption.REPLACE_EXISTING);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
@@ -77,16 +81,13 @@ public class ProcessTemplateSetTest extends TestFXBase {
       for (TemplateSetConfiguration configuration : templateSetConfigurations) {
         this.templateSetObservableList.addAll(configuration);
       }
-    });
 
-    this.searchResultsView.setItems(this.templateSetObservableList);
+      this.searchResultsView.setItems(this.templateSetObservableList);
 
-    Button installButton = find("#installButton");
-    String installButtonText = installButton.getText();
+      Button installButton = find("#installButton");
+      String installButtonText = installButton.getText();
 
-    sleep(1000);
-
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {
+      sleep(1000);
 
       // clicks on first element of searchResultsView
       clickOn(this.searchResultsView.getItems().get(0).getContextConfiguration().getTrigger().get(0).getId());
