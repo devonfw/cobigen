@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.retriever;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -116,7 +117,12 @@ public class ArtifactRetriever {
         templateSetConfigurations.add(templateSetConfiguration);
       }
     } else {
-      throw new CobiGenRuntimeException("No artifact cache folder found, cancelling!");
+      try {
+        Files.createDirectory(artifactCacheFolder);
+      } catch (IOException e) {
+        throw new CobiGenRuntimeException("Could not create artifact cache folder!", e);
+      }
+
     }
 
     return templateSetConfigurations;
