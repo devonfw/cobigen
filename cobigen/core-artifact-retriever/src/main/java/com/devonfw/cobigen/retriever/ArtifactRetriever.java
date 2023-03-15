@@ -1,19 +1,19 @@
 package com.devonfw.cobigen.retriever;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
 import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
@@ -33,6 +33,10 @@ public class ArtifactRetriever {
 
   private static final Logger LOG = LoggerFactory.getLogger(ArtifactRetriever.class);
 
+  /** Path to artifact cache folder **/
+  private static Path artifactCachePath = CobiGenPaths.getTemplateSetsFolderPath()
+      .resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER);
+
   /**
    * Retrieves a list of maven artifact download URLs
    *
@@ -41,7 +45,7 @@ public class ArtifactRetriever {
    * @return list of maven artifact download URLs
    *
    */
-  protected static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
+  public static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
 
     List<URL> downloadLinks = new ArrayList<>();
 
@@ -74,6 +78,23 @@ public class ArtifactRetriever {
   }
 
   /**
+   * Downloads template set artifacts from given URLs
+   *
+   * @param artifactUrls List of URLs
+   * @return List of artifact Paths
+   */
+  public static List<Path> downloadArtifactsFromUrls(List<URL> artifactUrls) {
+
+    List<Path> artifactPaths = new ArrayList<>();
+    for (URL url : artifactUrls) {
+      artifactPaths.add(TemplatesJarUtil.downloadFile(url.toString(), artifactCachePath));
+
+    }
+
+    return artifactPaths;
+  }
+
+  /**
    * Retrieves {@link TemplateSetArtifactReader}s taken from template-set files providing human readable data only
    *
    * @param templateSetFiles List of template set file paths
@@ -99,30 +120,25 @@ public class ArtifactRetriever {
   /**
    * Retrieves a list of {@link TemplateSetConfiguration} from the template set artifact cache
    *
+   * @param cachedArtifacts List of template set artifact paths
+   *
    * @return List of {@link TemplateSetConfiguration}
    */
-  public static List<TemplateSetConfiguration> retrieveArtifactsFromCache() {
-
-    Path templateSetFolder = CobiGenPaths.getTemplateSetsFolderPath();
-
-    Path artifactCacheFolder = templateSetFolder.resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER);
+  public static List<TemplateSetConfiguration> retrieveArtifactsFromCache(List<Path> cachedArtifacts) {
 
     List<TemplateSetConfiguration> templateSetConfigurations = new ArrayList<>();
-    if (Files.exists(artifactCacheFolder)) {
-      for (File file : artifactCacheFolder.toFile().listFiles()) {
-        TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader();
-        reader.readConfiguration(file.toPath());
 
-        TemplateSetConfiguration templateSetConfiguration = reader.getTemplateSetConfiguration();
-        templateSetConfigurations.add(templateSetConfiguration);
-      }
-    } else {
-      try {
-        Files.createDirectory(artifactCacheFolder);
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException("Could not create artifact cache folder!", e);
-      }
+    if (cachedArtifacts == null) {
+      List<File> artfactList = Arrays.asList(CobiGenPaths.getTemplateSetsFolderPath()
+          .resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER).toFile().listFiles());
+    }
 
+    for (Path file : cachedArtifacts) {
+      TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader();
+      reader.readConfiguration(file);
+
+      TemplateSetConfiguration templateSetConfiguration = reader.getTemplateSetConfiguration();
+      templateSetConfigurations.add(templateSetConfiguration);
     }
 
     return templateSetConfigurations;

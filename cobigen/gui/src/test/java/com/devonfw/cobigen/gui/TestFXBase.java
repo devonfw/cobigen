@@ -1,13 +1,18 @@
 package com.devonfw.cobigen.gui;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.gui.controllers.DetailsController;
 import com.devonfw.cobigen.gui.controllers.MenuController;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
@@ -51,11 +56,23 @@ public class TestFXBase extends ApplicationTest {
 
   protected static ResourceBundle bundle;
 
+  /** Temporary files rule to create temporary folders or files */
+  @Rule
+  public TemporaryFolder tmpFolder = new TemporaryFolder();
+
+  public static File userHome = null;
+
   /**
    * Set up headless testing
+   *
+   * @throws IOException
    */
-  @BeforeClass
-  public static void setupHeadlessMode() {
+  @Before
+  public void setupHeadlessMode() throws IOException {
+
+    userHome = this.tmpFolder.newFolder("UserHome");
+    this.tmpFolder.newFolder("UserHome", "template-sets");
+    CobiGenPaths.setCobiGenHomeTestPath(userHome.toPath().toAbsolutePath());
 
     if (Boolean.getBoolean("headless")) {
       System.setProperty("testfx.robot", "glass");

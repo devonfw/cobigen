@@ -2,13 +2,22 @@ package com.devonfw.cobigen.gui.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.gui.Controller;
 import com.devonfw.cobigen.gui.model.TemplateSetModel;
 import com.devonfw.cobigen.gui.services.TemplateSetCell;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
+import com.devonfw.cobigen.retriever.ArtifactRetriever;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
@@ -46,7 +55,6 @@ public class MenuController implements Initializable {
    */
   public MenuController() {
 
-    // TemplateSetModel.getInstance().loadAllAvailableTemplateSets();
     // Where do we need tags
     // List<TemplateSetTag> tagsList = new ArrayList<>();
     // tagsList.addAll(templateSet.getTemplateSetConfiguration().getContextConfiguration().getTags().getTagsList());
@@ -77,8 +85,35 @@ public class MenuController implements Initializable {
       }
     });
 
+    Path artifactCachePath = CobiGenPaths.getTemplateSetsFolderPath()
+        .resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER);
+
+    if (!Files.exists(artifactCachePath)) {
+      try {
+        Files.createDirectory(artifactCachePath);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
+    // Initialize template set artifacts
+    // TODO: read CobiGen properties
+    List<String> groupIds = Arrays.asList(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
+    List<URL> urlList = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds,
+        MavenUtil.determineMavenSettings());
+
+    List<Path> downloadedArtifacts = ArtifactRetriever.downloadArtifactsFromUrls(urlList);
+
+    List<TemplateSetConfiguration> templateSetConfigurations = ArtifactRetriever
+        .retrieveArtifactsFromCache(downloadedArtifacts);
+
+    ObservableList<TemplateSetConfiguration> observableList = FXCollections.observableArrayList();
+
+    observableList.addAll(templateSetConfigurations);
+
     // binds the List with model
-    this.searchResultsView.setItems(TemplateSetModel.getInstance().getTemplateSetObservableList());
+    this.searchResultsView.setItems(observableList);
 
     // Load increments of selected template set
     // call back functions

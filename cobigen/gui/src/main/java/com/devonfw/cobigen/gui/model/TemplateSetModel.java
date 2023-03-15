@@ -1,12 +1,5 @@
 package com.devonfw.cobigen.gui.model;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 
 import javafx.collections.FXCollections;
@@ -46,19 +39,14 @@ public class TemplateSetModel {
 
   public void loadAllAvailableTemplateSets() {
 
-    // Load all the paths of template set from cobigen home folder
-    // all templates in template-set-list folder
-    File templatesetFolder = new File(CobiGenPaths.getCobiGenHomePath().resolve("template-set-list").toString());
-    File[] templatesetFileslist = templatesetFolder.listFiles();
-    List<Path> templateSetFiles = new ArrayList<>();
-    for (File file : templatesetFileslist) {
-      templateSetFiles.add(Paths.get(file.getPath()));
-    }
+    // Load all template set artifacts
+    // List<TemplateSetConfiguration> templateSetConfigurations = ArtifactRetriever.retrieveArtifactsFromCache();
 
-    // List<com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration> templateSets = ArtifactRetriever
-    // .retrieveTemplateSetData(templateSetFiles);
+    // pass TemplateSetConfigurations to GUI
+    // for (TemplateSetConfiguration configuration : templateSetConfigurations) {
+    // this.templateSetObservableList.addAll(configuration);
+    // }
 
-    // this.templateSetObservableList.addAll(templateSets);
   }
 
 }
