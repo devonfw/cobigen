@@ -1,15 +1,19 @@
 package com.devonfw.cobigen.gui.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.ResourceBundle;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.gui.Controller;
 import com.devonfw.cobigen.gui.model.TemplateSetModel;
@@ -87,7 +91,7 @@ public class MenuController implements Initializable {
 
     Path artifactCachePath = CobiGenPaths.getTemplateSetsFolderPath()
         .resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER);
-
+    List<Path> cachedArtifacts = new ArrayList<>();
     if (!Files.exists(artifactCachePath)) {
       try {
         Files.createDirectory(artifactCachePath);
@@ -95,25 +99,15 @@ public class MenuController implements Initializable {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+    } else {
+
+      for (File artifact : Arrays.asList(artifactCachePath.toFile().listFiles())) {
+        cachedArtifacts.add(artifact.toPath());
+      }
     }
 
-    // Initialize template set artifacts
     // TODO: read CobiGen properties
-    List<String> groupIds = Arrays.asList(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    List<URL> urlList = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds,
-        MavenUtil.determineMavenSettings());
-
-    List<Path> downloadedArtifacts = ArtifactRetriever.downloadArtifactsFromUrls(urlList);
-
-    List<TemplateSetConfiguration> templateSetConfigurations = ArtifactRetriever
-        .retrieveArtifactsFromCache(downloadedArtifacts);
-
-    ObservableList<TemplateSetConfiguration> observableList = FXCollections.observableArrayList();
-
-    observableList.addAll(templateSetConfigurations);
-
-    // binds the List with model
-    this.searchResultsView.setItems(observableList);
+    refresh();
 
     // Load increments of selected template set
     // call back functions
@@ -164,6 +158,68 @@ public class MenuController implements Initializable {
    */
   @FXML
   public void refresh() {
+    // check if clear the list is needed
+
+    Path artifactCachePath = CobiGenPaths.getTemplateSetsFolderPath()
+        .resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER);
+    List<Path> cachedArtifacts = new ArrayList<>();
+    if (!Files.exists(artifactCachePath)) {
+      try {
+        Files.createDirectory(artifactCachePath);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    } else {
+
+      for (File artifact : Arrays.asList(artifactCachePath.toFile().listFiles())) {
+        cachedArtifacts.add(artifact.toPath());
+      }
+    }
+
+    // TODO: read CobiGen properties
+    List<String> groupIds = Arrays.asList(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
+    List<URL> urlList = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds,
+        MavenUtil.determineMavenSettings());
+
+    // check for Update
+    // TODO error handling with replace all and maybe jar is corrupted just replace it
+    // also try to export this to other functions
+    List<MavenCoordinate> cachedMavenCoordinates = new ArrayList<>();
+    for (Path p : cachedArtifacts) {
+      String version = p.getFileName().toString().replaceAll("-template-set.xml", "")
+          .replaceAll("^(([a-zA-z]+[\\w]-)+)", "");
+      String artifactID = p.getFileName().toString().replaceAll("-template-set.xml", "").replaceAll("-" + version, "");
+      cachedMavenCoordinates.add(new MavenCoordinate(null, artifactID, version));
+    }
+    ListIterator<URL> iterator = urlList.listIterator();
+    while (iterator.hasNext()) {
+      String maven = iterator.next().getFile().replaceAll("-template-set.xml", "");
+      String version = maven.replaceAll("^(([a-zA-z]+[\\w]-)+)", "");
+      String artifactID = maven.replaceAll("-" + version, "");
+      MavenCoordinate repo = new MavenCoordinate(null, artifactID, version);
+      for (MavenCoordinate cached : cachedMavenCoordinates) {
+        if (cached.getArtifactId().equals(repo.getArtifactId())) {
+          int result = cached.compareTo(repo);
+          if (result <= 0) {
+            // no download needed
+            iterator.remove();
+          } else {
+            // download needed ccan be removed, leave it for debugging pruposes
+          }
+        }
+      }
+    }
+
+    List<Path> downloadedArtifacts = ArtifactRetriever.downloadArtifactsFromUrls(urlList);
+
+    List<TemplateSetConfiguration> templateSetConfigurations = ArtifactRetriever
+        .retrieveArtifactsFromCache(downloadedArtifacts);
+
+    ObservableList<TemplateSetConfiguration> observableList = FXCollections.observableArrayList();
+
+    observableList.addAll(templateSetConfigurations);
+    this.searchResultsView.setItems(observableList);
 
   }
 
