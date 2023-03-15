@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
@@ -35,6 +38,9 @@ import javafx.scene.control.TextField;
  *
  */
 public class MenuController implements Initializable {
+
+  /** Logger instance */
+  private static final Logger LOG = LoggerFactory.getLogger(MenuController.class);
 
   @FXML
   private Controller controller;
@@ -85,7 +91,7 @@ public class MenuController implements Initializable {
       try {
         this.controller.loadHome(event);
       } catch (IOException e) {
-        e.printStackTrace();
+        LOG.error("An error occurred while loading the home page", e);
       }
     });
 
@@ -96,8 +102,7 @@ public class MenuController implements Initializable {
       try {
         Files.createDirectory(artifactCachePath);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error("An error occurred while creating the artifact cache directory", e);
       }
     } else {
 
@@ -116,7 +121,7 @@ public class MenuController implements Initializable {
       try {
         MenuController.this.controller.loadDetails();
       } catch (IOException e) {
-        e.printStackTrace();
+        LOG.error("An error occurred while loading the details page", e);
       }
 
     });
@@ -167,8 +172,7 @@ public class MenuController implements Initializable {
       try {
         Files.createDirectory(artifactCachePath);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error("An error occurred while creating the artifact cache directory", e);
       }
     } else {
 
@@ -213,13 +217,18 @@ public class MenuController implements Initializable {
 
     List<Path> downloadedArtifacts = ArtifactRetriever.downloadArtifactsFromUrls(urlList);
 
-    List<TemplateSetConfiguration> templateSetConfigurations = ArtifactRetriever
-        .retrieveArtifactsFromCache(downloadedArtifacts);
-
+    List<TemplateSetConfiguration> templateSetConfigurations;
+    if (downloadedArtifacts.isEmpty()) {
+      templateSetConfigurations = ArtifactRetriever.retrieveArtifactsFromCache(null);
+    } else {
+      templateSetConfigurations = ArtifactRetriever.retrieveArtifactsFromCache(downloadedArtifacts);
+    }
     ObservableList<TemplateSetConfiguration> observableList = FXCollections.observableArrayList();
 
-    observableList.addAll(templateSetConfigurations);
-    this.searchResultsView.setItems(observableList);
+    if (templateSetConfigurations != null) {
+      observableList.addAll(templateSetConfigurations);
+      this.searchResultsView.setItems(observableList);
+    }
 
   }
 

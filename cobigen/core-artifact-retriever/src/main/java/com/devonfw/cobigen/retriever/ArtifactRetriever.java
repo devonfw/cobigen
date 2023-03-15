@@ -1,7 +1,9 @@
 package com.devonfw.cobigen.retriever;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -118,6 +120,38 @@ public class ArtifactRetriever {
   }
 
   /**
+   * Retrieves the artifact cache path
+   *
+   * @return Path to artifact cache folder
+   */
+  public static Path retrieveArtifactCachePath() {
+
+    Path artifactCacheFolder = CobiGenPaths.getTemplateSetsFolderPath()
+        .resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER);
+    return artifactCacheFolder;
+  }
+
+  /**
+   * Checks is a directory is empty
+   *
+   * @param path directory to check
+   * @return true if empty, false if not
+   * @throws IOException
+   */
+  private static boolean isEmpty(Path path) throws IOException {
+
+    if (Files.isDirectory(path)) {
+      try (DirectoryStream<Path> directory = Files.newDirectoryStream(path)) {
+        return !directory.iterator().hasNext();
+      } catch (IOException e) {
+        LOG.debug("An error occurred while checking if the directory {} was empty", path, e);
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Retrieves a list of {@link TemplateSetConfiguration} from the template set artifact cache
    *
    * @param cachedArtifacts List of template set artifact paths
@@ -129,8 +163,26 @@ public class ArtifactRetriever {
     List<TemplateSetConfiguration> templateSetConfigurations = new ArrayList<>();
 
     if (cachedArtifacts == null) {
-      List<File> artfactList = Arrays.asList(CobiGenPaths.getTemplateSetsFolderPath()
-          .resolve(ConfigurationConstants.TEMPLATE_SET_ARTIFACT_CACHE_FOLDER).toFile().listFiles());
+
+      Path artifactCacheFolder = retrieveArtifactCachePath();
+      try {
+        if (!Files.exists(artifactCacheFolder) || isEmpty(artifactCacheFolder)) {
+          return null;
+        }
+      } catch (IOException e) {
+        LOG.error("An error occurred while checking the artifact cache directory {}", artifactCacheFolder, e);
+        return null;
+      }
+
+      List<File> artfactList = Arrays.asList(artifactCacheFolder.toFile().listFiles());
+      for (File file : artfactList) {
+        TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader();
+        reader.readConfiguration(file.toPath());
+
+        TemplateSetConfiguration templateSetConfiguration = reader.getTemplateSetConfiguration();
+        templateSetConfigurations.add(templateSetConfiguration);
+      }
+      return templateSetConfigurations;
     }
 
     for (Path file : cachedArtifacts) {
