@@ -233,7 +233,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       LOG.info("No template set jars found. Folder {} does not exist.", downloadedJarsFolder);
       return null;
     }
-    return TemplatesJarUtil.getTemplateSetJarFolderStructure(downloadedJarsFolder);
+    return MavenCoordinateState.getJarFilesToMavenCoordinateState(downloadedJarsFolder);
   }
 
   @Override

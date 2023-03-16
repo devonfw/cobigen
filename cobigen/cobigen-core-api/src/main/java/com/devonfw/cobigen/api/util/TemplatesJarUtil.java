@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,12 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.constants.TemplateSetsJarConstants;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
 
 /**
  * Utilities related to the templates jar. Includes the downloading, retrieval of the jar and the checkup of the
@@ -328,50 +324,4 @@ public class TemplatesJarUtil {
       return null;
     }
   }
-
-  /**
-   * Processes the jars in a given directory and organizes them into a data structure for extended logic.
-   *
-   * @param templateSetDirectory {@linkplain Path templateSetDirectory} the path to a directory with present Template
-   *        Sets
-   * @return {@linkplain MavenCoordinateStatePair mavenCoordinatePair} the pair containing {@linkplain MavenCoordinateState
-   *         MavenCoordinateStates} where the first value is a non-sources {@linkplain MavenCoordinateState} and the
-   *         second value is a sources {@linkplain MavenCoordinateState}
-   */
-  public static List<MavenCoordinateStatePair> getTemplateSetJarFolderStructure(Path templateSetDirectory) {
-
-    List<Path> jarFiles = getJarFiles(templateSetDirectory);
-    List<MavenCoordinateState> mavenCoordinateStates = new ArrayList<>();
-    Map<String, Boolean> patternToIsSourcesJar = Map.of(TemplateSetsJarConstants.MAVEN_COORDINATE_JAR_PATTERN, false,
-        TemplateSetsJarConstants.MAVEN_COORDINATE_SOURCES_JAR_PATTERN, true);
-
-    if (jarFiles == null) {
-      LOG.error("Failed to gather information about Template Set Jars and Sources Jars in the given Path: {}",
-          templateSetDirectory);
-      return null;
-    } else {
-      for (Path jar : jarFiles) {
-        patternToIsSourcesJar.forEach((pattern, isSource) -> {
-          mavenCoordinateStates.add(MavenCoordinateState.createMavenCoordinateState(jar, pattern, isSource));
-        });
-      }
-
-      Map<String, List<MavenCoordinateState>> groupedByGroupArtifactVersion = mavenCoordinateStates.stream()
-          .filter(element -> element != null)
-          .collect(Collectors.groupingBy(MavenCoordinateState::getGroupArtifactVersion));
-
-      groupedByGroupArtifactVersion.entrySet().stream().filter(entry -> entry.getValue().size() > 1)
-          .forEach(entry -> LOG.warn("Duplicate MavenCoordinateState objects for groupArtifactVersion {}: {}",
-              entry.getKey(), entry.getValue()));
-
-      List<MavenCoordinateStatePair> mavenCoordinateStatePair = groupedByGroupArtifactVersion.entrySet().stream()
-          .map(entry -> new MavenCoordinateStatePair(entry.getValue().get(0), entry.getValue().get(1)))
-          .filter(pair -> pair.getValue0() != null && pair.getValue1() != null).collect(Collectors.toList());
-
-      return mavenCoordinateStatePair;
-    }
-
-  }
-  // TODO: templateset adapter anpassen sodas die neue templateset get jar file methode benutzt wird, wenn exception
-  // geworfen wurde
 }

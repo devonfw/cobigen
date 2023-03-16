@@ -25,6 +25,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
 import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
@@ -229,8 +230,8 @@ public class TemplateProcessingTest extends AbstractApiTest {
 
     // When
     // Gather information about download directory
-    List<MavenCoordinateStatePair> mavenCoordinateStatePairs = TemplatesJarUtil
-        .getTemplateSetJarFolderStructure(downloadedTemplateSetsFolderPath);
+    List<MavenCoordinateStatePair> mavenCoordinateStatePairs = MavenCoordinateState
+        .getJarFilesToMavenCoordinateState(downloadedTemplateSetsFolderPath);
 
     List<String> flatAdaptedTemplates = adaptedTemplates.stream().flatMap(list -> list.stream())
         .collect(Collectors.toList());
