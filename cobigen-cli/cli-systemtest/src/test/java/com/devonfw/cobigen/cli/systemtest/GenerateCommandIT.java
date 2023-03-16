@@ -75,7 +75,7 @@ public class GenerateCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
+  @Ignore // TODO: re-enable when upgrade process is implemented
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
