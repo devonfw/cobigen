@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:tns1="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tns2="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+  <tns1:contextConfiguration version="6.0">
+      <tns1:trigger id="template_set_1_trigger" type="openapi">
+    <tns1:matcher type="element" value="ComponentDef">
+      <tns1:variableAssignment type="constant" key="domain" value="demo"/>
+    </tns1:matcher>
+  </tns1:trigger>
+    <tns1:tags>
+      <tns1:tag name="bla" />
+    </tns1:tags>
+  </tns1:contextConfiguration>
+  <tns2:templatesConfiguration version="6.0">
+<tns2:templates>
+    <tns2:templateExtension ref="environment.ts" mergeStrategy="tsmerge_override"/>
+  </tns2:templates>
+
+  <tns2:templateScans>
+    <tns2:templateScan name="ts_scan" templatePath="templates" destinationPath=""/>
+  </tns2:templateScans>
+
+  <tns2:increments>
+    <tns2:increment name="template_set_increment1" description="Increment 1 description">
+      <tns2:templateRef ref="environment.ts"/>
+    </tns2:increment>
+  </tns2:increments>
+  </tns2:templatesConfiguration>
+</tns:templateSetConfiguration>

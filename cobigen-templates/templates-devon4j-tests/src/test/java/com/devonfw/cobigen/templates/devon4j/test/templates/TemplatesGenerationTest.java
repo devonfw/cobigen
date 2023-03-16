@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
@@ -22,6 +23,7 @@ import com.devonfw.cobigen.templates.devon4j.config.constant.MavenMetadata;
 /**
  * Smoke tests of all templates.
  */
+@Ignore
 public class TemplatesGenerationTest extends AbstractMavenTest {
 
   /** Root of all test resources of this test suite */

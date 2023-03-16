@@ -373,7 +373,6 @@ public class ParsedJavaModelBuilderTest {
       Map<String, Object> model = javaModelBuilder.createModel(JavaParserUtil.getFirstJavaClass(fileReader));
 
       // test inherited field of direct superclass named "id"
-      System.out.println(model);
       Map<String, Object> inheritedField = JavaModelUtil.getMethodAccessibleField(model, "superSuperString");
       assertThat(inheritedField).isNotNull();
       assertThat(inheritedField.get(ModelConstant.NAME)).isEqualTo("superSuperString");

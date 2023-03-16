@@ -200,7 +200,6 @@ public class HealthCheckTest {
     FileUtils.copyDirectory(configurationFolder.toFile(), executionFolder.toFile());
     // act
     HealthCheckReport report = healthcheck.upgradeContextConfiguration(executionFolder, backuppolicy);
-    System.out.print(report.getErrors());
     assertThat(report).isOfContextVersion(executionFolder, "2.0");
   }
 

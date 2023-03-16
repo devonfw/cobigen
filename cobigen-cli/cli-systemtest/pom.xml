@@ -12,6 +12,7 @@
   <properties>
     <maven.test.path>src\test\resources\testdata\localmavenproject\maven.project</maven.test.path>
     <maven.test.templates.path>src\test\resources\testdata\templatesproject\templates-devon4j</maven.test.templates.path>
+    <maven.test.templateset.downloaded.path>src\test\resources\testdata\templatesproject\template-sets/downloaded/crud-java-server-app</maven.test.templateset.downloaded.path>
   </properties>
 
   <dependencies>
@@ -101,6 +102,25 @@
             <configuration>
               <executable>mvn</executable>
               <workingDirectory>${maven.test.templates.path}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>Install test template set downloaded project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${maven.test.templateset.downloaded.path}</workingDirectory>
               <arguments>
                 <argument>install</argument>
                 <!-- https://stackoverflow.com/a/66801171 -->

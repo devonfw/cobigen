@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.impl.config;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +9,7 @@ import java.util.Map;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.reader.AbstractContextConfigurationReader;
-import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReaderFactory;
-import com.devonfw.cobigen.impl.config.reader.ContextConfigurationSetReader;
-import com.devonfw.cobigen.impl.util.FileSystemUtil;
+import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -30,9 +28,24 @@ public class ContextConfiguration {
   private Path configurationPath;
 
   /**
+   * This is the automatically generated ContextConfiguration
+   */
+  private com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
+
+  /**
    * The reader to read the context.xml files
    */
-  private AbstractContextConfigurationReader contextConfigurationReader;
+  private ContextConfigurationReader contextConfigurationReader;
+
+  /**
+   * The representation of the generated TemplateSetConfiguration file
+   */
+  private TemplateSetConfiguration templateSetConfiguration;
+
+  /**
+   * The {@link ConfigurationHolder}
+   */
+  private ConfigurationHolder configurationHolder;
 
   /**
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
@@ -47,6 +60,23 @@ public class ContextConfiguration {
   }
 
   /**
+   * Creates a new {@link ContextConfiguration} with the contents initially loaded from the template-set.xml
+   *
+   * @param contextConfiguration provided by template-set reader
+   * @param configRoot root path for the configuration of CobiGen
+   * @param configurationHolder the {@link ConfigurationHolder} to initialize
+   * @param triggers the map of triggers
+   */
+  public ContextConfiguration(com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration,
+      Path configRoot, ConfigurationHolder configurationHolder, Map<String, Trigger> triggers) {
+
+    this.configurationHolder = configurationHolder;
+    this.configurationPath = configRoot;
+    this.contextConfigurationReader = new ContextConfigurationReader(contextConfiguration, configRoot);
+    this.triggers = triggers;
+  }
+
+  /**
    * Reads the configuration from the given path
    *
    * @param configRoot CobiGen configuration root path
@@ -55,11 +85,12 @@ public class ContextConfiguration {
   private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
     if (this.contextConfigurationReader == null) {
-      this.contextConfigurationReader = ContextConfigurationReaderFactory.getReader(configRoot);
+      this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
     }
 
     this.configurationPath = this.contextConfigurationReader.getContextRoot();
     this.triggers = this.contextConfigurationReader.loadTriggers();
+
   }
 
   /**
@@ -85,6 +116,14 @@ public class ContextConfiguration {
   }
 
   /**
+   * @return the version
+   */
+  public BigDecimal getVersion() {
+
+    return this.contextConfiguration.getVersion();
+  }
+
+  /**
    * Returns the {@link Trigger} with the given id
    *
    * @param id of the {@link Trigger} to be searched
@@ -107,20 +146,34 @@ public class ContextConfiguration {
 
   /**
    * @param triggerId the trigger id to get the config location for
-   * @param fileSystemDependentPath if true and the configuration is a jar file, the file system dependent path is
-   *        returned
    * @return the {@link Path} of the config location of the trigger
    */
-  public Path getConfigLocationforTrigger(String triggerId, boolean fileSystemDependentPath) {
+  public Path retrieveConfigRootByTrigger(String triggerId) {
 
-    if (this.contextConfigurationReader instanceof ContextConfigurationSetReader) {
-      Path configLocation = ((ContextConfigurationSetReader) this.contextConfigurationReader)
-          .getConfigLocationForTrigger(triggerId);
-      if (fileSystemDependentPath && FileSystemUtil.isZipFile(configLocation.toUri())) {
-        configLocation = FileSystemUtil.createFileSystemDependentPath(configLocation.toUri());
-      }
-      return configLocation;
+    if (this.configurationHolder != null) {
+      Map<String, Path> rootTemplateFolders = this.configurationHolder.getTemplateSetConfiguration()
+          .getRootTemplateFolders();
+      Path rootTemplateFolder = rootTemplateFolders.get(triggerId);
+      return rootTemplateFolder;
     }
-    return this.contextConfigurationReader.getContextRoot();
+
+    return this.configurationPath;
   }
+
+  /**
+   * Retrieves the utility folder from the given trigger id
+   *
+   * @param triggerId String of triggerId to search for
+   * @return Path to utility folder
+   */
+  public Path retrieveTemplateSetUtilsLocationByTrigger(String triggerId) {
+
+    if (this.configurationHolder != null) {
+      Map<String, Path> utilityFolders = this.configurationHolder.getTemplateSetConfiguration().getUtilFolders();
+      Path utilityFolder = utilityFolders.get(triggerId);
+      return utilityFolder;
+    }
+    return this.configurationPath;
+  }
+
 }

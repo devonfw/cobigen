@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+<cc:contextConfiguration version="3.0">
+  <cc:trigger id="crud_java_ea_uml" type="xml">
+    <cc:containerMatcher type="xpath" value="./uml:Model//packagedElement[@xmi:type='uml:Class']" />
+    <cc:matcher type="xpath" value="self::node()[@xmi:type='uml:Class']/ancestor::uml:Model">
+      <cc:variableAssignment type="xpath" key="rootPackage" value="self::node()/ancestor::packagedElement/packagedElement/@name" />
+      <cc:variableAssignment type="xpath" key="component" value="self::node()/ancestor::packagedElement/packagedElement/packagedElement/@name" />
+      <cc:variableAssignment type="xpath" key="className" value="self::node()/@name" />
+    </cc:matcher>
+  </cc:trigger>
+  <cc:tags>
+    <cc:tag name="EA"></cc:tag>
+    <cc:tag name="CRUD"></cc:tag>
+    <cc:tag name="Client"></cc:tag>
+    <cc:tag name="UML"></cc:tag>
+  </cc:tags>
+</cc:contextConfiguration>
+<tc:templatesConfiguration version="5.0">
+  <tc:templates>
+    <tc:templateExtension ref="${variables.className}Entity.java" mergeStrategy="javamerge" />
+  </tc:templates>
+  <tc:templateScans>
+    <tc:templateScan templatePath="templates" destinationPath="src/main" />
+  </tc:templateScans>
+  <tc:increments>
+    <tc:increment name="xml_uml_entity" description="Entity infrastructure" explanation="Creates Entity java classes to CRUD from schema.">
+      <tc:templateRef ref="${variables.className}Entity.java" />
+      <tc:templateRef ref="${variables.className}.java" />
+      <tc:templateRef ref="ApplicationEntity.java" />
+      <tc:templateRef ref="ApplicationPersistenceEntity.java" />
+    </tc:increment>
+  </tc:increments>
+</tc:templatesConfiguration>
+</tns:templateSetConfiguration>

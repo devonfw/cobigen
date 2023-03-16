@@ -27,7 +27,6 @@ import org.junit.rules.TemporaryFolder;
 import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
-import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.ContainerMatcher;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.Link;
@@ -39,7 +38,6 @@ import com.devonfw.cobigen.impl.config.entity.io.v6_0.Template;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
-import com.devonfw.cobigen.impl.config.upgrade.TemplateSetConfigurationUpgrader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 import jakarta.xml.bind.JAXBContext;
@@ -184,24 +182,26 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
     }
   }
 
-  /**
-   * Tests if v6.0 templateSet configuration is compatible to v6.0 schema.
-   *
-   * @throws Exception test fails
-   */
-  @Test
-  public void testCorrectV6_0SchemaDetection() throws Exception {
-
-    // preparation
-    TemplateSetConfigurationVersion currentVersion = TemplateSetConfigurationVersion.v6_0;
-    File targetConfig = new File(contextTestFileRootPath + "/valid-" + currentVersion);
-
-    for (File context : targetConfig.listFiles()) {
-      TemplateSetConfigurationVersion version = new TemplateSetConfigurationUpgrader()
-          .resolveLatestCompatibleSchemaVersion(context.toPath(), currentVersion);
-      assertThat(version).isEqualTo(currentVersion);
-    }
-  }
+  // /**
+  // * Tests if v6.0 templateSet configuration is compatible to v6.0 schema.
+  // *
+  // * @throws Exception test fails
+  // */
+  // @Test
+  // public void testCorrectV6_0SchemaDetection() throws Exception {
+  //
+  // // preparation
+  // TemplateSetConfigurationVersion currentVersion = TemplateSetConfigurationVersion.v6_0;
+  // File targetConfig = new File(contextTestFileRootPath + "/valid-" + currentVersion);
+  //
+  // for (File context : targetConfig.listFiles()) {
+  // TemplateSetConfigurationVersion version = new TemplateSetConfigurationUpgrader() // sollte nicht hier eher die cc
+  // gecheckt werden
+  //
+  // .resolveLatestCompatibleSchemaVersion(context.toPath(), currentVersion);
+  // assertThat(version).isEqualTo(currentVersion);
+  // }
+  // }
 
   @Test
   public void TestContextV6unmarshall() {

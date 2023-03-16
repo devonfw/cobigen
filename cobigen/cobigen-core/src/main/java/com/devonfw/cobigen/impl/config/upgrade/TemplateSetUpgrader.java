@@ -130,7 +130,9 @@ public class TemplateSetUpgrader {
       Files.createDirectory(adapted);
     }
     Path folderOfContextLocation = CobiGenPaths.getContextLocation(templatesLocation);
-    ContextConfiguration contextConfiguration = getContextConfiguration(folderOfContextLocation);
+
+    com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration contextConfiguration = getContextConfiguration(
+        folderOfContextLocation);
 
     List<com.devonfw.cobigen.impl.config.entity.io.v6_0.ContextConfiguration> contextFiles = splitContext(
         contextConfiguration);
@@ -224,7 +226,7 @@ public class TemplateSetUpgrader {
       Files.write(newPom, content.getBytes(charset));
 
     } catch (FileNotFoundException e) {
-      LOG.error("Monolitic pom file could not be found", e);
+      LOG.error("Monolithic pom file could not be found", e);
       throw new CobiGenRuntimeException(e.getMessage(), e);
     } catch (IOException e) {
       LOG.error("IOError while reading the monolithic pom file", e);
@@ -319,7 +321,8 @@ public class TemplateSetUpgrader {
    * @param contextFile {@link Path} to the contextFile
    * @return {@link ContextConfiguration}
    */
-  private ContextConfiguration getContextConfiguration(Path contextFile) throws Exception {
+  private com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration getContextConfiguration(Path contextFile)
+      throws FileNotFoundException, InvalidConfigurationException {
 
     if (contextFile == null) {
       throw new CobiGenRuntimeException("Templates location cannot be null!");
@@ -333,11 +336,12 @@ public class TemplateSetUpgrader {
     }
 
     try (InputStream in = Files.newInputStream(context)) {
-      Unmarshaller unmarschaller = JAXBContext.newInstance(ContextConfiguration.class).createUnmarshaller();
+      Unmarshaller unmarschaller = JAXBContext
+          .newInstance(com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class).createUnmarshaller();
 
       Object rootNode = unmarschaller.unmarshal(in);
-      if (rootNode instanceof ContextConfiguration) {
-        return (ContextConfiguration) rootNode;
+      if (rootNode instanceof com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration) {
+        return (com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration) rootNode;
       }
     } catch (IOException e) {
       throw new InvalidConfigurationException("Context file could not be found", e);

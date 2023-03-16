@@ -143,7 +143,6 @@ public class ConfigurationClassLoaderUtil {
   private static List<Class<?>> resolveFromFolder(Path templateRoot, ClassLoader inputClassLoader) {
 
     LOG.debug("Processing configuration from {}", templateRoot.toString());
-    LOG.info("Searching for classes in configuration folder...");
     List<Path> foundPaths = new LinkedList<>();
     List<Class<?>> result = new ArrayList<>();
 
@@ -172,7 +171,7 @@ public class ConfigurationClassLoaderUtil {
         }
       }
     } else {
-      LOG.info("Could not find any compiled classes to be loaded as util classes in template folder.");
+      LOG.debug("Could not find any compiled classes to be loaded as util classes in template folder.");
     }
 
     return result;

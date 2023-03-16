@@ -98,7 +98,7 @@ public class AbstractCliTest {
       for (Path path : devTemplateSets) {
         if (Files.isDirectory(path)) {
           Path resourcesFolder = path.resolve("src/main/resources");
-          Path templatesFolder = path.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+          Path templatesFolder = path.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
           if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
             try {
               Files.move(resourcesFolder, templatesFolder);
@@ -241,7 +241,6 @@ public class AbstractCliTest {
     // enable jacoco coverage monitoring for external processes (especially for CI/CD)
     if (!StringUtils.isEmpty(MavenMetadata.JACOCO_AGENT_ARGS)
         && !StringUtils.startsWith(MavenMetadata.JACOCO_AGENT_ARGS, "$")) {
-      System.out.println(System.getenv(JAVA_TOOL_OPTIONS));
       pe.environment(JAVA_TOOL_OPTIONS, MavenMetadata.JACOCO_AGENT_ARGS
 
           // .replaceFirst("destfile=[^,]+(,)?", "")

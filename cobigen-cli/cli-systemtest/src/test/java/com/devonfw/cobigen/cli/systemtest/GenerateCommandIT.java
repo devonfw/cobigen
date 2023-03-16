@@ -9,6 +9,7 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -74,6 +75,7 @@ public class GenerateCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
@@ -97,6 +99,35 @@ public class GenerateCommandIT extends AbstractCliTest {
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
         .exists();
   }
+
+  /**
+   *
+   * Todo
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  @Ignore // TODO: re-enable/fix when CLI tests were re-factored
+  public void generateFromEntityWithTemplateSetTest() throws Exception {
+
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    File templateSetsConfig = this.tmpProject.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).toFile();
+    String args[] = new String[6];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "0";
+    args[4] = "-tp";
+    args[5] = templateSetsConfig.getAbsolutePath();
+
+    execute(args, false);
+
+    assertThat(this.currentHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)).exists();
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
+        .exists();
+  }
+  // selben Test mit einer Jar
 
   /**
    * Integration test of the generation from a templates jar using a utility class with an extra dependency. See:

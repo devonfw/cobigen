@@ -28,11 +28,9 @@ public class ConfigurationUtilTest {
   /**
    * Tests findTemplatesLocation logic Checks if a template jar is located inside the downloaded folder of template-sets
    * Checks if a template jar can be loaded directly when being set from the .cobigen properties file
-   *
-   * @throws Exception
    */
   @Test
-  public void testFindTemplatesLocation() throws Exception {
+  public void testFindTemplateSetsLocation() throws Exception {
 
     File userHome = this.tmpFolder.newFolder("user-home");
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, userHome.getAbsolutePath()).execute(() -> {

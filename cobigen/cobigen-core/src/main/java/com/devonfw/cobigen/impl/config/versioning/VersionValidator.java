@@ -10,6 +10,7 @@ import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationExcept
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
+import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 
 /**
@@ -24,7 +25,10 @@ public class VersionValidator {
     /** Validates the {@link ContextConfigurationVersion} */
     CONTEXT_CONFIGURATION,
     /** Validates the {@link TemplatesConfigurationVersion} */
-    TEMPLATES_CONFIGURATION
+    TEMPLATES_CONFIGURATION,
+    /** Validates the {@link TemplateSetConfigurationVersion} */
+    TEMPLATE_SET_CONFIGURATION
+
   }
 
   /** Logger instance */
@@ -57,6 +61,10 @@ public class VersionValidator {
       case TEMPLATES_CONFIGURATION:
         this.configName = "templates configuration";
         this.versionSteps = TemplatesConfigurationVersion.valuesSorted();
+        break;
+      case TEMPLATE_SET_CONFIGURATION:
+        this.configName = "template set configuration";
+        this.versionSteps = TemplateSetConfigurationVersion.valuesSorted();
         break;
       default:
         throw new NotYetSupportedException("Unknown configuration type.");

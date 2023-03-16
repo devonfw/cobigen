@@ -61,6 +61,9 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       URI templatesLocationPath = ConfigurationFinder.findTemplatesLocation();
       if (Files.exists(Paths.get(templatesLocationPath))) {
         this.templatesLocation = Paths.get(templatesLocationPath);
+        if (this.templatesLocation.getFileName().toString().contains(".jar")) {
+          this.templatesLocation = this.templatesLocation.getParent();
+        }
       }
     } else {
       this.templatesLocation = templatesLocation;
@@ -74,7 +77,6 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     if (isMonolithicTemplatesConfiguration()) {
       Path destinationPath = this.templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
       adaptMonolithicTemplates(destinationPath, false);
-
       throw new UpgradeTemplatesNotificationException();
     } else {
       throw new TemplateSelectionForAdaptionException(getTemplateSetJars());

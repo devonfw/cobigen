@@ -215,6 +215,11 @@
       </dependency>
       <dependency>
         <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>openapiplugin</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
         <artifactId>tempeng-freemarker</artifactId>
         <version>${revision}</version>
       </dependency>
