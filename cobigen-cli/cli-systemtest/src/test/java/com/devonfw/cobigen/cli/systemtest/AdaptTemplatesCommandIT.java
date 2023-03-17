@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
 
 /**
  * Tests the usage of the adapt-templates command.
@@ -25,7 +26,8 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore // TODO: re-enable when template set adaptation is implemented
+  @Ignore
+  // TODO: re-enable when template set adaptation is implemented
   public void adaptTemplateSetTest() throws Exception {
 
     Path devTemplateSetPath = new File(
@@ -89,8 +91,9 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    *
    * @throws Exception test fails
    */
-  @Ignore
+
   @Test
+  @Ignore
   public void adaptTemplatesTest() throws Exception {
 
     Path cliSystemTestPath = new File(
@@ -101,8 +104,13 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     if (!Files.exists(templatesPath)) {
       Files.createDirectories(templatesPath);
     }
-    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", false, templatesPath.toFile());
-    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", true, templatesPath.toFile());
+
+    MavenCoordinateState nonSourcesJar = new MavenCoordinateState("com.devonfw.cobigen", "templates-devon4j", "3.0.0",
+        false);
+    MavenCoordinateState sourcesJar = new MavenCoordinateState("com.devonfw.cobigen", "templates-devon4j", "3.0.0",
+        true);
+    TemplatesJarUtil.downloadJar(nonSourcesJar, templatesPath.toFile());
+    TemplatesJarUtil.downloadJar(sourcesJar, templatesPath.toFile());
 
     String args[] = new String[2];
     args[0] = "adapt-templates";

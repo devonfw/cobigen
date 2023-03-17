@@ -13,6 +13,7 @@ import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
  * This MavenCoordinate class is just a dataholder with maven coordinates.
  */
 public class MavenCoordinate {
+
   /**
    * Constants needed for handling the template set jars
    */
@@ -109,6 +110,30 @@ public class MavenCoordinate {
   public String getVersion() {
 
     return this.version;
+  }
+
+  /**
+   * @param artifactId new value of {@link #getArtifactId}.
+   */
+  public void setArtifactId(String artifactId) {
+
+    this.artifactId = artifactId;
+  }
+
+  /**
+   * @param groupId new value of {@link #getGroupId}.
+   */
+  public void setGroupId(String groupId) {
+
+    this.groupId = groupId;
+  }
+
+  /**
+   * @param version new value of {@link #getVersion}.
+   */
+  public void setVersion(String version) {
+
+    this.version = version;
   }
 
   /**

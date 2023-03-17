@@ -115,6 +115,69 @@ public class MavenCoordinateState extends MavenCoordinate {
   }
 
   /**
+   * The constructor with a local path to a MavenCoordinate. By default all MavenCoordinates are neither present nor
+   * adapted.
+   *
+   * @param groupId the groupId of the maven artifact
+   * @param artifactId the artifactId of the maven artifact
+   * @param version the version of the maven artifact
+   * @param isSource whether the MavenCoordinate describes a source or not
+   */
+  public MavenCoordinateState(String groupId, String artifactId, String version, boolean isSource) {
+
+    super(groupId, artifactId, version);
+
+    this.mavenCoordinateLocalPath = null;
+    this.isSource = isSource;
+    this.isPresent = false; // this field might be obsolete
+    this.isAdapted = false;
+    setToBeAdapted(false);
+    setValidMavenCoordinate(false);
+
+  }
+
+  /**
+   * The constructor with a local path to a MavenCoordinate. By default all MavenCoordinates are neither present nor
+   * adapted. This constructor converts a MavenCoordinate into a MavenCoordinateState.
+   *
+   * @param mavenCoordinatePath the local path to a MavenCoordinate
+   * @param mvnCoord an instance of a MavenCoordinate
+   * @param isSource whether the MavenCoordinate describes a source or not
+   */
+  public MavenCoordinateState(Path mavenCoordinatePath, MavenCoordinate mvnCoord, boolean isSource) {
+
+    super(mvnCoord.getGroupId(), mvnCoord.getArtifactId(), mvnCoord.getVersion());
+
+    this.mavenCoordinateLocalPath = mavenCoordinatePath;
+    this.isSource = isSource;
+    this.isPresent = false; // this field might be obsolete
+    this.isAdapted = false;
+    setToBeAdapted(false);
+    setValidMavenCoordinate(false);
+
+  }
+
+  /**
+   * The constructor with a local path to a MavenCoordinate. By default all MavenCoordinates are neither present nor
+   * adapted. This constructor converts a MavenCoordinate into a MavenCoordinateState.
+   *
+   * @param mvnCoord an instance of a MavenCoordinate
+   * @param isSource whether the MavenCoordinate describes a source or not
+   */
+  public MavenCoordinateState(MavenCoordinate mvnCoord, boolean isSource) {
+
+    super(mvnCoord.getGroupId(), mvnCoord.getArtifactId(), mvnCoord.getVersion());
+
+    this.mavenCoordinateLocalPath = null;
+    this.isSource = isSource;
+    this.isPresent = false; // this field might be obsolete
+    this.isAdapted = false;
+    setToBeAdapted(false);
+    setValidMavenCoordinate(false);
+
+  }
+
+  /**
    * @return whether the MavenCoordinate is a source or not
    */
   public boolean isSource() {
@@ -283,8 +346,6 @@ public class MavenCoordinateState extends MavenCoordinate {
     }
 
   }
-  // TODO: templateset adapter anpassen sodas die neue templateset get jar file methode benutzt wird, wenn exception
-  // geworfen wurde
 
   /**
    * Creates a MavenCoordinateState object that exposes situational information.
