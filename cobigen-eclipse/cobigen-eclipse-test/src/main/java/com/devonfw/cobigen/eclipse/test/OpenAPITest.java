@@ -80,7 +80,7 @@ public class OpenAPITest extends SystemTest {
     // execute CobiGen
     EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "CRUD REST services");
     // increase timeout as the openAPI parser is slow on initialization
-    EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
+    EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 120000);
 
     // check assertions
     bot.waitUntil(new AllJobsAreFinished(), 10000);

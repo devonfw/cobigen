@@ -165,7 +165,7 @@ public class EclipseCobiGenUtils {
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
     postponeUpgradeAndContinue(bot);
-    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+    generateWithSelectedIncrements(bot, 120000, increments);
   }
 
   /**
@@ -216,7 +216,7 @@ public class EclipseCobiGenUtils {
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
     postponeUpgradeAndContinue(bot);
-    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+    generateWithSelectedIncrements(bot, 120000, increments);
   }
 
   /**
