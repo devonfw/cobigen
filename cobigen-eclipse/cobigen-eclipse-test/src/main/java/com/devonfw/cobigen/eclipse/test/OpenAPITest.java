@@ -29,6 +29,8 @@ import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
 /**
  * General Eclipse Plug-in Tests.
+ *
+ * TODO: Create a copy of this test class for template sets using a regular generate (without upgrade or postpone)
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class OpenAPITest extends SystemTest {
