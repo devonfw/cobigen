@@ -131,7 +131,7 @@ public class ContextConfigurationReader {
    * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
    * @return the {@link List} of {@link Matcher}s
    */
-  protected List<Matcher> loadMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
+  private List<Matcher> loadMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
 
     List<Matcher> matcher = new LinkedList<>();
     for (com.devonfw.cobigen.impl.config.entity.io.Matcher m : trigger.getMatcher()) {
@@ -146,7 +146,7 @@ public class ContextConfigurationReader {
    * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
    * @return the {@link List} of {@link Matcher}s
    */
-  protected List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
+  private List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
 
     List<ContainerMatcher> containerMatchers = new LinkedList<>();
     for (com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
@@ -162,8 +162,7 @@ public class ContextConfigurationReader {
    *
    * @return the {@link List} of {@link Matcher}s
    */
-  protected List<VariableAssignment> loadVariableAssignments(
-      com.devonfw.cobigen.impl.config.entity.io.Matcher matcher) {
+  private List<VariableAssignment> loadVariableAssignments(com.devonfw.cobigen.impl.config.entity.io.Matcher matcher) {
 
     List<VariableAssignment> variableAssignments = new LinkedList<>();
     for (com.devonfw.cobigen.impl.config.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {
@@ -191,7 +190,7 @@ public class ContextConfigurationReader {
   /**
    * Reads the context configuration.
    */
-  protected void readConfiguration() {
+  private void readConfiguration() {
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
