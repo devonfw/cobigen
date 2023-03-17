@@ -27,9 +27,11 @@ import com.devonfw.cobigen.api.matchers.MatcherToMatcher;
 import com.devonfw.cobigen.api.matchers.VariableAssignmentToMatcher;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
+import com.devonfw.cobigen.api.to.VariableAssignmentTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.test.matchers.CustomHamcrestMatchers;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
@@ -59,7 +61,7 @@ public class ClassLoadingIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
     // Execution
@@ -72,7 +74,6 @@ public class ClassLoadingIT extends AbstractApiTest {
     assertThat(report).isSuccessful();
     assertThat(generatedFile).exists();
     assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
-
   }
 
   @Test
@@ -86,7 +87,7 @@ public class ClassLoadingIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
     // Execution

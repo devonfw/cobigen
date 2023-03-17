@@ -118,13 +118,16 @@ public class ConfigurationClassLoaderUtil {
     List<Class<?>> result = new LinkedList<>();
     List<URL> classLoaderUrls = new ArrayList<>(); // stores ClassLoader URLs
 
-    if (configurationHolder.isJarConfig()) {
-      result = resolveFromJar(classLoader, configurationHolder);
-    } else {
-      ClassLoader inputClassLoader = null;
-      classLoaderUrls = addFoldersToClassLoaderUrls(configurationHolder.getConfigurationPath());
-      inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
-      result = resolveFromFolder(configurationHolder.getConfigurationPath(), inputClassLoader);
+    List<Path> utilsLocations = configurationHolder.getUtilsLocation();
+    for (Path utilsLocation : utilsLocations) {
+      if (FileSystemUtil.isZipFile(utilsLocation.toUri())) {
+        result.addAll(resolveFromJar(classLoader, utilsLocation));
+      } else {
+        ClassLoader inputClassLoader = null;
+        classLoaderUrls = addFoldersToClassLoaderUrls(utilsLocation);
+        inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
+        result.addAll(resolveFromFolder(utilsLocation, inputClassLoader));
+      }
     }
 
     return result;
@@ -140,7 +143,6 @@ public class ConfigurationClassLoaderUtil {
   private static List<Class<?>> resolveFromFolder(Path templateRoot, ClassLoader inputClassLoader) {
 
     LOG.debug("Processing configuration from {}", templateRoot.toString());
-    LOG.info("Searching for classes in configuration folder...");
     List<Path> foundPaths = new LinkedList<>();
     List<Class<?>> result = new ArrayList<>();
 
@@ -169,7 +171,7 @@ public class ConfigurationClassLoaderUtil {
         }
       }
     } else {
-      LOG.info("Could not find any compiled classes to be loaded as util classes in template folder.");
+      LOG.debug("Could not find any compiled classes to be loaded as util classes in template folder.");
     }
 
     return result;
@@ -182,15 +184,15 @@ public class ConfigurationClassLoaderUtil {
    * @param configurationHolder configuration holder
    * @return List of classes to load utilities from
    */
-  private static List<Class<?>> resolveFromJar(ClassLoader inputClassLoader, ConfigurationHolder configurationHolder) {
+  private static List<Class<?>> resolveFromJar(ClassLoader inputClassLoader, Path utilLocation) {
 
-    LOG.debug("Processing configuration archive {}", configurationHolder.getConfigurationLocation());
+    LOG.debug("Processing configuration archive {}", utilLocation);
     LOG.info("Searching for classes in configuration archive...");
 
     List<Class<?>> result = new ArrayList<>();
     List<String> foundClasses = new LinkedList<>();
     try {
-      foundClasses = walkJarFile(configurationHolder);
+      foundClasses = walkJarFile(utilLocation);
     } catch (IOException e) {
       LOG.error("Could not read templates jar file", e);
     }
@@ -249,12 +251,16 @@ public class ConfigurationClassLoaderUtil {
    * @return List<String> of file paths containing class files
    * @throws IOException if file could not be visited
    */
-  private static List<String> walkJarFile(ConfigurationHolder configurationHolder) throws IOException {
+  private static List<String> walkJarFile(Path utilLocation) throws IOException {
 
     List<String> foundClasses = new LinkedList<>();
     // walk the jar file
-    LOG.debug("Searching for classes in {}", configurationHolder.getConfigurationLocation());
-    Files.walkFileTree(configurationHolder.getConfigurationPath(), new SimpleFileVisitor<Path>() {
+    LOG.debug("Searching for classes in {}", utilLocation);
+    Path configurationPath = utilLocation;
+    if (FileSystemUtil.isZipFile(utilLocation.toUri())) {
+      configurationPath = FileSystemUtil.createFileSystemDependentPath(utilLocation.toUri());
+    }
+    Files.walkFileTree(configurationPath, new SimpleFileVisitor<Path>() {
 
       @Override
       public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

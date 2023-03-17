@@ -32,7 +32,7 @@ public class VelocityTemplateEngineIntegrationTest {
   @Test
   public void testBasicGeneration() throws Exception {
 
-    CobiGen cobigen = CobiGenFactory.create(new File("src/test/resources/systemtest").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File("src/test/resources/systemtest").toURI(), true);
     Object input = cobigen.read(
         new File("src/test/java/com/devonfw/cobigen/tempeng/velocity/systemtest/testobjects/Input.java").toPath(),
         Charset.forName("UTF-8"), getClass().getClassLoader());

@@ -65,7 +65,7 @@ public class GenerationIT extends AbstractApiTest {
     File target = new File(folder, "generated.txt");
     FileUtils.write(target, "base");
 
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "overrideMergeStrategy").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "overrideMergeStrategy").toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
     assertThat(templates).hasSize(1);
 
@@ -91,7 +91,7 @@ public class GenerationIT extends AbstractApiTest {
     FileUtils.write(target, "base");
 
     // when
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "externalIncrementsGeneration").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "externalIncrementsGeneration").toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
     List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
     List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
@@ -180,7 +180,7 @@ public class GenerationIT extends AbstractApiTest {
     // further setup
     File folder = this.tmpFolder.newFolder();
 
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "variableAvailability").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "variableAvailability").toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
     TemplateTo targetTemplate = getTemplate(templates, "t1");
 
@@ -240,7 +240,7 @@ public class GenerationIT extends AbstractApiTest {
       IOUtils.write("cobigenPropTarget=extValue", writer);
     }
 
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "variableAvailability").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "variableAvailability").toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
     TemplateTo targetTemplate = getTemplate(templates, "t2");
 

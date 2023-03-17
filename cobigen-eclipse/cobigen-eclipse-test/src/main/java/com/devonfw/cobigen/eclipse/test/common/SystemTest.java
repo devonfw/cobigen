@@ -19,87 +19,87 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
-import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
 /**
- * Abstract test implementation providing the commonly used setup and tear down methods as well as JUnit rules and
+ * Abstract test implementation providing the commonly used setup and tear down
+ * methods as well as JUnit rules and
  * resets the SWTBot accordingly.
  */
 public abstract class SystemTest {
 
-  /** Logger instance. */
-  private static final Logger LOG = LoggerFactory.getLogger(SystemTest.class);
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(SystemTest.class);
 
-  /** Rule for creating temporary {@link IJavaProject}s per test. */
-  @Rule
-  public TmpMavenProjectRule tmpMavenProjectRule = new TmpMavenProjectRule();
+    /** Rule for creating temporary {@link IJavaProject}s per test. */
+    @Rule
+    public TmpMavenProjectRule tmpMavenProjectRule = new TmpMavenProjectRule();
 
-  /** Rule for creating temporary files and folders */
-  @Rule
-  public TemporaryFolder tmpFolderRule = new TemporaryFolder();
+    /** Rule for creating temporary files and folders */
+    @Rule
+    public TemporaryFolder tmpFolderRule = new TemporaryFolder();
 
-  /**
-   * Logging test name
-   */
-  @Rule
-  public TestRule watcher = new TestWatcher() {
-    @Override
-    protected void starting(Description description) {
+    /**
+     * Logging test name
+     */
+    @Rule
+    public TestRule watcher = new TestWatcher() {
+        @Override
+        protected void starting(Description description) {
 
-      LOG.info(">>>>>>>> Starting test '{}'", description.getMethodName());
+            LOG.info(">>>>>>>> Starting test '{}'", description.getMethodName());
+        }
+
+        @Override
+        protected void finished(Description description) {
+
+            LOG.info(">>>>>>>> Finishing test '{}'", description.getMethodName());
+        }
+    };
+
+    /** {@link SWTBot} for UI controls */
+    protected static SWTWorkbenchBot bot = new SWTWorkbenchBot();
+
+    static {
+        SWTBotPreferences.TIMEOUT = EclipseCobiGenUtils.DEFAULT_TIMEOUT;
     }
 
-    @Override
-    protected void finished(Description description) {
+    /**
+     * Setup workbench appropriately for tests
+     *
+     * @throws Exception setup failed
+     */
+    @BeforeClass
+    public static void setupTest() throws Exception {
 
-      LOG.info(">>>>>>>> Finishing test '{}'", description.getMethodName());
+        bot.resetWorkbench();
+//        bot.waitUntil(new AllJobsAreFinished());
+
+        // this flag is set to be true and will suppress ErrorDialogs,
+        // which is completely strange, so we enable them again.
+        ErrorDialog.AUTOMATED_MODE = false;
+        SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
+        perspective.activate();
+
+        try {
+            bot.viewByTitle("Welcome").close();
+        } catch (WidgetNotFoundException e) {
+            // ignore as Welcome screen will just occur once
+        } catch (Exception e) {
+            LOG.debug("Exception occured during test setup", e);
+            throw e;
+        }
     }
-  };
 
-  /** {@link SWTBot} for UI controls */
-  protected static SWTWorkbenchBot bot = new SWTWorkbenchBot();
+    /**
+     * Cleans up the workspace before each test
+     *
+     * @throws Exception cleanup failed
+     */
+    @Before
+    public void cleanUp() throws Exception {
 
-  static {
-    SWTBotPreferences.TIMEOUT = EclipseCobiGenUtils.DEFAULT_TIMEOUT;
-  }
-
-  /**
-   * Setup workbench appropriately for tests
-   *
-   * @throws Exception setup failed
-   */
-  @BeforeClass
-  public static void setupTest() throws Exception {
-
-    bot.resetWorkbench();
-    bot.waitUntil(new AllJobsAreFinished());
-
-    // this flag is set to be true and will suppress ErrorDialogs,
-    // which is completely strange, so we enable them again.
-    ErrorDialog.AUTOMATED_MODE = false;
-    SWTBotPerspective perspective = bot.perspectiveById(JavaUI.ID_PERSPECTIVE);
-    perspective.activate();
-
-    try {
-      bot.viewByTitle("Welcome").close();
-    } catch (WidgetNotFoundException e) {
-      // ignore as Welcome screen will just occur once
-    } catch (Exception e) {
-      LOG.debug("Exception occured during test setup", e);
-      throw e;
+        EclipseUtils.cleanWorkspace(bot, false);
     }
-  }
-
-  /**
-   * Cleans up the workspace before each test
-   *
-   * @throws Exception cleanup failed
-   */
-  @Before
-  public void cleanUp() throws Exception {
-
-    EclipseUtils.cleanWorkspace(bot, false);
-  }
 }

@@ -45,7 +45,7 @@ public class TemplateScanIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 
@@ -73,7 +73,7 @@ public class TemplateScanIT extends AbstractApiTest {
     Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
     // test processing
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
     // checking
@@ -98,7 +98,7 @@ public class TemplateScanIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 
@@ -130,7 +130,7 @@ public class TemplateScanIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 

@@ -3,6 +3,8 @@ toc::[]
 
 = Configuration
 
+== CobiGen HOME directory
+
 CobiGen is maintaining a home directory further referenced in this documentation as `$cghome`, which is used to maintain temporary or transient data. The home folder is determined with the following location fall-back:
 
 1. System environment variable `COBIGEN_HOME` (e.g. `C:\project\ide\conf\cobigen-home`)
@@ -12,12 +14,11 @@ The actual configuration of CobiGen is maintained by a single folder or jar. The
 
 1. A configuration jar or directory, which is passed to CobiGen by the Maven or Eclipse integration or any other program using the CobiGen programming interface:
 1.1. the Maven integration allows to configure a jar dependency to be included in the currently running classpath _(of interest for link:cobigen-maven_configuration#plugin-injection-since-v3[maven configuration]_
-1.2. the Eclipse integration allows to specify a `CobiGen_Templates` project in the eclipse workspace 
+1.2. the Eclipse integration allows to specify a `CobiGen_Templates` project in the eclipse workspace
 2. The file `$cghome/.cobigen` exists and the property `templates` is set to a valid configuration (e.g. `templates=C:\project\ide\conf\templates` or `templates=C:\project\ide\conf\templates.jar`) _Hint: Check for log entry like `Value of property templates in $cghome/.cobigen is invalid` to identify an invalid configuration which is not taken up as expected_
 3. The folder `$cghome/templates/CobiGen_Templates` exists
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
 5. CobiGen will automatically download the latest jar configuration from maven central with `groupId` `com.devonfw.cobigen` and `artifactId` `templates-devon4j` and take it like described in 4.
-
 
 Within the configuration jar or directory you will find the following structure:
 
@@ -118,8 +119,8 @@ The context configuration (`context.xml`) always has the following root structur
 .Context Configuration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<contextConfiguration xmlns="http://capgemini.com" 
-                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<contextConfiguration xmlns="http://capgemini.com"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       version="1.0">
     <triggers>
         ...
@@ -147,7 +148,7 @@ As children of the `<triggers>` node you can define different triggers. By defin
 
 === Matcher Node
 
-A trigger will be activated if its matchers hold the following formula: 
+A trigger will be activated if its matchers hold the following formula:
 
 `!(NOT || ... || NOT) && AND && ... && AND && (OR || ... || OR)`
 
@@ -164,7 +165,7 @@ Whereas NOT/AND/OR describes the `accumulationType` of a _matcher_ (see below) a
 * The attribute `value` might contain any information necessary for processing the _matcher's_ functionality. Have a look at the relevant plug-in's documentation for more detail.
 * The attribute `accumulationType` _(optional)_ specifies how the matcher will influence the trigger activation. Valid values are:
 ** OR (default): if any matcher of accumulation type OR _matches_, the trigger will be activated as long as there are no further matchers with different accumulation types
-** AND: if any matcher with AND accumulation type does _not match_, the trigger will _not_ be activated 
+** AND: if any matcher with AND accumulation type does _not match_, the trigger will _not_ be activated
 ** NOT: if any matcher with NOT accumulation type _matches_, the trigger will _not_ be activated
 
 === Variable Assignment Node
@@ -175,8 +176,8 @@ Finally, a `<matcher>` node can have multiple `<variableAssignment>` nodes as ch
 .Complete Configuration Pattern
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<contextConfiguration xmlns="http://capgemini.com" 
-                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<contextConfiguration xmlns="http://capgemini.com"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       version="1.0">
     <triggers>
         <trigger id="..." type="..." templateFolder="...">
@@ -200,8 +201,8 @@ Such a container might be a package, which encloses multiple types or---more gen
 .`ContainerMatcher` Declaration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<contextConfiguration xmlns="http://capgemini.com" 
-                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<contextConfiguration xmlns="http://capgemini.com"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       version="1.0">
     <triggers>
         <trigger id="..." type="..." templateFolder="..." >
@@ -240,8 +241,8 @@ To get an intuition of the idea, the following will initially describe the first
 .Extensive Templates Configuration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<templatesConfiguration xmlns="http://capgemini.com"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         version="1.0" templateEngine="FreeMarker">
     <templates>
             ...
@@ -293,18 +294,18 @@ The second configuration style for template meta-data is driven by initially sca
 .Example of Template-scan configuration
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<templatesConfiguration xmlns="http://capgemini.com" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<templatesConfiguration xmlns="http://capgemini.com"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         version="1.2">
     <templateScans>
         <templateScan templatePath="templates" templateNamePrefix="prefix_" destinationPath="src/main/java"/>
     </templateScans>
 </templatesConfiguration>
 ```
-You can specify multiple `<templateScan ...>` nodes for different `templatePaths` and different `templateNamePrefixes`. 
+You can specify multiple `<templateScan ...>` nodes for different `templatePaths` and different `templateNamePrefixes`.
 
 * The `name` can be specified to later on reference the templates found by a template-scan within an xref:increment-node[increment]. _(since `cobigen-core-v2.1.`)_
-* The `templatePath` specifies the relative path from the `templates.xml` to the root folder from which the template scan should be performed. 
+* The `templatePath` specifies the relative path from the `templates.xml` to the root folder from which the template scan should be performed.
 * The `templateNamePrefix` _(optional)_ defines a common id prefix, which will be added to all found and automatically configured templates.
 * The `destinationPath` defines the root folder all found templates should be generated to, whereas the root folder will be a prefix for all found and automatically configured templates.
 
@@ -374,7 +375,7 @@ _(Since version 4.1.0)_  An special case of `<incrementRef ...>` is the external
 
 However, if we want to reference an increment that it is not defined inside our `templates.xml` (an increment defined for another trigger), then we can use external `incrementRef` as shown below:
 
-```xml 
+```xml
 <increment name="..." description="...">
     <incrementRef ref="trigger_id::increment_id"/>
 </increment>
@@ -382,10 +383,133 @@ However, if we want to reference an increment that it is not defined inside our 
 
 The ref string is split using as delimiter `::`. The first part of the string, is the `trigger_id` to reference. That trigger contains an `increment_id`. Currently, this functionality only works when both templates use the same kind of input file.
 
+== Configuration Upgrade
+
+`CobiGen 2021.12.007` introduces an updated configuration folder structure:
+
+```
+template-sets
+ |- downloaded
+   |- template-set1.jar
+   |- template-set2.jar
+   |- template-set-utilities.jar
+ |- adapted
+   |- template-set1
+     |- src
+       |- main
+         |- templates
+           |- templates
+             |- template-set.xml
+   |- template-set2
+```
+
+The updated structure splits the context.xml and the pom.xml files into multiple directories - one for each template set
+ - each with their own atomized/small/more understandable version so you can download them individually instead of all
+at once.
+
+If the configuration needs to be upgraded, the user will be asked whether he wants to perform an automatic upgrade. The
+upgrade can also be performed manually, but it is highly recommended to perform it automatically.
+
+=== Manual Upgrade Steps
+If you wish to manually split your templates into smaller parts, as specified in version 3.0, please follow the following instructions.
+Navigate to your CobiGen directory e.g. `$cghome/.cobigen`. If the `template-sets` folder is missing,
+please create one. Navigate into the folder and create a `downloaded` and an `adapted` folder.
+
+1. Navigate to the newly created `adapted` folder and create a new folder named after the template you want to upgrade
+e. g. `template1`
+
+2. In the newly created folder, create the following folder structure:
+```
+ |- adapted
+   |- template1
+     |- src
+       |- main
+         |- templates
+```
+Whereas `template1` is the name of the template you want to upgrade.
+[start=3]
+3. Within the old templates directory, navigate to `CobiGen_Templates\src\main\java` and copy the `java` folder, which contains the template utility source files, into your newly created `main` folder.
+The structure of the `adapted` folder should now look like this:
+```
+ |- adapted
+   |- template1
+     |- src
+       |- main
+         |- java
+         |- templates
+```
+[start=4]
+4. Navigate to the template you want to upgrade e.g. `CobiGen_Templates\src\main\templates\template-set1` and copy all of it's contents
+into your newly generated templates folder (`template-sets\adapted\templateSet1\src\main\templates`).
+
+6. Switch to `template-sets\adapted\templateSet1\src\main\templates` and create a new 'template-set.xml' file (which combines the context.xml and templates.xml), with the following content (adapted to your needs):
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.0">
+  <trigger id="valid" type="java">
+    <matcher type="fqn" value="*">
+    </matcher>
+  </trigger>
+
+  <tags>
+    <tag name="bla"/>
+  </tags>
+
+  <templates>
+    <template name="prefix_Foo2Class.java" destinationPath="src/main/java/foo/Foo2Class${variable}.java"
+      templateFile="foo/Foo2Class.java.ftl" mergeStrategy="javamerge"/>
+    <templateExtension ref="prefix2_FooClass.java" destinationPath="adapted/path/FooClass.java"
+      mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
+    <templateExtension ref="prefix2_Foo2Class.java"/>
+  </templates>
+
+  <templateScans>
+    <templateScan templateNamePrefix="prefix_" templatePath="foo" destinationPath="src/main/java/foo"/>
+    <templateScan templateNamePrefix="prefix2_" templatePath="bar" destinationPath="src/main/java/bar"/>
+  </templateScans>
+
+</templateSetConfiguration>
+```
+The newly generated 'template-set.xml' file contains information for just one template-set. You can copy this information for
+your template from the old 'context.xml' (located here: `CobiGen_Templates\src\main\templates`) and 'templates.xml' file (located here: `CobiGen_Templates\src\main\templates\template1`) (e.g. crud-java-server-app).
+[start=7]
+7. Switch to `template-sets\adapted\templateSet1` and create a new `pom.xml`. With the following content (adapted to your needs):
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <parent>
+    <groupId>com.devonfw.cobigen</groupId>
+    <artifactId>templates-devon4j</artifactId>
+    <version>2021.12.007</version>
+  </parent>
+  <artifactId>templateSet1</artifactId>
+  <name>PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER</name>
+  <dependencies>
+    <dependency>
+
+    //Your first dependency
+
+    </dependency>
+
+    <dependency>
+
+    //Your second dependency
+
+    </dependency>
+  </dependencies>
+</project>
+
+```
+[start=8]
+8. Congratulations, you have upgraded your first template!
+
 == Java Template Logic
 
 _since `cobigen-core-3.0.0` which is included in the Eclipse and Maven Plugin since version 2.0.0_
-In addition, it is possible to implement more complex template logic by custom Java code. To enable this feature, you can simply import the the `CobiGen_Templates` by clicking on _Adapt Templates_, turn it into a simple maven project (if it is not already) and implement any Java logic in the common maven layout (e.g. in the source folder `src/main/java`). Each Java class will be instantiated by CobiGen for each generation process. Thus, you can even store any state within a Java class instance during generation. However, there is currently no guarantee according to the template processing order. 
+In addition, it is possible to implement more complex template logic by custom Java code. To enable this feature, you can simply import the the `CobiGen_Templates` by clicking on _Adapt Templates_, turn it into a simple maven project (if it is not already) and implement any Java logic in the common maven layout (e.g. in the source folder `src/main/java`). Each Java class will be instantiated by CobiGen for each generation process. Thus, you can even store any state within a Java class instance during generation. However, there is currently no guarantee according to the template processing order.
 
 As a consequence, you have to implement your Java classes with a public default (non-parameter) constructor to be used by any template. Methods of the implemented Java classes can be called within templates by the simple standard FreeMarker expression for calling Bean methods: `SimpleType.methodName(param1)`. Until now, CobiGen will shadow multiple types with the same simple name non-deterministically. So please prevent yourself from that situation.
 

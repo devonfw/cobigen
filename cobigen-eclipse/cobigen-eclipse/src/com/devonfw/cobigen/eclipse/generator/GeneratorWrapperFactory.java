@@ -1,6 +1,8 @@
 package com.devonfw.cobigen.eclipse.generator;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,7 +13,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -25,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
@@ -43,33 +46,35 @@ import com.google.common.collect.Lists;
 /**
  * Generator creation factory, which creates a specific generator instance dependent on the current selection within the
  * eclipse IDE
- *
- * @author mbrunnli (03.12.2014)
  */
 public class GeneratorWrapperFactory {
 
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(GeneratorWrapperFactory.class);
 
+  private static IProject generatorProj = null;
+
   /**
    * Creates a generator dependent on the input of the selection
    *
    * @param selection current {@link IStructuredSelection} treated as input for generation
    * @param monitor tracking progress
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @return a specific {@link CobiGenWrapper} instance
    * @throws GeneratorCreationException if any exception occurred during converting the inputs or creating the generator
    * @throws GeneratorProjectNotExistentException if the generator configuration project does not exist
    * @throws InvalidInputException if the selection includes non supported input types or is composed in a non supported
    *         combination of inputs.
    */
-  public static CobiGenWrapper createGenerator(ISelection selection, IProgressMonitor monitor)
+  public static CobiGenWrapper createGenerator(ISelection selection, IProgressMonitor monitor,
+      boolean allowMonolithicConfiguration)
       throws GeneratorCreationException, GeneratorProjectNotExistentException, InvalidInputException {
 
     List<Object> extractedInputs = extractValidEclipseInputs(selection);
-
     if (extractedInputs.size() > 0) {
       monitor.subTask("Initialize CobiGen instance");
-      CobiGen cobigen = initializeGenerator();
+      CobiGen cobigen = initializeGenerator(allowMonolithicConfiguration);
 
       monitor.subTask("Reading inputs...");
       monitor.worked(10);
@@ -207,40 +212,78 @@ public class GeneratorWrapperFactory {
    * @throws InvalidConfigurationException if the context configuration is not valid
    * @throws GeneratorCreationException if the generator configuration project does not exist
    */
-  private static CobiGen initializeGenerator() throws InvalidConfigurationException, GeneratorCreationException {
+  private static CobiGen initializeGenerator(boolean allowMonolithicConfiguration)
+      throws InvalidConfigurationException, GeneratorCreationException {
 
     try {
       ResourcesPluginUtil.refreshConfigurationProject();
-      IProject generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
+      generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
-      if (generatorProj == null) {
-        throw new GeneratorCreationException(
-            "Configuration source could not be read. Have you downloaded the templates?");
+      initializeCobiGen(generatorProj, allowMonolithicConfiguration);
+
+      return initializeCobiGen(generatorProj, true);
+    } catch (CoreException e) {
+      throw new GeneratorCreationException("An eclipse internal exception occurred", e);
+    } catch (DeprecatedMonolithicConfigurationException e) {
+      if (null == generatorProj.getLocationURI())
+        throw e;
+      else {
+        throw new DeprecatedMonolithicConfigurationException(Paths.get(generatorProj.getLocationURI()));
       }
+    } catch (Throwable e) {
+      throw new GeneratorCreationException(
+          "Configuration source could not be read.\nIf you were updating templates, it may mean"
+              + " that you have no internet connection,",
+          e);
+    }
+  }
 
-      // We need to check whether it is a valid Java Project
-      IJavaProject configJavaProject = JavaCore.create(generatorProj);
+  /**
+   * Initializes the {@link CobiGen} with the correct configuration, checks if template-sets exists, if not the Jar or
+   * generatorProj will be used.
+   *
+   * @param generatorProj the templates project
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
+   * @return the configured{@link CobiGen}
+   * @throws if the generator configuration project does not exist
+   *
+   */
+  private static CobiGen initializeCobiGen(IProject generatorProj, boolean allowMonolithicConfiguration)
+      throws GeneratorCreationException {
 
-      // If it is not valid, we should use the jar
-      if (null == generatorProj.getLocationURI() || !configJavaProject.exists()) {
-        File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
-        File jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectory);
-        boolean fileExists = jarPath.exists();
+    Path templatesDirectoryPath = CobiGenPaths.getTemplateSetsFolderPath();
+    Path templateSetsAdaptedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path templateSetsDownloadedFolderPath = templatesDirectoryPath.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+
+    if (ResourcesPluginUtil.getTemplateSetPathAfterUpgrade() != null) {
+      return CobiGenFactory.create(ResourcesPluginUtil.getTemplateSetPathAfterUpgrade().toUri(),
+          allowMonolithicConfiguration);
+    }
+    if (generatorProj == null) {
+
+      // check adapted and downloaded folder
+      if (Files.exists(templateSetsAdaptedFolderPath) || Files.exists(templateSetsDownloadedFolderPath)) {
+        return CobiGenFactory.create(templatesDirectoryPath.toUri(), allowMonolithicConfiguration);
+      }
+      templatesDirectoryPath = CobiGenPaths.getTemplatesFolderPath();
+      if (Files.exists(templatesDirectoryPath)) {
+        // If it is not valid, we should use the jar
+        Path jarPath = TemplatesJarUtil.getJarFile(false, templatesDirectoryPath);
+        boolean fileExists = (jarPath != null && Files.exists(jarPath));
         if (!fileExists) {
           MessageDialog.openWarning(Display.getDefault().getActiveShell(), "Warning",
               "Not Downloaded the CobiGen Template Jar");
         }
-        return CobiGenFactory.create(jarPath.toURI());
-      } else {
-        return CobiGenFactory.create(generatorProj.getLocationURI());
+        return CobiGenFactory.create(jarPath.toUri(), allowMonolithicConfiguration);
       }
-    } catch (CoreException e) {
-      throw new GeneratorCreationException("An eclipse internal exception occurred", e);
-    } catch (Throwable e) {
+    }
+    if (generatorProj.getLocationURI() == null) {
       throw new GeneratorCreationException(
-          "Configuration source could not be read.\nIf you were updating templates, it may mean"
-              + " that you have no internet connection.",
-          e);
+          "Configuration source could not be read. Have you downloaded the templates?");
+    } else {
+      return CobiGenFactory.create(generatorProj.getLocationURI(), allowMonolithicConfiguration);
     }
   }
+
 }

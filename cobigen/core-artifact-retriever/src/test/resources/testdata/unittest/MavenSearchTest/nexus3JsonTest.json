@@ -1,0 +1,42 @@
+{
+  "items" : [ {
+    "id" : "bWF2ZW4tY2VudHJhbDoyZTQ3ZGRhMGYxYjU1NWUwNzE1OWRjOWY5ZGQzZmVmNA",
+    "repository" : "maven-central",
+    "format" : "maven2",
+    "group" : "org.osgi",
+    "name" : "org.osgi.core",
+    "version" : "4.3.1",
+    "assets" : [ {
+      "downloadUrl" : "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar",
+      "path" : "org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1-sources.jar",
+      "id" : "bWF2ZW4tY2VudHJhbDplMDE4OGVkMDcyOGZhNjhmNDExNzU2OGU1MjQ2NjZiYg",
+      "repository" : "maven-central",
+      "format" : "maven2",
+      "checksum" : {
+        "sha1" : "80bfafcf783988442b3a58318face1d2132db33d",
+        "md5" : "87ee0258b79dc852626b91818316b9c3"
+      }
+    }, {
+      "downloadUrl" : "http://localhost:8081/repository/maven-central/org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar",
+      "path" : "org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.jar",
+      "id" : "bWF2ZW4tY2VudHJhbDpkMDY0ODA0YThlZDVhZDZlNjhmZGU5MWNmM2NiZTgzMw",
+      "repository" : "maven-central",
+      "format" : "maven2",
+      "checksum" : {
+        "sha1" : "5458ffe2ba049e76c29f2df2dc3ffccddf8b839e",
+        "md5" : "8053bbc1b55d51f5abae005625209d08"
+      }
+    }, {
+      "downloadUrl" : "http://localhost:8081/repository/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml",
+      "path" : "org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom",
+      "id" : "bWF2ZW4tY2VudHJhbDo2NTRiYjdkMGE1OTIxMzg1OWZhMTVkMzNmYWU1ZmY3OA",
+      "repository" : "maven-central",
+      "format" : "maven2",
+      "checksum" : {
+        "sha1" : "79391fc69dd72ad1fd983d01b4572f93f644882b",
+        "md5" : "3d87a59bcdb4b131d9a63e87e0ed924a"
+      }
+    } ]
+  } ],
+  "continuationToken" : null
+}

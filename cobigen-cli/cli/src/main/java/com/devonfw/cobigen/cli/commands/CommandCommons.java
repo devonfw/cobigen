@@ -26,6 +26,12 @@ public abstract class CommandCommons implements Callable<Integer> {
   @Option(names = { "--templates-project", "-tp" }, description = MessagesConstants.TEMPLATE_PATH_DESCRIPTION)
   Path templatesProject;
 
+  /**
+   * If this option is enabled, the old monolithic templates will be upgraded to the new template-set structure.
+   */
+  @Option(names = { "--upgrade-configuration" }, description = MessagesConstants.UPGRADE_CONFIGURATION_OPTION)
+  boolean upgradeConfiguration;
+
   @Override
   public Integer call() throws Exception {
 

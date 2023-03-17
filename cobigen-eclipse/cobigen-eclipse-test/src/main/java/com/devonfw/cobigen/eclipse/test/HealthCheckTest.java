@@ -46,6 +46,6 @@ public class HealthCheckTest extends SystemTest {
     EclipseUtils.importExistingGeneralProject(bot, tmpFolder.getAbsolutePath(), false);
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
-    EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+    EclipseCobiGenUtils.runAndCaptureHealthCheckWithMonolithicConfiguration(bot);
   }
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="3.0">
+  <trigger id="crud_java_ea_uml" type="xml">
+    <containerMatcher type="xpath" value="./uml:Model//packagedElement[@xmi:type='uml:Class']" />
+    <matcher type="xpath" value="self::node()[@xmi:type='uml:Class']/ancestor::uml:Model">
+      <variableAssignment type="xpath" key="rootPackage" value="self::node()/ancestor::packagedElement/packagedElement/@name" />
+      <variableAssignment type="xpath" key="component" value="self::node()/ancestor::packagedElement/packagedElement/packagedElement/@name" />
+      <variableAssignment type="xpath" key="className" value="self::node()/@name" />
+    </matcher>
+  </trigger>
+  <tags>
+    <tag name="EA"></tag>
+    <tag name="CRUD"></tag>
+    <tag name="Client"></tag>
+    <tag name="UML"></tag>
+  </tags>
+</contextConfiguration>

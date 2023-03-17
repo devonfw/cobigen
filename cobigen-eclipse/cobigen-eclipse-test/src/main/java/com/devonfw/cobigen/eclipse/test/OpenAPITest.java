@@ -69,7 +69,7 @@ public class OpenAPITest extends SystemTest {
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
-    EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+    EclipseCobiGenUtils.runAndCaptureHealthCheckWithMonolithicConfiguration(bot);
     EclipseUtils.openErrorsTreeInProblemsView(bot);
 
     // expand the new file in the package explorer
@@ -78,7 +78,7 @@ public class OpenAPITest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "CRUD REST services");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "CRUD REST services");
     // increase timeout as the openAPI parser is slow on initialization
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
 
@@ -149,7 +149,7 @@ public class OpenAPITest extends SystemTest {
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
-    EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+    EclipseCobiGenUtils.runAndCaptureHealthCheckWithMonolithicConfiguration(bot);
     EclipseUtils.openErrorsTreeInProblemsView(bot);
 
     // expand the new file in the package explorer
@@ -158,7 +158,7 @@ public class OpenAPITest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "View Component");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "View Component");
     // increase timeout as the openAPI parser is slow on initialization
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
 
@@ -218,7 +218,7 @@ public class OpenAPITest extends SystemTest {
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
-    EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+    EclipseCobiGenUtils.runAndCaptureHealthCheckWithMonolithicConfiguration(bot);
     EclipseUtils.openErrorsTreeInProblemsView(bot);
     // expand the new file in the package explorer
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
@@ -226,7 +226,7 @@ public class OpenAPITest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "generate a file for every Entity");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "generate a file for every Entity");
     // increase timeout as the openAPI parser is slow on initialization
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
 

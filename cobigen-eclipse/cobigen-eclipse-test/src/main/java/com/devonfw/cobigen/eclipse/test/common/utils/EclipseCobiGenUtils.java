@@ -5,6 +5,7 @@ import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -35,7 +36,7 @@ public class EclipseCobiGenUtils {
   public static final int DEFAULT_TIMEOUT = 15000;
 
   /**
-   * Selects the the increment with the given name and generates it.
+   * Selects the increment with the given name and generates it.
    *
    * @param bot the {@link SWTWorkbenchBot} of the test
    * @param input input of CobiGen to be selected
@@ -45,6 +46,34 @@ public class EclipseCobiGenUtils {
   public static void processCobiGen(SWTWorkbenchBot bot, SWTBotTreeItem input, String... increments) throws Exception {
 
     processCobiGen(bot, input, DEFAULT_TIMEOUT, increments);
+  }
+
+  /**
+   * Selects the increment with the given name and generates it, even if monolithic templates found
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws Exception test fails
+   */
+  public static void processCobiGenAndPostponeUpgrade(SWTWorkbenchBot bot, SWTBotTreeItem input, String... increments)
+      throws Exception {
+
+    processCobiGenAndPostponeUpgrade(bot, input, DEFAULT_TIMEOUT, increments);
+  }
+
+  /**
+   * Selects the increment with the given name, upgrades the monolithic templates and generates.
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws Exception test fails
+   */
+  public static void processCobiGenAndUpgrade(SWTWorkbenchBot bot, SWTBotTreeItem input, String... increments)
+      throws Exception {
+
+    processCobiGenAndUpgrade(bot, input, DEFAULT_TIMEOUT, increments);
   }
 
   /**
@@ -101,7 +130,7 @@ public class EclipseCobiGenUtils {
   }
 
   /**
-   * Selects the the increment with the given name and generates it.
+   * Selects the increment with the given name and generates it.
    *
    * @param bot the {@link SWTWorkbenchBot} of the test
    * @param input input of CobiGen to be selected
@@ -135,6 +164,7 @@ public class EclipseCobiGenUtils {
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
+    postponeUpgradeAndContinue(bot);
     generateWithSelectedIncrements(bot, defaultTimeout, increments);
   }
 
@@ -170,6 +200,47 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Selects the increment with the given name and generates it, even if monolithic templates found
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws CoreException
+   * @throws Exception test fails
+   */
+  private static void processCobiGenAndPostponeUpgrade(SWTWorkbenchBot bot, SWTBotTreeItem input, int defaultTimeout,
+      String[] increments) throws Exception {
+
+    // Open generation wizard with new file as Input
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
+    input.contextMenu("CobiGen").menu("Generate...").click();
+    postponeUpgradeAndContinue(bot);
+    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+  }
+
+  /**
+   * Selects the increment with the given name and generates it, upgrade if monolithic templates found
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param input input of CobiGen to be selected
+   * @param increments increments to be generated.
+   * @throws CoreException
+   * @throws Exception test fails
+   */
+  private static void processCobiGenAndUpgrade(SWTWorkbenchBot bot, SWTBotTreeItem input, int defaultTimeout,
+      String[] increments) throws Exception {
+
+    // Open generation wizard with new file as Input
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
+    input.contextMenu("CobiGen").menu("Generate...").click();
+    upgradeAndContinue(bot, defaultTimeout);
+
+    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+  }
+
+  /**
    * Tries a Generate process with an expected error title.
    *
    * @param bot the {@link SWTWorkbenchBot} of the test
@@ -185,6 +256,7 @@ public class EclipseCobiGenUtils {
     ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
+    postponeUpgradeAndContinue(bot);
     bot.waitUntil(new AnyShellIsActive(expectedErrorTitle), defaultTimeout);
 
     takeScreenshot(bot, "InvalidConfigurationDialog");
@@ -192,6 +264,38 @@ public class EclipseCobiGenUtils {
     SWTBotButton finishButton = bot.button(IDialogConstants.OK_LABEL);
     bot.waitUntil(widgetIsEnabled(bot.button()));
     finishButton.click();
+  }
+
+  /**
+   * Skips the Upgrade Warning message with the "Postpone" button
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   *
+   */
+  private static void postponeUpgradeAndContinue(SWTWorkbenchBot bot) {
+
+    takeScreenshot(bot, "Warning!");
+    SWTBotShell finishDialog = bot.shell("Warning!");
+    finishDialog.bot().button("Postpone").click();
+  }
+
+  /**
+   * Starts the upgrade process with the "Upgrade" button
+   *
+   * @param bot the {@link SWTWorkbenchBot} of the test
+   * @param defaultTimeout
+   *
+   */
+  private static void upgradeAndContinue(SWTWorkbenchBot bot, int defaultTimeout) {
+
+    takeScreenshot(bot, "Warning!");
+    SWTBotShell finishDialog = bot.shell("Warning!");
+    finishDialog.bot().button("Upgrade").click();
+    bot.waitUntil(new AllJobsAreFinished(), defaultTimeout);
+    takeScreenshot(bot, "Success!");
+    SWTBotShell successDialog = bot.shell("Success!");
+    successDialog.bot().button("Ok").click();
+
   }
 
   /**
@@ -207,6 +311,33 @@ public class EclipseCobiGenUtils {
 
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     view.bot().tree().expandNode("CobiGen_Templates").select().contextMenu("CobiGen").menu("Health Check...").click();
+    captureAdvancedHealthCheck(bot);
+  }
+
+  /**
+   * Checks the CobiGen HealthCheck and takes screenshots of it, even if monolithic templates found.
+   *
+   * @param bot to process the health check
+   * @throws Exception test fails
+   */
+  public static void runAndCaptureHealthCheckWithMonolithicConfiguration(SWTWorkbenchBot bot) throws Exception {
+
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), DEFAULT_TIMEOUT); // build might take some time
+
+    SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+    view.bot().tree().expandNode("CobiGen_Templates").select().contextMenu("CobiGen").menu("Health Check...").click();
+    postponeUpgradeAndContinue(bot);
+    captureAdvancedHealthCheck(bot);
+  }
+
+  /**
+   * Checks the CobiGen HealthCheck and takes screenshots of it.
+   *
+   * @param bot to process the health check
+   */
+  private static void captureAdvancedHealthCheck(SWTWorkbenchBot bot) {
+
     bot.waitUntil(new AnyShellIsActive(CobiGenDialogConstants.HealthCheckDialogs.DIALOG_TITLE), DEFAULT_TIMEOUT);
 
     takeScreenshot(bot, "healthCheck");
@@ -261,8 +392,12 @@ public class EclipseCobiGenUtils {
 
     takeScreenshot(bot, "Adapt Templates Warning!");
     SWTBotShell warningDialog = bot.shell("Warning!");
-
     warningDialog.bot().button("Ok").click();
+
+    takeScreenshot(bot, "Create new POM!");
+    SWTBotShell finishDialog = bot.shell("Create new POM");
+    finishDialog.bot().button("Finish").click();
+
     SWTBotShell informationDialog = bot.shell("Information");
     bot.waitUntil(new AnyShellIsActive("Information"), DEFAULT_TIMEOUT);
     takeScreenshot(bot, "Adapt Templates Information");

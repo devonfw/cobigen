@@ -7,16 +7,22 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.util.Os;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
@@ -30,6 +36,9 @@ import uk.org.webcompere.systemstubs.security.SystemExit;
 /** Common test implementation for CLI tests */
 public class AbstractCliTest {
 
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractCliTest.class);
+
   /** Java tool options */
   private static final String JAVA_TOOL_OPTIONS = "CGCLI_JAVA_OPTIONS";
 
@@ -37,23 +46,84 @@ public class AbstractCliTest {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
+  /** Temporary directory for the templates project */
+  @ClassRule
+  public static TemporaryFolder tempFolderTemplates = new TemporaryFolder();
+
   /** Current home directory */
   protected Path currentHome;
 
-  /** The devon4j-templates development folder */
+  /** The templates development folder */
   protected static Path devTemplatesPath;
 
+  /** A temp directory containing the templates development folder */
+  protected static Path devTemplatesPathTemp;
+
   /**
-   * Determine the devon4j-templates development folder
+   * Determine the templates development folder and create a copy of it in the temp directory
    *
    * @throws URISyntaxException if the path could not be created properly
+   * @throws IOException if accessing a template directory directory fails
    */
   @BeforeClass
-  public static void determineDevTemplatesPath() throws URISyntaxException {
+  public static void determineDevTemplatesPath() throws URISyntaxException, IOException {
 
     devTemplatesPath = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+        .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates");
+
+    Path utilsPom = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())
         .getParentFile().getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
-        .resolve("templates-devon4j");
+        .resolve("templates-devon4j-tests/src/test/resources/utils/pom.xml");
+
+    // create a temporary directory cobigen-templates/template-sets/adapted containing the template sets
+    Path tempFolderPath = tempFolderTemplates.getRoot().toPath();
+    Path cobigenTemplatePath = tempFolderPath.resolve("cobigen-templates");
+    if (!Files.exists(cobigenTemplatePath)) {
+      Files.createDirectory(cobigenTemplatePath);
+
+      devTemplatesPathTemp = cobigenTemplatePath.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      Path templateSetsAdaptedFolder = devTemplatesPathTemp.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      Files.createDirectory(devTemplatesPathTemp);
+      Files.createDirectory(templateSetsAdaptedFolder);
+
+      FileUtils.copyDirectory(devTemplatesPath.toFile(), templateSetsAdaptedFolder.toFile());
+
+      List<Path> devTemplateSets = new ArrayList<>();
+      try (Stream<Path> files = Files.list(templateSetsAdaptedFolder)) {
+        files.forEach(path -> {
+          devTemplateSets.add(path);
+        });
+      }
+
+      for (Path path : devTemplateSets) {
+        if (Files.isDirectory(path)) {
+          Path resourcesFolder = path.resolve("src/main/resources");
+          Path templatesFolder = path.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+          if (Files.exists(resourcesFolder) && !Files.exists(templatesFolder)) {
+            try {
+              Files.move(resourcesFolder, templatesFolder);
+            } catch (IOException e) {
+              throw new IOException("Error moving directory " + resourcesFolder, e);
+            }
+          }
+
+          // Replace the pom.xml in the template sets. Needed so that the project in the temp directory is build
+          // properly
+          if (Files.exists(path.resolve("pom.xml"))) {
+            try {
+              Files.delete(path.resolve("pom.xml"));
+            } catch (IOException e) {
+              throw new IOException("Error deleting file " + path.resolve("pom.xml"), e);
+            }
+            try {
+              Files.copy(utilsPom, path.resolve("pom.xml"));
+            } catch (IOException e) {
+              throw new IOException("Error copying file " + utilsPom, e);
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -76,7 +146,7 @@ public class AbstractCliTest {
 
     Path configFile = this.currentHome.resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE);
     Files.write(configFile,
-        (ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + devTemplatesPath.toString()).getBytes());
+        (ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH + "=" + devTemplatesPathTemp.toString()).getBytes());
   }
 
   /**
@@ -89,14 +159,26 @@ public class AbstractCliTest {
   }
 
   /**
+   * @see #execute(String[], boolean, boolean)
+   */
+  @SuppressWarnings("javadoc")
+  protected void execute(String[] args, boolean useDevTemplates, boolean assureFailure) throws Exception {
+
+    execute(args, useDevTemplates, assureFailure, false);
+  }
+
+  /**
    * This method check the return code from picocli
    *
    * @param args execution arguments
    * @param useDevTemplates use development devon4j-templates
    * @param assureFailure assure failure instead of success of the command execution
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @throws Exception error
    */
-  protected void execute(String[] args, boolean useDevTemplates, boolean assureFailure) throws Exception {
+  protected void execute(String[] args, boolean useDevTemplates, boolean assureFailure,
+      boolean allowMonolithicConfiguration) throws Exception {
 
     if (useDevTemplates) {
       runWithLatestTemplates();
@@ -130,11 +212,21 @@ public class AbstractCliTest {
       i++;
     }
 
-    if (useDevTemplates) {
+    if (useDevTemplates && !allowMonolithicConfiguration) {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 3);
       debugArgs[debugArgs.length - 3] = "-v";
       debugArgs[debugArgs.length - 2] = "-tp";
-      debugArgs[debugArgs.length - 1] = devTemplatesPath.toString();
+      debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
+    } else if (useDevTemplates && allowMonolithicConfiguration) {
+      debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 4);
+      debugArgs[debugArgs.length - 4] = "--force-mc";
+      debugArgs[debugArgs.length - 3] = "-v";
+      debugArgs[debugArgs.length - 2] = "-tp";
+      debugArgs[debugArgs.length - 1] = devTemplatesPathTemp.toString();
+    } else if (allowMonolithicConfiguration) {
+      debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 2);
+      debugArgs[debugArgs.length - 2] = "--force-mc";
+      debugArgs[debugArgs.length - 1] = "-v";
     } else {
       debugArgs = Arrays.copyOf(debugArgs, debugArgs.length + 1);
       debugArgs[debugArgs.length - 1] = "-v";
@@ -147,11 +239,15 @@ public class AbstractCliTest {
         .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".cliprocess")).asInfo());
 
     // enable jacoco coverage monitoring for external processes (especially for CI/CD)
-    if (!StringUtils.isEmpty(MavenMetadata.JACOCO_AGENT_ARGS)) {
+    if (!StringUtils.isEmpty(MavenMetadata.JACOCO_AGENT_ARGS)
+        && !StringUtils.startsWith(MavenMetadata.JACOCO_AGENT_ARGS, "$")) {
       pe.environment(JAVA_TOOL_OPTIONS, MavenMetadata.JACOCO_AGENT_ARGS
+
           // .replaceFirst("destfile=[^,]+(,)?", "")
           // + ",output=tcpclient,sessionid=test,inclnolocationclasses=true,inclbootstrapclasses=true "
           + "" + (System.getenv(JAVA_TOOL_OPTIONS) == null ? "" : " " + System.getenv(JAVA_TOOL_OPTIONS)));
+    } else {
+      LOG.warn("No value for JACOCO is set!");
     }
 
     new SystemExit().execute(() -> {

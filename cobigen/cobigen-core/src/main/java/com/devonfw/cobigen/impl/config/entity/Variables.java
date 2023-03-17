@@ -10,6 +10,8 @@ import com.devonfw.cobigen.impl.config.reader.CobiGenPropertiesReader;
 
 import io.github.mmm.base.text.CaseSyntax;
 
+import io.github.mmm.base.text.CaseSyntax;
+
 /**
  * This class is a container for variables that can inherit from parent {@link Variables} building a hierarchy. The
  * {@link #containsKey(String) keys} for {@link #get(String) getting} and {@link #put(String, Object) setting} variables
@@ -20,13 +22,13 @@ import io.github.mmm.base.text.CaseSyntax;
  */
 public class Variables extends AbstractCobiGenModel {
 
-  /** The {@link Properties} containing the local variables. */
-  private final Properties properties;
+    /** The {@link Properties} containing the local variables. */
+    private final Properties properties;
 
-  /**
-   * The constructor for the root variables.
-   */
-  public Variables() {
+    /**
+     * The constructor for the root variables.
+     */
+    public Variables() {
 
     this(null, null);
   }

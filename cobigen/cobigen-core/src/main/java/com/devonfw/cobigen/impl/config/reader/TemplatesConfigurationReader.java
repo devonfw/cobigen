@@ -54,7 +54,6 @@ import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import jakarta.xml.bind.JAXBContext;
@@ -86,7 +85,7 @@ public class TemplatesConfigurationReader {
   private JXPathContext xPathContext;
 
   /** Cache to find all templates by name for each template scan */
-  private Map<String, List<String>> templateScanTemplates = Maps.newHashMap();
+  private Map<String, List<String>> templateScanTemplates = new HashMap<>();
 
   /** The top-level folder where the templates are located. */
   private TemplateFolder rootTemplateFolder;
@@ -731,7 +730,7 @@ public class TemplatesConfigurationReader {
    */
   private Trigger getExternalTrigger(String triggerToSearch) {
 
-    ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
+    AbstractContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);

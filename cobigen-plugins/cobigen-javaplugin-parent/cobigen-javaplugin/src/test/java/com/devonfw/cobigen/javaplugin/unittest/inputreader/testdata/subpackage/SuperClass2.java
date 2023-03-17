@@ -4,10 +4,6 @@ import java.util.List;
 
 import com.devonfw.cobigen.javaplugin.unittest.inputreader.testdata.RootClass;
 
-/**
- *
- * @author mbrunnli (25.01.2015)
- */
 public class SuperClass2 {
 
   private List<RootClass> genericAccessible;
@@ -16,7 +12,6 @@ public class SuperClass2 {
    * Returns the field 'genericAccessible'
    *
    * @return value of genericAccessible
-   * @author mbrunnli (25.01.2015)
    */
   public List<RootClass> getGenericAccessible() {
 
@@ -27,7 +22,6 @@ public class SuperClass2 {
    * Sets the field 'genericAccessible'.
    *
    * @param genericAccessible new value of genericAccessible
-   * @author mbrunnli (25.01.2015)
    */
   public void setGenericAccessible(List<RootClass> genericAccessible) {
 
