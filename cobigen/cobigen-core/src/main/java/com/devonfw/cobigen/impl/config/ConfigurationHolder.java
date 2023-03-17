@@ -178,12 +178,14 @@ public class ConfigurationHolder {
   }
 
   /**
-   * checks if this this a template set configuration or a templates configuration (true if templateSetConfiguraion)
+   * Checks if this this a template set configuration or a templates configuration (true if templateSetConfiguraion)
    *
-   * @return return if the template folder structure consists of template sets or if the monolithic structure is used.
+   * @return true if the template folder structure consists of template sets or false if the monolithic structure is
+   *         used.
    */
   public boolean isTemplateSetConfiguration() {
 
+    // TODO: Replace with a better logic for template set detection later f.e. groupid
     if (this.configurationPath.toUri().getScheme().equals("jar")
         || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return false;
