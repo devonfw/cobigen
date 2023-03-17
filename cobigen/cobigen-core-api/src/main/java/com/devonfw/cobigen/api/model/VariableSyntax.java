@@ -150,7 +150,7 @@ public enum VariableSyntax {
    * </table>
    */
   // .......1.....23......4.........................5
-  AGNOSTIC("(\\.?)(([xX]_)([a-zA-Z][a-zA-Z0-9_.$-]*?)(_[xX]))") {
+  AGNOSTIC("(\\.?)(([xX][_.-])([a-zA-Z_][a-zA-Z0-9_.$-]*?)([_.-][xX]))") {
 
     @Override
     public String getVariable(Matcher matcher) {
@@ -204,7 +204,7 @@ public enum VariableSyntax {
       CaseConversion firstCase = caseSyntax.getFirstCase();
       String prefixCased = firstCase.convert(prefix);
       String suffixCased = firstCase.convert(suffix);
-      if (prefix.equals(prefixCased)) {
+      if (prefix.equals(prefixCased) && (prefix.charAt(1) == suffix.charAt(0))) {
         if (suffix.equals(suffixCased)) {
           return;
         }

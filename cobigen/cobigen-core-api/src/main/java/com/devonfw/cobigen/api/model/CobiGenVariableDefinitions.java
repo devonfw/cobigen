@@ -1,7 +1,5 @@
 package com.devonfw.cobigen.api.model;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,19 +25,28 @@ public final class CobiGenVariableDefinitions {
   public static final CobiGenVariableDefinition<Map<String, String>> VARIABLES = new CobiGenVariableDefinition(
       "variables", Map.class, () -> new HashMap<>());
 
-  /** The {@link java.lang.reflect.Field#getName()}. */
-  public static final CobiGenVariableDefinition<Field> FIELD = CobiGenVariableDefinition.ofType("field", Field.class);
+  /** The entity name for generations from an entity as input (e.g. "MyExample" for "MyExampleEntity" as input). */
+  public static final CobiGenVariableDefinition<String> ENTITY_NAME = CobiGenVariableDefinition.ofString("EntityName");
 
-  /** The {@link java.lang.reflect.Field#getName()}. */
-  public static final CobiGenVariableDefinition<String> FIELD_NAME = CobiGenVariableDefinition.ofString("fieldName");
+  /** The root package namespace (e.g. "com.customer.app"). */
+  public static final CobiGenVariableDefinition<String> ROOT_PACKAGE = CobiGenVariableDefinition
+      .ofString("RootPackage");
 
-  /** The {@link java.lang.reflect.Field#getType()}. */
-  public static final CobiGenVariableDefinition<Type> FIELD_TYPE = CobiGenVariableDefinition.ofType("fieldtype",
-      Type.class);
+  /** The component name (e.g. "mycomponent"). */
+  public static final CobiGenVariableDefinition<String> COMPONENT_NAME = CobiGenVariableDefinition
+      .ofString("Component");
 
-  /** The {@link java.lang.reflect.Field#getType()}. */
-  public static final CobiGenVariableDefinition<String> FIELD_TYPE_SIMPLE_NAME = CobiGenVariableDefinition
-      .ofString("fieldtypeSimpeName");
+  /** The detail sub-package(s) (typically empty but can be anything like "special" or "detail.extra"). */
+  public static final CobiGenVariableDefinition<String> DETAIL_NAME = CobiGenVariableDefinition.ofString("Detail");
+
+  /** The scope package segment (typically empty but can be the scope as "api", "base", or "impl"). */
+  public static final CobiGenVariableDefinition<String> SCOPE_NAME = CobiGenVariableDefinition.ofString("Scope");
+
+  /**
+   * The module path (typically empty but can be the relativ path to the module of a multi-module project where to put
+   * the generated code).
+   */
+  public static final CobiGenVariableDefinition<String> MODULE_PATH = CobiGenVariableDefinition.ofString("Module");
 
   /** The {@link CobiGenOutput} of the currently generated artifact (template). */
   public static final CobiGenVariableDefinition<CobiGenOutput> OUT = CobiGenVariableDefinition.ofType("out",
