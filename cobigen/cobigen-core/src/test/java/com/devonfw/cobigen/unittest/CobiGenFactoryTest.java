@@ -50,7 +50,7 @@ public class CobiGenFactoryTest {
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     FileUtils.copyDirectory(TEST_FILE_ROOT_PATH_DOWNLOADED.getParent().toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
-      CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri());
+      CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri(), false);
     });
   }
 
@@ -65,7 +65,7 @@ public class CobiGenFactoryTest {
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     FileUtils.copyDirectory(TEST_FILE_ROOT_PATH_ADAPTED.getParent().toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
-      CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri());
+      CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri(), false);
     });
   }
 }
