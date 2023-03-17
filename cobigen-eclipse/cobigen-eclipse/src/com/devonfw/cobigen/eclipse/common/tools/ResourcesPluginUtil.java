@@ -13,9 +13,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
-import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
-import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,12 +21,13 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
+import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
+import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorProjectNotExistentException;
+import com.devonfw.cobigen.eclipse.updatetemplates.UpdateTemplatesDialog;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 
@@ -261,7 +259,7 @@ public class ResourcesPluginUtil {
     }
 
     try {
-      TemplateAdapter templateAdapter = new TemplateAdapterImpl(cobigenFolderPath);
+      TemplateAdapter templateAdapter = new TemplateAdapterImpl(null);
       templateAdapter.adaptMonolithicTemplates(cobigenFolderPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES),
           false);
     } catch (Exception e) {
@@ -297,7 +295,6 @@ public class ResourcesPluginUtil {
   public static void startTemplatesUpgrader(Path configurationPath) {
 
     setTemplateSetPathAfterUpgrade(CobiGenFactory.startTemplatesUpgrader(configurationPath));
-
 
     // FIXME after the upgrade adapt the new template-set folder. should be done in #1587
   }

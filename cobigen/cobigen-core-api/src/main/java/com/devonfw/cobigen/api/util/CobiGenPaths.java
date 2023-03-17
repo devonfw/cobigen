@@ -75,7 +75,9 @@ public class CobiGenPaths {
   public static Path getTemplatesFolderPath(Path home) {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
-    return templatesPath;
+
+    return createFolder(templatesPath);
+
   }
 
   /**

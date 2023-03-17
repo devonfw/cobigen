@@ -394,10 +394,6 @@ public class EclipseCobiGenUtils {
     SWTBotShell warningDialog = bot.shell("Warning!");
     warningDialog.bot().button("Ok").click();
 
-    takeScreenshot(bot, "Create new POM!");
-    SWTBotShell finishDialog = bot.shell("Create new POM");
-    finishDialog.bot().button("Finish").click();
-
     SWTBotShell informationDialog = bot.shell("Information");
     bot.waitUntil(new AnyShellIsActive("Information"), DEFAULT_TIMEOUT);
     takeScreenshot(bot, "Adapt Templates Information");
