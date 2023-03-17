@@ -24,6 +24,19 @@ public class CobiGenPaths {
   /** Logger instance */
   private static final Logger LOG = LoggerFactory.getLogger(CobiGenPaths.class);
 
+  /** Path for tests to change the CobiGen Home */
+  private static Path testPath = null;
+
+  /**
+   * Sets a custom path to CobiGen home (use this for tests only!!!)
+   *
+   * @param customPath Path to CobiGen home
+   */
+  public static void setCobiGenHomeTestPath(Path customPath) {
+
+    testPath = customPath;
+  }
+
   /**
    * Returns the CobiGen home directory, or creates a new one if it does not exist
    *
