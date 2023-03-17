@@ -52,13 +52,13 @@ public class ContextConfigurationReader {
   private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
   /** Map with XML Nodes 'context' of the context.xml files */
-  protected Map<Path, ContextConfiguration> contextConfigurations;
+  private Map<Path, ContextConfiguration> contextConfigurations;
 
   /** Paths of the context configuration files */
-  protected List<Path> contextFiles;
+  private List<Path> contextFiles;
 
   /** Root of the context configuration file, used for passing to ContextConfiguration */
-  protected Path contextRoot;
+  private Path contextRoot;
 
   /**
    * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given context file
