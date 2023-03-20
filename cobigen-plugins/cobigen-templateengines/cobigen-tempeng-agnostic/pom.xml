@@ -18,7 +18,7 @@
     </dependency>
 
     <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
+      <groupId>com.devonfw.cobigen.templates</groupId>
       <artifactId>templates-devonfw-java</artifactId>
       <scope>test</scope>
     </dependency>

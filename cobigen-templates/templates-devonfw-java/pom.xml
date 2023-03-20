@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <name>CobiGen - devonfw Java Templates</name>
   <parent>
-    <groupId>com.devonfw.cobigen</groupId>
+    <groupId>com.devonfw.cobigen.templates</groupId>
     <artifactId>templates-parent</artifactId>
     <version>${revision}</version>
     <relativePath>../pom.xml</relativePath>
@@ -16,7 +16,7 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
     </dependency>
     <dependency>

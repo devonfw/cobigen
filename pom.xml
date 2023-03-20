@@ -229,7 +229,7 @@
         <version>${revision}</version>
       </dependency>
       <dependency>
-        <groupId>com.devonfw.cobigen</groupId>
+        <groupId>com.devonfw.cobigen.templates</groupId>
         <artifactId>templates-devonfw-java</artifactId>
         <version>${revision}</version>
       </dependency>
