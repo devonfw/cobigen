@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -86,6 +87,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
    */
   @Test
   public void testCorrectUpgrade_v2_1_TO_v3_0() throws Exception {
+
 
     File cobigen = this.tempFolder.newFolder(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
@@ -203,6 +205,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
    */
   @Test
   public void testV2_1IsIncompatibleToV3_0Schema() throws Exception {
+
 
     // preparation
     ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_1;

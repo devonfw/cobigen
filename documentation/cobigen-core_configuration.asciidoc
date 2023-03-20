@@ -12,9 +12,9 @@ CobiGen is maintaining a home directory further referenced in this documentation
 
 The actual configuration of CobiGen is maintained by a single folder or jar. The location can be configured with respect to the implemented configuration fall-back mechanism. CobiGen will search for the location of the configuration in the following order:
 
-1. A configuration jar or directory, which is passed to CobiGen by the Maven or Eclipse integration or any other program using the CobiGen programming interface:
-1.1. the Maven integration allows to configure a jar dependency to be included in the currently running classpath _(of interest for link:cobigen-maven_configuration#plugin-injection-since-v3[maven configuration]_
-1.2. the Eclipse integration allows to specify a `CobiGen_Templates` project in the eclipse workspace
+1. A configuration jar or directory, which is passed to CobiGen by the Maven or Eclipse integration or any other program using the CobiGen programming interface: +
+1.1. the Maven integration allows to configure a jar dependency to be included in the currently running classpath _(of interest for link:cobigen-maven_configuration#plugin-injection-since-v3[maven configuration]_ +
+1.2. the Eclipse integration allows to specify a `CobiGen_Templates` project in the eclipse workspace +
 2. The file `$cghome/.cobigen` exists and the property `templates` is set to a valid configuration (e.g. `templates=C:\project\ide\conf\templates` or `templates=C:\project\ide\conf\templates.jar`) _Hint: Check for log entry like `Value of property templates in $cghome/.cobigen is invalid` to identify an invalid configuration which is not taken up as expected_
 3. The folder `$cghome/templates/CobiGen_Templates` exists
 4. The lexicographical sorted first configuration jar of the following path pattern `$cghome/templates/templates-([^-]+)-(\\d+\\.?)+.jar` if exists (e.g. `templates-devon4j-2020.04.001`)
@@ -47,10 +47,9 @@ template-sets
    |- template-set1
      |- src
        |- main
-         |- templates
+         |- resources
            |- templates
-             |- context.xml
-             |- templates.xml
+             |- template-set.xml
    |- template-set2
 ```
 
@@ -84,10 +83,16 @@ For a custom template-sets folder simply set the `template-sets` parameter like 
 template-sets=C:\\project\\ide\\conf\\template-sets
 ```
 
+And finally, for a custom template-set jar set the `template-sets` parameter analogously like this:
+
+```
+templates=C:\\project\\ide\\conf\\template-sets\\my-custom-template-set-devon4j-2023.01.001.jar
+```
+
 === Template set attributes
 Since: CobiGen 2021.12.006
 
-You can specify `template-sets` attributes f.e. to restrict the teams to ask for default templates provided by CobiGen. There are `four` custom template-sets attributes:
+You can specify `template-sets` attributes f.e. to restrict the teams to ask for default templates provided by CobiGen. There are `five` custom template-sets attributes:
 
 * `template-sets.groupIds`: Search for template-set artifacts by that configuration key
 configure multiple (comma separated) `groupIds`. By default, (public) CobiGen `groupId` will be used.
@@ -256,7 +261,7 @@ The root node `<templatesConfiguration>` specifies two attributes. The attribute
 
 The node `<templatesConfiguration>` allows two different grouping nodes as children. First, there is the `<templates>` node, which groups all declarations of templates. Second, there is the `<increments>` node, which groups all declarations about increments.
 
-=== Template Node
+=== Templates Node
 
 The `<templates>` node groups multiple `<template>` declarations, which enables further generation. Each template file should be registered at least once as a template to be considered.
 
@@ -383,6 +388,49 @@ However, if we want to reference an increment that it is not defined inside our 
 
 The ref string is split using as delimiter `::`. The first part of the string, is the `trigger_id` to reference. That trigger contains an `increment_id`. Currently, this functionality only works when both templates use the same kind of input file.
 
+
+== Template-set Configuration
+
+
+With version 6.0 you are working with template-sets rather than the old monolithic structure with tempalte.xml and context.xml files.
+The template-set.xml is basically a context.xml concatenated with the corresponding templates.xml all in one file.
+
+Therefore the root structure should look somewhat familiar:
+
+.Template-Set Configuration
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSetConfiguration xmlns="http://capgemini.com"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      version="1.0">
+    <cc:contextConfiguration version="1.0">
+    <cc:triggers>
+        ...
+    </cc:triggers>
+
+    </cc:contextConfiguration>
+
+    <tc:templatesConfiguraition>
+    <tc:templates>
+            ...
+    </tc:templates>
+    <increments>
+            ...
+    </tc:increments>
+    </tc:templatesConfiguration>
+</templateSetConfiguration>
+```
+
+The corresponding parts form the old monolithic structure by their own tags, so backwards compatiblity is possible.
+Also note how the prefixes are also marking the respective old parts.
+
+
+== Manual upgrade from old (monolithic) to new (template-sets) structure
+
+
+
+
+
 == Configuration Upgrade
 
 `CobiGen 2021.12.007` introduces an updated configuration folder structure:
@@ -392,12 +440,11 @@ template-sets
  |- downloaded
    |- template-set1.jar
    |- template-set2.jar
-   |- template-set-utilities.jar
  |- adapted
    |- template-set1
      |- src
        |- main
-         |- templates
+         |- resources
            |- templates
              |- template-set.xml
    |- template-set2
@@ -424,7 +471,7 @@ e. g. `template1`
    |- template1
      |- src
        |- main
-         |- templates
+         |- resources
 ```
 Whereas `template1` is the name of the template you want to upgrade.
 [start=3]
@@ -436,43 +483,48 @@ The structure of the `adapted` folder should now look like this:
      |- src
        |- main
          |- java
-         |- templates
+         |- resources
 ```
 [start=4]
-4. Navigate to the template you want to upgrade e.g. `CobiGen_Templates\src\main\templates\template-set1` and copy all of it's contents
-into your newly generated templates folder (`template-sets\adapted\templateSet1\src\main\templates`).
+4. Navigate to the template you want to upgrade e.g. `CobiGen_Templates\src\main\resources\template-set1` and copy all of it's contents
+into your newly generated templates folder (`template-sets\adapted\templateSet1\src\main\resources`).
 
-6. Switch to `template-sets\adapted\templateSet1\src\main\templates` and create a new 'template-set.xml' file (which combines the context.xml and templates.xml), with the following content (adapted to your needs):
+6. Switch to `template-sets\adapted\templateSet1\src\main\resources` and create a new 'template-set.xml' file (which combines the context.xml and templates.xml), with the following content (adapted to your needs):
 ```
 <?xml version="1.0" encoding="UTF-8"?>
-<templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.0">
-  <trigger id="valid" type="java">
-    <matcher type="fqn" value="*">
-    </matcher>
-  </trigger>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
 
-  <tags>
-    <tag name="bla"/>
-  </tags>
+  <cc:contextConfiguration version="6.0">
+    <cc:trigger id="valid" type="java">
+      <cc:matcher type="fqn" value="*"></cc:matcher>
+    </cc:trigger>
+    <cc:tags>
+      <cc:tag name="bla"/>
+    </cc:tags>
+  </cc:contextConfiguration>
 
-  <templates>
-    <template name="prefix_Foo2Class.java" destinationPath="src/main/java/foo/Foo2Class${variable}.java"
-      templateFile="foo/Foo2Class.java.ftl" mergeStrategy="javamerge"/>
-    <templateExtension ref="prefix2_FooClass.java" destinationPath="adapted/path/FooClass.java"
-      mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
-    <templateExtension ref="prefix2_Foo2Class.java"/>
-  </templates>
+  <tc:templatesConfiguration version="6.0">
+    <tc:templates>
+      <tc:template name="prefix_Foo2Class.java"
+        destinationPath="src/main/java/foo/Foo2Class${variable}.java" templateFile="templates/foo/Foo2Class.java.ftl"
+        mergeStrategy="javamerge"/>
+      <tc:templateExtension ref="prefix2_FooClass.java"
+        destinationPath="adapted/path/FooClass.java" mergeStrategy="javamerge" targetCharset="ISO-8859-1"/>
+      <tc:templateExtension ref="prefix2_Foo2Class.java"/>
+    </tc:templates>
 
-  <templateScans>
-    <templateScan templateNamePrefix="prefix_" templatePath="foo" destinationPath="src/main/java/foo"/>
-    <templateScan templateNamePrefix="prefix2_" templatePath="bar" destinationPath="src/main/java/bar"/>
-  </templateScans>
+    <tc:templateScans>
+      <tc:templateScan templateNamePrefix="prefix_" templatePath="templates/foo"
+        destinationPath="src/main/java/foo"/>
+      <tc:templateScan templateNamePrefix="prefix2_" templatePath="templates/bar"
+        destinationPath="src/main/java/bar"/>
+    </tc:templateScans>
+  </tc:templatesConfiguration>
 
-</templateSetConfiguration>
+</tns:templateSetConfiguration>
 ```
 The newly generated 'template-set.xml' file contains information for just one template-set. You can copy this information for
-your template from the old 'context.xml' (located here: `CobiGen_Templates\src\main\templates`) and 'templates.xml' file (located here: `CobiGen_Templates\src\main\templates\template1`) (e.g. crud-java-server-app).
+your template from the old 'context.xml' (located here: `CobiGen_Templates\src\main\resources`) and 'templates.xml' file (located here: `CobiGen_Templates\src\main\resources\template1`) (e.g. crud-java-server-app).
 [start=7]
 7. Switch to `template-sets\adapted\templateSet1` and create a new `pom.xml`. With the following content (adapted to your needs):
 

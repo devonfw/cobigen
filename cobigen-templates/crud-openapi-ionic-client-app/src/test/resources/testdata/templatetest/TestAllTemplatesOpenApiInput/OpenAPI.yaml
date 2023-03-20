@@ -1,0 +1,131 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/server/services/rest'
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+  x-rootpackage: com.devonfw.demo
+paths:
+  /datamanagement/v1/someData/{id}:
+    get:
+      operationId: findSomeData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 50
+      responses:
+        '200':
+          description: Any
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvenMoreData'
+            text/plain:
+              schema:
+                type: string
+  /datamanagement/v1/moreData/{id}:
+    get:
+      operationId: findMoreData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 10
+            maximum: 200
+      responses:
+        '200':
+          description: Any
+  /datamanagement/v1/someData/:
+    post:
+      responses:
+        '200':
+          description: Any
+      requestBody:
+        $ref: '#/components/requestBodies/SomeData'
+      tags:
+       - searchCriteria
+  /datamanagement/v1/moreData/validateMoreData:
+    post:
+      responses:
+       '200':
+          description: Any
+      requestBody:
+        $ref: '#/components/requestBodies/MoreData'
+components:
+    schemas:
+        SomeData:
+          x-component: DataManagement
+          description: Entity definiton of SomeData
+          type: object
+          properties:
+            AnyString:
+              type: string
+              maxLength: 100
+              minLength: 5
+              uniqueItems: true
+            furtherData:
+              type: array
+              items:
+                $ref: '#/components/schemas/FurtherData'
+        MoreData:
+          x-component: DataManagement
+          description: Entity definiton of Moredata
+          type: object
+          properties:
+            anyNumber:
+              type: number
+              format: int64
+              maximum: 100
+              minimum: 0
+            someData:
+              $ref: '#/components/schemas/SomeData'
+            allSomeData:
+              type: array
+              description: 'All SomeData'
+              items:
+                $ref: '#/components/schemas/SomeData'
+          required:
+            - saleExample
+        FurtherData:
+          x-component: AnotherComponent
+          type: object
+          properties:
+            parent:
+              $ref: '#/components/schemas/SomeData'
+            valid:
+              type: boolean
+            someList:
+              type: array
+              items:
+                type: string
+        EvenMoreData:
+          x-component: AnotherComponent
+          description: Entity definiton of more data
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              uniqueItems: true
+    requestBodies:
+        SomeData:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SomeData'
+          required: true
+        MoreData:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MoreData'
+          required: true

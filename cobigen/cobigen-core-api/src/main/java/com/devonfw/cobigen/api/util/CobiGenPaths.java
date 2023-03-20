@@ -24,12 +24,31 @@ public class CobiGenPaths {
   /** Logger instance */
   private static final Logger LOG = LoggerFactory.getLogger(CobiGenPaths.class);
 
+  /** Path for tests to change the CobiGen Home */
+  private static Path testPath = null;
+
+  /**
+   * Sets a custom path to CobiGen home (use this for tests only!!!)
+   *
+   * @param customPath Path to CobiGen home
+   */
+  public static void setCobiGenHomeTestPath(Path customPath) {
+
+    testPath = customPath;
+    LOG.debug("Changed CobiGen home path to: {}", customPath);
+  }
+
   /**
    * Returns the CobiGen home directory, or creates a new one if it does not exist
    *
    * @return {@link Path} of the CobiGen home directory
    */
   public static Path getCobiGenHomePath() {
+
+    if (testPath != null) {
+      LOG.debug("Custom CobiGen home path found at: {} returning it instead.", testPath);
+      return testPath;
+    }
 
     String envValue = System.getenv(ConfigurationConstants.CONFIG_ENV_HOME);
     Path cobiGenPath;
@@ -75,7 +94,9 @@ public class CobiGenPaths {
   public static Path getTemplatesFolderPath(Path home) {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+
     return templatesPath;
+
   }
 
   /**

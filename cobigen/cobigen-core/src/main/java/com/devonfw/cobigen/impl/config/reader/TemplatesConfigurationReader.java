@@ -142,6 +142,24 @@ public class TemplatesConfigurationReader {
   }
 
   /**
+   * The constructor which is being used by the {@link TemplateSetConfigurationReader}
+   *
+   * @param templatesConfiguration {@link TemplatesConfiguration} to initialize from
+   *        {@link TemplateSetConfigurationReader}
+   * @param rootTemplateFolder the root template folder
+   * @param configurationHolder The {@link ConfigurationHolder} used for reading templates folder
+   * @param templateSetConfigurationFile Path to template-set xml to be processed
+   */
+  public TemplatesConfigurationReader(TemplatesConfiguration templatesConfiguration, TemplateFolder rootTemplateFolder,
+      ConfigurationHolder configurationHolder, Path templateSetConfigurationFile) {
+
+    this.configurationHolder = configurationHolder;
+    this.configNode = templatesConfiguration;
+    this.configFilePath = templateSetConfigurationFile;
+    this.rootTemplateFolder = rootTemplateFolder;
+  }
+
+  /**
    * Returns the configured template engine to be used
    *
    * @return the configured template engine to be used
@@ -730,7 +748,7 @@ public class TemplatesConfigurationReader {
    */
   private Trigger getExternalTrigger(String triggerToSearch) {
 
-    AbstractContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
+    ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0"
+                              xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+                              xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+                              xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                              xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+    <cc:contextConfiguration version="3.0">
+        <cc:trigger id="OpenAPI_docs" type="openapi">
+            <cc:containerMatcher type="element" value="openAPIFile"/>
+            <cc:matcher type="element" value="EntityDef">
+                <cc:variableAssignment type="constant" key="rootPackage" value="com.devonfw"/>
+                <cc:variableAssignment type="property" key="component" value="componentName"/>
+                <cc:variableAssignment type="property" key="entityName" value="name"/>
+            </cc:matcher>
+        </cc:trigger>
+        <cc:tags>
+            <cc:tag name="OpenAPI"></cc:tag>
+            <cc:tag name="Documentation"></cc:tag>
+        </cc:tags>
+        <cc:links>
+            <cc:link url="https://github.com/devonfw/cobigen/wiki/cobigen-openapiplugin"></cc:link>
+        </cc:links>
+    </cc:contextConfiguration>
+    <tc:templatesConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5.0">
+
+        <tc:templates>
+            <tc:templateExtension ref="Documentation.adoc" mergeStrategy="textmerge_appendWithNewLine"/>
+        </tc:templates>
+
+        <tc:templateScans>
+            <tc:templateScan templatePath="templates" destinationPath=""/>
+        </tc:templateScans>
+
+        <tc:increments>
+            <tc:increment name="OpenAPI_Docs" description="Documentation"
+                       explanation="Contains information about the operations of the OpenAPI application.">
+                <tc:templateRef ref="Documentation.adoc"/>
+            </tc:increment>
+        </tc:increments>
+    </tc:templatesConfiguration>
+</tns:templateSetConfiguration>

@@ -165,7 +165,7 @@ public class EclipseCobiGenUtils {
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
     postponeUpgradeAndContinue(bot);
-    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+    generateWithSelectedIncrements(bot, 120000, increments);
   }
 
   /**
@@ -216,7 +216,7 @@ public class EclipseCobiGenUtils {
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
     postponeUpgradeAndContinue(bot);
-    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+    generateWithSelectedIncrements(bot, 120000, increments);
   }
 
   /**
@@ -393,10 +393,6 @@ public class EclipseCobiGenUtils {
     takeScreenshot(bot, "Adapt Templates Warning!");
     SWTBotShell warningDialog = bot.shell("Warning!");
     warningDialog.bot().button("Ok").click();
-
-    takeScreenshot(bot, "Create new POM!");
-    SWTBotShell finishDialog = bot.shell("Create new POM");
-    finishDialog.bot().button("Finish").click();
 
     SWTBotShell informationDialog = bot.shell("Information");
     bot.waitUntil(new AnyShellIsActive("Information"), DEFAULT_TIMEOUT);

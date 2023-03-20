@@ -48,4 +48,6 @@ public class HealthCheckTest extends SystemTest {
 
     EclipseCobiGenUtils.runAndCaptureHealthCheckWithMonolithicConfiguration(bot);
   }
+
+  // TODO: Add a health check test for new template sets
 }
