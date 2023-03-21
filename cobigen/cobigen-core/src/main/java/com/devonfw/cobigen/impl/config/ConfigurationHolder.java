@@ -64,7 +64,7 @@ public class ConfigurationHolder {
     this.configurationLocation = configurationLocation;
     this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
     this.configurationProperties = ConfigurationFinder.loadTemplateSetConfigurations(
-        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE), this.configurationPath);
+        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
 
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.configurationPath);
