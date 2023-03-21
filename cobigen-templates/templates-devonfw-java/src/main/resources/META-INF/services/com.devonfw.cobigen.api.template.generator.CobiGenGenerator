@@ -1,3 +1,4 @@
 com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeEtoProperties
 com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeEtoSuperClass
 com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeProperties
+com.devonfw.cobigen.api.template.generator.CobiGenGeneratorJavaTypeEntitySuperInterface

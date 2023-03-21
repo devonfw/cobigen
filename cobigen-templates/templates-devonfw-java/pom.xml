@@ -55,8 +55,6 @@
       </resource>
       <resource>
         <directory>src/main/java</directory>
-        <!-- temporary hack to allow legacy support -->
-        <targetPath>${project.build.outputDirectory}/src/main/resources</targetPath>
         <includes>
           <include>**/*.java</include>
         </includes>

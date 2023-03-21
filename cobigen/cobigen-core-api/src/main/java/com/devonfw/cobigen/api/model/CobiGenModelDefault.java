@@ -2,6 +2,7 @@ package com.devonfw.cobigen.api.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Implementation of {@link CobiGenModel}.
@@ -55,6 +56,26 @@ public class CobiGenModelDefault extends AbstractCobiGenModel {
   public Map<String, Object> getOriginalMap() {
 
     return this.originalMap;
+  }
+
+  public static CobiGenModelDefault fromLegacyMap(Map<String, Object> legacyModel) {
+
+    Map<String, Object> map = new HashMap<>();
+    Map<String, Object> variables = null;
+    for (Entry<String, Object> entry : legacyModel.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      if (CobiGenVariableDefinitions.VARIABLES.getName().equals(key)) {
+        variables = (Map<String, Object>) value;
+      } else {
+        map.put(key, value);
+      }
+    }
+    if (variables != null) {
+      map.putAll(variables);
+    }
+    CobiGenModelDefault model = new CobiGenModelDefault(map);
+    return model;
   }
 
 }

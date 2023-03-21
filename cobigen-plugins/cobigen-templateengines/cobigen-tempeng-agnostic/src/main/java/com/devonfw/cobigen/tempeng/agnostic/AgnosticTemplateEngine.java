@@ -73,13 +73,15 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
   @Override
   public void process(TextTemplate template, Map<String, Object> modelAsMap, Writer writer, String outputEncoding) {
 
+    // executeInThisClassloader(() -> {
     try {
-      CobiGenModelDefault model = new CobiGenModelDefault(modelAsMap);
+      CobiGenModelDefault model = CobiGenModelDefault.fromLegacyMap(modelAsMap);
       process(template, model, writer);
     } catch (Throwable e) {
       throw new CobiGenRuntimeException("An unkonwn error occurred while generating the template."
           + template.getAbsoluteTemplatePath() + "(Agnostic)", e);
     }
+    // });
   }
 
   private void process(TextTemplate template, CobiGenModel model, Writer writer) {
@@ -186,5 +188,23 @@ public class AgnosticTemplateEngine implements TextTemplateEngine {
       line = sb.toString();
     }
     return model.resolve(line, '.', VariableSyntax.AGNOSTIC);
+  }
+
+  /**
+   * Execute a {@link Runnable} within the classloader loading THIS class to circumvent from classpath conflicts in osgi
+   * environments
+   *
+   * @param exec the {@link Runnable} to be called
+   */
+  private void executeInThisClassloader(Runnable exec) {
+
+    Thread thread = Thread.currentThread();
+    ClassLoader loader = thread.getContextClassLoader();
+    thread.setContextClassLoader(this.getClass().getClassLoader());
+    try {
+      exec.run();
+    } finally {
+      thread.setContextClassLoader(loader);
+    }
   }
 }
