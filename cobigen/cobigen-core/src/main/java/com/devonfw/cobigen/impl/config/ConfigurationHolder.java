@@ -36,14 +36,6 @@ public class ConfigurationHolder {
   /** Cached templateSet configuration */
   private TemplateSetConfiguration templateSetConfiguration;
 
-  /**
-   * @return templateSetConfiguration
-   */
-  public TemplateSetConfiguration getTemplateSetConfiguration() {
-
-    return this.templateSetConfiguration;
-  }
-
   /** Root path of the configuration */
   private Path configurationPath;
 
@@ -68,6 +60,14 @@ public class ConfigurationHolder {
 
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.configurationPath);
+  }
+
+  /**
+   * @return templateSetConfiguration
+   */
+  public TemplateSetConfiguration getTemplateSetConfiguration() {
+
+    return this.templateSetConfiguration;
   }
 
   /**
