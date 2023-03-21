@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -99,12 +98,8 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    */
 
   @Test
-  @Ignore
   public void adaptTemplatesTest() throws Exception {
 
-    Path cliSystemTestPath = new File(
-        AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
-            .getParentFile().toPath();
     Path templatesPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
     Path CobigenTemplatesPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
     if (!Files.exists(templatesPath)) {
