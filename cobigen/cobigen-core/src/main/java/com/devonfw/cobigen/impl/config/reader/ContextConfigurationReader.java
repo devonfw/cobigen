@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -31,7 +32,10 @@ import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.WikiConstants;
+import com.devonfw.cobigen.impl.config.entity.ContainerMatcher;
+import com.devonfw.cobigen.impl.config.entity.Matcher;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
+import com.devonfw.cobigen.impl.config.entity.VariableAssignment;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
@@ -42,16 +46,19 @@ import jakarta.xml.bind.UnmarshalException;
 import jakarta.xml.bind.Unmarshaller;
 
 /** The {@link ContextConfigurationReader} reads the context xml */
-public class ContextConfigurationReader extends AbstractContextConfigurationReader {
+public class ContextConfigurationReader {
 
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(ContextConfigurationReader.class);
 
   /** Map with XML Nodes 'context' of the context.xml files */
-  protected Map<Path, ContextConfiguration> contextConfigurations;
+  private Map<Path, ContextConfiguration> contextConfigurations;
 
-  /** Map with the paths of the configuration location for a trigger */
-  private Map<String, Path> triggerConfigLocations = new HashMap<>();
+  /** Paths of the context configuration files */
+  private List<Path> contextFiles;
+
+  /** Root of the context configuration file, used for passing to ContextConfiguration */
+  private Path contextRoot;
 
   /**
    * Creates a new instance of the {@link ContextConfigurationReader} which initially parses the given context file
@@ -61,7 +68,9 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
    */
   public ContextConfigurationReader(Path configRoot) throws InvalidConfigurationException {
 
-    super(configRoot);
+    if (configRoot == null) {
+      throw new IllegalArgumentException("Configuration path cannot be null.");
+    }
 
     this.contextFiles = new ArrayList<>();
 
@@ -103,7 +112,9 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   public ContextConfigurationReader(ContextConfiguration contextConfiguration, Path contextRoot)
       throws InvalidConfigurationException {
 
-    super(contextRoot);
+    if (contextRoot == null) {
+      throw new IllegalArgumentException("Configuration path cannot be null.");
+    }
 
     if (this.contextConfigurations == null) {
       this.contextConfigurations = new HashMap<>();
@@ -115,10 +126,71 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
   }
 
   /**
+   * Loads all {@link Matcher}s of a given {@link com.devonfw.cobigen.impl.config.entity.io.Trigger}
+   *
+   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
+   * @return the {@link List} of {@link Matcher}s
+   */
+  private List<Matcher> loadMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
+
+    List<Matcher> matcher = new LinkedList<>();
+    for (com.devonfw.cobigen.impl.config.entity.io.Matcher m : trigger.getMatcher()) {
+      matcher.add(new Matcher(m.getType(), m.getValue(), loadVariableAssignments(m), m.getAccumulationType()));
+    }
+    return matcher;
+  }
+
+  /**
+   * Loads all {@link ContainerMatcher}s of a given {@link com.devonfw.cobigen.impl.config.entity.io.Trigger}
+   *
+   * @param trigger {@link com.devonfw.cobigen.impl.config.entity.io.Trigger} to retrieve the {@link Matcher}s from
+   * @return the {@link List} of {@link Matcher}s
+   */
+  private List<ContainerMatcher> loadContainerMatchers(com.devonfw.cobigen.impl.config.entity.io.Trigger trigger) {
+
+    List<ContainerMatcher> containerMatchers = new LinkedList<>();
+    for (com.devonfw.cobigen.impl.config.entity.io.ContainerMatcher cm : trigger.getContainerMatcher()) {
+      containerMatchers.add(new ContainerMatcher(cm.getType(), cm.getValue(), cm.isRetrieveObjectsRecursively()));
+    }
+    return containerMatchers;
+  }
+
+  /**
+   * Loads all {@link VariableAssignment}s from a given {@link com.devonfw.cobigen.impl.config.entity.io.Matcher}
+   *
+   * from
+   *
+   * @return the {@link List} of {@link Matcher}s
+   */
+  private List<VariableAssignment> loadVariableAssignments(com.devonfw.cobigen.impl.config.entity.io.Matcher matcher) {
+
+    List<VariableAssignment> variableAssignments = new LinkedList<>();
+    for (com.devonfw.cobigen.impl.config.entity.io.VariableAssignment va : matcher.getVariableAssignment()) {
+      variableAssignments.add(new VariableAssignment(va.getType(), va.getKey(), va.getValue(), va.isMandatory()));
+    }
+    return variableAssignments;
+  }
+
+  /**
+   * @return the path of the context file
+   */
+  public Path getContextRoot() {
+
+    return this.contextRoot;
+  }
+
+  /**
+   * @return the list of the context files
+   */
+  public List<Path> getContextFiles() {
+
+    return this.contextFiles;
+  }
+
+  /**
    * Reads the context configuration.
    */
-  @Override
-  protected void readConfiguration() {
+  private void readConfiguration() {
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
@@ -250,7 +322,6 @@ public class ContextConfigurationReader extends AbstractContextConfigurationRead
    *
    * @return a {@link List} containing all the {@link Trigger}s
    */
-  @Override
   public Map<String, Trigger> loadTriggers() {
 
     Map<String, Trigger> triggers = new HashMap<>();

@@ -16,6 +16,8 @@ import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
  * This class takes care of finding either adapted or downloaded template-set files.
+ *
+ * TODO: Move into TemplateSetConfigurationReader
  */
 public class TemplateSetConfigurationManager {
 

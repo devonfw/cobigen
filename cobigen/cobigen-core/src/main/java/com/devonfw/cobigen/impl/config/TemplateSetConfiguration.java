@@ -178,18 +178,20 @@ public class TemplateSetConfiguration {
     this.increments.putAll(templatesConfigurationReader.loadIncrements(loadedTemplates, activeTrigger));
     String templateEngine = templatesConfigurationReader.getTemplateEngine();
 
-    TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath,
-        trigger.get(trigger.keySet().toArray()[0]), loadedTemplates, loadedIncrements, templateEngine);
+    TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath, activeTrigger,
+        loadedTemplates, loadedIncrements, templateEngine);
+
     this.templatesConfigurations.add(templatesConfiguration);
   }
 
   /**
    * Gets the source folder for utility classes
    *
-   * @return the source folder where (src/main/templates) is located
+   * @return the source folder where utility classes are located
    */
   private Path getUtilSourceFolder(Path path) {
 
+    // TODO: replace with proper root template set folder
     return path.getParent().getParent().getParent().getParent();
   }
 
