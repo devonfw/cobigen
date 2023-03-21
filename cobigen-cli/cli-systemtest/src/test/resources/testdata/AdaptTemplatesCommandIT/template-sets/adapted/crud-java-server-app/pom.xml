@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.test</groupId>
   <artifactId>crud-java-server-app</artifactId>
-  <version>1.0.0-TEST</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>

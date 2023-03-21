@@ -5,9 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -19,6 +18,9 @@ import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
  */
 public class AdaptTemplatesCommandIT extends AbstractCliTest {
 
+  /** Test resources root path */
+  private static String testFileRootPath = "src/test/resources/testdata/AdaptTemplatesCommandIT/template-sets/downloaded";
+
   /**
    * Checks if adapt-templates command successfully created adapted folder and its sub folders
    *
@@ -27,29 +29,12 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
   @Test
   public void adaptTemplateSetTest() throws Exception {
 
-    Path devTemplateSetPath = new File(
-        AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
-            .getParentFile().getParentFile().getParentFile().toPath().resolve("cobigen-templates")
-            .resolve("crud-java-server-app").resolve("target");
-    File jars = devTemplateSetPath.toFile();
-    List<String> filenames = new ArrayList<>(2);
-    for (File file : jars.listFiles()) {
-      if (file.getName().endsWith(".jar")) {
-        filenames.add(file.getName());
-      }
+    Path downloadedTemplateSetsPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
+        .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    if (!Files.exists(downloadedTemplateSetsPath)) {
+      Files.createDirectories(downloadedTemplateSetsPath);
     }
-    if (Files.exists(devTemplateSetPath)) {
-      Path downloadedTemplateSetsPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
-          .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-      if (!Files.exists(downloadedTemplateSetsPath)) {
-        Files.createDirectories(downloadedTemplateSetsPath);
-      }
-      for (String jarFilename : filenames) {
-        Files.copy(devTemplateSetPath.resolve(jarFilename),
-            downloadedTemplateSetsPath.resolve(jarFilename.replace("-SNAPSHOT", "")));
-      }
-    }
-
+    FileUtils.copyDirectory(new File(testFileRootPath), downloadedTemplateSetsPath.toFile());
     String args[] = new String[2];
     args[0] = "adapt-templates";
     args[1] = "--all";
@@ -65,29 +50,45 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     assertThat(downloadedTemplateSetsFolderPath).exists();
     assertThat(adaptedTemplateSetsFolderPath).exists();
 
-    Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007");
+    Path templateSetSimple = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-1.0.0");
+    Path templateSetComplex = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-complex-1.0.0");
 
     // check if adapted template set exists
-    assertThat(templateSet).exists();
-    Path templateSetResourcesPath = templateSet.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
+    assertThat(templateSetSimple).exists();
+    assertThat(templateSetComplex).exists();
+
+    Path templateSetResourcesPath = templateSetSimple
+        .resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
+    Path templateSetResourcesPathComplex = templateSetComplex
+        .resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
 
     // check if templates folder exists
-    assertThat(templateSet.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
-
-    // check if template-set.xml exists
+    assertThat(templateSetSimple.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATES_FOLDER))
+        .exists();
     assertThat(
-        templateSet.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME))
+        templateSetComplex.resolve(templateSetResourcesPathComplex).resolve(ConfigurationConstants.TEMPLATES_FOLDER))
             .exists();
 
+    // check if template-set.xml exists
+    assertThat(templateSetSimple.resolve(templateSetResourcesPath)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    assertThat(templateSetComplex.resolve(templateSetResourcesPathComplex)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+
     // validate correct folder structure
-    assertThat(templateSet.resolve(templateSetResourcesPath)
+    assertThat(templateSetSimple.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATES_FOLDER)
         .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    assertThat(
+        templateSetComplex.resolve(templateSetResourcesPathComplex).resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+            .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
 
     // check if template set utility resource folder exists
-    assertThat(templateSet.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER)).exists();
+    assertThat(templateSetSimple.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER)).exists();
+    assertThat(templateSetComplex.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER)).exists();
 
     // validate maven specific contents
-    assertThat(templateSet.resolve("pom.xml")).exists();
+    assertThat(templateSetSimple.resolve("pom.xml")).exists();
+    assertThat(templateSetComplex.resolve("pom.xml")).exists();
 
   }
 
