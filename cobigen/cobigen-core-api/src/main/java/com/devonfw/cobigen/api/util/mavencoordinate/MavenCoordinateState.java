@@ -340,7 +340,7 @@ public class MavenCoordinateState extends MavenCoordinate {
 
       List<MavenCoordinateStatePair> mavenCoordinateStatePair = groupedByGroupArtifactVersion.entrySet().stream()
           .map(entry -> new MavenCoordinateStatePair(entry.getValue().get(0), entry.getValue().get(1)))
-          .filter(pair -> pair.getValue0() != null && pair.getValue1() != null).collect(Collectors.toList());
+          .filter(pair -> pair.getSourcesJar() != null && pair.getClassesJar() != null).collect(Collectors.toList());
 
       return mavenCoordinateStatePair;
     }

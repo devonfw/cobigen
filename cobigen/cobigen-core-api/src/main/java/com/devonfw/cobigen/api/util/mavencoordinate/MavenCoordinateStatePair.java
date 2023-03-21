@@ -25,22 +25,22 @@ public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> 
    * Initialize a MavenCoordinatePair with the given values. Ensures that the {@linkplain MavenCoordinateState} with a
    * truly {@linkplain MavenCoordinateState#isSource isSource} flag is the first element of the pair.
    *
-   * @param value0 any MavenCoordinateState
-   * @param value1 any MavenCoordinateState
+   * @param sourcesJar any MavenCoordinateState
+   * @param classesJar any MavenCoordinateState
    */
-  public MavenCoordinateStatePair(MavenCoordinateState value0, MavenCoordinateState value1) {
+  public MavenCoordinateStatePair(MavenCoordinateState sourcesJar, MavenCoordinateState classesJar) {
 
-    if (!value0.isSource() && value1.isSource()) {
-      this.pair = Pair.with(value1, value0);
+    if (!sourcesJar.isSource() && classesJar.isSource()) {
+      this.pair = Pair.with(classesJar, sourcesJar);
       return;
     }
-    this.pair = Pair.with(value0, value1);
+    this.pair = Pair.with(sourcesJar, classesJar);
   }
 
   /**
    * @return the first value of a pair
    */
-  public MavenCoordinateState getValue0() {
+  public MavenCoordinateState getSourcesJar() {
 
     return this.pair.getValue0();
   }
@@ -48,7 +48,7 @@ public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> 
   /**
    * @return the second value of a pair
    */
-  public MavenCoordinateState getValue1() {
+  public MavenCoordinateState getClassesJar() {
 
     return this.pair.getValue1();
   }
@@ -58,7 +58,7 @@ public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> 
    */
   public boolean isValidJarAndSourcesJarPair() {
 
-    return !getValue0().isSource() && getValue1().isSource() || getValue0().isSource() && !getValue1().isSource();
+    return !getSourcesJar().isSource() && getClassesJar().isSource() || getSourcesJar().isSource() && !getClassesJar().isSource();
   }
 
   /**
@@ -67,7 +67,7 @@ public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> 
    */
   public static List<MavenCoordinateState> flattenPairs(List<MavenCoordinateStatePair> pairs) {
 
-    return pairs.stream().flatMap(pair -> Stream.of(pair.getValue0(), pair.getValue1())).collect(Collectors.toList());
+    return pairs.stream().flatMap(pair -> Stream.of(pair.getSourcesJar(), pair.getClassesJar())).collect(Collectors.toList());
   }
 
   @Override
@@ -89,7 +89,7 @@ public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> 
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
-        return this.index++ == 0 ? getValue0() : getValue1();
+        return this.index++ == 0 ? getSourcesJar() : getClassesJar();
       }
     };
   }
@@ -97,8 +97,8 @@ public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> 
   @Override
   public int hashCode() {
 
-    int value0_hash = getValue0().hashCode();
-    int value1_hash = getValue1().hashCode();
+    int value0_hash = getSourcesJar().hashCode();
+    int value1_hash = getClassesJar().hashCode();
     return Objects.hash(value0_hash, value1_hash);
   }
 
@@ -113,7 +113,7 @@ public class MavenCoordinateStatePair implements Iterable<MavenCoordinateState> 
     }
     MavenCoordinateStatePair other = (MavenCoordinateStatePair) obj;
 
-    return getValue0().equals(other.getValue0()) && getValue1().equals(other.getValue1());
+    return getSourcesJar().equals(other.getSourcesJar()) && getClassesJar().equals(other.getClassesJar());
   }
 
 }

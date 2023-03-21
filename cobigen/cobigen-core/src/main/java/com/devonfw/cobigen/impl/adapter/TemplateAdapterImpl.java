@@ -18,7 +18,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,34 +118,42 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       Path destinationPath, boolean forceOverride) throws IOException {
 
     for (MavenCoordinateStatePair mavenCoordinateStatePair : templateSetMavenCoordinatePairs) {
-      for (MavenCoordinateState member : mavenCoordinateStatePair) { // Maximum of two iterations for each pair
-        Path path = member.getMavenCoordinateLocalPath();
+      MavenCoordinateState sourcesJar = mavenCoordinateStatePair.getSourcesJar();
+      MavenCoordinateState classesJar = mavenCoordinateStatePair.getClassesJar();
 
-        LOG.debug("Processing jar file @ {}", path);
-        Path destination = destinationPath.resolve(member.getRealDirectoryName());
-        boolean extract = false;
-        try {
-          extract = validatePaths(destination, forceOverride);
-        } catch (IOException e) {
-          LOG.info("Unable to extract template jar file to {}", destination);
+      Path path = classesJar.getMavenCoordinateLocalPath();
+
+      LOG.debug("Processing jar file @ {}", path);
+      Path destination = destinationPath.resolve(classesJar.getRealDirectoryName());
+      boolean extract = false;
+      try {
+        extract = validatePaths(destination, forceOverride);
+      } catch (IOException e) {
+        LOG.info("Unable to extract template jar file to {}", destination);
+      }
+
+      if (extract) {
+        if (!isEmpty(destination) && forceOverride) {
+          LOG.info("Override the existing destination folder {}", destination);
+          deleteDirectoryRecursively(destination);
         }
 
-        if (extract) {
-          if (Files.exists(destination) && forceOverride) {
-            LOG.info("Override the existing destination folder {}", destination);
-            deleteDirectoryRecursively(destination);
-          }
+        Path resourcesDestinationPath = destination.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
+        // extract sources jar to target directory
+        extractArchive(sourcesJar.getMavenCoordinateLocalPath(), resourcesDestinationPath);
 
-          if (extractArchive(path, destination)) {
-            member.setAdapted(true);
-          }
+        // create src/main/java directory
+        Files.createDirectories(destination.resolve("src/main/java"));
 
-          // com folder with precompiled util classes is not needed. The utils compiled at first generation into the
-          // target folder
-          if (Files.exists(destination.resolve("com"))) {
-            FileUtils.deleteDirectory(destination.resolve("com").toFile());
-          }
+        // move com folder to src/main/java/com
+        Files.move(resourcesDestinationPath.resolve("com"), destination.resolve("src/main/java/com"),
+            StandardCopyOption.REPLACE_EXISTING);
+
+        URI zipFile = URI.create("jar:file:" + classesJar.getMavenCoordinateLocalPath().toUri().getPath());
+        try (FileSystem fs = FileSystemUtil.getOrCreateFileSystem(zipFile)) {
+          Files.copy(fs.getPath("pom.xml"), destination.resolve("pom.xml"), StandardCopyOption.REPLACE_EXISTING);
         }
+
       }
     }
   }

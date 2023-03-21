@@ -139,19 +139,26 @@ public class TemplateProcessingTest extends AbstractApiTest {
     assertThat(downloadedTemplateSetsFolderPath).exists();
     assertThat(adaptedTemplateSetsFolderPath).exists();
 
-    // check if adapted template set exists
     Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007");
-    Path templateSetSources = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007-sources");
-    // throwing a error
+
+    // check if adapted template set exists
     assertThat(templateSet).exists();
-    assertThat(templateSetSources).exists();
-    // check if context configuration exists
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
-    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    Path templateSetResourcesPath = templateSet.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
+
+    // check if templates folder exists
+    assertThat(templateSet.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
+
+    // check if template-set.xml exists
+    assertThat(
+        templateSet.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME))
+            .exists();
     // validate correct folder structure
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
-    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    assertThat(templateSet.resolve(templateSetResourcesPath)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+
+    // check if template set utility resource folder exists
+    assertThat(templateSet.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER)).exists();
+
     // validate maven specific contents
     assertThat(templateSet.resolve("pom.xml")).exists();
   }
@@ -240,20 +247,20 @@ public class TemplateProcessingTest extends AbstractApiTest {
     for (MavenCoordinateStatePair pair : mavenCoordinateStatePairs) {
       // check if MavenCoordinateState specific attributes are set
       assertThat(pair.isValidJarAndSourcesJarPair()).isTrue();
-      assertThat(pair.getValue0().getMavenCoordinateLocalPath()).exists();
-      assertThat(pair.getValue1().getMavenCoordinateLocalPath()).exists();
-      assertThat(pair.getValue0().isPresent()).isTrue();
-      assertThat(pair.getValue1().isPresent()).isTrue();
-      assertThat(pair.getValue0().isValidMavenCoordinate()).isTrue();
-      assertThat(pair.getValue1().isValidMavenCoordinate()).isTrue();
+      assertThat(pair.getSourcesJar().getMavenCoordinateLocalPath()).exists();
+      assertThat(pair.getClassesJar().getMavenCoordinateLocalPath()).exists();
+      assertThat(pair.getSourcesJar().isPresent()).isTrue();
+      assertThat(pair.getClassesJar().isPresent()).isTrue();
+      assertThat(pair.getSourcesJar().isValidMavenCoordinate()).isTrue();
+      assertThat(pair.getClassesJar().isValidMavenCoordinate()).isTrue();
       // Check if the data structure contains the specific output
       Optional<String> notSourcesJar = flatAdaptedTemplates.stream()
-          .filter(str -> str.equals(pair.getValue0().getArtifactId() + "-" + pair.getValue0().getVersion())
-              && pair.getValue0().isSource())
+          .filter(str -> str.equals(pair.getSourcesJar().getArtifactId() + "-" + pair.getSourcesJar().getVersion())
+              && pair.getSourcesJar().isSource())
           .findFirst();
       Optional<String> sourcesJar = flatAdaptedTemplates.stream()
-          .filter(str -> str.equals(pair.getValue1().getArtifactId() + "-" + pair.getValue1().getVersion())
-              && !pair.getValue1().isSource())
+          .filter(str -> str.equals(pair.getClassesJar().getArtifactId() + "-" + pair.getClassesJar().getVersion())
+              && !pair.getClassesJar().isSource())
           .findFirst();
       assertThat(notSourcesJar.isPresent() && sourcesJar.isPresent());
 
@@ -277,20 +284,16 @@ public class TemplateProcessingTest extends AbstractApiTest {
 
     for (List<String> adapted : adaptedTemplates) {
       String notSourceDir = adapted.get(0);
-      String sourceDir = adapted.get(1);
       // check if adapted template set exists
       Path templateSet = adaptedTemplateSetsFolderPath.resolve(notSourceDir);
-      Path templateSetSources = adaptedTemplateSetsFolderPath.resolve(sourceDir);
       // throwing a error
       assertThat(templateSet).exists();
-      assertThat(templateSetSources).exists();
+      Path templateSetResourcesPath = templateSet.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
       // check if context configuration exists
-      assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
-      assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
-      assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+      assertThat(templateSetResourcesPath).exists();
+      assertThat(templateSetResourcesPath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
       // validate correct folder structure
-      assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
-      assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME))
+      assertThat(templateSetResourcesPath.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME))
           .exists();
       // validate maven specific contents
       assertThat(templateSet.resolve("pom.xml")).exists();

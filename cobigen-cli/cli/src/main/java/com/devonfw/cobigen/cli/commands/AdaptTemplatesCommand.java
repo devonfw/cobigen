@@ -129,8 +129,8 @@ public class AdaptTemplatesCommand extends CommandCommons {
 
     templateSetMavenCoordinatePairs.forEach(pair -> {
 
-      MavenCoordinateState nonSourcesMember = pair.getValue0();
-      MavenCoordinateState sourcesMember = pair.getValue1();
+      MavenCoordinateState nonSourcesMember = pair.getSourcesJar();
+      MavenCoordinateState sourcesMember = pair.getClassesJar();
       int nonSourcesMemberIdx = listViewOfPairs.indexOf(nonSourcesMember) + this.HUMAN_READABLE;
       int sourcesMemberIdx = listViewOfPairs.indexOf(sourcesMember) + this.HUMAN_READABLE;
 

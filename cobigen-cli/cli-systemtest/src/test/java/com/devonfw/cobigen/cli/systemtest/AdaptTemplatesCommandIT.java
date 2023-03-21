@@ -26,8 +26,6 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
-  // TODO: re-enable when template set adaptation is implemented
   public void adaptTemplateSetTest() throws Exception {
 
     Path devTemplateSetPath = new File(
@@ -68,19 +66,27 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     assertThat(downloadedTemplateSetsFolderPath).exists();
     assertThat(adaptedTemplateSetsFolderPath).exists();
 
-    // check if adapted template set exists
     Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007");
-    Path templateSetSources = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-2021.12.007-sources");
-    // check if template and sources exist
+
+    // check if adapted template set exists
     assertThat(templateSet).exists();
-    assertThat(templateSetSources).exists();
-    // check if context configuration exists
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
-    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    Path templateSetResourcesPath = templateSet.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
+
+    // check if templates folder exists
+    assertThat(templateSet.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATES_FOLDER)).exists();
+
+    // check if template-set.xml exists
+    assertThat(
+        templateSet.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME))
+            .exists();
+
     // validate correct folder structure
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
-    assertThat(templateSetSources.resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    assertThat(templateSet.resolve(templateSetResourcesPath)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+
+    // check if template set utility resource folder exists
+    assertThat(templateSet.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER)).exists();
+
     // validate maven specific contents
     assertThat(templateSet.resolve("pom.xml")).exists();
 
