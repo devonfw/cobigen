@@ -256,10 +256,8 @@ public class ConfigurationClassLoaderUtil {
     List<String> foundClasses = new LinkedList<>();
     // walk the jar file
     LOG.debug("Searching for classes in {}", utilLocation);
-    Path configurationPath = utilLocation;
-    if (FileSystemUtil.isZipFile(utilLocation.toUri())) {
-      configurationPath = FileSystemUtil.createFileSystemDependentPath(utilLocation.toUri());
-    }
+    Path configurationPath = FileSystemUtil.createFileSystemDependentPath(utilLocation.toUri());
+
     Files.walkFileTree(configurationPath, new SimpleFileVisitor<Path>() {
 
       @Override
