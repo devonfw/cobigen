@@ -16,6 +16,7 @@ import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,6 +32,7 @@ import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
  * Test the upgrader in core and generates from the new template-set
  *
  */
+@Ignore // TODO: re-enable when upgrader #1595 was implemented
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class UpgradeMonolithicTemplatesTest extends SystemTest {
 

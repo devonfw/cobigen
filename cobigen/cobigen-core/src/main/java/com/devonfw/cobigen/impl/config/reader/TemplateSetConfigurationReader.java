@@ -23,7 +23,6 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
-import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.TemplateFolder;
@@ -48,9 +47,6 @@ public class TemplateSetConfigurationReader {
   /** Paths of the configuration location for a template-set.xml file */
   private Path configLocation;
 
-  /** Root of the configuration */
-  private Path configRoot;
-
   /** The static representation of the TemplateSetConfiguration */
   private com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration templateSetConfiguration;
 
@@ -58,14 +54,9 @@ public class TemplateSetConfigurationReader {
   private Map<Path, Path> configLocations = new HashMap<>();
 
   /**
-   * The {@link ConfigurationHolder}
-   */
-  protected ConfigurationHolder configurationHolder;
-
-  /**
    * The {@link com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration}
    */
-  protected com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
+  private com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
 
   /**
    * @return contextConfiguration
@@ -86,7 +77,7 @@ public class TemplateSetConfigurationReader {
   /**
    * The {@link TemplatesConfiguration} to initialize
    */
-  protected TemplatesConfiguration templatesConfiguration;
+  private TemplatesConfiguration templatesConfiguration;
 
   /** The top-level folder where the templates are located. */
   private TemplateFolder rootTemplateFolder;
@@ -139,7 +130,6 @@ public class TemplateSetConfigurationReader {
       }
     }
 
-    this.configRoot = configRoot;
   }
 
   /**

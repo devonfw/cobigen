@@ -36,14 +36,6 @@ public class ConfigurationHolder {
   /** Cached templateSet configuration */
   private TemplateSetConfiguration templateSetConfiguration;
 
-  /**
-   * @return templateSetConfiguration
-   */
-  public TemplateSetConfiguration getTemplateSetConfiguration() {
-
-    return this.templateSetConfiguration;
-  }
-
   /** Root path of the configuration */
   private Path configurationPath;
 
@@ -64,10 +56,18 @@ public class ConfigurationHolder {
     this.configurationLocation = configurationLocation;
     this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
     this.configurationProperties = ConfigurationFinder.loadTemplateSetConfigurations(
-        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE), this.configurationPath);
+        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
 
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.configurationPath);
+  }
+
+  /**
+   * @return templateSetConfiguration
+   */
+  public TemplateSetConfiguration getTemplateSetConfiguration() {
+
+    return this.templateSetConfiguration;
   }
 
   /**
@@ -178,12 +178,14 @@ public class ConfigurationHolder {
   }
 
   /**
-   * checks if this this a template set configuration or a templates configuration (true if templateSetConfiguraion)
+   * Checks if this this a template set configuration or a templates configuration (true if templateSetConfiguraion)
    *
-   * @return return if the template folder structure consists of template sets or if the monolithic structure is used.
+   * @return true if the template folder structure consists of template sets or false if the monolithic structure is
+   *         used.
    */
   public boolean isTemplateSetConfiguration() {
 
+    // TODO: Replace with a better logic for template set detection later f.e. groupid
     if (this.configurationPath.toUri().getScheme().equals("jar")
         || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return false;
