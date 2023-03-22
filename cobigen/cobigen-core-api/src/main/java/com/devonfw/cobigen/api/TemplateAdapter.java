@@ -9,7 +9,6 @@ import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 
 /** The TemplateAdapter implements methods for adapting template jars */
 public interface TemplateAdapter {
-
   /**
    * Adapt the templates. Can either adapt an old monolithic template structure or independent template sets.
    *
