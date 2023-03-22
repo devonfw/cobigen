@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.TemplateFolder;

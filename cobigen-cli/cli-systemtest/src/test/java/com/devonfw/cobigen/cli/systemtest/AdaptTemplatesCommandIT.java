@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
 
 /**
  * Tests the usage of the adapt-templates command.
@@ -76,11 +75,10 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
         .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
 
     // validate correct folder structure
-    assertThat(templateSetSimple.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+    assertThat(templateSetSimple.resolve(templateSetResourcesPath)
         .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
-    assertThat(
-        templateSetComplex.resolve(templateSetResourcesPathComplex).resolve(ConfigurationConstants.TEMPLATES_FOLDER)
-            .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    assertThat(templateSetComplex.resolve(templateSetResourcesPathComplex)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
 
     // check if template set utility resource folder exists
     assertThat(templateSetSimple.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER)).exists();
@@ -89,6 +87,10 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     // validate maven specific contents
     assertThat(templateSetSimple.resolve("pom.xml")).exists();
     assertThat(templateSetComplex.resolve("pom.xml")).exists();
+
+    // check if META-INF was deleted
+    assertThat(templateSetResourcesPath.resolve("META-INF")).doesNotExist();
+    assertThat(templateSetResourcesPathComplex.resolve("META-INF")).doesNotExist();
 
   }
 
@@ -107,12 +109,8 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
       Files.createDirectories(templatesPath);
     }
 
-    MavenCoordinateState nonSourcesJar = new MavenCoordinateState("com.devonfw.cobigen", "templates-devon4j", "3.0.0",
-        false);
-    MavenCoordinateState sourcesJar = new MavenCoordinateState("com.devonfw.cobigen", "templates-devon4j", "3.0.0",
-        true);
-    TemplatesJarUtil.downloadJar(nonSourcesJar, templatesPath.toFile());
-    TemplatesJarUtil.downloadJar(sourcesJar, templatesPath.toFile());
+    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", false, templatesPath.toFile());
+    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", true, templatesPath.toFile());
 
     String args[] = new String[2];
     args[0] = "adapt-templates";

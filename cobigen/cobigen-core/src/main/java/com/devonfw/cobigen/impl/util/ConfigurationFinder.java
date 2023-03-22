@@ -21,9 +21,8 @@ import org.xml.sax.SAXException;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 
 /**
@@ -90,8 +89,8 @@ public class ConfigurationFinder {
       mavenCoordinates = Arrays.asList(props.getProperty(templateSetsInstalled).split(","));
     }
 
-    List<MavenCoordinate> hiddenIds = MavenCoordinateState.convertToMavenCoordinates(hiddenIdsString);
-    List<MavenCoordinate> convertedMavenCoordinates = MavenCoordinateState.convertToMavenCoordinates(mavenCoordinates);
+    List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
+    List<MavenCoordinate> convertedMavenCoordinates = MavenCoordinateUtil.convertToMavenCoordinates(mavenCoordinates);
 
     ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds,
         convertedMavenCoordinates);

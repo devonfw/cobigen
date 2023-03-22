@@ -18,7 +18,6 @@ import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.util.Os;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -65,7 +64,7 @@ public class AbstractCliTest {
    * @throws URISyntaxException if the path could not be created properly
    * @throws IOException if accessing a template directory directory fails
    */
-  @BeforeClass
+  // @BeforeClass
   public static void determineDevTemplatesPath() throws URISyntaxException, IOException {
 
     devTemplatesPath = new File(AbstractCliTest.class.getProtectionDomain().getCodeSource().getLocation().toURI())

@@ -45,3 +45,7 @@ cobigen-cli/cli-systemtest/src/test/resources/testdata/AdaptTemplatesCommandIT/t
 cobigen-cli/cli-systemtest/src/test/resources/testdata/AdaptTemplatesCommandIT/template-sets/downloaded/crud-java-server-app-1.0.0-sources.jar
 cobigen-cli/cli-systemtest/src/test/resources/testdata/AdaptTemplatesCommandIT/template-sets/downloaded/crud-java-server-app-complex-1.0.0.jar
 cobigen-cli/cli-systemtest/src/test/resources/testdata/AdaptTemplatesCommandIT/template-sets/downloaded/crud-java-server-app-complex-1.0.0-sources.jar
+cobigen/cobigen-core-systemtest/src/test/resources/testdata/systemtest/TemplateProcessingTest/template-sets/downloaded/crud-java-server-app-1.0.0.jar
+cobigen/cobigen-core-systemtest/src/test/resources/testdata/systemtest/TemplateProcessingTest/template-sets/downloaded/crud-java-server-app-1.0.0-sources.jar
+cobigen/cobigen-core-systemtest/src/test/resources/testdata/systemtest/TemplateProcessingTest/template-sets/downloaded/crud-java-server-app-complex-1.0.0.jar
+cobigen/cobigen-core-systemtest/src/test/resources/testdata/systemtest/TemplateProcessingTest/template-sets/downloaded/crud-java-server-app-complex-1.0.0-sources.jar

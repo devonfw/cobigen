@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.cli.commands;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.TemplateAdapter;
 import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 import com.devonfw.cobigen.cli.CobiGenCLI;
 import com.devonfw.cobigen.cli.constants.MessagesConstants;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
@@ -26,9 +25,6 @@ import picocli.CommandLine.Option;
 @Command(description = MessagesConstants.ADAPT_TEMPLATES_DESCRIPTION, name = "adapt-templates", aliases = {
 "a" }, mixinStandardHelpOptions = true)
 public class AdaptTemplatesCommand extends CommandCommons {
-
-  private final int HUMAN_READABLE = 1;
-
   /**
    * Logger to output useful information to the user
    */
@@ -51,7 +47,6 @@ public class AdaptTemplatesCommand extends CommandCommons {
   public Integer doAction() throws Exception {
 
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(this.templatesProject);
-
     try {
       templateAdapter.adaptTemplates();
     } catch (UpgradeTemplatesNotificationException e) {
@@ -59,40 +54,31 @@ public class AdaptTemplatesCommand extends CommandCommons {
         templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
       }
     } catch (TemplateSelectionForAdaptionException e) {
-      List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs = e.getTemplateSetMavenCoordinateStatePairs();
-      if (templateSetMavenCoordinatePairs != null && !templateSetMavenCoordinatePairs.isEmpty()) {
-        getJarsToAdapt(templateAdapter, templateSetMavenCoordinatePairs);
-        if (!templateSetMavenCoordinatePairs.isEmpty()) {
-          templateAdapter.adaptTemplateSets(templateSetMavenCoordinatePairs, false);
+      List<Path> templateJars = e.getTemplateSets();
+      if (templateJars != null && !templateJars.isEmpty()) {
+        List<Path> templateJarsToAdapt = getJarsToAdapt(templateAdapter, templateJars);
+        if (!templateJarsToAdapt.isEmpty()) {
+          templateAdapter.adaptTemplateSets(templateJarsToAdapt, false);
         }
       } else {
         LOG.info("No template set jars found to extract.");
       }
     }
-
     return 0;
   }
 
   /**
-   * Gives the user a selection of available template set jars to adapt. The users selection will reflect in the parsed
-   * {@link java.util.List List} of {@link MavenCoordinateStatePair MavenCoordinateStatePairs} by a side affect of this
-   * method.
+   * Gives the user a selection of available template set jars to adapt.
    *
-   * @param templateAdapter the scope of the current adapt process
-   * @param templateSetMavenCoordinateStatePairs A {@link java.util.List List} of {@link MavenCoordinateStatePair
-   *        MavenCoordinateStatePairs} with all available template set jars.
+   * @param templateJars A {@link List} with all available template set jars.
+   * @return A {@link List} with the template set jars selected by the user to adapt.
    */
-  private void getJarsToAdapt(TemplateAdapter templateAdapter,
-      List<MavenCoordinateStatePair> templateSetMavenCoordinateStatePairs) {
+  private List<Path> getJarsToAdapt(TemplateAdapter templateAdapter, List<Path> templateJars) {
 
-    if (templateSetMavenCoordinateStatePairs != null && templateSetMavenCoordinateStatePairs.size() > 0) {
-
-      List<MavenCoordinateState> listViewOfPairs = MavenCoordinateStatePair
-          .flattenPairs(templateSetMavenCoordinateStatePairs);
-      printJarsForSelection(templateAdapter, templateSetMavenCoordinateStatePairs, listViewOfPairs);
-
+    List<Path> jarsToAdapt = new ArrayList<>();
+    if (templateJars != null && templateJars.size() > 0) {
+      printJarsForSelection(templateAdapter, templateJars);
       List<String> userSelection = new ArrayList<>();
-
       if (this.adaptAll) {
         userSelection.add("0");
       } else {
@@ -100,45 +86,30 @@ public class AdaptTemplatesCommand extends CommandCommons {
           userSelection.add(templateSelection);
         }
       }
-
       if (userSelection.contains("0")) {
-        listViewOfPairs.forEach(mvnCoordState -> {
-          mvnCoordState.setToBeAdapted(true);
-        });
+        jarsToAdapt = templateJars;
       } else {
         for (String jarSelected : userSelection) {
-          listViewOfPairs.get(Integer.parseInt(jarSelected) - this.HUMAN_READABLE).setToBeAdapted(true);
+          jarsToAdapt.add(templateJars.get(Integer.parseInt(jarSelected) - 1));
         }
       }
     }
-
+    return jarsToAdapt;
   }
 
   /**
    * Prints the available template set jars
    *
-   * @param templateAdapter the scope of the current adapt process
-   * @param templateSetMavenCoordinatePairs {@link java.util.List List} of {@link MavenCoordinateStatePair
-   *        MavenCoordinateStatePairs}
-   * @param listViewOfPairs A {@link java.util.List List} view of {@code templateSetMavenCoordinatePairs}
+   * @param templateSetJarPaths List of {@link Path} to available template jar files
    */
-  private void printJarsForSelection(TemplateAdapter templateAdapter,
-      List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs, List<MavenCoordinateState> listViewOfPairs) {
+  private void printJarsForSelection(TemplateAdapter templateAdapter, List<Path> templateSetJarPaths) {
 
     LOG.info("(0) " + "All");
-
-    templateSetMavenCoordinatePairs.forEach(pair -> {
-
-      MavenCoordinateState nonSourcesMember = pair.getSourcesJar();
-      MavenCoordinateState sourcesMember = pair.getClassesJar();
-      int nonSourcesMemberIdx = listViewOfPairs.indexOf(nonSourcesMember) + this.HUMAN_READABLE;
-      int sourcesMemberIdx = listViewOfPairs.indexOf(sourcesMember) + this.HUMAN_READABLE;
-
-      LOG.info("(" + nonSourcesMemberIdx + ") " + nonSourcesMember.getRealDirectoryName()
-          + (templateAdapter.isTemplateSetAlreadyAdapted(nonSourcesMember) ? " (already adapted)" : ""));
-      LOG.info("(" + sourcesMemberIdx + ") " + sourcesMember.getRealDirectoryName()
-          + (templateAdapter.isTemplateSetAlreadyAdapted(sourcesMember) ? " (already adapted)" : ""));
-    });
+    for (Path templateSetJarPath : templateSetJarPaths) {
+      LOG.info("(" + (templateSetJarPaths.indexOf(templateSetJarPath) + 1) + ") "
+          + templateSetJarPath.getFileName().toString().replace(".jar", "")
+          + (templateAdapter.isTemplateSetAlreadyAdapted(templateSetJarPath) ? " (already adapted)" : ""));
+    }
     LOG.info("Please enter the number(s) of jar(s) that you want to adapt separated by comma.");
   }
 

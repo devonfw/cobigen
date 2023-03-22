@@ -14,10 +14,15 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +34,6 @@ import com.devonfw.cobigen.api.exception.TemplateSelectionForAdaptionException;
 import com.devonfw.cobigen.api.exception.UpgradeTemplatesNotificationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateStatePair;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.AbstractConfigurationUpgrader;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
@@ -42,7 +45,6 @@ import com.devonfw.cobigen.impl.util.FileSystemUtil;
  * template structure.
  */
 public class TemplateAdapterImpl implements TemplateAdapter {
-
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(TemplateAdapterImpl.class);
 
@@ -80,24 +82,23 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       adaptMonolithicTemplates(destinationPath, false);
       throw new UpgradeTemplatesNotificationException();
     } else {
-      throw new TemplateSelectionForAdaptionException(getTemplateSetMavenCoordinateStatePairs());
+      throw new TemplateSelectionForAdaptionException(getTemplateSetJars());
     }
   }
 
   @Override
-  public void adaptTemplateSets(List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs, boolean forceOverride)
-      throws IOException {
+  public void adaptTemplateSets(List<Path> templateSetJars, boolean forceOverride) throws IOException {
 
     Path destinationPath = this.templatesLocation.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-    adaptTemplateSets(templateSetMavenCoordinatePairs, destinationPath, forceOverride);
+    adaptTemplateSets(templateSetJars, destinationPath, forceOverride);
   }
 
   @Override
-  public void adaptTemplateSets(List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs, Path destinationPath,
-      boolean forceOverride) throws IOException {
+  public void adaptTemplateSets(List<Path> templateSetJars, Path destinationPath, boolean forceOverride)
+      throws IOException {
 
     try {
-      processTemplateSetJars(templateSetMavenCoordinatePairs, destinationPath, forceOverride);
+      processTemplateSetJars(templateSetJars, destinationPath, forceOverride);
       LOG.info("Successfully extracted templates to @ {}", destinationPath);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Not able to extract templates to " + destinationPath, e);
@@ -108,23 +109,19 @@ public class TemplateAdapterImpl implements TemplateAdapter {
    * Extracts a specified set of template jars to the specified target. The list is specified by the user in CLI or
    * Eclipse module.
    *
-   * @param templateSetMavenCoordinatePairs A {@link java.util.List List} of {@link MavenCoordinateStatePair
-   *        MavenCoordinateStatePairs}
+   * @param templateSetJarsToAdapt A {@link List} of {@link Path} with the template jars to adapt.
    * @param destinationPath The {@link Path} where the jars should be extracted to
    * @param forceOverride Indicator whether an already adapted template set should be overridden
    * @throws IOException If CobiGen is not able to extract the jar file to the destination folder
    */
-  private void processTemplateSetJars(List<MavenCoordinateStatePair> templateSetMavenCoordinatePairs,
-      Path destinationPath, boolean forceOverride) throws IOException {
+  private void processTemplateSetJars(List<Path> templateSetJarsToAdapt, Path destinationPath, boolean forceOverride)
+      throws IOException {
 
-    for (MavenCoordinateStatePair mavenCoordinateStatePair : templateSetMavenCoordinatePairs) {
-      MavenCoordinateState sourcesJar = mavenCoordinateStatePair.getSourcesJar();
-      MavenCoordinateState classesJar = mavenCoordinateStatePair.getClassesJar();
+    for (Path templateSetJar : templateSetJarsToAdapt) {
+      LOG.debug("Processing jar file @ {}", templateSetJar);
+      String fileName = templateSetJar.getFileName().toString().replace(".jar", "");
+      Path destination = destinationPath.resolve(fileName);
 
-      Path path = classesJar.getMavenCoordinateLocalPath();
-
-      LOG.debug("Processing jar file @ {}", path);
-      Path destination = destinationPath.resolve(classesJar.getRealDirectoryName());
       boolean extract = false;
       try {
         extract = validatePaths(destination, forceOverride);
@@ -140,7 +137,14 @@ public class TemplateAdapterImpl implements TemplateAdapter {
 
         Path resourcesDestinationPath = destination.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
         // extract sources jar to target directory
-        extractArchive(sourcesJar.getMavenCoordinateLocalPath(), resourcesDestinationPath);
+        String sourcesFileName = templateSetJar.getFileName().toString().replace(".jar", "-sources.jar");
+
+        extractArchive(templateSetJar.getParent().resolve(sourcesFileName), resourcesDestinationPath);
+
+        // delete META-INF folder
+        if (resourcesDestinationPath.resolve("META-INF").toFile().exists()) {
+          FileUtils.deleteDirectory(resourcesDestinationPath.resolve("META-INF").toFile());
+        }
 
         // create src/main/java directory
         Files.createDirectories(destination.resolve("src/main/java"));
@@ -149,7 +153,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
         Files.move(resourcesDestinationPath.resolve("com"), destination.resolve("src/main/java/com"),
             StandardCopyOption.REPLACE_EXISTING);
 
-        URI zipFile = URI.create("jar:file:" + classesJar.getMavenCoordinateLocalPath().toUri().getPath());
+        URI zipFile = URI.create("jar:file:" + templateSetJar.toUri().getPath());
         try (FileSystem fs = FileSystemUtil.getOrCreateFileSystem(zipFile)) {
           Files.copy(fs.getPath("pom.xml"), destination.resolve("pom.xml"), StandardCopyOption.REPLACE_EXISTING);
         }
@@ -191,56 +195,69 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       LOG.info("Override the existing destination folder {}", destinationPath);
       deleteDirectoryRecursively(destinationPath);
     }
-
     Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, this.templatesLocation);
     Path classesJarPath = TemplatesJarUtil.getJarFile(false, this.templatesLocation);
-
     if (sourcesJarPath == null && classesJarPath == null) {
       LOG.info("No monolithic jar found in {}!", this.templatesLocation);
       return;
     }
-
     LOG.debug("Processing jar file @ {}", sourcesJarPath);
-
     // extract sources jar to target directory
     extractArchive(sourcesJarPath, destinationPath);
-
     // create src/main/java directory
     Files.createDirectory(destinationPath.resolve("src/main/java"));
-
     // move com folder to src/main/java/com
     Files.move(destinationPath.resolve("com"), destinationPath.resolve("src/main/java/com"),
         StandardCopyOption.REPLACE_EXISTING);
-
     // create src/main/resources directory
     Files.createDirectory(destinationPath.resolve("src/main/resources"));
-
     // move META-INF folder to src/main/resources
     Files.move(destinationPath.resolve("META-INF"), destinationPath.resolve("src/main/resources/META-INF"),
         StandardCopyOption.REPLACE_EXISTING);
-
     // delete MANIFEST.MF
     Files.deleteIfExists(destinationPath.resolve("src/main/resources/META-INF/MANIFEST.MF"));
-
     URI zipFile = URI.create("jar:file:" + classesJarPath.toUri().getPath());
-
     // extract classes jar pom.xml
     try (FileSystem fs = FileSystemUtil.getOrCreateFileSystem(zipFile)) {
       Files.copy(fs.getPath("pom.xml"), destinationPath.resolve("pom.xml"), StandardCopyOption.REPLACE_EXISTING);
     }
-
     LOG.info("Successfully extracted templates to @ {}", destinationPath);
   }
 
   @Override
-  public List<MavenCoordinateStatePair> getTemplateSetMavenCoordinateStatePairs() {
+  public List<Path> getTemplateSetJars() {
 
     Path downloadedJarsFolder = this.templatesLocation.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     if (!Files.exists(downloadedJarsFolder)) {
       LOG.info("No template set jars found. Folder {} does not exist.", downloadedJarsFolder);
       return null;
     }
-    return MavenCoordinateState.getJarFilesToMavenCoordinateState(downloadedJarsFolder);
+    List<Path> JarFiles = TemplatesJarUtil.getJarFiles(downloadedJarsFolder);
+    Map<Boolean, List<Path>> jarMap = JarFiles.stream()
+        .collect(Collectors.partitioningBy(f -> f.getFileName().toString().contains("-source")));
+    List<Path> templateSetJars = jarMap.get(false);
+    List<Path> templateSetJarsSources = jarMap.get(true);
+    List<Path> resultJars = new ArrayList<>();
+    for (Path templateSetjar : templateSetJars) {
+      String fileName = templateSetjar.getFileName().toString().replace(".jar", "");
+      Iterator<Path> sourcesJarsIterator = templateSetJarsSources.iterator();
+      while (sourcesJarsIterator.hasNext()) {
+        if (sourcesJarsIterator.next().getFileName().toString().contains(fileName)) {
+          sourcesJarsIterator.remove();
+          resultJars.add(templateSetjar);
+          break;
+        }
+      }
+    }
+    templateSetJars.removeAll(resultJars);
+    if (!templateSetJars.isEmpty()) {
+      for (Path jarWithMissingSource : templateSetJars) {
+        LOG.error("Missing Source for Jar: " + jarWithMissingSource.getFileName());
+        // no matching source file found either download or handle somehow
+        // TODO throw Exception or download the missing source
+      }
+    }
+    return resultJars;
   }
 
   @Override
@@ -265,19 +282,14 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   }
 
   @Override
-  public boolean isTemplateSetAlreadyAdapted(MavenCoordinateState mavenCoordinateState) {
+  public boolean isTemplateSetAlreadyAdapted(Path templateSetJar) {
 
-    if (mavenCoordinateState != null) {
-      if (mavenCoordinateState.getMavenCoordinateLocalPath() != null
-          && Files.exists(mavenCoordinateState.getMavenCoordinateLocalPath())) {
-        Path adaptedFolder = this.templatesLocation.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-        if (Files.exists(adaptedFolder) && Files.exists(adaptedFolder.resolve(
-            mavenCoordinateState.getMavenCoordinateLocalPath().getFileName().toString().replace(".jar", "")))) {
-          mavenCoordinateState.setAdapted(true);
-          return true;
-        }
+    if (templateSetJar != null && Files.exists(templateSetJar)) {
+      Path adaptedFolder = this.templatesLocation.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+      if (Files.exists(adaptedFolder)
+          && Files.exists(adaptedFolder.resolve(templateSetJar.getFileName().toString().replace(".jar", "")))) {
+        return true;
       }
-      mavenCoordinateState.setAdapted(false);
     }
     return false;
   }
@@ -288,14 +300,12 @@ public class TemplateAdapterImpl implements TemplateAdapter {
    * @param sourcePath Path of the archive to unpack
    * @param targetPath Path of the target directory to unpack the source archive to
    * @throws IOException if an error occurred while processing the jar or its target directory
-   * @return success status
    */
-  private boolean extractArchive(Path sourcePath, Path targetPath) throws IOException {
+  private void extractArchive(Path sourcePath, Path targetPath) throws IOException {
 
     if (FileSystemUtil.isZipFile(sourcePath.toUri())) {
       // Important cast for jdk 17 compatibility
       FileSystem fs = FileSystems.newFileSystem(sourcePath, (ClassLoader) null);
-
       Path path = fs.getPath("/");
       Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
         @Override
@@ -319,10 +329,8 @@ public class TemplateAdapterImpl implements TemplateAdapter {
           return FileVisitResult.CONTINUE;
         }
       });
-      return true;
     } else {
       LOG.info("Source path is not a ZIP file {}", sourcePath);
-      return false;
     }
   }
 
@@ -338,12 +346,10 @@ public class TemplateAdapterImpl implements TemplateAdapter {
 
     Objects.requireNonNull(this.templatesLocation, "Templates location cannot be null");
     Objects.requireNonNull(destinationPath, "Destination path cannot be null");
-
     if (!Files.exists(this.templatesLocation)) {
       LOG.info("Templates location {} does not exist.", this.templatesLocation);
       return false;
     }
-
     if (!Files.isDirectory(destinationPath)) {
       try {
         Files.createDirectories(destinationPath);
@@ -351,11 +357,9 @@ public class TemplateAdapterImpl implements TemplateAdapter {
         throw new CobiGenRuntimeException("Unable to create directory " + destinationPath);
       }
     }
-
     if (!isEmpty(destinationPath) && !forceOverride) {
       throw new DirectoryNotEmptyException(destinationPath.toString());
     }
-
     return true;
   }
 
@@ -397,13 +401,10 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       CobigenTemplates = CobiGenPaths.getPomLocation(templatesPath);
     }
     AbstractConfigurationUpgrader<ContextConfigurationVersion> contextUpgraderObject = new ContextConfigurationUpgrader();
-
     // Upgrade the context.xml to the new template-set with latest version
     contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.NO_BACKUP);
-
     LOG.info("context.xml upgraded successfully. {}", templatesPath);
     LOG.info("Templates successfully upgraded. \n ");
-
     // check the new Path to the template-set after the upgrade
     Path newTemplates;
     if (templatesProject == null) {
@@ -413,7 +414,6 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       newTemplates = Paths.get(ConfigurationFinder.findTemplatesLocation());
     } else {
       // 2. otherwise check in the given customTemplates
-
       // check renaming
       // 2.1 renaming from CobiGen_Templates to template-sets occurred
       if (Files.exists(CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)))

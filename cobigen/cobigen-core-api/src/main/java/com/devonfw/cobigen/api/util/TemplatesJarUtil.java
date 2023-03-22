@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.constants.TemplatesJarConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinate;
-import com.devonfw.cobigen.api.util.mavencoordinate.MavenCoordinateState;
 
 /**
  * Utilities related to the templates jar. Includes the downloading, retrieval of the jar and the checkup of the
@@ -40,26 +38,24 @@ public class TemplatesJarUtil {
   private static final Logger LOG = LoggerFactory.getLogger(TemplatesJarUtil.class);
 
   /**
-   * Downloads a jar based on a MavenCoordinate and updates the path where the jar has been downloaded to.
-   *
-   * @param mavenCoordinateState holding the groupId, artifactId, version and whether the jar in question is a sources
-   *        jar or not
+   * @param groupId of the artifact to download
+   * @param artifactId of the artifact to download
+   * @param version of the artifact to download
+   * @param isDownloadSource true if downloading source jar file
    * @param templatesDirectory directory where the templates jar are located
    * @return fileName Name of the file downloaded
    */
-  public static String downloadJar(MavenCoordinateState mavenCoordinateState, File templatesDirectory) {
+  public static String downloadJar(String groupId, String artifactId, String version, boolean isDownloadSource,
+      File templatesDirectory) {
 
     // By default the version should be latest
-    if (StringUtils.isEmpty(mavenCoordinateState.getVersion())) {
+    if (StringUtils.isEmpty(version)) {
 
-      mavenCoordinateState.setVersion("LATEST");
+      version = "LATEST";
     }
 
     String mavenUrl = "https://repository.sonatype.org/service/local/artifact/maven/" + "redirect?r=central-proxy&g="
-        + mavenCoordinateState.getGroupId() + "&a=" + mavenCoordinateState.getArtifactId() + "&v="
-        + mavenCoordinateState.getVersion();
-
-    boolean isDownloadSource = mavenCoordinateState.isSource();
+        + groupId + "&a=" + artifactId + "&v=" + version;
 
     if (isDownloadSource) {
       mavenUrl = mavenUrl + "&c=sources";
@@ -67,7 +63,6 @@ public class TemplatesJarUtil {
 
     String fileName = "";
 
-    // TODO: add another case with appropriate method for template sets
     Path jarFilePath = getJarFile(isDownloadSource, templatesDirectory.toPath());
     try {
       if (jarFilePath == null || !Files.exists(jarFilePath)
@@ -82,15 +77,12 @@ public class TemplatesJarUtil {
           if (!file.exists()) {
             Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
           }
-          mavenCoordinateState.setMavenCoordinateLocalPath(targetPath);
         }
         conn.disconnect();
       } else {
         fileName = jarFilePath.toFile().getPath()
             .substring(jarFilePath.toFile().getPath().lastIndexOf(File.separator) + 1);
-        mavenCoordinateState.setMavenCoordinateLocalPath(jarFilePath);
       }
-      mavenCoordinateState.setPresent(true);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Could not download file from " + mavenUrl, e);
     }
@@ -106,8 +98,8 @@ public class TemplatesJarUtil {
    */
   public static String downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory) {
 
-    return downloadJar(new MavenCoordinateState(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
-        TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource), templatesDirectory);
+    return downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
+        TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
   }
 
   /**
@@ -148,15 +140,18 @@ public class TemplatesJarUtil {
     }
 
     for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
-      downloadJar(new MavenCoordinateState(mavenCoordinate, false), downloaded.toFile());
-      downloadJar(new MavenCoordinateState(mavenCoordinate, true), downloaded.toFile());
+      downloadJar(mavenCoordinate.getGroupId(), mavenCoordinate.getArtifactId(), mavenCoordinate.getVersion(), false,
+          downloaded.toFile());
+      downloadJar(mavenCoordinate.getGroupId(), mavenCoordinate.getArtifactId(), mavenCoordinate.getVersion(), true,
+          downloaded.toFile());
     }
 
   }
 
   /**
-   * Checks if the given Path contains Folders or files with a artifact name from a list of maven coordinates. This
-   * function is used to check if templates indicated by an artifactId already exist regardless of the version
+   * Checks if the given Path contains Folders or files with a artifact name from a list of maven artifact. This
+   * function is used to check if templates already exists and just uses the artifactId and not the version of the
+   * artifacts
    *
    * @param mavenCoordinates a List of maven coordinates that are check for matching templates
    * @param path Path to the directory that contains the Templates.
@@ -328,4 +323,5 @@ public class TemplatesJarUtil {
       return null;
     }
   }
+
 }
