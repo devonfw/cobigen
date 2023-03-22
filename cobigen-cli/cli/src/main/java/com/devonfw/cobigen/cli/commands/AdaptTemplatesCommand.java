@@ -55,7 +55,7 @@ public class AdaptTemplatesCommand extends CommandCommons {
       }
     } catch (TemplateSelectionForAdaptionException e) {
       List<Path> templateJars = e.getTemplateSets();
-      if (templateJars != null && !templateJars.isEmpty()) {
+      if (!templateJars.isEmpty()) {
         List<Path> templateJarsToAdapt = getJarsToAdapt(templateAdapter, templateJars);
         if (!templateJarsToAdapt.isEmpty()) {
           templateAdapter.adaptTemplateSets(templateJarsToAdapt, false);

@@ -292,7 +292,7 @@ public class TemplatesJarUtil {
       return jarPaths;
     } else {
       // There are no jars downloaded
-      return null;
+      return jarPaths;
     }
   }
 

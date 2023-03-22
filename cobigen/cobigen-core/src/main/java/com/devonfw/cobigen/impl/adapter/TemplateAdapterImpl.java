@@ -227,17 +227,20 @@ public class TemplateAdapterImpl implements TemplateAdapter {
   @Override
   public List<Path> getTemplateSetJars() {
 
+    List<Path> resultJars = new ArrayList<>();
+
     Path downloadedJarsFolder = this.templatesLocation.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     if (!Files.exists(downloadedJarsFolder)) {
       LOG.info("No template set jars found. Folder {} does not exist.", downloadedJarsFolder);
-      return null;
+      return resultJars;
     }
+
     List<Path> JarFiles = TemplatesJarUtil.getJarFiles(downloadedJarsFolder);
     Map<Boolean, List<Path>> jarMap = JarFiles.stream()
-        .collect(Collectors.partitioningBy(f -> f.getFileName().toString().contains("-source")));
+        .collect(Collectors.partitioningBy(f -> f.getFileName().toString().contains("-sources.jar")));
     List<Path> templateSetJars = jarMap.get(false);
     List<Path> templateSetJarsSources = jarMap.get(true);
-    List<Path> resultJars = new ArrayList<>();
+
     for (Path templateSetjar : templateSetJars) {
       String fileName = templateSetjar.getFileName().toString().replace(".jar", "");
       Iterator<Path> sourcesJarsIterator = templateSetJarsSources.iterator();
@@ -249,6 +252,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
         }
       }
     }
+
     templateSetJars.removeAll(resultJars);
     if (!templateSetJars.isEmpty()) {
       for (Path jarWithMissingSource : templateSetJars) {
