@@ -44,6 +44,25 @@ public class TemplatesConfiguration {
   private TemplatesConfigurationReader externalReader;
 
   /**
+   * Creates a new {@link TemplatesConfiguration} with the contents initially loaded from the template-set.xml
+   *
+   * @param configRoot root path for the configuration of CobiGen
+   * @param trigger the {@link Trigger}
+   * @param templates the map of templates
+   * @param increments the map of increments
+   * @param templateEngine the string of template engine
+   */
+  public TemplatesConfiguration(Path configRoot, Trigger trigger, Map<String, Template> templates,
+      Map<String, Increment> increments, String templateEngine) {
+
+    this.templatesFolderName = trigger.getTemplateFolder();
+    this.templates = templates;
+    this.increments = increments;
+    this.templateEngine = templateEngine;
+    this.trigger = trigger;
+  }
+
+  /**
    * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings reference. We
    * use the configurationHolder to store there all the external TemplatesConfiguration
    *
@@ -66,6 +85,7 @@ public class TemplatesConfiguration {
     this.increments = reader.loadIncrements(this.templates, trigger);
     this.templateEngine = reader.getTemplateEngine();
     this.trigger = trigger;
+
   }
 
   /**

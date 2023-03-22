@@ -23,6 +23,9 @@ public class ConfigurationConstants {
   /** Template Set configuration file name */
   public static final String TEMPLATE_SET_CONFIG_FILENAME = "template-set.xml";
 
+  /** Template Set filename for Freemarker functions */
+  public static final String TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME = "functions.ftl";
+
   /** Filename of the {@link Properties} used to customize cobigen properties and template relocation. */
   public static final String COBIGEN_PROPERTIES = "cobigen.properties";
 
@@ -32,9 +35,8 @@ public class ConfigurationConstants {
   /** Resource folder containing util classes */
   public static final String UTIL_RESOURCE_FOLDER = "src/main/java";
 
-  /** Resource folder containing resources */
-  // TODO make this a better fitting name
-  public static final String RESOURCE_FOLDER = "src/main/resources";
+  /** Resource folder containing maven configuration resources */
+  public static final String MAVEN_CONFIGURATION_RESOURCE_FOLDER = "src/main/resources";
 
   /** Resource folder containing merge schemas */
   public static final String MERGE_SCHEMA_RESOURCE_FOLDER = "src/main/resources/mergeSchemas";

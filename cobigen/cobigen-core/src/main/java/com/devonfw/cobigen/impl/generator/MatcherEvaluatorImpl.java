@@ -43,7 +43,7 @@ public class MatcherEvaluatorImpl implements MatcherEvaluator {
           default:
         }
       } else {
-        if (matcher.getAccumulationType() == AccumulationType.AND) {
+        if (matcher.getAccumulationType().equals(AccumulationType.AND)) {
           LOG.trace("AND Matcher does not match -> trigger match fails.");
           matcherSetMatches = false;
           break MATCHER_LOOP;

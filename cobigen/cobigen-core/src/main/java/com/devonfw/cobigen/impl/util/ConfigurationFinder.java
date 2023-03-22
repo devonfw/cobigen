@@ -20,11 +20,12 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 
 /**
- * Utilities related to the cobigen configurations including:
+ * Utilities related to the CobiGen configurations including:
  *
  * 1. templates location
  */
@@ -37,16 +38,17 @@ public class ConfigurationFinder {
    * load properties from .properties file into TemplateSetConfiguration if found valid properties otherwise load
    * default values
    *
-   * @param path to a .properties file
+   * @param propertiesPath to a .properties file
    * @return TemplateSetConfiguration instance
+   *
    */
-  public static TemplateSetConfiguration loadTemplateSetConfigurations(Path path) {
+  public static ConfigurationProperties loadTemplateSetConfigurations(Path propertiesPath) {
 
     Properties props = new Properties();
     try {
-      props = readConfigurationFile(path);
+      props = readConfigurationFile(propertiesPath);
     } catch (InvalidConfigurationException e) {
-      LOG.info("This path {} is invalid. The default Config values will be loaded instead.", path);
+      LOG.info("This path {} is invalid. The default Config values will be loaded instead.", propertiesPath);
     }
 
     String groupId = ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_GROUPIDS;
@@ -66,27 +68,36 @@ public class ConfigurationFinder {
       if (!groupIds.contains(defaultGroupId))
         groupIds.add(defaultGroupId);
 
-    boolean useSnapshots = false;
-    if (props.getProperty(snapshot) != null && props.getProperty(snapshot).equals("true")) {
-      useSnapshots = true;
+    boolean useSnapshots;
+    useSnapshots = false;
+    if (props.getProperty(snapshot) != null) {
+      if (props.getProperty(snapshot).equals("true"))
+        useSnapshots = true;
     }
 
-    List<String> hiddenIds = new ArrayList<>();
+    List<String> hiddenIdsString = new ArrayList<>();
     if (props.getProperty(hide) != null) {
-      hiddenIds = Arrays.asList(props.getProperty(hide).split(","));
+      hiddenIdsString = Arrays.asList(props.getProperty(hide).split(","));
     }
 
     List<String> mavenCoordinates = new ArrayList<>();
     if (props.getProperty(templateSetsInstalled) != null) {
       mavenCoordinates = Arrays.asList(props.getProperty(templateSetsInstalled).split(","));
     }
-    return new TemplateSetConfiguration(groupIds, useSnapshots, hiddenIds, mavenCoordinates);
+
+    List<MavenCoordinate> hiddenIds = MavenCoordinateUtil.convertToMavenCoordinates(hiddenIdsString);
+    List<MavenCoordinate> convertedMavenCoordinates = MavenCoordinateUtil.convertToMavenCoordinates(mavenCoordinates);
+
+    ConfigurationProperties configurationProperties = new ConfigurationProperties(groupIds, useSnapshots, hiddenIds,
+        convertedMavenCoordinates);
+
+    return configurationProperties;
   }
 
   /**
    * The method finds location of templates. It could be CobiGen_Templates folder or a template artifact
    *
-   * @return template location uri if exist, otherwise null
+   * @return template location URI if exist, otherwise null
    */
   public static URI findTemplatesLocation() {
 
@@ -143,9 +154,9 @@ public class ConfigurationFinder {
   }
 
   /**
-   * This is a helper method to read a given cobigen configuration file
+   * This is a helper method to read a given CobiGen configuration file
    *
-   * @param cobigenConfigFile cobigen configuration file
+   * @param cobigenConfigFile CobiGen configuration file
    * @throws InvalidConfigurationException if the file isn't present or the path is invalid
    * @return Properties containing configuration
    */

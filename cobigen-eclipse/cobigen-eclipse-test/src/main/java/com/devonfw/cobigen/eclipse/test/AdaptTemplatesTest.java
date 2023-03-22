@@ -24,6 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
@@ -98,7 +100,7 @@ public class AdaptTemplatesTest extends SystemTest {
   }
 
   /**
-   * Test for external projects (not in workspace) taken as input
+   * Test for external projects (not in workspace) taken as input for generation
    *
    * @throws Exception test fails
    */
