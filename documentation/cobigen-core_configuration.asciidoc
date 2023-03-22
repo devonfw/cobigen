@@ -392,7 +392,7 @@ The ref string is split using as delimiter `::`. The first part of the string, i
 == Template-set Configuration
 
 
-With version 6.0 you are working with template-sets rather than the old monolithic structure with tempalte.xml and context.xml files.
+With version 6.0 you are working with template-sets rather than the old monolithic structure with template.xml and context.xml files.
 The template-set.xml is basically a context.xml concatenated with the corresponding templates.xml all in one file.
 
 Therefore the root structure should look somewhat familiar:
@@ -421,7 +421,7 @@ Therefore the root structure should look somewhat familiar:
 </templateSetConfiguration>
 ```
 
-The corresponding parts form the old monolithic structure by their own tags, so backwards compatiblity is possible.
+The corresponding parts form the old monolithic structure by their own tags, so backwards compatibility is possible.
 Also note how the prefixes are also marking the respective old parts.
 
 
@@ -446,13 +446,12 @@ template-sets
        |- main
          |- resources
            |- templates
-             |- template-set.xml
+           |- template-set.xml
    |- template-set2
 ```
 
 The updated structure splits the context.xml and the pom.xml files into multiple directories - one for each template set
- - each with their own atomized/small/more understandable version so you can download them individually instead of all
-at once.
+ - each with their own atomized/small/more understandable version so you can download them individually instead of all at once.
 
 If the configuration needs to be upgraded, the user will be asked whether he wants to perform an automatic upgrade. The
 upgrade can also be performed manually, but it is highly recommended to perform it automatically.
@@ -486,16 +485,16 @@ The structure of the `adapted` folder should now look like this:
          |- resources
 ```
 [start=4]
-4. Navigate to the template you want to upgrade e.g. `CobiGen_Templates\src\main\resources\template-set1` and copy all of it's contents
-into your newly generated templates folder (`template-sets\adapted\templateSet1\src\main\resources`).
+4. Navigate to the template you want to upgrade e.g. `CobiGen_Templates\src\main\templates\template1` and copy all of it's contents
+into your newly generated templates folder (`template-sets\adapted\template1\src\main\resources`).
 
-6. Switch to `template-sets\adapted\templateSet1\src\main\resources` and create a new 'template-set.xml' file (which combines the context.xml and templates.xml), with the following content (adapted to your needs):
+6. Switch to `template-sets\adapted\template1\src\main\resources` and create a new 'template-set.xml' file (which combines the context.xml and templates.xml), with the following content (adapted to your needs):
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
 
   <cc:contextConfiguration version="6.0">
-    <cc:trigger id="valid" type="java">
+    <cc:trigger id="template1" type="java">
       <cc:matcher type="fqn" value="*"></cc:matcher>
     </cc:trigger>
     <cc:tags>
@@ -524,9 +523,9 @@ into your newly generated templates folder (`template-sets\adapted\templateSet1\
 </tns:templateSetConfiguration>
 ```
 The newly generated 'template-set.xml' file contains information for just one template-set. You can copy this information for
-your template from the old 'context.xml' (located here: `CobiGen_Templates\src\main\resources`) and 'templates.xml' file (located here: `CobiGen_Templates\src\main\resources\template1`) (e.g. crud-java-server-app).
+your template from the old 'context.xml' (located here: `CobiGen_Templates\src\main\templates`) and 'templates.xml' file (located here: `CobiGen_Templates\src\main\templates\template1`) (e.g. crud-java-server-app).
 [start=7]
-7. Switch to `template-sets\adapted\templateSet1` and create a new `pom.xml`. With the following content (adapted to your needs):
+7. Switch to `template-sets\adapted\template1` and create a new `pom.xml`. With the following content (adapted to your needs):
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -537,7 +536,7 @@ your template from the old 'context.xml' (located here: `CobiGen_Templates\src\m
     <artifactId>templates-devon4j</artifactId>
     <version>2021.12.007</version>
   </parent>
-  <artifactId>templateSet1</artifactId>
+  <artifactId>template1</artifactId>
   <name>PLACEHOLDER---Replace this text with a correct template name---PLACEHOLDER</name>
   <dependencies>
     <dependency>
