@@ -123,9 +123,8 @@ public class ConfigurationClassLoaderUtil {
       if (FileSystemUtil.isZipFile(utilsLocation.toUri())) {
         result.addAll(resolveFromJar(classLoader, utilsLocation));
       } else {
-        ClassLoader inputClassLoader = null;
         classLoaderUrls = addFoldersToClassLoaderUrls(utilsLocation);
-        inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
+        ClassLoader inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
         result.addAll(resolveFromFolder(utilsLocation, inputClassLoader));
       }
     }
