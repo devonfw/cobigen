@@ -1,0 +1,15 @@
+= Debugging Cobigen Maven Systemtest =
+
+To debug Cobigen Maven Systemtest, follow these steps:
+
+Open the file AbstractMavenTest and append the command from above to line 148.
+
+Start the test normally.
+
+Wait until you are prompted to attach in the console.
+
+Go to Run > Debug Configurations.
+
+Select "Remote Java Application."
+
+Select the appropriate test and make sure the correct port and localhost are selected.
