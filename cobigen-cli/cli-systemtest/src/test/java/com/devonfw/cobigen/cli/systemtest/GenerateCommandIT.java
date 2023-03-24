@@ -75,14 +75,12 @@ public class GenerateCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore // TODO: re-enable when upgrade process is implemented
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
-    this.tmpProject.resolve("templates-devon4j").toFile()
-        .renameTo(this.tmpProject.resolve(ConfigurationConstants.COBIGEN_TEMPLATES).toFile());
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates-devon4j"),
+        this.currentHome.toFile().toPath().resolve(ConfigurationConstants.COBIGEN_TEMPLATES).toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
-    File monolithicConfiguration = this.tmpProject.toFile();
+    File monolithicConfiguration = this.currentHome.toFile();
     String args[] = new String[7];
     args[0] = "generate";
     args[1] = this.entityInputFile.getAbsolutePath();
@@ -95,6 +93,7 @@ public class GenerateCommandIT extends AbstractCliTest {
     execute(args, false);
 
     assertThat(this.currentHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)).exists();
+    assertThat(this.currentHome.resolve(ConfigurationConstants.BACKUP_FOLDER)).exists();
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
         .exists();

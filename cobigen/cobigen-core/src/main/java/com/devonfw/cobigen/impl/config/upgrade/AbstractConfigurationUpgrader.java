@@ -56,7 +56,7 @@ import jakarta.xml.bind.Unmarshaller;
 public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?>> {
 
   /** Logger instance. */
-  private static final Logger LOG = LoggerFactory.getLogger(AbstractConfigurationUpgrader.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(AbstractConfigurationUpgrader.class);
 
   /** All enum values from the versions {@link Enum} */
   private VERSIONS_TYPE[] versions;

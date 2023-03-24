@@ -63,8 +63,6 @@ public class TemplateSetConfiguration {
   /** Root of the configuration */
   private Path configRoot;
 
-  private ConfigurationHolder configurationHolder;
-
   /**
    * Map of the root template folders distinguished by their trigger ID
    */
@@ -150,12 +148,12 @@ public class TemplateSetConfiguration {
     TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
 
     TemplatesConfigurationReader templatesConfigurationReader = new TemplatesConfigurationReader(
-        templatesConfigurationStatic, templateFolder, this.configurationHolder, templateSetFile);
+        templatesConfigurationStatic, templateFolder, null, templateSetFile);
 
     ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(contextConfigurationStatic,
         templateSetFile);
 
-    Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
+    Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers(true);
     Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
 
     if (isZipFile) {

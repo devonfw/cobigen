@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.TemplateAdapter;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.extension.GeneratorPluginActivator;
 import com.devonfw.cobigen.api.extension.InputReader;
@@ -37,6 +39,7 @@ import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.api.to.MatcherTo;
 import com.devonfw.cobigen.api.to.TemplateTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
@@ -79,6 +82,48 @@ public class GenerationIT extends AbstractApiTest {
 
     assertThat(report).isSuccessful();
     assertThat(target).hasContent("overwritten");
+  }
+
+  /**
+   * Tests if after a upgrade with a merge of context and templates to template sets a generation of all matching (java)
+   * templates is successful
+   *
+   * @throws Exception test fails.
+   */
+  @Test
+  public void testUpgradeAndGenerateWithJavaInput() throws Exception {
+
+    File templates = this.tmpFolder.newFolder("templates");
+    FileUtils.copyDirectory(new File(testFileRootPath + "UpgradeTest/templates"), templates);
+    CobiGen cobigen = null;
+    try {
+      cobigen = CobiGenFactory.create(templates.toURI());
+      assert (false);
+    } catch (DeprecatedMonolithicConfigurationException e) {
+
+    }
+    TemplateAdapter templateAdapter = new TemplateAdapterImpl(templates.toPath());
+    Path templateSets = templateAdapter.upgradeMonolithicTemplates(templates.toPath());
+    cobigen = CobiGenFactory.create(templateSets.getParent().toUri());
+    Object input = cobigen.read(
+        new File("src/test/java/com/devonfw/cobigen/systemtest/testobjects/io/generator/logic/api/to/InputEto.java")
+            .toPath(),
+        Charset.forName("UTF-8"), getClass().getClassLoader());
+
+    File folder = this.tmpFolder.newFolder("GenerationTest");
+    File target = new File(folder, "generated.txt");
+    FileUtils.write(target, "base");
+
+    List<TemplateTo> templatesTos = cobigen.getMatchingTemplates(input);
+    List<IncrementTo> increments = cobigen.getMatchingIncrements(input);
+    List<String> triggersIds = cobigen.getMatchingTriggerIds(input);
+    assertThat(templatesTos).hasSize(1);
+    assertThat(increments).hasSize(1);
+    assertThat(triggersIds).hasSize(1);
+
+    GenerationReportTo report1 = cobigen.generate(input, templatesTos.get(0), Paths.get(folder.toURI()));
+
+    assertThat(report1).isSuccessful();
   }
 
   /**

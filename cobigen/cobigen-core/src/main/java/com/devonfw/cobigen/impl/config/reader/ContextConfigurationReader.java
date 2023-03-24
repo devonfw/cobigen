@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -320,17 +321,27 @@ public class ContextConfigurationReader {
   /**
    * Loads all {@link Trigger}s of the static context into the local representation
    *
+   * @param isTemplateSet TODO
    * @return a {@link List} containing all the {@link Trigger}s
    */
-  public Map<String, Trigger> loadTriggers() {
+  public Map<String, Trigger> loadTriggers(boolean isTemplateSet) {
 
     Map<String, Trigger> triggers = new HashMap<>();
     for (Path contextFile : this.contextConfigurations.keySet()) {
       ContextConfiguration contextConfiguration = this.contextConfigurations.get(contextFile);
       for (com.devonfw.cobigen.impl.config.entity.io.Trigger t : contextConfiguration.getTrigger()) {
-        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), t.getTemplateFolder(),
+        String templateFolder = t.getTemplateFolder();
+        if (isTemplateSet) {
+          if (!StringUtils.isEmpty(templateFolder) || !templateFolder.equals("/")) {
+            LOG.warn("Ignoring content of template folder field: {} from trigger, not needed for template sets.",
+                templateFolder);
+          }
+          templateFolder = "/";
+        }
+        triggers.put(t.getId(), new Trigger(t.getId(), t.getType(), templateFolder,
             Charset.forName(t.getInputCharset()), loadMatchers(t), loadContainerMatchers(t)));
       }
+
     }
     return triggers;
   }

@@ -144,7 +144,7 @@ public class TemplateSetUpgrader {
         Path utilsPath = folderOfContextLocation.getParent().resolve("java");
         try {
           FileUtils.copyDirectory(triggerFolder.toFile(),
-              newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER).toFile());
+              newTriggerFolder.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER).toFile());
         } catch (Exception e) {
           LOG.error("An error occurred while copying the template Folder", e);
           throw new CobiGenRuntimeException(e.getMessage(), e);
@@ -161,20 +161,23 @@ public class TemplateSetUpgrader {
         }
 
         // Read templates.xml then delete it
-        Path tcPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        Path tcPath = newTriggerFolder.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER)
             .resolve("templates.xml");
         TemplatesConfiguration tcV6 = readTemplatesConfigurationV6(tcPath);
         Files.delete(tcPath);
         // Use templates.xml and context.xml to generate template-set.xml
+        for (com.devonfw.cobigen.impl.config.entity.io.v6_0.Trigger t : cc.getTrigger()) {
+          t.setTemplateFolder("");
+        }
         TemplateSetConfiguration tsc = buildTemplateSetConfigurationV6(tcV6, cc);
-        Path tscPath = newTriggerFolder.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        Path tscPath = newTriggerFolder.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
         try (OutputStream out = Files.newOutputStream(tscPath)) {
           JAXB.marshal(tsc, out);
         }
         // Figure out template-set.xml path in new folder structure
         tscPath = templateSets.resolve(folderToRename.toPath().relativize(newTriggerFolder)
-            .resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+            .resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER)
             .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME));
         templateSetMap.put(tsc, tscPath);
         writeNewPomFile(cobigenTemplatesFolder, newTriggerFolder, trigger);

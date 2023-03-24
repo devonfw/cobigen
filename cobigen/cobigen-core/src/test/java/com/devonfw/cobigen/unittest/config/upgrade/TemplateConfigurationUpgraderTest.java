@@ -162,4 +162,23 @@ public class TemplateConfigurationUpgraderTest extends AbstractUnitTest {
     }
   }
 
+  /**
+   * Tests if v6.0 template configuration is compatible to v6.0 schema.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void testCorrectV6_0SchemaDetection() throws Exception {
+
+    // preparation
+    TemplatesConfigurationVersion currentVersion = TemplatesConfigurationVersion.v6_0;
+    File targetConfig = new File(testFileRootPath + "/valid-" + currentVersion);
+
+    for (File context : targetConfig.listFiles()) {
+      TemplatesConfigurationVersion version = new TemplateConfigurationUpgrader()
+          .resolveLatestCompatibleSchemaVersion(context.toPath(), currentVersion);
+      assertThat(version).isEqualTo(currentVersion);
+    }
+  }
+
 }

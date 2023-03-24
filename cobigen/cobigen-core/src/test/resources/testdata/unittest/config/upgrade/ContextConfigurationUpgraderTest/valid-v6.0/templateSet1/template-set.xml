@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns3:templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:ns2="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:ns3="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" version="6.0">
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="6.0">
-	<trigger id="templateSet1" type="java" templateFolder="templateSet1" inputCharset="UTF-8">
+	<trigger id="templateSet1" type="java" templateFolder="" inputCharset="UTF-8">
 		<containerMatcher type="package" value="someValue" retrieveObjectsRecursively="false" />
 		<matcher type="fqn" value="*" accumulationType="NOT">
 			<variableAssignment type="constant" key="foo" value="BLUBB1" />
