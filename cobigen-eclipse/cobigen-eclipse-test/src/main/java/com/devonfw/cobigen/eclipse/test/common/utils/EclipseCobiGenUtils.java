@@ -415,6 +415,11 @@ public class EclipseCobiGenUtils {
 
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     view.bot().tree().contextMenu("CobiGen").menu("Adapt Templates...").click();
+
+    SWTBotShell informationDialog = bot.shell("Information");
+    bot.waitUntil(new AnyShellIsActive("Information"), DEFAULT_TIMEOUT);
+    takeScreenshot(bot, "Adapt Templates Information");
+    informationDialog.bot().button("Ok").click();
   }
 
   /**

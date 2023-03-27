@@ -48,6 +48,9 @@ public class AdaptTemplatesTest extends SystemTest {
   /** Line separator, e.g. for windows '\r\n' */
   public static final String LINE_SEPARATOR = java.lang.System.getProperty("line.separator");
 
+  /* Root path for templateSets jar */
+  private static final String testResource = "src/main/resources/AdaptTemplatesTest/template-sets/downloaded";
+
   /**
    * Setup workbench appropriately for tests
    *
@@ -116,17 +119,25 @@ public class AdaptTemplatesTest extends SystemTest {
 
     EclipseCobiGenUtils.runAndCaptureAdaptTemplatesSets(bot);
 
-    EclipseUtils.openErrorsTreeInProblemsView(bot);
+    // EclipseUtils.updateMavenProject(bot, ResourceConstants.TEMPLATE_SETS_CONFIG_PROJECT_NAME);
 
     // expand the new file in the package explorer
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "adapt-templates.yml");
     javaClassItem.select();
 
+    // execute CobiGen
+    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, 25000, "CRUD devon4j Server>CRUD REST services");
+    bot.waitUntil(new AllJobsAreFinished(), 10000);
+    // increase timeout as the openAPI parser is slow on initialization
+    EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
+    bot.waitUntil(new AllJobsAreFinished(), 10000);
+
+    // EclipseUtils.openErrorsTreeInProblemsView(bot);
+
     IProject generatorProjOfTempltesSets = ResourcesPlugin.getWorkspace().getRoot()
         .getProject(ResourceConstants.TEMPLATE_SETS_CONFIG_PROJECT_NAME);
-    bot.waitUntil(new AllJobsAreFinished(), 10000000);
-    IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
+    bot.waitUntil(new AllJobsAreFinished(), 10000);
 
     Path adaptedFolder = Paths.get(generatorProjOfTempltesSets.getLocationURI())
         .resolve(ResourceConstants.TEMPLATE_SETS_ADAPTED);
@@ -151,7 +162,11 @@ public class AdaptTemplatesTest extends SystemTest {
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
-    EclipseCobiGenUtils.runAndCaptureUpdateTemplates(bot);
+    // retrieve CobiGen home directory (overwritten through environment variables)
+    File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
+    // create templates directory as this should be present in this scenario
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesDirectory);
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesDirectory);
     EclipseCobiGenUtils.runAndCaptureAdaptTemplates(bot);
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
@@ -184,7 +199,7 @@ public class AdaptTemplatesTest extends SystemTest {
   @Test
   public void testAdaptMonolithicTemplatesAndGenerate() throws Exception {
 
-    File tmpProject = this.tempFolder.newFolder("playground", "project", "templates");
+    File tmpProject = this.tempFolder.newFolder("playground", "project");
     withEnvironmentVariable("COBIGEN_HOME", tmpProject.toPath().toString())
         .execute(() -> testBasicOpenAPIGenerationWithAdaptMonolithicTemplates());
   }
@@ -210,22 +225,19 @@ public class AdaptTemplatesTest extends SystemTest {
         .execute(() -> testBasicOpenAPIGenerationWithAdaptTemplateSets());
   }
 
-  /*
-   *
+  /**
    * Test adaption of template-sets/downloaded/.jar files and importing the project into Eclipse
    *
+   * @throws Exception
    */
   @Test
   public void testAdaptTemplateSetsAndImport() throws Exception {
 
-    Path devTemplatesPath = new File(
-        AdaptTemplatesTest.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
-            .getParentFile().toPath().resolve("cobigen-templates").resolve("crud-openapi-java-server-app")
-            .resolve("target").resolve("crud-openapi-java-server-app-2021.12.007-SNAPSHOT.jar");
-
     File tmpProject = this.tempFolder.newFolder("playground", "project");
     File downloaded = this.tempFolder.newFolder("playground", "project", "template-sets", "downloaded");
-    FileUtils.copyFileToDirectory(devTemplatesPath.toFile(), downloaded);
+
+    FileUtils.copyDirectory(new File(testResource), downloaded);
+
     withEnvironmentVariable("COBIGEN_HOME", tmpProject.toPath().toString())
         .execute(() -> testAdaptTemplatesAndImportIntoEclipse());
 

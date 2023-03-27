@@ -93,17 +93,9 @@ public class CobiGenPaths {
    */
   public static Path getTemplatesFolderPath(Path home) {
 
-    File file = new File(home.toString());
-    int lastSlash = file.getName().lastIndexOf("/");
-    String lastWord = file.getName().substring(lastSlash + 1);
-    if (lastWord.equals(ConfigurationConstants.TEMPLATES_FOLDER)) {
-      return home;
-    } else {
-      home = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+    Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
 
-    }
-
-    return home;
+    return createFolder(templatesPath);
   }
 
   /**

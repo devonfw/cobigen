@@ -13,6 +13,9 @@
   <properties>
     <tycho.testArgLine.enriched>${surefireArgLineIntegration} -Xms512m -Xmx2048m -XX:+DisableExplicitGC</tycho.testArgLine.enriched>
     <enforcer.skip>true</enforcer.skip>
+    <maven.test.AdaptTemplatesTest1>src\main\resources\AdaptTemplatesTest\template-sets\adapted\crud-java-server-app</maven.test.AdaptTemplatesTest1>
+    <maven.test.AdaptTemplatesTest2>src\main\resources\AdaptTemplatesTest\template-sets\adapted\crud-java-server-app-complex</maven.test.AdaptTemplatesTest2>
+
   </properties>
 
   <dependencies>
@@ -57,6 +60,53 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- Building a Maven project that is used on the tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>Install test adaptTemplatesTests1</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${maven.test.AdaptTemplatesTest1}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>Install test adaptTemplatesTests2</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${maven.test.AdaptTemplatesTest2}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

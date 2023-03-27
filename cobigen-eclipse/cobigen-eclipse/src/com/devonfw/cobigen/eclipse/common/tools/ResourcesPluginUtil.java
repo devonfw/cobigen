@@ -106,46 +106,17 @@ public class ResourcesPluginUtil {
    */
   public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException, CoreException {
 
-    Path templateSetDirectory = getTemplateSetDirectory();
-
-    if (!Files.exists(templateSetDirectory)) {
-      File templatesDirectory = getTemplatesDirectory();
+    generatorProj = ResourcesPlugin.getWorkspace().getRoot()
+        .getProject(ResourceConstants.TEMPLATE_SETS_CONFIG_PROJECT_NAME);
+    if (generatorProj.exists()) {
+      return generatorProj;
+    } else {
       generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
-
-      if (!generatorProj.exists()) {
-        if (!isUpdateDialogShown) {
-          if (templatesDirectory.exists()) {
-            Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesDirectory.toPath());
-            // If we don't find at least one jar, then we do need to download new templates
-            if (jarFilePath == null || !Files.exists(jarFilePath)) {
-              int result = createUpdateTemplatesDialog();
-              isUpdateDialogShown = true;
-              if (result == 1) {
-                // User does not want to download templates.
-                userWantsToDownloadTemplates = false;
-              } else {
-                userWantsToDownloadTemplates = true;
-              }
-            }
-
-          } else {
-            int result = createUpdateTemplatesDialog();
-            isUpdateDialogShown = true;
-            if (result == 1) {
-              // User does not want to download templates.
-              userWantsToDownloadTemplates = false;
-            } else {
-              userWantsToDownloadTemplates = true;
-            }
-          }
-        }
-      }
-      if (userWantsToDownloadTemplates) {
+      if (generatorProj.exists()) {
         return generatorProj;
-      } else {
-        return null;
       }
     }
+
     return null;
   }
 
@@ -265,7 +236,7 @@ public class ResourcesPluginUtil {
     }
 
     try {
-      TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateDirectory);
+      TemplateAdapter templateAdapter = new TemplateAdapterImpl(null);
       templateAdapter.adaptMonolithicTemplates(templateDirectory.resolve(ConfigurationConstants.COBIGEN_TEMPLATES),
           false);
     } catch (Exception e) {
