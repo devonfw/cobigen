@@ -147,7 +147,7 @@ public abstract class AbstractSearchResponse {
       // use no authentication
       Response response = null;
 
-      Request request = new Request.Builder().url(targetLink).get().build();
+      Request request = new Request.Builder().addHeader("Accept", "application/json").url(targetLink).get().build();
 
       boolean usingBasicAuth = false;
       // use basic authentication
@@ -250,6 +250,26 @@ public abstract class AbstractSearchResponse {
     String downloadLink = mavenRepo + "/" + parsedGroupId + "/" + artifactId + "/" + version + "/" + downloadFile;
     URL url = new URL(downloadLink);
     return url;
+  }
+
+  /**
+   * Extracts a root URL from given repository URL
+   *
+   * @param repositoryUrl URL of the repository
+   * @return root URL
+   */
+  protected static String createRootURL(String repositoryUrl) {
+
+    URL url;
+    try {
+      url = new URL(repositoryUrl);
+      String baseUrl = url.getProtocol() + "://" + url.getHost();
+      return baseUrl;
+    } catch (MalformedURLException e) {
+      LOG.debug("URL: {} was not valid.", repositoryUrl, e);
+      return null;
+    }
+
   }
 
 }

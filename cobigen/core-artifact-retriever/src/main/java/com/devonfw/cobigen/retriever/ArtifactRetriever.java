@@ -9,6 +9,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.util.MavenCoordinate;
+import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
@@ -25,6 +27,38 @@ import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsServerModel;
 public class ArtifactRetriever {
 
   private static final Logger LOG = LoggerFactory.getLogger(ArtifactRetriever.class);
+
+  /**
+   * Retrieves template set jar download URLs by given maven group IDs and mavenCoordinates
+   *
+   * @param groupIds List of groupIds to search for download URLs
+   * @param mavenCoordinates List of {@link MavenCoordinate}
+   * @return List of download URLs as Strings
+   */
+  public static List<String> retrieveTemplateSetJarDownloadURLs(List<String> groupIds,
+      List<MavenCoordinate> mavenCoordinates) {
+
+    String mavenSettings = MavenUtil.determineMavenSettings();
+    List<URL> downloadURLs = retrieveTemplateSetXmlDownloadLinks(groupIds, mavenSettings);
+
+    List<String> templateSetJars = new ArrayList<>();
+
+    for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
+      for (URL downloadURL : downloadURLs) {
+        String jarURL = downloadURL.toString().replace("&e=xml", "&e=jar").replace("&c=template-set", "");
+        if (jarURL.contains(mavenCoordinate.getArtifactId()) && jarURL.contains(mavenCoordinate.getVersion())) {
+          templateSetJars.add(jarURL);
+        }
+        String sourcesURL = downloadURL.toString().replace("&e=xml", "&e=jar").replace("&c=template-set", "&c=sources");
+        if (sourcesURL.contains(mavenCoordinate.getArtifactId()) && sourcesURL.contains(mavenCoordinate.getVersion())) {
+          templateSetJars.add(sourcesURL);
+        }
+      }
+    }
+
+    return templateSetJars;
+
+  }
 
   /**
    * Retrieves a list of maven artifact download URLs

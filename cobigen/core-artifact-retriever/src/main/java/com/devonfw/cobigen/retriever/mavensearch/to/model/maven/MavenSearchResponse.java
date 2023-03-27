@@ -87,8 +87,13 @@ public class MavenSearchResponse extends AbstractSearchResponse {
   @Override
   public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
 
-    return repositoryUrl + "/" + MavenSearchRepositoryConstants.MAVEN_REST_SEARCH_API_PATH + "?q=g:" + groupId
-        + "&wt=json";
+    String rootUrl = AbstractSearchResponse.createRootURL(repositoryUrl);
+    if (rootUrl != null) {
+      return rootUrl + "/" + MavenSearchRepositoryConstants.MAVEN_REST_SEARCH_API_PATH + "?q=g:" + groupId + "&wt=json";
+    } else {
+      return null;
+    }
+
   }
 
 }

@@ -49,6 +49,11 @@ public class MavenSearchRepositoryConstants {
   public static final String NEXUS2_REPOSITORY_LINK = "service/local/repositories/releases/content";
 
   /**
+   * Nexus2 SNAPSHOT repository link
+   */
+  public static final String NEXUS2_SNAPSHOT_REPOSITORY_LINK = "service/local/artifact/maven/redirect";
+
+  /**
    * Nexus2 REST search API path
    */
   public static final String NEXUS2_REST_SEARCH_API_PATH = "service/local/lucene/search";
