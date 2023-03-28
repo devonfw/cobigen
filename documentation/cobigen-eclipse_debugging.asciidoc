@@ -2,10 +2,10 @@
 
 === To debug Cobigen-Eclipse, follow the steps below: ===
 
-==== Frühere Vorgehensweise: ====
+==== Frühere Vorgehensweise zum Hinzufügen der Plugins: ====
 Install Cobigen-Plugins via "Help > Install New Software > Add > cobigen-plugins > target/repository" and add it.
 
-==== Neue Vorgehensweise: ====
+==== Aktuelle Vorgehensweise zum Hinzufügen der Plugins: ====
 1. Open the target file "Eclipse.test.targets.2018-12.target" and add the target/repository of each plugin by clicking "Add > Directory > ...": +
 image:images/debugging/addDirToTarget.png[]
 
@@ -24,7 +24,7 @@ image:images/debugging/osgi-console.png[]
 
 7. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent class. Breakpoints are better placed in the equivalent Java files rather than in the class files.
 
-8. Click "Terminate" in the top left to close the environment.
+8. Click "Terminate" in the top left to close the environment. +
 
 
 == Debugging (SWTBot-)Tests ==
