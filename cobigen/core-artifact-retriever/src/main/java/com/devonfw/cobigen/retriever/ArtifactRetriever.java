@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
+import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryConstants;
 import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
 import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 import com.devonfw.cobigen.retriever.settings.MavenProxy;
@@ -153,7 +154,19 @@ public class ArtifactRetriever {
           result.addAll(MavenSearchArtifactRetriever.retrieveMavenArtifactDownloadUrls(repositoryModel.getUrl(),
               serverModel.getUsername(), serverModel.getPassword(), null, 0, null, null, groupID));
         }
+
       }
+    }
+    // Fallback if settings.xml was not usable (uses sonatype as default)
+    if (result.isEmpty()) {
+      LOG.warn(
+          "Maven settings did not get any results, searching for artifacts using default sonatype fallback repository.");
+      for (String groupID : groupIdsList) {
+        result.addAll(MavenSearchArtifactRetriever.retrieveMavenArtifactDownloadUrls(
+            MavenSearchRepositoryConstants.FALLBACK_REPOSITORY_URL, null, null, null, 0, null, null, groupID));
+      }
+      if (result.isEmpty())
+        LOG.warn("No artifacts were found on the default sonatype fallback repository.");
     }
     return result;
   }

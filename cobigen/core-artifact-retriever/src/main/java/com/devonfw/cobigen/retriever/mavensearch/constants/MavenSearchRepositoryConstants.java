@@ -24,6 +24,11 @@ public class MavenSearchRepositoryConstants {
   public static final String MAVEN_SEARCH_API_EXCEPTION_UNABLE_TO_PARSE_JSON = "CobiGen was unable to parse the json response from the REST Search API of the";
 
   /**
+   * Fallback repository URL
+   */
+  public static final String FALLBACK_REPOSITORY_URL = "https://s01.oss.sonatype.org";
+
+  /**
    * Maven repository URL
    */
   public static final String MAVEN_REPOSITORY_URL = "https://search.maven.org";
