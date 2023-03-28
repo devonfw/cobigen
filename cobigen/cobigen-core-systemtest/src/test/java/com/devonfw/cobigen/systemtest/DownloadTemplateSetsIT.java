@@ -15,6 +15,9 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
 
+/**
+ * Test suite for download processes of template sets.
+ */
 public class DownloadTemplateSetsIT extends AbstractApiTest {
 
   /**
@@ -23,6 +26,9 @@ public class DownloadTemplateSetsIT extends AbstractApiTest {
   private static String testFileRootPath = apiTestsRootPath + "DownloadTemplateSets";
 
   /**
+   * Tests if a template set SNAPSHOT defined in properties template-sets.installed can be retrieved and downloaded from
+   * sonatype
+   *
    * @throws Exception test fails
    */
   @Test
