@@ -9,9 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +17,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 import com.devonfw.cobigen.retriever.settings.MavenSettings;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -134,36 +131,6 @@ public class ArtifactRetrieverTest {
     List<URL> downloadUrls = ArtifactRetriever.retrieveTemplateSetXmlDownloadLinks(groupIds, mavenSettingsProxy);
     assertThat(downloadUrls).contains(new URL(
         "http://localhost:8080/artifactory/api/storage/libs-release-local/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml"));
-  }
-
-  /**
-   * Tests if multiple artifacts can be retrieved
-   */
-  @Test
-  public void testRetrieveTemplateSetArtifacts() {
-
-    List<Path> templateSetFiles = new ArrayList<>();
-    templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set1.xml"));
-    templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set2.xml"));
-
-    List<TemplateSet> templateSets = ArtifactRetriever.retrieveTemplateSetData(templateSetFiles);
-
-    assertThat(templateSets).size().isEqualTo(2);
-  }
-
-  /**
-   * Tests if an artifact can be retrieved while a missing file gets ignored
-   */
-  @Test
-  public void testRetrieveTemplateSetArtifactWithMissingFile() {
-
-    List<Path> templateSetFiles = new ArrayList<>();
-    templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set-non-existing.xml"));
-    templateSetFiles.add(Paths.get(testdataRoot).resolve("template-set1.xml"));
-
-    List<TemplateSet> templateSets = ArtifactRetriever.retrieveTemplateSetData(templateSetFiles);
-
-    assertThat(templateSets).size().isEqualTo(1);
   }
 
 }

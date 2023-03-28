@@ -1,8 +1,6 @@
 package com.devonfw.cobigen.retriever;
 
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +11,6 @@ import com.devonfw.cobigen.api.util.MavenCoordinate;
 import com.devonfw.cobigen.api.util.MavenUtil;
 import com.devonfw.cobigen.retriever.mavensearch.MavenSearchArtifactRetriever;
 import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepositoryConstants;
-import com.devonfw.cobigen.retriever.reader.TemplateSetArtifactReader;
-import com.devonfw.cobigen.retriever.reader.to.model.TemplateSet;
 import com.devonfw.cobigen.retriever.settings.MavenProxy;
 import com.devonfw.cobigen.retriever.settings.MavenSettings;
 import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
@@ -99,29 +95,6 @@ public class ArtifactRetriever {
 
     return downloadLinks;
 
-  }
-
-  /**
-   * Retrieves {@link TemplateSetArtifactReader}s taken from template-set files providing human readable data only
-   *
-   * @param templateSetFiles List of template set file paths
-   * @return List of {@link TemplateSetArtifactReader}s
-   */
-  public static List<TemplateSet> retrieveTemplateSetData(List<Path> templateSetFiles) {
-
-    List<TemplateSet> templateSetList = new ArrayList<>();
-    for (Path templateSetFile : templateSetFiles) {
-
-      if (!Files.exists(templateSetFile)) {
-        LOG.debug("Template set file was ignored because it was not existing at: {}.", templateSetFile);
-        continue;
-      }
-
-      TemplateSetArtifactReader artifactReader = new TemplateSetArtifactReader();
-      templateSetList.add(artifactReader.retrieveTemplateSet(templateSetFile));
-    }
-
-    return templateSetList;
   }
 
   /**
