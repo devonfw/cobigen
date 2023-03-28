@@ -7,6 +7,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IProject;
@@ -105,43 +106,18 @@ public class ResourcesPluginUtil {
    */
   public static IProject getGeneratorConfigurationProject() throws GeneratorProjectNotExistentException, CoreException {
 
-    File templatesDirectory = getTemplatesDirectory();
-
-    generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
-
-    if (!generatorProj.exists()) {
-      if (!isUpdateDialogShown) {
-        if (templatesDirectory.exists()) {
-          Path jarFilePath = TemplatesJarUtil.getJarFile(false, templatesDirectory.toPath());
-          // If we don't find at least one jar, then we do need to download new templates
-          if (jarFilePath == null || !Files.exists(jarFilePath)) {
-            int result = createUpdateTemplatesDialog();
-            isUpdateDialogShown = true;
-            if (result == 1) {
-              // User does not want to download templates.
-              userWantsToDownloadTemplates = false;
-            } else {
-              userWantsToDownloadTemplates = true;
-            }
-          }
-
-        } else {
-          int result = createUpdateTemplatesDialog();
-          isUpdateDialogShown = true;
-          if (result == 1) {
-            // User does not want to download templates.
-            userWantsToDownloadTemplates = false;
-          } else {
-            userWantsToDownloadTemplates = true;
-          }
-        }
-      }
-    }
-    if (userWantsToDownloadTemplates) {
+    generatorProj = ResourcesPlugin.getWorkspace().getRoot()
+        .getProject(ResourceConstants.TEMPLATE_SETS_CONFIG_PROJECT_NAME);
+    if (generatorProj.exists()) {
       return generatorProj;
     } else {
-      return null;
+      generatorProj = ResourcesPlugin.getWorkspace().getRoot().getProject(ResourceConstants.CONFIG_PROJECT_NAME);
+      if (generatorProj.exists()) {
+        return generatorProj;
+      }
     }
+
+    return null;
   }
 
   /**
@@ -207,7 +183,7 @@ public class ResourcesPluginUtil {
    *
    * @return the templateDirectory
    */
-  private static File getTemplatesDirectory() {
+  public static File getTemplatesDirectory() {
 
     return CobiGenPaths.getTemplatesFolderPath().toFile();
   }
@@ -217,9 +193,9 @@ public class ResourcesPluginUtil {
    *
    * @return the templateDirectory
    */
-  private static File getTemplateSetDirectory() {
+  public static Path getTemplateSetDirectory() {
 
-    return CobiGenPaths.getTemplateSetsFolderPath().toFile();
+    return CobiGenPaths.getTemplateSetsFolderPath();
   }
 
   /**
@@ -234,6 +210,7 @@ public class ResourcesPluginUtil {
 
     String pathForCobigenTemplates = "";
     IPath ws = ResourcesPluginUtil.getWorkspaceLocation();
+    Path templateDirectory = ResourcesPluginUtil.getTemplatesDirectory().toPath();
 
     try {
       pathForCobigenTemplates = ws.toPortableString()
@@ -260,8 +237,31 @@ public class ResourcesPluginUtil {
 
     try {
       TemplateAdapter templateAdapter = new TemplateAdapterImpl(null);
-      templateAdapter.adaptMonolithicTemplates(cobigenFolderPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES),
+      templateAdapter.adaptMonolithicTemplates(templateDirectory.resolve(ConfigurationConstants.COBIGEN_TEMPLATES),
           false);
+    } catch (Exception e) {
+      LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
+      PlatformUIUtil
+          .openErrorDialog("An exception occurred while processing Jar file to create CobiGen_Templates folder", e);
+    }
+  }
+
+  /**
+   * Process Jar method is responsible for unzip the Jar files of templateSets from downloaded to adapted
+   *
+   * @param fileName Name of source jar file downloaded
+   * @throws IOException {@link IOException} occurred
+   * @throws MalformedURLException {@link MalformedURLException} occurred
+   */
+  public static void adaptTemplateSet(Path templateSetsLocation) {
+
+    try {
+      TemplateAdapter templateAdapter = new TemplateAdapterImpl(templateSetsLocation);
+      List<Path> jarFilePath = TemplatesJarUtil
+          .getJarFiles(templateSetsLocation.resolve(ResourceConstants.TEMPLATE_SETS_DOWNLOADED));
+      templateAdapter.adaptTemplateSets(jarFilePath,
+          templateSetsLocation.resolve(ResourceConstants.TEMPLATE_SETS_ADAPTED), false);
+
     } catch (Exception e) {
       LOG.error("An exception occurred while processing Jar files to create CobiGen_Templates folder", e);
       PlatformUIUtil
