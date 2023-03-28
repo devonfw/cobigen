@@ -1,21 +1,38 @@
 = Debugging Cobigen-CLI:
 
-Open Debug Configurations by clicking on the "Debug Configurations" icon in Eclipse.
-Click on "Java Application" and then click on "New".
-Select the "cli" project and set the Main class to "com.devonfw.cobigen.cli.CobiGenCLI".
-Add any arguments that you would normally use when running the CLI.
-Make sure that every CLI command is possible. For example, you can use the command "g 'PATH TO EmployeeEntity.java'".
-Under the File System tab, set the Working Directory to the directory where the CLI is opened.
-Open cobigen.bat and add the following flag to the command:
+1. Open Debug Configurations by clicking on "Run > Debug Configurations" in Eclipse.
 
-(image:images/debug/cli/imagfile.jpg[])
+2. Click on "Java Application" and then click on "New".
 
-Put the marked section of the code above (before cp) into the Arguments field.
-Go to the Remote Java Application tab in Debug Configurations and click on "New".
-Select the "cli" project and set the Connection Type to "Standard (Socket Attach)".
-Set the Host to "localhost" and the Port to the value shown in the screenshot.
-Save the configuration and start the debugger.
-To debug system tests for the CLI, open the file "cg.bat" located in "Cli > src > main > assembly > resources".
-Add the marked command from the screenshot to the file before "-cp".
-Repeat step 14, but add the command before "cp".
-Rebuild the CLI by running "mvn clean install -f cobigen-cli/ -DskipTests" so that the files are included in the jar.
+3. Select the "cli" project and set the Main class to "com.devonfw.cobigen.cli.CobiGenCLI".
+
+4. Add any arguments that you would normally use when running the CLI.
+
+5. Make sure that every CLI command is possible. For example, you can use the command "g 'PATH TO EmployeeEntity.java'".
+
+6. Under the File System tab, set the Working Directory to the directory where the CLI is opened.
+
+7. Open cobigen.bat and add the following flag +
+*-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1044* +
+to the command before "-cp": +
+image:images/debugging/cobigen-bat.png[]
+
+8. Go to the Remote Java Application tab in Debug Configurations and click on "New".
+
+9. Select the "cli" project and set the Connection Type to "Standard (Socket Attach)".
+
+10. Set the Host to "localhost" and the Port to the value shown in the screenshot (1044).
+
+11. Save the configuration and start the debugger.
+
+
+=== Debug System Tests for CLI ===
+To debug system tests for the CLI,... 
+
+1. Open the file "cg" located in "Cli > src > main > assembly > resources > bin".
+
+2. Add the marked flag from the screenshot (*-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1044*) to the file before "-cp".
+
+3. Repeat step 2 for "cg.bat".
+
+4. Rebuild the CLI by running "mvn clean install -f cobigen-cli/ -DskipTests" in your favorite shell so the files are included in the jar.
