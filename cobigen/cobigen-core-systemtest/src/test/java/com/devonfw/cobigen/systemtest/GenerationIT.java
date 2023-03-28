@@ -96,12 +96,10 @@ public class GenerationIT extends AbstractApiTest {
     File templates = this.tmpFolder.newFolder("templates");
     FileUtils.copyDirectory(new File(testFileRootPath + "UpgradeTest/templates"), templates);
     CobiGen cobigen = null;
-    try {
-      cobigen = CobiGenFactory.create(templates.toURI());
-      assert (false);
-    } catch (DeprecatedMonolithicConfigurationException e) {
+    assertThatThrownBy(() -> {
+      CobiGenFactory.create(templates.toURI());
+    }).isInstanceOf(DeprecatedMonolithicConfigurationException.class);
 
-    }
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(templates.toPath());
     Path templateSets = templateAdapter.upgradeMonolithicTemplates(templates.toPath());
     cobigen = CobiGenFactory.create(templateSets.getParent().toUri());

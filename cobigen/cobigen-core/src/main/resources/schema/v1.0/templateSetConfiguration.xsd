@@ -3,12 +3,12 @@
   xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
   targetNamespace="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
   xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
-  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" elementFormDefault="qualified" version="6.0">
+  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" elementFormDefault="qualified" version="1.0">
 
 
-  <xs:import schemaLocation="contextConfiguration.xsd"
+  <xs:import schemaLocation="../v3.0/contextConfiguration.xsd"
     namespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration"/>
-  <xs:import schemaLocation="templatesConfiguration.xsd"
+  <xs:import schemaLocation="../v5.0/templatesConfiguration.xsd"
     namespace="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"/>
 
   <xs:element name="templateSetConfiguration">

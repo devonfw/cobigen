@@ -19,9 +19,9 @@ public class TemplateSetConfigurationUpgrader extends AbstractConfigurationUpgra
    * Creates a new {@link TemplateConfigurationUpgrader} instance.
    *
    */
-  TemplateSetConfigurationUpgrader() {
+  public TemplateSetConfigurationUpgrader() {
 
-    super(TemplateSetConfigurationVersion.v6_0, TemplateSetConfiguration.class,
+    super(TemplateSetConfigurationVersion.v1_0, TemplateSetConfiguration.class,
         ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
   }
 
@@ -31,8 +31,8 @@ public class TemplateSetConfigurationUpgrader extends AbstractConfigurationUpgra
 
     List<ConfigurationUpgradeResult> results = new ArrayList<>();
     switch (source) {
-      case v6_0:
-        LOG.info("No Upgrade needed, v6 is the lastest version");
+      case v1_0:
+        LOG.info("No Upgrade needed, v1 is the lastest version");
         break;
       default:
         throw new NotYetSupportedException("This template set configuration version is not supported yet.");

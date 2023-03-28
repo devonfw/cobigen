@@ -83,6 +83,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
   private static final String JAXB_PACKAGE_PREFIX = "com.devonfw.cobigen.impl.config.entity.io";
 
   /**
+   * Package prefix generated JAXB classes for the template set configurations (analogous to the pom.xml specification)
+   */
+  private static final String TS_JAXB_PACKAGE_PREFIX = "com.devonfw.cobigen.impl.tsconfig.entity.io";
+
+  /**
    * Creates a new instance for the abstract implementation of an configuration upgrader.
    *
    * @param version an arbitrary instance to perform reflection on during upgrading.
@@ -331,14 +336,14 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
               }
               VERSIONS_TYPE currentVersion;
               if (result.getResultConfigurationJaxbRootNode().getClass()
-                  .equals(com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration.class)) {
+                  .equals(com.devonfw.cobigen.impl.tsconfig.entity.io.v1_0.TemplateSetConfiguration.class)) {
                 // changed class from context to templateSet, field has to be updated
                 this.configurationFilename = ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME;
                 this.configurationJaxbRootNode = TemplateSetConfiguration.class;
                 this.configurationName = "TemplateSet Configuration";
                 this.configurationXsdFilename = "templateSetConfiguration.xsd";
                 currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath(), true,
-                    latestVersion);
+                    versionsList.get(0)); // versionsList.get is a little hack to get v1 for template-set configurations
               } else {
                 // implicitly check upgrade step
                 currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
@@ -434,10 +439,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    */
   private Class<?> getJaxbConfigurationClass(VERSIONS_TYPE lv) throws ClassNotFoundException {
 
-    Class<?> configurationClass = getClass().getClassLoader()
-        .loadClass(AbstractConfigurationUpgrader.JAXB_PACKAGE_PREFIX + "." + lv.name() + "."
-            + this.configurationJaxbRootNode.getSimpleName());
-    return configurationClass;
+    String prefix = this.configurationXsdFilename.equals("templateSetConfiguration.xsd")
+        ? AbstractConfigurationUpgrader.TS_JAXB_PACKAGE_PREFIX
+        : AbstractConfigurationUpgrader.JAXB_PACKAGE_PREFIX;
+    return getClass().getClassLoader()
+        .loadClass(prefix + "." + lv.name() + "." + this.configurationJaxbRootNode.getSimpleName());
   }
 
   /**
@@ -461,11 +467,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
       Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
     }
     StreamSource[] schemaArray;
+    System.out.println("Meine Version " + lv);
     if (this.configurationXsdFilename.equals("templateSetConfiguration.xsd")) {
       schemaArray = new StreamSource[] {
-      new StreamSource(getClass().getResourceAsStream("/schema/" + lv.toString() + "/templatesConfiguration.xsd")),
-      new StreamSource(getClass().getResourceAsStream("/schema/" + lv.toString() + "/contextConfiguration.xsd")),
-      new StreamSource(
+      new StreamSource(getClass().getResourceAsStream("/schema/v5.0/templatesConfiguration.xsd")),
+      new StreamSource(getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd")), new StreamSource(
           getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)) };
     } else {
       schemaArray = new StreamSource[] { new StreamSource(

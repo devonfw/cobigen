@@ -144,7 +144,8 @@
               <packageName>com.devonfw.cobigen.impl.config.entity.io.v1_0</packageName>
               <outputDirectory>${project.build.directory}/generated-sources/config/v1.0</outputDirectory>
               <sources>
-                <source>${basedir}/src/main/resources/schema/v1.0</source>
+                <source>${basedir}/src/main/resources/schema/v1.0/contextConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v1.0/templatesConfiguration.xsd</source>
               </sources>
             </configuration>
           </execution>
@@ -233,16 +234,16 @@
             </configuration>
           </execution>
           <execution>
-            <id>generate-v6.0-configuration</id>
+            <id>generate-TSv1.0-configuration</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>xjc</goal>
             </goals>
             <configuration>
-              <packageName>com.devonfw.cobigen.impl.config.entity.io.v6_0</packageName>
-              <outputDirectory>${project.build.directory}/generated-sources/config/v6.0</outputDirectory>
+              <packageName>com.devonfw.cobigen.impl.tsconfig.entity.io.v1_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/tsconfig/v1.0</outputDirectory>
               <sources>
-                <source>${basedir}/src/main/resources/schema/v6.0</source>
+                <source>${basedir}/src/main/resources/schema/v1.0/templateSetConfiguration.xsd</source>
               </sources>
             </configuration>
           </execution>
@@ -257,7 +258,7 @@
               <packageName>com.devonfw.cobigen.impl.config.entity.io</packageName>
               <outputDirectory>${project.build.directory}/generated-sources/config/current</outputDirectory>
               <sources>
-                <source>${basedir}/src/main/resources/schema/v6.0/templateSetConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v1.0/templateSetConfiguration.xsd</source>
               </sources>
             </configuration>
           </execution>

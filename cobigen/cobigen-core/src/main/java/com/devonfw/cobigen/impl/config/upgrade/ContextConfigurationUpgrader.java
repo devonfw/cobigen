@@ -11,7 +11,7 @@ import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
-import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.tsconfig.entity.io.v1_0.TemplateSetConfiguration;
 
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;

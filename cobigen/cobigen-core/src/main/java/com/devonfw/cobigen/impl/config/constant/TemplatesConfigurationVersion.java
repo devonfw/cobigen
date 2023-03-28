@@ -43,15 +43,7 @@ public enum TemplatesConfigurationVersion {
    * <li>added explanation attribute to increments</li>
    * </ul>
    */
-  v5_0(5.0f, true),
-
-  /**
-   * ChangeLog:
-   * <ul>
-   * <li>merged template and context into one file</li>
-   * </ul>
-   */
-  v6_0(6.0f, true);
+  v5_0(5.0f, true);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;

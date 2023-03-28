@@ -22,7 +22,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import com.devonfw.cobigen.impl.config.entity.io.v6_0.TemplateSetConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -35,6 +34,7 @@ import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.impl.config.upgrade.TemplateSetUpgrader;
+import com.devonfw.cobigen.impl.tsconfig.entity.io.v1_0.TemplateSetConfiguration;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 /**
