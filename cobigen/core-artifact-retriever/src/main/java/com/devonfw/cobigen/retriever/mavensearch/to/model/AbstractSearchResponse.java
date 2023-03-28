@@ -23,6 +23,7 @@ import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Request.Builder;
 import okhttp3.Response;
 import okhttp3.Route;
 
@@ -103,12 +104,14 @@ public abstract class AbstractSearchResponse {
    * @param targetLink link to get response from
    * @param username to use for authentication
    * @param password to use for authentication
+   * @param requestWithHeaders
    * @return Request to use as resource
    */
-  private static Request basicUsernamePasswordAuthentication(String targetLink, String username, String password) {
+  private static Builder basicUsernamePasswordAuthentication(String targetLink, String username, String password,
+      Builder requestWithHeaders) {
 
     String credential = Credentials.basic(username, password);
-    return new Request.Builder().url(targetLink).addHeader("Authorization", credential).build();
+    return requestWithHeaders.addHeader("Authorization", credential);
 
   }
 
@@ -148,17 +151,21 @@ public abstract class AbstractSearchResponse {
       Response response = null;
 
       Request request = new Request.Builder().url(targetLink).get().build();
+      Builder requestWithHeaders = request.newBuilder();
+      requestWithHeaders.addHeader("Accept", "application/json");
 
       boolean usingBasicAuth = false;
       // use basic authentication
       if (serverCredentials.getUsername() != null && serverCredentials.getPassword() != null) {
         LOG.debug("Connecting to REST API using Basic Authentication.");
-        request = basicUsernamePasswordAuthentication(targetLink, serverCredentials.getUsername(),
-            serverCredentials.getPassword());
+        requestWithHeaders = basicUsernamePasswordAuthentication(targetLink, serverCredentials.getUsername(),
+            serverCredentials.getPassword(), requestWithHeaders);
         usingBasicAuth = true;
       }
 
-      response = httpClient.newCall(request).execute();
+      Request finalRequest = requestWithHeaders.build();
+
+      response = httpClient.newCall(finalRequest).execute();
 
       if (response != null) {
         int statusCode = response.code();
@@ -250,6 +257,29 @@ public abstract class AbstractSearchResponse {
     String downloadLink = mavenRepo + "/" + parsedGroupId + "/" + artifactId + "/" + version + "/" + downloadFile;
     URL url = new URL(downloadLink);
     return url;
+  }
+
+  /**
+   * Extracts a root URL from given repository URL
+   *
+   * @param repositoryUrl URL of the repository
+   * @return root URL
+   */
+  protected static String createRootURL(String repositoryUrl) {
+
+    URL url;
+    try {
+      url = new URL(repositoryUrl);
+      String baseUrl = url.getProtocol() + "://" + url.getHost();
+      if (url.getPort() != -1) {
+        baseUrl += ":" + url.getPort();
+      }
+      return baseUrl;
+    } catch (MalformedURLException e) {
+      LOG.debug("URL: {} was not valid.", repositoryUrl, e);
+      return "";
+    }
+
   }
 
 }

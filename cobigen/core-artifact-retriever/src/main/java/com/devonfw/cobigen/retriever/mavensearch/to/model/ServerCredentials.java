@@ -63,6 +63,8 @@ public class ServerCredentials {
    */
   public String getUsername() {
 
+    if (this.username != null && this.username.startsWith("$["))
+      return null;
     return this.username;
   }
 
@@ -71,6 +73,8 @@ public class ServerCredentials {
    */
   public String getPassword() {
 
+    if (this.username != null && this.password.startsWith("$["))
+      return null;
     return this.password;
   }
 

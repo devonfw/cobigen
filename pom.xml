@@ -205,6 +205,11 @@
       </dependency>
       <dependency>
         <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>core-artifact-retriever</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
         <artifactId>core-test</artifactId>
         <version>${revision}</version>
       </dependency>

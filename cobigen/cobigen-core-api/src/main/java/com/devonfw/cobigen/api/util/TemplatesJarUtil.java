@@ -90,6 +90,47 @@ public class TemplatesJarUtil {
   }
 
   /**
+   * Downloads a jar from a given URL to template set downloaded directory
+   *
+   * @param downloadURL URl to download from
+   * @param templateSetDirectory directory where the template sets are located
+   * @return fileName Name of the file downloaded
+   */
+  public static String downloadJarFromURL(String downloadURL, Path templateSetDirectory) {
+
+    String fileName = "";
+    Path downloaded = templateSetDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+
+    if (!Files.exists(downloaded)) {
+      LOG.info("Downloaded folder could not be found and will be created.");
+      try {
+        Files.createDirectory(templateSetDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
+      } catch (IOException e) {
+        throw new CobiGenRuntimeException("Could not create Downloaded Folder", e);
+      }
+    }
+
+    HttpURLConnection conn;
+    try {
+      conn = initializeConnection(downloadURL.toString());
+      try (InputStream inputStream = conn.getInputStream()) {
+
+        fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+        Path file = downloaded.resolve(fileName);
+        Path targetPath = file;
+        if (!Files.exists(file)) {
+          Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        }
+      }
+      conn.disconnect();
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Could not download file from: " + downloadURL, e);
+    }
+
+    return fileName;
+  }
+
+  /**
    * Downloads the latest devon4j templates
    *
    * @param isDownloadSource true if downloading source jar file
