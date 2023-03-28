@@ -271,10 +271,13 @@ public abstract class AbstractSearchResponse {
     try {
       url = new URL(repositoryUrl);
       String baseUrl = url.getProtocol() + "://" + url.getHost();
+      if (url.getPort() != -1) {
+        baseUrl += ":" + url.getPort();
+      }
       return baseUrl;
     } catch (MalformedURLException e) {
       LOG.debug("URL: {} was not valid.", repositoryUrl, e);
-      return null;
+      return "";
     }
 
   }
