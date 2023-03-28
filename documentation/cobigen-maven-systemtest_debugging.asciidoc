@@ -1,15 +1,23 @@
 = Debugging Cobigen Maven Systemtest =
 
-To debug Cobigen Maven Systemtest, follow these steps:
+==== To debug Cobigen Maven Systemtest, follow these steps: ====
 
-Open the file AbstractMavenTest and append the command from above to line 148.
+1. Open the file AbstractMavenTest +
+image:images/debugging/locOfAbstractMavenTest.png[]
 
-Start the test normally.
+2. Append the command: +
+*-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1044* +
+to the end of line 148 in the string. +
+image:images/debugging/locInAbstractMavenTest.png[] +
+image:images/debugging/locInAbstractMavenTest-command.png[]
 
-Wait until you are prompted to attach in the console.
+2. Start the test normally.
 
-Go to Run > Debug Configurations.
+3. Wait until you are prompted to attach in the console.
 
-Select "Remote Java Application."
+4. Go to Run > Debug Configurations.
 
-Select the appropriate test and make sure the correct port and localhost are selected.
+5. Select "Remote Java Application."
+
+6. Select the appropriate test and make sure the correct port - in this case 1044 - and localhost are selected. +
+image:images/debugging/debug-configurations.png[]
