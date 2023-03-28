@@ -23,6 +23,7 @@ import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Request.Builder;
 import okhttp3.Response;
 import okhttp3.Route;
 
@@ -103,12 +104,14 @@ public abstract class AbstractSearchResponse {
    * @param targetLink link to get response from
    * @param username to use for authentication
    * @param password to use for authentication
+   * @param requestWithHeaders
    * @return Request to use as resource
    */
-  private static Request basicUsernamePasswordAuthentication(String targetLink, String username, String password) {
+  private static Builder basicUsernamePasswordAuthentication(String targetLink, String username, String password,
+      Builder requestWithHeaders) {
 
     String credential = Credentials.basic(username, password);
-    return new Request.Builder().url(targetLink).addHeader("Authorization", credential).build();
+    return requestWithHeaders.addHeader("Authorization", credential);
 
   }
 
@@ -147,18 +150,22 @@ public abstract class AbstractSearchResponse {
       // use no authentication
       Response response = null;
 
-      Request request = new Request.Builder().addHeader("Accept", "application/json").url(targetLink).get().build();
+      Request request = new Request.Builder().url(targetLink).get().build();
+      Builder requestWithHeaders = request.newBuilder();
+      requestWithHeaders.addHeader("Accept", "application/json");
 
       boolean usingBasicAuth = false;
       // use basic authentication
       if (serverCredentials.getUsername() != null && serverCredentials.getPassword() != null) {
         LOG.debug("Connecting to REST API using Basic Authentication.");
-        request = basicUsernamePasswordAuthentication(targetLink, serverCredentials.getUsername(),
-            serverCredentials.getPassword());
+        requestWithHeaders = basicUsernamePasswordAuthentication(targetLink, serverCredentials.getUsername(),
+            serverCredentials.getPassword(), requestWithHeaders);
         usingBasicAuth = true;
       }
 
-      response = httpClient.newCall(request).execute();
+      Request finalRequest = requestWithHeaders.build();
+
+      response = httpClient.newCall(finalRequest).execute();
 
       if (response != null) {
         int statusCode = response.code();
