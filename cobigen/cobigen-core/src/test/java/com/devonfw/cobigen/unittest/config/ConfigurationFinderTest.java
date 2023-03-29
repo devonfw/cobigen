@@ -44,7 +44,7 @@ public class ConfigurationFinderTest {
 
     Path emptyConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/emptyConfigProperties/config.properties");
-    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(emptyConfiguration);
+    ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(emptyConfiguration);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.getHideTemplates()).isEmpty();
@@ -62,7 +62,7 @@ public class ConfigurationFinderTest {
 
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/validConfigProperties/config.properties");
-    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration);
+    ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(validConfiguration);
 
     assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob",
         ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
@@ -83,7 +83,7 @@ public class ConfigurationFinderTest {
 
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/invalidConfigProperties/config.properties");
-    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration);
+    ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(validConfiguration);
 
     assertTrue(conf.getHideTemplates().isEmpty());
     assertTrue(conf.getMavenCoordinates().isEmpty());
@@ -100,7 +100,7 @@ public class ConfigurationFinderTest {
   public void invalidPathTest() throws IOException {
 
     Path invalidPath = Paths.get("path/which/does/not/exist");
-    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath);
+    ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(invalidPath);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.getHideTemplates()).isEmpty();
