@@ -99,7 +99,6 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    *
    * @throws Exception test fails
    */
-
   @Test
   public void adaptTemplatesTest() throws Exception {
 
