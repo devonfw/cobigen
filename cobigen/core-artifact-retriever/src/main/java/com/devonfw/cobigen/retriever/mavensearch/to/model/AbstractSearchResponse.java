@@ -101,11 +101,11 @@ public abstract class AbstractSearchResponse {
   /**
    * Creates a @Request with provided authentication username and password
    *
-   * @param targetLink link to get response from
-   * @param username to use for authentication
-   * @param password to use for authentication
-   * @param requestWithHeaders
-   * @return Request to use as resource
+   * @param targetLink String link to get response from
+   * @param username String to use for authentication
+   * @param password String to use for authentication
+   * @param requestWithHeaders {@link Builder} request with headers
+   * @return {@link Builder} request to use as resource
    */
   private static Builder basicUsernamePasswordAuthentication(String targetLink, String username, String password,
       Builder requestWithHeaders) {
