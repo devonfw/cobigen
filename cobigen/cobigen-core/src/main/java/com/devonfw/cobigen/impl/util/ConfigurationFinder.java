@@ -35,14 +35,14 @@ public class ConfigurationFinder {
   private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFinder.class);
 
   /**
-   * load properties from .properties file into TemplateSetConfiguration if found valid properties otherwise load
+   * Retrieves {@link ConfigurationProperties} from .properties file if valid properties were found otherwise returns
    * default values
    *
-   * @param propertiesPath to a .properties file
-   * @return TemplateSetConfiguration instance
+   * @param propertiesPath Path to a .properties file
+   * @return {@link ConfigurationProperties} instance
    *
    */
-  public static ConfigurationProperties loadTemplateSetConfigurations(Path propertiesPath) {
+  public static ConfigurationProperties retrieveCobiGenProperties(Path propertiesPath) {
 
     Properties props = new Properties();
     try {
