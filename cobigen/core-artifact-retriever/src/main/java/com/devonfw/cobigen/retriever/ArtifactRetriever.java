@@ -93,6 +93,13 @@ public class ArtifactRetriever {
           .addAll(retrieveArtifactsFromRepository(groupIdsList, model, activeProxy, repositoriesWhichDoNotUseTheProxy));
     }
 
+    // Fallback if no repositories were found
+    if (allActiveRepositories.isEmpty()) {
+      LOG.debug("No repositories were found in settings.xml, using fallback.");
+      downloadLinks.addAll(
+          retrieveArtifactsFromRepository(groupIdsList, null, null, new ArrayList<MavenSettingsRepositoryModel>()));
+    }
+
     return downloadLinks;
 
   }
