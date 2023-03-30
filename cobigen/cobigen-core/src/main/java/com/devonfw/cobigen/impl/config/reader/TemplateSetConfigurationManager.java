@@ -115,8 +115,9 @@ public class TemplateSetConfigurationManager {
 
     // We need to empty this list to prevent duplicates from being added
     this.templateSetPaths.clear();
+    // TODO: add check for valid templatesetjar util
     List<Path> templateJars = TemplatesJarUtil.getJarFiles(configRoot);
-    if (templateJars != null) {
+    if (!templateJars.isEmpty()) {
       for (Path jarPath : templateJars) {
         Path configurationPath = FileSystemUtil.createFileSystemDependentPath(jarPath.toUri());
         Path templateSetFilePath = configurationPath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);

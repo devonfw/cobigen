@@ -25,6 +25,9 @@ public class ConfigurationConstants {
    */
   public static final String TEMPLATE_SET_CONFIG_FILENAME = "template-set.xml";
 
+  /** Template Set filename for Freemarker functions */
+  public static final String TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME = "functions.ftl";
+
   /** Filename of the {@link Properties} used to customize cobigen properties and template relocation. */
   public static final String COBIGEN_PROPERTIES = "cobigen.properties";
 

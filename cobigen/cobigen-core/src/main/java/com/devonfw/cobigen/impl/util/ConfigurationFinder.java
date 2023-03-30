@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
@@ -26,7 +25,7 @@ import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 
 /**
- * Utilities related to the cobigen configurations including:
+ * Utilities related to the CobiGen configurations including:
  *
  * 1. templates location
  */
@@ -36,17 +35,14 @@ public class ConfigurationFinder {
   private static final Logger LOG = LoggerFactory.getLogger(ConfigurationFinder.class);
 
   /**
-   * load properties from .properties file into TemplateSetConfiguration if found valid properties otherwise load
+   * Retrieves {@link ConfigurationProperties} from .properties file if valid properties were found otherwise returns
    * default values
    *
-   * @param propertiesPath to a .properties file
-   * @param templatesPath to the template-set, where the properties be loaded
-   * @return TemplateSetConfiguration instance
-   * @throws SAXException
-   * @throws InvalidConfigurationException
+   * @param propertiesPath Path to a .properties file
+   * @return {@link ConfigurationProperties} instance
+   *
    */
-  public static ConfigurationProperties loadTemplateSetConfigurations(Path propertiesPath, Path templatesPath)
-      throws InvalidConfigurationException {
+  public static ConfigurationProperties retrieveCobiGenProperties(Path propertiesPath) {
 
     Properties props = new Properties();
     try {
@@ -101,7 +97,7 @@ public class ConfigurationFinder {
   /**
    * The method finds location of templates. It could be CobiGen_Templates folder or a template artifact
    *
-   * @return template location uri if exist, otherwise null
+   * @return template location URI if exist, otherwise null
    */
   public static URI findTemplatesLocation() {
 
@@ -158,9 +154,9 @@ public class ConfigurationFinder {
   }
 
   /**
-   * This is a helper method to read a given cobigen configuration file
+   * This is a helper method to read a given CobiGen configuration file
    *
-   * @param cobigenConfigFile cobigen configuration file
+   * @param cobigenConfigFile CobiGen configuration file
    * @throws InvalidConfigurationException if the file isn't present or the path is invalid
    * @return Properties containing configuration
    */

@@ -36,14 +36,6 @@ public class ConfigurationHolder {
   /** Cached templateSet configuration */
   private TemplateSetConfiguration templateSetConfiguration;
 
-  /**
-   * @return templateSetConfiguration
-   */
-  public TemplateSetConfiguration getTemplateSetConfiguration() {
-
-    return this.templateSetConfiguration;
-  }
-
   /** Root path of the configuration */
   private Path configurationPath;
 
@@ -63,11 +55,19 @@ public class ConfigurationHolder {
 
     this.configurationLocation = configurationLocation;
     this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
-    this.configurationProperties = ConfigurationFinder.loadTemplateSetConfigurations(
-        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE), this.configurationPath);
+    this.configurationProperties = ConfigurationFinder.retrieveCobiGenProperties(
+        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
 
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.configurationPath);
+  }
+
+  /**
+   * @return templateSetConfiguration
+   */
+  public TemplateSetConfiguration getTemplateSetConfiguration() {
+
+    return this.templateSetConfiguration;
   }
 
   /**

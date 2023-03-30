@@ -47,11 +47,20 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
       for (Nexus2SearchResponseArtifactHits artifactHit : item.artifactHits) {
         for (Nexus2SearchResponseArtifactLinks artifactLink : artifactHit.artifactLinks) {
           if (artifactLink.getClassifier() != null && artifactLink.getClassifier().equals("template-set")) {
-            downloadLinks.add(AbstractSearchResponse.createDownloadLink(
-                MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
-                    + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
-                item.getGroupId(), item.getArtifactId(), item.getVersion(),
-                "-" + artifactLink.getClassifier() + "." + artifactLink.getExtension()));
+            // Check for full SNAPSHOT version link
+            if (item.getVersion().contains("-SNAPSHOT")) {
+              URL snapShotUrl = new URL(MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
+                  + MavenSearchRepositoryConstants.NEXUS2_SNAPSHOT_REPOSITORY_LINK + "?r=snapshots" + "&g="
+                  + item.getGroupId() + "&a=" + item.getArtifactId() + "&v=" + item.getVersion() + "&e="
+                  + artifactLink.getExtension() + "&c=" + artifactLink.getClassifier());
+              downloadLinks.add(snapShotUrl);
+            } else {
+              downloadLinks.add(AbstractSearchResponse.createDownloadLink(
+                  MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
+                      + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
+                  item.getGroupId(), item.getArtifactId(), item.getVersion(),
+                  "-" + artifactLink.getClassifier() + "." + artifactLink.getExtension()));
+            }
           }
         }
       }
@@ -79,6 +88,12 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
   @Override
   public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
 
-    return repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_REST_SEARCH_API_PATH + "?q=" + groupId;
+    String rootUrl = AbstractSearchResponse.createRootURL(repositoryUrl);
+    if (rootUrl != null) {
+      return rootUrl + "/" + MavenSearchRepositoryConstants.NEXUS2_REST_SEARCH_API_PATH + "?q=" + groupId;
+    } else {
+      return null;
+    }
+
   }
 }

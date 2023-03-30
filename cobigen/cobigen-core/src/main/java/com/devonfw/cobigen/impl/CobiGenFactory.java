@@ -1,10 +1,10 @@
 package com.devonfw.cobigen.impl;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -25,6 +25,7 @@ import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
+import com.devonfw.cobigen.retriever.ArtifactRetriever;
 
 /**
  * CobiGen's Factory to create new instances of {@link CobiGen}.
@@ -103,9 +104,12 @@ public class CobiGenFactory {
     // install Template Sets defined in .properties file
     if (configurationHolder.isTemplateSetConfiguration()) {
       ConfigurationProperties config = configurationHolder.getConfigurationProperties();
-      URI templatesLocation = configurationHolder.getConfigurationPath().toUri();
-      File downloadPath = new File(templatesLocation);
-      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(downloadPath.toPath(), config.getMavenCoordinates());
+      Path templatesLocation = configurationHolder.getConfigurationPath();
+      List<String> downloadUrls = ArtifactRetriever.retrieveTemplateSetJarDownloadURLs(config.getGroupIds(),
+          config.getMavenCoordinates());
+      for (String downloadUrl : downloadUrls) {
+        TemplatesJarUtil.downloadJarFromURL(downloadUrl, templatesLocation);
+      }
     }
     return createBean;
   }

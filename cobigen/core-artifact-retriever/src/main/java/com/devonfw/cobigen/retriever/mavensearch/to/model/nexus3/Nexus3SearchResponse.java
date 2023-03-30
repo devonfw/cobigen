@@ -73,7 +73,12 @@ public class Nexus3SearchResponse extends AbstractSearchResponse {
   @Override
   public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
 
-    return repositoryUrl + "/" + MavenSearchRepositoryConstants.NEXUS3_REST_SEARCH_API_PATH
-        + "?repository=maven-central" + "&group=" + groupId;
+    String rootUrl = AbstractSearchResponse.createRootURL(repositoryUrl);
+    if (rootUrl != null) {
+      return rootUrl + "/" + MavenSearchRepositoryConstants.NEXUS3_REST_SEARCH_API_PATH + "?repository=maven-central"
+          + "&group=" + groupId;
+    } else {
+      return null;
+    }
   }
 }

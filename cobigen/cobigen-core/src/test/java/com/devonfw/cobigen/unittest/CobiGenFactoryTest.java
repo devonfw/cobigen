@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 
 import junit.framework.TestCase;
@@ -40,7 +41,8 @@ public class CobiGenFactoryTest {
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   /**
-   * Tests whether a valid configuration can be read from template-sets/adapted folder
+   * Tests whether a valid configuration can be read from template-sets/adapted folder does not throw a
+   * {@link InvalidConfigurationException}
    *
    * @throws Exception test fails
    */
@@ -55,7 +57,8 @@ public class CobiGenFactoryTest {
   }
 
   /**
-   * Tests whether a valid configuration can be read from template-sets/adapted folder
+   * Tests whether a valid configuration can be read from template-sets/adapted folder does not throw a
+   * {@link InvalidConfigurationException}
    *
    * @throws Exception test fails
    */

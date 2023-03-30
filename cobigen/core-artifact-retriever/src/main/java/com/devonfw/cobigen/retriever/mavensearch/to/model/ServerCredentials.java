@@ -59,18 +59,26 @@ public class ServerCredentials {
   }
 
   /**
-   * @return username
+   * Returns the username, if the username settings.xml tag is a placeholder this getter will return null instead
+   *
+   * @return username String of username
    */
   public String getUsername() {
 
+    if (this.username != null && this.username.startsWith("$["))
+      return null;
     return this.username;
   }
 
   /**
-   * @return password
+   * Returns the password, if the password settings.xml tag is a placeholder this getter will return null instead
+   *
+   * @return password String of password
    */
   public String getPassword() {
 
+    if (this.username != null && this.password.startsWith("$["))
+      return null;
     return this.password;
   }
 
