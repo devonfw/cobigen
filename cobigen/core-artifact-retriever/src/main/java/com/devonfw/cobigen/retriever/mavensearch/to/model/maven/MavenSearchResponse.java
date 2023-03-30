@@ -68,7 +68,7 @@ public class MavenSearchResponse extends AbstractSearchResponse {
         if (fileEnding.endsWith(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)) {
           downloadLinks.add(
               AbstractSearchResponse.createDownloadLink(MavenSearchRepositoryConstants.MAVEN_REPOSITORY_DOWNLOAD_LINK,
-                  doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), fileEnding));
+                  doc.getGroup(), doc.getArtifact(), doc.getLatestVersion(), fileEnding, ""));
         }
 
       }
