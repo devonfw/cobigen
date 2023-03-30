@@ -4,6 +4,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,17 +51,23 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
           if (artifactLink.getClassifier() != null && artifactLink.getClassifier().equals("template-set")) {
             // Check for full SNAPSHOT version link
             if (item.getVersion().contains("-SNAPSHOT")) {
-              URL snapShotUrl = new URL(MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
-                  + MavenSearchRepositoryConstants.NEXUS2_SNAPSHOT_REPOSITORY_LINK + "?r=snapshots" + "&g="
-                  + item.getGroupId() + "&a=" + item.getArtifactId() + "&v=" + item.getVersion() + "&e="
-                  + artifactLink.getExtension() + "&c=" + artifactLink.getClassifier());
-              downloadLinks.add(snapShotUrl);
+
+              String fullSnapshotVersion = determineSnapshotVersionFromResource(item.getGroupId(), item.getArtifactId(),
+                  item.getVersion());
+
+              URL snapshotUrl = AbstractSearchResponse.createDownloadLink(
+                  MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
+                      + MavenSearchRepositoryConstants.NEXUS2_SNAPSHOT_REPOSITORY_LINK,
+                  item.getGroupId(), item.getArtifactId(), item.getVersion(),
+                  "-" + artifactLink.getClassifier() + "." + artifactLink.getExtension(), fullSnapshotVersion);
+
+              downloadLinks.add(snapshotUrl);
             } else {
               downloadLinks.add(AbstractSearchResponse.createDownloadLink(
                   MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
                       + MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_LINK,
                   item.getGroupId(), item.getArtifactId(), item.getVersion(),
-                  "-" + artifactLink.getClassifier() + "." + artifactLink.getExtension()));
+                  "-" + artifactLink.getClassifier() + "." + artifactLink.getExtension(), ""));
             }
           }
         }
@@ -67,6 +75,32 @@ public class Nexus2SearchResponse extends AbstractSearchResponse {
     }
 
     return removeDuplicatedDownloadURLs(downloadLinks);
+  }
+
+  /**
+   * Determines the full snapshot version number from resource xml
+   *
+   * @param groupId String of the group ID
+   * @param artifactId String of the artifact ID
+   * @param version String of the version
+   * @return String of full snapshot version number
+   */
+  @JsonIgnore
+  public String determineSnapshotVersionFromResource(String groupId, String artifactId, String version) {
+
+    String parsedGroupId = groupId.replace(".", "/");
+    String snapshotUrl = MavenSearchRepositoryConstants.NEXUS2_REPOSITORY_URL + "/"
+        + MavenSearchRepositoryConstants.NEXUS2_SNAPSHOT_REPOSITORY_LINK + "/" + parsedGroupId + "/" + artifactId + "/"
+        + version;
+    String response = AbstractSearchResponse.retrieveJsonResponseWithAuthentication(snapshotUrl, getRepositoryType(),
+        null);
+    Pattern pattern = Pattern.compile("(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)-(\\d+)-template-set\\.xml");
+    Matcher matcher = pattern.matcher(response);
+    String versionNumber = "";
+    if (matcher.find()) {
+      versionNumber = matcher.group();
+    }
+    return versionNumber.replace("-template-set.xml", "");
   }
 
   @Override
