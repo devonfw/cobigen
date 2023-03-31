@@ -40,7 +40,6 @@ import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 /**
  * Test suite for {@link TemplateSetUpgrader}
  */
-
 public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
   /** Root path to all resources used in this test case */
@@ -53,6 +52,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
+  /** Path to the CobiGen home folder */
   private Path currentHome;
 
   @Before
@@ -65,10 +65,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   /**
    * Test the correct folder creation
    *
-   * @throws Exception
+   * @throws Exception test fails
    */
   @Test
-  @Ignore
+  @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
   public void testTemplateSetUpgrade() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
@@ -92,7 +92,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   /**
    * Test the correct folder creation
    *
-   * @throws Exception
+   * @throws Exception test fails
    */
   @Test
   public void testTemplateSetUpgradeWithoutTemplatesFolder() throws Exception {
@@ -116,10 +116,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   /**
    * Tests if the Template files have been correctly copied into both the new template set and the backup folder
    *
-   * @throws Exception
+   * @throws Exception test fails
    */
   @Test
-  @Ignore
+  @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
   public void testTemplateSetUpgradeCopyOfTemplates() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
@@ -169,7 +169,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    * @throws SAXException if a fatal error is found.
    * @throws IOException if the underlying reader throws an IOException.
    */
-  @Ignore
+  @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
   private void validateContextConfigurationFile(Path contextpath, String schemaVersion)
       throws SAXException, IOException {
 
@@ -196,10 +196,10 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    * Tests if the context.xml has been created in the correct location and that it was correctly created as a v3.0
    * schema
    *
-   * @throws Exception
+   * @throws Exception test fails
    */
   @Test
-  @Ignore
+  @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
   public void testTemplateSetUpgradeContextSplit() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
