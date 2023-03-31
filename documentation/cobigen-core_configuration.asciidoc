@@ -49,7 +49,7 @@ template-sets
        |- main
          |- resources
            |- templates
-             |- template-set.xml
+           |- template-set.xml
    |- template-set2
 ```
 
