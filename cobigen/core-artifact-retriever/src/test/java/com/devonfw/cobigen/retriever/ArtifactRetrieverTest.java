@@ -17,8 +17,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.devonfw.cobigen.retriever.settings.MavenSettings;
-import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -32,16 +30,6 @@ public class ArtifactRetrieverTest {
    * Test resource location
    */
   private final static String testdataRoot = "src/test/resources/testdata/unittest/ArtifactRetrieverTest";
-
-  /**
-   * {@link MavenSettingsModel} without a proxy
-   */
-  private static MavenSettingsModel modelNonProxy;
-
-  /**
-   * {@link MavenSettingsModel} with a proxy
-   */
-  private static MavenSettingsModel modelProxy;
 
   /**
    * Maven settings string without a proxy
@@ -69,9 +57,6 @@ public class ArtifactRetrieverTest {
 
     mavenSettingsNonProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsNonProxy.xml")));
     mavenSettingsProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsProxy.xml")));
-
-    modelNonProxy = MavenSettings.generateMavenSettingsModel(mavenSettingsNonProxy);
-    modelProxy = MavenSettings.generateMavenSettingsModel(mavenSettingsProxy);
   }
 
   /**
