@@ -21,7 +21,7 @@ import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
 /**
  * Test suite for {@link HealthCheckImpl} class.
  */
-@Ignore // TODO: re-enable when upgrade from monolithic to template-sets was implemented
+@Ignore // TODO: re-enable when upgrade from monolithic to template-sets was implemented, see: https://github.com/devonfw/cobigen/issues/1595
 public class HealthCheckTest {
 
   /**
