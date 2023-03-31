@@ -27,7 +27,8 @@ import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 /**
  * Utilities related to the CobiGen configurations including:
  *
- * 1. templates location
+ * 1. template-set location
+ * 2. CobiGen_Templates location
  */
 public class ConfigurationFinder {
 
