@@ -90,7 +90,7 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
    *
    * @throws Exception test fails
    */
-  @Ignore // TODO: Detection and handling of duplicates needs to be implemented first, then the test can be enabled
+  @Ignore // TODO: Detection and handling of duplicates needs to be implemented first, then the test can be enabled, see: https://github.com/devonfw/cobigen/issues/1663
   @Test
   public void testTemplateSetsDuplicatedThrowsError() throws Exception {
 
