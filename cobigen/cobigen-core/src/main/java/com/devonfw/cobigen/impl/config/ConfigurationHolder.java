@@ -185,7 +185,7 @@ public class ConfigurationHolder {
    */
   public boolean isTemplateSetConfiguration() {
 
-    // TODO: Replace with a better logic for template set detection later f.e. groupid
+    // TODO: Replace with a better logic for template set detection later f.e. groupid, see: https://github.com/devonfw/cobigen/issues/1660
     if (this.configurationPath.toUri().getScheme().equals("jar")
         || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return false;
