@@ -32,7 +32,7 @@ import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
  * Test the upgrader in core and generates from the new template-set
  *
  */
-@Ignore // TODO: re-enable when upgrader #1595 was implemented
+@Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class UpgradeMonolithicTemplatesTest extends SystemTest {
 

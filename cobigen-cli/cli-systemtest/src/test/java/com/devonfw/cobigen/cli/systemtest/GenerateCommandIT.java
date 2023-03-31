@@ -75,7 +75,7 @@ public class GenerateCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore // TODO: re-enable when upgrade process is implemented
+  @Ignore // TODO: re-enable when upgrade process is implemented, see: https://github.com/devonfw/cobigen/issues/1595
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
@@ -107,7 +107,7 @@ public class GenerateCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore // TODO: re-enable/fix when CLI tests were re-factored
+  @Ignore // TODO: re-enable/fix when CLI tests were re-factored, see: https://github.com/devonfw/cobigen/issues/1659
   public void generateFromEntityWithTemplateSetTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
