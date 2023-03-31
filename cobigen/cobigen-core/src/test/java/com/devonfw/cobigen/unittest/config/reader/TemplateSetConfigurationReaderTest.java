@@ -43,9 +43,6 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
   private final static Path INVALID_CONFIGURATION_PATH = Paths.get(TEST_FILE_ROOT_PATH + "/invalid_template_sets")
       .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
 
-  private final static Path VALID_CONFIGURATION_PATH = Paths.get(TEST_FILE_ROOT_PATH + "/valid_template_sets")
-      .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve("adapted/test-template");
-
   /**
    * Tests whether an invalid configuration results in an {@link InvalidConfigurationException}
    *
@@ -90,7 +87,8 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
    *
    * @throws Exception test fails
    */
-  @Ignore // TODO: Detection and handling of duplicates needs to be implemented first, then the test can be enabled, see: https://github.com/devonfw/cobigen/issues/1663
+  @Ignore // TODO: Detection and handling of duplicates needs to be implemented first, then the test can be enabled,
+          // see: https://github.com/devonfw/cobigen/issues/1663
   @Test
   public void testTemplateSetsDuplicatedThrowsError() throws Exception {
 
