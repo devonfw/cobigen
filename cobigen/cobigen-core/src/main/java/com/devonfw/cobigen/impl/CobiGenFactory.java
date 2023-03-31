@@ -104,11 +104,14 @@ public class CobiGenFactory {
     // install Template Sets defined in .properties file
     if (configurationHolder.isTemplateSetConfiguration()) {
       ConfigurationProperties config = configurationHolder.getConfigurationProperties();
-      Path templatesLocation = configurationHolder.getConfigurationPath();
-      List<String> downloadUrls = ArtifactRetriever.retrieveTemplateSetJarDownloadURLs(config.getGroupIds(),
-          config.getMavenCoordinates());
-      for (String downloadUrl : downloadUrls) {
-        TemplatesJarUtil.downloadJarFromURL(downloadUrl, templatesLocation);
+      // if installed template sets property was not empty, install found template sets
+      if (!config.getTemplateSetsInstalled().isEmpty()) {
+        Path templatesLocation = configurationHolder.getConfigurationPath();
+        List<String> downloadUrls = ArtifactRetriever.retrieveTemplateSetJarDownloadURLs(config.getGroupIds(),
+            config.getTemplateSetsInstalled());
+        for (String downloadUrl : downloadUrls) {
+          TemplatesJarUtil.downloadJarFromURL(downloadUrl, templatesLocation);
+        }
       }
     }
     return createBean;

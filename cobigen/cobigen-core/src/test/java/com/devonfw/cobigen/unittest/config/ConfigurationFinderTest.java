@@ -47,7 +47,7 @@ public class ConfigurationFinderTest {
     ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(emptyConfiguration);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getHideTemplates()).isEmpty();
+    assertThat(conf.getHideTemplateSets()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
   }
 
@@ -67,9 +67,9 @@ public class ConfigurationFinderTest {
     assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob",
         ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.isAllowSnapshots()).isTrue();
-    assertThat(conf.getHideTemplates().get(0).getArtifactId().equals("com.devonfw"));
-    assertThat(conf.getHideTemplates().get(0).getGroupId().equals("test-artifact"));
-    assertThat(conf.getHideTemplates().get(0).getVersion().equals("3.2.1-SNAPSHOT"));
+    assertThat(conf.getHideTemplateSets().get(0).getArtifactId().equals("com.devonfw"));
+    assertThat(conf.getHideTemplateSets().get(0).getGroupId().equals("test-artifact"));
+    assertThat(conf.getHideTemplateSets().get(0).getVersion().equals("3.2.1-SNAPSHOT"));
   }
 
   /**
@@ -85,8 +85,8 @@ public class ConfigurationFinderTest {
         .get("src/test/resources/testdata/unittest/config/properties/invalidConfigProperties/config.properties");
     ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(validConfiguration);
 
-    assertTrue(conf.getHideTemplates().isEmpty());
-    assertTrue(conf.getMavenCoordinates().isEmpty());
+    assertTrue(conf.getHideTemplateSets().isEmpty());
+    assertTrue(conf.getTemplateSetsInstalled().isEmpty());
   }
 
   /**
@@ -103,7 +103,7 @@ public class ConfigurationFinderTest {
     ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(invalidPath);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getHideTemplates()).isEmpty();
+    assertThat(conf.getHideTemplateSets()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
   }
 
