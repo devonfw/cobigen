@@ -128,7 +128,7 @@ public class GenerateCommandIT extends AbstractCliTest {
         .exists();
   }
 
-  // TODO: Add similar test with a template-set jar file in downloaded folder
+  // TODO: Add similar test with a template-set jar file in downloaded folder, see: https://github.com/devonfw/cobigen/issues/1661
 
   /**
    * Integration test of the generation from a templates jar using a utility class with an extra dependency. See:
