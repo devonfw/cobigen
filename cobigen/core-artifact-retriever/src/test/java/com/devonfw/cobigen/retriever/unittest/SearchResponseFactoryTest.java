@@ -239,7 +239,6 @@ public class SearchResponseFactoryTest {
 
   /**
    * Tests if an empty list gets returned if the search request received an empty json string as a response
-   *
    */
   @Test
   public void testSearchRequestWithEmptyJsonResponseReturnsEmptyList() {

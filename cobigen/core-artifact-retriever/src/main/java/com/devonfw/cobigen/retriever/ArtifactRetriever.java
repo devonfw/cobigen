@@ -60,7 +60,7 @@ public class ArtifactRetriever {
   /**
    * Retrieves a list of maven artifact download URLs
    *
-   * @param groupIdsList grouIds for template-sets
+   * @param groupIdsList groupIds for template-sets
    * @param mavenSettings string of maven's settings.xml
    * @return list of maven artifact download URLs
    *
