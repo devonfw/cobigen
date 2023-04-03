@@ -44,7 +44,7 @@ public class TemplateSetConfigurationReader {
   /** Path of the template set configuration file */
   private Path templateSetFile;
 
-  /** Paths of the configuration location for a template-set.xml file */
+  /** Path of the configuration location for a template-set.xml file e.g. src/main/resources */
   private Path configLocation;
 
   /** The static representation of the TemplateSetConfiguration */
@@ -57,22 +57,6 @@ public class TemplateSetConfigurationReader {
    * The {@link com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration}
    */
   private com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
-
-  /**
-   * @return contextConfiguration
-   */
-  public com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration getContextConfiguration() {
-
-    return this.contextConfiguration;
-  }
-
-  /**
-   * @return templatesConfiguration
-   */
-  public TemplatesConfiguration getTemplatesConfiguration() {
-
-    return this.templatesConfiguration;
-  }
 
   /**
    * The {@link TemplatesConfiguration} to initialize
@@ -130,6 +114,22 @@ public class TemplateSetConfigurationReader {
       }
     }
 
+  }
+
+  /**
+   * @return contextConfiguration
+   */
+  public com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration getContextConfiguration() {
+
+    return this.contextConfiguration;
+  }
+
+  /**
+   * @return templatesConfiguration
+   */
+  public TemplatesConfiguration getTemplatesConfiguration() {
+
+    return this.templatesConfiguration;
   }
 
   /**
