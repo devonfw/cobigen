@@ -60,9 +60,6 @@ public class TemplateSetConfiguration {
   /** The reader to read the template-set.xml files */
   private TemplateSetConfigurationReader templateSetConfigurationReader;
 
-  /** Root of the configuration */
-  private Path configRoot;
-
   private ConfigurationHolder configurationHolder;
 
   /**
@@ -94,7 +91,6 @@ public class TemplateSetConfiguration {
     this.templates = Maps.newHashMap();
     this.rootTemplateFolders = Maps.newHashMap();
     this.utilFolders = Maps.newHashMap();
-    this.configRoot = configurationPath;
     readConfiguration(configurationPath);
   }
 
@@ -167,7 +163,6 @@ public class TemplateSetConfiguration {
     }
 
     this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
-    this.configRoot = configurationPath;
     this.triggers.putAll(trigger);
 
     Map<String, Template> loadedTemplates = templatesConfigurationReader.loadTemplates(activeTrigger);
@@ -191,7 +186,7 @@ public class TemplateSetConfiguration {
    */
   private Path getUtilSourceFolder(Path path) {
 
-    // TODO: replace with proper root template set folder
+    // TODO: replace with proper root template set folder, see: https://github.com/devonfw/cobigen/issues/1667
     return path.getParent().getParent().getParent().getParent();
   }
 

@@ -72,6 +72,7 @@ public class TemplateSetConfigurationManager {
     // We need to empty this list to prevent duplicates from being added
     this.templateSetPaths.clear();
 
+    // TODO: Make these directories accessible for the reader, see: https://github.com/devonfw/cobigen/issues/1667
     List<Path> templateSetDirectories = retrieveTemplateSetDirectories(configRoot);
 
     for (Path templateDirectory : templateSetDirectories) {
