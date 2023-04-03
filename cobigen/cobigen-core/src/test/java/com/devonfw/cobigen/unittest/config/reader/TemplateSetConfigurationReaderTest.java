@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -134,6 +135,31 @@ public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets/");
     FileUtils.copyDirectory(templateSetPath.toFile(), folder);
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
+
+      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+          folder.toPath().resolve("template-sets"));
+
+      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(3);
+    });
+  }
+
+  /**
+   * Tests if template-set configuration can be found in both adapted and downloaded folder of the template sets
+   * directory, even if an invalid folder .settings was added to the adapted folder
+   *
+   * @throws Exception test fails
+   *
+   */
+  @Test
+  public void testGetTemplatesWithInvalidAdaptedFolder() throws Exception {
+
+    File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
+    Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets/");
+    FileUtils.copyDirectory(templateSetPath.toFile(), folder);
+    // create an invalid folder which has to be ignored
+    Files.createDirectory(folder.toPath().resolve("template-sets").resolve("adapted").resolve(".settings"));
+
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
 
       TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(

@@ -154,13 +154,9 @@ public class TemplateSetConfiguration {
     Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
     Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
 
-    if (isZipFile) {
-      Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
-      Path jarPath = configLocations.get(templateSetFile);
-      this.utilFolders.put(activeTrigger.getId(), jarPath);
-    } else {
-      this.utilFolders.put(activeTrigger.getId(), getUtilSourceFolder(templateSetFile));
-    }
+    Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
+    Path templateSetRootFolder = configLocations.get(templateSetFile);
+    this.utilFolders.put(activeTrigger.getId(), templateSetRootFolder);
 
     this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
     this.triggers.putAll(trigger);
@@ -177,17 +173,6 @@ public class TemplateSetConfiguration {
         loadedTemplates, loadedIncrements, templateEngine);
 
     this.templatesConfigurations.add(templatesConfiguration);
-  }
-
-  /**
-   * Gets the source folder for utility classes
-   *
-   * @return the source folder where utility classes are located
-   */
-  private Path getUtilSourceFolder(Path path) {
-
-    // TODO: replace with proper root template set folder, see: https://github.com/devonfw/cobigen/issues/1667
-    return path.getParent().getParent().getParent().getParent();
   }
 
   /**
