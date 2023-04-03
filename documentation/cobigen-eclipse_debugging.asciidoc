@@ -20,11 +20,11 @@ image:images/debugging/target-platform.png[] +
 Sidenote: Plugins will not be displayed under installed software of the new Eclipse. Open the OSGi Console (arrow at the top right in console) and type "ss" to show all loaded plugins.
 image:images/debugging/osgi-console.png[]
 
-5. In the new Eclipse you can now execute Cobigen commands while setting breakpoints and classicly debugging in the original Eclipse.
+4. In the new Eclipse you can now execute Cobigen commands while setting breakpoints and classicly debugging in the original Eclipse.
 
-6. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent class. Breakpoints are better placed in the equivalent Java files rather than in the class files.
+5. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent class. Breakpoints are better placed in the equivalent Java files rather than in the class files.
 
-8. Click "Terminate" in the top left to close the environment. +
+6. Click "Terminate" in the top left to close the environment. +
 
 
 == Debugging (SWTBot-)Tests ==
