@@ -38,11 +38,6 @@ public class ContextConfiguration {
   private ContextConfigurationReader contextConfigurationReader;
 
   /**
-   * The representation of the generated TemplateSetConfiguration file
-   */
-  private TemplateSetConfiguration templateSetConfiguration;
-
-  /**
    * The {@link ConfigurationHolder}
    */
   private ConfigurationHolder configurationHolder;
