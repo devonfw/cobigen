@@ -211,6 +211,8 @@ public class TemplateSetUpgrader {
               + "</groupId>");
       content = content.replaceAll("</groupId>\n" + "  <artifactId>.*</artifactId>", "</groupId>\n" + "  <artifactId>"
           + newTemplateFolder.getFileName().toString().replace('_', '-') + "</artifactId>");
+      // TODO: retrieve the version dynamically (not as a constant) at runtime, see:
+      // https://github.com/devonfw/cobigen/issues/1669
       content = content.replaceAll("</artifactId>\n" + "  <version>([0-9]+(\\.[0-9]+)+)</version>", "</artifactId>\n"
           + "  <version>" + ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_VERSION + "</version>");
       content = content.replaceAll("</version>\n" + "  <name>.*</name>",
