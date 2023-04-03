@@ -203,7 +203,7 @@ public class TemplateSetConfigurationReader {
               "The required 'version' attribute of node \"templateSetConfiguration\" has not been set");
         } else {
           VersionValidator validator = new VersionValidator(Type.TEMPLATE_SET_CONFIGURATION, MavenMetadata.VERSION);
-          validator.validate(configVersion.floatValue());
+          validator.validate(configVersion.floatValue(), false);
         }
       } else {
         throw new InvalidConfigurationException(this.templateSetFile,

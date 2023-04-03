@@ -78,7 +78,7 @@ public class VersionValidator {
    */
   public void validate(float configVersion) {
 
-    validate(configVersion, true);
+    validate(configVersion, false);
   }
 
   /**
