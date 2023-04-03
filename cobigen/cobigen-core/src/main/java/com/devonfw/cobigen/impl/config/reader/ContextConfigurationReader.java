@@ -270,6 +270,8 @@ public class ContextConfigurationReader {
   /**
    * Checks if a conflict with the old and modular configuration exists
    *
+   * TODO: Check if this is still needed, see: https://github.com/devonfw/cobigen/issues/1662
+   *
    * @param configRoot Path to root directory of the configuration
    * @param contextFile Path to context file of the configuration
    */
@@ -287,6 +289,8 @@ public class ContextConfigurationReader {
 
   /**
    * Searches for configuration Files in the sub folders of configRoot
+   *
+   * TODO: Check if this is still needed, see: https://github.com/devonfw/cobigen/issues/1662
    *
    * @param configRoot root directory of the configuration
    * @throws InvalidConfigurationException if the configuration is not valid against its xsd specification
