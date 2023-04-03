@@ -17,7 +17,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
@@ -104,10 +103,6 @@ public class ArtifactRetrieverTest {
   @Test
   public void testRetrieveTemplateSetXmlDownloadLinksWithProxy() throws IOException {
 
-    // origin server using port 8081
-    new WireMockServer(options().port(8081));
-
-    // proxied server using port 8080
     this.wireMockRule.stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(200)
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")))));
 
