@@ -90,6 +90,10 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     assertThat(templateFooClass.getMergeStrategy()).isNull();
   }
 
+  /**
+   * TODO: Check if this test is still needed (reverse engineer its use case), see:
+   * https://github.com/devonfw/cobigen/issues/1666
+   */
   @Test
   public void testTemplatesSourceFolder() {
 
