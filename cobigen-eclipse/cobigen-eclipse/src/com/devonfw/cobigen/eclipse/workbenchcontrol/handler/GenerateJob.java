@@ -113,7 +113,7 @@ public class GenerateJob implements IRunnableWithProgress {
   }
 
   /**
-   * checks if monolithic configuration exist, handles the exception and lets the user decide if the templates should be
+   * checks if monolithic configuration exists, handles the exception and lets the user decide if the templates should be
    * upgraded.
    *
    * @param monitor of run method
