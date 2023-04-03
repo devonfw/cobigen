@@ -8,7 +8,7 @@
 
 4. Add any arguments that you would normally use when running the CLI.
 
-5. Make sure that every CLI command is possible. For example, you can use the command "g 'PATH TO EmployeeEntity.java'".
+5. Make sure that every CLI command is valid. For example, you can use the command "g 'PATH TO EmployeeEntity.java'".
 
 6. Under the File System tab, set the Working Directory to the directory where the CLI is opened.
 
@@ -35,4 +35,5 @@ To debug system tests for the CLI,...
 
 3. Repeat step 2 for "cg.bat".
 
-4. Rebuild the CLI by running "mvn clean install -f cobigen-cli/ -DskipTests" in your favorite shell so the files are included in the jar.
+4. If you have changed files in core, rebuild the core by running "mvn clean install -f cobigen/ -DskipTests". +
+Rebuild the CLI by running "mvn clean install -f cobigen-cli/ -DskipTests" in your favorite shell so the files are included in the jar.

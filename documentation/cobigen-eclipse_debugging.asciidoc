@@ -2,27 +2,27 @@
 
 === To debug Cobigen-Eclipse, follow the steps below: ===
 
-==== Frühere Vorgehensweise zum Hinzufügen der Plugins: ====
+==== Previous procedure for adding the plugins: ====
 Install Cobigen-Plugins via "Help > Install New Software > Add > cobigen-plugins > target/repository" and add it.
 
-==== Aktuelle Vorgehensweise zum Hinzufügen der Plugins: ====
+==== Current procedure for adding the plug-ins: ====
 1. Open the target file "Eclipse.test.targets.2018-12.target" and add the target/repository of each plugin by clicking "Add > Directory > ...": +
 image:images/debugging/addDirToTarget.png[]
 
 2. Click on "Reload" and save.
 
-3. Change your eclipse target platform by clicking on "Window > Preferences > ..." +
+Sidenote: Change your eclipse target platform by clicking on "Window > Preferences > ..." +
 image:images/debugging/target-platform.png[] +
 (Use Eclipse 2018-12 as it is also used in maven. Running Platform will use your installed Eclipse version.)
 
-4. To run Eclipse in the runtime, right-click on "cobigen.eclipse" and select "Debug As > Eclipse Application". +
+3. To run Eclipse in the runtime, right-click on "cobigen.eclipse" and select "Debug As > Eclipse Application". +
 
-5. Plugins will not be displayed under installed software of the new Eclipse. Open the OSGi Console (arrow at the top right in console) and type "ss" to show all loaded plugins.
+Sidenote: Plugins will not be displayed under installed software of the new Eclipse. Open the OSGi Console (arrow at the top right in console) and type "ss" to show all loaded plugins.
 image:images/debugging/osgi-console.png[]
 
-6. In the new Eclipse you can now execute Cobigen commands while setting breakpoints and classicly debugging in the original Eclipse.
+5. In the new Eclipse you can now execute Cobigen commands while setting breakpoints and classicly debugging in the original Eclipse.
 
-7. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent class. Breakpoints are better placed in the equivalent Java files rather than in the class files.
+6. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent class. Breakpoints are better placed in the equivalent Java files rather than in the class files.
 
 8. Click "Terminate" in the top left to close the environment. +
 
@@ -43,6 +43,6 @@ image:images/debugging/osgi-console.png[]
 
 6. SWTBot will perform the test and you can use classic debugging to debug any issues that may arise.
 
-7. If the test is aborted and the cleanup function doesn't work, it is recommended to delete the "junit-workspace" folder in the workspace, as this folder may contain information about what happened during the test.
+7. If the test is aborted and the cleanup function doesn't work, it is recommended to delete the "junit-workspace" folder in the workspace, as this folder may contain information about what happened during the test and tests copy their resources (template-set project and input project) there.
 
 *Extra:* You can also use the "Debug Configurations" window to add the current debug session to your favorites menu. This allows you to easily access the debug session history later by selecting "Debug" and then the name of the debug session from the favorites menu.
