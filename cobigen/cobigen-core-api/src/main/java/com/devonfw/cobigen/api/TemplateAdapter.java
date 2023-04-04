@@ -59,9 +59,10 @@ public interface TemplateAdapter {
   public void adaptMonolithicTemplates(Path destinationPath, boolean forceOverride) throws IOException;
 
   /**
-   * Get a list of available template set jars to adapt.
+   * Gets a list of available template set jars to adapt. Template set jars without sources will not be added to this
+   * list.
    *
-   * @return A {@link List} of {@link Path} with all template set jar files found.
+   * @return A {@link List} of {@link Path} with all adaptable template set jar files found.
    */
   public List<Path> getTemplateSetJars();
 
