@@ -62,6 +62,9 @@ public class AbstractCliTest {
   /**
    * Determine the templates development folder and create a copy of it in the temp directory
    *
+   * TODO: Replace with reduced template set projects in test resources, see:
+   * https://github.com/devonfw/cobigen/issues/1659
+   *
    * @throws URISyntaxException if the path could not be created properly
    * @throws IOException if accessing a template directory directory fails
    */
