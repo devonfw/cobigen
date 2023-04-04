@@ -71,7 +71,12 @@ public class TemplateSetConfigurationReader {
   /** The list of downloaded template set configuration paths */
   private List<Path> templateSetConfigurationPathsDownloaded;
 
-  // TODO: Use dependency injection here instead of the new operator
+  /**
+   * The TemplateSetConfigurationManager manages adapted and downloaded template sets
+   *
+   * TODO: Check if it can be integrated into this reader, see: https://github.com/devonfw/cobigen/issues/1668
+   *
+   */
   private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
 
   /**
