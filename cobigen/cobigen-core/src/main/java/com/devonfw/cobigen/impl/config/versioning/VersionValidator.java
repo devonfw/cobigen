@@ -78,7 +78,8 @@ public class VersionValidator {
    */
   public void validate(float configVersion) {
 
-    validate(configVersion, false);
+    // TODO: Change allowMonolithicConfiguration to false, see: https://github.com/devonfw/cobigen/issues/1670
+    validate(configVersion, true);
   }
 
   /**
