@@ -406,6 +406,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     }
     AbstractConfigurationUpgrader<ContextConfigurationVersion> contextUpgraderObject = new ContextConfigurationUpgrader();
     // Upgrade the context.xml to the new template-set with latest version
+    // TODO: Check if this can be optimized, see: https://github.com/devonfw/cobigen/issues/1676
     contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.NO_BACKUP);
     LOG.info("context.xml upgraded successfully. {}", templatesPath);
     LOG.info("Templates successfully upgraded. \n ");
