@@ -73,7 +73,6 @@ public abstract class SystemTest {
   public static void setupTest() throws Exception {
 
     bot.resetWorkbench();
-    // bot.waitUntil(new AllJobsAreFinished());
 
     // this flag is set to be true and will suppress ErrorDialogs,
     // which is completely strange, so we enable them again.
