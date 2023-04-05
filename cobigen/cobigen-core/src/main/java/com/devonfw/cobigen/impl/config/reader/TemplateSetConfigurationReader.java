@@ -50,6 +50,8 @@ public class TemplateSetConfigurationReader {
   private com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration templateSetConfiguration;
 
   /** List with the paths of the configuration locations for the template-set.xml files */
+  // TODO: Check if this map can replace templateSetFile and configLocation, see:
+  // https://github.com/devonfw/cobigen/issues/1668
   private Map<Path, Path> configLocations = new HashMap<>();
 
   /**
