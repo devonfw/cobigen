@@ -23,7 +23,7 @@ public class TemplatesInstallationTest extends AbstractApiTest {
    * Tests if the templates specified in the .cobigen file will be loaded at startup with the template-set structure and
    * an existing downloaded folder.
    *
-   * TODO: Check if this test is valid
+   * TODO: Check if this test is valid, see: https://github.com/devonfw/cobigen/issues/1672
    *
    * @throws Exception test fails.
    */
@@ -50,7 +50,7 @@ public class TemplatesInstallationTest extends AbstractApiTest {
   /**
    * Tests if the templates specified in the .cobigen file won´t be loaded when an adapted folder already exists.
    *
-   * TODO: Check if this test is valid
+   * TODO: Check if this test is valid, see: https://github.com/devonfw/cobigen/issues/1672
    *
    * @throws Exception test fails.
    */
@@ -80,7 +80,7 @@ public class TemplatesInstallationTest extends AbstractApiTest {
    * Tests if the templates specified in the .cobigen file will be loaded at startup with the template-set structure
    * without an existing downloaded folder.
    *
-   * TODO: Check if this test is valid
+   * TODO: Check if this test is valid, see: https://github.com/devonfw/cobigen/issues/1672
    *
    * @throws Exception test fails.
    */
@@ -106,7 +106,7 @@ public class TemplatesInstallationTest extends AbstractApiTest {
    * Tests if the templates specified in the .cobigen file will be checked for the correct format defined in the
    * documentation.
    *
-   * TODO: Check if this test is valid
+   * TODO: Check if this test is valid, see: https://github.com/devonfw/cobigen/issues/1672
    *
    * @throws Exception test fails.
    */

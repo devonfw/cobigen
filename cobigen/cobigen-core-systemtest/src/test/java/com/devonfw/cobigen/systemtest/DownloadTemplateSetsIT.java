@@ -30,6 +30,8 @@ public class DownloadTemplateSetsIT extends AbstractApiTest {
    * Tests if a template set SNAPSHOT defined in properties template-sets.installed can be retrieved and downloaded from
    * sonatype
    *
+   * TODO: Check if this test is still valid, see: https://github.com/devonfw/cobigen/issues/1672
+   *
    * @throws Exception test fails
    */
   @Test
