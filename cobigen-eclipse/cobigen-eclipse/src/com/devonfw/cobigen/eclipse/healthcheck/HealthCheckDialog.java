@@ -165,6 +165,7 @@ public class HealthCheckDialog {
       }
       LOG.warn(healthyCheckMessage, e);
     } catch (DeprecatedMonolithicConfigurationException e) {
+      // TODO: Check what to do here, see: https://github.com/devonfw/cobigen/issues/1675
       throw e;
     } catch (Throwable e) {
       healthyCheckMessage = "An unexpected error occurred! Templates were not found.";
