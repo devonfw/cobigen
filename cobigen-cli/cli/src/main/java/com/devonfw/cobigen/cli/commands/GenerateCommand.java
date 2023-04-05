@@ -313,13 +313,12 @@ public class GenerateCommand extends CommandCommons {
 
   /**
    * Asks the user if he wants to postpone the upgrade message for 30 days.
-   *
-   * @throws IOException
    */
   private void askUserToPostponeUpgrade() {
 
     LOG.info("Would you like to postpone the upgrade warning message for 30 days?"
         + MessagesConstants.YES_NO_ANSWER_DESCRIPTION, System.getProperty("user.dir"));
+    // TODO: Check if this message and behavior is still valid, see: https://github.com/devonfw/cobigen/issues/1674
     boolean setToUserDir = ValidationUtils.yesNoPrompt("A timer is set for 30 days...: ",
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Allright...");
 
