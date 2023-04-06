@@ -152,6 +152,8 @@ public class TemplateSetConfiguration {
         templateSetFile);
 
     Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
+
+    // uses the 1st element because a template-set has only one trigger
     Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
 
     Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
