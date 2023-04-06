@@ -185,7 +185,8 @@ public class ConfigurationHolder {
    */
   public boolean isTemplateSetConfiguration() {
 
-    // TODO: Replace with a better logic for template set detection later f.e. groupid, see: https://github.com/devonfw/cobigen/issues/1660
+    // TODO: Replace with a better logic for template set detection later f.e. groupid, see:
+    // https://github.com/devonfw/cobigen/issues/1660
     if (this.configurationPath.toUri().getScheme().equals("jar")
         || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return false;
@@ -217,6 +218,8 @@ public class ConfigurationHolder {
   }
 
   /**
+   * Retrieves a template set configuration within a map of template sets by its template set folder path
+   *
    * @param templateSetConfigurations Cached templateSet configurations
    * @param templateSetFolder folder where to get the specific configuration from
    * @return the {@link TemplateSetConfiguration} instance saved in the given map
