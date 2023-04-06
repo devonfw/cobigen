@@ -297,13 +297,11 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
-   * Upgrades the given template configuration.
-   *
+   * Upgrades the given template configuration and sets the new template-set as the templatesProject after the upgrade
    */
   private void startTemplatesUpgrader() {
 
     try {
-      // set the new template-set as the templatesProject after the upgrade
       this.templatesProject = CobiGenFactory.startTemplatesUpgrader(this.templatesProject);
     } catch (Throwable e) {
       LOG.error("An error occurred while upgrading the templates.");
