@@ -60,12 +60,13 @@ public class GenerateJob implements IRunnableWithProgress {
 
     MDC.put(InfrastructureConstants.CORRELATION_ID, this.correlationId);
 
-    // when this handler is executed, we should we should be sure, that the selection is currently
-    // supported by the following implementation
+    // when this handler is executed, we should be sure, that the selection is currently supported by the following
+    // implementation
 
     try {
       LOG.info("Initiating CobiGen...");
       monitor.beginTask("Initiating CobiGen...", 1);
+      // TODO: Check this, see: https://github.com/devonfw/cobigen/issues/1679
       if (PostponeUtil.isTimePassed())
         checkMonolithicConfigurationException(monitor);
       CobiGenWrapper generator = GeneratorWrapperFactory.createGenerator(this.selection, monitor, true);
@@ -113,8 +114,8 @@ public class GenerateJob implements IRunnableWithProgress {
   }
 
   /**
-   * checks if monolithic configuration exists, handles the exception and lets the user decide if the templates should be
-   * upgraded.
+   * Checks if monolithic configuration exists, handles the exception and lets the user decide if the templates should
+   * be upgraded.
    *
    * @param monitor of run method
    */
