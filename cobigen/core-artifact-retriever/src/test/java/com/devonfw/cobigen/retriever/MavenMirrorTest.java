@@ -58,7 +58,7 @@ public class MavenMirrorTest {
   }
 
   /**
-   * Tests the injectInjectMirrorUrl method with the wildcard selector (*)
+   * Tests the injectMirrorUrl method with the wildcard selector (*)
    */
   @Test
   public void testInjectMirrorUrlMultipleMirrors() {
