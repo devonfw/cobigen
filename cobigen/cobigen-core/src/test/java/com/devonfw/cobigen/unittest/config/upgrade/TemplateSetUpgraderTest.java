@@ -65,6 +65,8 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   /**
    * Test the correct folder creation
    *
+   * TODO: Check if this test is still valid, see: https://github.com/devonfw/cobigen/issues/1682
+   *
    * @throws Exception test fails
    */
   @Test
@@ -91,6 +93,8 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
   /**
    * Test the correct folder creation
+   *
+   * TODO: Check if this test is still valid, see: https://github.com/devonfw/cobigen/issues/1682
    *
    * @throws Exception test fails
    */
