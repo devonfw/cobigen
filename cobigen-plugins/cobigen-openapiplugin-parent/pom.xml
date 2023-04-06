@@ -20,7 +20,7 @@
     <dependency>
       <groupId>com.github.maybeec</groupId>
       <artifactId>openapi-parser</artifactId>
-      <version>3.7.10</version>
+      <version>4.0.4</version>
     </dependency>
   </dependencies>
 </project>
