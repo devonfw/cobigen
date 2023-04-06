@@ -46,8 +46,7 @@ public class ConfigurationHolder {
   private ConfigurationProperties configurationProperties;
 
   /**
-   * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration. Since this
-   * is a Singleton, this constructor is private
+   * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
    *
    * @param configurationLocation the OS Filesystem path of the configuration location.
    */
