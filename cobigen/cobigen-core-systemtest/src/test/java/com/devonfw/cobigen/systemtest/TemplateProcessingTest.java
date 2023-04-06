@@ -115,6 +115,9 @@ public class TemplateProcessingTest extends AbstractApiTest {
   /**
    * Test of adapt templates with old CobiGen_Templates project existing
    *
+   * TODO: Check if this test is really validating a complete adapt of a monolithic template, see:
+   * https://github.com/devonfw/cobigen/issues/1681
+   *
    * @throws IOException if an Exception occurs
    */
   @Test
