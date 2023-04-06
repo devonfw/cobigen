@@ -86,6 +86,8 @@ public class GenerateCommand extends CommandCommons {
 
   /**
    * allows usage of the old monolithic template structure instead of the new template sets structure.
+   *
+   * TODO: Check if still needed, see: https://github.com/devonfw/cobigen/issues/1683
    */
   @Option(names = { "--force-monolithic-configuration",
   "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
