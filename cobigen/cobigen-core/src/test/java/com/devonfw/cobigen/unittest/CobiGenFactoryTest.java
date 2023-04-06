@@ -23,18 +23,6 @@ import junit.framework.TestCase;
 public class CobiGenFactoryTest {
 
   /**
-   * Root path to all resources used in this test case
-   */
-  private final static Path TEST_FILE_ROOT_PATH_DOWNLOADED = Paths.get(
-      "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_downloaded/template-sets");
-
-  /**
-   * Root path to resources used in this test case
-   */
-  private final static Path TEST_FILE_ROOT_PATH_ADAPTED = Paths.get(
-      "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_adapted/template-sets");
-
-  /**
    * JUnit Rule to temporarily create files and folders, which will be automatically removed after test execution
    */
   @Rule
@@ -49,8 +37,11 @@ public class CobiGenFactoryTest {
   @Test
   public void testTemplateSetDownloadedLoadedFromNewConfiguration() throws Exception {
 
+    Path downloadedPath = Paths.get(
+        "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_downloaded/template-sets");
+
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
-    FileUtils.copyDirectory(TEST_FILE_ROOT_PATH_DOWNLOADED.getParent().toFile(), folder);
+    FileUtils.copyDirectory(downloadedPath.getParent().toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
       CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri(), false);
     });
@@ -65,8 +56,10 @@ public class CobiGenFactoryTest {
   @Test
   public void testTemplateSetAdaptedLoadedFromNewConfiguration() throws Exception {
 
+    Path adaptedPath = Paths.get(
+        "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_adapted/template-sets");
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
-    FileUtils.copyDirectory(TEST_FILE_ROOT_PATH_ADAPTED.getParent().toFile(), folder);
+    FileUtils.copyDirectory(adaptedPath.getParent().toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
       CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri(), false);
     });
