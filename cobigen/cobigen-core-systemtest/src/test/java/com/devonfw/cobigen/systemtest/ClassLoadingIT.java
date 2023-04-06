@@ -151,6 +151,12 @@ public class ClassLoadingIT extends AbstractApiTest {
     assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
   }
 
+  /**
+   * TODO: Check if this test is still usable and what it does exactly, see:
+   * https://github.com/devonfw/cobigen/issues/1678
+   *
+   * @throws Exception test fails
+   */
   @Test
   public void testLoadEnumClass() throws Exception {
 
