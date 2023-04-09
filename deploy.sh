@@ -28,10 +28,10 @@ then
     gitCleanup
   fi
   cd "$SCRIPT_PATH"
-else
+elif [ "$DEPLOY_UPDATESITE" = "test" ]
   echo " ! Not detected cloned gh-pages branch in ../gh-pages folder."
   ORIGIN="$(git config --get remote.origin.url)"
-  SED_OUT=$(echo $ORIGIN | sed -r -E -n 's@^https:\/\/(github.com.*)@\1@p')
+  SED_OUT=$(echo $ORIGIN | sed -r -E -n 's@^.+(github.com.*)@\1@p')
   if [ -n "$SED_OUT" ] && [ -n "$BUILD_USER" ] && [ -n "$BUILD_USER_PASSWD" ]
   then
     ORIGIN="https://${BUILD_USER}:${BUILD_USER_PASSWD}@$SED_OUT"

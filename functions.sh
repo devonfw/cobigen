@@ -150,7 +150,7 @@ fi
 
 ## VALIDATE
 
-if [[ "$(basename "$0")" != "build.sh" ]]
+if [[ "$(basename $0)" != "build.sh" ]] && [[ -z "$GPG_KEYNAME" ]]
 then
   echo -e "\e[91m  !ERR! Cannot sign artifacts without passing a gpg key for signing. Please pass gpgkey=<your key> as a parameter or GPG_KEY as secret.\e[39m"
   exit 1
