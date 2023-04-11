@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Devon4Net.WebAPI.Implementation.Domain.Entities
+namespace Devon4Net.Application.WebAPI.Domain.Entities
 {
     /// <summary>
     /// Entity class for ${variables.entityName}

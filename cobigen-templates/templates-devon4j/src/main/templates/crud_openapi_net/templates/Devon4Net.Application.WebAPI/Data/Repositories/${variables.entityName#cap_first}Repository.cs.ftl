@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+using Devon4Net.Application.WebAPI.Business.${variables.entityName?cap_first}Management.Exceptions;
+using Devon4Net.Application.WebAPI.Domain.Database;
+using Devon4Net.Application.WebAPI.Domain.Entities;
+using Devon4Net.Application.WebAPI.Domain.RepositoryInterfaces;
 using Devon4Net.Domain.UnitOfWork.Repository;
-using Devon4Net.Infrastructure.Log;
-using Devon4Net.WebAPI.Implementation.Domain.Database;
-using Devon4Net.WebAPI.Implementation.Domain.Entities;
-using Devon4Net.WebAPI.Implementation.Domain.RepositoryInterfaces;
-using Devon4Net.WebAPI.Implementation.Business.${variables.entityName?cap_first}Management.Exceptions;
+using Devon4Net.Infrastructure.Common;
+using System.Linq.Expressions;
 
-namespace Devon4Net.WebAPI.Implementation.Data.Repositories
+namespace Devon4Net.Application.WebAPI.Data.Repositories
 {
     /// <summary>
     /// ${variables.entityName?cap_first} Repository

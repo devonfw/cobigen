@@ -1,7 +1,7 @@
-using Devon4Net.WebAPI.Implementation.Domain.Entities;
+using Devon4Net.Application.WebAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Devon4Net.WebAPI.Implementation.Domain.Database
+namespace Devon4Net.Application.WebAPI.Domain.Database
 {
     /// <summary>
     /// Cobigen database context definition

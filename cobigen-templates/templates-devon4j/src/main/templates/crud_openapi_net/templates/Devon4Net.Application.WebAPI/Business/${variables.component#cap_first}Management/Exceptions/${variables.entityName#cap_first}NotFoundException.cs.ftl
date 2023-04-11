@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Devon4Net.WebAPI.Implementation.Business.${variables.entityName?cap_first}Management.Exceptions
+namespace Devon4Net.Application.WebAPI.Business.${variables.entityName?cap_first}Management.Exceptions
 {
     /// <summary>
     /// Custom exception ${variables.entityName?cap_first}NotFoundException

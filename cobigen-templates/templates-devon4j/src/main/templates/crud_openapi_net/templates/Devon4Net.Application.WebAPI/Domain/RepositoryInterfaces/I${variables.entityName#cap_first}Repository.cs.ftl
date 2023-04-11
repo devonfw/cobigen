@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Devon4Net.Domain.UnitOfWork.Repository;
-using Devon4Net.WebAPI.Implementation.Domain.Entities;
+using Devon4Net.Application.WebAPI.Domain.Entities;
+using System.Linq.Expressions;
 
-namespace Devon4Net.WebAPI.Implementation.Domain.RepositoryInterfaces
+namespace Devon4Net.Application.WebAPI.Domain.RepositoryInterfaces
 {
     /// <summary>
     /// ${variables.entityName?cap_first}Repository interface

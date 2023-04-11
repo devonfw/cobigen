@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Devon4Net.Infrastructure.Log;
+using Devon4Net.Application.WebAPI.Business.${variables.component?cap_first}Management.Service;
+using Devon4Net.Application.WebAPI.Business.${variables.entityName?cap_first}Management.Dto;
+using Devon4Net.Infrastructure.Common;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_first}Management.Service;
-using Devon4Net.WebAPI.Implementation.Business.${variables.entityName?cap_first}Management.Dto;
 
-namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_first}Management.Controller
+namespace Devon4Net.Application.WebAPI.Business.${variables.component?cap_first}Management.Controller
 {
     /// <summary>
     /// ${variables.component?cap_first} controller
@@ -100,7 +98,7 @@ namespace Devon4Net.WebAPI.Implementation.Business.${variables.component?cap_fir
         [ProducesResponseType(500)]
         public async Task<IActionResult> FindAll${variables.entityName?cap_first}s()
         {
-            Devon4NetLogger.Debug("Executing FindAll${variables.entityName?cap_first} from controller ${variables.component?cap_first}Controller");    
+            Devon4NetLogger.Debug("Executing FindAll${variables.entityName?cap_first} from controller ${variables.component?cap_first}Controller");
             return Ok(await _${variables.component?cap_first}Service.FindAll${variables.entityName?cap_first}s().ConfigureAwait(false));
         }
     <#assign pathInUse = "/" + variables.entityName?lower_case + "/{id}/,/" + variables.entityName?lower_case + "/search/">
