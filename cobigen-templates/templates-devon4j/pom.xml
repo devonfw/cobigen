@@ -54,6 +54,21 @@
       <version>3.10.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+      <dependency>
+          <groupId>com.devonfw.cobigen</groupId>
+          <artifactId>javaplugin</artifactId>
+          <scope>test</scope>
+      </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>tempeng-freemarker</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

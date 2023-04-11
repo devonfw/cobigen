@@ -31,7 +31,7 @@ public class JavaUtil {
 
   /**
    * Returns the Object version of a Java primitive or the input if the input isn't a java primitive
-   * 
+   *
    * @param simpleType String
    * @return the corresponding object wrapper type simple name of the input if the input is the name of a primitive java
    *         type. The input itself if not. (e.g. "int" results in "Integer")
@@ -62,7 +62,7 @@ public class JavaUtil {
 
     if (pojoClass == null) {
       throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+              "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
 
     if (equalsJavaPrimitive(pojoClass, fieldName)) {
@@ -122,7 +122,7 @@ public class JavaUtil {
    * @throws SecurityException if the field cannot be accessed.
    */
   public boolean equalsJavaPrimitive(Class<?> pojoClass, String fieldName)
-      throws NoSuchFieldException, SecurityException {
+          throws NoSuchFieldException, SecurityException {
 
     if (pojoClass == null) {
       return false;
@@ -169,10 +169,10 @@ public class JavaUtil {
    * @throws SecurityException if the field cannot be accessed.
    */
   public boolean equalsJavaPrimitiveIncludingArrays(Class<?> pojoClass, String fieldName)
-      throws NoSuchFieldException, SecurityException {
+          throws NoSuchFieldException, SecurityException {
 
     return equalsJavaPrimitive(pojoClass, fieldName) || (pojoClass.getDeclaredField(fieldName).getType().isArray()
-        && pojoClass.getDeclaredField(fieldName).getType().getComponentType().isPrimitive());
+            && pojoClass.getDeclaredField(fieldName).getType().getComponentType().isPrimitive());
   }
 
   /**
@@ -206,7 +206,7 @@ public class JavaUtil {
    * @throws SecurityException if the field cannot be accessed.
    */
   public String castJavaPrimitives(Class<?> pojoClass, String fieldName)
-      throws NoSuchFieldException, SecurityException {
+          throws NoSuchFieldException, SecurityException {
 
     if (equalsJavaPrimitive(pojoClass, fieldName)) {
       return String.format("((%1$s)%2$s)", boxJavaPrimitives(pojoClass, fieldName), fieldName);
@@ -334,7 +334,7 @@ public class JavaUtil {
 
     if (pojoClass == null) {
       throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+              "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
     String s = "-";
     Method method = findMethod(pojoClass, methodName);
@@ -357,11 +357,11 @@ public class JavaUtil {
    */
   @SuppressWarnings("unchecked")
   public String getReturnTypeOfMethodAnnotatedWith(Class<?> pojoClass, String annotatedClassName)
-      throws ClassNotFoundException {
+          throws ClassNotFoundException {
 
     if (pojoClass == null) {
       throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+              "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
 
     Method[] methods = pojoClass.getDeclaredMethods();
@@ -414,7 +414,7 @@ public class JavaUtil {
 
     if (pojoClass == null) {
       throw new IllegalAccessError(
-          "Class object is null. Cannot generate template as it might obviously depend on reflection.");
+              "Class object is null. Cannot generate template as it might obviously depend on reflection.");
     }
     for (Method m : pojoClass.getMethods()) {
       if (m.getName().equals(methodName)) {
