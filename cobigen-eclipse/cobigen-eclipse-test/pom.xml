@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>com.devonfw.cobigen.eclipse.test</artifactId>
   <name>CobiGen - Eclipse Plug-In E2E Test</name>
@@ -114,131 +116,18 @@
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>target-platform-configuration</artifactId>
             <configuration>
-              <dependency-resolution>
-                <extraRequirements>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>org.eclipse.m2e.feature.feature.group</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.eclipse.feature.feature.group</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.htmlplugin</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.javaplugin</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.jsonplugin</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.propertyplugin</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.textmerger</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.tsplugin</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.xmlplugin</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.openapiplugin</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.tempeng-freemarker</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                  <requirement>
-                    <type>p2-installable-unit</type>
-                    <id>com.devonfw.cobigen.tempeng-velocity</id>
-                    <versionRange>0.0.0</versionRange>
-                  </requirement>
-                </extraRequirements>
-              </dependency-resolution>
+              <target>
+                <artifact>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>cobigen-eclipse-releng</artifactId>
+		              <version>${revision}</version>
+		              <relativePath>../cobigen-eclipse-releng/pom.xml</relativePath>
+                </artifact>
+              </target>
             </configuration>
           </plugin>
         </plugins>
       </build>
-      <repositories>
-        <repository>
-          <id>swtbot</id>
-          <url>http://download.eclipse.org/technology/swtbot/releases/latest/</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>htmlplugin</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-htmlplugin/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>javaplugin</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-javaplugin-parent/cobigen-javaplugin/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>jsonplugin</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-jsonplugin/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>openapiplugin</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-openapiplugin-parent/cobigen-openapiplugin/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>propertyplugin</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-propertyplugin/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>freemarker</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-templateengines/cobigen-tempeng-freemarker/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>velocity</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-templateengines/cobigen-tempeng-velocity/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>textmerger</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-textmerger/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>tsplugin</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-tsplugin/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-        <repository>
-          <id>xmlplugin</id>
-          <url>file:///${maven.multiModuleProjectDirectory}/cobigen-plugins/cobigen-xmlplugin/target/repository</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
     </profile>
   </profiles>
 </project>

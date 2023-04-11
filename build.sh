@@ -5,6 +5,15 @@ echo ""
 echo "##########################################"
 echo ""
 
+
+if [[ -f "$(dirname ${0})/cobigen-eclipse/cobigen-eclipse-releng/cobigen-eclipse-releng.target" ]]
+then
+  log_step "Eclipse target platform specification already built"
+else
+  log_step "Building eclipse target platform specification"
+  doRunCommand "mvn install $MVN_SETTINGS --projects cobigen-eclipse/cobigen-eclipse-releng/ $DEBUG $PARALLELIZED $BATCH_MODE"
+fi
+
 if [[ "$NO_CLEAN" = false ]]
 then
   log_step "Cleanup Projects"

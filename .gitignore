@@ -49,3 +49,4 @@ cobigen/cobigen-core-systemtest/src/test/resources/testdata/systemtest/TemplateP
 cobigen/cobigen-core-systemtest/src/test/resources/testdata/systemtest/TemplateProcessingTest/template-sets/downloaded/crud-java-server-app-1.0.0-sources.jar
 cobigen/cobigen-core-systemtest/src/test/resources/testdata/systemtest/TemplateProcessingTest/template-sets/downloaded/crud-java-server-app-complex-1.0.0.jar
 cobigen/cobigen-core-systemtest/src/test/resources/testdata/systemtest/TemplateProcessingTest/template-sets/downloaded/crud-java-server-app-complex-1.0.0-sources.jar
+cobigen-eclipse/cobigen-eclipse-releng/cobigen-eclipse-releng.target

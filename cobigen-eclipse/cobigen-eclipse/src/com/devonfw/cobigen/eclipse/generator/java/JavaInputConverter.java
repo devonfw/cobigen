@@ -16,6 +16,7 @@ import com.devonfw.cobigen.api.InputInterpreter;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.exception.MergeException;
 import com.devonfw.cobigen.eclipse.common.exceptions.GeneratorCreationException;
+import com.devonfw.cobigen.eclipse.common.exceptions.InvalidInputException;
 import com.devonfw.cobigen.eclipse.common.tools.ClassLoaderUtil;
 import com.google.common.collect.Lists;
 
@@ -33,7 +34,7 @@ public class JavaInputConverter {
    * @throws GeneratorCreationException if any exception occurred during converting the inputs or creating the generator
    */
   public static List<Object> convertInput(List<Object> javaElements, InputInterpreter inputInterpreter)
-      throws GeneratorCreationException {
+      throws InvalidInputException {
 
     List<Object> convertedInputs = Lists.newLinkedList();
 
@@ -49,12 +50,11 @@ public class JavaInputConverter {
               ClassLoaderUtil.getProjectClassLoader(frag.getJavaProject()));
           convertedInputs.add(packageFolder);
         } catch (MalformedURLException e) {
-          throw new GeneratorCreationException(
-              "An internal exception occurred while building the project class loader.", e);
+          throw new InvalidInputException("An internal exception occurred while building the project class loader.", e);
         } catch (CoreException e) {
-          throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
+          throw new InvalidInputException("An eclipse internal exception occurred.", e);
         } catch (InputReaderException e) {
-          throw new GeneratorCreationException("Could not read from resource " + elem.toString(), e);
+          throw new InvalidInputException("Could not read from resource " + elem.toString(), e);
         }
       } else if (elem instanceof ICompilationUnit) {
         // Take first input type as precondition for the input is that all input types are part of the
@@ -62,7 +62,7 @@ public class JavaInputConverter {
         try {
           IType[] types = ((ICompilationUnit) elem).getTypes();
           if (types.length < 1) {
-            throw new GeneratorCreationException("The input does not declare a class");
+            throw new InvalidInputException("The input does not declare a class");
           }
           IType rootType = types[0];
           try {
@@ -72,17 +72,17 @@ public class JavaInputConverter {
                 StandardCharsets.UTF_8, projectClassLoader);
             convertedInputs.add(input);
           } catch (MalformedURLException e) {
-            throw new GeneratorCreationException(
+            throw new InvalidInputException(
                 "An internal exception occurred while loading Java class " + rootType.getFullyQualifiedName(), e);
           } catch (InputReaderException e) {
-            throw new GeneratorCreationException("Could not read from resource " + elem.toString(), e);
+            throw new InvalidInputException("Could not read from resource " + elem.toString(), e);
           }
         } catch (MergeException e) {
-          throw new GeneratorCreationException(
+          throw new InvalidInputException(
               "Could not parse Java base file: " + ((ICompilationUnit) elem).getElementName() + ":\n" + e.getMessage(),
               e);
         } catch (CoreException e) {
-          throw new GeneratorCreationException("An eclipse internal exception occurred.", e);
+          throw new InvalidInputException("An eclipse internal exception occurred.", e);
         }
       }
     }
