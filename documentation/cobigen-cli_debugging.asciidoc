@@ -13,10 +13,12 @@ image:images/debugging/cli-debug-configuration.png[]
 
 6. Under the Arguments tab, set the Working Directory to the path, where CLI is being executed (uses destination of call as root).
 
-The following steps are only required for debugging tests or remote debugging of CLI. Commands added to arguments can be directly debugged already. +
-==== Warning: ====
+The following steps are only required for debugging tests or remote debugging of CLI. Commands added to arguments can be directly debugged already.
+
+==== Warning:
 Without those steps the active cobigen home will be used for the tests! +
 With them the tests use a temporary folder instead.
+
 7. Open cobigen.bat and add the following flag +
 *-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1044* +
 to the command before "-cp": +
