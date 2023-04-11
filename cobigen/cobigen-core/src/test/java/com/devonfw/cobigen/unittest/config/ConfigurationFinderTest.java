@@ -21,9 +21,10 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
+import junit.framework.TestCase;
+
 /**
- * Class to test the method loadTemplateSetConfigurations in ConfigurationFinder
- *
+ * This {@link TestCase} tests the {@link ConfigurationFinder}
  */
 public class ConfigurationFinderTest {
 
@@ -34,7 +35,7 @@ public class ConfigurationFinderTest {
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if invalid properties found, to load the default
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if invalid properties found, to load the default
    * values.
    *
    * @throws IOException test fails
@@ -52,7 +53,7 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if valid properties found, to load these valid
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if valid properties found, to load these valid
    * properties correctly.
    *
    * @throws IOException test fails
@@ -73,7 +74,7 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if valid properties found, to load these valid
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if valid properties found, to load these valid
    * properties correctly.
    *
    * @throws IOException test fails
@@ -90,8 +91,8 @@ public class ConfigurationFinderTest {
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if file *.properties not found , to load the
-   * default values.
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if file *.properties not found , to load the default
+   * values.
    *
    * @throws IOException test fails
    *
