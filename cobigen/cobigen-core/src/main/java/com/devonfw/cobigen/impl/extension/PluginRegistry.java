@@ -1,5 +1,6 @@
 package com.devonfw.cobigen.impl.extension;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,7 +40,9 @@ public class PluginRegistry {
   private static Map<String, TriggerInterpreter> registeredTriggerInterpreter = Maps
       .<String, TriggerInterpreter> newHashMap();
 
-  /** Currently registered {@link TriggerInterpreter}s mapped by their supporting file extensions */
+  /**
+   * Currently registered {@link TriggerInterpreter}s mapped by their supporting file extensions
+   */
   private static Multimap<String, TriggerInterpreter> registeredTriggerInterpreterByFileExtension = HashMultimap
       .<String, TriggerInterpreter> create();
 
@@ -63,7 +66,7 @@ public class PluginRegistry {
   private static <T extends GeneratorPluginActivator> GeneratorPluginActivator loadPlugin(Class<T> generatorPlugin) {
 
     try {
-      Object plugin = generatorPlugin.newInstance();
+      Object plugin = generatorPlugin.getDeclaredConstructor().newInstance();
       LOG.info("Register CobiGen Plug-in '{}'.", generatorPlugin.getCanonicalName());
       if (plugin instanceof GeneratorPluginActivator) {
         // Collect Mergers
@@ -87,7 +90,8 @@ public class PluginRegistry {
             GeneratorPluginActivator.class.getCanonicalName());
         return null;
       }
-    } catch (InstantiationException | IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+        | NoSuchMethodException | SecurityException e) {
       throw new CobiGenRuntimeException(
           "Could not intantiate CobiGen Plug-in '" + generatorPlugin.getCanonicalName() + "'.", e);
     }
