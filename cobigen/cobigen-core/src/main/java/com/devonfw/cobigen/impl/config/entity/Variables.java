@@ -10,8 +10,6 @@ import com.devonfw.cobigen.impl.config.reader.CobiGenPropertiesReader;
 
 import io.github.mmm.base.text.CaseSyntax;
 
-import io.github.mmm.base.text.CaseSyntax;
-
 /**
  * This class is a container for variables that can inherit from parent {@link Variables} building a hierarchy. The
  * {@link #containsKey(String) keys} for {@link #get(String) getting} and {@link #put(String, Object) setting} variables
