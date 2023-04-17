@@ -20,9 +20,7 @@ public class ConfigurationConstants {
   /** Templates configuration file name */
   public static final String TEMPLATES_CONFIG_FILENAME = "templates.xml";
 
-  /**
-   * Template-set configuration file name (File obtained after merging context.xml and templates.xml)
-   */
+  /** Template Set configuration file name */
   public static final String TEMPLATE_SET_CONFIG_FILENAME = "template-set.xml";
 
   /** Template Set filename for Freemarker functions */

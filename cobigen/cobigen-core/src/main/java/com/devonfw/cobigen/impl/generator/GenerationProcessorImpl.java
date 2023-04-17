@@ -283,11 +283,14 @@ public class GenerationProcessorImpl implements GenerationProcessor {
             // gets classpath cache file within template-sets folder
             cpCacheFile = configLocation.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
 
+            // gets classpath cache file within template-sets folder
+            cpCacheFile = configLocation.resolve(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+
             // gets classpath cache file from parent directory of configuration location of monolithic template jar
             if (!this.configurationHolder.isTemplateSetConfiguration() && this.configurationHolder.isJarConfig()) {
-                cpCacheFile = configLocation
-                    .resolveSibling(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
-              }
+              cpCacheFile = configLocation
+                  .resolveSibling(String.format(MavenConstants.CLASSPATH_CACHE_FILE, pomFileHash));
+            }
 
             combinedClassLoader = MavenUtil.addURLsFromCachedClassPathsFile(cpCacheFile, pomFile, combinedClassLoader);
           }

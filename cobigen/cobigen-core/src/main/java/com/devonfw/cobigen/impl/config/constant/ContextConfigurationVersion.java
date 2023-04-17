@@ -33,7 +33,7 @@ public enum ContextConfigurationVersion {
   /**
    * ChangeLog:
    * <ul>
-   * <li>added links and tags</li>
+   * <li>added links and tags, made templateFolder optional</li>
    * </ul>
    */
   v3_0(3.0f, false);
