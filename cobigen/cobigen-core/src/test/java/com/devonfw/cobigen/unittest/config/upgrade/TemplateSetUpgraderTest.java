@@ -24,7 +24,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,48 +39,39 @@ import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 /**
  * Test suite for {@link TemplateSetUpgrader}
  */
-
 public class TemplateSetUpgraderTest extends AbstractUnitTest {
 
   /** Root path to all resources used in this test case */
   private static String testFileRootPath = "src/test/resources/testdata/unittest/config/upgrade/TemplateSetUpgraderTest/";
 
-  /** Path to the template folder */
-  private Path templateLocation;
-
   /** JUnit Rule to create and automatically cleanup temporarily files/folders */
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  private Path currentHome;
-
-  @Before
-  public void prepare() throws IOException {
-
-    this.currentHome = this.tempFolder.newFolder(ConfigurationConstants.DEFAULT_HOME_DIR_NAME).toPath();
-
-  }
-
   /**
    * Test the correct folder creation
    *
-   * @throws Exception
+   * TODO: Check if this test is still valid, see: https://github.com/devonfw/cobigen/issues/1682
+   *
+   * @throws Exception test fails
    */
   @Test
-  @Ignore
+  @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
   public void testTemplateSetUpgrade() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
-    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+    Path currentHome = this.tempFolder.newFolder(ConfigurationConstants.DEFAULT_HOME_DIR_NAME).toPath();
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), currentHome.toFile());
+    Path templateLocation = currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
         .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).execute(() -> {
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-      templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
+      templateSetUpgrader.upgradeTemplatesToTemplateSets(templateLocation);
 
-      Path templateSetsPath = this.templateLocation.getParent().getParent()
+      Path templateSetsPath = templateLocation.getParent().getParent()
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-      Path backup = this.templateLocation.getParent().getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
+      Path backup = templateLocation.getParent().getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
       Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
       assertThat(templateSetsPath).exists();
       assertThat(templateSetsAdapted).exists();
@@ -92,21 +82,25 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   /**
    * Test the correct folder creation
    *
-   * @throws Exception
+   * TODO: Check if this test is still valid, see: https://github.com/devonfw/cobigen/issues/1682
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testTemplateSetUpgradeWithoutTemplatesFolder() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1/templates"), this.currentHome.toFile());
-    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    Path currentHome = this.tempFolder.newFolder(ConfigurationConstants.DEFAULT_HOME_DIR_NAME).toPath();
 
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1/templates"), currentHome.toFile());
+    Path templateLocation = currentHome.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).execute(() -> {
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-      templateSetUpgrader.upgradeTemplatesToTemplateSets(this.templateLocation);
+      templateSetUpgrader.upgradeTemplatesToTemplateSets(templateLocation);
 
-      Path templateSetsPath = this.templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+      Path templateSetsPath = templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-      Path backup = this.templateLocation.getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
+      Path backup = templateLocation.getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
       assertThat(templateSetsPath).exists();
       assertThat(templateSetsAdapted).exists();
       assertThat(backup).exists();
@@ -116,27 +110,29 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
   /**
    * Tests if the Template files have been correctly copied into both the new template set and the backup folder
    *
-   * @throws Exception
+   * @throws Exception test fails
    */
   @Test
-  @Ignore
+  @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
   public void testTemplateSetUpgradeCopyOfTemplates() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
-    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+    Path currentHome = this.tempFolder.newFolder(ConfigurationConstants.DEFAULT_HOME_DIR_NAME).toPath();
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), currentHome.toFile());
+    Path templateLocation = currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
         .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
-      Path templatesFolder = this.templateLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).execute(() -> {
+      Path templatesFolder = templateLocation.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
       int OldTemplatesFileCount = templatesFolder.toFile().list().length;
-      List<Path> templatesFolderPaths = Files.walk(this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER))
+      List<Path> templatesFolderPaths = Files.walk(currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER))
           .map(Path::getFileName).collect(Collectors.toList());
 
       TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
       Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> newContextConfigurations = templateSetUpgrader
-          .upgradeTemplatesToTemplateSets(this.templateLocation);
+          .upgradeTemplatesToTemplateSets(templateLocation);
 
-      Path newTemplatesPath = this.templateLocation.getParent().getParent()
+      Path newTemplatesPath = templateLocation.getParent().getParent()
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).resolve(ConfigurationConstants.ADAPTED_FOLDER);
       Set<File> NewPathFilesSet = new HashSet<>(Arrays.asList(newTemplatesPath.toFile().listFiles()));
 
@@ -148,8 +144,9 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
         validateContextConfigurationFile(contextpath, "v3.0");
 
       }
-      List<Path> backupFolderFiles = Files.walk(this.currentHome.resolve(ConfigurationConstants.BACKUP_FOLDER)
-          .resolve(ConfigurationConstants.TEMPLATES_FOLDER)).map(Path::getFileName).collect(Collectors.toList());
+      List<Path> backupFolderFiles = Files.walk(
+          currentHome.resolve(ConfigurationConstants.BACKUP_FOLDER).resolve(ConfigurationConstants.TEMPLATES_FOLDER))
+          .map(Path::getFileName).collect(Collectors.toList());
       assertThat(backupFolderFiles).containsAll(templatesFolderPaths);
 
       for (File file : NewPathFilesSet) {
@@ -169,7 +166,7 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    * @throws SAXException if a fatal error is found.
    * @throws IOException if the underlying reader throws an IOException.
    */
-  @Ignore
+  @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
   private void validateContextConfigurationFile(Path contextpath, String schemaVersion)
       throws SAXException, IOException {
 
@@ -196,21 +193,23 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
    * Tests if the context.xml has been created in the correct location and that it was correctly created as a v3.0
    * schema
    *
-   * @throws Exception
+   * @throws Exception test fails
    */
   @Test
-  @Ignore
+  @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
   public void testTemplateSetUpgradeContextSplit() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), this.currentHome.toFile());
-    this.templateLocation = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
+    Path currentHome = this.tempFolder.newFolder(ConfigurationConstants.DEFAULT_HOME_DIR_NAME).toPath();
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1"), currentHome.toFile());
+    Path templateLocation = currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER)
         .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, this.currentHome.toString()).execute(() -> {
+    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).execute(() -> {
       ContextConfigurationUpgrader upgrader = new ContextConfigurationUpgrader();
-      upgrader.upgradeConfigurationToLatestVersion(this.templateLocation, BackupPolicy.ENFORCE_BACKUP);
+      upgrader.upgradeConfigurationToLatestVersion(templateLocation, BackupPolicy.ENFORCE_BACKUP);
 
-      Path newTemplatesPath = this.templateLocation.getParent().getParent()
+      Path newTemplatesPath = templateLocation.getParent().getParent()
           .resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
       newTemplatesPath = newTemplatesPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
 

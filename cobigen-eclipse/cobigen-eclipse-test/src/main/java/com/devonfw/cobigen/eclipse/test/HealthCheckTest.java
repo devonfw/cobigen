@@ -49,5 +49,5 @@ public class HealthCheckTest extends SystemTest {
     EclipseCobiGenUtils.runAndCaptureHealthCheckWithMonolithicConfiguration(bot);
   }
 
-  // TODO: Add a health check test for new template sets
+  // TODO: Add a health check test for new template sets, see: https://github.com/devonfw/cobigen/issues/1648
 }

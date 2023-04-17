@@ -13,9 +13,9 @@ function show_help() {
 echo -e "\e[39m"
 echo "##########################################"
 echo ""
-cat << EOF  
+cat << EOF
 
-Usage of CobiGen build & deploy script  
+Usage of CobiGen build & deploy script
 
   -b | --batch             Batch mode to prevent from issues like https://stackoverflow.com/a/66801171
   -c | --coverage          Create code coverage report
@@ -43,7 +43,7 @@ PARALLELIZED=""
 DEBUG=""
 DRYRUN=false
 NO_CLEAN=false
-GPG_KEYNAME="" 
+GPG_KEYNAME=""
 COVERAGE=""
 COV_REPORT=false
 
@@ -89,8 +89,8 @@ do
       ;;
     -C|--components)
       shift
-      IFS=',' read -r -a COMPONENTS <<< $1
-      COMPONENTS_TO_BUILD+=(${COMPONENTS[@]})
+      IFS=',' read -r -a COMPONENTS <<< "$1"
+      COMPONENTS_TO_BUILD+=(${COMPONENTS[*]})
       echo -e "\e[92m  > Build components $( IFS=$','; echo "${COMPONENTS[*]}" )\e[39m"
       ;;
     -d|--dirty)
@@ -99,7 +99,7 @@ do
       ;;
     -g|--gpgkey)
       shift
-      GPG_KEYNAME=$1
+      GPG_KEYNAME="$1"
       echo -e "\e[92m  > GPG Key set to $GPG_KEYNAME\e[39m"
       ;;
     -h|--help)
@@ -114,11 +114,11 @@ do
       COV_REPORT=true
       echo -e "\e[92m  > Create coverage report\e[39m"
       ;;
-    -s|--repo-settings) 
+    -s|--repo-settings)
       MVN_SETTINGS="-s .mvn/ci-settings.xml"
       echo -e "\e[92m  > Executing maven with settings from .mvn/settings.xml \e[39m"
       ;;
-    -t|--test) 
+    -t|--test)
       ENABLED_TEST=""
       echo -e "\e[92m  > With test execution\e[39m"
       ;;
@@ -145,12 +145,12 @@ done
 if [[ ${#COMPONENTS_TO_BUILD[@]} = 0 ]]
 then
   echo -e "\e[92m  > Build all components\e[39m"
-  COMPONENTS_TO_BUILD=${ALL_COMPONENTS[@]}
+  COMPONENTS_TO_BUILD=${ALL_COMPONENTS[*]}
 fi
 
 ## VALIDATE
 
-if [[ $(basename $0) != "build.sh" ]]
+if [[ "$(basename $0)" != "build.sh" ]] && [[ -z "$GPG_KEYNAME" ]]
 then
   echo -e "\e[91m  !ERR! Cannot sign artifacts without passing a gpg key for signing. Please pass gpgkey=<your key> as a parameter or GPG_KEY as secret.\e[39m"
   exit 1
@@ -202,7 +202,7 @@ function doRunCommand() {
 # $1: yes/no question
 function doAskQuestion() {
 	local question="${1}"
-  
+
 	local answer
 	while true
 	do
@@ -253,6 +253,6 @@ function pauseUntilKeyPressed() {
   if [[ "$SILENT" = false ]]
   then
     echo ""
-    read -p "Press any key to resume with cleanup after reviewing the deployments ..."  
+    read -p "Press any key to resume with cleanup after reviewing the deployments ..."
   fi
 }

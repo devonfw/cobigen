@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  version="2.1">
-  <trigger id="valid" type="java" templateFolder="valid">
-    <matcher type="fqn" value="*">
-    </matcher>
-  </trigger>
-</contextConfiguration>

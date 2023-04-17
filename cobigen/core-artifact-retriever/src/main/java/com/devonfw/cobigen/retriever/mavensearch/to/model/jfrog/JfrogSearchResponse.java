@@ -78,6 +78,12 @@ public class JfrogSearchResponse extends AbstractSearchResponse {
   @Override
   public String retrieveRestSearchApiTargetLink(String repositoryUrl, String groupId) {
 
-    return repositoryUrl + "/" + MavenSearchRepositoryConstants.JFROG_REST_SEARCH_API_PATH + "?g=" + groupId;
+    String rootUrl = AbstractSearchResponse.createRootURL(repositoryUrl);
+    if (rootUrl != null) {
+      return rootUrl + "/" + MavenSearchRepositoryConstants.JFROG_REST_SEARCH_API_PATH + "?g=" + groupId;
+    } else {
+      return null;
+    }
+
   }
 }

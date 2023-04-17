@@ -86,6 +86,8 @@ public class GenerateCommand extends CommandCommons {
 
   /**
    * allows usage of the old monolithic template structure instead of the new template sets structure.
+   *
+   * TODO: Check if still needed, see: https://github.com/devonfw/cobigen/issues/1683
    */
   @Option(names = { "--force-monolithic-configuration",
   "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
@@ -297,13 +299,11 @@ public class GenerateCommand extends CommandCommons {
   }
 
   /**
-   * Upgrades the given template configuration.
-   *
+   * Upgrades the given template configuration and sets the new template-set as the templatesProject after the upgrade
    */
   private void startTemplatesUpgrader() {
 
     try {
-      // set the new template-set as the templatesProject after the upgrade
       this.templatesProject = CobiGenFactory.startTemplatesUpgrader(this.templatesProject);
     } catch (Throwable e) {
       LOG.error("An error occurred while upgrading the templates.");
@@ -313,13 +313,12 @@ public class GenerateCommand extends CommandCommons {
 
   /**
    * Asks the user if he wants to postpone the upgrade message for 30 days.
-   *
-   * @throws IOException
    */
   private void askUserToPostponeUpgrade() {
 
     LOG.info("Would you like to postpone the upgrade warning message for 30 days?"
         + MessagesConstants.YES_NO_ANSWER_DESCRIPTION, System.getProperty("user.dir"));
+    // TODO: Check if this message and behavior is still valid, see: https://github.com/devonfw/cobigen/issues/1674
     boolean setToUserDir = ValidationUtils.yesNoPrompt("A timer is set for 30 days...: ",
         MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Allright...");
 

@@ -14,9 +14,13 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -41,7 +45,6 @@ import com.devonfw.cobigen.impl.util.FileSystemUtil;
  * template structure.
  */
 public class TemplateAdapterImpl implements TemplateAdapter {
-
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(TemplateAdapterImpl.class);
 
@@ -127,17 +130,34 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       }
 
       if (extract) {
-        if (Files.exists(destination) && forceOverride) {
+        if (!isEmpty(destination) && forceOverride) {
           LOG.info("Override the existing destination folder {}", destination);
           deleteDirectoryRecursively(destination);
         }
 
-        extractArchive(templateSetJar, destination);
-        // com folder with precompiled util classes is not needed. The utils compiled at first generation into the
-        // target folder
-        if (Files.exists(destination.resolve("com"))) {
-          FileUtils.deleteDirectory(destination.resolve("com").toFile());
+        Path resourcesDestinationPath = destination.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
+        // extract sources jar to target directory
+        String sourcesFileName = templateSetJar.getFileName().toString().replace(".jar", "-sources.jar");
+
+        extractArchive(templateSetJar.getParent().resolve(sourcesFileName), resourcesDestinationPath);
+
+        // delete META-INF folder
+        if (resourcesDestinationPath.resolve("META-INF").toFile().exists()) {
+          FileUtils.deleteDirectory(resourcesDestinationPath.resolve("META-INF").toFile());
         }
+
+        // create src/main/java directory
+        Files.createDirectories(destination.resolve("src/main/java"));
+
+        // move com folder to src/main/java/com
+        Files.move(resourcesDestinationPath.resolve("com"), destination.resolve("src/main/java/com"),
+            StandardCopyOption.REPLACE_EXISTING);
+
+        URI zipFile = URI.create("jar:file:" + templateSetJar.toUri().getPath());
+        try (FileSystem fs = FileSystemUtil.getOrCreateFileSystem(zipFile)) {
+          Files.copy(fs.getPath("pom.xml"), destination.resolve("pom.xml"), StandardCopyOption.REPLACE_EXISTING);
+        }
+
       }
     }
   }
@@ -175,56 +195,73 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       LOG.info("Override the existing destination folder {}", destinationPath);
       deleteDirectoryRecursively(destinationPath);
     }
-
     Path sourcesJarPath = TemplatesJarUtil.getJarFile(true, this.templatesLocation);
     Path classesJarPath = TemplatesJarUtil.getJarFile(false, this.templatesLocation);
-
     if (sourcesJarPath == null && classesJarPath == null) {
       LOG.info("No monolithic jar found in {}!", this.templatesLocation);
       return;
     }
-
     LOG.debug("Processing jar file @ {}", sourcesJarPath);
-
     // extract sources jar to target directory
     extractArchive(sourcesJarPath, destinationPath);
-
     // create src/main/java directory
     Files.createDirectory(destinationPath.resolve("src/main/java"));
-
     // move com folder to src/main/java/com
     Files.move(destinationPath.resolve("com"), destinationPath.resolve("src/main/java/com"),
         StandardCopyOption.REPLACE_EXISTING);
-
     // create src/main/resources directory
     Files.createDirectory(destinationPath.resolve("src/main/resources"));
-
     // move META-INF folder to src/main/resources
     Files.move(destinationPath.resolve("META-INF"), destinationPath.resolve("src/main/resources/META-INF"),
         StandardCopyOption.REPLACE_EXISTING);
-
     // delete MANIFEST.MF
     Files.deleteIfExists(destinationPath.resolve("src/main/resources/META-INF/MANIFEST.MF"));
-
     URI zipFile = URI.create("jar:file:" + classesJarPath.toUri().getPath());
-
     // extract classes jar pom.xml
     try (FileSystem fs = FileSystemUtil.getOrCreateFileSystem(zipFile)) {
       Files.copy(fs.getPath("pom.xml"), destinationPath.resolve("pom.xml"), StandardCopyOption.REPLACE_EXISTING);
     }
-
     LOG.info("Successfully extracted templates to @ {}", destinationPath);
   }
 
   @Override
   public List<Path> getTemplateSetJars() {
 
+    List<Path> resultJars = new ArrayList<>();
+
     Path downloadedJarsFolder = this.templatesLocation.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
     if (!Files.exists(downloadedJarsFolder)) {
       LOG.info("No template set jars found. Folder {} does not exist.", downloadedJarsFolder);
-      return null;
+      return resultJars;
     }
-    return TemplatesJarUtil.getJarFiles(downloadedJarsFolder);
+
+    List<Path> JarFiles = TemplatesJarUtil.getJarFiles(downloadedJarsFolder);
+    Map<Boolean, List<Path>> jarMap = JarFiles.stream()
+        .collect(Collectors.partitioningBy(f -> f.getFileName().toString().contains("-sources.jar")));
+    List<Path> templateSetJars = jarMap.get(false);
+    List<Path> templateSetJarsSources = jarMap.get(true);
+
+    for (Path templateSetjar : templateSetJars) {
+      String fileName = templateSetjar.getFileName().toString().replace(".jar", "");
+      Iterator<Path> sourcesJarsIterator = templateSetJarsSources.iterator();
+      while (sourcesJarsIterator.hasNext()) {
+        if (sourcesJarsIterator.next().getFileName().toString().contains(fileName)) {
+          sourcesJarsIterator.remove();
+          resultJars.add(templateSetjar);
+          break;
+        }
+      }
+    }
+
+    templateSetJars.removeAll(resultJars);
+    if (!templateSetJars.isEmpty()) {
+      for (Path jarWithMissingSource : templateSetJars) {
+        LOG.error("Missing Source for Jar: " + jarWithMissingSource.getFileName());
+        // no matching source file found either download or handle somehow
+        // TODO throw Exception or download the missing source, see: https://github.com/devonfw/cobigen/issues/1671
+      }
+    }
+    return resultJars;
   }
 
   @Override
@@ -273,7 +310,6 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     if (FileSystemUtil.isZipFile(sourcePath.toUri())) {
       // Important cast for jdk 17 compatibility
       FileSystem fs = FileSystems.newFileSystem(sourcePath, (ClassLoader) null);
-
       Path path = fs.getPath("/");
       Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
         @Override
@@ -314,12 +350,10 @@ public class TemplateAdapterImpl implements TemplateAdapter {
 
     Objects.requireNonNull(this.templatesLocation, "Templates location cannot be null");
     Objects.requireNonNull(destinationPath, "Destination path cannot be null");
-
     if (!Files.exists(this.templatesLocation)) {
       LOG.info("Templates location {} does not exist.", this.templatesLocation);
       return false;
     }
-
     if (!Files.isDirectory(destinationPath)) {
       try {
         Files.createDirectories(destinationPath);
@@ -327,11 +361,9 @@ public class TemplateAdapterImpl implements TemplateAdapter {
         throw new CobiGenRuntimeException("Unable to create directory " + destinationPath);
       }
     }
-
     if (!isEmpty(destinationPath) && !forceOverride) {
       throw new DirectoryNotEmptyException(destinationPath.toString());
     }
-
     return true;
   }
 
@@ -373,13 +405,11 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       CobigenTemplates = CobiGenPaths.getPomLocation(templatesPath);
     }
     AbstractConfigurationUpgrader<ContextConfigurationVersion> contextUpgraderObject = new ContextConfigurationUpgrader();
-
     // Upgrade the context.xml to the new template-set with latest version
+    // TODO: Check if this can be optimized, see: https://github.com/devonfw/cobigen/issues/1676
     contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.NO_BACKUP);
-
     LOG.info("context.xml upgraded successfully. {}", templatesPath);
     LOG.info("Templates successfully upgraded. \n ");
-
     // check the new Path to the template-set after the upgrade
     Path newTemplates;
     if (templatesProject == null) {
@@ -389,7 +419,6 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       newTemplates = Paths.get(ConfigurationFinder.findTemplatesLocation());
     } else {
       // 2. otherwise check in the given customTemplates
-
       // check renaming
       // 2.1 renaming from CobiGen_Templates to template-sets occurred
       if (Files.exists(CobigenTemplates.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)))
