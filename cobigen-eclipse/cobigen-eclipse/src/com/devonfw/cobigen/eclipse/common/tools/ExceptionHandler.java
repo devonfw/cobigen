@@ -49,16 +49,15 @@ public class ExceptionHandler {
       LOG.error(
           "The project '{}' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
           ResourceConstants.CONFIG_PROJECT_NAME, e);
-      PlatformUIUtil.openErrorDialog("The project '" + ResourceConstants.CONFIG_PROJECT_NAME
-          + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.",
-          e);
+      MessageDialog.openError(getShell(activeShell), "Generator configuration project not found!", "The project '"
+          + ResourceConstants.CONFIG_PROJECT_NAME
+          + "' containing the configuration and templates is currently not existent. Please create one or check it out from SVN as stated in the user documentation.");
     } else if (GeneratorCreationException.class.isAssignableFrom(e.getClass())) {
       LOG.error("Could not create an instance of the generator.", e);
       PlatformUIUtil.openErrorDialog("Could not initialize CobiGen for the given selection: " + e.getMessage(), e);
     } else if (InvalidInputException.class.isAssignableFrom(e.getClass())) {
       LOG.info("Invalid input selected for generation: {}", e.getMessage());
-      PlatformUIUtil.getWorkbench().getDisplay()
-          .syncExec(() -> MessageDialog.openInformation(getShell(activeShell), "Invalid selection", e.getMessage()));
+      MessageDialog.openInformation(getShell(activeShell), "Invalid selection", e.getMessage());
     } else if (CobiGenRuntimeException.class.isAssignableFrom(e.getClass())) {
       LOG.error("CobiGen Exception:\n{}", e.getMessage(), e);
       PlatformUIUtil.openErrorDialog(e.getMessage(), e);
@@ -66,6 +65,7 @@ public class ExceptionHandler {
       LOG.error("An unexpected exception occurred!", e);
       PlatformUIUtil.openErrorDialog("An unexpected exception occurred!", e);
     }
+
   }
 
   /**

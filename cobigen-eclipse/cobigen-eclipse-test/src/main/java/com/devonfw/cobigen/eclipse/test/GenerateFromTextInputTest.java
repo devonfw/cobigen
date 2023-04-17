@@ -12,9 +12,11 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEclipseEditor;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
+import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
@@ -25,6 +27,7 @@ import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 /**
  * Test suite for issues with generation from text selection
  */
+@RunWith(SWTBotJunit4ClassRunner.class)
 public class GenerateFromTextInputTest extends SystemTest {
 
   /** Root path of the Test Resources */

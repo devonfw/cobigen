@@ -15,9 +15,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
+import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
@@ -30,6 +32,7 @@ import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
  *
  * TODO: Create a copy of this test class for template sets using a regular generate (without upgrade or postpone)
  */
+@RunWith(SWTBotJunit4ClassRunner.class)
 public class OpenAPITest extends SystemTest {
 
   /** Root path of the Test Resources */

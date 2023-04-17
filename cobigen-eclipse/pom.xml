@@ -20,7 +20,6 @@
     <module>cobigen-eclipse-test</module>
     <module>cobigen-eclipse-feature</module>
     <module>cobigen-eclipse-updatesite</module>
-    <module>cobigen-eclipse-releng</module>
   </modules>
   <build>
     <plugins>

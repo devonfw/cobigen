@@ -13,10 +13,12 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
+import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
@@ -31,6 +33,7 @@ import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
  *
  */
 @Ignore // TODO: re-enable when upgrader was implemented, see: https://github.com/devonfw/cobigen/issues/1595
+@RunWith(SWTBotJunit4ClassRunner.class)
 public class UpgradeMonolithicTemplatesTest extends SystemTest {
 
   /** Root path of the Test Resources */
