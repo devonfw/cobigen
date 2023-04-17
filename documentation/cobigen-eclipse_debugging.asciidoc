@@ -9,20 +9,20 @@ Install Cobigen-Plugins via "Help > Install New Software > Add > cobigen-plugins
 1. Open the target file "Eclipse.test.targets.2018-12.target" and add the target/repository of each plugin by clicking "Add > Directory > ...": +
 image:images/debugging/addDirToTarget.png[]
 
-2. Click on "Reload" and save.
-
-Sidenote: Change your eclipse target platform by clicking on "Window > Preferences > ..." +
-image:images/debugging/target-platform.png[] +
-(Use Eclipse 2018-12 as it is also used in maven. Running Platform will use your installed Eclipse version.)
+2. Click on "Reload" and save. +
+ Sidenote: Change your eclipse target platform by clicking on "Window > Preferences > ..." +
+ image:images/debugging/target-platform.png[] +
+ (Use Eclipse 2018-12 as it is also used in maven. Running Platform will use your installed Eclipse version.)
 
 3. To run Eclipse in the runtime, right-click on "cobigen.eclipse" and select "Debug As > Eclipse Application". +
-
-Sidenote: Plugins will not be displayed under installed software of the new Eclipse. Open the OSGi Console (arrow at the top right in console) and type "ss" to show all loaded plugins.
-image:images/debugging/osgi-console.png[]
+ Sidenote: Plugins will not be displayed under installed software of the new Eclipse. Open the OSGi Console (arrow at the top right in console) and type "ss" to show all loaded plugins.
+ image:images/debugging/osgi-console.png[]
 
 4. In the new Eclipse you can now execute Cobigen commands while setting breakpoints and classicly debugging in the original Eclipse.
 
-5. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent class. Breakpoints are better placed in the equivalent Java files rather than in the class files.
+5. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent java file. Breakpoints are better placed in the equivalent Java files rather than in the class files. +
+Workaround: Use the eclipse plug-in "Open .java file for .class file" +
+Sources can be attached to a class (f.e. core.jar) using right click on the eclipse project Properties/Java Build Path/Libraries/Classpath and adding a source to core.jar (unfold core.jar and add a Source Attachment from Workspace location).
 
 6. Click "Terminate" in the top left to close the environment. +
 
