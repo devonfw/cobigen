@@ -179,7 +179,8 @@ public class ReflectedJavaModelBuilder {
 
     Map<String, Object> fieldValues = new HashMap<>();
     fieldValues.put(ModelConstant.NAME, field.getName());
-    // build type name with type parameters (parameter types cannot be retrieved, so use generic
+    // build type name with type parameters (parameter types cannot be retrieved, so
+    // use generic
     // parameter '?'
     String type = field.getType().getSimpleName();
     if (field.getType().getTypeParameters().length > 0) {

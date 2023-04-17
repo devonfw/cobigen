@@ -5,5 +5,5 @@
         <matcher type="fqn" value=".*">
         </matcher>
     </trigger>
-    
+
 </contextConfiguration>

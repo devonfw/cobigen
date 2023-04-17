@@ -6,9 +6,11 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
+import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 
 /**
@@ -23,7 +25,10 @@ public class VersionValidator {
     /** Validates the {@link ContextConfigurationVersion} */
     CONTEXT_CONFIGURATION,
     /** Validates the {@link TemplatesConfigurationVersion} */
-    TEMPLATES_CONFIGURATION
+    TEMPLATES_CONFIGURATION,
+    /** Validates the {@link TemplateSetConfigurationVersion} */
+    TEMPLATE_SET_CONFIGURATION
+
   }
 
   /** Logger instance */
@@ -57,6 +62,10 @@ public class VersionValidator {
         this.configName = "templates configuration";
         this.versionSteps = TemplatesConfigurationVersion.valuesSorted();
         break;
+      case TEMPLATE_SET_CONFIGURATION:
+        this.configName = "template set configuration";
+        this.versionSteps = TemplateSetConfigurationVersion.valuesSorted();
+        break;
       default:
         throw new NotYetSupportedException("Unknown configuration type.");
     }
@@ -68,6 +77,19 @@ public class VersionValidator {
    * @param configVersion version to be validated
    */
   public void validate(float configVersion) {
+
+    // TODO: Change allowMonolithicConfiguration to false, see: https://github.com/devonfw/cobigen/issues/1670
+    validate(configVersion, true);
+  }
+
+  /**
+   * Validates the given version with the running instance of CobiGen.
+   *
+   * @param configVersion version to be validated
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
+   */
+  public void validate(float configVersion, boolean allowMonolithicConfiguration) {
 
     Float currentCobiGenVersion;
     String currentCobiGenVersionStr = this.cobiGenVersion;
@@ -92,8 +114,8 @@ public class VersionValidator {
             && !versionStep.getValue()) {
           LOG.warn("{} version too old for current CobiGen version. CobiGen: {} / {}: {}", this.configName,
               currentCobiGenVersionStr, this.configName, configVersion);
-          throw new InvalidConfigurationException("The " + this.configName + " with version '" + configVersion
-              + "' has to be upgraded to a compatible " + this.configName + " version.");
+          if (!allowMonolithicConfiguration)
+            throw new DeprecatedMonolithicConfigurationException();
         }
       }
       LOG.debug("Compatible {} as no breaking changes found. CobiGen: {} / {}: {}", this.configName,

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <mirrors>
+    <mirror>
+      <mirrorOf>*</mirrorOf>
+      <url>http://0.0.0.0/</url>
+      <id>testMirror1</id>
+    </mirror>
+    <mirror>
+      <mirrorOf>repo1</mirrorOf>
+      <url>http://1.1.1.1/</url>
+      <id>testMirror2</id>
+    </mirror>
+    <mirror>
+      <mirrorOf>repo1, repo2</mirrorOf>
+      <url>http://2.2.2.2/</url>
+      <id>testMirror3</id>
+    </mirror>
+    <mirror>
+      <mirrorOf>*,!repo1</mirrorOf>
+      <url>http://3.3.3.3/</url>
+      <id>testMirror4</id>
+    </mirror>
+    <mirror>
+      <mirrorOf>external:*</mirrorOf>
+      <url>http://4.4.4.4/</url>
+      <id>testMirror5</id>
+    </mirror>
+    <mirror>
+      <mirrorOf>external:http:*</mirrorOf>
+      <url>http://5.5.5.5/</url>
+      <id>testMirror6</id>
+    </mirror>
+  </mirrors>
+
+  <profiles>
+    <profile>
+      <id>devonfw-snapshots1</id>
+      <repositories>
+        <repository>
+          <id>repo1</id>
+          <name>Test Repo 1</name>
+          <url>localhost</url>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>devonfw-snapshots2</id>
+      <repositories>
+        <repository>
+          <id>repo2</id>
+          <name>Test Repo 2</name>
+          <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+    <profile>
+      <id>devonfw-snapshots3</id>
+      <repositories>
+        <repository>
+          <id>repo3</id>
+          <name>Test Repo 3</name>
+          <url>http://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+</settings>

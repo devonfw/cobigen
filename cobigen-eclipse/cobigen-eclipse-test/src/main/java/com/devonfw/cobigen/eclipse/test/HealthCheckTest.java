@@ -46,6 +46,8 @@ public class HealthCheckTest extends SystemTest {
     EclipseUtils.importExistingGeneralProject(bot, tmpFolder.getAbsolutePath(), false);
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
-    EclipseCobiGenUtils.runAndCaptureHealthCheck(bot);
+    EclipseCobiGenUtils.runAndCaptureHealthCheckWithMonolithicConfiguration(bot);
   }
+
+  // TODO: Add a health check test for new template sets, see: https://github.com/devonfw/cobigen/issues/1648
 }

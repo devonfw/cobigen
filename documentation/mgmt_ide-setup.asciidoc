@@ -6,7 +6,7 @@ toc::[]
 
 == General Installation Process
 
-. First of all you will have to https://devonfw.com/website/pages/docs/devonfw-guide_ide.wiki_setup.asciidoc.html[setup the devonfw IDE]. Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL. You can just press enter as no special settings are used. Following that, you will simply have to wait and follow any instructions given.
+. First of all you will have to https://devonfw.com/website/pages/docs/devonfw-guide_ide.wiki_setup.asciidoc.html[setup the devonfw IDE] with the following settings URL: https://github.com/devonfw/cobigen-ide-settings.git. Once the download is complete and you started the installation process via the setup command (or setup.bat), you will be prompted for a settings URL. You can just press enter as no special settings are used. Following that, you will simply have to wait and follow any instructions given.
 +
 After you have executed the steps mentioned above, your install location should look like the picture below.
 +

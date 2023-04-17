@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tns:templateSetConfiguration version="6.0"
+  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+  <cc:contextConfiguration version="3.0">
+    <cc:trigger id="entities2" type="openapi">
+      <cc:containerMatcher type="element" value="openAPIFile"/>
+        <cc:matcher type="element" value="EntityDef">
+          <cc:variableAssignment type="extension" key="rootPackage" value="x-rootpackage"/>
+          <cc:variableAssignment type="property" key="component" value="componentName"/>
+          <cc:variableAssignment type="property" key="entityName" value="name"/>
+        </cc:matcher>
+    </cc:trigger>
+    <cc:tags>
+      <cc:tag name="bla"/>
+    </cc:tags>
+  </cc:contextConfiguration>
+  <tc:templatesConfiguration version="5.0">
+    <tc:templates>
+      <tc:template name="t2" destinationPath="generated.txt" templateFile="templates/generated.txt.ftl"
+        mergeStrategy="override"/>
+    </tc:templates>
+
+    <tc:increments>
+      <tc:increment name="i2" description="the only increment">
+        <tc:templateRef ref="t2"/>
+      </tc:increment>
+    </tc:increments>
+  </tc:templatesConfiguration>
+</tns:templateSetConfiguration>

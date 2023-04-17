@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0"
+                              xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+                              xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+                              xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                              xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+
+    <cc:contextConfiguration version="3.0">
+
+        <cc:trigger id="constants_named_queries" type="xml" templateFolder="constants/named_queries">
+            <cc:matcher type="nodename" value="entity-mappings">
+                <cc:variableAssignment type="constant" key="rootPackage" value="com.devonfw.gastronomy.restaurant"/>
+            </cc:matcher>
+        </cc:trigger>
+        <cc:tags>
+            <cc:tag name="NamedQueries"></cc:tag>
+        </cc:tags>
+    </cc:contextConfiguration>
+    <tc:templatesConfiguration version="5.0">
+        <tc:templates>
+            <tc:template name="named_queries"
+                         destinationPath="src/main/java/${variables.rootPackage}/general/common/api/constants/NamedQueries.java"
+                         templateFile="NamedQueries.java.ftl"/>
+        </tc:templates>
+        <tc:increments>
+            <tc:increment name="named_queries" description="Named Query Constants"
+                          explanation="Generates basic query constants schema.">
+                <tc:templateRef ref="named_queries"/>
+            </tc:increment>
+        </tc:increments>
+    </tc:templatesConfiguration>
+</tns:templateSetConfiguration>

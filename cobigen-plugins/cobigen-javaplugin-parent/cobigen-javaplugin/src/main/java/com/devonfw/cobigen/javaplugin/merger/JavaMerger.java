@@ -33,8 +33,6 @@ import com.thoughtworks.qdox.parser.ParseException;
 /**
  * The {@link JavaMerger} merges a patch and the base file of the same class. This merge is a structural merge
  * considering code blocks of fields, methods and inner classes. There will be no merging on statement level
- *
- * @author mbrunnli (19.03.2013)
  */
 public class JavaMerger implements Merger {
 
@@ -54,7 +52,6 @@ public class JavaMerger implements Merger {
    * @param type merger type
    * @param patchOverrides if <code>true</code>, conflicts will be resolved by using the patch contents<br>
    *        if <code>false</code>, conflicts will be resolved by using the base contents
-   * @author mbrunnli (19.03.2013)
    */
   public JavaMerger(String type, boolean patchOverrides) {
 
@@ -114,7 +111,6 @@ public class JavaMerger implements Merger {
    * @return the merged {@link JavaClass}
    * @param baseClass {@link JavaClass}
    * @param patchClass {@link JavaClass}
-   * @author mbrunnli (19.03.2013)
    */
   private ModifyableJavaClass merge(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
@@ -150,7 +146,6 @@ public class JavaMerger implements Merger {
    *
    * @param baseClass {@link JavaClass}
    * @param patchClass {@link JavaClass}
-   * @author mbrunnli (03.06.2013)
    */
   private void mergeSupertypes(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
@@ -181,7 +176,6 @@ public class JavaMerger implements Merger {
    *
    * @param baseClass {@link JavaClass}
    * @param patchClass {@link JavaClass}
-   * @author mbrunnli (05.04.2013)
    */
   private void mergeImports(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
@@ -210,7 +204,6 @@ public class JavaMerger implements Merger {
    *
    * @param canonicalName to be shortend
    * @return the Type name
-   * @author mbrunnli
    */
   private String getShortTypeName(String canonicalName) {
 
@@ -226,7 +219,6 @@ public class JavaMerger implements Merger {
    *
    * @param baseClass {@link JavaClass}
    * @param patchClass {@link JavaClass}
-   * @author mbrunnli (19.03.2013)
    */
   private void mergeInnerClasses(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
@@ -247,7 +239,6 @@ public class JavaMerger implements Merger {
    *
    * @param baseClass {@link JavaClass}
    * @param patchClass {@link JavaClass}
-   * @author mbrunnli (19.03.2013)
    */
   private void mergeFields(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 
@@ -270,7 +261,6 @@ public class JavaMerger implements Merger {
    *
    * @param baseClass {@link JavaClass}
    * @param patchClass {@link JavaClass}
-   * @author mbrunnli (19.03.2013)
    */
   private void mergeMethods(ModifyableJavaClass baseClass, ModifyableJavaClass patchClass) {
 

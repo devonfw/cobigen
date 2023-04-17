@@ -48,18 +48,18 @@ public class CobiGenUtils {
    * Registers CobiGen plug-ins and instantiates CobiGen
    *
    * @param templatesProject the templates project or jar
+   * @param allowMonolithicConfiguration ignores deprecated monolithic template folder structure and if found does not
+   *        throw a DeprecatedMonolithicConfigurationException
    * @return object of CobiGen
    */
-  public static CobiGen initializeCobiGen(Path templatesProject) {
+  public static CobiGen initializeCobiGen(Path templatesProject, boolean allowMonolithicConfiguration) {
 
     registerPlugins();
-    CobiGen cg;
     if (templatesProject != null) {
-      cg = CobiGenFactory.create(templatesProject.toUri());
+      return CobiGenFactory.create(templatesProject.toUri(), allowMonolithicConfiguration);
     } else {
-      cg = CobiGenFactory.create();
+      return CobiGenFactory.create(allowMonolithicConfiguration);
     }
-    return cg;
   }
 
   /**

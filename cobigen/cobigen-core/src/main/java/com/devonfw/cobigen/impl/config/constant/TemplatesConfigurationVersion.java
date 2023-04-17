@@ -1,8 +1,7 @@
 package com.devonfw.cobigen.impl.config.constant;
 
 import java.util.Map;
-
-import com.google.common.collect.Maps;
+import java.util.TreeMap;
 
 /** Version steps of the templates configuration. */
 public enum TemplatesConfigurationVersion {
@@ -36,7 +35,15 @@ public enum TemplatesConfigurationVersion {
    * <li>new attribute templateEngine (#293)</li>
    * </ul>
    */
-  v4_0(4.0f, true);
+  v4_0(4.0f, true),
+
+  /**
+   * ChangeLog:
+   * <ul>
+   * <li>added explanation attribute to increments</li>
+   * </ul>
+   */
+  v5_0(5.0f, true);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;
@@ -89,7 +96,7 @@ public enum TemplatesConfigurationVersion {
    */
   public static Map<Float, Boolean> valuesSorted() {
 
-    Map<Float, Boolean> floatVersions = Maps.newTreeMap();
+    Map<Float, Boolean> floatVersions = new TreeMap<>();
     for (TemplatesConfigurationVersion v : values()) {
       floatVersions.put(v.getFloatRepresentation(), v.isBackwardCompatible());
     }

@@ -92,7 +92,6 @@ public class PropertyMerger implements Merger {
    * @param lineSeparator the line Separator to use for the file
    * @return merged file contents
    * @throws IOException if the base file could not be read oder accessed
-   * @author mbrunnli (11.03.2013)
    */
   private String concatContents(Set<Object> conflicts, BufferedReader baseFileReader, String patch,
       String lineSeparator) throws IOException {

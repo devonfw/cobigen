@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tns:templateSetConfiguration version="6.0"
+  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+  <cc:contextConfiguration version="3.0">
+    <cc:trigger id="entities2" type="java">
+      <!--  <cc:matcher type="fqn" value=".+">-->
+      <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.logic\.api\.to\.([^\.]+)Eto">
+        <cc:variableAssignment type="constant" key="etoName" value="5"/>
+        <cc:variableAssignment type="regex" key="etoName2" value="4" />
+      </cc:matcher>
+    </cc:trigger>
+    <cc:tags>
+      <cc:tag name="bla"/>
+    </cc:tags>
+  </cc:contextConfiguration>
+  <tc:templatesConfiguration version="5.0">
+    <tc:templates>
+      <tc:template name="t2" destinationPath="generated.txt" templateFile="templates/generated.txt.ftl"
+        mergeStrategy="override"/>
+    </tc:templates>
+
+    <tc:increments>
+      <tc:increment name="i2" description="the only increment">
+        <tc:templateRef ref="t2"/>
+      </tc:increment>
+    </tc:increments>
+  </tc:templatesConfiguration>
+</tns:templateSetConfiguration>

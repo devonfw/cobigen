@@ -1,0 +1,23 @@
+openapi: 3.0.0
+servers:
+  - url: 'https://localhost:8081/server/services/rest'
+    description: Just some data
+info:
+  title: Devon Example
+  description: Example of a API definition
+  version: 1.0.0
+  x-rootpackage: com.devonfw.angular.test
+paths:
+  /shopmanagement/v1/shop/{shopId}:
+    x-component: shopmanagement
+    get:
+      operationId: findShop
+      parameters:
+        - name: shopId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            maximum: 50

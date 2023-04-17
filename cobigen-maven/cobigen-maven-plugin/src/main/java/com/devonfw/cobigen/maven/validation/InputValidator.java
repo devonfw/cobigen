@@ -10,8 +10,6 @@ import com.devonfw.cobigen.api.to.TemplateTo;
 
 /**
  * Input validator, which validates the increment and template declarations within the maven plugin configuration
- *
- * @author mbrunnli (09.02.2015)
  */
 public class InputValidator {
 
@@ -21,7 +19,6 @@ public class InputValidator {
    * @param templates available templates in the configuration
    * @param templateIdsToBeGenerated requested templates
    * @throws MojoExecutionException if one of the requested templates could not be found in configuration
-   * @author mbrunnli (11.02.2015)
    */
   public static void validateTemplateInputs(List<TemplateTo> templates, List<String> templateIdsToBeGenerated)
       throws MojoExecutionException {
@@ -43,7 +40,6 @@ public class InputValidator {
    * @param increments available increments in the configuration
    * @param templateIdsToBeGenerated requested increments
    * @throws MojoExecutionException if one of the requested increments could not be found in the configuration
-   * @author mbrunnli (11.02.2015)
    */
   public static void validateIncrementInputs(List<IncrementTo> increments, List<String> templateIdsToBeGenerated)
       throws MojoExecutionException {

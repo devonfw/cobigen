@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -30,12 +31,17 @@ public class TemplateScanIT extends AbstractApiTest {
   private static String testFileRootPath = apiTestsRootPath + "TemplateScanTest/";
 
   /**
+   * Root path to all template-set resources used in this test case
+   */
+  private static String testFileRootPathTemplateSets = apiTestsRootPath + "TemplateScanTemplateSetTest/";
+
+  /**
    * Tests the correct destination resolution for resources obtained by template-scans
    *
    * @throws Exception test fails
    */
   @Test
-  public void testCorrectDestinationResoution() throws Exception {
+  public void testCorrectDestinationResolution() throws Exception {
 
     Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
@@ -45,7 +51,7 @@ public class TemplateScanIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 
@@ -73,7 +79,7 @@ public class TemplateScanIT extends AbstractApiTest {
     Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
     // test processing
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI(), true);
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
     // checking
@@ -88,7 +94,7 @@ public class TemplateScanIT extends AbstractApiTest {
    * @throws Exception test fails
    */
   @Test
-  public void testCorrectDestinationResoution_emptyPathElement() throws Exception {
+  public void testCorrectDestinationResolution_emptyPathElement() throws Exception {
 
     Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
@@ -98,7 +104,7 @@ public class TemplateScanIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 
@@ -120,7 +126,7 @@ public class TemplateScanIT extends AbstractApiTest {
    * @throws Exception test fails
    */
   @Test
-  public void testCorrectDestinationResoution_emptyPathElements() throws Exception {
+  public void testCorrectDestinationResolution_emptyPathElements() throws Exception {
 
     Object input = PluginMockFactory.createSimpleJavaConfigurationMock();
 
@@ -130,7 +136,7 @@ public class TemplateScanIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath);
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(input);
     assertThat(templates).isNotNull();
 
@@ -144,6 +150,36 @@ public class TemplateScanIT extends AbstractApiTest {
     // Validation
     assertThat(new File(generationRootFolder.getAbsolutePath() + File.separator + "src" + File.separator + "main"
         + File.separator + "java" + File.separator + "base" + File.separator + "MultiEmpty.java")).exists();
+  }
+
+  /**
+   * Tests if a template-set with a ts_scan node can be read and generated successfully
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testTemplateSetCorrectDestinationResolution() throws Exception {
+
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPathTemplateSets + "template-sets").toURI());
+
+    Object input = cobigen.read(
+        new File("src/test/java/com/devonfw/cobigen/systemtest/testobjects/io/generator/logic/api/to/InputEto.java")
+            .toPath(),
+        Charset.forName("UTF-8"), getClass().getClassLoader());
+
+    File generationRootFolder = this.tmpFolder.newFolder("generationRootFolder");
+
+    List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
+    assertThat(templates).isNotNull();
+
+    TemplateTo targetTemplate = getTemplateById(templates, "generated.txt");
+    assertThat(targetTemplate).isNotNull();
+
+    // Execution
+    GenerationReportTo report = cobigen.generate(input, targetTemplate, Paths.get(generationRootFolder.toURI()), false);
+
+    // Validation
+    assertThat(report).isSuccessful();
   }
 
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+<cc:contextConfiguration version="3.0">
+  <cc:trigger id="crud_java_server_app_complex" type="java">
+    <cc:containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api" retrieveObjectsRecursively="false" />
+    <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+)Entity">
+      <cc:variableAssignment type="regex" key="rootPackage" value="1" />
+      <cc:variableAssignment type="regex" key="domain" value="3" />
+      <cc:variableAssignment type="regex" key="component" value="4" />
+      <cc:variableAssignment type="regex" key="entityName" value="5" />
+    </cc:matcher>
+  </cc:trigger>
+  <cc:tags>
+    <cc:tag name="Java"></cc:tag>
+    <cc:tag name="CRUD"></cc:tag>
+    <cc:tag name="Server"></cc:tag>
+    <cc:tag name="App"></cc:tag>
+  </cc:tags>
+  <cc:links>
+    <cc:link url="https://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/reference/html/repositories.html"></cc:link>
+  </cc:links>
+</cc:contextConfiguration>
+
+<tc:templatesConfiguration version="5.0">
+
+  <tc:templates>
+    <tc:templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge"/>
+  </tc:templates>
+
+  <tc:templateScans>
+    <tc:templateScan name="ts_scan" templatePath="templates" destinationPath="" />
+  </tc:templateScans>
+
+  <tc:increments>
+    <tc:increment name="tos" description="TO's">
+      <tc:templateRef ref="${variables.entityName}Eto.java"/>
+    </tc:increment>
+  </tc:increments>
+</tc:templatesConfiguration>
+</tns:templateSetConfiguration>

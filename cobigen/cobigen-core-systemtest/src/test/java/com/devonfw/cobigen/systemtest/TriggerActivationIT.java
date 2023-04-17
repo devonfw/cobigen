@@ -58,6 +58,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
 
     when(inputReader.isValidInput(anything())).thenReturn(true);
+
     when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and1"), any(String.class), sameInstance(input)))))
         .thenReturn(false);
     when(matcher.matches(argThat(new MatcherToMatcher(equalTo("and2"), any(String.class), sameInstance(input)))))
@@ -70,7 +71,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
     // execution
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI(), true);
     List<String> matchingTriggerIds = cobigen.getMatchingTriggerIds(input);
 
     assertThat(matchingTriggerIds, not(hasItem("triggerId")));
@@ -109,7 +110,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
     // execution
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI(), true);
     List<String> matchingTriggerIds = cobigen.getMatchingTriggerIds(input);
 
     assertThat(matchingTriggerIds, not(hasItem("triggerId")));
@@ -131,6 +132,8 @@ public class TriggerActivationIT extends AbstractApiTest {
     MatcherInterpreter matcher = mock(MatcherInterpreter.class);
     InputReader inputReader = mock(InputReader.class);
 
+    when(inputReader.isValidInput(ArgumentMatchers.any())).thenReturn(true);
+
     when(triggerInterpreter.getType()).thenReturn("test");
     when(triggerInterpreter.getMatcher()).thenReturn(matcher);
     when(triggerInterpreter.getInputReader()).thenReturn(inputReader);
@@ -148,7 +151,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
     // execution
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI(), true);
     List<String> matchingTriggerIds = cobigen.getMatchingTriggerIds(input);
 
     assertThat(matchingTriggerIds, hasItem("triggerId"));
@@ -187,7 +190,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
     // execution
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI(), true);
     List<String> matchingTriggerIds = cobigen.getMatchingTriggerIds(input);
 
     assertThat(matchingTriggerIds, not(hasItem("triggerId")));
@@ -197,7 +200,6 @@ public class TriggerActivationIT extends AbstractApiTest {
    * Tests that a trigger will not be activated in case of one OR matcher but no AND matcher matches.
    *
    * @throws Exception test fails
-   * @author mbrunnli (22.02.2015)
    */
   @Test
   public void testNoActivation_1OR_0AND_MatcherMatches() throws Exception {
@@ -227,7 +229,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
     // execution
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI(), true);
     List<String> matchingTriggerIds = cobigen.getMatchingTriggerIds(input);
 
     assertThat(matchingTriggerIds, not(hasItem("triggerId")));
@@ -266,7 +268,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
     // execution
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI(), true);
     List<String> matchingTriggerIds = cobigen.getMatchingTriggerIds(input);
 
     assertThat(matchingTriggerIds, not(hasItem("triggerId")));
@@ -301,7 +303,7 @@ public class TriggerActivationIT extends AbstractApiTest {
     PluginRegistry.registerTriggerInterpreter(triggerInterpreter, activator);
 
     // execution
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI(), true);
     List<String> matchingTriggerIds = cobigen.getMatchingTriggerIds(input);
 
     assertThat(matchingTriggerIds, hasItem("triggerId2"));

@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.eclipse.test.common.junit.TmpMavenProjectRule;
-import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseCobiGenUtils;
 import com.devonfw.cobigen.eclipse.test.common.utils.EclipseUtils;
 
@@ -74,7 +73,6 @@ public abstract class SystemTest {
   public static void setupTest() throws Exception {
 
     bot.resetWorkbench();
-    bot.waitUntil(new AllJobsAreFinished());
 
     // this flag is set to be true and will suppress ErrorDialogs,
     // which is completely strange, so we enable them again.

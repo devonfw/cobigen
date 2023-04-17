@@ -2,6 +2,10 @@ package com.devonfw.cobigen.eclipse.test.common.junit;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
 
 import org.eclipse.core.resources.IFile;
@@ -20,6 +24,8 @@ import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
+
 /**
  * JUnit Rule for a temporary {@link IJavaProject}. Should be created in each test method by createProject when it
  * should be used.
@@ -35,7 +41,9 @@ public class TmpMavenProjectRule extends ExternalResource {
    */
   private IJavaProject javaProject;
 
-  /** Maven Project specification containing group id, artifact id, and version as a pom xml description */
+  /**
+   * Maven Project specification containing group id, artifact id, and version as a pom xml description
+   */
   private String mvnProjectSpecification;
 
   @Override
@@ -113,8 +121,29 @@ public class TmpMavenProjectRule extends ExternalResource {
     // make sure the contents are synchronized
     this.javaProject.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     // update maven project to implicitly set classpath and so on.
-    new UpdateMavenProjectJob(new IProject[] { this.javaProject.getProject() })
-        .runInWorkspace(new NullProgressMonitor());
+
+    // Need to access internal (fragile) API of M2E as command
+    // "org.eclipse.m2e.core.ui.command.updateProject" does not allow execution, but
+    // spawns dialog popup
+    Constructor<UpdateMavenProjectJob> constructor;
+    UpdateMavenProjectJob updateMavenJob;
+    try {
+      // M2E < v2
+      constructor = UpdateMavenProjectJob.class.getConstructor(IProject[].class);
+      updateMavenJob = constructor.newInstance((Object) new IProject[] { this.javaProject.getProject() });
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+      LOG.debug("Assumptions for M2E < 2 did not match, trying to connect to M2E v2 API", e);
+      try {
+        // M2E >= 2
+        constructor = UpdateMavenProjectJob.class.getConstructor(Collection.class);
+        updateMavenJob = constructor.newInstance(Arrays.asList(this.javaProject.getProject()));
+      } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e1) {
+        throw new CobiGenRuntimeException(
+            "There might be an incompatibility with the current version of M2E installed. Please state a bug report on github including the M2E version installed in your eclipse.",
+            e1);
+      }
+    }
+    updateMavenJob.runInWorkspace(new NullProgressMonitor());
 
   }
 

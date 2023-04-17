@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.devonfw.cobigen</groupId>
+  <artifactId>templates-devon4j</artifactId>
+  <version>2021.12.006</version>
+  <name>CobiGen - devon4j Templates</name>
+  <description>A Code-based incremental Generator</description>
+  <url>https://github.com/devonfw/cobigen/templates-parent/templates-devon4j</url>
+  <properties>
+   <maven.compiler.source>1.8</maven.compiler.source>
+   <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  <build>
+   <resources>
+     <resource>
+       <directory>src/main/templates</directory>
+       <targetPath>src/main/templates</targetPath>
+     </resource>
+   </resources>
+  </build>
+</project>

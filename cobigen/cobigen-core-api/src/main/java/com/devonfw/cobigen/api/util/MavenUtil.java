@@ -40,6 +40,9 @@ public class MavenUtil {
   /** Logger instance. */
   private static final Logger LOG = LoggerFactory.getLogger(MavenUtil.class);
 
+  /** Maven repository */
+  private static Path MAVEN_REPO = null;
+
   /**
    * Executes a Maven class path build command which will download all the transitive dependencies needed for the CLI
    *
@@ -225,11 +228,29 @@ public class MavenUtil {
    */
   public static Path determineMavenRepositoryPath() {
 
+    if (MAVEN_REPO != null) {
+      LOG.debug("Using {} as cached maven repository path.", MAVEN_REPO);
+      return MAVEN_REPO;
+    }
     Path m2Repo = Paths
         .get(runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(SystemUtil.determineMvnPath().toString(),
             "help:evaluate", "-Dexpression=settings.localRepository", "-DforceStdout")));
     LOG.debug("Determined {} as maven repository path.", m2Repo);
+    MAVEN_REPO = m2Repo;
     return m2Repo;
+  }
+
+  /**
+   * Returns maven's settings.xml as a string by using maven evaluate
+   *
+   * @return the maven's settings.xml as string
+   */
+  public static String determineMavenSettings() {
+
+    LOG.info("Determine content of maven's settings.xml");
+    String mavenSettings = runCommand(SystemUtils.getUserHome().toPath(), Lists.newArrayList(
+        SystemUtil.determineMvnPath().toString(), "help:evaluate", "-Dexpression=settings", "-DforceStdout"));
+    return mavenSettings;
   }
 
   /**

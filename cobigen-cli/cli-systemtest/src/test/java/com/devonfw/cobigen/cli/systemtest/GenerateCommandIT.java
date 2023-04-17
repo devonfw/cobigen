@@ -9,7 +9,10 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 
 /**
  * Tests the usage of the generate command.
@@ -66,6 +69,70 @@ public class GenerateCommandIT extends AbstractCliTest {
   }
 
   /**
+   *
+   * Test the upgrade process from templates in a given path and generates from the new template-sets structure
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  @Ignore // TODO: re-enable when upgrade process is implemented, see: https://github.com/devonfw/cobigen/issues/1595
+  public void upgradeAndGenerateFromEntityTest() throws Exception {
+
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
+    this.tmpProject.resolve("templates-devon4j").toFile()
+        .renameTo(this.tmpProject.resolve(ConfigurationConstants.COBIGEN_TEMPLATES).toFile());
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    File monolithicConfiguration = this.tmpProject.toFile();
+    String args[] = new String[7];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "0";
+    args[4] = "--upgrade-configuration";
+    args[5] = "-tp";
+    args[6] = monolithicConfiguration.getAbsolutePath();
+
+    execute(args, false);
+
+    assertThat(this.currentHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)).exists();
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
+        .exists();
+  }
+
+  /**
+   *
+   * Integration test of the generation of template sets from a Java Entity. It does not specify the project to generate
+   * the folders to.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  @Ignore // TODO: re-enable/fix when CLI tests were re-factored, see: https://github.com/devonfw/cobigen/issues/1659
+  public void generateFromEntityWithTemplateSetTest() throws Exception {
+
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    File templateSetsConfig = this.tmpProject.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).toFile();
+    String args[] = new String[6];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "0";
+    args[4] = "-tp";
+    args[5] = templateSetsConfig.getAbsolutePath();
+
+    execute(args, false);
+
+    assertThat(this.currentHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)).exists();
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
+        .exists();
+  }
+
+  // TODO: Add similar test with a template-set jar file in downloaded folder, see:
+  // https://github.com/devonfw/cobigen/issues/1661
+
+  /**
    * Integration test of the generation from a templates jar using a utility class with an extra dependency. See:
    * https://github.com/devonfw/cobigen/issues/1450
    *
@@ -74,10 +141,10 @@ public class GenerateCommandIT extends AbstractCliTest {
   @Test
   public void generateFromTemplatesJarWithUtilClassDependencyTest() throws Exception {
 
-    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
+    FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject/templates-devon4j"),
+        this.tmpProject.toFile());
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
-    File templatesProject = this.tmpProject.resolve("templates-devon4j/target/templates-devon4j-dev-SNAPSHOT.jar")
-        .toFile();
+    File templatesProject = this.tmpProject.resolve("target/templates-devon4j-dev-SNAPSHOT.jar").toFile();
 
     String args[] = new String[6];
     args[0] = "generate";
@@ -87,7 +154,7 @@ public class GenerateCommandIT extends AbstractCliTest {
     args[4] = "-tp";
     args[5] = templatesProject.getAbsolutePath();
 
-    execute(args, false);
+    execute(args, false, false, true);
 
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
         .exists();
@@ -231,7 +298,6 @@ public class GenerateCommandIT extends AbstractCliTest {
     String args[] = new String[6];
     args[0] = "generate";
     args[1] = openApiFile.getAbsolutePath() + "," + this.entityInputFile.getAbsolutePath();
-
     args[2] = "--out";
     args[3] = outputRootFile.getAbsolutePath();
     args[4] = "--increments";

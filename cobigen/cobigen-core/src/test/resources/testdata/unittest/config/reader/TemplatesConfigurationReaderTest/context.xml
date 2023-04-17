@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
 
   <trigger id="valid_incrementref_outside_folder" type="xml" templateFolder="valid_incrementref_outside_folder">
     <matcher type="nodename" value="xmi:XMI">
@@ -13,7 +13,7 @@
     </matcher>
   </trigger>
   <trigger id="valid_relocate_template_vs_scan" type="xml" templateFolder="valid_relocate_template_vs_scan">
-  <matcher type="nodename" value="xmi:XMI">
+    <matcher type="nodename" value="xmi:XMI">
       <variableAssignment type="constant" key="className" value="Bill"/>
     </matcher>
   </trigger>
@@ -22,4 +22,7 @@
       <variableAssignment type="constant" key="className" value="Bill"/>
     </matcher>
   </trigger>
+  <tags>
+    <tag name="someTag"/>
+  </tags>
 </contextConfiguration>

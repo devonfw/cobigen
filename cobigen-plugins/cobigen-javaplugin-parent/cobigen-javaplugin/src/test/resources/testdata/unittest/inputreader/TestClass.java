@@ -30,10 +30,6 @@ public class TestClass extends AbstractTestClass implements TestInterface1, Test
         this.customList = customList;
     }
 
-    /**
-     * {@inheritDoc}
-     * @author fkreis (25.09.2014)
-     */
     @Override
     public void interface1Method() {
         return;

@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * * The {@link JavaModelUtil} class provides helper functions to access the given model.
- *
- * @author fkreis (25.09.2014)
+ *  The {@link JavaModelUtil} class provides helper functions to access the given model.
  */
 public class JavaModelUtil {
 
@@ -73,7 +71,6 @@ public class JavaModelUtil {
    *
    * @param model raw model
    * @return the list of all field models
-   * @author mbrunnli (17.11.2014)
    */
   public static List<Map<String, Object>> getMethodAccessibleFields(Map<String, Object> model) {
 
@@ -89,7 +86,6 @@ public class JavaModelUtil {
    * @param model raw model
    * @param fieldName field name to be retrieved
    * @return the field model for the given field name if such a field exists, otherwise null.
-   * @author mbrunnli (17.11.2014)
    */
   public static Map<String, Object> getMethodAccessibleField(Map<String, Object> model, String fieldName) {
 
@@ -169,7 +165,6 @@ public class JavaModelUtil {
    * @param methodName method name to search for
    * @return method model for the method with the given name or <code>null</code> if no method with the given name
    *         found.
-   * @author mbrunnli (30.01.2015)
    */
   public static Map<String, Object> getMethod(Map<String, Object> model, String methodName) {
 
@@ -211,7 +206,6 @@ public class JavaModelUtil {
    *
    * @param documentedElementModel element model, from which the javaDoc model should be retrieved.
    * @return the JavaDoc model or <code>null</code> if not available.
-   * @author mbrunnli (30.01.2015)
    */
   public static Map<String, Object> getJavaDocModel(Map<String, Object> documentedElementModel) {
 

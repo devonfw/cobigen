@@ -158,13 +158,13 @@ public class GenerateMojo extends AbstractMojo {
 
     if (this.configurationFolder != null) {
       getLog().debug("ConfigurationFolder configured as " + this.configurationFolder.toURI().toString());
-      cobiGen = CobiGenFactory.create(this.configurationFolder.toURI());
+      cobiGen = CobiGenFactory.create(this.configurationFolder.toURI(), true);
     } else {
       final ClassRealm classRealm = this.pluginDescriptor.getClassRealm();
       URL contextConfigurationLocation = ConfigurationClassLoaderUtil.getContextConfiguration(classRealm);
       URI configFile = URI.create(contextConfigurationLocation.getFile().toString().split("!")[0]);
       getLog().debug("Reading configuration from file " + configFile.toString());
-      cobiGen = CobiGenFactory.create(configFile);
+      cobiGen = CobiGenFactory.create(configFile, true);
     }
     return cobiGen;
   }

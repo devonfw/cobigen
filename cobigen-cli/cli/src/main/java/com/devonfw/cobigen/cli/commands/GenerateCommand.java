@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.CobiGen;
+import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InputReaderException;
 import com.devonfw.cobigen.api.to.GenerableArtifact;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
@@ -36,8 +37,11 @@ import com.devonfw.cobigen.cli.exceptions.UserAbortException;
 import com.devonfw.cobigen.cli.utils.CobiGenUtils;
 import com.devonfw.cobigen.cli.utils.ParsingUtils;
 import com.devonfw.cobigen.cli.utils.ValidationUtils;
+import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
+import com.devonfw.cobigen.impl.util.PostponeUtil;
 import com.google.googlejavaformat.java.FormatterException;
 
 import picocli.CommandLine.Command;
@@ -81,6 +85,15 @@ public class GenerateCommand extends CommandCommons {
   List<String> templates = null;
 
   /**
+   * allows usage of the old monolithic template structure instead of the new template sets structure.
+   *
+   * TODO: Check if still needed, see: https://github.com/devonfw/cobigen/issues/1683
+   */
+  @Option(names = { "--force-monolithic-configuration",
+  "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
+  boolean forceMonolithicConfiguration;
+
+  /**
    * Logger to output useful information to the user
    */
   private static Logger LOG = LoggerFactory.getLogger(CobiGenCLI.class);
@@ -101,7 +114,11 @@ public class GenerateCommand extends CommandCommons {
     }
 
     LOG.debug("Input files and output root path confirmed to be valid.");
-    CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject);
+
+    if ((PostponeUtil.isTimePassed()) && (!this.forceMonolithicConfiguration))
+      checkMonolithicConfigurationException();
+
+    CobiGen cg = CobiGenUtils.initializeCobiGen(this.templatesProject, true);
 
     resolveTemplateDependencies();
 
@@ -118,7 +135,9 @@ public class GenerateCommand extends CommandCommons {
             MavenUtil.getProjectRoot(this.inputFiles.get(i), false), inputsAndArtifacts.getB(), cg, IncrementTo.class);
       }
     }
+
     return 0;
+
   }
 
   /**
@@ -177,7 +196,7 @@ public class GenerateCommand extends CommandCommons {
             "Did not detect the input as part of a maven project, the root directory of the maven project was not found.");
 
         LOG.info("Would you like to take '{}' as a root directory for output generation? \n"
-            + "type yes/y to continue or no/n to cancel (or hit return for yes).", System.getProperty("user.dir"));
+            + MessagesConstants.YES_NO_ANSWER_DESCRIPTION, System.getProperty("user.dir"));
 
         setRootOutputDirectoryWithPrompt();
 
@@ -241,6 +260,73 @@ public class GenerateCommand extends CommandCommons {
       System.exit(255);
     }
 
+  }
+
+  /**
+   * Uses default initialization, checks if monolithic templates exist, handles the exception and lets the user decide
+   * if the templates should be upgraded.
+   */
+  private void checkMonolithicConfigurationException() {
+
+    try {
+      CobiGenUtils.initializeCobiGen(this.templatesProject, false);
+    } catch (DeprecatedMonolithicConfigurationException e) {
+      LOG.warn("Found monolithic configuration at: {} {}",
+          DeprecatedMonolithicConfigurationException.getMonolithicConfiguration(), e.getMessage());
+
+      if (this.upgradeConfiguration || askUserToUpgradeTemplates()) {
+        startTemplatesUpgrader();
+      } else {
+        askUserToPostponeUpgrade();
+      }
+    }
+
+  }
+
+  /**
+   * Opens a looping prompt with a yes/no question and upgrades the templates to the newest version.
+   *
+   */
+  private boolean askUserToUpgradeTemplates() {
+
+    LOG.info(
+        "Would you like to upgrade your templates to the newest version? \n"
+            + MessagesConstants.YES_NO_ANSWER_DESCRIPTION + "For more Informations, please visit: ",
+        WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION, System.getProperty("user.dir"));
+
+    return ValidationUtils.yesNoPrompt("Upgrading templates configuration...: ",
+        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Continue generation with monolithic templates...");
+  }
+
+  /**
+   * Upgrades the given template configuration and sets the new template-set as the templatesProject after the upgrade
+   */
+  private void startTemplatesUpgrader() {
+
+    try {
+      this.templatesProject = CobiGenFactory.startTemplatesUpgrader(this.templatesProject);
+    } catch (Throwable e) {
+      LOG.error("An error occurred while upgrading the templates.");
+      throw e;
+    }
+  }
+
+  /**
+   * Asks the user if he wants to postpone the upgrade message for 30 days.
+   */
+  private void askUserToPostponeUpgrade() {
+
+    LOG.info("Would you like to postpone the upgrade warning message for 30 days?"
+        + MessagesConstants.YES_NO_ANSWER_DESCRIPTION, System.getProperty("user.dir"));
+    // TODO: Check if this message and behavior is still valid, see: https://github.com/devonfw/cobigen/issues/1674
+    boolean setToUserDir = ValidationUtils.yesNoPrompt("A timer is set for 30 days...: ",
+        MessagesConstants.INVALID_YES_NO_ANSWER_DESCRIPTION, "Allright...");
+
+    if (setToUserDir) {
+      PostponeUtil.addATimestampForOneMonth();
+    } else {
+      // Do nothing, the user will be asked again.
+    }
   }
 
   /**
