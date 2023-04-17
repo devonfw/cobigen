@@ -101,12 +101,13 @@ public class GenerateCommandIT extends AbstractCliTest {
 
   /**
    *
-   * Todo
+   * Integration test of the generation of template sets from a Java Entity. It does not specify the project to generate
+   * the folders to.
    *
    * @throws Exception test fails
    */
   @Test
-  @Ignore // TODO: re-enable/fix when CLI tests were re-factored
+  @Ignore // TODO: re-enable/fix when CLI tests were re-factored, see: https://github.com/devonfw/cobigen/issues/1659
   public void generateFromEntityWithTemplateSetTest() throws Exception {
 
     File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
@@ -127,7 +128,8 @@ public class GenerateCommandIT extends AbstractCliTest {
         .exists();
   }
 
-  // TODO: Add similar test with a template-set jar file in downloaded folder
+  // TODO: Add similar test with a template-set jar file in downloaded folder, see:
+  // https://github.com/devonfw/cobigen/issues/1661
 
   /**
    * Integration test of the generation from a templates jar using a utility class with an extra dependency. See:

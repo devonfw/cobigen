@@ -27,7 +27,6 @@ import org.xml.sax.SAXParseException;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
@@ -217,11 +216,7 @@ public class ContextConfigurationReader {
                 "The required 'version' attribute of node \"contextConfiguration\" has not been set");
           } else {
             VersionValidator validator = new VersionValidator(Type.CONTEXT_CONFIGURATION, MavenMetadata.VERSION);
-            try {
-              validator.validate(configVersion.floatValue());
-            } catch (NotYetSupportedException e) {
-              // TODO
-            }
+            validator.validate(configVersion.floatValue());
           }
         } else {
           throw new InvalidConfigurationException(contextFile,
@@ -271,6 +266,8 @@ public class ContextConfigurationReader {
   /**
    * Checks if a conflict with the old and modular configuration exists
    *
+   * TODO: Check if this is still needed, see: https://github.com/devonfw/cobigen/issues/1662
+   *
    * @param configRoot Path to root directory of the configuration
    * @param contextFile Path to context file of the configuration
    */
@@ -288,6 +285,8 @@ public class ContextConfigurationReader {
 
   /**
    * Searches for configuration Files in the sub folders of configRoot
+   *
+   * TODO: Check if this is still needed, see: https://github.com/devonfw/cobigen/issues/1662
    *
    * @param configRoot root directory of the configuration
    * @throws InvalidConfigurationException if the configuration is not valid against its xsd specification

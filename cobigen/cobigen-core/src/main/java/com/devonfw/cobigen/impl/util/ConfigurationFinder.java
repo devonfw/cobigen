@@ -25,9 +25,7 @@ import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 
 /**
- * Utilities related to the CobiGen configurations including:
- *
- * 1. templates location
+ * Class which handles the CobiGen Configuration including Properties and monolithic templates / template-set locations
  */
 public class ConfigurationFinder {
 
@@ -95,7 +93,8 @@ public class ConfigurationFinder {
   }
 
   /**
-   * The method finds location of templates. It could be CobiGen_Templates folder or a template artifact
+   * The method finds location of templates. It could be CobiGen_Templates folder or a template artifact or a template
+   * set configuration
    *
    * @return template location URI if exist, otherwise null
    */
@@ -114,8 +113,8 @@ public class ConfigurationFinder {
       Path templateSetsFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templateSetsLocation);
       if (templateSetsFolderLocation != null && Files.exists(templateSetsFolderLocation)) {
         return templateSetsFolderLocation.toUri();
-
       }
+
       // use old templates configuration
       Path templatesFolderLocation = getTemplatesFolderLocation(cobigenHome, configFile, templatesLocation);
       if (templatesFolderLocation != null && Files.exists(templatesFolderLocation)) {

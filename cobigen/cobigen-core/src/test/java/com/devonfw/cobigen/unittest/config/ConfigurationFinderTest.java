@@ -21,9 +21,10 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
+import junit.framework.TestCase;
+
 /**
- * Class to test the method loadTemplateSetConfigurations in ConfigurationFinder
- *
+ * This {@link TestCase} tests the {@link ConfigurationFinder}
  */
 public class ConfigurationFinderTest {
 
@@ -34,7 +35,7 @@ public class ConfigurationFinderTest {
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if invalid properties found, to load the default
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if invalid properties found, to load the default
    * values.
    *
    * @throws IOException test fails
@@ -47,12 +48,12 @@ public class ConfigurationFinderTest {
     ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(emptyConfiguration);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getHideTemplates()).isEmpty();
+    assertThat(conf.getHideTemplateSets()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if valid properties found, to load these valid
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if valid properties found, to load these valid
    * properties correctly.
    *
    * @throws IOException test fails
@@ -67,13 +68,13 @@ public class ConfigurationFinderTest {
     assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob",
         ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.isAllowSnapshots()).isTrue();
-    assertThat(conf.getHideTemplates().get(0).getArtifactId().equals("com.devonfw"));
-    assertThat(conf.getHideTemplates().get(0).getGroupId().equals("test-artifact"));
-    assertThat(conf.getHideTemplates().get(0).getVersion().equals("3.2.1-SNAPSHOT"));
+    assertThat(conf.getHideTemplateSets().get(0).getArtifactId().equals("com.devonfw"));
+    assertThat(conf.getHideTemplateSets().get(0).getGroupId().equals("test-artifact"));
+    assertThat(conf.getHideTemplateSets().get(0).getVersion().equals("3.2.1-SNAPSHOT"));
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if valid properties found, to load these valid
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if valid properties found, to load these valid
    * properties correctly.
    *
    * @throws IOException test fails
@@ -85,13 +86,13 @@ public class ConfigurationFinderTest {
         .get("src/test/resources/testdata/unittest/config/properties/invalidConfigProperties/config.properties");
     ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(validConfiguration);
 
-    assertTrue(conf.getHideTemplates().isEmpty());
-    assertTrue(conf.getMavenCoordinates().isEmpty());
+    assertTrue(conf.getHideTemplateSets().isEmpty());
+    assertTrue(conf.getTemplateSetsInstalled().isEmpty());
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if file *.properties not found , to load the
-   * default values.
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if file *.properties not found , to load the default
+   * values.
    *
    * @throws IOException test fails
    *
@@ -103,7 +104,7 @@ public class ConfigurationFinderTest {
     ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(invalidPath);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getHideTemplates()).isEmpty();
+    assertThat(conf.getHideTemplateSets()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
   }
 

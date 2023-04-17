@@ -121,7 +121,8 @@ public class ClassLoadingIT extends AbstractApiTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore
+  @Ignore // TODO: re-enable when versions can be detected and version handling was implemented, see:
+          // https://github.com/devonfw/cobigen/issues/1665
   public void callClassLoadingTemplateSetTestWithVersionConflict() throws Exception {
 
     // Mocking
@@ -138,18 +139,24 @@ public class ClassLoadingIT extends AbstractApiTest {
     // pre-processing
     List<TemplateTo> templates = cobigen.getMatchingTemplates(input);
 
-    // Execution
     GenerationReportTo report = cobigen.generate(input, templates.get(0), Paths.get(generationRootFolder.toURI()),
         false);
 
     // Verification
+    assertThat(report).isSuccessful();
+    assertThat(templates).hasSize(1);
     File expectedResult = new File(testTemplateSetFileRootPath, "expected-conflicted/generated.txt");
     File generatedFile = new File(generationRootFolder, "generated.txt");
-    assertThat(report).isSuccessful();
     assertThat(generatedFile).exists();
     assertThat(generatedFile).isFile().hasSameContentAs(expectedResult);
   }
 
+  /**
+   * TODO: Check if this test is still usable and what it does exactly, see:
+   * https://github.com/devonfw/cobigen/issues/1678
+   *
+   * @throws Exception test fails
+   */
   @Test
   public void testLoadEnumClass() throws Exception {
 

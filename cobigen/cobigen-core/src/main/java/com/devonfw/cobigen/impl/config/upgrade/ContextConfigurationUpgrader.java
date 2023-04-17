@@ -9,7 +9,6 @@ import java.util.Map;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.tsconfig.entity.io.v1_0.TemplateSetConfiguration;
 
@@ -28,7 +27,8 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
    */
   public ContextConfigurationUpgrader() {
 
-    super(ContextConfigurationVersion.v1_0, ContextConfiguration.class, ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    super(ContextConfigurationVersion.v1_0, com.devonfw.cobigen.impl.config.entity.io.v1_0.ContextConfiguration.class,
+        ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
   }
 
   @Override

@@ -6,14 +6,19 @@ import com.devonfw.cobigen.retriever.mavensearch.constants.MavenSearchRepository
 /** Exception to indicate that the REST search API encountered a problem while accessing the server. */
 public class RestSearchResponseException extends CobiGenRuntimeException {
 
+  /** The ID */
   private static final long serialVersionUID = 1L;
 
+  /** The status code which was received by the search response */
   private int statusCode = 0;
 
+  /** Message constant if it was not possible to get a response */
   private static final String IT_WAS_NOT_POSSIBLE_TO = "It was not possible to get a response from";
 
+  /** Continuation of IT_WAS_NOT_POSSIBLE_TO */
   private static final String WITH_THE_URL = "with the URL";
 
+  /** Message constant for an unexpected status code */
   private static final String THE_SEARCH_RETURNED_UNEXPECTED_STATUS_CODE = "The search REST API returned the unexpected status code";
 
   /**

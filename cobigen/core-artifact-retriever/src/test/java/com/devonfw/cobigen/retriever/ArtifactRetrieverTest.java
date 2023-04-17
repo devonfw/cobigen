@@ -17,9 +17,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.devonfw.cobigen.retriever.settings.MavenSettings;
-import com.devonfw.cobigen.retriever.settings.to.model.MavenSettingsModel;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
@@ -32,16 +29,6 @@ public class ArtifactRetrieverTest {
    * Test resource location
    */
   private final static String testdataRoot = "src/test/resources/testdata/unittest/ArtifactRetrieverTest";
-
-  /**
-   * {@link MavenSettingsModel} without a proxy
-   */
-  private static MavenSettingsModel modelNonProxy;
-
-  /**
-   * {@link MavenSettingsModel} with a proxy
-   */
-  private static MavenSettingsModel modelProxy;
 
   /**
    * Maven settings string without a proxy
@@ -69,9 +56,6 @@ public class ArtifactRetrieverTest {
 
     mavenSettingsNonProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsNonProxy.xml")));
     mavenSettingsProxy = new String(Files.readAllBytes(Paths.get(testdataRoot).resolve("settingsProxy.xml")));
-
-    modelNonProxy = MavenSettings.generateMavenSettingsModel(mavenSettingsNonProxy);
-    modelProxy = MavenSettings.generateMavenSettingsModel(mavenSettingsProxy);
   }
 
   /**
@@ -119,10 +103,6 @@ public class ArtifactRetrieverTest {
   @Test
   public void testRetrieveTemplateSetXmlDownloadLinksWithProxy() throws IOException {
 
-    // origin server using port 8081
-    new WireMockServer(options().port(8081));
-
-    // proxied server using port 8080
     this.wireMockRule.stubFor(get(urlMatching("/artifactory/api/search/gavc.*")).willReturn(aResponse().withStatus(200)
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("jfrogJsonTest.json")))));
 

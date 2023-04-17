@@ -60,9 +60,6 @@ public class TemplateSetConfiguration {
   /** The reader to read the template-set.xml files */
   private TemplateSetConfigurationReader templateSetConfigurationReader;
 
-  /** Root of the configuration */
-  private Path configRoot;
-
   /**
    * Map of the root template folders distinguished by their trigger ID
    */
@@ -92,7 +89,6 @@ public class TemplateSetConfiguration {
     this.templates = Maps.newHashMap();
     this.rootTemplateFolders = Maps.newHashMap();
     this.utilFolders = Maps.newHashMap();
-    this.configRoot = configurationPath;
     readConfiguration(configurationPath);
   }
 
@@ -154,18 +150,15 @@ public class TemplateSetConfiguration {
         templateSetFile);
 
     Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers(true);
+
+    // uses the 1st element because a template-set has only one trigger
     Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
 
-    if (isZipFile) {
       Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
-      Path jarPath = configLocations.get(templateSetFile);
-      this.utilFolders.put(activeTrigger.getId(), jarPath);
-    } else {
-      this.utilFolders.put(activeTrigger.getId(), getUtilSourceFolder(templateSetFile));
-    }
+    Path templateSetRootFolder = configLocations.get(templateSetFile);
+    this.utilFolders.put(activeTrigger.getId(), templateSetRootFolder);
 
     this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
-    this.configRoot = configurationPath;
     this.triggers.putAll(trigger);
 
     Map<String, Template> loadedTemplates = templatesConfigurationReader.loadTemplates(activeTrigger);
@@ -180,17 +173,6 @@ public class TemplateSetConfiguration {
         loadedTemplates, loadedIncrements, templateEngine);
 
     this.templatesConfigurations.add(templatesConfiguration);
-  }
-
-  /**
-   * Gets the source folder for utility classes
-   *
-   * @return the source folder where utility classes are located
-   */
-  private Path getUtilSourceFolder(Path path) {
-
-    // TODO: replace with proper root template set folder
-    return path.getParent().getParent().getParent().getParent();
   }
 
   /**

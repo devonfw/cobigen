@@ -74,7 +74,8 @@ public class MavenSettings {
   }
 
   /**
-   * Maps parts of maven's settings.xml to a Java class Mapping includes: settings-, profiles-, profile-, repository-,
+   * Maps parts of maven's settings.xml to a Java class.
+   * Mapping includes: settings-, profiles-, profile-, repository-,
    * repositories-, servers-, and server-elements
    *
    * @param mavenSettings string of maven's settings.xml

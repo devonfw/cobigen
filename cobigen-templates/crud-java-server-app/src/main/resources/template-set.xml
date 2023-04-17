@@ -62,12 +62,6 @@
     <tc:increment name="ctos" description="CTO's">
       <tc:templateRef ref="${variables.entityName}Cto.java" />
     </tc:increment>
-    <!-- <increment name="logic_impl" description="CRUD logic (all in one)">
-      <templateRef ref="AbstractBeanMapperSupport.java"/>
-      <templateRef ref="AbstractComponentFacade.java"/>
-      <templateRef ref="${variables.component#cap_first}Impl.java"/>
-      <templateRef ref="${variables.component#cap_first}.java"/>
-    </increment>-->
     <tc:increment name="dataaccess_infrastructure" description="Entity infrastructure">
       <tc:templateRef ref="ApplicationPersistenceEntity.java" />
       <tc:templateRef ref="ApplicationEntity.java" />
@@ -86,12 +80,6 @@
       <tc:templateRef ref="${variables.component#cap_first}RestServiceImplCtos.java" />
       <tc:templateRef ref="${variables.component#cap_first}RestServiceCtos.java" />
     </tc:increment>
-    <!-- <increment name="soap_service_impl" description="CRUD SOAP services">
-      <templateRef ref="ServiceConfig.java"/>
-      <templateRef ref="WebApplicationContextLocator.java"/>
-      <templateRef ref="${variables.component#cap_first}SoapService.java"/>
-      <templateRef ref="${variables.component#cap_first}SoapServiceImpl.java"/>
-    </increment>-->
   </tc:increments>
 </tc:templatesConfiguration>
 </tns:templateSetConfiguration>

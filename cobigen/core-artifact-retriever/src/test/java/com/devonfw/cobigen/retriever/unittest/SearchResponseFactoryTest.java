@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import com.devonfw.cobigen.retriever.mavensearch.to.model.SearchResponseFactory;
 import com.devonfw.cobigen.retriever.mavensearch.to.model.ServerCredentials;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
@@ -63,17 +62,13 @@ public class SearchResponseFactoryTest {
   }
 
   /**
-   * Tests if retrieving maven artifacts using a valid proxy returns an list of download URLs.
+   * Tests if retrieving maven artifacts using a valid proxy returns a list of download URLs.
    *
    * @throws IOException if the test resource could not be read
    */
   @Test
   public void testRetrieveMavenArtifactsWithProxyReturnsAResponse() throws IOException {
 
-    // origin server using port 8081
-    new WireMockServer(options().port(8081));
-
-    // proxied server using port 8080
     this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200)
         .withBody(Files.readAllBytes(Paths.get(testdataRoot).resolve("mavenJsonTest.json")))));
 
@@ -93,8 +88,6 @@ public class SearchResponseFactoryTest {
   @Test
   public void testRetrieveMavenArtifactsWithInvalidProxyNameReturnsAnEmptyList() throws IOException {
 
-    WireMockServer wm = new WireMockServer(options().port(8081));
-
     this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200)));
 
     ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8081", null, null, "http://localhost",
@@ -112,8 +105,6 @@ public class SearchResponseFactoryTest {
   @Test
   public void testRetrieveMavenArtifactsWithEmptyProxyCredentialsReturnsAnEmptyList() throws IOException {
 
-    WireMockServer wm = new WireMockServer(options().port(8081));
-
     this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(200)));
 
     ServerCredentials serverCredentials = new ServerCredentials("http://localhost:8081", null, null, "http://localhost",
@@ -130,8 +121,6 @@ public class SearchResponseFactoryTest {
    */
   @Test
   public void testRetrieveMavenArtifactsWithInvalidProxyCredentialsReturnsAnEmptyList() throws IOException {
-
-    WireMockServer wm = new WireMockServer(options().port(8081));
 
     this.wireMockRule.stubFor(get(urlMatching("/solrsearch/select.*")).willReturn(aResponse().withStatus(401)));
 
@@ -239,7 +228,6 @@ public class SearchResponseFactoryTest {
 
   /**
    * Tests if an empty list gets returned if the search request received an empty json string as a response
-   *
    */
   @Test
   public void testSearchRequestWithEmptyJsonResponseReturnsEmptyList() {

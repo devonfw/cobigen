@@ -28,7 +28,7 @@ public class ConfigurationConstants {
   /** Template Set filename for Freemarker functions */
   public static final String TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME = "functions.ftl";
 
-  /** Filename of the {@link Properties} used to customize cobigen properties and template relocation. */
+  /** Filename of the {@link Properties} used to customize CobiGen properties and template relocation. */
   public static final String COBIGEN_PROPERTIES = "cobigen.properties";
 
   /** Resource folder containing templates */
@@ -46,7 +46,7 @@ public class ConfigurationConstants {
   /** Delimiter splitting the template folder and value of references in templates.xml files */
   public static final String REFERENCE_DELIMITER = "::";
 
-  // configuration resource constants of cobigen home
+  // configuration resource constants of CobiGen home
 
   /** Default directory name in the home folder in case of {@link #DEFAULT_HOME} */
   public static final String DEFAULT_HOME_DIR_NAME = ".cobigen";
@@ -116,20 +116,23 @@ public class ConfigurationConstants {
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_INSTALLED = "template-sets.installed";
 
   /**
-   * Default (public) cobigen GroupId
+   * Default (public) CobiGen GroupId
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID = "com.devonfw.cobigen.templates";
 
-  // cobigen configuration environment variables
+  // CobiGen configuration environment variables
 
-  /** Name of the environment variable pointing to cobigen configuration file */
+  /** Name of the environment variable pointing to CobiGen configuration file */
   public static final String CONFIG_ENV_HOME = "COBIGEN_HOME";
 
   /** Name of the backup folder containing the old configuration */
   public static final String BACKUP_FOLDER = "backup";
 
   /**
-   * Default cobigen version TODO retrieve the version dynamically(not as a constant) at runtime.
+   * Default CobiGen version
+   *
+   * TODO: retrieve the version dynamically (not as a constant) at runtime, see:
+   * https://github.com/devonfw/cobigen/issues/1669
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_VERSION = "2021.12.007";
 
