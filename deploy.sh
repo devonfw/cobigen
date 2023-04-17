@@ -29,6 +29,7 @@ then
   fi
   cd "$SCRIPT_PATH"
 elif [ "$DEPLOY_UPDATESITE" = "test" ]
+then
   echo " ! Not detected cloned gh-pages branch in ../gh-pages folder."
   ORIGIN="$(git config --get remote.origin.url)"
   SED_OUT=$(echo $ORIGIN | sed -r -E -n 's@^.+(github.com.*)@\1@p')
