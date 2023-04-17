@@ -13,8 +13,7 @@
   </parent>
 
   <properties>
-    <tycho.testArgLine.enriched>${surefireArgLineIntegration} -Xms512m -Xmx2048m
-      -XX:+DisableExplicitGC</tycho.testArgLine.enriched>
+    <tycho.testArgLine.enriched>${surefireArgLineIntegration} -Xms512m -Xmx2048m -XX:+DisableExplicitGC</tycho.testArgLine.enriched>
     <enforcer.skip>true</enforcer.skip>
   </properties>
 
@@ -121,8 +120,8 @@
                 <artifact>
                   <groupId>${project.groupId}</groupId>
                   <artifactId>cobigen-eclipse-releng</artifactId>
-                  <version>${revision}</version>
-                  <relativePath>../cobigen-eclipse-releng/pom.xml</relativePath>
+		              <version>${revision}</version>
+		              <relativePath>../cobigen-eclipse-releng/pom.xml</relativePath>
                 </artifact>
               </target>
             </configuration>
