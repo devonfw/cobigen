@@ -218,9 +218,7 @@ public class GeneratorWrapperFactory {
     try {
       generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
-      initializeCobiGen(generatorProj, allowMonolithicConfiguration);
-
-      return initializeCobiGen(generatorProj, true);
+      return initializeCobiGen(generatorProj, allowMonolithicConfiguration);
     } catch (CoreException e) {
       throw new GeneratorCreationException("An eclipse internal exception occurred", e);
     } catch (DeprecatedMonolithicConfigurationException e) {

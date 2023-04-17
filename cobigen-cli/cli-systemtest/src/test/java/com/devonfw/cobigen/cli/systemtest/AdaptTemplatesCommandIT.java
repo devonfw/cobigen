@@ -99,7 +99,6 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
    *
    * @throws Exception test fails
    */
-
   @Test
   public void adaptTemplatesTest() throws Exception {
 
@@ -109,6 +108,8 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
       Files.createDirectories(templatesPath);
     }
 
+    // TODO: Replace with downloadJarFromURL method and get rid of downloadJar, see:
+    // https://github.com/devonfw/cobigen/issues/1685
     TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", false, templatesPath.toFile());
     TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", true, templatesPath.toFile());
 

@@ -84,7 +84,7 @@ public class CrudJavaEaUmlTest extends AbstractMavenTest {
   }
 
   /**
-   * Test successful generation of all templates based on a
+   * Test successful generation of all templates based on a XML input
    *
    * @throws Exception test fails
    */

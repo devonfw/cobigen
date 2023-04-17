@@ -180,7 +180,7 @@ public class ConfigurationClassLoaderUtil {
    * Resolves utility classes from Jar archive
    *
    * @param inputClassLoader ClassLoader to use for storing of classes
-   * @param configurationHolder configuration holder
+   * @param utilLocation Path to utilities location
    * @return List of classes to load utilities from
    */
   private static List<Class<?>> resolveFromJar(ClassLoader inputClassLoader, Path utilLocation) {
@@ -246,7 +246,7 @@ public class ConfigurationClassLoaderUtil {
   /**
    * Walks the jar file in search of utility classes
    *
-   * @param configurationHolder the holder of the parsed configuration
+   * @param utilLocation Path to utilities location
    * @return List<String> of file paths containing class files
    * @throws IOException if file could not be visited
    */

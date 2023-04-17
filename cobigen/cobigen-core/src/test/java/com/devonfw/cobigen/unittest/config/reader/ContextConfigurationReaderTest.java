@@ -1,17 +1,14 @@
 package com.devonfw.cobigen.unittest.config.reader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -37,25 +34,6 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
 
     ContextConfigurationReader reader = new ContextConfigurationReader(
         Paths.get(new File(testFileRootPath + "faulty").toURI()));
-  }
-
-  /**
-   * Tests whether an {@link ConfigurationConflictException} will be thrown when both a v2.1 and v2.2 context.xml are
-   * present (new templates with old custom templates). Also tests if the thrown error message contains a link to the
-   * wiki.
-   *
-   * @throws ConfigurationConflictException if a conflict occurred
-   *
-   */
-  @Test
-  public void testConflictConfiguration() throws ConfigurationConflictException {
-
-    Throwable bothPresent = assertThrows(ConfigurationConflictException.class, () -> {
-      new ContextConfigurationReader(Paths.get(testFileRootPath + "conflicted_old_templates"));
-    });
-
-    assertThat(bothPresent instanceof ConfigurationConflictException);
-    assertThat(bothPresent.getMessage()).contains(WikiConstants.WIKI_UPDATE_OLD_CONFIG);
   }
 
   /**

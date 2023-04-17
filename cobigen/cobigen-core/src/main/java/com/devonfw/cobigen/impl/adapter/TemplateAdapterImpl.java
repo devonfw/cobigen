@@ -257,7 +257,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
       for (Path jarWithMissingSource : templateSetJars) {
         LOG.error("Missing Source for Jar: " + jarWithMissingSource.getFileName());
         // no matching source file found either download or handle somehow
-        // TODO throw Exception or download the missing source
+        // TODO throw Exception or download the missing source, see: https://github.com/devonfw/cobigen/issues/1671
       }
     }
     return resultJars;
@@ -405,6 +405,7 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     }
     AbstractConfigurationUpgrader<ContextConfigurationVersion> contextUpgraderObject = new ContextConfigurationUpgrader();
     // Upgrade the context.xml to the new template-set with latest version
+    // TODO: Check if this can be optimized, see: https://github.com/devonfw/cobigen/issues/1676
     contextUpgraderObject.upgradeConfigurationToLatestVersion(templatesPath, BackupPolicy.NO_BACKUP);
     LOG.info("context.xml upgraded successfully. {}", templatesPath);
     LOG.info("Templates successfully upgraded. \n ");

@@ -19,7 +19,7 @@ on:
       - '**.asciidoc'
 
 env:
-  # if continuously builds exiting ramdomy, possibly add again -Djansi.force=true -Djansi.passthrough=true
+  # if continuously builds exiting randomly, possibly add again -Djansi.force=true -Djansi.passthrough=true
   MVN_BATCH_MODE: '-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
   # fixing random connection reset of maven downloads as proposed here: https://github.com/actions/virtual-environments/issues/2715#issuecomment-797388909
   MVN_HTTP_OPTIMIZATION: '-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120'

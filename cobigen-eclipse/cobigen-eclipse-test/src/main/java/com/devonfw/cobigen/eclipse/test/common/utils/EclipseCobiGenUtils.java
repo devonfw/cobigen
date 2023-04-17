@@ -312,6 +312,7 @@ public class EclipseCobiGenUtils {
 
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     view.bot().tree().expandNode("CobiGen_Templates").select().contextMenu("CobiGen").menu("Health Check...").click();
+    // TODO: replace with health check reaction, see: https://github.com/devonfw/cobigen/issues/1686
     captureAdvancedHealthCheck(bot);
   }
 
@@ -333,7 +334,8 @@ public class EclipseCobiGenUtils {
   }
 
   /**
-   * Checks the CobiGen HealthCheck and takes screenshots of it.
+   * Checks the CobiGen HealthCheck and takes screenshots of it. TODO: Split into captureHealthCheck and
+   * captureAdvancedHealthCheck, see: https://github.com/devonfw/cobigen/issues/1686
    *
    * @param bot to process the health check
    */
