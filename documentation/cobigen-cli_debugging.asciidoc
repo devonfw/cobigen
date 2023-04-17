@@ -9,9 +9,10 @@ image:images/debugging/cli-debug-configuration.png[]
 
 4. Add any arguments that you would normally use when running the CLI.
 
-5. Make sure that every CLI command is valid. For example, you can use the command "g 'PATH TO EmployeeEntity.java'".
+5. Make sure that every CLI command is valid. You can find an overview of possible commands [here](https://github.com/devonfw/cobigen/wiki/howto_Cobigen-CLI-generation#commands-and-options).
 
-6. Under the Arguments tab, set the Working Directory to the path, where CLI is being executed (uses destination of call as root).
+6. Under the Arguments tab, set the Working Directory to the path, where CLI is being executed (uses destination of call as root). +
+image:images/debugging/cli-working-dir.png[]
 
 The following steps are only required for debugging tests or remote debugging of CLI. Commands added to arguments can be directly debugged already.
 
@@ -24,13 +25,15 @@ With them the tests use a temporary folder instead.
 to the command before "-cp": +
 image:images/debugging/cobigen-bat.png[]
 
-8. Go to the Remote Java Application tab in Debug Configurations and click on "New".
+8. Now wait for the console to show "listing for port 1044" and attach the debugger.
 
-9. Select the "cli" project and set the Connection Type to "Standard (Socket Attach)".
+9. Go to the Remote Java Application tab in Debug Configurations and click on "New".
 
-10. Set the Host to "localhost" and the Port to the value shown in the screenshot (1044).
+10. Select the "cli" project and set the Connection Type to "Standard (Socket Attach)".
 
-11. Save the configuration and start the debugger.
+11. Set the Host to "localhost" and the Port to the value shown in the screenshot (1044).
+
+12. Save the configuration and start the debugger.
 
 
 === Debug System Tests for CLI ===
