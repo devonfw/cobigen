@@ -64,22 +64,6 @@ public class TemplatesJarUtil {
     String fileName = "";
 
     Path jarFilePath = getJarFile(isDownloadSource, templatesDirectory.toPath());
-    try {
-      if (jarFilePath == null || !Files.exists(jarFilePath)
-          || isJarOutdated(jarFilePath.toFile(), mavenUrl, isDownloadSource, templatesDirectory)) {
-
-        fileName = downloadFile(mavenUrl, templatesDirectory.toPath()).getFileName().toString();
-
-      } else {
-        fileName = jarFilePath.toFile().getPath()
-            .substring(jarFilePath.toFile().getPath().lastIndexOf(File.separator) + 1);
-      }
-    } catch (IOException e) {
-      throw new CobiGenRuntimeException("Could not download file from " + mavenUrl, e);
-    }
-    return fileName;
-  }
-
   /**
    * Downloads a file by given URL to the target directory and returns the downloaded file
    *
@@ -93,6 +77,8 @@ public class TemplatesJarUtil {
     Path targetPath = null;
 
     try {
+      if (jarFilePath == null || !Files.exists(jarFilePath)
+          || isJarOutdated(jarFilePath.toFile(), mavenUrl, isDownloadSource, templatesDirectory)) {
 
       HttpURLConnection conn = initializeConnection(url);
       try (InputStream inputStream = conn.getInputStream()) {
@@ -105,11 +91,54 @@ public class TemplatesJarUtil {
         }
       }
       conn.disconnect();
-
+      } else {
+        fileName = jarFilePath.toFile().getPath()
+            .substring(jarFilePath.toFile().getPath().lastIndexOf(File.separator) + 1);
     } catch (IOException e) {
       throw new CobiGenRuntimeException("Could not download file from " + url, e);
     }
     return targetPath;
+  }
+
+  /**
+   * Downloads a jar from a given URL to template set downloaded directory
+   *
+   * @param downloadURL URl to download from
+   * @param templateSetDirectory directory where the template sets are located
+   * @return fileName Name of the file downloaded
+   */
+  public static String downloadJarFromURL(String downloadURL, Path templateSetDirectory) {
+
+    String fileName = "";
+    Path downloaded = templateSetDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+
+    if (!Files.exists(downloaded)) {
+      LOG.info("Downloaded folder could not be found and will be created.");
+      try {
+        Files.createDirectory(templateSetDirectory.resolve(ConfigurationConstants.DOWNLOADED_FOLDER));
+      } catch (IOException e) {
+        throw new CobiGenRuntimeException("Could not create Downloaded Folder", e);
+      }
+    }
+
+    HttpURLConnection conn;
+    try {
+      conn = initializeConnection(downloadURL.toString());
+      try (InputStream inputStream = conn.getInputStream()) {
+
+        fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
+        Path file = downloaded.resolve(fileName);
+        Path targetPath = file;
+        if (!Files.exists(file)) {
+          Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        }
+      }
+      conn.disconnect();
+    } catch (IOException e) {
+      throw new CobiGenRuntimeException("Could not download file from: " + downloadURL, e);
+    }
+
+    return fileName;
   }
 
   /**

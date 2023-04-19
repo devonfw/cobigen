@@ -82,15 +82,6 @@ public class TemplateSetConfigurationReader {
   private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
 
   /**
-   *
-   * The constructor for the artifact reader.
-   */
-  public TemplateSetConfigurationReader() {
-
-    this.configRoot = null;
-  }
-
-  /**
    * The constructor.
    *
    * @param configRoot Path of the configuration root directory
