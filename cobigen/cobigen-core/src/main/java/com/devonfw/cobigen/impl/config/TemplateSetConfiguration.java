@@ -60,9 +60,6 @@ public class TemplateSetConfiguration {
   /** The reader to read the template-set.xml files */
   private TemplateSetConfigurationReader templateSetConfigurationReader;
 
-  /** Root of the configuration */
-  private Path configRoot;
-
   private ConfigurationHolder configurationHolder;
 
   /**
@@ -94,7 +91,6 @@ public class TemplateSetConfiguration {
     this.templates = Maps.newHashMap();
     this.rootTemplateFolders = Maps.newHashMap();
     this.utilFolders = Maps.newHashMap();
-    this.configRoot = configurationPath;
     readConfiguration(configurationPath);
   }
 
@@ -156,18 +152,15 @@ public class TemplateSetConfiguration {
         templateSetFile);
 
     Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
+
+    // uses the 1st element because a template-set has only one trigger
     Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
 
-    if (isZipFile) {
-      Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
-      Path jarPath = configLocations.get(templateSetFile);
-      this.utilFolders.put(activeTrigger.getId(), jarPath);
-    } else {
-      this.utilFolders.put(activeTrigger.getId(), getUtilSourceFolder(templateSetFile));
-    }
+    Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
+    Path templateSetRootFolder = configLocations.get(templateSetFile);
+    this.utilFolders.put(activeTrigger.getId(), templateSetRootFolder);
 
     this.rootTemplateFolders.put(activeTrigger.getId(), templateFolder.getPath());
-    this.configRoot = configurationPath;
     this.triggers.putAll(trigger);
 
     Map<String, Template> loadedTemplates = templatesConfigurationReader.loadTemplates(activeTrigger);
@@ -178,19 +171,10 @@ public class TemplateSetConfiguration {
     this.increments.putAll(templatesConfigurationReader.loadIncrements(loadedTemplates, activeTrigger));
     String templateEngine = templatesConfigurationReader.getTemplateEngine();
 
-    TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath,
-        trigger.get(trigger.keySet().toArray()[0]), loadedTemplates, loadedIncrements, templateEngine);
+    TemplatesConfiguration templatesConfiguration = new TemplatesConfiguration(configurationPath, activeTrigger,
+        loadedTemplates, loadedIncrements, templateEngine);
+
     this.templatesConfigurations.add(templatesConfiguration);
-  }
-
-  /**
-   * Gets the source folder for utility classes
-   *
-   * @return the source folder where (src/main/templates) is located
-   */
-  private Path getUtilSourceFolder(Path path) {
-
-    return path.getParent().getParent().getParent().getParent();
   }
 
   /**

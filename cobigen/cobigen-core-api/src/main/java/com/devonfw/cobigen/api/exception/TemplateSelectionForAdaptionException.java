@@ -8,7 +8,6 @@ import java.util.List;
  * adapted.
  */
 public class TemplateSelectionForAdaptionException extends Exception {
-
   /** Generated serial version UID */
   private static final long serialVersionUID = 1;
 

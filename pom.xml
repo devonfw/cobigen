@@ -130,7 +130,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>30.1.1-jre</version>
+        <version>31.1-jre</version>
       </dependency>
       <dependency>
         <groupId>org.zeroturnaround</groupId>
@@ -201,6 +201,11 @@
       <dependency>
         <groupId>com.devonfw.cobigen</groupId>
         <artifactId>core-externalprocess-api</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>core-artifact-retriever</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>

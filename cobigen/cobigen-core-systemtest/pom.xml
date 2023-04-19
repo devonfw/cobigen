@@ -7,6 +7,8 @@
   <properties>
     <valid.templateset.downloaded1.test.path>src\test\resources\testdata\systemtest\GenerationTestTemplateSetsXml\template-sets\downloaded\downloaded1-test</valid.templateset.downloaded1.test.path>
     <valid.templateset.downloaded2.test.path>src\test\resources\testdata\systemtest\GenerationTestTemplateSetsXml\template-sets\downloaded\downloaded2-test</valid.templateset.downloaded2.test.path>
+    <maven.test.TemplateProcessingTest.adapted.path1>src\test\resources\testdata\systemtest\TemplateProcessingTest\template-sets\adapted\crud-java-server-app</maven.test.TemplateProcessingTest.adapted.path1>
+    <maven.test.TemplateProcessingTest.adapted.path2>src\test\resources\testdata\systemtest\TemplateProcessingTest\template-sets\adapted\crud-java-server-app-complex</maven.test.TemplateProcessingTest.adapted.path2>
   </properties>
 
   <parent>
@@ -85,6 +87,44 @@
             <configuration>
               <executable>mvn</executable>
               <workingDirectory>${valid.templateset.downloaded2.test.path}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>Install TemplateProcessingTest downloaded1 template set test project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${maven.test.TemplateProcessingTest.adapted.path1}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>Install TemplateProcessingTest downloaded2 template set test project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${maven.test.TemplateProcessingTest.adapted.path2}</workingDirectory>
               <arguments>
                 <argument>install</argument>
                 <!-- https://stackoverflow.com/a/66801171 -->

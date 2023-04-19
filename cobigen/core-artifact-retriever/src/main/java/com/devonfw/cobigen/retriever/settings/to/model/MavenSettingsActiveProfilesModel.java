@@ -5,7 +5,7 @@ import java.util.List;
 import jakarta.xml.bind.annotation.XmlElement;
 
 /**
- * Class, which represents the activeProfiles element of maven's setting.xml
+ * Class, which represents the activeProfiles element of maven's settings.xml
  *
  */
 public class MavenSettingsActiveProfilesModel {

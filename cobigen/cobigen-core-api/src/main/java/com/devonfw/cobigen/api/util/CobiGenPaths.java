@@ -15,7 +15,7 @@ import com.devonfw.cobigen.api.constants.MavenConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 
 /**
- * Utilities related to the cobigen configurations including:
+ * Utilities related to the CobiGen configurations including:
  *
  * 1. templates location
  */
@@ -28,13 +28,14 @@ public class CobiGenPaths {
   private static Path testPath = null;
 
   /**
-   * Sets a custom path to CobiGen home for tests only
+   * Sets a custom path to CobiGen home (use this for tests only!!!)
    *
    * @param customPath Path to CobiGen home
    */
   public static void setCobiGenHomeTestPath(Path customPath) {
 
     testPath = customPath;
+    LOG.debug("Changed CobiGen home path to: {}", customPath);
   }
 
   /**
@@ -45,6 +46,7 @@ public class CobiGenPaths {
   public static Path getCobiGenHomePath() {
 
     if (testPath != null) {
+      LOG.debug("Custom CobiGen home path found at: {} returning it instead.", testPath);
       return testPath;
     }
 
@@ -86,13 +88,15 @@ public class CobiGenPaths {
    * Returns the templates home directory (which is located inside CobiGen home folder). The folder is no longer created
    * if it does not exist. Instead CobiGen will switch to the template sets folder.
    *
-   * @param home cobigen configuration home directory
+   * @param home CobiGen configuration home directory
    * @return {@link Path} of the templates home directory
    */
   public static Path getTemplatesFolderPath(Path home) {
 
     Path templatesPath = home.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+
     return templatesPath;
+
   }
 
   /**
@@ -123,7 +127,7 @@ public class CobiGenPaths {
    * Returns the template sets home directory (which is located inside CobiGen home folder). The directory will not be
    * created
    *
-   * @param home cobigen configuration home directory
+   * @param home CobiGen configuration home directory
    * @return {@link Path} of the template sets home directory
    */
   public static Path getTemplateSetsFolderPath(Path home) {
@@ -135,7 +139,7 @@ public class CobiGenPaths {
    * Returns the template sets home directory (which is located inside CobiGen home folder). If createFolder is true,
    * the directory will be created.
    *
-   * @param home cobigen configuration home directory
+   * @param home CobiGen configuration home directory
    * @param createFolder if true, the folder will be created if it does not already exists
    * @return {@link Path} of the template sets home directory
    */
@@ -196,9 +200,9 @@ public class CobiGenPaths {
   }
 
   /**
-   * return the path for the context.xml in a monolithic structure
+   * Returns the path of the context.xml in a monolithic structure
    *
-   * @param templatesLocation the path to the Cobigen templates project
+   * @param templatesLocation the path to the CobiGen templates project
    * @return the parent path to the context.xml
    */
   public static Path getContextLocation(Path templatesLocation) {
@@ -219,9 +223,9 @@ public class CobiGenPaths {
   }
 
   /**
-   * return the path of the found pom.xml in a monolithic structure
+   * Returns the path of the pom.xml in a monolithic structure
    *
-   * @param templatesLocation the path to the Cobigen templates project
+   * @param templatesLocation the path to the CobiGen templates project
    * @return parent path to the found pom.xml
    */
   public static Path getPomLocation(Path templatesLocation) {

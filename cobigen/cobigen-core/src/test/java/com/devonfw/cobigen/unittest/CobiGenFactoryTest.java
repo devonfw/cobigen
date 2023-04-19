@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
 
 import junit.framework.TestCase;
@@ -22,50 +23,45 @@ import junit.framework.TestCase;
 public class CobiGenFactoryTest {
 
   /**
-   * Root path to all resources used in this test case
-   */
-  private final static Path TEST_FILE_ROOT_PATH_DOWNLOADED = Paths.get(
-      "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_downloaded/template-sets");
-
-  /**
-   * Root path to resources used in this test case
-   */
-  private final static Path TEST_FILE_ROOT_PATH_ADAPTED = Paths.get(
-      "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_adapted/template-sets");
-
-  /**
    * JUnit Rule to temporarily create files and folders, which will be automatically removed after test execution
    */
   @Rule
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   /**
-   * Tests whether a valid configuration can be read from template-sets/adapted folder
+   * Tests whether a valid configuration can be read from template-sets/adapted folder does not throw a
+   * {@link InvalidConfigurationException}
    *
    * @throws Exception test fails
    */
   @Test
   public void testTemplateSetDownloadedLoadedFromNewConfiguration() throws Exception {
 
+    Path downloadedPath = Paths.get(
+        "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_downloaded/template-sets");
+
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
-    FileUtils.copyDirectory(TEST_FILE_ROOT_PATH_DOWNLOADED.getParent().toFile(), folder);
+    FileUtils.copyDirectory(downloadedPath.getParent().toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
-      CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri());
+      CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri(), false);
     });
   }
 
   /**
-   * Tests whether a valid configuration can be read from template-sets/adapted folder
+   * Tests whether a valid configuration can be read from template-sets/adapted folder does not throw a
+   * {@link InvalidConfigurationException}
    *
    * @throws Exception test fails
    */
   @Test
   public void testTemplateSetAdaptedLoadedFromNewConfiguration() throws Exception {
 
+    Path adaptedPath = Paths.get(
+        "src/test/resources/testdata/unittest/config/reader/TemplateSetConfigurationReaderTest/valid_template_sets_adapted/template-sets");
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
-    FileUtils.copyDirectory(TEST_FILE_ROOT_PATH_ADAPTED.getParent().toFile(), folder);
+    FileUtils.copyDirectory(adaptedPath.getParent().toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
-      CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri());
+      CobiGenFactory.create(folder.toPath().resolve("template-sets").toUri(), false);
     });
   }
 }

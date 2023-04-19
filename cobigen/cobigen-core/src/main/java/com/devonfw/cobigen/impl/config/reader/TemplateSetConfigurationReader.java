@@ -20,10 +20,8 @@ import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
-import com.devonfw.cobigen.impl.config.ConfigurationHolder;
 import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
 import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.TemplateFolder;
@@ -45,48 +43,26 @@ public class TemplateSetConfigurationReader {
   /** Path of the template set configuration file */
   private Path templateSetFile;
 
-  /** Paths of the configuration location for a template-set.xml file */
+  /** Path of the configuration location for a template-set.xml file e.g. src/main/resources */
   private Path configLocation;
-
-  /** Root of the configuration */
-  private Path configRoot;
 
   /** The static representation of the TemplateSetConfiguration */
   private com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration templateSetConfiguration;
 
   /** List with the paths of the configuration locations for the template-set.xml files */
+  // TODO: Check if this map can replace templateSetFile and configLocation, see:
+  // https://github.com/devonfw/cobigen/issues/1668
   private Map<Path, Path> configLocations = new HashMap<>();
-
-  /**
-   * The {@link ConfigurationHolder}
-   */
-  protected ConfigurationHolder configurationHolder;
 
   /**
    * The {@link com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration}
    */
-  protected com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
-
-  /**
-   * @return contextConfiguration
-   */
-  public com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration getContextConfiguration() {
-
-    return this.contextConfiguration;
-  }
-
-  /**
-   * @return templatesConfiguration
-   */
-  public TemplatesConfiguration getTemplatesConfiguration() {
-
-    return this.templatesConfiguration;
-  }
+  private com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
 
   /**
    * The {@link TemplatesConfiguration} to initialize
    */
-  protected TemplatesConfiguration templatesConfiguration;
+  private TemplatesConfiguration templatesConfiguration;
 
   /** The top-level folder where the templates are located. */
   private TemplateFolder rootTemplateFolder;
@@ -97,7 +73,12 @@ public class TemplateSetConfigurationReader {
   /** The list of downloaded template set configuration paths */
   private List<Path> templateSetConfigurationPathsDownloaded;
 
-  // TODO: Use dependency injection here instead of the new operator
+  /**
+   * The TemplateSetConfigurationManager manages adapted and downloaded template sets
+   *
+   * TODO: Check if it can be integrated into this reader, see: https://github.com/devonfw/cobigen/issues/1668
+   *
+   */
   private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
 
   /**
@@ -148,7 +129,22 @@ public class TemplateSetConfigurationReader {
       }
     }
 
-    this.configRoot = configRoot;
+  }
+
+  /**
+   * @return contextConfiguration
+   */
+  public com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration getContextConfiguration() {
+
+    return this.contextConfiguration;
+  }
+
+  /**
+   * @return templatesConfiguration
+   */
+  public TemplatesConfiguration getTemplatesConfiguration() {
+
+    return this.templatesConfiguration;
   }
 
   /**
@@ -223,11 +219,7 @@ public class TemplateSetConfigurationReader {
               "The required 'version' attribute of node \"templateSetConfiguration\" has not been set");
         } else {
           VersionValidator validator = new VersionValidator(Type.TEMPLATE_SET_CONFIGURATION, MavenMetadata.VERSION);
-          try {
-            validator.validate(configVersion.floatValue());
-          } catch (NotYetSupportedException e) {
-            // TODO
-          }
+          validator.validate(configVersion.floatValue(), false);
         }
       } else {
         throw new InvalidConfigurationException(this.templateSetFile,

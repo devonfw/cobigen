@@ -36,14 +36,6 @@ public class ConfigurationHolder {
   /** Cached templateSet configuration */
   private TemplateSetConfiguration templateSetConfiguration;
 
-  /**
-   * @return templateSetConfiguration
-   */
-  public TemplateSetConfiguration getTemplateSetConfiguration() {
-
-    return this.templateSetConfiguration;
-  }
-
   /** Root path of the configuration */
   private Path configurationPath;
 
@@ -54,8 +46,7 @@ public class ConfigurationHolder {
   private ConfigurationProperties configurationProperties;
 
   /**
-   * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration. Since this
-   * is a Singleton, this constructor is private
+   * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
    *
    * @param configurationLocation the OS Filesystem path of the configuration location.
    */
@@ -63,11 +54,19 @@ public class ConfigurationHolder {
 
     this.configurationLocation = configurationLocation;
     this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
-    this.configurationProperties = ConfigurationFinder.loadTemplateSetConfigurations(
-        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE), this.configurationPath);
+    this.configurationProperties = ConfigurationFinder.retrieveCobiGenProperties(
+        CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
 
     // updates the root template path and informs all of its observers
     PluginRegistry.notifyPlugins(this.configurationPath);
+  }
+
+  /**
+   * @return templateSetConfiguration
+   */
+  public TemplateSetConfiguration getTemplateSetConfiguration() {
+
+    return this.templateSetConfiguration;
   }
 
   /**
@@ -178,12 +177,15 @@ public class ConfigurationHolder {
   }
 
   /**
-   * checks if this this a template set configuration or a templates configuration (true if templateSetConfiguraion)
+   * Checks if this this a template set configuration or a templates configuration (true if templateSetConfiguraion)
    *
-   * @return return if the template folder structure consists of template sets or if the monolithic structure is used.
+   * @return true if the template folder structure consists of template sets or false if the monolithic structure is
+   *         used.
    */
   public boolean isTemplateSetConfiguration() {
 
+    // TODO: Replace with a better logic for template set detection later f.e. groupid, see:
+    // https://github.com/devonfw/cobigen/issues/1660
     if (this.configurationPath.toUri().getScheme().equals("jar")
         || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
       return false;
@@ -215,6 +217,8 @@ public class ConfigurationHolder {
   }
 
   /**
+   * Retrieves a template set configuration within a map of template sets by its template set folder path
+   *
    * @param templateSetConfigurations Cached templateSet configurations
    * @param templateSetFolder folder where to get the specific configuration from
    * @return the {@link TemplateSetConfiguration} instance saved in the given map

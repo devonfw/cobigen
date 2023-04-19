@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -22,9 +21,10 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 
+import junit.framework.TestCase;
+
 /**
- * mdukhan Class to test the method loadTemplateSetConfigurations in ConfigurationFinder
- *
+ * This {@link TestCase} tests the {@link ConfigurationFinder}
  */
 public class ConfigurationFinderTest {
 
@@ -35,93 +35,84 @@ public class ConfigurationFinderTest {
   public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if invalid properties found, to load the default
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if invalid properties found, to load the default
    * values.
    *
-   * @throws IOException
+   * @throws IOException test fails
    */
   @Test
-  @Ignore
   public void emptyConfigurationTest() throws IOException {
 
-    File folder = this.tmpFolder.newFolder("TemplateSetsTest");
     Path emptyConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/emptyConfigProperties/config.properties");
-    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(emptyConfiguration,
-        folder.toPath());
+    ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(emptyConfiguration);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getHideTemplates()).isEmpty();
+    assertThat(conf.getHideTemplateSets()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if valid properties found, to load these valid
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if valid properties found, to load these valid
    * properties correctly.
    *
-   * @throws IOException
+   * @throws IOException test fails
    */
   @Test
-  @Ignore
   public void validConfigurationTest() throws IOException {
 
-    File folder = this.tmpFolder.newFolder("TemplateSetsTest1");
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/validConfigProperties/config.properties");
-    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration,
-        folder.toPath());
+    ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(validConfiguration);
 
     assertThat(conf.getGroupIds()).containsSequence("devonfw-cobigen-bla", "abcd", "blablob",
         ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
     assertThat(conf.isAllowSnapshots()).isTrue();
-    assertThat(conf.getHideTemplates().get(0).getArtifactId().equals("com.devonfw"));
-    assertThat(conf.getHideTemplates().get(0).getGroupId().equals("test-artifact"));
-    assertThat(conf.getHideTemplates().get(0).getVersion().equals("3.2.1-SNAPSHOT"));
+    assertThat(conf.getHideTemplateSets().get(0).getArtifactId().equals("com.devonfw"));
+    assertThat(conf.getHideTemplateSets().get(0).getGroupId().equals("test-artifact"));
+    assertThat(conf.getHideTemplateSets().get(0).getVersion().equals("3.2.1-SNAPSHOT"));
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if valid properties found, to load these valid
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if valid properties found, to load these valid
    * properties correctly.
    *
-   * @throws IOException
+   * @throws IOException test fails
    */
   @Test
-  @Ignore
   public void invalidInputConfigurationTest() throws IOException {
 
-    File folder = this.tmpFolder.newFolder("TemplateSetsTest2");
     Path validConfiguration = Paths
         .get("src/test/resources/testdata/unittest/config/properties/invalidConfigProperties/config.properties");
-    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(validConfiguration,
-        folder.toPath());
+    ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(validConfiguration);
 
-    assertTrue(conf.getHideTemplates().isEmpty());
-    assertTrue(conf.getMavenCoordinates().isEmpty());
+    assertTrue(conf.getHideTemplateSets().isEmpty());
+    assertTrue(conf.getTemplateSetsInstalled().isEmpty());
   }
 
   /**
-   * Test loadTemplateSetConfigurations Method in ConfigurationFinder if file *.properties not found , to load the
-   * default values.
+   * Test retrieveCobiGenProperties Method in ConfigurationFinder if file *.properties not found , to load the default
+   * values.
    *
-   * @throws IOException
+   * @throws IOException test fails
    *
    */
   @Test
-  @Ignore
   public void invalidPathTest() throws IOException {
 
-    File folder = this.tmpFolder.newFolder("TemplateSetsTest3");
     Path invalidPath = Paths.get("path/which/does/not/exist");
-    ConfigurationProperties conf = ConfigurationFinder.loadTemplateSetConfigurations(invalidPath, folder.toPath());
+    ConfigurationProperties conf = ConfigurationFinder.retrieveCobiGenProperties(invalidPath);
 
     assertThat(conf.getGroupIds()).contains(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_GROUPID);
-    assertThat(conf.getHideTemplates()).isEmpty();
+    assertThat(conf.getHideTemplateSets()).isEmpty();
     assertThat(conf.isAllowSnapshots()).isFalse();
   }
 
   /**
    * Test of findTemplates without an existing templates or template-set folder, expecting to return a created
    * template-set folder
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplatesLocation_WithoutExistingFolders() throws Exception {
@@ -137,6 +128,8 @@ public class ConfigurationFinderTest {
 
   /**
    * Test of findTemplates with an existing template-set/adapted folder, expecting to return the template-set folder
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithTemplateSetFolderContainingAdaptedFolder() throws Exception {
@@ -153,6 +146,8 @@ public class ConfigurationFinderTest {
 
   /**
    * Test of findTemplates with an existing template-set/downloaded folder, expecting to return the template-set folder
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithTemplateSetFolderContainingDownloadedFolder() throws Exception {
@@ -169,6 +164,8 @@ public class ConfigurationFinderTest {
 
   /**
    * Test of findTemplates with an existing templates folder with template jars, expecting to return the path to a jar.
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithTemplatesFolderContainingJars() throws Exception {
@@ -187,6 +184,8 @@ public class ConfigurationFinderTest {
   /**
    * Test of findTemplates with an existing templates folder without template jars , expecting to return a newly created
    * template-Set folder
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithTemplatesFolderWithoutJars() throws Exception {
@@ -203,6 +202,8 @@ public class ConfigurationFinderTest {
   /**
    * Test of findTemplates with an existing templates/CobiGen_Templates folder, expecting to return the
    * CobiGen_Templates folder
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithTemplatesFolderContainingCobiGenTemplatesFolder() throws Exception {
@@ -221,6 +222,8 @@ public class ConfigurationFinderTest {
   /**
    * Test of findTemplates with an existing template-set/downloaded folder and template-set/adapted folder, expecting to
    * return the template-set folder
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithTemplateSetFolderContainingDownloadedAndAdaptedFolder() throws Exception {
@@ -240,6 +243,8 @@ public class ConfigurationFinderTest {
   /**
    * Test of findTemplates with templates value set in the cobigen file, expecting to return the value from the .cobigen
    * file
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithTemplatesPropertySet() throws Exception {
@@ -261,6 +266,8 @@ public class ConfigurationFinderTest {
   /**
    * Test of findTemplates with template-set value set in the cobigen file, the value is faulty and the folder does not
    * exist. Expecting to create a template-set folder in the COBIGEN_HOME home directory.
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithIvalidTemplateSetPropertySet() throws Exception {
@@ -283,6 +290,8 @@ public class ConfigurationFinderTest {
   /**
    * Test of findTemplates with template-set value set in the cobigen file, expecting to return the value from the
    * .cobigen file
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithTemplateSetPropertySet() throws Exception {
@@ -305,6 +314,8 @@ public class ConfigurationFinderTest {
    *
    * Test of findTemplates with templates value set in the cobigen file, the value is faulty and the folder does not
    * exist. Expecting to create a template-set folder in the COBIGEN_HOME home directory and return the folder.
+   *
+   * @throws Exception test fails
    */
   @Test
   public void testFindTemplateLocation_WithIvalidTemplatesPropertySet() throws Exception {

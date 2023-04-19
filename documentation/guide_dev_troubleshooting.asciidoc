@@ -95,3 +95,14 @@ But on the local system the build and test process works fine.
 
 ==== Solution
 If you add an Eclipse test project, make sure that you git force add the .project file too. Otherwise the `importExistingGeneralProject` method will fail.
+
+== I get ongoingly wrong indentation (4 whitespaces instead of 2) by the eclipse formatter on editor save
+
+The issue might be, that due to eclipse upgrades or accidental changes on the formatter configuration, you might have project specific formatter settings enabled without your knowledge or even just have an old version of eclipse nobody is compliant anymore with.
+To clean up your installation as well as making sure, that you don't have any project specific jdt configuration, please follow the following steps:
+
+1. Close all devonfw applications
+2. Open a git bash in the devonfw workspace of your cobigen projects
+3. Run `devon ide update all` to get in sync with the latest settings and setup. This may take some time. Please read the messages carefully. You might need to run this command again in case the scripts get updated.
+4. Navigate to your workspace root, e.g. `workspaces/main` and run `rm */.settings/org.eclipse.jdt.core.prefs` to get rid of all project specific settings.
+5. Open eclipse and validate the fix.

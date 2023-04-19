@@ -38,11 +38,6 @@ public class ContextConfiguration {
   private ContextConfigurationReader contextConfigurationReader;
 
   /**
-   * The representation of the generated TemplateSetConfiguration file
-   */
-  private TemplateSetConfiguration templateSetConfiguration;
-
-  /**
    * The {@link ConfigurationHolder}
    */
   private ConfigurationHolder configurationHolder;
@@ -145,6 +140,8 @@ public class ContextConfiguration {
   }
 
   /**
+   * Retrieves the directory of the configuration root directory by given trigger ID
+   *
    * @param triggerId the trigger id to get the config location for
    * @return the {@link Path} of the config location of the trigger
    */
