@@ -77,10 +77,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/x
       <artifactId>core-api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.devonfw.cobigen</groupId>
-      <artifactId>core</artifactId>
-    </dependency>
+
 
   </dependencies>
 </project>

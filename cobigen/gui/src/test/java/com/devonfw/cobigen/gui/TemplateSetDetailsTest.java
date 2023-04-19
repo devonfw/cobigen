@@ -53,7 +53,7 @@ public class TemplateSetDetailsTest extends TestFXBase {
     Path templateSetXmlFile = TEST_FILE_ROOT_PATH.resolve("template-set.xml");
 
     // initialize template set reader
-    TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader();
+    TemplateSetConfigurationReader reader = new TemplateSetConfigurationReader(templateSetXmlFile);
 
     // read template set xml file/files
     reader.readConfiguration(templateSetXmlFile);

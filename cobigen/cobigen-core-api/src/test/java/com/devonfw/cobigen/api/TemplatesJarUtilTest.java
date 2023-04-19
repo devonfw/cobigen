@@ -3,6 +3,7 @@ package com.devonfw.cobigen.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,10 +31,10 @@ public class TemplatesJarUtilTest {
   public void testDownloadFile() throws Exception {
 
     Path tempFolder = this.temp.newFolder(ConfigurationConstants.TEMPLATE_SETS_FOLDER).toPath();
-    Path test = TemplatesJarUtil.downloadFile(
+    String test = TemplatesJarUtil.downloadJarFromURL(
         "https://repo1.maven.org/maven2/com/devonfw/cobigen/templates-devon4j/2021.12.006/templates-devon4j-2021.12.006.pom",
         tempFolder);
-    assertThat(test).exists();
+    assertThat(Paths.get(test)).exists();
 
   }
 }

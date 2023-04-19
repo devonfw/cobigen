@@ -22,6 +22,7 @@ import com.devonfw.cobigen.gui.Controller;
 import com.devonfw.cobigen.gui.model.TemplateSetModel;
 import com.devonfw.cobigen.gui.services.TemplateSetCell;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.util.ArtifactRetrieverUtil;
 import com.devonfw.cobigen.retriever.ArtifactRetriever;
 
 import javafx.collections.FXCollections;
@@ -215,13 +216,13 @@ public class MenuController implements Initializable {
       }
     }
 
-    List<Path> downloadedArtifacts = ArtifactRetriever.downloadArtifactsFromUrls(urlList);
+    List<Path> downloadedArtifacts = ArtifactRetrieverUtil.downloadArtifactsFromUrls(urlList);
 
     List<TemplateSetConfiguration> templateSetConfigurations;
     if (downloadedArtifacts.isEmpty()) {
-      templateSetConfigurations = ArtifactRetriever.retrieveArtifactsFromCache(null);
+      templateSetConfigurations = ArtifactRetrieverUtil.retrieveArtifactsFromCache(null);
     } else {
-      templateSetConfigurations = ArtifactRetriever.retrieveArtifactsFromCache(downloadedArtifacts);
+      templateSetConfigurations = ArtifactRetrieverUtil.retrieveArtifactsFromCache(downloadedArtifacts);
     }
     ObservableList<TemplateSetConfiguration> observableList = FXCollections.observableArrayList();
 
