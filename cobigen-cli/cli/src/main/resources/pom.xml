@@ -10,4 +10,52 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>javaplugin</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>tsplugin</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>xmlplugin</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>textmerger</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>openapiplugin</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>tempeng-freemarker</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>htmlplugin</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>propertyplugin</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>jsonplugin</artifactId>
+      <version>${revision}</version>
+    </dependency>
+  </dependencies>
+
 </project>
