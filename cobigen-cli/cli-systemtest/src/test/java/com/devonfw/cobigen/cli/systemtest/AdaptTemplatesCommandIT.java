@@ -3,52 +3,37 @@ package com.devonfw.cobigen.cli.systemtest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.Before;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 
 /**
  * Tests the usage of the adapt-templates command.
  */
 public class AdaptTemplatesCommandIT extends AbstractCliTest {
 
-  /**
-   * Simulate the download of the template set jars, as this not yet implemented. This method can be removed later
-   *
-   * @throws URISyntaxException if the path could not be created properly
-   * @throws IOException if accessing a directory or file fails
-   */
-  @Before
-  public void initAdaptTemplatesTest() throws URISyntaxException, IOException {
-
-    Path cliSystemTestPath = new File(
-        AdaptTemplatesCommandIT.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile()
-            .getParentFile().toPath();
-    Path templateJar = cliSystemTestPath.resolve("src/test/resources/testdata/crud-java-server-app.jar");
-    if (Files.exists(templateJar)) {
-      Path downloadedTemplateSetsPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
-          .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
-      if (!Files.exists(downloadedTemplateSetsPath)) {
-        Files.createDirectories(downloadedTemplateSetsPath);
-      }
-      Files.copy(templateJar, downloadedTemplateSetsPath.resolve(templateJar.getFileName()));
-    }
-  }
+  /** Test resources root path */
+  private static String testFileRootPath = "src/test/resources/testdata/AdaptTemplatesCommandIT/template-sets/downloaded";
 
   /**
-   * Checks if adapt-templates command successfully created cobigen templates folder and its sub folders
+   * Checks if adapt-templates command successfully created adapted folder and its sub folders
    *
    * @throws Exception test fails
    */
   @Test
-  public void adaptTemplatesTest() throws Exception {
+  public void adaptTemplateSetTest() throws Exception {
 
+    Path downloadedTemplateSetsPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
+        .resolve(ConfigurationConstants.DOWNLOADED_FOLDER);
+    if (!Files.exists(downloadedTemplateSetsPath)) {
+      Files.createDirectories(downloadedTemplateSetsPath);
+    }
+    FileUtils.copyDirectory(new File(testFileRootPath), downloadedTemplateSetsPath.toFile());
     String args[] = new String[2];
     args[0] = "adapt-templates";
     args[1] = "--all";
@@ -64,12 +49,90 @@ public class AdaptTemplatesCommandIT extends AbstractCliTest {
     assertThat(downloadedTemplateSetsFolderPath).exists();
     assertThat(adaptedTemplateSetsFolderPath).exists();
 
+    Path templateSetSimple = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-1.0.0");
+    Path templateSetComplex = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app-complex-1.0.0");
+
     // check if adapted template set exists
-    Path templateSet = adaptedTemplateSetsFolderPath.resolve("crud-java-server-app");
-    assertThat(templateSet).exists();
+    assertThat(templateSetSimple).exists();
+    assertThat(templateSetComplex).exists();
+
+    Path templateSetResourcesPath = templateSetSimple
+        .resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
+    Path templateSetResourcesPathComplex = templateSetComplex
+        .resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
+
+    // check if templates folder exists
+    assertThat(templateSetSimple.resolve(templateSetResourcesPath).resolve(ConfigurationConstants.TEMPLATES_FOLDER))
+        .exists();
+    assertThat(
+        templateSetComplex.resolve(templateSetResourcesPathComplex).resolve(ConfigurationConstants.TEMPLATES_FOLDER))
+            .exists();
+
+    // check if template-set.xml exists
+    assertThat(templateSetSimple.resolve(templateSetResourcesPath)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+    assertThat(templateSetComplex.resolve(templateSetResourcesPathComplex)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME)).exists();
+
+    // validate correct folder structure
+    assertThat(templateSetSimple.resolve(templateSetResourcesPath)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+    assertThat(templateSetComplex.resolve(templateSetResourcesPathComplex)
+        .resolve(ConfigurationConstants.TEMPLATE_SET_FREEMARKER_FUNCTIONS_FILE_NAME)).exists();
+
+    // check if template set utility resource folder exists
+    assertThat(templateSetSimple.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER)).exists();
+    assertThat(templateSetComplex.resolve(ConfigurationConstants.UTIL_RESOURCE_FOLDER)).exists();
+
+    // validate maven specific contents
+    assertThat(templateSetSimple.resolve("pom.xml")).exists();
+    assertThat(templateSetComplex.resolve("pom.xml")).exists();
+
+    // check if META-INF was deleted
+    assertThat(templateSetResourcesPath.resolve("META-INF")).doesNotExist();
+    assertThat(templateSetResourcesPathComplex.resolve("META-INF")).doesNotExist();
+
+  }
+
+  /**
+   * Checks if adapt-templates command successfully created cobigen templates folder and its sub folders
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void adaptTemplatesTest() throws Exception {
+
+    Path templatesPath = this.currentHome.resolve(ConfigurationConstants.TEMPLATES_FOLDER);
+    Path CobigenTemplatesPath = templatesPath.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    if (!Files.exists(templatesPath)) {
+      Files.createDirectories(templatesPath);
+    }
+
+    // TODO: Replace with downloadJarFromURL method and get rid of downloadJar, see:
+    // https://github.com/devonfw/cobigen/issues/1685
+    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", false, templatesPath.toFile());
+    TemplatesJarUtil.downloadJar("com.devonfw.cobigen", "templates-devon4j", "3.0.0", true, templatesPath.toFile());
+
+    String args[] = new String[2];
+    args[0] = "adapt-templates";
+    args[1] = "--all";
+
+    execute(args, false, false, true);
+
+    assertThat(CobigenTemplatesPath).exists();
+
+    Path templateRoot = CobigenTemplatesPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+
     // check if context configuration exists
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)).exists();
-    assertThat(templateSet.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)).exists();
+    assertThat(templateRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME)).exists();
+
+    Path template = templateRoot.resolve("crud_java_server_app");
+    Path templateComplex = templateRoot.resolve("crud_java_server_app_complex");
+    // check if templates exists
+    assertThat(template).exists();
+    assertThat(templateComplex).exists();
+    // check if template.xml exists
+    assertThat(template.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME)).exists();
+    assertThat(templateComplex.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME)).exists();
   }
 }

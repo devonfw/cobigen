@@ -21,8 +21,6 @@ import com.google.common.collect.Lists;
 
 /**
  * This class provides some helper functions in order to minimize code overhead
- *
- * @author Malte Brunnlieb (06.12.2012)
  */
 public class PlatformUIUtil {
 

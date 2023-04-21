@@ -45,6 +45,8 @@ public class VelocityGenerationTest extends SystemTest {
   /**
    * Tests a simple generation using velocity template engine.
    *
+   * TODO: add same test for template sets using regular generate
+   *
    * @throws Exception test fails
    */
   @Test

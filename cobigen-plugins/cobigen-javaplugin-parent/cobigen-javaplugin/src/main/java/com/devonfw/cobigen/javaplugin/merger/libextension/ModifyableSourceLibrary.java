@@ -48,7 +48,6 @@ public class ModifyableSourceLibrary extends SourceLibrary {
    * Creates a new {@link ModifyableJavaClass}
    *
    * @param parent {@link ClassLibrary}
-   * @author mbrunnli (04.04.2013)
    */
   public ModifyableSourceLibrary(AbstractClassLibrary parent) {
 
@@ -62,7 +61,6 @@ public class ModifyableSourceLibrary extends SourceLibrary {
    * @return the created {@link JavaSource}
    * @throws ParseException if the given source could not be parsed
    * @throws IOException if the given source was a file which could not be accessed
-   * @author mbrunnli (04.04.2013)
    */
   public JavaSource addSource(Object source) throws ParseException, IOException {
 
@@ -85,7 +83,6 @@ public class ModifyableSourceLibrary extends SourceLibrary {
    *         while constructing the URL
    * @throws UnsupportedEncodingException If the named charset is not supported
    * @throws IOException if any exception occurred while accessing the source
-   * @author mbrunnli (04.04.2013)
    */
   private JavaSource parseSource(Builder modelBuilder, Object source)
       throws FileNotFoundException, MalformedURLException, UnsupportedEncodingException, IOException {
@@ -114,7 +111,6 @@ public class ModifyableSourceLibrary extends SourceLibrary {
    * @param modelBuilder used to construct the model
    * @return the created {@link JavaSource}
    * @throws ParseException if any exception occurs while parsing
-   * @author mbrunnli (04.04.2013)
    */
   protected JavaSource parse(InputStream stream, URL url, Builder modelBuilder) throws ParseException {
 
@@ -137,7 +133,6 @@ public class ModifyableSourceLibrary extends SourceLibrary {
    * @param modelBuilder used to construct the model
    * @return the created {@link JavaSource}
    * @throws ParseException if any exception occurs while parsing
-   * @author mbrunnli (04.04.2013)
    */
   protected JavaSource parse(Reader reader, URL url, Builder modelBuilder) throws ParseException {
 
@@ -160,7 +155,6 @@ public class ModifyableSourceLibrary extends SourceLibrary {
    * @param builder used to construct the model
    * @return the created {@link JavaSource}
    * @throws ParseException if any exception occurs while parsing
-   * @author mbrunnli (04.04.2013)
    */
   private JavaSource parse(JavaLexer lexer, URL url, Builder builder) throws ParseException {
 
@@ -176,13 +170,10 @@ public class ModifyableSourceLibrary extends SourceLibrary {
     } catch (ParseException pe) {
       if (url != null) {
         pe.setSourceInfo(url.toExternalForm());
-        LOG.info("{}{}", "source info set", "url not null", url.toExternalForm());
       }
       if (getErrorHandler() != null) {
-        LOG.info("error handler not null");
         getErrorHandler().handle(pe);
       } else {
-        LOG.error("{}", "ParseException", pe);
         throw pe;
       }
     }

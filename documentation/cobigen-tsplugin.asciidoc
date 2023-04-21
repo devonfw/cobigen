@@ -52,7 +52,7 @@ The TypeScript input reader is based on the one that the link:https://github.com
 `module: null` specifies a standard entity or type as `string` or `number`.
 
 === Object model
-To get a first impression of the created object after parsing, let us start with analyzing a small example, namely the parsing of a simple link:https://typeorm.io/#/[type-orm] model written in TypeScript. 
+To get a first impression of the created object after parsing, let us start with analyzing a small example, namely the parsing of a simple link:https://typeorm.io/#/[TypeORM] model written in TypeScript. 
 
 ```Typescript
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
@@ -192,10 +192,10 @@ Returning to the general case, independently from the given TypeScript file, an 
 
 * *`importDeclarations`*: A list of import statement as described above
 * *`exportDeclarations`*: A list of export declarations
-* *classes*: A list of classes extracted from the given file, where each entry is full of class specific fields, describing its properties and decorator for example. 
-* *interfaces*: A list of interfaces.
-* *variables*: A list of variables. 
-* *functions*: A list of functions. 
-* *enums*: A list of enumerations.
+* *`classes`*: A list of classes extracted from the given file, where each entry is full of class specific fields, describing its properties and decorator for example. 
+* *`interfaces`*: A list of interfaces.
+* *`variables`*: A list of variables. 
+* *`functions`*: A list of functions. 
+* *`enums`*: A list of enumerations.
 
 

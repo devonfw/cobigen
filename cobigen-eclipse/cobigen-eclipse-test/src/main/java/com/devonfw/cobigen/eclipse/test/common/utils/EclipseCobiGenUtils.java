@@ -165,7 +165,7 @@ public class EclipseCobiGenUtils {
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
     postponeUpgradeAndContinue(bot);
-    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+    generateWithSelectedIncrements(bot, 120000, increments);
   }
 
   /**
@@ -216,7 +216,7 @@ public class EclipseCobiGenUtils {
     bot.waitUntil(new AllJobsAreFinished(), defaultTimeout); // build might take some time
     input.contextMenu("CobiGen").menu("Generate...").click();
     postponeUpgradeAndContinue(bot);
-    generateWithSelectedIncrements(bot, defaultTimeout, increments);
+    generateWithSelectedIncrements(bot, 120000, increments);
   }
 
   /**
@@ -311,6 +311,7 @@ public class EclipseCobiGenUtils {
 
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
     view.bot().tree().expandNode("CobiGen_Templates").select().contextMenu("CobiGen").menu("Health Check...").click();
+    // TODO: replace with health check reaction, see: https://github.com/devonfw/cobigen/issues/1686
     captureAdvancedHealthCheck(bot);
   }
 
@@ -332,7 +333,8 @@ public class EclipseCobiGenUtils {
   }
 
   /**
-   * Checks the CobiGen HealthCheck and takes screenshots of it.
+   * Checks the CobiGen HealthCheck and takes screenshots of it. TODO: Split into captureHealthCheck and
+   * captureAdvancedHealthCheck, see: https://github.com/devonfw/cobigen/issues/1686
    *
    * @param bot to process the health check
    */
@@ -393,10 +395,6 @@ public class EclipseCobiGenUtils {
     takeScreenshot(bot, "Adapt Templates Warning!");
     SWTBotShell warningDialog = bot.shell("Warning!");
     warningDialog.bot().button("Ok").click();
-
-    takeScreenshot(bot, "Create new POM!");
-    SWTBotShell finishDialog = bot.shell("Create new POM");
-    finishDialog.bot().button("Finish").click();
 
     SWTBotShell informationDialog = bot.shell("Information");
     bot.waitUntil(new AnyShellIsActive("Information"), DEFAULT_TIMEOUT);

@@ -54,7 +54,6 @@ import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
 import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import jakarta.xml.bind.JAXBContext;
@@ -86,7 +85,7 @@ public class TemplatesConfigurationReader {
   private JXPathContext xPathContext;
 
   /** Cache to find all templates by name for each template scan */
-  private Map<String, List<String>> templateScanTemplates = Maps.newHashMap();
+  private Map<String, List<String>> templateScanTemplates = new HashMap<>();
 
   /** The top-level folder where the templates are located. */
   private TemplateFolder rootTemplateFolder;
@@ -140,6 +139,24 @@ public class TemplatesConfigurationReader {
 
     readConfiguration();
     this.configurationHolder = configurationHolder;
+  }
+
+  /**
+   * The constructor which is being used by the {@link TemplateSetConfigurationReader}
+   *
+   * @param templatesConfiguration {@link TemplatesConfiguration} to initialize from
+   *        {@link TemplateSetConfigurationReader}
+   * @param rootTemplateFolder the root template folder
+   * @param configurationHolder The {@link ConfigurationHolder} used for reading templates folder
+   * @param templateSetConfigurationFile Path to template-set xml to be processed
+   */
+  public TemplatesConfigurationReader(TemplatesConfiguration templatesConfiguration, TemplateFolder rootTemplateFolder,
+      ConfigurationHolder configurationHolder, Path templateSetConfigurationFile) {
+
+    this.configurationHolder = configurationHolder;
+    this.configNode = templatesConfiguration;
+    this.configFilePath = templateSetConfigurationFile;
+    this.rootTemplateFolder = rootTemplateFolder;
   }
 
   /**
@@ -731,7 +748,7 @@ public class TemplatesConfigurationReader {
    */
   private Trigger getExternalTrigger(String triggerToSearch) {
 
-    AbstractContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
+    ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
     Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
     Trigger trig = triggers.get(triggerToSearch);

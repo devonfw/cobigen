@@ -11,10 +11,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-/**
- *
- * @author fkreis (28.11.2014)
- */
 public class XmlUtil {
 
   /**
@@ -22,7 +18,6 @@ public class XmlUtil {
    *
    * @param file the file (xml) to parse
    * @return a DOM {@link Document} according to the
-   * @author fkreis (28.11.2014)
    * @throws IOException thrown if input File cannot be found
    * @throws SAXException thrown if input file is not a valid xml document
    * @throws ParserConfigurationException thrown if document builder is configured wrong
@@ -41,7 +36,6 @@ public class XmlUtil {
    *
    * @param stream the inputstream (xml) to parse
    * @return a DOM {@link Document} according to the
-   * @author fkreis (28.11.2014)
    * @throws IOException thrown if input File cannot be found
    * @throws SAXException thrown if input file is not a valid xml document
    * @throws ParserConfigurationException thrown if document builder is configured wrong

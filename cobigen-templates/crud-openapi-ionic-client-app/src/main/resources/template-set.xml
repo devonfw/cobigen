@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+	
+	 <cc:contextConfiguration version="3.0">
+  <cc:trigger id="crud_openapi_ionic_client_app" type="openapi">
+    <cc:containerMatcher type="element" value="openAPIFile" />
+    <cc:matcher type="element" value="EntityDef">
+      <cc:variableAssignment type="constant" key="domain" value="demo" />
+      <cc:variableAssignment type="property" key="component" value="componentName" />
+      <cc:variableAssignment type="property" key="etoName" value="name" />
+    </cc:matcher>
+  </cc:trigger>
+  <cc:tags>
+    <cc:tag name="Ionic"></cc:tag>
+    <cc:tag name="OpenAPI"></cc:tag>
+    <cc:tag name="CRUD"></cc:tag>
+    <cc:tag name="Client"></cc:tag>
+    <cc:tag name="App"></cc:tag>
+  </cc:tags>
+  <cc:links>
+    <cc:link url="https://github.com/devonfw/cobigen/wiki/howto-devonfw-CobiGen-OpenAPI"></cc:link>
+  </cc:links>
+   </cc:contextConfiguration>
+	
+	 <tc:templatesConfiguration version="5.0">
+  <tc:templates>
+    <tc:templateExtension ref="${variables.etoName#lower_case}-detail.page.ts" mergeStrategy="tsmerge" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}-list.page.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="app.component.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="app.module.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}-rest.service.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}.ts" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}-search-criteria.ts" />
+    <tc:templateExtension ref="paginated-list-to.ts" />
+    <tc:templateExtension ref="pageable.ts" />
+    <tc:templateExtension ref="sort.ts" />
+    <tc:templateExtension ref="environment.android.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="environment.prod.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="environment.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="app-routing.module.ts" mergeStrategy="tsmerge_override" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}-detail.page.html" mergeStrategy="html-ng*" />
+    <tc:templateExtension ref="${variables.etoName#lower_case}-list.page.html" mergeStrategy="html-ng*" />
+    <tc:templateExtension ref="es.json" mergeStrategy="jsonmerge_override" />
+    <tc:templateExtension ref="en.json" mergeStrategy="jsonmerge_override" />
+    <tc:templateExtension ref="it.json" mergeStrategy="jsonmerge_override" />
+    <tc:templateExtension ref="business-operator.service.ts" mergeStrategy="tsmerge_override" />
+  </tc:templates>
+
+  <tc:templateScans>
+    <tc:templateScan name="ts_scan" templatePath="templates" destinationPath="" />
+  </tc:templateScans>
+
+  <tc:increments>
+    <tc:increment name="devon4ng-app" description="CRUD devon4ng Ionic App" explanation="Creates Ionic stack CRUD service.">
+      <tc:incrementRef ref="app_ionic_structure" />
+      <tc:incrementRef ref="ionic_routing" />
+      <tc:incrementRef ref="ionic_i18n" />
+      <tc:incrementRef ref="ionic_component" />
+      <tc:incrementRef ref="ionic_theme" />
+    </tc:increment>
+    <tc:increment name="app_ionic_structure" description="Ionic devon4ng environments">
+      <tc:templateRef ref="environment.android.ts" />
+      <tc:templateRef ref="environment.prod.ts" />
+      <tc:templateRef ref="environment.ts" />
+    </tc:increment>
+    <tc:increment name="ionic_routing" description="Ionic routing">
+      <tc:templateRef ref="app-routing.module.ts" />
+    </tc:increment>
+    <tc:increment name="ionic_i18n" description="Ionic i18n">
+      <tc:templateRef ref="es.json" />
+      <tc:templateRef ref="en.json" />
+      <tc:templateRef ref="it.json" />
+    </tc:increment>
+    <tc:increment name="ionic_component" description="Ionic List">
+      <tc:templateRef ref="${variables.etoName#lower_case}.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-search-criteria.ts" />
+      <tc:templateRef ref="paginated-list-to.ts" />
+      <tc:templateRef ref="app.component.ts" />
+      <tc:templateRef ref="app.module.ts" />
+      <tc:templateRef ref="pageable.ts" />
+      <tc:templateRef ref="sort.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-rest.service.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-list.page.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-list.page.html" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-list.page.scss" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-detail.page.ts" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-detail.page.html" />
+      <tc:templateRef ref="${variables.etoName#lower_case}-detail.page.scss" />
+      <tc:templateRef ref="business-operator.service.ts" />
+    </tc:increment>
+    <tc:increment name="ionic_theme" description="Ionic theme">
+      <tc:templateRef ref="variables.scss" />
+    </tc:increment>
+  </tc:increments>
+</tc:templatesConfiguration>
+</tns:templateSetConfiguration>

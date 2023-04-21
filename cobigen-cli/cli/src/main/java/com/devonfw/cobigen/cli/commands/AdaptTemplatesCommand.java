@@ -25,7 +25,6 @@ import picocli.CommandLine.Option;
 @Command(description = MessagesConstants.ADAPT_TEMPLATES_DESCRIPTION, name = "adapt-templates", aliases = {
 "a" }, mixinStandardHelpOptions = true)
 public class AdaptTemplatesCommand extends CommandCommons {
-
   /**
    * Logger to output useful information to the user
    */
@@ -37,21 +36,26 @@ public class AdaptTemplatesCommand extends CommandCommons {
   @Option(names = { "--all" }, description = MessagesConstants.ADAPT_ALL_DESCRIPTION)
   boolean adaptAll;
 
+  /**
+   * Allows usage of the old monolithic template structure instead of the new template sets structure.
+   */
+  @Option(names = { "--force-monolithic-configuration",
+  "--force-mc" }, description = MessagesConstants.FORCE_MONOLITHIC_CONFIGURATION)
+  boolean forceMonolithicConfiguration;
+
   @Override
   public Integer doAction() throws Exception {
 
     TemplateAdapter templateAdapter = new TemplateAdapterImpl(this.templatesProject);
-
     try {
       templateAdapter.adaptTemplates();
     } catch (UpgradeTemplatesNotificationException e) {
-      if (askUserToContinueWithUpgrade(e)) {
-
+      if (!this.forceMonolithicConfiguration && askUserToContinueWithUpgrade(e)) {
         templateAdapter.upgradeMonolithicTemplates(this.templatesProject);
       }
     } catch (TemplateSelectionForAdaptionException e) {
       List<Path> templateJars = e.getTemplateSets();
-      if (templateJars != null && !templateJars.isEmpty()) {
+      if (!templateJars.isEmpty()) {
         List<Path> templateJarsToAdapt = getJarsToAdapt(templateAdapter, templateJars);
         if (!templateJarsToAdapt.isEmpty()) {
           templateAdapter.adaptTemplateSets(templateJarsToAdapt, false);
@@ -60,7 +64,6 @@ public class AdaptTemplatesCommand extends CommandCommons {
         LOG.info("No template set jars found to extract.");
       }
     }
-
     return 0;
   }
 
@@ -75,9 +78,7 @@ public class AdaptTemplatesCommand extends CommandCommons {
     List<Path> jarsToAdapt = new ArrayList<>();
     if (templateJars != null && templateJars.size() > 0) {
       printJarsForSelection(templateAdapter, templateJars);
-
       List<String> userSelection = new ArrayList<>();
-
       if (this.adaptAll) {
         userSelection.add("0");
       } else {
@@ -85,7 +86,6 @@ public class AdaptTemplatesCommand extends CommandCommons {
           userSelection.add(templateSelection);
         }
       }
-
       if (userSelection.contains("0")) {
         jarsToAdapt = templateJars;
       } else {
@@ -94,7 +94,6 @@ public class AdaptTemplatesCommand extends CommandCommons {
         }
       }
     }
-
     return jarsToAdapt;
   }
 

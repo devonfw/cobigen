@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  targetNamespace="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+  xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+  xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" elementFormDefault="qualified" version="6.0">
+
+
+  <xs:import schemaLocation="contextConfiguration.xsd"
+    namespace="http://capgemini.com/devonfw/cobigen/ContextConfiguration"/>
+  <xs:import schemaLocation="templatesConfiguration.xsd"
+    namespace="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration"/>
+
+  <xs:element name="templateSetConfiguration">
+    <xs:complexType>
+       <xs:all>
+        <xs:element ref="cc:contextConfiguration"/>
+        <xs:element ref="tc:templatesConfiguration"/>
+      </xs:all>
+      <xs:attribute name="version" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

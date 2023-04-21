@@ -9,7 +9,6 @@ import java.util.Map;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
-import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 
 import ma.glasnost.orika.MapperFacade;
@@ -19,19 +18,16 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 /**
  * This class encompasses all logic for legacy context configuration detection and upgrading these to the latest
  * supported version.
- *
- * @author mbrunnli (Jun 22, 2015)
  */
 public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<ContextConfigurationVersion> {
 
   /**
    * Creates a new {@link ContextConfigurationUpgrader} instance.
-   *
-   * @author mbrunnli (Jun 23, 2015)
    */
   public ContextConfigurationUpgrader() {
 
-    super(ContextConfigurationVersion.v1_0, ContextConfiguration.class, ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    super(ContextConfigurationVersion.v1_0, com.devonfw.cobigen.impl.config.entity.io.v1_0.ContextConfiguration.class,
+        ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
   }
 
   @Override

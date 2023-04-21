@@ -8,7 +8,6 @@ import java.util.List;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
-import com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.v1_2.Increment;
 import com.devonfw.cobigen.impl.config.entity.io.v1_2.IncrementRef;
 import com.devonfw.cobigen.impl.config.entity.io.v1_2.Template;
@@ -23,19 +22,16 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 /**
  * This class encompasses all logic for legacy templates configuration detection and upgrading these to the latest
  * supported version.
- *
- * @author mbrunnli (Jun 22, 2015)
  */
 public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader<TemplatesConfigurationVersion> {
 
   /**
    * Creates a new {@link TemplateConfigurationUpgrader} instance.
-   *
-   * @author mbrunnli (Jun 23, 2015)
    */
   public TemplateConfigurationUpgrader() {
 
-    super(TemplatesConfigurationVersion.v1_0, TemplatesConfiguration.class,
+    super(TemplatesConfigurationVersion.v1_0,
+        com.devonfw.cobigen.impl.config.entity.io.v1_0.TemplatesConfiguration.class,
         ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
   }
 

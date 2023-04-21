@@ -764,7 +764,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
    *
    * @param baseField to be replaced
    * @param patchField to replace the baseField
-   * @author Malte Brunnlieb
    */
   public void replace(JavaField baseField, JavaField patchField) {
 
@@ -781,7 +780,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
    *
    * @param baseMethod to be replaced
    * @param patchMethod to replace the baseMethod
-   * @author Malte Brunnlieb
    */
   public void replace(JavaMethod baseMethod, JavaMethod patchMethod) {
 
@@ -798,7 +796,6 @@ public class ModifyableJavaClass extends AbstractInheritableJavaEntity implement
    *
    * @param baseConstructor to be replaced
    * @param patchConstructor to replace the baseMethod
-   * @author Malte Brunnlieb
    */
   public void replace(JavaConstructor baseConstructor, JavaConstructor patchConstructor) {
 

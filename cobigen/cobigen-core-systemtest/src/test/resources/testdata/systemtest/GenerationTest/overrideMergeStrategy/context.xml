@@ -4,6 +4,10 @@
         <matcher type="fqn" value=".+">
         </matcher>
     </trigger>
+    <trigger id="entities2" type="mockplugin" templateFolder="testTemplates2">
+        <matcher type="fqn" value=".+">
+        </matcher>
+    </trigger>
   <tags>
     <tag name="bla" />
   </tags>

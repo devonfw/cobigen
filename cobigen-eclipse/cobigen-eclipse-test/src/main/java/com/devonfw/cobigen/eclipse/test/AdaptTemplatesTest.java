@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -19,7 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
@@ -51,7 +53,6 @@ public class AdaptTemplatesTest extends SystemTest {
   public static void setupClass() throws Exception {
 
     EclipseUtils.cleanWorkspace(bot, true);
-
   }
 
   /**
@@ -69,7 +70,17 @@ public class AdaptTemplatesTest extends SystemTest {
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
-    EclipseCobiGenUtils.runAndCaptureUpdateTemplates(bot);
+    // retrieve CobiGen home directory (overwritten through environment variables)
+    File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
+
+    // create templates directory as this should be present in this scenario
+    this.tempFolder.newFolder("playground", "project", "templates");
+
+    // download latest monolithic templates to simulate existing template jars
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesDirectory);
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesDirectory);
+
+    // adapt template jars into CobiGen_Templates project
     EclipseCobiGenUtils.runAndCaptureAdaptTemplates(bot);
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
@@ -80,11 +91,20 @@ public class AdaptTemplatesTest extends SystemTest {
     SWTBotTreeItem javaClassItem = view.bot().tree().expandNode(testProjName, "adapt-templates.yml");
     javaClassItem.select();
 
-    bot.waitUntil(new AllJobsAreFinished(), 10000);
-    String Cobigen_templates = ConfigurationConstants.COBIGEN_TEMPLATES;
-    IProject adaptedTemplatesProj = ResourcesPlugin.getWorkspace().getRoot().getProject(Cobigen_templates);
+    // execute CobiGen
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "CRUD devon4j Server>CRUD REST services");
 
-    assertThat(adaptedTemplatesProj.exists()).isTrue();
+    bot.waitUntil(new AllJobsAreFinished(), 10000);
+    // increase timeout as the openAPI parser is slow on initialization
+    EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
+
+    bot.waitUntil(new AllJobsAreFinished(), 10000);
+    IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjName);
+    IFile generationResult = proj.getFile(
+        "src/main/java/com/devonfw/test/sampledatamanagement/service/impl/rest/SampledatamanagementRestServiceImpl.java");
+
+    assertThat(generationResult.exists()).isTrue();
+
   }
 
   /**
@@ -93,10 +113,10 @@ public class AdaptTemplatesTest extends SystemTest {
    * @throws Exception test fails
    */
   @Test
-  public void testAdaptTemplates() throws Exception {
+  public void testAdaptTemplatesAndGenerate() throws Exception {
 
-    File tmpProject = this.tempFolder.newFolder("playground", "project", "templates");
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, tmpProject.getParentFile().getAbsolutePath())
+    File tmpProject = this.tempFolder.newFolder("playground", "project");
+    withEnvironmentVariable("COBIGEN_HOME", tmpProject.toPath().toString())
         .execute(() -> testBasicOpenAPIGenerationWithAdaptTemplates());
   }
 }

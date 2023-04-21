@@ -61,7 +61,7 @@ public class AbstractMavenTest {
     this.mvnSettingsFile = this.tmpFolder.newFile();
     Files.write(this.mvnSettingsFile.toPath(),
         IOUtils.toByteArray(AbstractMavenTest.class.getResourceAsStream("/test-maven-settings.xml")));
-    LOG.info("Temporary settings file created in " + this.mvnSettingsFile.getAbsolutePath());
+    LOG.info("Temporary settings file created in {}", this.mvnSettingsFile.getAbsolutePath());
   }
 
   /**

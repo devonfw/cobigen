@@ -319,7 +319,6 @@ public class ContainerMatcherIT extends AbstractApiTest {
    *        matcher
    * @param multipleContainerChildren defines whether the container should contain multiple children
    * @return the container as input for generation interpreter for
-   * @author mbrunnli (16.10.2014)
    */
   @SuppressWarnings("unchecked")
   private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger,

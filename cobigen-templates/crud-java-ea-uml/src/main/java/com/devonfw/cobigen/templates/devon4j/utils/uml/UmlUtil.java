@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
 import com.devonfw.cobigen.templates.devon4j.utils.DevonfwUtil;
 
 /**
- *
+ * Provides utilities for UML generation
  */
 public class UmlUtil {
 
@@ -33,7 +33,7 @@ public class UmlUtil {
 
     String textContent = generateText(isImpl, isOverride);
 
-    this.connectors = new ArrayList();
+    this.connectors = new ArrayList<>();
 
     return textContent;
   }
@@ -260,8 +260,8 @@ public class UmlUtil {
         if (isOverride) {
           content += "@Override\n\t";
         }
-        content += "public void set" + new DevonfwUtil().removePlural(connectedClassName) + "s(List<" + connectedClassName
-            + "Entity> " + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s)";
+        content += "public void set" + new DevonfwUtil().removePlural(connectedClassName) + "s(List<"
+            + connectedClassName + "Entity> " + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s)";
         content += "{" + "\n\t\tthis." + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s = "
             + new DevonfwUtil().removePlural(connectedClassName.toLowerCase()) + "s;" + "\n\t}";
       }

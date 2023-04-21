@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
@@ -73,6 +75,7 @@ public class GenerateCommandIT extends AbstractCliTest {
    * @throws Exception test fails
    */
   @Test
+  @Ignore // TODO: re-enable when upgrade process is implemented, see: https://github.com/devonfw/cobigen/issues/1595
   public void upgradeAndGenerateFromEntityTest() throws Exception {
 
     FileUtils.copyDirectory(new File(testFileRootPath + "templatesproject"), this.tmpProject.toFile());
@@ -96,6 +99,38 @@ public class GenerateCommandIT extends AbstractCliTest {
     assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
         .exists();
   }
+
+  /**
+   *
+   * Integration test of the generation of template sets from a Java Entity. It does not specify the project to generate
+   * the folders to.
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  @Ignore // TODO: re-enable/fix when CLI tests were re-factored, see: https://github.com/devonfw/cobigen/issues/1659
+  public void generateFromEntityWithTemplateSetTest() throws Exception {
+
+    File baseProject = this.tmpProject.resolve("maven.project/core/").toFile();
+    File templateSetsConfig = this.tmpProject.resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER).toFile();
+    String args[] = new String[6];
+    args[0] = "generate";
+    args[1] = this.entityInputFile.getAbsolutePath();
+    args[2] = "--increments";
+    args[3] = "0";
+    args[4] = "-tp";
+    args[5] = templateSetsConfig.getAbsolutePath();
+
+    execute(args, false);
+
+    assertThat(this.currentHome.resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATE_SETS_PATH)).exists();
+
+    assertThat(baseProject.toPath().resolve("src/main/java/com/maven/project/sampledatamanagement/logic/api/to"))
+        .exists();
+  }
+
+  // TODO: Add similar test with a template-set jar file in downloaded folder, see:
+  // https://github.com/devonfw/cobigen/issues/1661
 
   /**
    * Integration test of the generation from a templates jar using a utility class with an extra dependency. See:
@@ -326,6 +361,70 @@ public class GenerateCommandIT extends AbstractCliTest {
     execute(args, true);
 
     assertThat(outputRootPath.resolve("docs")).exists();
+  }
+
+  /**
+   * Integration test of the generation and validation of the class path cache. The test will execute a generation twice
+   * this requires some cleanup.A deleted dependencies will be detected by the validating process in MavenUtil and will
+   * reload the needed dependency and not prevent the second generation
+   *
+   * @throws Exception test fails
+   */
+  @Test
+  public void generateFromEntityTwiceToTestCache() throws Exception {
+
+    // prepare
+    File outputRootFile = this.tempFolder.newFolder("playground2", "rootoutput");
+    File openApiFile = new File(testFileRootPath + "openAPI.yml");
+
+    String args[] = new String[6];
+    args[0] = "generate";
+    args[1] = openApiFile.getAbsolutePath();
+    args[2] = "--out";
+    args[3] = outputRootFile.getAbsolutePath();
+    args[4] = "--increments";
+    args[5] = "ionic_component,OpenAPI_Docs,services";
+
+    execute(args, true);
+
+    Path rootPath = outputRootFile.toPath();
+    assertThat(rootPath.resolve("../../devon4ng-ionic-application-template"));
+
+    // cleanup for a second execution of generate to test the correct cache usage
+    File cli_config = this.tempFolder.getRoot().toPath().resolve("cobigen-test-home").toFile();
+    File bin = cli_config.toPath().resolve("cobigen-test-home/bin").toFile();
+    if (bin.exists()) {
+      FileUtils.deleteDirectory(bin);
+    }
+    File lib = cli_config.toPath().resolve("cobigen-test-home/lib").toFile();
+    if (lib.exists()) {
+      FileUtils.deleteDirectory(lib);
+    }
+    File license = cli_config.toPath().resolve("cobigen-test-home/LICENSE.txt").toFile();
+    if (license.exists()) {
+      FileUtils.delete(license);
+    }
+    File cli = cli_config.toPath().resolve("cli-config").toFile();
+    // get the saved dependencies in the cache file and delete one
+    for (File f : cli.listFiles()) {
+      if (f.getName().startsWith("pom-cp-")) {
+        String dependenciesFromCache = FileUtils.readFileToString(f, Charset.defaultCharset());
+        String osName = System.getProperty("os.name");
+        String[] dependenciesFromCacheArray;
+        if (osName.contains("Windows")) {
+          dependenciesFromCacheArray = dependenciesFromCache.split(";");
+        } else {
+          dependenciesFromCacheArray = dependenciesFromCache.split(":");
+        }
+        for (int i = 0; i >= 0; i--) { // reverse
+          if (dependenciesFromCacheArray[i].contains("javax.persistence")) {
+            FileUtils.delete(new File(dependenciesFromCacheArray[i])); // delete a randomly picked dependency
+          }
+        }
+      }
+    }
+    FileUtils.delete(cli_config.toPath().resolve("cli.tar.gz").toFile());
+    execute(args, true);
   }
 
 }

@@ -1,10 +1,10 @@
 package com.devonfw.cobigen.impl;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -13,20 +13,19 @@ import org.slf4j.LoggerFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.HealthCheck;
 import com.devonfw.cobigen.api.TemplateAdapter;
-import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.DeprecatedMonolithicConfigurationException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.impl.adapter.TemplateAdapterImpl;
 import com.devonfw.cobigen.impl.aop.BeanFactory;
 import com.devonfw.cobigen.impl.aop.ProxyFactory;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
+import com.devonfw.cobigen.impl.config.ConfigurationProperties;
 import com.devonfw.cobigen.impl.extension.PluginRegistry;
 import com.devonfw.cobigen.impl.healthcheck.HealthCheckImpl;
 import com.devonfw.cobigen.impl.util.ConfigurationClassLoaderUtil;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
+import com.devonfw.cobigen.retriever.ArtifactRetriever;
 
 /**
  * CobiGen's Factory to create new instances of {@link CobiGen}.
@@ -104,11 +103,16 @@ public class CobiGenFactory {
     }
     // install Template Sets defined in .properties file
     if (configurationHolder.isTemplateSetConfiguration()) {
-      TemplateSetConfiguration config = ConfigurationFinder.loadTemplateSetConfigurations(
-          CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
-      URI templatesLocation = ConfigurationFinder.findTemplatesLocation();
-      File downloadPath = new File(templatesLocation);
-      TemplatesJarUtil.downloadTemplatesByMavenCoordinates(downloadPath.toPath(), config.getMavenCoordinates());
+      ConfigurationProperties config = configurationHolder.getConfigurationProperties();
+      // if installed template sets property was not empty, install found template sets
+      if (!config.getTemplateSetsInstalled().isEmpty()) {
+        Path templatesLocation = configurationHolder.getConfigurationPath();
+        List<String> downloadUrls = ArtifactRetriever.retrieveTemplateSetJarDownloadURLs(config.getGroupIds(),
+            config.getTemplateSetsInstalled());
+        for (String downloadUrl : downloadUrls) {
+          TemplatesJarUtil.downloadJarFromURL(downloadUrl, templatesLocation);
+        }
+      }
     }
     return createBean;
   }

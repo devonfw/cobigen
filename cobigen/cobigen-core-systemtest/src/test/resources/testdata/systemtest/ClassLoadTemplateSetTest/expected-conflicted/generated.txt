@@ -1,0 +1,2 @@
+Testing JarredClass:
+String is 2

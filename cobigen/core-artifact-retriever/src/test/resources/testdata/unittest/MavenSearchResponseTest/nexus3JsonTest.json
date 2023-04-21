@@ -1,0 +1,22 @@
+{
+  "items" : [ {
+    "id" : "bWF2ZW4tY2VudHJhbDoyZTQ3ZGRhMGYxYjU1NWUwNzE1OWRjOWY5ZGQzZmVmNA",
+    "repository" : "maven-central",
+    "format" : "maven2",
+    "group" : "org.osgi",
+    "name" : "org.osgi.core",
+    "version" : "4.3.1",
+    "assets" : [ {
+      "downloadUrl" : "http://localhost:8081/repository/com/devonfw/cobigen/templates/crud-java-server-app/2021.08.001/crud-java-server-app-2021.08.001-template-set.xml",
+      "path" : "org/osgi/org.osgi.core/4.3.1/org.osgi.core-4.3.1.pom",
+      "id" : "bWF2ZW4tY2VudHJhbDo2NTRiYjdkMGE1OTIxMzg1OWZhMTVkMzNmYWU1ZmY3OA",
+      "repository" : "maven-central",
+      "format" : "maven2",
+      "checksum" : {
+        "sha1" : "79391fc69dd72ad1fd983d01b4572f93f644882b",
+        "md5" : "3d87a59bcdb4b131d9a63e87e0ed924a"
+      }
+    } ]
+  } ],
+  "continuationToken" : null
+}

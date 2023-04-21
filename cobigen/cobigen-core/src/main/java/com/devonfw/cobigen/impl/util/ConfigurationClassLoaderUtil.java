@@ -123,9 +123,8 @@ public class ConfigurationClassLoaderUtil {
       if (FileSystemUtil.isZipFile(utilsLocation.toUri())) {
         result.addAll(resolveFromJar(classLoader, utilsLocation));
       } else {
-        ClassLoader inputClassLoader = null;
         classLoaderUrls = addFoldersToClassLoaderUrls(utilsLocation);
-        inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
+        ClassLoader inputClassLoader = getUrlClassLoader(classLoaderUrls.toArray(new URL[] {}), classLoader);
         result.addAll(resolveFromFolder(utilsLocation, inputClassLoader));
       }
     }
@@ -143,7 +142,6 @@ public class ConfigurationClassLoaderUtil {
   private static List<Class<?>> resolveFromFolder(Path templateRoot, ClassLoader inputClassLoader) {
 
     LOG.debug("Processing configuration from {}", templateRoot.toString());
-    LOG.info("Searching for classes in configuration folder...");
     List<Path> foundPaths = new LinkedList<>();
     List<Class<?>> result = new ArrayList<>();
 
@@ -172,7 +170,7 @@ public class ConfigurationClassLoaderUtil {
         }
       }
     } else {
-      LOG.info("Could not find any compiled classes to be loaded as util classes in template folder.");
+      LOG.debug("Could not find any compiled classes to be loaded as util classes in template folder.");
     }
 
     return result;
@@ -182,7 +180,7 @@ public class ConfigurationClassLoaderUtil {
    * Resolves utility classes from Jar archive
    *
    * @param inputClassLoader ClassLoader to use for storing of classes
-   * @param configurationHolder configuration holder
+   * @param utilLocation Path to utilities location
    * @return List of classes to load utilities from
    */
   private static List<Class<?>> resolveFromJar(ClassLoader inputClassLoader, Path utilLocation) {
@@ -248,7 +246,7 @@ public class ConfigurationClassLoaderUtil {
   /**
    * Walks the jar file in search of utility classes
    *
-   * @param configurationHolder the holder of the parsed configuration
+   * @param utilLocation Path to utilities location
    * @return List<String> of file paths containing class files
    * @throws IOException if file could not be visited
    */
@@ -257,10 +255,8 @@ public class ConfigurationClassLoaderUtil {
     List<String> foundClasses = new LinkedList<>();
     // walk the jar file
     LOG.debug("Searching for classes in {}", utilLocation);
-    Path configurationPath = utilLocation;
-    if (FileSystemUtil.isZipFile(utilLocation.toUri())) {
-      configurationPath = FileSystemUtil.createFileSystemDependentPath(utilLocation.toUri());
-    }
+    Path configurationPath = FileSystemUtil.createFileSystemDependentPath(utilLocation.toUri());
+
     Files.walkFileTree(configurationPath, new SimpleFileVisitor<Path>() {
 
       @Override
