@@ -33,7 +33,7 @@ Sources can be attached to a class (f.e. core.jar) using right click on the ecli
 
 1. Right-click on the test you want to debug and select "Debug As" and then "Debug Configurations".
 
-2. In the "Debug Configurations" window, select "JUni Plug-in Test" and click on "New Configuration" to create a new test configuration.
+2. In the "Debug Configurations" window, select "JUnit Plug-in Test" and click on "New Configuration" to create a new test configuration.
 
 3. Make sure that "Run in UI thread" is not selected.
 
