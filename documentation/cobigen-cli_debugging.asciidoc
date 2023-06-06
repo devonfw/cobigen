@@ -12,7 +12,7 @@ image:images/debugging/cli-debug-configuration.png[]
 5. Make sure that every CLI command is valid. You can find an overview of possible commands [here](https://github.com/devonfw/cobigen/wiki/howto_Cobigen-CLI-generation#commands-and-options).
 
 6. Under the Arguments tab, set the Working Directory to the path, where CLI is being executed (uses destination of call as root). +
-image:images/debugging/cli-working-dir.png[]
+image:images/debugging/other-path.png[]
 
 The following steps are only required for debugging tests or remote debugging of CLI. Commands added to arguments can be directly debugged already.
 
