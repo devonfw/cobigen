@@ -20,7 +20,8 @@ image:images/debugging/addDirToTarget.png[]
 
 4. In the new Eclipse you can now execute Cobigen commands while setting breakpoints and classicly debugging in the original Eclipse.
 
-5. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent java file. Breakpoints are better placed in the equivalent Java files rather than in the class files. +
+5. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent java file. Breakpoints are better placed in the equivalent Java files rather than in the class files. Here is an example selection of core.+
+image:images/debugging/source-location-selection.png[]
 Workaround: Use the eclipse plug-in "Open .java file for .class file" +
 Sources can be attached to a class (f.e. core.jar) using right click on the eclipse project Properties/Java Build Path/Libraries/Classpath and adding a source to core.jar (unfold core.jar and add a Source Attachment from Workspace location).
 
