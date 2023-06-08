@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Storage class for trigger data provided within the context.xml
+ * Storage class for trigger data provided within the context.xml or template-set.xml
  */
 public class Trigger {
 
@@ -47,6 +47,10 @@ public class Trigger {
     this.id = id;
     this.type = type;
     this.templateFolder = templateFolder;
+    // required because template folder field is optional in template set triggers
+    if (templateFolder.isEmpty() || templateFolder.equals("/")) {
+      this.templateFolder = "";
+    }
     this.inputCharset = inputCharset;
     this.matchers = matcher == null ? new LinkedList<>() : matcher;
     this.containerMatchers = containerMatchers == null ? new LinkedList<>() : containerMatchers;

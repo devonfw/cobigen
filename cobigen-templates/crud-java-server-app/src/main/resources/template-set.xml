@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration templateSetConfiguration.xsd ">
+<cc:contextConfiguration version="3.0">
+  <cc:trigger id="crud_java_server_app" type="java">
+    <cc:containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api" retrieveObjectsRecursively="false" />
+    <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess\.api\.([^\.]+)Entity">
+      <cc:variableAssignment type="regex" key="rootPackage" value="1" />
+      <cc:variableAssignment type="regex" key="domain" value="3" />
+      <cc:variableAssignment type="regex" key="component" value="4" />
+      <cc:variableAssignment type="regex" key="entityName" value="5" />
+    </cc:matcher>
+  </cc:trigger>
+  <cc:tags>
+    <cc:tag name="Java"></cc:tag>
+    <cc:tag name="CRUD"></cc:tag>
+    <cc:tag name="Server"></cc:tag>
+    <cc:tag name="App"></cc:tag>
+  </cc:tags>
+  <cc:links>
+    <cc:link url="https://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/reference/html/repositories.html"></cc:link>
+  </cc:links>
+</cc:contextConfiguration>
+
+<tc:templatesConfiguration version="5.0">
+
+  <tc:templates>
+    <tc:templateExtension ref="${variables.entityName}Entity.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="${variables.entityName}.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="${variables.entityName}Repository.java" mergeStrategy="javamerge" />
+
+    <tc:templateExtension ref="${variables.entityName}Cto.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="${variables.entityName}Eto.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="${variables.entityName}SearchCriteriaTo.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="AbstractSearchCriteriaTo.java" mergeStrategy="javamerge" />
+
+    <tc:templateExtension ref="${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="${variables.component#cap_first}RestService.java" mergeStrategy="javamerge" />
+
+    <tc:templateExtension ref="${variables.component#cap_first}RestServiceImplCtos.java" destinationPath="src/main/java/${variables.rootPackage}/${variables.component}/service/impl/rest/${variables.component#cap_first}RestServiceImpl.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="${variables.component#cap_first}RestServiceCtos.java" destinationPath="../api/src/main/java/${variables.rootPackage}/${variables.component}/service/api/rest/${variables.component#cap_first}RestService.java" mergeStrategy="javamerge" />
+
+    <tc:templateExtension ref="${variables.component#cap_first}SoapService.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="${variables.component#cap_first}SoapServiceImpl.java" mergeStrategy="javamerge" />
+    <tc:templateExtension ref="ServiceConfig.java" mergeStrategy="javamerge" />
+
+    <tc:templateExtension ref="AbstractComponentFacade.java" mergeStrategy="javamerge_override" />
+  </tc:templates>
+
+  <tc:templateScans>
+    <tc:templateScan templatePath="templates" destinationPath="src/main" />
+  </tc:templateScans>
+
+  <tc:increments>
+    <tc:increment name="springdata-repository" description="CRUD SpringData Repository" explanation="Creates necessary interfaces and methods for the SpringData Repository to interact with the database.">
+      <tc:templateRef ref="${variables.entityName}Repository.java" />
+    </tc:increment>
+    <tc:increment name="tos" description="TO's">
+      <tc:templateRef ref="AbstractSearchCriteriaTo.java" />
+      <tc:templateRef ref="${variables.entityName}Eto.java" />
+      <tc:templateRef ref="${variables.entityName}SearchCriteriaTo.java" />
+    </tc:increment>
+    <tc:increment name="ctos" description="CTO's">
+      <tc:templateRef ref="${variables.entityName}Cto.java" />
+    </tc:increment>
+    <tc:increment name="dataaccess_infrastructure" description="Entity infrastructure">
+      <tc:templateRef ref="ApplicationPersistenceEntity.java" />
+      <tc:templateRef ref="ApplicationEntity.java" />
+      <tc:templateRef ref="${variables.entityName}Entity.java" />
+      <tc:templateRef ref="${variables.entityName}.java" />
+    </tc:increment>
+    <tc:increment name="rest_service_impl" description="CRUD REST services">
+      <tc:templateRef ref="AbstractBeanMapperSupport.java" />
+      <tc:templateRef ref="AbstractComponentFacade.java" />
+      <tc:templateRef ref="${variables.component#cap_first}RestServiceImpl.java" />
+      <tc:templateRef ref="${variables.component#cap_first}RestService.java" />
+    </tc:increment>
+    <tc:increment name="rest_service_impl_ctos" description="CRUD REST services (CTOs)">
+      <tc:templateRef ref="AbstractBeanMapperSupport.java" />
+      <tc:templateRef ref="AbstractComponentFacade.java" />
+      <tc:templateRef ref="${variables.component#cap_first}RestServiceImplCtos.java" />
+      <tc:templateRef ref="${variables.component#cap_first}RestServiceCtos.java" />
+    </tc:increment>
+  </tc:increments>
+</tc:templatesConfiguration>
+</tns:templateSetConfiguration>

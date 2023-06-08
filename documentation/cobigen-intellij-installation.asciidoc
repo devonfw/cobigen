@@ -20,16 +20,16 @@ If you want to use IntelliJ for CobiGen project, you can follow the steps below:
 .. Go to `File`-> `Settings` -> `Build, Execution, Deployment` -> `Build Tools` -> `Maven`
 +
 --
-... **Choose** `(Maven home Path)` from your devonFolder -> devonProjects/software/maven
+... **Choose** `(Maven home Path)` from your `devonFolder` -> `devonProjects/software/maven`
 
-... **Override** `(user settings file)` -> devonProjects/conf/.m2/settings.xml
+... **Override** `(user settings file)` -> `devonProjects/conf/.m2/settings.xml`
 
-... **Override** `(Local repository)` -> devonProjects/conf/.m2/repository
+... **Override** `(Local repository)` -> `devonProjects/conf/.m2/repository`
 --
 +
 image::images/howtos/intellij/maven-settings.png[Maven Settings]
 
-.. Now go to `File` -> `Project Structure` -> `Project Settings` -> `Project add java sdk version from` -> `devonProjects/software/java`. 
+.. Now go to `File` -> `Project Structure` -> `Project Settings` -> `Project add java sdk version from` -> `devonProjects/software/java`.
 +
 Make sure you are using Java 11. If you have set up your devonfw-ide with this settings URL `https://github.com/devonfw/cobigen-ide-settings.git`, the correct version will be set automatically. If not, you can download Java 11 manually and place it into `devonProjects/software/java11`.
 +
@@ -55,13 +55,13 @@ image::images/howtos/intellij/adapter-plugin-settings.png[Eclipse Formatter Plug
 
 === IntelliJ Testing and Debugging
 
-. Disable **ArgLine**: 
+. Disable **ArgLine**:
 +
 If there are any tests that do not work, you might want to disable argline. Go to  `File` -> `Settings` -> `Build, Execution, Deployment` -> `Build Tools` -> `Maven` -> `Running Tests` then uncheck **ArgLine**
 +
 image::images/howtos/intellij/argline.png[Unchecked Argline]
 
-. Delegate IDE build and run actions to Maven: 
+. Delegate IDE build and run actions to Maven:
 +
 Go to `File` -> `Settings` -> `Build, Execution, Deployment` -> `Build Tools` -> `Maven` -> `Runner` and check `Delegate IDE build/run actions to Maven`.
 +

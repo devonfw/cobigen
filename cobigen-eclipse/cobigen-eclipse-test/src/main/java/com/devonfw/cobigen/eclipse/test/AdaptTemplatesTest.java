@@ -20,6 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.api.util.TemplatesJarUtil;
 import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
 import com.devonfw.cobigen.eclipse.test.common.SystemTest;
 import com.devonfw.cobigen.eclipse.test.common.swtbot.AllJobsAreFinished;
@@ -68,7 +70,17 @@ public class AdaptTemplatesTest extends SystemTest {
     project.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
     this.tmpMavenProjectRule.updateProject();
 
-    EclipseCobiGenUtils.runAndCaptureUpdateTemplates(bot);
+    // retrieve CobiGen home directory (overwritten through environment variables)
+    File templatesDirectory = CobiGenPaths.getTemplatesFolderPath().toFile();
+
+    // create templates directory as this should be present in this scenario
+    this.tempFolder.newFolder("playground", "project", "templates");
+
+    // download latest monolithic templates to simulate existing template jars
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(true, templatesDirectory);
+    TemplatesJarUtil.downloadLatestDevon4jTemplates(false, templatesDirectory);
+
+    // adapt template jars into CobiGen_Templates project
     EclipseCobiGenUtils.runAndCaptureAdaptTemplates(bot);
     EclipseUtils.updateMavenProject(bot, ResourceConstants.CONFIG_PROJECT_NAME);
 
@@ -80,7 +92,8 @@ public class AdaptTemplatesTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, 25000, "CRUD devon4j Server>CRUD REST services");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "CRUD devon4j Server>CRUD REST services");
+
     bot.waitUntil(new AllJobsAreFinished(), 10000);
     // increase timeout as the openAPI parser is slow on initialization
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot, 40000);
@@ -91,6 +104,7 @@ public class AdaptTemplatesTest extends SystemTest {
         "src/main/java/com/devonfw/test/sampledatamanagement/service/impl/rest/SampledatamanagementRestServiceImpl.java");
 
     assertThat(generationResult.exists()).isTrue();
+
   }
 
   /**

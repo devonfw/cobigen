@@ -14,10 +14,6 @@
   <artifactId>sonar-report</artifactId>
   <name>Aggregated Sonar Report</name>
 
-  <properties>
-    <java.version>11</java.version>
-  </properties>
-
   <!-- Unfortunately, there is different solution to that then specifying all leaves modules of interest -->
   <dependencies>
     <dependency>

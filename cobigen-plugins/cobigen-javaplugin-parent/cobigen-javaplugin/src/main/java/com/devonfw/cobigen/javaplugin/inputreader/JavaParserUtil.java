@@ -8,11 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import net.sf.mmm.code.impl.java.JavaContext;
-import net.sf.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
-import net.sf.mmm.code.impl.java.source.maven.MavenDependencyCollector;
-import net.sf.mmm.code.java.maven.impl.MavenBridgeImpl;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +19,14 @@ import com.thoughtworks.qdox.library.ClassLibraryBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
 
-/** The {@link JavaParserUtil} class provides helper functions for generating parsed inputs */
+import io.github.mmm.code.impl.java.JavaContext;
+import io.github.mmm.code.impl.java.source.maven.JavaSourceProviderUsingMaven;
+import io.github.mmm.code.impl.java.source.maven.MavenDependencyCollector;
+import io.github.mmm.code.java.maven.impl.MavenBridgeImpl;
+
+/**
+ * The {@link JavaParserUtil} class provides helper functions for generating parsed inputs
+ */
 public class JavaParserUtil {
 
   /** Logger instance. */

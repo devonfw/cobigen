@@ -27,7 +27,6 @@ public abstract class AbstractMatcher {
    * Returns the matcher type
    *
    * @return matcher type
-   * @author mbrunnli (08.04.2014)
    */
   public String getType() {
 
@@ -38,7 +37,6 @@ public abstract class AbstractMatcher {
    * Returns the value the matcher should match against
    *
    * @return the value the matcher should match against
-   * @author mbrunnli (08.04.2014)
    */
   public String getValue() {
 

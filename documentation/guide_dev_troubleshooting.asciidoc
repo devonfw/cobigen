@@ -96,9 +96,9 @@ But on the local system the build and test process works fine.
 ==== Solution
 If you add an Eclipse test project, make sure that you git force add the .project file too. Otherwise the `importExistingGeneralProject` method will fail.
 
-== I get ongoingly wrong intendation (4 whitespaces instead of 2) by the eclipse formatter on editor save
+== I get ongoingly wrong indentation (4 whitespaces instead of 2) by the eclipse formatter on editor save
 
-The issue might be, that due to eclipse upgrades or accidential changes on the formatter configuration, you might have project specific formatter settings enabled without your knowledge or even just have an old version of eclipse nobody is compliant anymore with.
+The issue might be, that due to eclipse upgrades or accidental changes on the formatter configuration, you might have project specific formatter settings enabled without your knowledge or even just have an old version of eclipse nobody is compliant anymore with.
 To clean up your installation as well as making sure, that you don't have any project specific jdt configuration, please follow the following steps:
 
 1. Close all devonfw applications

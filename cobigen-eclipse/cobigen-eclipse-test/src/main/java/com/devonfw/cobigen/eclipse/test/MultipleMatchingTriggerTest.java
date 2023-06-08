@@ -67,7 +67,7 @@ public class MultipleMatchingTriggerTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "increment1", "increment2");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "increment1", "increment2");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions

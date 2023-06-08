@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" targetNamespace="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" elementFormDefault="qualified" version="5.0">
+
+  <xs:element name="templatesConfiguration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="templates" minOccurs="0" type="tns:templates" />
+        <xs:element name="templateScans" minOccurs="0" type="tns:templateScans" />
+        <xs:element name="increments" minOccurs="0" type="tns:increments" />
+      </xs:sequence>
+      <xs:attribute name="templateEngine" use="optional" type="xs:string" default="FreeMarker"/>
+      <xs:attribute name="version" use="required" type="xs:decimal" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="templates">
+    <xs:sequence>
+      <xs:element name="template" minOccurs="0" maxOccurs="unbounded" type="tns:template" />
+      <xs:element name="templateExtension" minOccurs="0" maxOccurs="unbounded" type="tns:templateExtension" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="templateScans">
+    <xs:sequence maxOccurs="unbounded" minOccurs="0">
+      <xs:element name="templateScan" type="tns:templateScan" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="template">
+    <xs:attribute name="name" use="required" type="xs:string" />
+    <xs:attribute name="destinationPath" use="required" type="xs:string" />
+    <xs:attribute name="templateFile" use="required" type="xs:string" />
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string" />
+    <xs:attribute name="targetCharset" use="optional" type="xs:string" default="UTF-8" />
+  </xs:complexType>
+
+  <xs:complexType name="templateExtension">
+    <xs:attribute name="ref" use="required" type="xs:string" />
+    <xs:attribute name="destinationPath" use="optional" type="xs:string" />
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string" />
+    <xs:attribute name="targetCharset" use="optional" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="templateScan">
+    <xs:attribute name="name" use="optional" type="xs:string" />
+    <xs:attribute name="templateNamePrefix" use="optional" type="xs:string" />
+    <xs:attribute name="templatePath" use="required" type="xs:string" />
+    <xs:attribute name="destinationPath" use="required" type="xs:string" />
+    <xs:attribute name="mergeStrategy" use="optional" type="xs:string" />
+    <xs:attribute name="targetCharset" use="optional" type="xs:string" default="UTF-8" />
+  </xs:complexType>
+
+  <xs:complexType name="increments">
+    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+      <xs:element name="increment" type="tns:increment" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="increment">
+    <xs:choice maxOccurs="unbounded" minOccurs="1">
+      <xs:element name="templateRef" type="tns:templateRef" />
+      <xs:element name="incrementRef" type="tns:incrementRef" />
+      <xs:element name="templateScanRef" type="tns:templateScanRef" />
+    </xs:choice>
+    <xs:attribute name="name" use="required" type="xs:string" />
+    <xs:attribute name="description" use="required" type="xs:string" />
+    <xs:attribute name="explanation" use="optional" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="templateRef">
+    <xs:attribute name="ref" use="required" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="incrementRef">
+    <xs:attribute name="ref" use="required" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="templateScanRef">
+    <xs:attribute name="ref" use="required" type="xs:string" />
+  </xs:complexType>
+
+</xs:schema>

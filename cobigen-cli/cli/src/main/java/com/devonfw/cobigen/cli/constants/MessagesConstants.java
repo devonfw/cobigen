@@ -1,5 +1,7 @@
 package com.devonfw.cobigen.cli.constants;
 
+import com.devonfw.cobigen.impl.config.constant.WikiConstants;
+
 /**
  * Messages constants printed to the user
  */
@@ -73,7 +75,34 @@ public class MessagesConstants {
   public static final String ADAPT_TEMPLATES_DESCRIPTION = "Generates a new templates folder next to the cobigen cli";
 
   /**
+   * Message constant: description of the adapt-templates --all command
+   */
+  public static final String ADAPT_ALL_DESCRIPTION = "If this option is enabled, all templates will get adapted.";
+
+  /**
    * Message constant: description of the custom-location option
    */
   public static final String CUSTOM_LOCATION_OPTION_DESCRIPTION = "Custom location where the unpacked templates will be stored.";
+
+  /**
+   * Message constant: description of the --upgrade option
+   */
+  public static final String UPGRADE_CONFIGURATION_OPTION = "Will upgrade the monolithc templates automatically, if enabled.";
+
+  /**
+   * Message constant: description of the generate command with --force-monolithic-templates option
+   */
+  public static final String FORCE_MONOLITHIC_CONFIGURATION = "If this option is enabled, the old monolithic template structure will be used instead of the new template sets structure..Further Information can be found at: "
+      + WikiConstants.WIKI_UPGRADE_MONOLITHIC_CONFIGURATION;
+
+  /**
+   * Message constant: description of the CLI Yes or No answer
+   */
+  public static final String YES_NO_ANSWER_DESCRIPTION = "Type yes/y to continue or no/n to cancel (or hit return for yes). ";
+
+  /**
+   * Message constant: description of the CLI Invalid Yes or No answer
+   */
+  public static final String INVALID_YES_NO_ANSWER_DESCRIPTION = "Invalid input. Please answer yes/n or no/n (or hit return for yes).";
+
 }

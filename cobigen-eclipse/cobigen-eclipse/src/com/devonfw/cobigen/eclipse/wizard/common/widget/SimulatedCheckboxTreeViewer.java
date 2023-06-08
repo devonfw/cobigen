@@ -67,7 +67,6 @@ public class SimulatedCheckboxTreeViewer extends CheckboxTreeViewer {
    * @param element to be checked
    * @return <code>true</code> if the element is currently visible<br>
    *         <code>false</code> otherwise
-   * @author mbrunnli (12.03.2013)
    */
   private boolean isVisible(Object element) {
 

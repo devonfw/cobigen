@@ -2,17 +2,15 @@ package com.devonfw.cobigen.unittest.config.resolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import net.sf.mmm.util.lang.api.CaseSyntax;
-
 import org.junit.Test;
 
 import com.devonfw.cobigen.impl.config.entity.Variables;
 import com.devonfw.cobigen.impl.config.resolver.PathExpressionResolver;
 
+import io.github.mmm.base.text.CaseSyntax;
+
 /**
  * Test suite for {@link PathExpressionResolver}
- *
- * @author mbrunnli (16.09.2014)
  */
 public class PathExpressionResolverTest {
 

@@ -8,14 +8,14 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.mmm.util.lang.api.CaseSyntax;
-
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.util.StringUtil;
 import com.devonfw.cobigen.impl.config.reader.CobiGenPropertiesReader;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.devonfw.cobigen.impl.model.ModelBuilderImpl;
+
+import io.github.mmm.base.text.CaseSyntax;
 
 /**
  * This class is a container for variables that can inherit from parent {@link Variables} building a hierarchy. The
@@ -35,11 +35,15 @@ public class Variables {
    */
   private static final char DUMMY_LETTER_FOR_DOT = 'ʵ';
 
-  /** Regex {@link Pattern} for variable in dollar syntax (<code>${...}</code>). */
+  /**
+   * Regex {@link Pattern} for variable in dollar syntax (<code>${...}</code>).
+   */
   private static final Pattern PATTERN_VARIABLE_DOLLAR_SYNTAX = Pattern
       .compile("\\$\\{([^?#}]+)(((\\?|#)[^}?#]+)*)\\}");
 
-  /** Regex {@link Pattern} for variable in language-agnostic case-syntax (<code>x_..._x</code>). */
+  /**
+   * Regex {@link Pattern} for variable in language-agnostic case-syntax (<code>x_..._x</code>).
+   */
   private static final Pattern PATTERN_VARIABLE_CASE_SYNTAX = Pattern.compile("[xX]__([a-zA-Z0-9_-]+?)__[xX]");
 
   /** The parent {@link Variables} to inherit or {@code null}. */
@@ -290,7 +294,8 @@ public class Variables {
         variableKey = variableKey.substring(PREFIX_VARIABLES.length());
       }
       // a variable like ${detail} can be explicitly set to null
-      // this is considered as the empty string but null instead of "" is required for free-marker
+      // this is considered as the empty string but null instead of "" is required for
+      // free-marker
       if (!containsKey(variableKey)) {
         throw new UnknownContextVariableException(variableKey);
       }

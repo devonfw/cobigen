@@ -45,6 +45,8 @@ public class VelocityGenerationTest extends SystemTest {
   /**
    * Tests a simple generation using velocity template engine.
    *
+   * TODO: add same test for template sets using regular generate
+   *
    * @throws Exception test fails
    */
   @Test
@@ -63,7 +65,7 @@ public class VelocityGenerationTest extends SystemTest {
     javaClassItem.select();
 
     // execute CobiGen
-    EclipseCobiGenUtils.processCobiGen(bot, javaClassItem, "Velocity Test");
+    EclipseCobiGenUtils.processCobiGenAndPostponeUpgrade(bot, javaClassItem, "Velocity Test");
     EclipseCobiGenUtils.confirmSuccessfullGeneration(bot);
 
     // check assertions

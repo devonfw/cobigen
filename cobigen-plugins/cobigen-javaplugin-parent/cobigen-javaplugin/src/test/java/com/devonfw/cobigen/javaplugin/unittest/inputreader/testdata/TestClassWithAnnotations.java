@@ -19,7 +19,6 @@ public class TestClassWithAnnotations {
    * Sets the field 'boolvalue'.
    *
    * @param boolvalue new value of boolvalue
-   * @author mbrunnli (05.12.2014)
    */
   public void setBoolvalue(boolean boolvalue) {
 

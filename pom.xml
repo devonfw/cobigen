@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devonfw.cobigen</groupId>
   <artifactId>master-parent</artifactId>
@@ -14,9 +14,10 @@
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
     <slf4j.version>1.7.30</slf4j.version>
+    <zeroturnaround.version>1.12</zeroturnaround.version>
     <skip.deployment>true</skip.deployment>
-    <java.version>1.8</java.version>
-    <tycho.version>1.6.0</tycho.version>
+    <java.version>11</java.version>
+    <tycho.version>2.7.5</tycho.version>
     <jaxb.version>3.0.1</jaxb.version>
     <jacoco.version>0.8.8</jacoco.version>
     <license.skipAggregateDownloadLicenses>${skip.deployment}</license.skipAggregateDownloadLicenses>
@@ -129,7 +130,12 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>30.1.1-jre</version>
+        <version>31.1-jre</version>
+      </dependency>
+      <dependency>
+        <groupId>org.zeroturnaround</groupId>
+        <artifactId>zt-exec</artifactId>
+        <version>${zeroturnaround.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -139,12 +145,22 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.12.7.1</version>
+        <version>2.13.3</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>2.8.9</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>4.10.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okio</groupId>
+        <artifactId>okio</artifactId>
+        <version>3.2.0</version>
       </dependency>
       <dependency>
         <groupId>jaxen</groupId>
@@ -189,12 +205,22 @@
       </dependency>
       <dependency>
         <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>core-artifact-retriever</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
         <artifactId>core-test</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
         <groupId>com.devonfw.cobigen</groupId>
         <artifactId>javaplugin</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>openapiplugin</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
@@ -233,7 +259,7 @@
             <configuration>
               <property>master.basedir</property>
               <project>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.devonfw.cobigen</groupId>
                 <artifactId>master-parent</artifactId>
               </project>
             </configuration>
@@ -590,22 +616,6 @@
                   <name>p2.repository.build.dir.url</name>
                   <failIfNoMatch>false</failIfNoMatch>
                 </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <!-- plugins from profile -->
-          <!-- sets ${qualifiedVersion} for upload to update site -->
-          <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>tycho-packaging-plugin</artifactId>
-            <version>${tycho.version}</version>
-            <executions>
-              <execution>
-                <id>build-qualifier</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>build-qualifier</goal>
-                </goals>
               </execution>
             </executions>
           </plugin>

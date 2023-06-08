@@ -1,6 +1,7 @@
 package com.devonfw.cobigen.impl.config;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,21 @@ public class ContextConfiguration {
   private Path configurationPath;
 
   /**
+   * This is the automatically generated ContextConfiguration
+   */
+  private com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration;
+
+  /**
+   * The reader to read the context.xml files
+   */
+  private ContextConfigurationReader contextConfigurationReader;
+
+  /**
+   * The {@link ConfigurationHolder}
+   */
+  private ConfigurationHolder configurationHolder;
+
+  /**
    * Creates a new {@link ContextConfiguration} with the contents initially loaded from the context.xml
    *
    * @param configRoot root path for the configuration of CobiGen
@@ -39,6 +55,23 @@ public class ContextConfiguration {
   }
 
   /**
+   * Creates a new {@link ContextConfiguration} with the contents initially loaded from the template-set.xml
+   *
+   * @param contextConfiguration provided by template-set reader
+   * @param configRoot root path for the configuration of CobiGen
+   * @param configurationHolder the {@link ConfigurationHolder} to initialize
+   * @param triggers the map of triggers
+   */
+  public ContextConfiguration(com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration contextConfiguration,
+      Path configRoot, ConfigurationHolder configurationHolder, Map<String, Trigger> triggers) {
+
+    this.configurationHolder = configurationHolder;
+    this.configurationPath = configRoot;
+    this.contextConfigurationReader = new ContextConfigurationReader(contextConfiguration, configRoot);
+    this.triggers = triggers;
+  }
+
+  /**
    * Reads the configuration from the given path
    *
    * @param configRoot CobiGen configuration root path
@@ -46,9 +79,13 @@ public class ContextConfiguration {
    */
   private void readConfiguration(Path configRoot) throws InvalidConfigurationException {
 
-    ContextConfigurationReader reader = new ContextConfigurationReader(configRoot);
-    this.configurationPath = reader.getContextRoot();
-    this.triggers = reader.loadTriggers();
+    if (this.contextConfigurationReader == null) {
+      this.contextConfigurationReader = new ContextConfigurationReader(configRoot);
+    }
+
+    this.configurationPath = this.contextConfigurationReader.getContextRoot();
+    this.triggers = this.contextConfigurationReader.loadTriggers();
+
   }
 
   /**
@@ -74,6 +111,14 @@ public class ContextConfiguration {
   }
 
   /**
+   * @return the version
+   */
+  public BigDecimal getVersion() {
+
+    return this.contextConfiguration.getVersion();
+  }
+
+  /**
    * Returns the {@link Trigger} with the given id
    *
    * @param id of the {@link Trigger} to be searched
@@ -91,6 +136,40 @@ public class ContextConfiguration {
    */
   public Path getConfigurationPath() {
 
+    return this.configurationPath;
+  }
+
+  /**
+   * Retrieves the directory of the configuration root directory by given trigger ID
+   *
+   * @param triggerId the trigger id to get the config location for
+   * @return the {@link Path} of the config location of the trigger
+   */
+  public Path retrieveConfigRootByTrigger(String triggerId) {
+
+    if (this.configurationHolder != null) {
+      Map<String, Path> rootTemplateFolders = this.configurationHolder.getTemplateSetConfiguration()
+          .getRootTemplateFolders();
+      Path rootTemplateFolder = rootTemplateFolders.get(triggerId);
+      return rootTemplateFolder;
+    }
+
+    return this.configurationPath;
+  }
+
+  /**
+   * Retrieves the utility folder from the given trigger id
+   *
+   * @param triggerId String of triggerId to search for
+   * @return Path to utility folder
+   */
+  public Path retrieveTemplateSetUtilsLocationByTrigger(String triggerId) {
+
+    if (this.configurationHolder != null) {
+      Map<String, Path> utilityFolders = this.configurationHolder.getTemplateSetConfiguration().getUtilFolders();
+      Path utilityFolder = utilityFolders.get(triggerId);
+      return utilityFolder;
+    }
     return this.configurationPath;
   }
 

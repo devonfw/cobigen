@@ -1,16 +1,14 @@
 package com.devonfw.cobigen.unittest.config.reader;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
 
+import java.io.File;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import com.devonfw.cobigen.api.exception.ConfigurationConflictException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.CobiGenFactory;
-import com.devonfw.cobigen.impl.config.constant.WikiConstants;
 import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
@@ -34,50 +32,8 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test(expected = InvalidConfigurationException.class)
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
-    new ContextConfigurationReader(Paths.get(testFileRootPath + "faulty"));
-  }
-
-  /**
-   * Tests whether an {@link ConfigurationConflictException} will be thrown when both a v2.1 and v2.2 context.xml are
-   * present (new templates with old custom templates). Also tests if the thrown error message contains a link to the
-   * wiki.
-   *
-   * Backward Compatibility test, remove when monolithic context.xml is deprecated.
-   *
-   * @throws ConfigurationConflictException if a conflict occurred
-   *
-   */
-  @Test
-  public void testConflictConfiguration() throws ConfigurationConflictException {
-
-    Throwable bothPresent = assertThrows(ConfigurationConflictException.class, () -> {
-      new ContextConfigurationReader(Paths.get(testFileRootPath + "invalid_new"));
-    });
-
-    assertThat(bothPresent instanceof ConfigurationConflictException);
-    assertThat(bothPresent.getMessage()).contains(WikiConstants.WIKI_UPDATE_OLD_CONFIG);
-  }
-
-  /**
-   * Tests whether a valid v2.2 configuration can be read from src/main/templates/templateSet folder
-   *
-   * @throws Exception test fails
-   */
-  @Test
-  public void testContextLoadedFromNewConfiguration() throws Exception {
-
-    CobiGenFactory.create(Paths.get(testFileRootPath + "valid_new").toUri());
-  }
-
-  /**
-   * Tests if multiple (2) templates are found with v2.2 context configuration
-   *
-   */
-  @Test
-  public void testNewConfiguration() {
-
-    ContextConfigurationReader context = new ContextConfigurationReader(Paths.get(testFileRootPath + "valid_new"));
-    assertThat(context.getContextFiles().size()).isEqualTo(2);
+    ContextConfigurationReader reader = new ContextConfigurationReader(
+        Paths.get(new File(testFileRootPath + "faulty").toURI()));
   }
 
   /**
@@ -90,11 +46,11 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testContextLoadedFromOldConfiguration() throws Exception {
 
-    CobiGenFactory.create(Paths.get(testFileRootPath + "valid_source_folder").toUri());
+    CobiGenFactory.create(new File(testFileRootPath + "valid_source_folder").toURI(), true);
   }
 
   /**
-   * Tests that exactly one v2.1 context configuration is read
+   * Tests that exactly one v3.0 context configuration is read
    *
    * Backward Compatibility test, remove when monolithic context.xml is deprecated.
    *
@@ -103,7 +59,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   public void testOldConfiguration() {
 
     ContextConfigurationReader context = new ContextConfigurationReader(
-        Paths.get(testFileRootPath + "valid_source_folder"));
+        Paths.get(new File(testFileRootPath + "valid_source_folder").toURI()));
     assertThat(context.getContextFiles().size()).isEqualTo(1);
   }
 
@@ -115,7 +71,7 @@ public class ContextConfigurationReaderTest extends AbstractUnitTest {
   @Test
   public void testReadConfigurationFromZip() throws Exception {
 
-    CobiGenFactory.create(Paths.get(testFileRootPath + "valid.zip").toUri());
+    CobiGenFactory.create(new File(testFileRootPath + "valid.zip").toURI(), true);
   }
 
 }

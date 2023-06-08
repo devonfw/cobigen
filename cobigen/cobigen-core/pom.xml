@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>core</artifactId>
   <name>CobiGen Core</name>
   <packaging>jar</packaging>
-
   <parent>
     <groupId>com.devonfw.cobigen</groupId>
     <artifactId>core-parent</artifactId>
     <version>${revision}</version>
   </parent>
-
   <properties>
     <skip.deployment>false</skip.deployment>
+    <valid.templateset.test.path>src\test\resources\testdata\unittest\config\reader\TemplateSetConfigurationReaderTest\valid_template_sets\template-sets\downloaded\crud-java-server-app</valid.templateset.test.path>
+    <valid.templateset.downloaded.test.path>src\test\resources\testdata\unittest\config\reader\TemplateSetConfigurationReaderTest\valid_template_sets_downloaded\template-sets\downloaded\crud-java-server-app</valid.templateset.downloaded.test.path>
   </properties>
 
   <dependencies>
@@ -21,20 +20,21 @@
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>core-artifact-retriever</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-test</artifactId>
       <scope>test</scope>
     </dependency>
-
     <!-- Enables XPath for FreeMarker templates -->
     <dependency>
       <groupId>jaxen</groupId>
@@ -45,25 +45,12 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-
     <!-- enables XPath queries over object structures -->
     <dependency>
       <groupId>commons-jxpath</groupId>
       <artifactId>commons-jxpath</artifactId>
       <version>1.3</version>
     </dependency>
-
-    <dependency>
-      <groupId>net.sf.m-m-m</groupId>
-      <artifactId>mmm-util-core</artifactId>
-      <version>7.4.0</version>
-    </dependency>
-
     <!-- Needed for JDK 9+ -->
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
@@ -78,14 +65,22 @@
       <artifactId>jaxb-impl</artifactId>
     </dependency>
     <!-- END JDK 9 -->
-
     <dependency>
-    <groupId>ma.glasnost.orika</groupId>
-    <artifactId>orika-core</artifactId>
-    <version>1.5.4</version>
-</dependency>
+      <groupId>ma.glasnost.orika</groupId>
+      <artifactId>orika-core</artifactId>
+      <version>1.5.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>3.8.5</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.m-m-m</groupId>
+      <artifactId>mmm-base</artifactId>
+      <version>0.9.1</version>
+    </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <!-- Inject Maven Properties in java-templates source folder -->
@@ -102,7 +97,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -112,12 +106,11 @@
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v1_2</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_1</excludePackageNames>
-          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v2_2</excludePackageNames>
+          <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v3.0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io.v4_0</excludePackageNames>
           <excludePackageNames>com.devonfw.cobigen.impl.config.entity.io</excludePackageNames>
         </configuration>
       </plugin>
-
       <!-- Used for JUnit tests, we need to copy a test resources file to the jar -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -139,7 +132,6 @@
           </execution>
         </executions>
       </plugin>
-
       <!-- Generation of configuration beans -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -203,16 +195,16 @@
             </configuration>
           </execution>
           <execution>
-            <id>generate-v2.2-configuration</id>
+            <id>generate-v3.0-configuration</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>xjc</goal>
             </goals>
             <configuration>
-              <packageName>com.devonfw.cobigen.impl.config.entity.io.v2_2</packageName>
-              <outputDirectory>${project.build.directory}/generated-sources/config/v2.2</outputDirectory>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v3_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v3_0</outputDirectory>
               <sources>
-                <source>${basedir}/src/main/resources/schema/v2.2</source>
+                <source>${basedir}/src/main/resources/schema/v3.0</source>
               </sources>
             </configuration>
           </execution>
@@ -230,6 +222,34 @@
               </sources>
             </configuration>
           </execution>
+          <execution>
+            <id>generate-v5.0-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v5_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v5.0</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v5.0</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-v6.0-configuration</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <packageName>com.devonfw.cobigen.impl.config.entity.io.v6_0</packageName>
+              <outputDirectory>${project.build.directory}/generated-sources/config/v6.0</outputDirectory>
+              <sources>
+                <source>${basedir}/src/main/resources/schema/v6.0</source>
+              </sources>
+            </configuration>
+          </execution>
           <!-- Redundant generation due to stability reasons of the configuration upgrade mechanism -->
           <execution>
             <id>generate-current-configuration</id>
@@ -241,8 +261,7 @@
               <packageName>com.devonfw.cobigen.impl.config.entity.io</packageName>
               <outputDirectory>${project.build.directory}/generated-sources/config/current</outputDirectory>
               <sources>
-                <source>${basedir}/src/main/resources/schema/v2.2/contextConfiguration.xsd</source>
-                <source>${basedir}/src/main/resources/schema/v4.0/templatesConfiguration.xsd</source>
+                <source>${basedir}/src/main/resources/schema/v6.0/templateSetConfiguration.xsd</source>
               </sources>
             </configuration>
           </execution>
@@ -278,6 +297,51 @@
             <version>2.0.1</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>Install test valid template set test project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${valid.templateset.downloaded.test.path}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>Install valid downloaded template set project</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory>${valid.templateset.test.path}</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <!-- https://stackoverflow.com/a/66801171 -->
+                <argument>-Djansi.force=true</argument>
+                <argument>-Djansi.passthrough=true</argument>
+                <argument>-B</argument>
+                <argument>-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

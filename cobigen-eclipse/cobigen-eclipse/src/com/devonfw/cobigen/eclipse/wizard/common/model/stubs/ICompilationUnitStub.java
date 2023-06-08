@@ -24,8 +24,6 @@ import org.eclipse.text.edits.UndoEdit;
 
 /**
  * Stub for {@link ICompilationUnit} in order to simulate resources in the generate wizard
- *
- * @author mbrunnli (05.04.2014)
  */
 @SuppressWarnings("deprecation")
 public class ICompilationUnitStub extends IJavaElementStub implements ICompilationUnit {

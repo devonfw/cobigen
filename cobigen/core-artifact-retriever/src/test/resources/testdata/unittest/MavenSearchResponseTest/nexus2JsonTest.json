@@ -1,0 +1,42 @@
+{
+   "totalCount":305,
+   "from":-1,
+   "count":-1,
+   "tooManyResults":false,
+   "collapsed":false,
+   "data":[
+      {
+         "groupId":"com.devonfw.cobigen.templates",
+         "artifactId":"crud-java-server-app",
+         "version":"2021.08.001",
+         "latestRelease":"2021.08.001",
+         "latestReleaseRepositoryId":"releases",
+         "highlightedFragment":"<blockquote>Group ID<UL><LI><B>com<\/B>.<B>devonfw<\/B>.<B>cobigen<\/B><\/LI><\/UL><\/blockquote>",
+         "artifactHits":[
+            {
+               "repositoryId":"releases",
+               "artifactLinks":[
+                  {
+                     "extension":"pom"
+                  },
+                  {
+                     "classifier":"javadoc",
+                     "extension":"jar"
+                  },
+				  {
+                     "classifier":"template-set",
+                     "extension":"xml"
+                  },
+                  {
+                     "extension":"jar"
+                  },
+                  {
+                     "classifier":"sources",
+                     "extension":"jar"
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}

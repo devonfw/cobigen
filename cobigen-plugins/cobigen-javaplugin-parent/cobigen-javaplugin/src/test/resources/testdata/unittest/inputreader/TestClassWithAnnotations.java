@@ -9,7 +9,6 @@ public class TestClassWithAnnotations {
     /**
      * Returns the field 'boolvalue'
      * @return value of boolvalue
-     * @author mbrunnli (05.12.2014)
      */
     @XmlAnyElement(lax = true)
     public boolean isBoolvalue() {
@@ -20,7 +19,6 @@ public class TestClassWithAnnotations {
      * Sets the field 'boolvalue'.
      * @param boolvalue
      *            new value of boolvalue
-     * @author mbrunnli (05.12.2014)
      */
     public void setBoolvalue(boolean boolvalue) {
         this.boolvalue = boolvalue;

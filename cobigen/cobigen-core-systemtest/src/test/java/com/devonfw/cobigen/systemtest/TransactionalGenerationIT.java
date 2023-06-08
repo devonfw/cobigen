@@ -7,12 +7,12 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
-import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
 import com.devonfw.cobigen.api.CobiGen;
 import com.devonfw.cobigen.api.to.GenerationReportTo;
 import com.devonfw.cobigen.api.to.IncrementTo;
 import com.devonfw.cobigen.impl.CobiGenFactory;
+import com.devonfw.cobigen.systemtest.common.AbstractApiTest;
+import com.devonfw.cobigen.systemtest.util.PluginMockFactory;
 
 /**
  * This test suit focuses on the transactional behavior of generation. In specific, that temporary files will be
@@ -35,7 +35,7 @@ public class TransactionalGenerationIT extends AbstractApiTest {
     Object generationInput = PluginMockFactory.createSimpleJavaConfigurationMock();
     File targetRoot = this.tmpFolder.newFolder();
 
-    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI());
+    CobiGen cobigen = CobiGenFactory.create(new File(testFileRootPath + "templates").toURI(), true);
     List<IncrementTo> matchingIncrements = cobigen.getMatchingIncrements(generationInput);
 
     // act

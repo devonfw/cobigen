@@ -3,6 +3,7 @@ package com.devonfw.cobigen.impl.generator;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.inject.Inject;
@@ -167,6 +168,16 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
 
     for (Trigger trigger : this.triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
+
+      if (this.configurationHolder.isTemplateSetConfiguration()) {
+        Map<Path, TemplatesConfiguration> map = this.configurationHolder.getTemplatesConfigurations()
+            .get(trigger.getId());
+
+        if (map != null) {
+          templateConfigurations.addAll(map.values());
+        }
+      }
+
       TemplatesConfiguration templatesConfiguration = this.configurationHolder.readTemplatesConfiguration(trigger);
       if (templatesConfiguration != null) {
         if (!templateConfigurations.contains(templatesConfiguration)) {

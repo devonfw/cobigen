@@ -42,7 +42,6 @@ public class XmlMergerDelegate implements Merger {
    * @param mergeSchemaLocation String of a path to the folder containing the merge schemas to be used
    * @param mergeType the way how conflicts will be handled
    * @param validate use validator
-   * @author sholzer (Aug 27, 2015)
    */
   public XmlMergerDelegate(String mergeSchemaLocation, MergeType mergeType, Boolean validate) {
 
@@ -58,7 +57,6 @@ public class XmlMergerDelegate implements Merger {
    * @param mergeSchemaLocation Path to the folder containing the merge schemas to be used
    * @param mergeType the way how conflicts will be handled
    * @param validate use validator
-   * @author sholzer (Aug 27, 2015)
    */
   public XmlMergerDelegate(Path mergeSchemaLocation, MergeType mergeType, Boolean validate) {
 
@@ -110,7 +108,6 @@ public class XmlMergerDelegate implements Merger {
    * Sets the validation flag
    *
    * @param validation true if a validation is desired. false otherwise. Default is false
-   * @author sholzer (Sep 1, 2015)
    */
   public void setValidation(boolean validation) {
 

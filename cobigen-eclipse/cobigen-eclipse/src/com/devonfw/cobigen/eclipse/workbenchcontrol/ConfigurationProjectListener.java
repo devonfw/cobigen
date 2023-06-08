@@ -18,8 +18,6 @@ import com.devonfw.cobigen.eclipse.common.constants.external.ResourceConstants;
  * {@link ConfigurationProjectListener} for starting / stopping the {@link LogbackConfigChangeListener}. This class is
  * an abstract, due to the potential need of having multiple nested {@link IResourceChangeListener} for the CobiGen
  * configuration.
- *
- * @author mbrunnli (08.04.2013)
  */
 public class ConfigurationProjectListener implements IResourceChangeListener {
 

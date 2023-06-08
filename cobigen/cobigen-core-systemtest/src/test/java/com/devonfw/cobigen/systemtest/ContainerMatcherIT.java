@@ -62,7 +62,7 @@ public class ContainerMatcherIT extends AbstractApiTest {
 
     // Execution
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
     // Verification
@@ -84,7 +84,7 @@ public class ContainerMatcherIT extends AbstractApiTest {
 
     // Execution
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<String> matchingTriggerIds = target.getMatchingTriggerIds(containerInput);
 
     // Verification
@@ -106,7 +106,7 @@ public class ContainerMatcherIT extends AbstractApiTest {
 
     // Execution
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> matchingTemplates = target.getMatchingTemplates(containerInput);
 
     // Verification
@@ -127,7 +127,7 @@ public class ContainerMatcherIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     List<TemplateTo> templates = target.getMatchingTemplates(containerInput);
 
     // Execution
@@ -151,7 +151,7 @@ public class ContainerMatcherIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
 
     // Execution
     List<IncrementTo> increments = target.getMatchingIncrements(containerInput);
@@ -175,7 +175,7 @@ public class ContainerMatcherIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath + "templates");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
 
     // Execution
     List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
@@ -200,7 +200,7 @@ public class ContainerMatcherIT extends AbstractApiTest {
 
     // pre-processing
     File templatesFolder = new File(testFileRootPath + "accumulationType");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
 
     // Execution
     List<String> triggerIds = target.getMatchingTriggerIds(containerInput);
@@ -283,7 +283,7 @@ public class ContainerMatcherIT extends AbstractApiTest {
 
     // create CobiGen instance
     File templatesFolder = new File(testFileRootPath + "selectiveContainerGeneration");
-    CobiGen target = CobiGenFactory.create(templatesFolder.toURI());
+    CobiGen target = CobiGenFactory.create(templatesFolder.toURI(), true);
     File folder = this.tmpFolder.newFolder();
 
     // Execution
@@ -319,7 +319,6 @@ public class ContainerMatcherIT extends AbstractApiTest {
    *        matcher
    * @param multipleContainerChildren defines whether the container should contain multiple children
    * @return the container as input for generation interpreter for
-   * @author mbrunnli (16.10.2014)
    */
   @SuppressWarnings("unchecked")
   private Object createTestDataAndConfigureMock(boolean containerChildMatchesTrigger,
