@@ -30,19 +30,19 @@ import com.devonfw.cobigen.openapiplugin.model.PropertyDef;
 import com.devonfw.cobigen.openapiplugin.model.ResponseDef;
 import com.devonfw.cobigen.openapiplugin.model.ServerDef;
 import com.devonfw.cobigen.openapiplugin.util.constants.Constants;
-import com.reprezen.jsonoverlay.JsonOverlay;
-import com.reprezen.jsonoverlay.Overlay;
-import com.reprezen.kaizen.oasparser.OpenApiParser;
-import com.reprezen.kaizen.oasparser.model3.Info;
-import com.reprezen.kaizen.oasparser.model3.MediaType;
-import com.reprezen.kaizen.oasparser.model3.OpenApi3;
-import com.reprezen.kaizen.oasparser.model3.Operation;
-import com.reprezen.kaizen.oasparser.model3.Parameter;
-import com.reprezen.kaizen.oasparser.model3.Path;
-import com.reprezen.kaizen.oasparser.model3.RequestBody;
-import com.reprezen.kaizen.oasparser.model3.Response;
-import com.reprezen.kaizen.oasparser.model3.Schema;
-import com.reprezen.kaizen.oasparser.model3.Server;
+import com.networknt.jsonoverlay.JsonOverlay;
+import com.networknt.jsonoverlay.Overlay;
+import com.networknt.oas.OpenApiParser;
+import com.networknt.oas.model.Info;
+import com.networknt.oas.model.MediaType;
+import com.networknt.oas.model.OpenApi3;
+import com.networknt.oas.model.Operation;
+import com.networknt.oas.model.Parameter;
+import com.networknt.oas.model.Path;
+import com.networknt.oas.model.RequestBody;
+import com.networknt.oas.model.Response;
+import com.networknt.oas.model.Schema;
+import com.networknt.oas.model.Server;
 
 /**
  * Extension for the {@link InputReader} Interface of the CobiGen, to be able to read OpenApi3 definition files into

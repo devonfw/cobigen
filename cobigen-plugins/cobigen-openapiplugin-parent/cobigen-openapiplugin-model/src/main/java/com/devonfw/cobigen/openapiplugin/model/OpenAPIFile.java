@@ -3,7 +3,7 @@ package com.devonfw.cobigen.openapiplugin.model;
 import java.net.URI;
 import java.nio.file.Path;
 
-import com.reprezen.kaizen.oasparser.model3.OpenApi3;
+import com.networknt.oas.model.OpenApi3;
 
 /** Swagger file transfer object which contains the {@link Path} and the name of the file */
 public class OpenAPIFile {
