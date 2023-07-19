@@ -43,6 +43,9 @@
 * link:mgmt_dependency-and-license-tracking[License tracking of dependencies]
 * link:guide_dev_troubleshooting[Troubleshooting]
 * link:setup-jre[Setup JRE in eclipse]
+* link:cobigen-cli_debugging.asciidoc[Debugging Cobigen-CLI]
+* link:cobigen-eclipse_debugging.asciidoc[Debugging Cobigen-Eclipse]
+* link:cobigen-maven-systemtest_debugging.asciidoc[Debugging Cobigen Maven Systemtest]
 
 ==== Implementation Docs
 * link:eclipse-plugin_development[Eclipse-Plugin Development]

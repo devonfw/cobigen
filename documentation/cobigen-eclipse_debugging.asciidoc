@@ -1,0 +1,49 @@
+= Debugging Cobigen-Eclipse
+
+=== To debug Cobigen-Eclipse, follow the steps below: ===
+
+==== Previous procedure for adding the plugins: ====
+Install Cobigen-Plugins via "Help > Install New Software > Add > cobigen-plugins > target/repository" and add it.
+
+==== Current procedure for adding the plug-ins: ====
+1. Open the target file "Eclipse.test.targets.2018-12.target" and add the target/repository of each plugin by clicking "Add > Directory > ...": +
+image:images/debugging/addDirToTarget.png[]
+
+2. Click on "Reload" and save. +
+ Sidenote: Change your eclipse target platform by clicking on "Window > Preferences > ..." +
+ image:images/debugging/target-platform.png[] +
+ (Use Eclipse 2018-12 as it is also used in maven. Running Platform will use your installed Eclipse version.)
+
+3. To run Eclipse in the runtime, right-click on "cobigen.eclipse" and select "Debug As > Eclipse Application". +
+ Sidenote: Plugins will not be displayed under installed software of the new Eclipse. Open the OSGi Console (arrow at the top right in console) and type "ss" to show all loaded plugins.
+ image:images/debugging/osgi-console.png[]
+
+4. In the new Eclipse you can now execute Cobigen commands while setting breakpoints and classicly debugging in the original Eclipse.
+
+5. For example, in CobiGenPaths.class > attach source > select project folder "cobigen". Class files cannot be modified, so you need to find the equivalent java file. Breakpoints are better placed in the equivalent Java files rather than in the class files. Here is an example selection of core.
+image:images/debugging/source-location-selection.png[]
+Workaround: Use the eclipse plug-in "Open .java file for .class file" +
+Sources can be attached to a class (f.e. core.jar) using right click on the eclipse project Properties/Java Build Path/Libraries/Classpath and adding a source to core.jar (unfold core.jar and add a Source Attachment from Workspace location).
+
+6. Click "Terminate" in the top left to close the environment. +
+
+
+== Debugging (SWTBot-)Tests ==
+
+=== To debug tests in Cobigen-Eclipse, follow these steps: ===
+
+1. Right-click on the test you want to debug and select "Debug As" and then "Debug Configurations".
+
+2. In the "Debug Configurations" window, select "JUnit Plug-in Test" and click on "New Configuration" to create a new test configuration.
+
+3. Make sure that "Run in UI thread" is not selected.
+
+4. Click "Apply" to save the new configuration.
+
+5. Click "Debug" to start the test in debug mode.
+
+6. SWTBot will perform the test and you can use classic debugging to debug any issues that may arise.
+
+7. If the test is aborted and the cleanup function doesn't work, it is recommended to delete the "junit-workspace" folder in the workspace, as this folder may contain information about what happened during the test and tests copy their resources (template-set project and input project) there.
+
+*Extra:* You can also use the "Debug Configurations" window to add the current debug session to your favorites menu. This allows you to easily access the debug session history later by selecting "Debug" and then the name of the debug session from the favorites menu.
