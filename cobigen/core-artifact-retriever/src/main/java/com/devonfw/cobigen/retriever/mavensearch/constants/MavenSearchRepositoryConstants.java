@@ -83,7 +83,7 @@ public class MavenSearchRepositoryConstants {
   /**
    * Nexus2 SNAPSHOT repository link
    */
-  public static final String NEXUS2_SNAPSHOT_REPOSITORY_LINK = "service/local/artifact/maven/redirect";
+  public static final String NEXUS2_SNAPSHOT_REPOSITORY_LINK = "service/local/repositories/snapshots/content";
 
   /**
    * Nexus2 REST search API path

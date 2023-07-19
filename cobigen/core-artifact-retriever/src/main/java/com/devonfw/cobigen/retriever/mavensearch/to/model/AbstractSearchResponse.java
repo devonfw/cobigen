@@ -138,7 +138,8 @@ public abstract class AbstractSearchResponse {
     builder.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
     builder.retryOnConnectionFailure(true);
 
-    if (serverCredentials.getProxyAddress() != null && serverCredentials.getProxyPort() != 0) {
+    if (serverCredentials != null && serverCredentials.getProxyAddress() != null
+        && serverCredentials.getProxyPort() != 0) {
       buildProxy(serverCredentials, builder);
     }
 
@@ -156,7 +157,8 @@ public abstract class AbstractSearchResponse {
 
       boolean usingBasicAuth = false;
       // use basic authentication
-      if (serverCredentials.getUsername() != null && serverCredentials.getPassword() != null) {
+      if (serverCredentials != null && serverCredentials.getUsername() != null
+          && serverCredentials.getPassword() != null) {
         LOG.debug("Connecting to REST API using Basic Authentication.");
         requestWithHeaders = basicUsernamePasswordAuthentication(targetLink, serverCredentials.getUsername(),
             serverCredentials.getPassword(), requestWithHeaders);
@@ -239,22 +241,33 @@ public abstract class AbstractSearchResponse {
   }
 
   /**
-   * Creates a download link (concatenates maven repository link with groupId, artifact and version)
+   * Creates a download link (concatenates maven repository link with groupId, artifact and version).
+   *
+   * Can handle snapshot versions if provided
    *
    * @param mavenRepo link to the maven repository to use
    * @param groupId for the download link
    * @param artifactId for the download link
    * @param version for the download link
    * @param fileEnding file ending for the download link
+   * @param snapshotVersion String of snapshot version number
    * @return concatenated download link
    * @throws MalformedURLException if the URL was not valid
    */
   protected static URL createDownloadLink(String mavenRepo, String groupId, String artifactId, String version,
-      String fileEnding) throws MalformedURLException {
+      String fileEnding, String snapshotVersion) throws MalformedURLException {
 
     String parsedGroupId = groupId.replace(".", "/");
     String downloadFile = artifactId + "-" + version + fileEnding;
+
+    // replace version with snapshot version
+    if (!snapshotVersion.isEmpty()) {
+      String versionWithoutSnapShot = version.replace("-SNAPSHOT", "");
+      downloadFile = artifactId + "-" + versionWithoutSnapShot + "-" + snapshotVersion + fileEnding;
+    }
+
     String downloadLink = mavenRepo + "/" + parsedGroupId + "/" + artifactId + "/" + version + "/" + downloadFile;
+
     URL url = new URL(downloadLink);
     return url;
   }
