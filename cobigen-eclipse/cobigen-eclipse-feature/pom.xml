@@ -11,4 +11,9 @@
     <artifactId>eclipse-parent</artifactId>
     <version>${revision}</version>
   </parent>
+
+  <properties>
+    <skip.deployment>false</skip.deployment>
+  </properties>
+
 </project>

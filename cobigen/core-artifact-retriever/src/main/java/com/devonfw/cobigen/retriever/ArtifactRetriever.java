@@ -65,7 +65,7 @@ public class ArtifactRetriever {
    * @return list of maven artifact download URLs
    *
    */
-  protected static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
+  public static List<URL> retrieveTemplateSetXmlDownloadLinks(List<String> groupIdsList, String mavenSettings) {
 
     List<URL> downloadLinks = new ArrayList<>();
 
@@ -99,9 +99,7 @@ public class ArtifactRetriever {
       downloadLinks.addAll(
           retrieveArtifactsFromRepository(groupIdsList, null, null, new ArrayList<MavenSettingsRepositoryModel>()));
     }
-
     return downloadLinks;
-
   }
 
   /**

@@ -1,0 +1,105 @@
+.root {
+    -fx-accent: #1e74c6;
+    -fx-body-color : white;
+    -fx-outer-border : black;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-base: black;
+    -fx-accent: #0070AD;
+    -fx-control-inner-background: derive(-fx-base, 35.0%);
+    -fx-control-inner-background-alt: -fx-control-inner-background;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+   -fx-background-color: transparent;
+   -fx-padding: 0;
+}
+.split-pane:vertical > .split-pane-divider {
+
+   -fx-padding: 0.5;
+}
+
+/* Text */
+Text {
+  -fx-font: 12px Ubuntu;
+  -fx-fill: white;
+  -fx-font-weight: 200;
+  -fx-font-smoothing-type: lcd;
+}
+.header {
+ -fx-font-weight: 400;
+ -fx-font-size: 16.0px;
+}
+.subheader {
+ -fx-font-weight: 300;
+ -fx-font-size: 14.0px;
+}
+
+/* Components */
+.label{
+    -fx-text-fill: lightgray;
+}
+
+.text-field {
+    -fx-background-color: -fx-text-box-border, -fx-background ;
+    -fx-background-insets: 0, 0 0 0 0 ;
+    -fx-background-radius: 0 ;
+    -fx-prompt-text-fill: gray;
+}
+.text-field:focused {
+    -fx-background-color: -fx-focus-color, -fx-background ;
+}
+
+.button{
+    -fx-focus-traversable: false;
+    -fx-background-color: -fx-control-inner-background, -fx-control-inner-background, -fx-control-inner-background;
+}
+#togglebutton{
+   -fx-background-color: transparent;
+}
+#filterMenuButton{
+  -fx-background-color: -fx-control-inner-background;
+}
+ .titleBarButtons{
+ -fx-background-color: transparent
+ }
+
+.icons{
+  -fx-icon-color: -fx-body-color;
+}
+.button:default {
+    -fx-base: -fx-accent ;
+}
+
+.button:hover{
+    -fx-text-fill: white;
+}
+
+.separator *.line {
+    -fx-background-color: #3C3C3C;
+    -fx-border-style: solid;
+    -fx-border-width: 1.0px;
+}
+
+.scroll-bar {
+  -fx-background-color: derive(-fx-base,45.0%);
+  -fx-block-increment: 1.0;
+}
+
+.list-cell:even,
+.list-cell:odd {
+    -fx-control-inner-background: derive(-fx-base, 15.0%);
+}
+
+.list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.list-cell {
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color:transparent;
+}
+
+#menuBarPane{
+  -fx-background-color: -fx-control-inner-background;
+}

@@ -149,7 +149,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testDownloadTemplates() throws Exception {
 
     // preparation
-    File adapted = this.tempFolder.newFolder("templateLocation/adapted");
+    File adapted = this.tempFolder.newFolder("templateLocation", "adapted");
     this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
     this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
     this.mavenCoordinatesList.add(createMavenCoordinateForDevon4jTemplates(null));
@@ -173,7 +173,7 @@ public class TemplateJarDownloaderTest extends AbstractUnitTest {
   public void testDownloadTemplatesAlreadyAdapted() throws Exception {
 
     // preparation
-    File adapted = this.tempFolder.newFolder("templateLocation/adapted");
+    File adapted = this.tempFolder.newFolder("templateLocation", "adapted");
     this.mavenCoordinatesList.add(new MavenCoordinate("com.group", "artifact-id", "1.0"));
     this.mavenCoordinatesList.add(new MavenCoordinate("some.group", "some-artifact", "2.01"));
     this.mavenCoordinatesList.add(new MavenCoordinate("com.com", "app-app", "87"));

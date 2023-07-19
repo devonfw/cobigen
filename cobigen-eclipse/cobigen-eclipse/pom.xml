@@ -26,6 +26,10 @@
     </dependency>
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>gui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
       <artifactId>javaplugin-model</artifactId>
     </dependency>
 

@@ -134,4 +134,6 @@ public class ConfigurationConstants {
    */
   public static final String CONFIG_PROPERTY_TEMPLATE_SETS_DEFAULT_VERSION = "2021.12.007";
 
+  public static final String TEMPLATE_SET_ARTIFACT_CACHE_FOLDER = "template-set-list";
+
 }
