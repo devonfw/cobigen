@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.devonfw.test</groupId>
+  <artifactId>templates-devon4j</artifactId>
+  <version>3.1.8</version>
+  <name>CobiGen devon4j Templates</name>
+  <description>CobiGen devon4j Templates</description>
+  <url>https://github.com/devonfw/cobigen/templates-parent/templates-devon4j</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>javaplugin</artifactId>
+      <version>${pluginVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>tempeng-freemarker</artifactId>
+      <version>${pluginVersion}</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+   <maven.compiler.source>1.8</maven.compiler.source>
+   <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <build>
+   <resources>
+     <resource>
+       <directory>src/main/templates</directory>
+       <targetPath>src/main/templates</targetPath>
+     </resource>
+   </resources>
+  </build>
+</project>
