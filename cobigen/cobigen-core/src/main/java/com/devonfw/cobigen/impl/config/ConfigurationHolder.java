@@ -2,71 +2,57 @@ package com.devonfw.cobigen.impl.config;
 
 import java.net.URI;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
-import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.extension.PluginRegistry;
+import com.devonfw.cobigen.impl.config.reader.ConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.ConfigurationReaderFactory;
+import com.devonfw.cobigen.impl.config.reader.TemplateSetsConfigReader;
 import com.devonfw.cobigen.impl.util.ConfigurationFinder;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
-import com.google.common.collect.Maps;
 
 /**
  * Cached in-memory CobiGen configuration.
  */
 public class ConfigurationHolder {
 
-  /** Logger instance */
-  private static final Logger LOG = LoggerFactory.getLogger(ConfigurationHolder.class);
+  /**
+   * Cached templates configurations. Trigger ID -> Configuration instance
+   */
+  private final Map<String, TemplatesConfiguration> templatesConfigurations = new HashMap<>();
 
-  /** Cached templates configurations. Trigger ID -> Configuration File URI -> configuration instance */
-  private Map<String, Map<Path, TemplatesConfiguration>> templatesConfigurations = Maps.newHashMap();
+  /**
+   * Cached context configuration
+   */
+  private final ContextConfiguration contextConfiguration;
 
-  /** Cached context configuration */
-  private ContextConfiguration contextConfiguration;
+  /**
+   * The OS filesystem path of the configuration
+   */
+  private final URI configurationLocation;
 
-  /** Cached templateSet configuration */
-  private TemplateSetConfiguration templateSetConfiguration;
+  /** Configuration properties */
+  private final ConfigurationProperties configurationProperties;
 
-  /** Root path of the configuration */
-  private Path configurationPath;
-
-  /** The OS filesystem path of the configuration */
-  private URI configurationLocation;
-
-  /** Location where the properties are saved */
-  private ConfigurationProperties configurationProperties;
+  private final ConfigurationReader configurationReader;
 
   /**
    * Creates a new {@link ConfigurationHolder} which serves as a cache for CobiGen's external configuration.
    *
-   * @param configurationLocation the OS Filesystem path of the configuration location.
+   * @param configurationLocation the OS file system path of the configuration location.
    */
   public ConfigurationHolder(URI configurationLocation) {
 
     this.configurationLocation = configurationLocation;
-    this.configurationPath = FileSystemUtil.createFileSystemDependentPath(configurationLocation);
+    this.configurationReader = ConfigurationReaderFactory.create(configurationLocation);
+    this.contextConfiguration = this.configurationReader.readContextConfiguration();
+
     this.configurationProperties = ConfigurationFinder.retrieveCobiGenProperties(
         CobiGenPaths.getCobiGenHomePath().resolve(ConfigurationConstants.COBIGEN_CONFIG_FILE));
-
-    // updates the root template path and informs all of its observers
-    PluginRegistry.notifyPlugins(this.configurationPath);
-  }
-
-  /**
-   * @return templateSetConfiguration
-   */
-  public TemplateSetConfiguration getTemplateSetConfiguration() {
-
-    return this.templateSetConfiguration;
   }
 
   /**
@@ -95,138 +81,38 @@ public class ConfigurationHolder {
   }
 
   /**
-   * @return the path within the configuration. Might be a different file system than OS in case of a .jar configuration
-   */
-  public Path getConfigurationPath() {
-
-    return this.configurationPath;
-  }
-
-  /**
-   * Reads the {@link TemplatesConfiguration} from cache or from file if not present in cache.
-   *
-   * @param trigger to get matcher declarations from
-   * @return the {@link TemplatesConfiguration}
-   * @throws InvalidConfigurationException if the configuration is not valid
-   */
-  public TemplatesConfiguration readTemplatesConfiguration(Trigger trigger) {
-
-    Path configRoot = readContextConfiguration().retrieveConfigRootByTrigger(trigger.getId());
-    Path templateFolder = Paths.get(trigger.getTemplateFolder());
-
-    if (!this.templatesConfigurations.containsKey(trigger.getId())) {
-
-      TemplatesConfiguration config;
-
-      if (isTemplateSetConfiguration()) {
-
-        List<TemplatesConfiguration> templatesConfigurations = getTemplateSetConfiguration()
-            .getTemplatesConfigurations();
-
-        for (TemplatesConfiguration configurations : templatesConfigurations) {
-          Trigger localTrigger = configurations.getTrigger();
-          if (localTrigger.equals(trigger)) {
-            return configurations;
-          }
-        }
-
-      }
-      config = new TemplatesConfiguration(configRoot, trigger, this);
-
-      this.templatesConfigurations.put(trigger.getId(), Maps.<Path, TemplatesConfiguration> newHashMap());
-
-      this.templatesConfigurations.get(trigger.getId()).put(templateFolder, config);
-    }
-
-    return this.templatesConfigurations.get(trigger.getId()).get(templateFolder);
-  }
-
-  /**
-   * @return templatesConfigurations
-   */
-  public Map<String, Map<Path, TemplatesConfiguration>> getTemplatesConfigurations() {
-
-    return this.templatesConfigurations;
-  }
-
-  /**
-   * Reads the {@link ContextConfiguration} from cache or from file if not present in cache.
-   *
-   * @return the {@link ContextConfiguration}
-   * @throws InvalidConfigurationException if the configuration is not valid
-   */
-  public ContextConfiguration readContextConfiguration() {
-
-    if (this.contextConfiguration == null) {
-      if (isTemplateSetConfiguration()) {
-        if (this.templateSetConfiguration == null) {
-          this.templateSetConfiguration = new TemplateSetConfiguration(this.configurationPath);
-
-        }
-        return new ContextConfiguration(
-            this.templateSetConfiguration.getTemplateSetConfigurationReader().getContextConfiguration(),
-            this.configurationPath, this, this.templateSetConfiguration.getTriggers());
-
-      } else {
-
-        this.contextConfiguration = new ContextConfiguration(this.configurationPath);
-      }
-    }
-
-    return this.contextConfiguration;
-  }
-
-  /**
-   * Checks if this this a template set configuration or a templates configuration (true if templateSetConfiguraion)
-   *
-   * @return true if the template folder structure consists of template sets or false if the monolithic structure is
-   *         used.
-   */
-  public boolean isTemplateSetConfiguration() {
-
-    // TODO: Replace with a better logic for template set detection later f.e. groupid, see:
-    // https://github.com/devonfw/cobigen/issues/1660
-    if (this.configurationPath.toUri().getScheme().equals("jar")
-        || !this.configurationPath.getFileName().toString().equals(ConfigurationConstants.TEMPLATE_SETS_FOLDER)) {
-      return false;
-    }
-    return true;
-
-  }
-
-  /**
    * Search for the location of the Java utils
    *
    * @return the {@link Path} of the location of the util classes or null if no location was found
    */
-  public List<Path> getUtilsLocation() {
+  public List<Path> getUtilsLocation(Trigger trigger) {
 
-    List<Path> utilsLocationPaths = new ArrayList<>();
-    if (isTemplateSetConfiguration()) {
-      List<Trigger> triggers = readContextConfiguration().getTriggers();
+    return List.of(getTemplatesConfiguration(trigger).getConfigRoot());
+  }
 
-      for (Trigger trigger : triggers) {
-        Path configLocation = readContextConfiguration().retrieveTemplateSetUtilsLocationByTrigger(trigger.getId());
-        utilsLocationPaths.add(configLocation);
-      }
-    } else {
-      utilsLocationPaths.add(Paths.get(this.configurationLocation));
+  public Trigger getTrigger(String s) {
+
+    return this.contextConfiguration.getTrigger(s);
+  }
+
+  public TemplatesConfiguration getTemplatesConfiguration(Trigger trigger) {
+
+    if (this.templatesConfigurations.containsKey(trigger.getId())) {
+      return this.templatesConfigurations.get(trigger.getId());
     }
-
-    return utilsLocationPaths;
+    TemplatesConfiguration templatesConfiguration = this.configurationReader
+        .readTemplatesConfiguration(trigger.getId());
+    this.templatesConfigurations.put(trigger.getId(), templatesConfiguration);
+    return templatesConfiguration;
   }
 
-  /**
-   * Retrieves a template set configuration within a map of template sets by its template set folder path
-   *
-   * @param templateSetConfigurations Cached templateSet configurations
-   * @param templateSetFolder folder where to get the specific configuration from
-   * @return the {@link TemplateSetConfiguration} instance saved in the given map
-   */
-  public TemplateSetConfiguration retrieveTemplateSetConfiguration(
-      Map<Path, TemplateSetConfiguration> templateSetConfigurations, Path templateSetFolder) {
+  public ContextConfiguration getContextConfiguration() {
 
-    return templateSetConfigurations.get(templateSetFolder);
+    return this.contextConfiguration;
   }
 
+  public boolean isTemplateSetConfiguration() {
+
+    return this.configurationReader instanceof TemplateSetsConfigReader;
+  }
 }

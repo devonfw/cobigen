@@ -75,7 +75,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
   private static final Logger LOG = LoggerFactory.getLogger(GenerationProcessorImpl.class);
 
   /** {@link ConfigurationHolder} for configuration caching purposes */
-  private ConfigurationHolder configurationHolder;
+  private final ConfigurationHolder configurationHolder;
 
   /** States, whether existing contents should be overwritten by generation */
   private boolean forceOverride;
@@ -99,7 +99,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
   private Path targetRootPath;
 
   /** {@link InputResolver} instance */
-  private InputResolver inputResolver;
+  private final InputResolver inputResolver;
 
   /**
    * Creates a new generation processor. This instance should be used once per generate call as of the internal state
@@ -163,22 +163,10 @@ public class GenerationProcessorImpl implements GenerationProcessor {
 
     progressCallback.accept("Prepend Templates Classloader", 10);
     inputProjectClassLoader = prependTemplatesClassloader(inputProjectClassLoader);
-    if (inputProjectClassLoader != null) {
-      try {
-        logicClasses = ConfigurationClassLoaderUtil.resolveUtilClasses(this.configurationHolder,
-            inputProjectClassLoader);
-      } catch (IOException e) {
-        LOG.error("An IOException occured while resolving utility classes!", e);
-      }
-    }
 
     // initialize
     this.forceOverride = forceOverride;
     this.input = input;
-    if (logicClasses != null) {
-      progressCallback.accept("Load Template logic classes", 20);
-      loadLogicClasses(progressCallback, logicClasses);
-    }
 
     progressCallback.accept("Create Temporary Target Directory", 40);
     this.rawModel = rawModel;
@@ -198,10 +186,24 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     // generate
     Map<File, File> origToTmpFileTrace = Maps.newHashMap();
     try {
-      LOG.debug("Generating {} templates", templatesToBeGenerated.size());
+      LOG.debug("Generating {} templates", Integer.valueOf(templatesToBeGenerated.size()));
       for (TemplateTo template : templatesToBeGenerated) {
         try {
-          Trigger trigger = this.configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+          Trigger trigger = this.configurationHolder.getContextConfiguration().getTrigger(template.getTriggerId());
+
+          if (inputProjectClassLoader != null) {
+            try {
+              logicClasses = ConfigurationClassLoaderUtil.resolveUtilClasses(this.configurationHolder,
+                  inputProjectClassLoader, trigger);
+            } catch (IOException e) {
+              LOG.error("An IOException occured while resolving utility classes!", e);
+            }
+          }
+          if (logicClasses != null) {
+            progressCallback.accept("Load Template logic classes", 20);
+            loadLogicClasses(progressCallback, logicClasses);
+          }
+
           TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
           InputValidator.validateTriggerInterpreter(triggerInterpreter, trigger);
           progressCallback.accept("Generating " + template.getId(),
@@ -252,7 +254,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
    * Prepend the classloader to get from the template folder to the classloader passed or create a new one. This method
    * will even make sure the code is compiled, if the templateFolder does not point to a jar, but maven project
    *
-   * @param configLocation the template folder path or jar
    * @param inputProjectClassLoader an existing classloader or null
    * @return the combined classloader for the templates with classLoader argument as parent or null if both arguments
    *         passed as null
@@ -263,7 +264,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     ClassLoader combinedClassLoader = inputProjectClassLoader != null ? inputProjectClassLoader
         : Thread.currentThread().getContextClassLoader();
 
-    if (configLocation != null && !this.configurationHolder.getUtilsLocation().isEmpty()) {
+    if (!this.configurationHolder.getUtilsLocation().isEmpty()) {
       List<Path> utilsLocations = this.configurationHolder.getUtilsLocation();
       Path cpCacheFile = null;
       try {
@@ -302,9 +303,8 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         }
 
         // prepend jar/compiled resources as well
-        URL[] urls = urlList.toArray(new URL[urlList.size()]);
+        URL[] urls = urlList.toArray(new URL[0]);
         combinedClassLoader = new URLClassLoader(urls, combinedClassLoader);
-        return combinedClassLoader;
       } catch (MalformedURLException e) {
         throw new CobiGenRuntimeException("Invalid Path", e);
       } catch (IOException e) {
@@ -412,7 +412,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
   private void generate(TemplateTo template, TriggerInterpreter triggerInterpreter, Map<File, File> origToTmpFileTrace,
       BiConsumer<String, Integer> progressCallback) {
 
-    Trigger trigger = this.configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+    Trigger trigger = this.configurationHolder.getContextConfiguration().getTrigger(template.getTriggerId());
 
     InputReader inputReader = triggerInterpreter.getInputReader();
     if (!inputReader.isValidInput(this.input)) {
@@ -421,12 +421,11 @@ public class GenerationProcessorImpl implements GenerationProcessor {
     }
 
     List<Object> inputObjects = this.inputResolver.resolveContainerElements(this.input, trigger);
-    TemplatesConfiguration tConfig = this.configurationHolder.readTemplatesConfiguration(trigger);
+    TemplatesConfiguration tConfig = this.configurationHolder.getTemplatesConfiguration(trigger);
     String templateEngineName = tConfig.getTemplateEngine();
     TextTemplateEngine templateEngine = TemplateEngineRegistry.getEngine(templateEngineName);
 
-    templateEngine.setTemplateFolder(this.configurationHolder.readContextConfiguration()
-        .retrieveConfigRootByTrigger(trigger.getId()).resolve(trigger.getTemplateFolder()));
+    templateEngine.setTemplateFolder(this.configurationHolder.getTemplatesConfiguration(trigger).getConfigRoot());
 
     Template templateEty = tConfig.getTemplate(template.getId());
     if (templateEty == null) {

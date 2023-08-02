@@ -378,7 +378,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     Path configPath = Paths.get(new File(testFileRootPath).toURI());
     ConfigurationHolder configurationHolder = new ConfigurationHolder(configPath.toUri());
 
-    TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+    TemplatesConfiguration templatesConfiguration = configurationHolder.getTemplatesConfiguration(trigger);
     Map<String, Increment> increments = templatesConfiguration.getIncrements();
 
     assertThat(templatesConfiguration.getTrigger().getId()).isEqualTo("testingTrigger");
@@ -412,7 +412,7 @@ public class TemplatesConfigurationReaderTest extends AbstractUnitTest {
     Path config = Paths.get(new File(testFileRootPath).toURI());
     ConfigurationHolder configurationHolder = new ConfigurationHolder(config.toUri());
 
-    TemplatesConfiguration templatesConfiguration = configurationHolder.readTemplatesConfiguration(trigger);
+    TemplatesConfiguration templatesConfiguration = configurationHolder.getTemplatesConfiguration(trigger);
     Map<String, Increment> increments = templatesConfiguration.getIncrements();
 
     // validation

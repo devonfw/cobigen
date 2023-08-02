@@ -6,7 +6,7 @@ import java.util.TreeMap;
 /**
  * Version steps of the templates configuration.
  */
-public enum ContextConfigurationVersion {
+public enum ContextConfigurationVersion implements ConfigurationVersionEnum {
 
   /**
    * Initial release.

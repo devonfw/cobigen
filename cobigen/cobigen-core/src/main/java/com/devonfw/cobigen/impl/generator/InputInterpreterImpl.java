@@ -42,7 +42,7 @@ public class InputInterpreterImpl implements InputInterpreter {
   public boolean combinesMultipleInputs(Object input) {
 
     List<Trigger> matchingTriggers = this.configurationInterpreter.getMatchingTriggers(input);
-    return matchingTriggers.stream().anyMatch(e -> e.matchesByContainerMatcher());
+    return matchingTriggers.stream().anyMatch(Trigger::matchesByContainerMatcher);
   }
 
   @Cached

@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
+import com.devonfw.cobigen.impl.config.entity.Trigger;
 
 /**
  * Utilities related to the retrieval of Templates utility classes
@@ -112,13 +113,13 @@ public class ConfigurationClassLoaderUtil {
    * @return a List of Classes for template generation.
    * @throws IOException if either templates jar or templates folder could not be read
    */
-  public static List<Class<?>> resolveUtilClasses(ConfigurationHolder configurationHolder, ClassLoader classLoader)
-      throws IOException {
+  public static List<Class<?>> resolveUtilClasses(ConfigurationHolder configurationHolder, ClassLoader classLoader,
+      Trigger trigger) throws IOException {
 
     List<Class<?>> result = new LinkedList<>();
     List<URL> classLoaderUrls = new ArrayList<>(); // stores ClassLoader URLs
 
-    List<Path> utilsLocations = configurationHolder.getUtilsLocation();
+    List<Path> utilsLocations = configurationHolder.getUtilsLocation(trigger);
     for (Path utilsLocation : utilsLocations) {
       if (FileSystemUtil.isZipFile(utilsLocation.toUri())) {
         result.addAll(resolveFromJar(classLoader, utilsLocation));

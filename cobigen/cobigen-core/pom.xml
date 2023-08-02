@@ -268,7 +268,7 @@
         </executions>
         <configuration>
           <extension>true</extension>
-          <bindingDirectory>${basedir}/src/main/resources/schema</bindingDirectory>
+          <!--<bindingDirectory>${basedir}/src/main/resources/schema</bindingDirectory>-->
         </configuration>
         <dependencies>
           <dependency>

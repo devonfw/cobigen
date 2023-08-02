@@ -44,7 +44,7 @@ public class TriggerMatchingEvaluatorImpl implements TriggerMatchingEvaluator {
 
     LOG.debug("Retrieve matching trigger. input {}, hash: {}", matcherInput, matcherInput.hashCode());
     List<Trigger> matchingTrigger = Lists.newLinkedList();
-    for (Trigger trigger : this.configurationHolder.readContextConfiguration().getTriggers()) {
+    for (Trigger trigger : this.configurationHolder.getContextConfiguration().getTriggers()) {
       TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
       if (triggerInterpreter == null) {
         continue;

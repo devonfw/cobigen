@@ -5,7 +5,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 /** Version steps of the templates configuration. */
-public enum TemplateSetConfigurationVersion {
+public enum TemplateSetConfigurationVersion implements ConfigurationVersionEnum {
 
   /**
    * Initial release. Merges the content of the context.xml and the templates.xml into a new template-set.xml file.
@@ -44,16 +44,6 @@ public enum TemplateSetConfigurationVersion {
   public boolean isBackwardCompatible() {
 
     return this.backwardCompatible;
-  }
-
-  /**
-   * Get latest template set version supported by this CobiGen release.
-   *
-   * @return latest template set version supported by this CobiGen release.
-   */
-  public static TemplateSetConfigurationVersion getLatest() {
-
-    return values()[values().length - 1];
   }
 
   /**

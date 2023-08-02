@@ -138,14 +138,14 @@ public class CobiGenImpl implements CobiGen {
 
     List<String> matchingTriggerIds = getMatchingTriggerIds(input);
     // Just take the first trigger as all trigger should have the same input reader. See javadoc.
-    Trigger trigger = this.configurationHolder.readContextConfiguration().getTrigger(matchingTriggerIds.get(0));
+    Trigger trigger = this.configurationHolder.getTrigger(matchingTriggerIds.get(0));
     return new ModelBuilderImpl(input, trigger);
   }
 
   @Override
   public ModelBuilder getModelBuilder(Object generatorInput, String triggerId) {
 
-    Trigger trigger = this.configurationHolder.readContextConfiguration().getTrigger(triggerId);
+    Trigger trigger = this.configurationHolder.getTrigger(triggerId);
     if (trigger == null) {
       throw new IllegalArgumentException("Unknown Trigger with id '" + triggerId + "'.");
     }

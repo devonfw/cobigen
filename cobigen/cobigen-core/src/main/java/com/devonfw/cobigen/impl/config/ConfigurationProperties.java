@@ -11,16 +11,16 @@ import com.devonfw.cobigen.api.util.MavenCoordinate;
 public class ConfigurationProperties {
 
   /** variable for template-set artifacts */
-  private List<String> groupIds;
+  private final List<String> groupIds;
 
   /** allow snapshots of template-sets */
-  private boolean allowSnapshots;
+  private final boolean allowSnapshots;
 
   /** List of mavenCoordinates for the template sets that should be installed at CobiGen startup */
-  private List<MavenCoordinate> templateSetsInstalled;
+  private final List<MavenCoordinate> templateSetsInstalled;
 
   /** variable to hide very specific template sets or versions of template sets */
-  private List<MavenCoordinate> hideTemplateSets;
+  private final List<MavenCoordinate> hideTemplateSets;
 
   /**
    * The constructor. Loads properties from a given source
@@ -50,16 +50,6 @@ public class ConfigurationProperties {
   }
 
   /**
-   * Sets a list of the groupIds from a source
-   *
-   * @param groupIds new value of {@link #getgroupIds}.
-   */
-  public void setGroupIds(List<String> groupIds) {
-
-    this.groupIds = groupIds;
-  }
-
-  /**
    * Returns a boolean which states if specific Snapshots should be allowed.
    *
    * @return allowSnapshots
@@ -67,16 +57,6 @@ public class ConfigurationProperties {
   public boolean isAllowSnapshots() {
 
     return this.allowSnapshots;
-  }
-
-  /**
-   * Sets a value on the snapshot
-   *
-   * @param allowSnapshots new value of {@link #getallowSnapshots}.
-   */
-  public void setAllowSnapshots(boolean allowSnapshots) {
-
-    this.allowSnapshots = allowSnapshots;
   }
 
   /**
@@ -90,16 +70,6 @@ public class ConfigurationProperties {
   }
 
   /**
-   * Sets a list of the HideTemplate from a source
-   *
-   * @param hideTemplateSets new value of {@link #gethideTemplateSets}.
-   */
-  public void setHideTemplateSets(List<MavenCoordinate> hideTemplateSets) {
-
-    this.hideTemplateSets = hideTemplateSets;
-  }
-
-  /**
    * Returns a list of maven coordinates for the download of template sets
    *
    * @return maven coordinates
@@ -107,16 +77,6 @@ public class ConfigurationProperties {
   public List<MavenCoordinate> getTemplateSetsInstalled() {
 
     return this.templateSetsInstalled;
-  }
-
-  /**
-   * Set a list of template sets that should be installed at startup
-   *
-   * @param templateSetsInstalled new value of {@link #getTemplateSetsInstalled}.
-   */
-  public void setTemplateSetsInstalled(List<MavenCoordinate> templateSetsInstalled) {
-
-    this.templateSetsInstalled = templateSetsInstalled;
   }
 
 }

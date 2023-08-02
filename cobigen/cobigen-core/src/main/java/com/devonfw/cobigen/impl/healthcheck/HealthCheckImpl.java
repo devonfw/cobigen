@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.devonfw.cobigen.impl.config.reader.ConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.ConfigurationReaderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,7 @@ public class HealthCheckImpl implements HealthCheck {
   private static final Logger LOG = LoggerFactory.getLogger(HealthCheckImpl.class);
 
   /** HealthCheckReport created by this HealthCheck */
-  private HealthCheckReport healthCheckReport = new HealthCheckReport();
+  private final HealthCheckReport healthCheckReport = new HealthCheckReport();
 
   @Override
   public HealthCheckReport upgradeContextConfiguration(Path configurationFolder, BackupPolicy backupPolicy)
@@ -91,7 +93,7 @@ public class HealthCheckImpl implements HealthCheck {
       upgradeContextConfiguration(contextConfigurationPath, BackupPolicy.NO_BACKUP);
     }
 
-    ContextConfiguration contextConfiguration = new ContextConfiguration(contextConfigurationPath);
+    ContextConfiguration contextConfiguration = ConfigurationReaderFactory.create(contextConfigurationPath.toUri()).readContextConfiguration();
     List<String> expectedTemplatesConfigurations = new ArrayList<>();
     Set<String> hasConfiguration = Sets.newHashSet();
     Map<String, Path> upgradeableConfigurations = this.healthCheckReport.getUpgradeableConfigurations();
@@ -122,7 +124,7 @@ public class HealthCheckImpl implements HealthCheck {
 
     // 1. Get configuration resources
     // determine expected template configurations to be defined
-    ContextConfiguration contextConfiguration = new ContextConfiguration(configurationPath);
+    ContextConfiguration contextConfiguration = ConfigurationReaderFactory.create(configurationPath.toUri()).readContextConfiguration();
     List<String> expectedTemplatesConfigurations = Lists.newArrayList();
     Set<String> hasConfiguration = Sets.newHashSet();
     Set<String> isAccessible = Sets.newHashSet();
@@ -134,15 +136,13 @@ public class HealthCheckImpl implements HealthCheck {
     }
     // 2. Determine current state
     TemplateConfigurationUpgrader templateConfigurationUpgrader = new TemplateConfigurationUpgrader();
-    pathForCobigenTemplates = configurationPath.resolve("src" + File.separator + "main" + File.separator + "templates");
+    pathForCobigenTemplates = configurationPath.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
     for (String expectedTemplateFolder : expectedTemplatesConfigurations) {
       if (Files.exists(pathForCobigenTemplates)) {
-        String configPath = (configurationPath + File.separator + "src" + File.separator + "main" + File.separator
-            + "templates").toString();
-        hasConfiguration.add(configPath);
-        isAccessible.add(configPath);
+        hasConfiguration.add(pathForCobigenTemplates.toString());
+        isAccessible.add(pathForCobigenTemplates.toString());
         Path expectedTemplateFolderForResolvedVer = pathForCobigenTemplates
-            .resolve(expectedTemplateFolder.replace("/", File.separator).toString());
+            .resolve(expectedTemplateFolder.replace("/", File.separator));
         TemplatesConfigurationVersion resolvedVersion = templateConfigurationUpgrader
             .resolveLatestCompatibleSchemaVersion(expectedTemplateFolderForResolvedVer);
         if (resolvedVersion != null) {

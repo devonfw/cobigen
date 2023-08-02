@@ -3,6 +3,7 @@ package com.devonfw.cobigen.impl.config.reader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -15,15 +16,12 @@ import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
  */
 public class CobiGenPropertiesReader {
 
-  /** The {@link Charset} used to read {@link ConfigurationConstants#COBIGEN_PROPERTIES}. */
-  private static final Charset UTF_8 = Charset.forName("UTF-8");
-
   /**
    * @param folder the {@link Path} pointing to the folder that may contain a {@code cobigen.properties} file.
    * @return the new {@link Properties} containing the properties from a potential {@code cobigen.properties}. Will be
    *         empty if no such properties file exists.
    */
-  public static final Properties load(Path folder) {
+  public static Properties load(Path folder) {
 
     return load(folder, null);
   }
@@ -34,7 +32,7 @@ public class CobiGenPropertiesReader {
    * @return the new {@link Properties} containing the properties from a potential {@code cobigen.properties} merged
    *         with the given {@code parent} properties.
    */
-  public static final Properties load(Path folder, Properties parent) {
+  public static Properties load(Path folder, Properties parent) {
 
     Path propertiesPath = folder.resolve(ConfigurationConstants.COBIGEN_PROPERTIES);
     if (!Files.exists(propertiesPath)) {
@@ -48,7 +46,7 @@ public class CobiGenPropertiesReader {
     if (parent != null) {
       properties.putAll(parent);
     }
-    try (Reader reader = Files.newBufferedReader(propertiesPath, UTF_8)) {
+    try (Reader reader = Files.newBufferedReader(propertiesPath, StandardCharsets.UTF_8)) {
       properties.load(reader);
     } catch (IOException e) {
       throw new CobiGenRuntimeException(

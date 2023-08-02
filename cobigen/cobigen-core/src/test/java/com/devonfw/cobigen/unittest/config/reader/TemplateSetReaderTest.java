@@ -17,17 +17,16 @@ import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.impl.config.TemplateSetConfiguration;
-import com.devonfw.cobigen.impl.config.reader.TemplateSetConfigurationReader;
+import com.devonfw.cobigen.impl.config.reader.TemplateSetReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 import junit.framework.TestCase;
 
 /**
- * This {@link TestCase} tests the {@link TemplateSetConfigurationReader}
+ * This {@link TestCase} tests the {@link TemplateSetReader}
  */
 
-public class TemplateSetConfigurationReaderTest extends AbstractUnitTest {
+public class TemplateSetReaderTest extends AbstractUnitTest {
 
   /**
    * JUnit Rule to temporarily create files and folders, which will be automatically removed after test execution

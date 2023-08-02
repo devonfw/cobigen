@@ -1,21 +1,14 @@
 package com.devonfw.cobigen.impl.config;
 
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Template;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.reader.TemplatesConfigurationReader;
-import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
+import javassist.ClassPath;
+
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * The {@link TemplatesConfiguration} is a configuration data wrapper for all information of a context about templates
@@ -23,95 +16,38 @@ import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
  */
 public class TemplatesConfiguration {
 
-  /** Folder name of the context definition (root folder for all templates) */
-  private String templatesFolderName;
-
-  /** All available templates */
-  private Map<String, Template> templates;
-
-  /** All available increments */
-  private Map<String, Increment> increments;
-
-  /** {@link Trigger}, all templates of this configuration depend on */
-  private Trigger trigger;
-
-  /** {@link TextTemplateEngine} to be used for the template set covered by this configuration. */
-  private String templateEngine;
+  private final Path configRoot;
 
   /**
-   * {@link TemplatesConfigurationReader} to be used for reading external increments
+   * All available templates
    */
-  private TemplatesConfigurationReader externalReader;
+  private final Map<String, Template> templates;
 
   /**
-   * Creates a new {@link TemplatesConfiguration} with the contents initially loaded from the template-set.xml
-   *
-   * @param configRoot root path for the configuration of CobiGen
-   * @param trigger the {@link Trigger}
-   * @param templates the map of templates
-   * @param increments the map of increments
-   * @param templateEngine the string of template engine
+   * All available increments
    */
-  public TemplatesConfiguration(Path configRoot, Trigger trigger, Map<String, Template> templates,
-      Map<String, Increment> increments, String templateEngine) {
+  private final Map<String, Increment> increments;
 
-    this.templatesFolderName = trigger.getTemplateFolder();
-    this.templates = templates;
+  /**
+   * {@link Trigger}, all templates of this configuration depend on
+   */
+  private final Trigger trigger;
+
+  /**
+   * {@link TextTemplateEngine} to be used for the template set covered by this configuration.
+   */
+  private final String templateEngine;
+
+  private Path[] utilClasses;
+
+  private URL[] classPathUrls;
+
+  public TemplatesConfiguration(Trigger trigger, Map<String, Increment> increments, Map<String, Template> templates, String templateEngine, Path configRoot) {
+    this.trigger = trigger;
     this.increments = increments;
+    this.templates = templates;
     this.templateEngine = templateEngine;
-    this.trigger = trigger;
-  }
-
-  /**
-   * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings reference. We
-   * use the configurationHolder to store there all the external TemplatesConfiguration
-   *
-   * @param configRoot configuration root path
-   * @param trigger {@link Trigger} of this {@link TemplatesConfiguration}
-   * @param configurationHolder The {@link ConfigurationHolder} used for reading templates folder
-   * @throws UnknownContextVariableException if the destination path contains an undefined context variable
-   * @throws UnknownExpressionException if there is an unknown variable modifier
-   * @throws InvalidConfigurationException if the given templates.xml is not valid
-   */
-  public TemplatesConfiguration(Path configRoot, Trigger trigger, ConfigurationHolder configurationHolder)
-      throws InvalidConfigurationException {
-
-    TemplatesConfigurationReader reader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder(),
-        configurationHolder);
-
-    this.templatesFolderName = trigger.getTemplateFolder();
-
-    this.templates = reader.loadTemplates(trigger);
-    this.increments = reader.loadIncrements(this.templates, trigger);
-    this.templateEngine = reader.getTemplateEngine();
-    this.trigger = trigger;
-
-  }
-
-  /**
-   * Creates a new {@link TemplatesConfiguration} for the given template folder with the given settings reference
-   *
-   * @param configRoot configuration root path
-   * @param trigger {@link Trigger} of this {@link TemplatesConfiguration}
-   * @param configurationHolder The {@link ConfigurationHolder} used for reading templates folder
-   * @param incrementToSearch String name of the increment we should retrieve and store
-   * @throws UnknownContextVariableException if the destination path contains an undefined context variable
-   * @throws UnknownExpressionException if there is an unknown variable modifier
-   * @throws InvalidConfigurationException if the given templates.xml is not valid
-   */
-  public TemplatesConfiguration(Path configRoot, Trigger trigger, ConfigurationHolder configurationHolder,
-      String incrementToSearch) throws InvalidConfigurationException {
-
-    this.externalReader = new TemplatesConfigurationReader(configRoot, trigger.getTemplateFolder(),
-        configurationHolder);
-    this.templatesFolderName = trigger.getTemplateFolder();
-    this.templates = this.externalReader.loadTemplates(trigger);
-    Map<String, Increment> externalIncrements = this.externalReader.loadSpecificIncrement(this.templates, trigger,
-        incrementToSearch);
-    this.increments = new HashMap<>();
-    this.increments.putAll(externalIncrements);
-    this.templateEngine = this.externalReader.getTemplateEngine();
-    this.trigger = trigger;
+    this.configRoot = configRoot.resolve(trigger.getTemplateFolder());
   }
 
   /**
@@ -146,24 +82,15 @@ public class TemplatesConfiguration {
   }
 
   /**
-   * Returns the set of all available increments
+   * Returns the list of all available increments
    *
-   * @return the set of all available increments
+   * @return all available increments
    */
   public List<Increment> getAllGenerationPackages() {
 
     return new LinkedList<>(this.increments.values());
   }
 
-  /**
-   * Returns the folder name of this context definition (root folder for all templates)
-   *
-   * @return the folder name of this context definition (root folder for all templates)
-   */
-  public String getTemplatesFolderName() {
-
-    return this.templatesFolderName;
-  }
 
   /**
    * Returns the configured template engine
@@ -185,16 +112,8 @@ public class TemplatesConfiguration {
     return this.increments;
   }
 
-  /**
-   * Loads an specific increment and stores it inside our increments map
-   *
-   * @param incrementToSearch Name of the increment to search
-   */
-  public void loadSpecificIncrement(String incrementToSearch) {
-
-    Map<String, Increment> externalIncrements = this.externalReader.loadSpecificIncrement(this.templates, this.trigger,
-        incrementToSearch);
-    this.increments.putAll(externalIncrements);
+  public Path getConfigRoot() {
+    return this.configRoot;
   }
 
 }

@@ -11,22 +11,22 @@ import java.util.List;
 public class Trigger {
 
   /** Technical id */
-  private String id;
+  private final String id;
 
   /** Identifies the {@link Trigger}. */
-  private String type;
+  private final String type;
 
   /** Folder in which the configuration.xml is located in */
   private String templateFolder;
 
   /** Input charset, which should be used to read the inputs */
-  private Charset inputCharset;
+  private final Charset inputCharset;
 
   /** All available matchers */
-  private List<Matcher> matchers;
+  private final List<Matcher> matchers;
 
   /** All available container matchers */
-  private List<ContainerMatcher> containerMatchers;
+  private final List<ContainerMatcher> containerMatchers;
 
   /** States if the trigger has been matched by a container matcher */
   private boolean matchesByContainerMatcher;

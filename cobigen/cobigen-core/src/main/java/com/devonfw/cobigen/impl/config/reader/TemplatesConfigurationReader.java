@@ -1,9 +1,5 @@
 package com.devonfw.cobigen.impl.config.reader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,24 +12,15 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.UnknownExpressionException;
 import com.devonfw.cobigen.api.extension.TextTemplateEngine;
-import com.devonfw.cobigen.api.util.ExceptionUtil;
-import com.devonfw.cobigen.api.util.JvmUtil;
 import com.devonfw.cobigen.impl.config.ConfigurationHolder;
-import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
+import com.devonfw.cobigen.impl.config.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.constant.TemplatesConfigurationVersion;
 import com.devonfw.cobigen.impl.config.entity.Increment;
 import com.devonfw.cobigen.impl.config.entity.Template;
@@ -49,114 +36,108 @@ import com.devonfw.cobigen.impl.config.entity.io.TemplateScan;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScanRef;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateScans;
 import com.devonfw.cobigen.impl.config.entity.io.Templates;
-import com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration;
-import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
-import com.devonfw.cobigen.impl.config.versioning.VersionValidator.Type;
 import com.devonfw.cobigen.impl.exceptions.UnknownContextVariableException;
 import com.devonfw.cobigen.impl.extension.TemplateEngineRegistry;
 import com.google.common.collect.Sets;
-
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.UnmarshalException;
-import jakarta.xml.bind.Unmarshaller;
 
 /**
  * The {@link TemplatesConfigurationReader} reads the configuration xml, evaluates all key references and converts the
  * information to the working entities
  */
-public class TemplatesConfigurationReader {
+public class TemplatesConfigurationReader extends JaxbDeserializer {
 
   /**
    * The {@link Properties#getProperty(String) name of the property} to relocate a template target folder.
    */
   private static final String PROPERTY_RELOCATE = "relocate";
 
-  /** The syntax for the variable pointing to the current working directory (CWD) of a template. */
+  /**
+   * The syntax for the variable pointing to the current working directory (CWD) of a template.
+   */
   private static final String VARIABLE_CWD = "${cwd}";
 
-  /** JAXB root node of the configuration */
-  private TemplatesConfiguration configNode;
+  /**
+   * JAXB root node of the configuration
+   */
+  private final com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration configNode;
 
-  /** Configuration file */
+  /**
+   * Cache to find all templates by name for each template scan
+   */
+  private final Map<String, List<String>> templateScanTemplates = new HashMap<>();
+
+  /**
+   * The top-level folder where the templates are located.
+   */
+  private final TemplateFolder rootTemplateFolder;
+
+  /**
+   * Configuration file
+   */
   private Path configFilePath;
 
-  /** {@link JXPathContext} for the configNode */
+  /**
+   * {@link JXPathContext} for the configNode
+   */
   private JXPathContext xPathContext;
 
-  /** Cache to find all templates by name for each template scan */
-  private Map<String, List<String>> templateScanTemplates = new HashMap<>();
-
-  /** The top-level folder where the templates are located. */
-  private TemplateFolder rootTemplateFolder;
-
-  /** The {@link ConfigurationHolder} used for reading templates folder **/
-  private ConfigurationHolder configurationHolder;
+  /**
+   * The {@link ConfigurationHolder} used for reading templates folder
+   **/
+  private final ConfigurationReader configurationReader;
 
   /**
    * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given configuration
-   * file without a ConfigurationFolder
+   * file without a ConfigurationFolder. <br>
+   * <br>
+   * <b>!!! Caution: constructor just for test simplicity !!!</b>
    *
-   * @param projectRoot root path for the templates, has to be an absolute path
-   * @param templateFolder name of the folder containing the configuration and templates, has to be a relative path
+   * @param configFilePath file path to the templates.xml
    * @throws InvalidConfigurationException if the configuration is not valid against its xsd specification
    */
-  public TemplatesConfigurationReader(Path projectRoot, String templateFolder) {
+  public TemplatesConfigurationReader(Path configFilePath) {
 
-    this(projectRoot, templateFolder, null);
+    this(configFilePath, null);
   }
 
   /**
    * Creates a new instance of the {@link TemplatesConfigurationReader} which initially parses the given configuration
    * file
    *
-   * @param projectRoot root path for the templates, has to be an absolute path
-   * @param templateFolder name of the folder containing the configuration and templates, has to be a relative path
-   * @param configurationHolder The {@link ConfigurationHolder} used for reading templates folder
+   * @param configFilePath file path to the templates.xml
+   * @param configurationReader The {@link ConfigurationReader} used for reading across-trigger / across-template-set
+   *        referenced templates or increments
    * @throws InvalidConfigurationException if the configuration is not valid against its xsd specification
    */
-  public TemplatesConfigurationReader(Path projectRoot, String templateFolder, ConfigurationHolder configurationHolder)
+  public TemplatesConfigurationReader(Path configFilePath, ConfigurationReader configurationReader)
       throws InvalidConfigurationException {
 
-    Path templateLocation;
+    this.configurationReader = configurationReader;
+    // Path rootTemplatePath = configFilePath.getParent();
+    // Path templateLocation = findTemplateRootPath(projectRoot, templateFolder, rootTemplatePath);
+    this.rootTemplateFolder = TemplateFolder.create(configFilePath.getParent());
 
-    Path rootTemplatePath = projectRoot.resolve(templateFolder);
-    this.configFilePath = rootTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
-
-    if (!Files.exists(this.configFilePath)) {
-      Path sourceTemplatePath = projectRoot.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
-      sourceTemplatePath = sourceTemplatePath.resolve(templateFolder);
-      this.configFilePath = sourceTemplatePath.resolve(ConfigurationConstants.TEMPLATES_CONFIG_FILENAME);
-      templateLocation = sourceTemplatePath;
-
-      if (!Files.exists(this.configFilePath)) {
-        throw new InvalidConfigurationException(this.configFilePath, "Could not find templates configuration file.");
-      }
-    } else {
-      templateLocation = rootTemplatePath;
-    }
-    this.rootTemplateFolder = TemplateFolder.create(templateLocation);
-
-    readConfiguration();
-    this.configurationHolder = configurationHolder;
+    this.configNode = deserialize(this.configFilePath,
+        com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration.class, TemplatesConfigurationVersion.class,
+        "templatesConfiguration");
   }
 
   /**
-   * The constructor which is being used by the {@link TemplateSetConfigurationReader}
+   * The constructor which is being used by the {@link TemplateSetReader}
    *
-   * @param templatesConfiguration {@link TemplatesConfiguration} to initialize from
-   *        {@link TemplateSetConfigurationReader}
+   * @param templatesConfiguration {@link TemplatesConfiguration} to initialize from {@link TemplateSetReader}
    * @param rootTemplateFolder the root template folder
-   * @param configurationHolder The {@link ConfigurationHolder} used for reading templates folder
+   * @param configurationReader The {@link ConfigurationHolder} used for reading templates folder
    * @param templateSetConfigurationFile Path to template-set xml to be processed
    */
-  public TemplatesConfigurationReader(TemplatesConfiguration templatesConfiguration, TemplateFolder rootTemplateFolder,
-      ConfigurationHolder configurationHolder, Path templateSetConfigurationFile) {
+  public TemplatesConfigurationReader(
+      com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration templatesConfiguration, Path rootTemplateFolder,
+      ConfigurationReader configurationReader, Path templateSetConfigurationFile) {
 
-    this.configurationHolder = configurationHolder;
+    this.configurationReader = configurationReader;
     this.configNode = templatesConfiguration;
     this.configFilePath = templateSetConfigurationFile;
-    this.rootTemplateFolder = rootTemplateFolder;
+    this.rootTemplateFolder = TemplateFolder.create(rootTemplateFolder);
   }
 
   /**
@@ -164,82 +145,9 @@ public class TemplatesConfigurationReader {
    *
    * @return the configured template engine to be used
    */
-  public String getTemplateEngine() {
+  private String getTemplateEngine() {
 
     return this.configNode.getTemplateEngine();
-  }
-
-  /**
-   * Reads the templates configuration.
-   */
-  private void readConfiguration() {
-
-    // workaround to make JAXB work in OSGi context by
-    // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
-    final ClassLoader orig = Thread.currentThread().getContextClassLoader();
-    if (JvmUtil.isRunningJava9OrLater()) {
-      Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
-    }
-
-    try (InputStream in = Files.newInputStream(this.configFilePath)) {
-      Unmarshaller unmarschaller = JAXBContext.newInstance(TemplatesConfiguration.class).createUnmarshaller();
-
-      // Unmarshal without schema checks for getting the version attribute of the root node.
-      // This is necessary to provide an automatic upgrade client later on
-      Object rootNode = unmarschaller.unmarshal(in);
-      if (rootNode instanceof TemplatesConfiguration) {
-        BigDecimal configVersion = ((TemplatesConfiguration) rootNode).getVersion();
-        if (configVersion == null) {
-          throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
-              "The required 'version' attribute of node \"templatesConfiguration\" has not been set");
-        } else {
-          VersionValidator validator = new VersionValidator(Type.TEMPLATES_CONFIGURATION, MavenMetadata.VERSION);
-          validator.validate(configVersion.floatValue());
-        }
-      } else {
-        throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
-            "Unknown Root Node. Use \"templatesConfiguration\" as root Node");
-      }
-
-      // If we reach this point, the configuration version and root node has been validated.
-      // Unmarshal with schema checks for checking the correctness and give the user more hints to
-      // correct his failures
-      SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      TemplatesConfigurationVersion latestConfigurationVersion = TemplatesConfigurationVersion.getLatest();
-      try (
-          InputStream schemaStream = getClass()
-              .getResourceAsStream("/schema/" + latestConfigurationVersion + "/templatesConfiguration.xsd");
-          InputStream configInputStream = Files.newInputStream(this.configFilePath)) {
-
-        Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
-        unmarschaller.setSchema(schema);
-        rootNode = unmarschaller.unmarshal(configInputStream);
-        this.configNode = (TemplatesConfiguration) rootNode;
-      }
-    } catch (JAXBException e) {
-      // try getting SAXParseException for better error handling and user support
-      Throwable parseCause = ExceptionUtil.getCause(e, SAXParseException.class, UnmarshalException.class);
-      String message = "";
-      if (parseCause != null && parseCause.getMessage() != null) {
-        message = parseCause.getMessage();
-      }
-      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
-          "Could not parse configuration file:\n" + message, e);
-    } catch (SAXException e) {
-      // Should never occur. Programming error.
-      throw new IllegalStateException("Could not parse templates configuration schema. Please state this as a bug.");
-    } catch (NumberFormatException e) {
-      // The version number is currently the only xml value which will be parsed to a number data type
-      // So provide help
-      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
-          "Invalid version number defined. The version of the templates configuration should consist of 'major.minor' version.",
-          e);
-    } catch (IOException e) {
-      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
-          "Could not read templates configuration file.", e);
-    } finally {
-      Thread.currentThread().setContextClassLoader(orig);
-    }
   }
 
   /**
@@ -251,7 +159,7 @@ public class TemplatesConfigurationReader {
    * @throws UnknownExpressionException if there is an unknown variable modifier
    * @throws InvalidConfigurationException if there are multiple templates with the same name
    */
-  public Map<String, Template> loadTemplates(Trigger trigger)
+  private Map<String, Template> loadTemplates(Trigger trigger)
       throws UnknownExpressionException, UnknownContextVariableException, InvalidConfigurationException {
 
     Map<String, Template> templates = new HashMap<>();
@@ -434,13 +342,13 @@ public class TemplatesConfigurationReader {
    * @param templateFile the {@link TemplateFile}.
    * @param templateName the {@link Template#getName() template name} (ID).
    * @param unresolvedTemplatePath the {@link Template#getUnresolvedTemplatePath() unresolved template path}.
-   * @param mergeStratgey the {@link Template#getMergeStrategy() merge strategy}.
+   * @param mergeStrategy the {@link Template#getMergeStrategy() merge strategy}.
    * @param outputCharset the {@link Template#getTargetCharset() target charset}.
    * @param scanSourcePath {@link TemplateScan#getTemplatePath() root path} of the {@link TemplateScan}
    * @return the new template instance.
    */
   private Template createTemplate(TemplateFile templateFile, String templateName, String unresolvedTemplatePath,
-      String mergeStratgey, String outputCharset, String scanSourcePath) {
+      String mergeStrategy, String outputCharset, String scanSourcePath) {
 
     String unresolvedDestinationPath = unresolvedTemplatePath;
     TemplateFolder templateFolder = templateFile.getParent();
@@ -456,18 +364,18 @@ public class TemplatesConfigurationReader {
       }
     }
     return new Template(templateFile, templateName, stripTemplateFileending(unresolvedDestinationPath),
-        unresolvedTemplatePath, mergeStratgey, outputCharset);
+        unresolvedTemplatePath, mergeStrategy, outputCharset);
   }
 
   /**
    * Loads all increments of the static configuration into the local representation.
    *
-   * @return the mapping of increment names to the corresponding {@link Increment}
    * @param templates {@link Map} of all templates (see {@link TemplatesConfigurationReader#loadTemplates(Trigger)}
    * @param trigger {@link Trigger} for which the templates should be loaded
+   * @return the mapping of increment names to the corresponding {@link Increment}
    * @throws InvalidConfigurationException if there is an invalid ref attribute
    */
-  public Map<String, Increment> loadIncrements(Map<String, Template> templates, Trigger trigger)
+  private Map<String, Increment> loadIncrements(Map<String, Template> templates, Trigger trigger)
       throws InvalidConfigurationException {
 
     Map<String, Increment> increments = new HashMap<>();
@@ -495,13 +403,13 @@ public class TemplatesConfigurationReader {
    * Loads an specific increment of the static configuration into the local representation. The return object must be a
    * map because maybe this increment references other increments
    *
-   * @return the mapping of increment names to the corresponding {@link Increment}
    * @param templates {@link Map} of all templates (see {@link TemplatesConfigurationReader#loadTemplates(Trigger)}
    * @param trigger {@link Trigger} for which the templates should be loaded
    * @param incrementName the increment to search
+   * @return the mapping of increment names to the corresponding {@link Increment}
    * @throws InvalidConfigurationException if there is an invalid ref attribute
    */
-  public Map<String, Increment> loadSpecificIncrement(Map<String, Template> templates, Trigger trigger,
+  private Map<String, Increment> loadSpecificIncrement(Map<String, Template> templates, Trigger trigger,
       String incrementName) throws InvalidConfigurationException {
 
     Map<String, Increment> increments = new HashMap<>();
@@ -661,8 +569,12 @@ public class TemplatesConfigurationReader {
    */
   private com.devonfw.cobigen.impl.config.TemplatesConfiguration loadExternalConfig(String refTrigger) {
 
-    Trigger extTrigger = getExternalTrigger(refTrigger);
-    return this.configurationHolder.readTemplatesConfiguration(extTrigger);
+    TemplatesConfiguration templatesConfiguration = this.configurationReader.readTemplatesConfiguration(refTrigger);
+    if (templatesConfiguration == null) {
+      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
+          "Invalid trigger reference. No trigger with id '" + refTrigger + "' was found on your context.xml!");
+    }
+    return templatesConfiguration;
   }
 
   /**
@@ -741,32 +653,13 @@ public class TemplatesConfigurationReader {
   }
 
   /**
-   * Tries to read the context.xml file for finding and returning an external trigger
-   *
-   * @param triggerToSearch string containing the name of the trigger to search
-   * @return the found external trigger
-   */
-  private Trigger getExternalTrigger(String triggerToSearch) {
-
-    ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
-        this.configurationHolder.readContextConfiguration().getConfigurationPath());
-    Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
-    Trigger trig = triggers.get(triggerToSearch);
-    if (trig == null) {
-      throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),
-          "Invalid external ref, no trigger '" + triggerToSearch + "' was found on your context.xml!");
-    }
-    return trig;
-  }
-
-  /**
    * Tries to find an increment on a list of increments and return it
    *
    * @param increment list of increments
    * @param ref name of the increment to get
    * @return Increment if it was found, null if no increment with that name was found
    */
-  public com.devonfw.cobigen.impl.config.entity.io.Increment getSpecificIncrement(
+  private com.devonfw.cobigen.impl.config.entity.io.Increment getSpecificIncrement(
       List<com.devonfw.cobigen.impl.config.entity.io.Increment> increment, String ref) {
 
     for (com.devonfw.cobigen.impl.config.entity.io.Increment inc : increment) {
@@ -777,4 +670,11 @@ public class TemplatesConfigurationReader {
     return null;
   }
 
+  public TemplatesConfiguration read(Trigger trigger) {
+
+    Map<String, Template> templates = loadTemplates(trigger);
+    Map<String, Increment> increments = loadIncrements(templates, trigger);
+    return new TemplatesConfiguration(trigger, increments, templates, getTemplateEngine(),
+        this.configFilePath.getParent());
+  }
 }

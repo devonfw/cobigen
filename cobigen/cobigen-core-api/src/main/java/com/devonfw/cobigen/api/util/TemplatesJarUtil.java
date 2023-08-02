@@ -112,14 +112,13 @@ public class TemplatesJarUtil {
 
     HttpURLConnection conn;
     try {
-      conn = initializeConnection(downloadURL.toString());
+      conn = initializeConnection(downloadURL);
       try (InputStream inputStream = conn.getInputStream()) {
 
         fileName = conn.getURL().getFile().substring(conn.getURL().getFile().lastIndexOf("/") + 1);
         Path file = downloaded.resolve(fileName);
-        Path targetPath = file;
         if (!Files.exists(file)) {
-          Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+          Files.copy(inputStream, file, StandardCopyOption.REPLACE_EXISTING);
         }
       }
       conn.disconnect();
@@ -133,14 +132,13 @@ public class TemplatesJarUtil {
   /**
    * Downloads the latest devon4j templates
    *
-   * @param isDownloadSource true if downloading source jar file
+   * @param isDownloadSource   true if downloading source jar file
    * @param templatesDirectory directory where the templates jar are located
-   * @return fileName Name of the file downloaded
    */
-  public static String downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory) {
+  public static void downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory) {
 
-    return downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
-        TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
+    downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
+      TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
   }
 
   /**
@@ -203,8 +201,8 @@ public class TemplatesJarUtil {
     HashSet<MavenCoordinate> existingTemplates = new HashSet<>();
 
     for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
-      try {
-        if (Files.list(path).anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
+      try (Stream<Path> directory = Files.list(path)){
+        if (directory.anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
           existingTemplates.add(mavenCoordinate);
         }
       } catch (IOException e) {
@@ -233,7 +231,7 @@ public class TemplatesJarUtil {
 
     String fileName = jarFile.getPath().substring(jarFile.getPath().lastIndexOf(File.separator) + 1);
     Matcher m = matchJarVersion(fileName, isDownloadSource);
-    if (m.find() == false || m.group(2).isEmpty()) {
+    if (!m.find() || m.group(2).isEmpty()) {
       // Maybe the jar is corrupted, let's update it
       return true;
     } else {
@@ -247,7 +245,7 @@ public class TemplatesJarUtil {
         m = matchJarVersion(latestJar, isDownloadSource);
       }
 
-      if (m.find() == false || m.group(2).isEmpty()) {
+      if (!m.find() || m.group(2).isEmpty()) {
         return false;
       }
       // Split the version number because it contains dots e.g. 3.1.0
@@ -255,7 +253,7 @@ public class TemplatesJarUtil {
 
       for (int i = 0; i < versionNumbersLatest.length; i++) {
         if (versionNumbersLatest[i] > versionNumbers[i]) {
-          if (isDownloadSource == false) {
+          if (!isDownloadSource) {
             // we now need to download the latest sources
             downloadLatestDevon4jTemplates(true, templatesDirectory);
           }
@@ -285,8 +283,7 @@ public class TemplatesJarUtil {
     }
 
     Pattern p = Pattern.compile(regex);
-    Matcher m = p.matcher(lowercaseName);
-    return m;
+    return p.matcher(lowercaseName);
   }
 
   /**
@@ -318,10 +315,9 @@ public class TemplatesJarUtil {
   public static List<Path> getJarFiles(Path templatesDirectory) {
 
     ArrayList<Path> jarPaths = new ArrayList<>();
-
     try (Stream<Path> files = Files.list(templatesDirectory)) {
       files.forEach(path -> {
-        if (path.toString().endsWith(".jar")) {
+        if (path.endsWith(".jar")) {
           jarPaths.add(path);
         }
       });
@@ -329,12 +325,7 @@ public class TemplatesJarUtil {
       throw new CobiGenRuntimeException("Could not read configuration root directory.", e);
     }
 
-    if (!jarPaths.isEmpty()) {
-      return jarPaths;
-    } else {
-      // There are no jars downloaded
-      return jarPaths;
-    }
+    return jarPaths;
   }
 
   /**

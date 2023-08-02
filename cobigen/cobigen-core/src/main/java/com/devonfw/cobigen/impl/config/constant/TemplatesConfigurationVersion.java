@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /** Version steps of the templates configuration. */
-public enum TemplatesConfigurationVersion {
+public enum TemplatesConfigurationVersion implements ConfigurationVersionEnum {
 
   /**
    * Initial release.

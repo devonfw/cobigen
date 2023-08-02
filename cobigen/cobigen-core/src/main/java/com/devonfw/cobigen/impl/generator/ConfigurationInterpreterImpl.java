@@ -99,14 +99,14 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
   @Override
   public Path resolveTemplateDestinationPath(Path targetRootPath, TemplateTo template, Object input) {
 
-    Trigger trigger = this.configurationHolder.readContextConfiguration().getTrigger(template.getTriggerId());
+    Trigger trigger = this.configurationHolder.getContextConfiguration().getTrigger(template.getTriggerId());
     InputValidator.validateTrigger(trigger);
 
     TriggerInterpreter triggerInterpreter = PluginRegistry.getTriggerInterpreter(trigger.getType());
     // the GenerationReportTo won't be further processed
     Variables variables = new ContextVariableResolver(input, trigger).resolveVariables(triggerInterpreter,
         new GenerationReportTo());
-    Template templateEty = this.configurationHolder.readTemplatesConfiguration(trigger).getTemplate(template.getId());
+    Template templateEty = this.configurationHolder.getTemplatesConfiguration(trigger).getTemplate(template.getId());
     try {
       String resolvedDestinationPath = new PathExpressionResolver(variables)
           .evaluateExpressions(templateEty.getUnresolvedTargetPath());
@@ -168,17 +168,7 @@ public class ConfigurationInterpreterImpl implements ConfigurationInterpreter {
     List<TemplatesConfiguration> templateConfigurations = Lists.newLinkedList();
 
     for (Trigger trigger : this.triggerMatchingEvaluator.getMatchingTriggers(matcherInput)) {
-
-      if (this.configurationHolder.isTemplateSetConfiguration()) {
-        Map<Path, TemplatesConfiguration> map = this.configurationHolder.getTemplatesConfigurations()
-            .get(trigger.getId());
-
-        if (map != null) {
-          templateConfigurations.addAll(map.values());
-        }
-      }
-
-      TemplatesConfiguration templatesConfiguration = this.configurationHolder.readTemplatesConfiguration(trigger);
+      TemplatesConfiguration templatesConfiguration = this.configurationHolder.getTemplatesConfiguration(trigger);
       if (templatesConfiguration != null) {
         if (!templateConfigurations.contains(templatesConfiguration)) {
           templateConfigurations.add(templatesConfiguration);

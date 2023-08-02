@@ -67,7 +67,6 @@ public class CobiGenFactory {
   /**
    * Creates a new {@link CobiGen} while searching a valid configuration at the given path
    *
-   * @param configFileOrFolder the root folder containing the context.xml and all templates, configurations etc.
    * @return a new instance of {@link CobiGen}
    * @throws InvalidConfigurationException if the context configuration could not be read properly.
    */
@@ -95,8 +94,6 @@ public class CobiGenFactory {
     BeanFactory beanFactory = new BeanFactory();
     beanFactory.addManuallyInitializedBean(configurationHolder);
     CobiGen createBean = beanFactory.createBean(CobiGen.class);
-    // Notifies all plugins of new template root path
-    PluginRegistry.notifyPlugins(configurationHolder.getConfigurationPath());
 
     if (!allowMonolithicConfiguration && !configurationHolder.isTemplateSetConfiguration()) {
       throw new DeprecatedMonolithicConfigurationException(Paths.get(configFileOrFolder));
@@ -106,7 +103,7 @@ public class CobiGenFactory {
       ConfigurationProperties config = configurationHolder.getConfigurationProperties();
       // if installed template sets property was not empty, install found template sets
       if (!config.getTemplateSetsInstalled().isEmpty()) {
-        Path templatesLocation = configurationHolder.getConfigurationPath();
+        Path templatesLocation = Paths.get(configurationHolder.getConfigurationLocation());
         List<String> downloadUrls = ArtifactRetriever.retrieveTemplateSetJarDownloadURLs(config.getGroupIds(),
             config.getTemplateSetsInstalled());
         for (String downloadUrl : downloadUrls) {
