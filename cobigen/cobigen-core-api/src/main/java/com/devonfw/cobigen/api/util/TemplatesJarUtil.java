@@ -317,7 +317,7 @@ public class TemplatesJarUtil {
     ArrayList<Path> jarPaths = new ArrayList<>();
     try (Stream<Path> files = Files.list(templatesDirectory)) {
       files.forEach(path -> {
-        if (path.endsWith(".jar")) {
+        if (path.toString().endsWith(".jar")) {
           jarPaths.add(path);
         }
       });
