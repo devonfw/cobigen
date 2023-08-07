@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 
 import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.impl.config.upgrade.TemplateSetUpgrader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
@@ -94,17 +95,18 @@ public class TemplateSetUpgraderTest extends AbstractUnitTest {
     FileUtils.copyDirectory(new File(testFileRootPath + "valid-2.1/templates"), currentHome.toFile());
     Path templateLocation = currentHome.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
 
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, currentHome.toString()).execute(() -> {
-      TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
-      templateSetUpgrader.upgradeTemplatesToTemplateSets(templateLocation);
+    CobiGenPaths.setCobiGenHomeTestPath(currentHome);
 
-      Path templateSetsPath = templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
-      Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
-      Path backup = templateLocation.getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
-      assertThat(templateSetsPath).exists();
-      assertThat(templateSetsAdapted).exists();
-      assertThat(backup).exists();
-    });
+    TemplateSetUpgrader templateSetUpgrader = new TemplateSetUpgrader();
+    templateSetUpgrader.upgradeTemplatesToTemplateSets(templateLocation);
+
+    Path templateSetsPath = templateLocation.getParent().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER);
+    Path templateSetsAdapted = templateSetsPath.resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path backup = templateLocation.getParent().resolve(ConfigurationConstants.BACKUP_FOLDER);
+    assertThat(templateSetsPath).exists();
+    assertThat(templateSetsAdapted).exists();
+    assertThat(backup).exists();
+
   }
 
   /**
