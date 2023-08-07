@@ -42,8 +42,8 @@ public class TemplateSetReader extends JaxbDeserializer {
 //  private final TemplateSetConfigurationManager templateSetConfigurationManager = new TemplateSetConfigurationManager();
 
 
-  TemplateSetReader(Path rootDir, ConfigurationReader configurationReader) {
-    this.templateSetFile = rootDir.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+  public TemplateSetReader(Path rootDir, ConfigurationReader configurationReader) {
+    this.templateSetFile = rootDir.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER).resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
     this.configurationReader = configurationReader;
     deserializeConfigFile();
   }
