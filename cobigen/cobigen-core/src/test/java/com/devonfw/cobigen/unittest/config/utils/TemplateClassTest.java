@@ -37,7 +37,7 @@ public class TemplateClassTest extends AbstractUnitTest {
     Path path = Paths.get(TEST_FILES_ROOT_PATH + filename);
 
     List<Class<?>> classes = ConfigurationClassLoaderUtil.resolveUtilClasses(new ConfigurationHolder(path.toUri()),
-        null);
+        null, null);
     assertThat(classes.get(0).getName()).contains("IDGenerator");
   }
 
@@ -57,7 +57,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         getClass().getClassLoader());
 
     List<Class<?>> classes = ConfigurationClassLoaderUtil.resolveUtilClasses(new ConfigurationHolder(path.toUri()),
-        inputClassLoader);
+        inputClassLoader, null);
     assertThat(classes).isNotEmpty();
     assertThat(classes.get(0).getName()).contains("IDGenerator");
   }
@@ -77,7 +77,7 @@ public class TemplateClassTest extends AbstractUnitTest {
         new URL[] { pathArchive.toUri().toURL(), pathFolder.toUri().toURL() }, getClass().getClassLoader());
 
     List<Class<?>> classes = ConfigurationClassLoaderUtil
-        .resolveUtilClasses(new ConfigurationHolder(pathFolder.toUri()), inputClassLoader);
+        .resolveUtilClasses(new ConfigurationHolder(pathFolder.toUri()), inputClassLoader, null);
     assertThat(classes.get(0).getName()).contains("IDGenerator");
   }
 

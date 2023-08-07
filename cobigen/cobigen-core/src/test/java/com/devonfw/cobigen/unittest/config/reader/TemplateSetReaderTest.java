@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.devonfw.cobigen.impl.config.ContextConfiguration;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -54,7 +56,7 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     // when
     assertThatThrownBy(() -> {
 
-      new TemplateSetConfiguration(TEST_FILE_ROOT_PATH.resolve("faulty"));
+      new ContextConfiguration(null, null, TEST_FILE_ROOT_PATH.resolve("faulty"));
 
     }).isInstanceOf(InvalidConfigurationException.class)
         .hasMessage(TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath() + ":\n"
@@ -74,7 +76,7 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
 
     assertThatThrownBy(() -> {
 
-      new TemplateSetConfiguration(INVALID_CONFIGURATION_PATH);
+      new ContextConfiguration(null, null,INVALID_CONFIGURATION_PATH);
 
     }).isInstanceOf(InvalidConfigurationException.class).hasMessage(INVALID_CONFIGURATION_PATH.toAbsolutePath() + ":\n"
         + "Could not find any template-set configuration file in the given folder.");
@@ -96,7 +98,7 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_duplicated");
     FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+      ContextConfiguration templateSetConfiguration = new ContextConfiguration(null, null,
           folder.toPath().resolve("template-sets"));
       // TODO add check for proper exception message
     });
@@ -115,9 +117,9 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_downloaded/");
     FileUtils.copyDirectory(templateSetPath.toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+      ContextConfiguration templateSetConfiguration = new ContextConfiguration(null, null,
           folder.toPath().resolve("template-sets"));
-      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(1);
+      assertThat(templateSetConfiguration.getTriggers().size()).isEqualTo(1);
     });
   }
 
@@ -136,10 +138,10 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     FileUtils.copyDirectory(templateSetPath.toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
 
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+      ContextConfiguration templateSetConfiguration = new ContextConfiguration(null, null,
           folder.toPath().resolve("template-sets"));
 
-      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(3);
+      assertThat(templateSetConfiguration.getTriggers().size()).isEqualTo(3);
     });
   }
 
@@ -161,10 +163,10 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
 
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+      ContextConfiguration templateSetConfiguration = new ContextConfiguration(null, null,
           folder.toPath().resolve("template-sets"));
 
-      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(3);
+      assertThat(templateSetConfiguration.getTriggers().size()).isEqualTo(3);
     });
   }
 

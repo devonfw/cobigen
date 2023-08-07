@@ -161,8 +161,9 @@ public class GenerationProcessorImpl implements GenerationProcessor {
       }
     }
 
+    Collection<TemplateTo> templatesToBePrepended = flatten(generableArtifacts);
     progressCallback.accept("Prepend Templates Classloader", 10);
-    inputProjectClassLoader = prependTemplatesClassloader(inputProjectClassLoader);
+    inputProjectClassLoader = prependTemplatesClassloader(inputProjectClassLoader, templatesToBePrepended);
 
     // initialize
     this.forceOverride = forceOverride;
@@ -255,17 +256,26 @@ public class GenerationProcessorImpl implements GenerationProcessor {
    * will even make sure the code is compiled, if the templateFolder does not point to a jar, but maven project
    *
    * @param inputProjectClassLoader an existing classloader or null
+   * @param templatesToBePrepended
    * @return the combined classloader for the templates with classLoader argument as parent or null if both arguments
    *         passed as null
    */
-  private ClassLoader prependTemplatesClassloader(ClassLoader inputProjectClassLoader) {
+  private ClassLoader prependTemplatesClassloader(ClassLoader inputProjectClassLoader,
+      Collection<TemplateTo> templatesToBePrepended) {
 
     Path configLocation = Paths.get(this.configurationHolder.getConfigurationLocation());
     ClassLoader combinedClassLoader = inputProjectClassLoader != null ? inputProjectClassLoader
         : Thread.currentThread().getContextClassLoader();
 
-    if (!this.configurationHolder.getUtilsLocation().isEmpty()) {
-      List<Path> utilsLocations = this.configurationHolder.getUtilsLocation();
+    List<Path> utilsLocations = new ArrayList<>();
+    for (TemplateTo template : templatesToBePrepended) {
+      Trigger trigger = this.configurationHolder.getContextConfiguration().getTrigger(template.getTriggerId());
+      if (!this.configurationHolder.getUtilsLocation(trigger).isEmpty()) {
+        utilsLocations = this.configurationHolder.getUtilsLocation(trigger);
+      }
+    }
+
+    if (!utilsLocations.isEmpty()) {
       Path cpCacheFile = null;
       try {
         List<URL> urlList = new ArrayList<>();
