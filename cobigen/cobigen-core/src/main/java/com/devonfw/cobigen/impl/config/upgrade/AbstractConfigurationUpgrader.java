@@ -27,12 +27,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import com.devonfw.cobigen.api.constants.BackupPolicy;
+import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.CobiGenRuntimeException;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.api.util.ExceptionUtil;
 import com.devonfw.cobigen.api.util.JvmUtil;
+import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.exceptions.BackupFailedException;
 import com.google.common.collect.Lists;
 
@@ -54,7 +56,7 @@ import jakarta.xml.bind.Unmarshaller;
 public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?>> {
 
   /** Logger instance. */
-  private static final Logger LOG = LoggerFactory.getLogger(AbstractConfigurationUpgrader.class);
+  protected static final Logger LOG = LoggerFactory.getLogger(AbstractConfigurationUpgrader.class);
 
   /** All enum values from the versions {@link Enum} */
   private VERSIONS_TYPE[] versions;
@@ -79,6 +81,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    * Package prefix generated JAXB classes of the configurations (analogous to the pom.xml specification)
    */
   private static final String JAXB_PACKAGE_PREFIX = "com.devonfw.cobigen.impl.config.entity.io";
+
+  /**
+   * Package prefix generated JAXB classes for the template set configurations (analogous to the pom.xml specification)
+   */
+  private static final String TS_JAXB_PACKAGE_PREFIX = "com.devonfw.cobigen.impl.tsconfig.entity.io";
 
   /**
    * Creates a new instance for the abstract implementation of an configuration upgrader.
@@ -302,7 +309,7 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
       throw new InvalidConfigurationException(configurationFile.toUri().toString(),
           StringUtils.capitalize(this.configurationName) + " does not match any current or legacy schema definitions.");
     } else {
-      VERSIONS_TYPE latestVersion = versionsList.get(0);
+      VERSIONS_TYPE latestVersion = versionsList.get(versionsList.size() - 1);
       // increasing iteration of versions
       for (int i = 0; i < versionsList.size(); i++) {
         if (validatedVersion == latestVersion) {
@@ -327,9 +334,20 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
               try (OutputStream out = Files.newOutputStream(result.getConfigurationPath())) {
                 JAXB.marshal(result.getResultConfigurationJaxbRootNode(), out);
               }
-
-              // implicitly check upgrade step
-              VERSIONS_TYPE currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
+              VERSIONS_TYPE currentVersion;
+              if (result.getResultConfigurationJaxbRootNode().getClass()
+                  .equals(com.devonfw.cobigen.impl.tsconfig.entity.io.v1_0.TemplateSetConfiguration.class)) {
+                // changed class from context to templateSet, field has to be updated
+                this.configurationFilename = ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME;
+                this.configurationJaxbRootNode = TemplateSetConfiguration.class;
+                this.configurationName = "TemplateSet Configuration";
+                this.configurationXsdFilename = "templateSetConfiguration.xsd";
+                currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath(), true,
+                    versionsList.get(0)); // versionsList.get is a little hack to get v1 for template-set configurations
+              } else {
+                // implicitly check upgrade step
+                currentVersion = resolveLatestCompatibleSchemaVersion(result.getConfigurationPath());
+              }
               // if CobiGen does not understand the upgraded file... throw exception
               if (currentVersion == null) {
                 throw new CobiGenRuntimeException("An error occurred while upgrading " + this.configurationName
@@ -421,10 +439,11 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
    */
   private Class<?> getJaxbConfigurationClass(VERSIONS_TYPE lv) throws ClassNotFoundException {
 
-    Class<?> configurationClass = getClass().getClassLoader()
-        .loadClass(AbstractConfigurationUpgrader.JAXB_PACKAGE_PREFIX + "." + lv.name() + "."
-            + this.configurationJaxbRootNode.getSimpleName());
-    return configurationClass;
+    String prefix = this.configurationXsdFilename.equals("templateSetConfiguration.xsd")
+        ? AbstractConfigurationUpgrader.TS_JAXB_PACKAGE_PREFIX
+        : AbstractConfigurationUpgrader.JAXB_PACKAGE_PREFIX;
+    return getClass().getClassLoader()
+        .loadClass(prefix + "." + lv.name() + "." + this.configurationJaxbRootNode.getSimpleName());
   }
 
   /**
@@ -447,12 +466,21 @@ public abstract class AbstractConfigurationUpgrader<VERSIONS_TYPE extends Enum<?
     if (JvmUtil.isRunningJava9OrLater()) {
       Thread.currentThread().setContextClassLoader(JAXBContext.class.getClassLoader());
     }
-
+    StreamSource[] schemaArray;
+    System.out.println("Meine Version " + lv);
+    if (this.configurationXsdFilename.equals("templateSetConfiguration.xsd")) {
+      schemaArray = new StreamSource[] {
+      new StreamSource(getClass().getResourceAsStream("/schema/v5.0/templatesConfiguration.xsd")),
+      new StreamSource(getClass().getResourceAsStream("/schema/v3.0/contextConfiguration.xsd")), new StreamSource(
+          getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)) };
+    } else {
+      schemaArray = new StreamSource[] { new StreamSource(
+          getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)) };
+    }
     try {
       Unmarshaller unmarschaller = JAXBContext.newInstance(jaxbConfigurationClass).createUnmarshaller();
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      Schema schema = schemaFactory.newSchema(new StreamSource(
-          getClass().getResourceAsStream("/schema/" + lv.toString() + "/" + this.configurationXsdFilename)));
+      Schema schema = schemaFactory.newSchema(schemaArray);
       unmarschaller.setSchema(schema);
       Object rootNode;
       try (InputStream in = Files.newInputStream(configurationFile)) {

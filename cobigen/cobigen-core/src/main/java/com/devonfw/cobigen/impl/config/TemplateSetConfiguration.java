@@ -60,8 +60,6 @@ public class TemplateSetConfiguration {
   /** The reader to read the template-set.xml files */
   private TemplateSetConfigurationReader templateSetConfigurationReader;
 
-  private ConfigurationHolder configurationHolder;
-
   /**
    * Map of the root template folders distinguished by their trigger ID
    */
@@ -146,17 +144,17 @@ public class TemplateSetConfiguration {
     TemplateFolder templateFolder = this.templateSetConfigurationReader.getRootTemplateFolder();
 
     TemplatesConfigurationReader templatesConfigurationReader = new TemplatesConfigurationReader(
-        templatesConfigurationStatic, templateFolder, this.configurationHolder, templateSetFile);
+        templatesConfigurationStatic, templateFolder, null, templateSetFile);
 
     ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(contextConfigurationStatic,
         templateSetFile);
 
-    Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers();
+    Map<String, Trigger> trigger = contextConfigurationReader.loadTriggers(true);
 
     // uses the 1st element because a template-set has only one trigger
     Trigger activeTrigger = trigger.get(trigger.keySet().toArray()[0]);
 
-    Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
+      Map<Path, Path> configLocations = this.templateSetConfigurationReader.getConfigLocations();
     Path templateSetRootFolder = configLocations.get(templateSetFile);
     this.utilFolders.put(activeTrigger.getId(), templateSetRootFolder);
 

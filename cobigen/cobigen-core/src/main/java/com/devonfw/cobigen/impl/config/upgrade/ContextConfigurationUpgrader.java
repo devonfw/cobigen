@@ -10,6 +10,7 @@ import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.NotYetSupportedException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
+import com.devonfw.cobigen.impl.tsconfig.entity.io.v1_0.TemplateSetConfiguration;
 
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
@@ -61,7 +62,6 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         upgradedConfig_2_1 = mapper.map(previousConfigurationRootNode,
             com.devonfw.cobigen.impl.config.entity.io.v2_1.ContextConfiguration.class);
         upgradedConfig_2_1.setVersion(new BigDecimal("2.1"));
-
         result.setResultConfigurationJaxbRootNodeAndPath(upgradedConfig_2_1,
             configurationRoot.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME));
         results.add(result);
@@ -69,11 +69,12 @@ public class ContextConfigurationUpgrader extends AbstractConfigurationUpgrader<
         break;
       case v2_1:
         TemplateSetUpgrader templatesSetUpgrader = new TemplateSetUpgrader();
-        Map<com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration, Path> contextMap = templatesSetUpgrader
-            .upgradeTemplatesToTemplateSets(templatesLocation);
-        for (com.devonfw.cobigen.impl.config.entity.io.v3_0.ContextConfiguration context : contextMap.keySet()) {
+        Map<TemplateSetConfiguration, Path> templateSetMap = templatesSetUpgrader
+            .upgradeTemplatesToTemplateSetsV6(templatesLocation);
+        for (TemplateSetConfiguration templateSetConfiguration : templateSetMap.keySet()) {
           ConfigurationUpgradeResult tempResult = new ConfigurationUpgradeResult();
-          tempResult.setResultConfigurationJaxbRootNodeAndPath(context, contextMap.get(context));
+          tempResult.setResultConfigurationJaxbRootNodeAndPath(templateSetConfiguration,
+              templateSetMap.get(templateSetConfiguration));
           results.add(tempResult);
         }
         break;

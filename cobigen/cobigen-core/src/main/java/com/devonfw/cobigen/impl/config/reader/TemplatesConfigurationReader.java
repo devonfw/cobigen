@@ -750,7 +750,7 @@ public class TemplatesConfigurationReader {
 
     ContextConfigurationReader contextConfigurationReader = new ContextConfigurationReader(
         this.configurationHolder.readContextConfiguration().getConfigurationPath());
-    Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers();
+    Map<String, Trigger> triggers = contextConfigurationReader.loadTriggers(this.configurationHolder.isTemplateSetConfiguration());
     Trigger trig = triggers.get(triggerToSearch);
     if (trig == null) {
       throw new InvalidConfigurationException(this.configFilePath.toUri().toString(),

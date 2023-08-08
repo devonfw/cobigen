@@ -94,6 +94,10 @@ public class TemplateConfigurationUpgrader extends AbstractConfigurationUpgrader
         results.add(result);
       }
         break;
+      case v5_0: { // to 5.0
+        // upgrade from v5 to v6 will be handles by context configuration upgrader cause of files merge
+      }
+        break;
       default:
         throw new NotYetSupportedException("An upgrade of the templates configuration from version " + source
             + " to a newer one is currently not supported.");

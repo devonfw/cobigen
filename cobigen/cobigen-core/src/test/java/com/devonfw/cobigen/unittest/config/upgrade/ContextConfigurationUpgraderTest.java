@@ -19,7 +19,9 @@ import org.junit.rules.TemporaryFolder;
 import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
+import com.devonfw.cobigen.impl.config.constant.TemplateSetConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
+import com.devonfw.cobigen.impl.config.upgrade.TemplateSetConfigurationUpgrader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 /**
@@ -80,23 +82,24 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests the valid upgrade of a context configuration from version v2.1 to v3.0. Please make sure that
-   * .../ContextConfigurationUpgraderTest/valid-v3.0 exists
+   * Tests the valid upgrade of a context configuration from version v2.1 to template set v1.This also includes a merge
+   * of a templateConfiguration v5.0 into a templateSetConfigration
    *
    * @throws Exception test fails
    */
   @Test
-  public void testCorrectUpgrade_v2_1_TO_v3_0() throws Exception {
-
+  public void testCorrectUpgrade_v2_1_TO_TSv1_0() throws Exception {
 
     File cobigen = this.tempFolder.newFolder(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, cobigen.toPath().toString()).execute(() -> {
       // preparation
       ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_1;
-      ContextConfigurationVersion targetVersion = ContextConfigurationVersion.v3_0;
+      ContextConfigurationVersion latestVersion = ContextConfigurationVersion.v3_0;
+      TemplateSetConfigurationVersion targetVersion = TemplateSetConfigurationVersion.v1_0;
+
       String currentVersionPath = "valid-2.1";
-      String targetVersionPath = "valid-v3.0";
+      String targetVersionPathTS = "valid-v1.0";
 
       Path templates = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
           .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
@@ -110,10 +113,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
       ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(context, currentVersion);
       assertThat(version).as("Source Version").isEqualTo(currentVersion);
 
-      sut.upgradeConfigurationToLatestVersion(templates, BackupPolicy.ENFORCE_BACKUP, targetVersion);
-      // copy resources again to check if backup was successful
-      String pom = "templates/CobiGen_Templates/pom.xml";
-      FileUtils.copyDirectory(new File(templateTestFileRootPath + File.separator + currentVersionPath), cobigen);
+      sut.upgradeConfigurationToLatestVersion(templates, BackupPolicy.ENFORCE_BACKUP, latestVersion);
 
       Path newTemplatesLocation = cobigen.toPath().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
           .resolve(ConfigurationConstants.ADAPTED_FOLDER);
@@ -122,17 +122,23 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
           .resolve(ConfigurationConstants.COBIGEN_TEMPLATES).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
           .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 
-      for (String s : newTemplatesLocation.toFile().list()) {
-        Path newContextPath = newTemplatesLocation.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+      assertThat(backupContextPath).exists();
+      assertThat(templates).doesNotExist();
 
-        version = sut.resolveLatestCompatibleSchemaVersion(newContextPath, targetVersion);
-        assertThat(version).as("Target version").isEqualTo(targetVersion);
+      for (String templateName : newTemplatesLocation.toFile().list()) {
+        Path newContextPath = newTemplatesLocation.resolve(templateName)
+            .resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER);
 
-        newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+        TemplateSetConfigurationUpgrader tscU = new TemplateSetConfigurationUpgrader();
+        TemplateSetConfigurationVersion tscVersion = tscU.resolveLatestCompatibleSchemaVersion(newContextPath,
+            targetVersion);
+        assertThat(tscVersion).as("Target version").isEqualTo(targetVersion);
+
+        newContextPath = newContextPath.resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
         XMLUnit.setIgnoreWhitespace(true);
         try (
-            Reader firstReader = new FileReader(contextTestFileRootPath + File.separator + targetVersionPath
-                + File.separator + s + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+            Reader firstReader = new FileReader(contextTestFileRootPath + File.separator + targetVersionPathTS
+                + File.separator + templateName + File.separator + ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
             Reader secondReader = new FileReader(newContextPath.toFile())) {
           new XMLTestCase() {
           }.assertXMLEqual(firstReader, secondReader);
@@ -180,7 +186,7 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   }
 
   /**
-   * Tests if v3.0 context configuration is compatible to v3.0 schema.
+   * Tests if v6.0 context configuration is compatible to v6.0 schema.
    *
    * @throws Exception test fails
    */
@@ -189,23 +195,20 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
 
     // preparation
     ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v3_0;
-    File targetConfig = new File(contextTestFileRootPath + "/valid-" + currentVersion);
+    File context = new File(contextTestFileRootPath + "/valid-" + currentVersion + "/context.xml");
 
-    for (File context : targetConfig.listFiles()) {
-      ContextConfigurationVersion version = new ContextConfigurationUpgrader()
-          .resolveLatestCompatibleSchemaVersion(context.toPath(), currentVersion);
-      assertThat(version).isEqualTo(currentVersion);
-    }
+    ContextConfigurationVersion version = new ContextConfigurationUpgrader()
+        .resolveLatestCompatibleSchemaVersion(context.toPath(), currentVersion);
+    assertThat(version).isEqualTo(currentVersion);
   }
 
   /**
-   * Tests if v3.0 context configuration schema is not compatible to v2.1 configuration file.
+   * Tests if v2.1 context configuration schema is not compatible to v6.0 configuration file.
    *
    * @throws Exception test fails
    */
   @Test
   public void testV2_1IsIncompatibleToV3_0Schema() throws Exception {
-
 
     // preparation
     ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_1;

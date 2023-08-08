@@ -8,9 +8,10 @@ import com.google.common.collect.Maps;
 public enum TemplateSetConfigurationVersion {
 
   /**
-   * Initial release. Merges the content of the context.xml and the templates.xml into a new template-set.xml file.
+   * Initial release. Merges the content of the context.xml v3 and the templates.xml v5 into a new template-set.xml
+   * file.
    */
-  v6_0(6f, false);
+  v1_0(1f, false);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;
