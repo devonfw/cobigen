@@ -165,20 +165,18 @@ public class ResourcesPluginUtil {
    */
   public static String downloadJar(boolean isDownloadSource) throws MalformedURLException, IOException {
 
-    String fileName = "";
-
     ProgressMonitorDialog progressMonitor = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
     progressMonitor.open();
     progressMonitor.getProgressMonitor().beginTask("downloading latest templates...", 0);
 
     File templatesDirectory = getTemplatesDirectory();
     try {
-      fileName = TemplatesJarUtil.downloadLatestDevon4jTemplates(isDownloadSource, templatesDirectory);
+      TemplatesJarUtil.downloadLatestDevon4jTemplates(isDownloadSource, templatesDirectory);
     } finally {
       progressMonitor.close();
     }
 
-    return fileName;
+    return templatesDirectory.toString();
   }
 
   /**
