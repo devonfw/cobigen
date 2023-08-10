@@ -1,22 +1,5 @@
 package com.devonfw.cobigen.impl.config.reader;
 
-import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
-import com.devonfw.cobigen.api.util.ExceptionUtil;
-import com.devonfw.cobigen.api.util.JvmUtil;
-import com.devonfw.cobigen.impl.config.constant.ConfigurationVersionEnum;
-import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
-import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.UnmarshalException;
-import jakarta.xml.bind.Unmarshaller;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -24,12 +7,33 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.ExceptionUtil;
+import com.devonfw.cobigen.api.util.JvmUtil;
+import com.devonfw.cobigen.impl.config.constant.ConfigurationVersionEnum;
+import com.devonfw.cobigen.impl.config.constant.MavenMetadata;
+import com.devonfw.cobigen.impl.config.versioning.VersionValidator;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshalException;
+import jakarta.xml.bind.Unmarshaller;
+
 public abstract class JaxbDeserializer {
 
   /**
    * Reads the templates configuration.
    */
-  <R, E extends ConfigurationVersionEnum> R deserialize(Path file, Class<R> deserializeTo, Class<E> versionEnum, String rootNodeName) {
+  <R, E extends ConfigurationVersionEnum> R deserialize(Path file, Class<R> deserializeTo, Class<E> versionEnum,
+      String rootNodeName) {
 
     // workaround to make JAXB work in OSGi context by
     // https://github.com/ControlSystemStudio/cs-studio/issues/2530#issuecomment-450991188
@@ -48,14 +52,15 @@ public abstract class JaxbDeserializer {
         BigDecimal configVersion = (BigDecimal) rootNode.getClass().getDeclaredMethod("getVersion").invoke(rootNode);
         if (configVersion == null) {
           throw new InvalidConfigurationException(file.toUri().toString(),
-            "The required 'version' attribute of node \""+ rootNodeName + "\" has not been set");
+              "The required 'version' attribute of node \"" + rootNodeName + "\" has not been set");
         } else {
-          VersionValidator validator = new VersionValidator(VersionValidator.Type.TEMPLATES_CONFIGURATION, MavenMetadata.VERSION);
+          VersionValidator validator = new VersionValidator(VersionValidator.Type.TEMPLATES_CONFIGURATION,
+              MavenMetadata.VERSION);
           validator.validate(configVersion.floatValue());
         }
       } else {
         throw new InvalidConfigurationException(file.toUri().toString(),
-          "Unknown Root Node. Use \""+ rootNodeName + "\" as root Node");
+            "Unknown Root Node. Use \"" + rootNodeName + "\" as root Node");
       }
 
       // If we reach this point, the configuration version and root node has been validated.
@@ -65,9 +70,9 @@ public abstract class JaxbDeserializer {
 
       E latestConfigurationVersion = versionEnum.cast(versionEnum.getDeclaredMethod("getLatest").invoke(null));
       try (
-        InputStream schemaStream = getClass()
-          .getResourceAsStream("/schema/" + latestConfigurationVersion + "/"+rootNodeName+".xsd");
-        InputStream configInputStream = Files.newInputStream(file)) {
+          InputStream schemaStream = getClass()
+              .getResourceAsStream("/schema/" + latestConfigurationVersion + "/" + rootNodeName + ".xsd");
+          InputStream configInputStream = Files.newInputStream(file)) {
 
         Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
         unmarschaller.setSchema(schema);
@@ -82,7 +87,7 @@ public abstract class JaxbDeserializer {
         message = parseCause.getMessage();
       }
       throw new InvalidConfigurationException(file.toUri().toString(),
-        "Could not parse configuration file:\n" + message, e);
+          "Could not parse configuration file:\n" + message, e);
     } catch (SAXException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       // Should never occur. Programming error.
       throw new IllegalStateException("Could not parse configuration schema. Please state this as a bug.");
@@ -90,8 +95,8 @@ public abstract class JaxbDeserializer {
       // The version number is currently the only xml value which will be parsed to a number data type
       // So provide help
       throw new InvalidConfigurationException(file.toUri().toString(),
-        "Invalid version number defined. The version of the configuration should consist of 'major.minor' version.",
-        e);
+          "Invalid version number defined. The version of the configuration should consist of 'major.minor' version.",
+          e);
     } catch (IOException e) {
       throw new InvalidConfigurationException(file.toUri().toString(), "Could not read configuration file.", e);
     } finally {
