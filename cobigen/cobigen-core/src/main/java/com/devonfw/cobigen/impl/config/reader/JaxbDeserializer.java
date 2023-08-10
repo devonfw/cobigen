@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -69,12 +69,10 @@ public abstract class JaxbDeserializer {
       SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
       E latestConfigurationVersion = versionEnum.cast(versionEnum.getDeclaredMethod("getLatest").invoke(null));
-      try (
-          InputStream schemaStream = getClass()
-              .getResourceAsStream("/schema/" + latestConfigurationVersion + "/" + rootNodeName + ".xsd");
-          InputStream configInputStream = Files.newInputStream(file)) {
+      URL schemaStream = getClass().getResource("/schema/" + latestConfigurationVersion + "/" + rootNodeName + ".xsd");
+      try (InputStream configInputStream = Files.newInputStream(file)) {
 
-        Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+        Schema schema = schemaFactory.newSchema(schemaStream);
         unmarschaller.setSchema(schema);
         rootNode = unmarschaller.unmarshal(configInputStream);
         return deserializeTo.cast(rootNode);
@@ -90,7 +88,7 @@ public abstract class JaxbDeserializer {
           "Could not parse configuration file:\n" + message, e);
     } catch (SAXException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       // Should never occur. Programming error.
-      throw new IllegalStateException("Could not parse configuration schema. Please state this as a bug.");
+      throw new IllegalStateException("Could not parse configuration schema. Please state this as a bug.", e);
     } catch (NumberFormatException e) {
       // The version number is currently the only xml value which will be parsed to a number data type
       // So provide help
