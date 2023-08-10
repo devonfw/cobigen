@@ -113,8 +113,6 @@ public class TemplatesConfigurationReader extends JaxbDeserializer {
       throws InvalidConfigurationException {
 
     this.configurationReader = configurationReader;
-    // Path rootTemplatePath = configFilePath.getParent();
-    // Path templateLocation = findTemplateRootPath(projectRoot, templateFolder, rootTemplatePath);
     this.configFilePath = configFilePath;
     this.rootTemplateFolder = TemplateFolder.create(configFilePath.getParent());
 
