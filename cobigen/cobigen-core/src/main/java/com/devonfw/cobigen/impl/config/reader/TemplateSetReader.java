@@ -10,6 +10,7 @@ import com.devonfw.cobigen.impl.config.entity.Trigger;
 import com.devonfw.cobigen.impl.config.entity.io.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.TemplateSetConfiguration;
 import com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration;
+import com.devonfw.cobigen.impl.util.FileSystemUtil;
 
 /**
  * The {@link TemplateSetReader} combines everything from the {@link TemplatesConfigurationReader} and
@@ -44,8 +45,15 @@ public class TemplateSetReader extends JaxbDeserializer {
 
   public TemplateSetReader(Path rootDir, ConfigurationReader configurationReader) {
 
-    this.templateSetFile = rootDir.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER)
-        .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+    if (rootDir.toString().endsWith(".jar")) {
+      this.templateSetFile = FileSystemUtil.createFileSystemDependentPath(rootDir.toUri())
+          .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+    } else {
+      this.templateSetFile = FileSystemUtil.createFileSystemDependentPath(rootDir.toUri())
+          .resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER)
+          .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+    }
+
     this.configurationReader = configurationReader;
     deserializeConfigFile();
   }
