@@ -1,6 +1,5 @@
 package com.devonfw.cobigen.unittest.config.upgrade;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -11,13 +10,13 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.BackupPolicy;
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.constant.ContextConfigurationVersion;
 import com.devonfw.cobigen.impl.config.upgrade.ContextConfigurationUpgrader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
@@ -88,57 +87,55 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
   @Test
   public void testCorrectUpgrade_v2_1_TO_v3_0() throws Exception {
 
-
     File cobigen = this.tempFolder.newFolder(ConfigurationConstants.COBIGEN_CONFIG_FILE);
 
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, cobigen.toPath().toString()).execute(() -> {
-      // preparation
-      ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_1;
-      ContextConfigurationVersion targetVersion = ContextConfigurationVersion.v3_0;
-      String currentVersionPath = "valid-2.1";
-      String targetVersionPath = "valid-v3.0";
+    CobiGenPaths.setCobiGenHomeTestPath(cobigen.toPath());
+    // preparation
+    ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_1;
+    ContextConfigurationVersion targetVersion = ContextConfigurationVersion.v3_0;
+    String currentVersionPath = "valid-2.1";
+    String targetVersionPath = "valid-v3.0";
 
-      Path templates = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
-          .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
-      Path context = templates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-          .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    Path templates = cobigen.toPath().resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
+        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
+    Path context = templates.resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 
-      FileUtils.copyDirectory(new File(templateTestFileRootPath + File.separator + currentVersionPath), cobigen);
+    FileUtils.copyDirectory(new File(templateTestFileRootPath + File.separator + currentVersionPath), cobigen);
 
-      ContextConfigurationUpgrader sut = new ContextConfigurationUpgrader();
+    ContextConfigurationUpgrader sut = new ContextConfigurationUpgrader();
 
-      ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(context, currentVersion);
-      assertThat(version).as("Source Version").isEqualTo(currentVersion);
+    ContextConfigurationVersion version = sut.resolveLatestCompatibleSchemaVersion(context, currentVersion);
+    assertThat(version).as("Source Version").isEqualTo(currentVersion);
 
-      sut.upgradeConfigurationToLatestVersion(templates, BackupPolicy.ENFORCE_BACKUP, targetVersion);
-      // copy resources again to check if backup was successful
-      String pom = "templates/CobiGen_Templates/pom.xml";
-      FileUtils.copyDirectory(new File(templateTestFileRootPath + File.separator + currentVersionPath), cobigen);
+    sut.upgradeConfigurationToLatestVersion(templates, BackupPolicy.ENFORCE_BACKUP, targetVersion);
+    // copy resources again to check if backup was successful
+    String pom = "templates/CobiGen_Templates/pom.xml";
+    FileUtils.copyDirectory(new File(templateTestFileRootPath + File.separator + currentVersionPath), cobigen);
 
-      Path newTemplatesLocation = cobigen.toPath().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
-          .resolve(ConfigurationConstants.ADAPTED_FOLDER);
-      Path backupContextPath = cobigen.toPath().resolve("backup")
-          .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
-          .resolve(ConfigurationConstants.COBIGEN_TEMPLATES).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
-          .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+    Path newTemplatesLocation = cobigen.toPath().resolve(ConfigurationConstants.TEMPLATE_SETS_FOLDER)
+        .resolve(ConfigurationConstants.ADAPTED_FOLDER);
+    Path backupContextPath = cobigen.toPath().resolve("backup")
+        .resolve(ConfigurationConstants.CONFIG_PROPERTY_TEMPLATES_PATH)
+        .resolve(ConfigurationConstants.COBIGEN_TEMPLATES).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER)
+        .resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
 
-      for (String s : newTemplatesLocation.toFile().list()) {
-        Path newContextPath = newTemplatesLocation.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
+    for (String s : newTemplatesLocation.toFile().list()) {
+      Path newContextPath = newTemplatesLocation.resolve(s).resolve(ConfigurationConstants.TEMPLATE_RESOURCE_FOLDER);
 
-        version = sut.resolveLatestCompatibleSchemaVersion(newContextPath, targetVersion);
-        assertThat(version).as("Target version").isEqualTo(targetVersion);
+      version = sut.resolveLatestCompatibleSchemaVersion(newContextPath, targetVersion);
+      assertThat(version).as("Target version").isEqualTo(targetVersion);
 
-        newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-        XMLUnit.setIgnoreWhitespace(true);
-        try (
-            Reader firstReader = new FileReader(contextTestFileRootPath + File.separator + targetVersionPath
-                + File.separator + s + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
-            Reader secondReader = new FileReader(newContextPath.toFile())) {
-          new XMLTestCase() {
-          }.assertXMLEqual(firstReader, secondReader);
-        }
+      newContextPath = newContextPath.resolve(ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+      XMLUnit.setIgnoreWhitespace(true);
+      try (
+          Reader firstReader = new FileReader(contextTestFileRootPath + File.separator + targetVersionPath
+              + File.separator + s + File.separator + ConfigurationConstants.CONTEXT_CONFIG_FILENAME);
+          Reader secondReader = new FileReader(newContextPath.toFile())) {
+        new XMLTestCase() {
+        }.assertXMLEqual(firstReader, secondReader);
       }
-    });
+    }
   }
 
   /**
@@ -205,7 +202,6 @@ public class ContextConfigurationUpgraderTest extends AbstractUnitTest {
    */
   @Test
   public void testV2_1IsIncompatibleToV3_0Schema() throws Exception {
-
 
     // preparation
     ContextConfigurationVersion currentVersion = ContextConfigurationVersion.v2_1;

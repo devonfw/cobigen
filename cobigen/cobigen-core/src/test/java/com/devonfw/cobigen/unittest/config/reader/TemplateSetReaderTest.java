@@ -17,7 +17,10 @@ import org.junit.rules.TemporaryFolder;
 
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
+import com.devonfw.cobigen.api.util.CobiGenPaths;
+import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetReader;
+import com.devonfw.cobigen.impl.config.reader.TemplateSetsConfigReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 import junit.framework.TestCase;
@@ -52,13 +55,14 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
     // when
+    Path faultyPath = TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath().resolve("template-sets");
     assertThatThrownBy(() -> {
 
-      new TemplateSetConfiguration(TEST_FILE_ROOT_PATH.resolve("faulty"));
+      TemplateSetsConfigReader reader = new TemplateSetsConfigReader(faultyPath);
+      reader.readContextConfiguration();
 
     }).isInstanceOf(InvalidConfigurationException.class)
-        .hasMessage(TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath() + ":\n"
-            + "Could not find any template-set configuration file in the given folder.");
+        .hasMessage(faultyPath + ":\n" + "Could not find any template-set configuration file in the given folder.");
 
   }
 
@@ -74,7 +78,8 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
 
     assertThatThrownBy(() -> {
 
-      new TemplateSetConfiguration(INVALID_CONFIGURATION_PATH);
+      TemplateSetsConfigReader reader = new TemplateSetsConfigReader(INVALID_CONFIGURATION_PATH);
+      reader.readContextConfiguration();
 
     }).isInstanceOf(InvalidConfigurationException.class).hasMessage(INVALID_CONFIGURATION_PATH.toAbsolutePath() + ":\n"
         + "Could not find any template-set configuration file in the given folder.");
@@ -96,7 +101,7 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     Path templateSetPathAdapted = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_duplicated");
     FileUtils.copyDirectory(templateSetPathAdapted.toFile(), folder);
     withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
+      ContextConfiguration templateSetConfiguration = new ContextConfiguration(null, null,
           folder.toPath().resolve("template-sets"));
       // TODO add check for proper exception message
     });
@@ -114,11 +119,11 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets_downloaded/");
     FileUtils.copyDirectory(templateSetPath.toFile(), folder);
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
-          folder.toPath().resolve("template-sets"));
-      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(1);
-    });
+    CobiGenPaths.setCobiGenHomeTestPath(folder.toPath());
+
+    TemplateSetsConfigReader reader = new TemplateSetsConfigReader(folder.toPath().resolve("template-sets"));
+    assertThat(reader.readContextConfiguration().getTriggers().size()).isEqualTo(1);
+
   }
 
   /**
@@ -134,13 +139,11 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     File folder = this.tmpFolder.newFolder("TemplateSetsInstalledTest");
     Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets/");
     FileUtils.copyDirectory(templateSetPath.toFile(), folder);
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
+    CobiGenPaths.setCobiGenHomeTestPath(folder.toPath());
 
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
-          folder.toPath().resolve("template-sets"));
+    TemplateSetsConfigReader reader = new TemplateSetsConfigReader(folder.toPath().resolve("template-sets"));
+    assertThat(reader.readContextConfiguration().getTriggers().size()).isEqualTo(3);
 
-      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(3);
-    });
   }
 
   /**
@@ -159,13 +162,11 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     // create an invalid folder which has to be ignored
     Files.createDirectory(folder.toPath().resolve("template-sets").resolve("adapted").resolve(".settings"));
 
-    withEnvironmentVariable(ConfigurationConstants.CONFIG_ENV_HOME, folder.getAbsolutePath()).execute(() -> {
+    CobiGenPaths.setCobiGenHomeTestPath(folder.toPath());
 
-      TemplateSetConfiguration templateSetConfiguration = new TemplateSetConfiguration(
-          folder.toPath().resolve("template-sets"));
+    TemplateSetsConfigReader reader = new TemplateSetsConfigReader(folder.toPath().resolve("template-sets"));
+    assertThat(reader.readContextConfiguration().getTriggers().size()).isEqualTo(3);
 
-      assertThat(templateSetConfiguration.getTemplatesConfigurations().size()).isEqualTo(3);
-    });
   }
 
 }

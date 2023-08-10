@@ -36,7 +36,15 @@ public enum ContextConfigurationVersion implements ConfigurationVersionEnum {
    * <li>added links and tags, made templateFolder optional</li>
    * </ul>
    */
-  v3_0(3.0f, false);
+  v3_0(3.0f, false),
+
+  /**
+   * ChangeLog:
+   * <ul>
+   * <li>added links and tags, made templateFolder optional</li>
+   * </ul>
+   */
+  v6_0(6.0f, false);
 
   /** Comparable float representation of the version number. */
   private float floatRepresentation;

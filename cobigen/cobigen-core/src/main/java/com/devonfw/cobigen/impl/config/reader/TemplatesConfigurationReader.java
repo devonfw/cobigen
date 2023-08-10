@@ -113,11 +113,10 @@ public class TemplatesConfigurationReader extends JaxbDeserializer {
       throws InvalidConfigurationException {
 
     this.configurationReader = configurationReader;
-    // Path rootTemplatePath = configFilePath.getParent();
-    // Path templateLocation = findTemplateRootPath(projectRoot, templateFolder, rootTemplatePath);
+    this.configFilePath = configFilePath;
     this.rootTemplateFolder = TemplateFolder.create(configFilePath.getParent());
 
-    this.configNode = deserialize(this.configFilePath,
+    this.configNode = deserialize(configFilePath,
         com.devonfw.cobigen.impl.config.entity.io.TemplatesConfiguration.class, TemplatesConfigurationVersion.class,
         "templatesConfiguration");
   }

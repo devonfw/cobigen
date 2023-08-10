@@ -2,15 +2,14 @@ package com.devonfw.cobigen.impl.config;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.reader.ContextConfigurationReader;
 
 /**
  * The {@link ContextConfiguration} is a configuration data wrapper for all information about templates and the target
@@ -23,18 +22,18 @@ public class ContextConfiguration {
   /**
    * All available {@link Trigger}s
    */
-  private Map<String, Trigger> triggers;
+  private Map<String, Trigger> triggers = new HashMap<>();
 
   /**
    * Path of the configuration. Might point to a folder or a jar or maybe even something different in future.
    */
   private Path configurationPath;
 
-
   /**
    * Constructor needed only for {@link com.devonfw.cobigen.impl.config.reader.ContextConfigurationCollector}
    */
   public ContextConfiguration() {
+
   }
 
   /**
@@ -43,7 +42,8 @@ public class ContextConfiguration {
    * @param configRoot root path for the configuration of CobiGen
    * @throws InvalidConfigurationException thrown if the {@link File} is not valid with respect to the context.xsd
    */
-  public ContextConfiguration(BigDecimal version, Map<String, Trigger> triggers, Path configRoot) throws InvalidConfigurationException {
+  public ContextConfiguration(BigDecimal version, Map<String, Trigger> triggers, Path configRoot)
+      throws InvalidConfigurationException {
 
     this.version = version;
     this.configurationPath = configRoot;
@@ -81,10 +81,17 @@ public class ContextConfiguration {
 
   /**
    * Merges another context configuration into _this_ context configuration instance
+   *
    * @param contextConfiguration to be merged
    */
   public ContextConfiguration merge(ContextConfiguration contextConfiguration) {
-    triggers.putAll(contextConfiguration.triggers);
+
+    List<Trigger> contextTriggers = contextConfiguration.getTriggers();
+    Map<String, Trigger> triggerMap = new HashMap<>();
+    for (Trigger trigger : contextTriggers) {
+      triggerMap.put(trigger.getId(), trigger);
+    }
+    triggers.putAll(triggerMap);
     return this;
   }
 }

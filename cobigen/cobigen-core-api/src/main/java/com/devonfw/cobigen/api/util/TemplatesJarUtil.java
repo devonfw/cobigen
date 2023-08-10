@@ -132,13 +132,13 @@ public class TemplatesJarUtil {
   /**
    * Downloads the latest devon4j templates
    *
-   * @param isDownloadSource   true if downloading source jar file
+   * @param isDownloadSource true if downloading source jar file
    * @param templatesDirectory directory where the templates jar are located
    */
   public static void downloadLatestDevon4jTemplates(boolean isDownloadSource, File templatesDirectory) {
 
-    downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID,
-      TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID, "LATEST", isDownloadSource, templatesDirectory);
+    downloadJar(TemplatesJarConstants.DEVON4J_TEMPLATES_GROUPID, TemplatesJarConstants.DEVON4J_TEMPLATES_ARTIFACTID,
+        "LATEST", isDownloadSource, templatesDirectory);
   }
 
   /**
@@ -201,7 +201,7 @@ public class TemplatesJarUtil {
     HashSet<MavenCoordinate> existingTemplates = new HashSet<>();
 
     for (MavenCoordinate mavenCoordinate : mavenCoordinates) {
-      try (Stream<Path> directory = Files.list(path)){
+      try (Stream<Path> directory = Files.list(path)) {
         if (directory.anyMatch(f -> (f.getFileName().toString().contains(mavenCoordinate.getArtifactId())))) {
           existingTemplates.add(mavenCoordinate);
         }
@@ -317,7 +317,7 @@ public class TemplatesJarUtil {
     ArrayList<Path> jarPaths = new ArrayList<>();
     try (Stream<Path> files = Files.list(templatesDirectory)) {
       files.forEach(path -> {
-        if (path.endsWith(".jar")) {
+        if (path.toString().endsWith(".jar")) {
           jarPaths.add(path);
         }
       });
