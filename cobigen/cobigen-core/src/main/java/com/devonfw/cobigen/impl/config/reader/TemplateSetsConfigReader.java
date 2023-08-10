@@ -64,6 +64,10 @@ public class TemplateSetsConfigReader extends ConfigurationReader {
   @Override
   public ContextConfiguration readContextConfiguration() {
 
+    if (templateSets.isEmpty()) {
+      throw new InvalidConfigurationException(configRoot,
+          "Could not find any template-set configuration file in the given folder.");
+    }
     return templateSets.values().parallelStream().map(ts -> {
       TemplateSetReader tsReader;
       synchronized (templateSetReaderCache) {
