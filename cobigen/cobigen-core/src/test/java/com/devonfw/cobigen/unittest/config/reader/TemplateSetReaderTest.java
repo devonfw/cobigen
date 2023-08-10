@@ -9,9 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import com.devonfw.cobigen.impl.config.TemplatesConfiguration;
-import com.devonfw.cobigen.impl.config.entity.Trigger;
-import com.devonfw.cobigen.impl.config.reader.TemplateSetsConfigReader;
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -23,6 +20,7 @@ import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.CobiGenPaths;
 import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.reader.TemplateSetReader;
+import com.devonfw.cobigen.impl.config.reader.TemplateSetsConfigReader;
 import com.devonfw.cobigen.unittest.config.common.AbstractUnitTest;
 
 import junit.framework.TestCase;
@@ -57,13 +55,14 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
   public void testErrorOnInvalidConfiguration() throws InvalidConfigurationException {
 
     // when
+    Path faultyPath = TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath().resolve("template-sets");
     assertThatThrownBy(() -> {
 
-      new ContextConfiguration(null, null, TEST_FILE_ROOT_PATH.resolve("faulty"));
+      TemplateSetsConfigReader reader = new TemplateSetsConfigReader(faultyPath);
+      reader.readContextConfiguration();
 
     }).isInstanceOf(InvalidConfigurationException.class)
-        .hasMessage(TEST_FILE_ROOT_PATH.resolve("faulty").toAbsolutePath() + ":\n"
-            + "Could not find any template-set configuration file in the given folder.");
+        .hasMessage(faultyPath + ":\n" + "Could not find any template-set configuration file in the given folder.");
 
   }
 
@@ -75,12 +74,12 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
    *
    */
   @Test
-  @Ignore // TODO: check if this exception is still needed
   public void testInvalidTemplateSets() throws InvalidConfigurationException {
 
     assertThatThrownBy(() -> {
 
-      new ContextConfiguration(null, null, INVALID_CONFIGURATION_PATH);
+      TemplateSetsConfigReader reader = new TemplateSetsConfigReader(INVALID_CONFIGURATION_PATH);
+      reader.readContextConfiguration();
 
     }).isInstanceOf(InvalidConfigurationException.class).hasMessage(INVALID_CONFIGURATION_PATH.toAbsolutePath() + ":\n"
         + "Could not find any template-set configuration file in the given folder.");
@@ -122,9 +121,8 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     FileUtils.copyDirectory(templateSetPath.toFile(), folder);
     CobiGenPaths.setCobiGenHomeTestPath(folder.toPath());
 
-    ContextConfiguration templateSetConfiguration = new ContextConfiguration(null, null,
-        folder.toPath().resolve("template-sets"));
-    assertThat(templateSetConfiguration.getTriggers().size()).isEqualTo(1);
+    TemplateSetsConfigReader reader = new TemplateSetsConfigReader(folder.toPath().resolve("template-sets"));
+    assertThat(reader.readContextConfiguration().getTriggers().size()).isEqualTo(1);
 
   }
 
@@ -142,9 +140,8 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     Path templateSetPath = TEST_FILE_ROOT_PATH.resolve("valid_template_sets/");
     FileUtils.copyDirectory(templateSetPath.toFile(), folder);
     CobiGenPaths.setCobiGenHomeTestPath(folder.toPath());
-    
-    TemplateSetsConfigReader reader = new TemplateSetsConfigReader(folder.toPath().resolve("template-sets"));
 
+    TemplateSetsConfigReader reader = new TemplateSetsConfigReader(folder.toPath().resolve("template-sets"));
     assertThat(reader.readContextConfiguration().getTriggers().size()).isEqualTo(3);
 
   }
@@ -166,10 +163,9 @@ public class TemplateSetReaderTest extends AbstractUnitTest {
     Files.createDirectory(folder.toPath().resolve("template-sets").resolve("adapted").resolve(".settings"));
 
     CobiGenPaths.setCobiGenHomeTestPath(folder.toPath());
-    ContextConfiguration templateSetConfiguration = new ContextConfiguration(null, null,
-        folder.toPath().resolve("template-sets"));
 
-    assertThat(templateSetConfiguration.getTriggers().size()).isEqualTo(3);
+    TemplateSetsConfigReader reader = new TemplateSetsConfigReader(folder.toPath().resolve("template-sets"));
+    assertThat(reader.readContextConfiguration().getTriggers().size()).isEqualTo(3);
 
   }
 
