@@ -1,5 +1,18 @@
 package com.devonfw.cobigen.impl.config.reader;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.devonfw.cobigen.api.constants.ConfigurationConstants;
 import com.devonfw.cobigen.api.exception.InvalidConfigurationException;
 import com.devonfw.cobigen.api.util.TemplatesJarUtil;
@@ -7,14 +20,6 @@ import com.devonfw.cobigen.impl.config.ContextConfiguration;
 import com.devonfw.cobigen.impl.config.TemplatesConfiguration;
 import com.devonfw.cobigen.impl.config.entity.TemplateSet;
 import com.devonfw.cobigen.impl.util.FileSystemUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Stream;
 
 public class TemplateSetsConfigReader extends ConfigurationReader {
 
@@ -26,12 +31,13 @@ public class TemplateSetsConfigReader extends ConfigurationReader {
   private final Map<String, TemplateSet> templateSets = new HashMap<>();
 
   /**
-   * Need to cache template set reader as they read context and templates configuration in one go, while both is queried separately by the engine.
-   * It is fully initialized after context configuration read time.
+   * Need to cache template set reader as they read context and templates configuration in one go, while both is queried
+   * separately by the engine. It is fully initialized after context configuration read time.
    */
   private final Map<String, TemplateSetReader> templateSetReaderCache = Collections.synchronizedMap(new HashMap<>());
 
   public TemplateSetsConfigReader(Path configRoot) {
+
     super(configRoot);
     readTemplateSets(configRoot);
   }
@@ -75,11 +81,14 @@ public class TemplateSetsConfigReader extends ConfigurationReader {
 
   @Override
   public TemplatesConfiguration readTemplatesConfiguration(String triggerOrTemplateSet) {
+
     TemplateSetReader templateSetReader = templateSetReaderCache.get(triggerOrTemplateSet);
     if (templateSetReader == null)
-      throw new InvalidConfigurationException("A template set with name '" + triggerOrTemplateSet + "' was referenced, but could not be found.");
+      throw new InvalidConfigurationException(
+          "A template set with name '" + triggerOrTemplateSet + "' was referenced, but could not be found.");
 
-    return templateSetReader.readTemplatesConfiguration(templateSetReader.readContextConfiguration().getTrigger(triggerOrTemplateSet));
+    return templateSetReader
+        .readTemplatesConfiguration(templateSetReader.readContextConfiguration().getTrigger(triggerOrTemplateSet));
   }
 
   /**
@@ -93,7 +102,7 @@ public class TemplateSetsConfigReader extends ConfigurationReader {
 
     for (Path templateDirectory : templateSetDirectories) {
       Path templateSetFilePath = templateDirectory.resolve(ConfigurationConstants.MAVEN_CONFIGURATION_RESOURCE_FOLDER)
-        .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
+          .resolve(ConfigurationConstants.TEMPLATE_SET_CONFIG_FILENAME);
 
       // makes sure that only valid template set folders get added
       if (Files.exists(templateSetFilePath)) {
@@ -104,7 +113,8 @@ public class TemplateSetsConfigReader extends ConfigurationReader {
           templateSets.put(templateDirectory.getFileName().toString(), new TemplateSet(templateDirectory));
         }
       } else {
-        LOG.info("Ignoring folder {} as template set as it does not contain {} on top-level.", templateDirectory, templateSetFilePath.getFileName());
+        LOG.info("Ignoring folder {} as template set as it does not contain {} on top-level.", templateDirectory,
+            templateSetFilePath.getFileName());
       }
     }
   }
@@ -146,9 +156,11 @@ public class TemplateSetsConfigReader extends ConfigurationReader {
       // makes sure that only valid template set jars get added
       if (Files.exists(templateSetFilePath)) {
         // TODO clarify on invariant, that downloaded jars are stored without version suffix
-        this.templateSets.put(jarPath.getFileName().toString(), new TemplateSet(jarPath.getFileName().toString(), jarPath));
+        this.templateSets.put(jarPath.getFileName().toString(),
+            new TemplateSet(jarPath.getFileName().toString(), jarPath));
       } else {
-        LOG.info("Ignoring jar {} as template set as it does not contain {} on top-level.", jarPath, templateSetFilePath.getFileName());
+        LOG.info("Ignoring jar {} as template set as it does not contain {} on top-level.", jarPath,
+            templateSetFilePath.getFileName());
       }
     }
   }
