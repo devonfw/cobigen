@@ -444,7 +444,7 @@ public class TemplatesConfigurationReader {
 
     String unresolvedDestinationPath = unresolvedTemplatePath;
     TemplateFolder templateFolder = templateFile.getParent();
-    String relocate = templateFolder.getVariables().get(PROPERTY_RELOCATE);
+    String relocate = templateFolder.getVariables().getVariable(PROPERTY_RELOCATE);
     if (relocate != null) {
       if (scanSourcePath != null) {
         // The relative template path has to be specifically parsed to string and back to a path so

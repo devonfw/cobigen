@@ -38,8 +38,7 @@ public class PathExpressionResolver {
       return null;
     }
     String resolvedPath = this.variables.resolve(relativeUnresolvedPath, '/');
-    // Cleanup empty path segments
-    return resolvedPath.replaceAll("/+", "/");
+    return resolvedPath;
   }
 
 }

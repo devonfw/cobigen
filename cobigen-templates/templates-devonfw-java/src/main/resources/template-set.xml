@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:templateSetConfiguration version="6.0"
+    xmlns:tns="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration"
+    xmlns:cc="http://capgemini.com/devonfw/cobigen/ContextConfiguration"
+    xmlns:tc="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration">
+
+  <cc:contextConfiguration version="6.0">
+    <cc:trigger id="devonfw-java" type="java">
+      <cc:containerMatcher type="package" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess(\.api)?"
+        retrieveObjectsRecursively="false" />
+      <!-- .........................12......3..........4...................5......67............8 -->
+      <cc:matcher type="fqn" value="((.+\.)?([^\.]+))\.([^\.]+)\.dataaccess(\.api)((.[^\.]+)*)\.([^\.]+)Entity">
+        <cc:variableAssignment type="regex" key="rootPackage" value="1" />
+        <cc:variableAssignment type="regex" key="domain" value="3" />
+        <cc:variableAssignment type="regex" key="component" value="4" />
+        <cc:variableAssignment type="regex" key="scope" value="5" />
+        <cc:variableAssignment type="regex" key="detail" value="6" />
+        <cc:variableAssignment type="regex" key="entityName" value="8" />
+      </cc:matcher>
+    </cc:trigger>
+  </cc:contextConfiguration>
+
+  <tc:templatesConfiguration version="2.1" templateEngine="Agnostic">
+
+    <tc:templates>
+      <tc:templateExtension ref="X_EntityName_XEntity.java" mergeStrategy="javamerge" />
+      <tc:templateExtension ref="X_EntityName_X.java" mergeStrategy="javamerge" />
+      <tc:templateExtension ref="X_EntityName_XRepository.java" mergeStrategy="javamerge" />
+      <tc:templateExtension ref="X_EntityName_XEto.java" mergeStrategy="javamerge" />
+      <tc:templateExtension ref="X_EntityName_XRestService.java" mergeStrategy="javamerge" />
+      <!--
+      <tc:templateExtension ref="X_EntityName_XCto.java" mergeStrategy="javamerge"/>
+      <tc:templateExtension ref="X_EntityName_XSearchCriteriaTo.java" mergeStrategy="javamerge"/>
+      <tc:templateExtension ref="AbstractSearchCriteriaTo.java" mergeStrategy="javamerge"/>
+      <tc:templateExtension ref="X_EntityName_XRestServiceImpl.java" mergeStrategy="javamerge"/>
+      -->
+    </tc:templates>
+
+    <tc:templateScans>
+      <tc:templateScan templatePath="." destinationPath="src/main/java" />
+    </tc:templateScans>
+
+    <tc:increments>
+      <tc:increment name="dataaccess" description="Data-access (Repository)">
+        <tc:templateRef ref="X_EntityName_XRepository.java" />
+      </tc:increment>
+      <tc:increment name="entity" description="Entity infrastructure">
+        <tc:templateRef ref="AbstractEto.java" />
+        <tc:templateRef ref="ApplicationEntity.java" />
+        <tc:templateRef ref="ApplicationPersistenceEntity.java" />
+        <tc:templateRef ref="X_EntityName_X.java" />
+        <tc:templateRef ref="X_EntityName_XEntity.java" />
+        <tc:templateRef ref="X_EntityName_XEto.java" />
+      </tc:increment>
+      <tc:increment name="logic" description="Logic (Use-Cases)">
+        <tc:templateRef ref="ApplicationAccessControlConfig.java" />
+        <tc:templateRef ref="AbstractUcX_EntityName_X.java" />
+        <tc:templateRef ref="UcDeleteX_EntityName_X.java" />
+        <tc:templateRef ref="UcFindX_EntityName_X.java" />
+        <tc:templateRef ref="UcSaveX_EntityName_X.java" />
+      </tc:increment>
+      <tc:increment name="rest" description="REST service">
+        <tc:templateRef ref="X_EntityName_XRestService.java" />
+      </tc:increment>
+      <!--
+      <tc:increment name="tos" description="TO's">
+        <tc:templateRef ref="AbstractSearchCriteriaTo.java"/>
+        <tc:templateRef ref="X_EntityName_XSearchCriteriaTo.java"/>
+      </tc:increment>
+      <tc:increment name="ctos" description="CTO's">
+        <tc:templateRef ref="X_EntityName_XCto.java"/>
+      </tc:increment>
+      <tc:increment name="rest_service_impl_ctos" description="CRUD REST services (CTOs)">
+        <tc:templateRef ref="AbstractBeanMapperSupport.java"/>
+        <tc:templateRef ref="AbstractComponentFacade.java"/>
+        <tc:templateRef ref="${variables.component#cap_first}RestServiceImplCtos.java"/>
+        <tc:templateRef ref="${variables.component#cap_first}RestServiceCtos.java"/>
+      </tc:increment>
+      -->
+    </tc:increments>
+  </tc:templatesConfiguration>
+</tns:templateSetConfiguration>

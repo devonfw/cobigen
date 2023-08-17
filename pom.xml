@@ -230,7 +230,17 @@
       </dependency>
       <dependency>
         <groupId>com.devonfw.cobigen</groupId>
+        <artifactId>tempeng-agnostic</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen</groupId>
         <artifactId>javaplugin-model</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.devonfw.cobigen.templates</groupId>
+        <artifactId>templates-devonfw-java</artifactId>
         <version>${revision}</version>
       </dependency>
     </dependencies>

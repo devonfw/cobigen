@@ -15,6 +15,7 @@
   <modules>
     <module>cobigen-tempeng-freemarker</module>
     <module>cobigen-tempeng-velocity</module>
+    <module>cobigen-tempeng-agnostic</module>
   </modules>
 
 </project>

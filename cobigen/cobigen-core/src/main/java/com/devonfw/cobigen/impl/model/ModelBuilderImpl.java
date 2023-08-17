@@ -98,11 +98,14 @@ public class ModelBuilderImpl implements ModelBuilder {
   public Map<String, Object> enrichByContextVariables(Map<String, Object> model, TriggerInterpreter triggerInterpreter,
       Template template, Path targetRootPath, GenerationReportTo report) {
 
-    Map<String, String> variables = Maps.newHashMap();
-    Map<String, String> contextVariables = new ContextVariableResolver(this.generatorInput, this.trigger)
+    Map<String, Object> variables = Maps.newHashMap();
+    Map<String, Object> contextVariables = new ContextVariableResolver(this.generatorInput, this.trigger)
         .resolveVariables(triggerInterpreter, report).asMap();
-    Map<String, String> templateProperties = template.getVariables().asMap();
+    Map<String, Object> templateProperties = template.getVariables().asMap();
     Properties targetCobiGenProperties = CobiGenPropertiesReader.load(targetRootPath);
+    if (targetCobiGenProperties == null) {
+      targetCobiGenProperties = new Properties();
+    }
     // if there are properties overriding each other, throw an exception for better usability.
     // This is most probably a not intended mechanism such that we simply will not support it.
     Set<String> intersection = new HashSet<>(contextVariables.keySet());

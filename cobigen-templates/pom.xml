@@ -21,6 +21,7 @@ xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLS
   </properties>
 
   <modules>
+    <module>templates-devonfw-java</module>
     <module>templates-devon4j-utils</module>
     <module>templates-devon4j-tests</module>
     <module>crud-angular-client-app</module>
