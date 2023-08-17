@@ -216,7 +216,6 @@ public class GeneratorWrapperFactory {
       throws InvalidConfigurationException, GeneratorCreationException {
 
     try {
-      ResourcesPluginUtil.refreshConfigurationProject();
       generatorProj = ResourcesPluginUtil.getGeneratorConfigurationProject();
 
       return initializeCobiGen(generatorProj, allowMonolithicConfiguration);

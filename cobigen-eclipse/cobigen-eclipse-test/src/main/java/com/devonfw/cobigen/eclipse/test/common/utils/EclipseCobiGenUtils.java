@@ -3,6 +3,7 @@ package com.devonfw.cobigen.eclipse.test.common.utils;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.shellIsActive;
 import static org.eclipse.swtbot.swt.finder.waits.Conditions.widgetIsEnabled;
 
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -361,7 +362,8 @@ public class EclipseCobiGenUtils {
    */
   public static void runAndCaptureUpdateTemplates(SWTWorkbenchBot bot) throws Exception {
 
-    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    workspace.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
     bot.waitUntil(new AllJobsAreFinished(), DEFAULT_TIMEOUT); // build might take some time
 
     SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
@@ -395,6 +397,26 @@ public class EclipseCobiGenUtils {
     takeScreenshot(bot, "Adapt Templates Warning!");
     SWTBotShell warningDialog = bot.shell("Warning!");
     warningDialog.bot().button("Ok").click();
+
+    SWTBotShell informationDialog = bot.shell("Information");
+    bot.waitUntil(new AnyShellIsActive("Information"), DEFAULT_TIMEOUT);
+    takeScreenshot(bot, "Adapt Templates Information");
+    informationDialog.bot().button("Ok").click();
+  }
+
+  /**
+   * Checks the CobiGen Adapt TemplateSets and takes screenshots of it.
+   *
+   * @param bot to process the Adapt Templates command
+   * @throws Exception test fails
+   */
+  public static void runAndCaptureAdaptTemplatesSets(SWTWorkbenchBot bot) throws Exception {
+
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), DEFAULT_TIMEOUT); // build might take some time
+
+    SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+    view.bot().tree().contextMenu("CobiGen").menu("Adapt Templates...").click();
 
     SWTBotShell informationDialog = bot.shell("Information");
     bot.waitUntil(new AnyShellIsActive("Information"), DEFAULT_TIMEOUT);

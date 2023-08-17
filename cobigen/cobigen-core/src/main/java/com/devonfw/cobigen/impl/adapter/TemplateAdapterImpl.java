@@ -80,7 +80,6 @@ public class TemplateAdapterImpl implements TemplateAdapter {
     if (isMonolithicTemplatesConfiguration()) {
       Path destinationPath = this.templatesLocation.resolve(ConfigurationConstants.COBIGEN_TEMPLATES);
       adaptMonolithicTemplates(destinationPath, false);
-      throw new UpgradeTemplatesNotificationException();
     } else {
       throw new TemplateSelectionForAdaptionException(getTemplateSetJars());
     }
