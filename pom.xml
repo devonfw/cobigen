@@ -21,7 +21,7 @@
     <jaxb.version>3.0.1</jaxb.version>
     <jacoco.version>0.8.8</jacoco.version>
     <license.skipAggregateDownloadLicenses>${skip.deployment}</license.skipAggregateDownloadLicenses>
-    <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
+    <central.publishing.maven.plugin.version>0.6.0</central.publishing.maven.plugin.version>
     <updatesite.url>https://devonfw.com/cobigen/updatesite</updatesite.url>
     <!-- updatesite.repository needs to be set by cmd and needs to be one of either 'stable' or 'test' -->
     <updatesite.repository.url>${updatesite.url}/${updatesite.repository}</updatesite.repository.url>
@@ -560,17 +560,14 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>${nexus.staging.maven.plugin.version}</version>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>${central.publishing.maven.plugin.version}</version>
             <extensions>true</extensions>
             <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>false</autoReleaseAfterClose>
-              <autoDropAfterRelease>false</autoDropAfterRelease>
-              <description>Release ${project.groupId}:${project.artifactId}.${project.version}</description>
-              <skipNexusStagingDeployMojo>${skip.deployment}</skipNexusStagingDeployMojo>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>false</autoPublish>
+              <skipPublishing>${skip.deployment}</skipPublishing>
             </configuration>
           </plugin>
         </plugins>
@@ -701,24 +698,11 @@
     </profile>
   </profiles>
 
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <name>Sonartype Releases</name>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <name>Sonartype Snapshots</name>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <repositories>
     <repository>
-      <id>ossrh</id>
-      <name>OSSRH Snapshots</name>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central</id>
+      <name>Central Repository Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>

@@ -80,9 +80,9 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-      <id>ossrh</id>
-      <name>OSSRH Snapshots</name>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central</id>
+      <name>Central Repository Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
     </repository>
   </repositories>
 
