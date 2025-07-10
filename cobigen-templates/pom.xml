@@ -114,7 +114,7 @@ xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLS
               <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>
+              <target>
                 <echo>Integrate flattened POM manually</echo>
                 <!-- Patching the flattened-pom file -->
                 <!-- Removing the last </project> line -->
@@ -139,7 +139,7 @@ xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLS
                   </then>
                 </if>
                 <copy file=".flattened-pom.xml" tofile="${project.build.outputDirectory}/pom.xml" />
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>
