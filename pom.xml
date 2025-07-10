@@ -13,7 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <github.project>devonfw/cobigen</github.project>
     <flatten.mode>ossrh</flatten.mode>
-    <slf4j.version>1.7.30</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
     <zeroturnaround.version>1.12</zeroturnaround.version>
     <skip.deployment>true</skip.deployment>
     <java.version>11</java.version>

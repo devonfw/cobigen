@@ -69,10 +69,10 @@
               <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>
+              <target>
                 <echo>Integrate POM manually</echo>
                 <copy file="pom.xml" tofile="${project.build.outputDirectory}/pom.xml"/>
-              </tasks>
+              </target>
             </configuration>
           </execution>
         </executions>
