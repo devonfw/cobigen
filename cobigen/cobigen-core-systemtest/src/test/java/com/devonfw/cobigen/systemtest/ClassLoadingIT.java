@@ -121,8 +121,6 @@ public class ClassLoadingIT extends AbstractApiTest {
    * @throws Exception test fails
    */
   @Test
-  @Ignore // TODO: re-enable when versions can be detected and version handling was implemented, see:
-          // https://github.com/devonfw/cobigen/issues/1665
   public void callClassLoadingTemplateSetTestWithVersionConflict() throws Exception {
 
     // Mocking
