@@ -403,6 +403,28 @@ public class EclipseCobiGenUtils {
   }
 
   /**
+   * Checks the CobiGen Manage Template Sets and takes screenshots of it.
+   *
+   * @param bot to process the Manage Template Sets command
+   * @throws Exception test fails
+   */
+  public static void runAndCaptureManageTemplateSets(SWTWorkbenchBot bot) throws Exception {
+
+    ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
+    bot.waitUntil(new AllJobsAreFinished(), DEFAULT_TIMEOUT); // build might take some time
+
+    SWTBotView view = bot.viewById(JavaUI.ID_PACKAGES);
+    view.bot().tree().contextMenu("CobiGen").menu("Manage Template Sets...").click();
+
+    // TODO
+    // bot.waitUntil(new AnyShellIsActive("Template Set Manager"), DEFAULT_TIMEOUT);
+    // takeScreenshot(bot, "Template Set Manager");
+    // SWTBotShell gui = bot.shell("Template Set Manager");
+    // gui.bot().button("#homeButton").click();
+
+  }
+
+  /**
    * Takes a screenshot (*.jpeg) of the current screen encoding test method and class and appends the given identifier
    * to the file name
    *

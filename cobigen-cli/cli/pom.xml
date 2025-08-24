@@ -13,6 +13,7 @@
 
   <properties>
     <skip.deployment>false</skip.deployment>
+    <javafx.version>18</javafx.version>
   </properties>
 
   <dependencies>
@@ -23,6 +24,10 @@
     <dependency>
       <groupId>com.devonfw.cobigen</groupId>
       <artifactId>core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.devonfw.cobigen</groupId>
+      <artifactId>gui</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -51,6 +56,16 @@
       <groupId>com.google.googlejavaformat</groupId>
       <artifactId>google-java-format</artifactId>
       <version>1.10.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-fxml</artifactId>
+      <version>${javafx.version}</version>
     </dependency>
   </dependencies>
 

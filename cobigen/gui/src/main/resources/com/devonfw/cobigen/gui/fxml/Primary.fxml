@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane fx:id="outerPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="489.0" prefWidth="671.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.Controller">
+   <children>
+      <SplitPane fx:id="verticalSplitPane" dividerPositions="0.5" layoutY="24.0" prefHeight="465.0" prefWidth="671.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="24.0">
+        <items>
+          <AnchorPane fx:id="leftPane" minWidth="-Infinity" prefHeight="463.0" prefWidth="236.0">
+               <children>
+                  <fx:include fx:id="menu" source="Menu.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+          <AnchorPane fx:id="rightPane" minWidth="-Infinity" prefHeight="463.0" prefWidth="403.0">
+               <children>
+                  <fx:include fx:id="details" source="Details.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <fx:include fx:id="home" source="Home.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+      <Button fx:id="closeButton" layoutX="645.0" layoutY="1.0" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleCloseAction" prefHeight="23.0" prefWidth="26.0" styleClass="titleBarButtons" AnchorPane.rightAnchor="0.0">
+         <graphic>
+            <FontIcon boundsType="VISUAL" iconLiteral="mdi-close" styleClass="icons" wrappingWidth="14.333343982696533" />
+         </graphic>
+      </Button>
+      <Button fx:id="minButton" layoutX="593.0" layoutY="1.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleMinAction" prefHeight="23.0" prefWidth="26.0" styleClass="titleBarButtons" AnchorPane.rightAnchor="52.0">
+         <graphic>
+            <FontIcon iconLiteral="mdi-chevron-down" styleClass="icons" />
+         </graphic>
+      </Button>
+      <Button fx:id="minMaxButton" layoutX="619.0" layoutY="1.0" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleMinMaxAction" styleClass="titleBarButtons" AnchorPane.rightAnchor="24.0">
+         <graphic>
+            <FontIcon iconLiteral="mdi-checkbox-multiple-blank-outline" styleClass="icons" text="" />
+         </graphic>
+      </Button>
+      <Label layoutX="7.0" layoutY="2.0" prefHeight="23.0" prefWidth="149.0" text="Template Set Manager" />
+      <Pane fx:id="topPane" onMouseDragged="#handleMovementAction" onMousePressed="#handleClickAction" prefHeight="23.0" prefWidth="593.0" />
+   </children>
+</AnchorPane>

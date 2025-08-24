@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane fx:id="homePane" prefHeight="568.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.HomeController">
+  <children>
+    <SplitPane fx:id="horizontalSplitPane" dividerPositions="0.09787735849056606" orientation="VERTICAL" prefHeight="459.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <items>
+        <AnchorPane fx:id="headerPane" minHeight="0.0" minWidth="0.0" prefHeight="57.0" prefWidth="429.0" SplitPane.resizableWithParent="false">
+          <children>
+            <Text fx:id="headerText" layoutX="5.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="header" text="Welcome to CobiGen`s Template Set Manager!" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <ToggleButton fx:id="togglebutton" layoutX="389.0" layoutY="6.0" mnemonicParsing="false" onAction="#changeTheme" prefHeight="28.0" prefWidth="27.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="7.0">
+              <graphic>
+                <FontIcon styleClass="icons" iconLiteral="mdi-theme-light-dark" iconSize="20" />
+              </graphic>
+            </ToggleButton>
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
+          <children>
+            <Text layoutX="6.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subheader" text="How it Works" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+            <Separator layoutY="24.0" prefHeight="16.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+            <Text layoutX="10.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search for template sets in the search bar on the left" wrappingWidth="340.80274963378906" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+            <FontIcon styleClass="icons" iconLiteral="mdi-magnify" iconSize="20" layoutX="413.0" layoutY="55.0" AnchorPane.bottomAnchor="441.1666666666667" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0" />
+            <Text layoutX="10.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filter your search for tags or installation state" wrappingWidth="340.80274963378906" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
+            <FontIcon  styleClass="icons" iconLiteral="mdi-filter" iconSize="20" layoutX="413.0" layoutY="86.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="70.0" />
+            <Text layoutX="10.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Install, update and uninstall chosen template sets" wrappingWidth="340.80274963378906" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="100.0" />
+            <FontIcon styleClass="icons"  iconLiteral="mdi-download" iconSize="20" layoutX="413.0" layoutY="114.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="100.0" />
+            <Text layoutX="5.0" layoutY="161.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subheader" text="Template Set Structure" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="135.0" />
+            <Separator layoutY="166.0" prefHeight="16.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="155.0" />
+            <AnchorPane layoutX="18.0" layoutY="182.0" prefHeight="120.0" prefWidth="427.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="170.0">
+              <children>
+                <ScrollPane fitToWidth="true" prefHeight="124.0" prefWidth="427.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <content>
+                    <AnchorPane fx:id="treeViewPane" />
+                  </content>
+                </ScrollPane>
+              </children>
+            </AnchorPane>
+            <Text layoutX="5.0" layoutY="342.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="subheader" text="Wiki" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="5.0" />
+            <Separator layoutY="348.0" prefHeight="16.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+            <Text layoutX="6.0" layoutY="369.0" strokeType="OUTSIDE" strokeWidth="0.0" text="More information can be found in our Wiki:" wrappingWidth="246.13607788085938" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" />
+            <Hyperlink fx:id="wikilink" layoutX="109.0" layoutY="374.0" onAction="#openWiki" text="https://github.com/devonfw/cobigen/wiki" textAlignment="CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+  </children>
+</AnchorPane>

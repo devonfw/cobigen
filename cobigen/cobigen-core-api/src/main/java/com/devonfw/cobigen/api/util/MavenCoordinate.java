@@ -1,11 +1,12 @@
 package com.devonfw.cobigen.api.util;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
  * This MavenCoordinate class is just a dataholder with maven coordinates.
  */
-public class MavenCoordinate {
+public class MavenCoordinate implements Comparable<MavenCoordinate> {
 
   /**
    * the groupId of the maven artifact
@@ -84,6 +85,24 @@ public class MavenCoordinate {
     MavenCoordinate other = (MavenCoordinate) obj;
     return Objects.equals(this.artifactId, other.artifactId) && Objects.equals(this.groupId, other.groupId)
         && Objects.equals(this.version, other.version);
+  }
+
+  @Override
+  public int compareTo(MavenCoordinate other) {
+
+    if (!this.artifactId.equals(other.artifactId)) {
+      throw new ClassCastException("The artifactID of the comprarable should be the same");
+      // TODO
+    }
+    int[] versionNumbersCurrent = Arrays.stream(this.version.split("\\.")).mapToInt(Integer::parseInt).toArray();
+    int[] versionNumbersOther = Arrays.stream(other.getVersion().split("\\.")).mapToInt(Integer::parseInt).toArray();
+    for (int i = 0; i < versionNumbersCurrent.length; i++) {
+      if (versionNumbersCurrent[i] > versionNumbersOther[i]) {
+        return 1;
+      } else if (versionNumbersCurrent[i] < versionNumbersOther[i])
+        return -1;
+    }
+    return 0;
   }
 
 }

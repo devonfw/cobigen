@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="502.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.devonfw.cobigen.gui.controllers.MenuController">
+  <children>
+
+  <AnchorPane fx:id="menuPane" minHeight="0.0" minWidth="0.0" prefHeight="358.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <AnchorPane fx:id="menuBarPane" layoutY="1.0" prefHeight="25.0" prefWidth="207.0" styleClass="menu-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Button fx:id="homeButton" layoutX="82.0" layoutY="2.0" maxHeight="15.0" maxWidth="15.0" minHeight="25.0" minWidth="25.0" mnemonicParsing="false" prefHeight="15.0" prefWidth="15.0" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="1.0">
+                           <tooltip>
+                              <Tooltip fx:id="homeTooltip" text="Home" />
+                           </tooltip>
+                     <graphic>
+                        <FontIcon iconLiteral="mdi-home" styleClass="icons" />
+                     </graphic>
+                        </Button>
+                        <Button fx:id="refreshButton" layoutX="114.0" layoutY="1.0" maxHeight="15.0" maxWidth="15.0" mnemonicParsing="false" onAction="#refresh" prefHeight="15.0" prefWidth="15.0" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="46.0" AnchorPane.topAnchor="1.0">
+                           <tooltip>
+                              <Tooltip fx:id="refreshTooltip" text="Refresh" />
+                           </tooltip>
+                     <graphic>
+                        <FontIcon iconLiteral="mdi-refresh" styleClass="icons" />
+                     </graphic>
+                        </Button>
+                        <MenuButton fx:id="filterMenuButton" layoutX="138.0" layoutY="1.0" mnemonicParsing="false" prefHeight="25.0" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="1.0">
+                          <items>
+                              <Menu fx:id="viewsMenu" mnemonicParsing="false" text="Views">
+                                <items>
+                                    <CheckMenuItem fx:id="adaptedCheckMenuItem" mnemonicParsing="false" text="Adapted" />
+                                    <CheckMenuItem fx:id="installedCheckMenuItem" mnemonicParsing="false" text="Installed" />
+                                    <CheckMenuItem fx:id="recommendedCheckMenuItem" mnemonicParsing="false" text="Recommended" />
+                                </items>
+                              </Menu>
+                            <MenuItem fx:id="updatesMenuItem" mnemonicParsing="false" text="Check for Updates" />
+                              <SeparatorMenuItem fx:id="filterSeparatorMenuItem" mnemonicParsing="false" />
+                              <Menu fx:id="tagsMenu" mnemonicParsing="false" text="Tags">
+                                <items>
+                                    <CheckMenuItem mnemonicParsing="false" text="Tag 1" />
+                                    <CheckMenuItem mnemonicParsing="false" text="Tag 2" />
+                                    <CheckMenuItem mnemonicParsing="false" text="Tag 3" />
+                                </items>
+                              </Menu>
+                          </items>
+                     <graphic>
+                        <FontIcon iconLiteral="mdi-filter" styleClass="icons" />
+                     </graphic>
+                        </MenuButton>
+                     </children>
+                     <padding>
+                        <Insets bottom="2.0" top="1.0" />
+                     </padding>
+                  </AnchorPane>
+                <AnchorPane fx:id="searchPane" minHeight="0.0" minWidth="0.0" prefHeight="283.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+               <children>
+                <TextField id="searchBar" fx:id="searchBar" prefHeight="25.0" prefWidth="174.0" promptText="Search Template Sets" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="26.0" AnchorPane.topAnchor="1.0" />
+                <Button fx:id="clearSearchResultsButton" minHeight="-Infinity" mnemonicParsing="false" onAction="#clearSearchResults" prefHeight="23.0" prefWidth="27.0" style="-fx-background-color: TRANSPARENT;" text="x" textFill="#0000004d" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="27.0">
+                     <content>
+                        <ListView id="searchResultsView" fx:id="searchResultsView" />
+                     </content>
+                </ScrollPane>
+               </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+  </children>
+</AnchorPane>
