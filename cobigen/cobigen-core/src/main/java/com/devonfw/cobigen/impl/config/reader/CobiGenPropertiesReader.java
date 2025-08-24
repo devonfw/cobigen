@@ -21,33 +21,16 @@ public class CobiGenPropertiesReader {
   /**
    * @param folder the {@link Path} pointing to the folder that may contain a {@code cobigen.properties} file.
    * @return the new {@link Properties} containing the properties from a potential {@code cobigen.properties}. Will be
-   *         empty if no such properties file exists.
+   *         {@code null} if no such properties file exists.
    */
   public static final Properties load(Path folder) {
 
-    return load(folder, null);
-  }
-
-  /**
-   * @param folder the {@link Path} pointing to the folder that may contain a {@code cobigen.properties} file.
-   * @param parent the parent {@link Properties} to inherit from and override with potentially read properties.
-   * @return the new {@link Properties} containing the properties from a potential {@code cobigen.properties} merged
-   *         with the given {@code parent} properties.
-   */
-  public static final Properties load(Path folder, Properties parent) {
-
     Path propertiesPath = folder.resolve(ConfigurationConstants.COBIGEN_PROPERTIES);
     if (!Files.exists(propertiesPath)) {
-      if (parent == null) {
-        return new Properties();
-      }
-      return parent;
+      return null;
     }
 
     Properties properties = new Properties();
-    if (parent != null) {
-      properties.putAll(parent);
-    }
     try (Reader reader = Files.newBufferedReader(propertiesPath, UTF_8)) {
       properties.load(reader);
     } catch (IOException e) {

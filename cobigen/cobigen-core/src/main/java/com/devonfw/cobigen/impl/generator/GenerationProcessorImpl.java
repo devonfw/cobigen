@@ -307,8 +307,6 @@ public class GenerationProcessorImpl implements GenerationProcessor {
         return combinedClassLoader;
       } catch (MalformedURLException e) {
         throw new CobiGenRuntimeException("Invalid Path", e);
-      } catch (IOException e) {
-        throw new CobiGenRuntimeException("Unable to read " + cpCacheFile, e);
       }
     } else {
       combinedClassLoader = inputProjectClassLoader;
@@ -442,7 +440,7 @@ public class GenerationProcessorImpl implements GenerationProcessor {
       // resolve temporary file paths
       @SuppressWarnings("unchecked")
       PathExpressionResolver pathExpressionResolver = new PathExpressionResolver(
-          Variables.fromMap((Map<String, String>) model.get(ModelBuilderImpl.NS_VARIABLES)));
+          Variables.fromMap((Map<String, Object>) model.get(ModelBuilderImpl.NS_VARIABLES)));
       String resolvedTargetDestinationPath = pathExpressionResolver
           .evaluateExpressions(templateEty.getUnresolvedTargetPath());
       String resolvedTmpDestinationPath = pathExpressionResolver
