@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="4.0">
+<ns3:templateSetConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" xmlns:ns2="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" xmlns:ns3="http://capgemini.com/devonfw/cobigen/TemplateSetConfiguration" version="1.0">
+<contextConfiguration version="3.0">
+  <trigger id="templateSet2" type="someType" templateFolder="" inputCharset="UTF-8">
+    <containerMatcher type="element" value="someValue" retrieveObjectsRecursively="true"/>
+    <matcher type="element" value="*" accumulationType="OR">
+      <variableAssignment type="constant" key="foo" value="BlABLA1"/>
+    </matcher>
+  </trigger>
+  	<tags>
+		<tag name="PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER" />
+	</tags>
+	<links>
+		<link url="PLACEHOLDER---This tag was inserted through the upgrade process and has to be changed manually---PLACEHOLDER" />
+	</links>
+</contextConfiguration>
+<templatesConfiguration xmlns="http://capgemini.com/devonfw/cobigen/TemplatesConfiguration" version="5.0">
     <templates>
         <template name="entityBuilder" destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder.java.ftl" mergeStrategy="javamerge"/>
         <template name="entityBuilder_customFunctions" destinationPath="src/test/java/${variables.rootPackage}/common/api/builders/${variables.pojoName}Builder.java" templateFile="ObjectBuilder_customFunctions.java.ftl" mergeStrategy="javamerge"/>
@@ -20,3 +35,4 @@
         </increment>
     </increments>
 </templatesConfiguration>
+</ns3:templateSetConfiguration>

@@ -84,7 +84,13 @@ public class ContextConfiguration {
     }
 
     this.configurationPath = this.contextConfigurationReader.getContextRoot();
-    this.triggers = this.contextConfigurationReader.loadTriggers();
+    boolean isTemplateSet = false;
+    // check if configurationHolder is present to check for template set configuration
+    // configurationHolder is never used in monolitic configuration here.
+    if (this.configurationHolder != null) {
+      isTemplateSet = this.configurationHolder.isTemplateSetConfiguration();
+    }
+    this.triggers = this.contextConfigurationReader.loadTriggers(isTemplateSet);
 
   }
 

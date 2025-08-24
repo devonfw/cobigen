@@ -1,0 +1,6 @@
+<contextConfiguration xmlns="http://capgemini.com/devonfw/cobigen/ContextConfiguration" version="2.1">
+    <trigger id="entities" type="java" templateFolder="template-test">
+      <matcher type="fqn" value=".+">
+      </matcher>
+    </trigger>
+</contextConfiguration>
